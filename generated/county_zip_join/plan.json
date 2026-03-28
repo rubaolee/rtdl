@@ -1,0 +1,197 @@
+{
+  "kernel_name": "county_zip_join",
+  "backend": "rayjoin",
+  "precision": "exact",
+  "build_input": {
+    "name": "right",
+    "geometry": "segments",
+    "layout": "Segment2D",
+    "role": "build",
+    "fields": [
+      {
+        "name": "x0",
+        "c_type": "float"
+      },
+      {
+        "name": "y0",
+        "c_type": "float"
+      },
+      {
+        "name": "x1",
+        "c_type": "float"
+      },
+      {
+        "name": "y1",
+        "c_type": "float"
+      },
+      {
+        "name": "id",
+        "c_type": "uint32_t"
+      }
+    ]
+  },
+  "probe_input": {
+    "name": "left",
+    "geometry": "segments",
+    "layout": "Segment2D",
+    "role": "probe",
+    "fields": [
+      {
+        "name": "x0",
+        "c_type": "float"
+      },
+      {
+        "name": "y0",
+        "c_type": "float"
+      },
+      {
+        "name": "x1",
+        "c_type": "float"
+      },
+      {
+        "name": "y1",
+        "c_type": "float"
+      },
+      {
+        "name": "id",
+        "c_type": "uint32_t"
+      }
+    ]
+  },
+  "accel_kind": "bvh",
+  "predicate": "segment_intersection",
+  "exact_refine_mode": "two_stage_segment_intersection",
+  "emit_fields": [
+    "left_id",
+    "right_id",
+    "intersection_point_x",
+    "intersection_point_y"
+  ],
+  "payload_registers": [
+    {
+      "index": 0,
+      "name": "probe_index",
+      "encoding": "u32"
+    },
+    {
+      "index": 1,
+      "name": "build_primitive_index",
+      "encoding": "u32"
+    },
+    {
+      "index": 2,
+      "name": "hit_t_bits",
+      "encoding": "f32_bits"
+    },
+    {
+      "index": 3,
+      "name": "hit_kind",
+      "encoding": "u32"
+    }
+  ],
+  "launch_params": [
+    {
+      "name": "traversable",
+      "c_type": "OptixTraversableHandle",
+      "role": "rt_accel"
+    },
+    {
+      "name": "right_segments",
+      "c_type": "const Segment2D*",
+      "role": "device_input_build"
+    },
+    {
+      "name": "left_segments",
+      "c_type": "const Segment2D*",
+      "role": "device_input_probe"
+    },
+    {
+      "name": "output_records",
+      "c_type": "IntersectionRecord*",
+      "role": "device_output"
+    },
+    {
+      "name": "output_count",
+      "c_type": "uint32_t*",
+      "role": "device_counter"
+    },
+    {
+      "name": "probe_count",
+      "c_type": "uint32_t",
+      "role": "launch_size"
+    }
+  ],
+  "buffers": [
+    {
+      "name": "right_segments",
+      "element": "Segment2D",
+      "role": "device_input_build"
+    },
+    {
+      "name": "left_segments",
+      "element": "Segment2D",
+      "role": "device_input_probe"
+    },
+    {
+      "name": "output_records",
+      "element": "IntersectionRecord",
+      "role": "device_output"
+    },
+    {
+      "name": "output_count",
+      "element": "uint32_t",
+      "role": "device_counter"
+    }
+  ],
+  "output_record": {
+    "name": "IntersectionRecord",
+    "fields": [
+      {
+        "name": "left_id",
+        "c_type": "uint32_t"
+      },
+      {
+        "name": "right_id",
+        "c_type": "uint32_t"
+      },
+      {
+        "name": "intersection_point_x",
+        "c_type": "float"
+      },
+      {
+        "name": "intersection_point_y",
+        "c_type": "float"
+      }
+    ]
+  },
+  "ray_spec": {
+    "origin": [
+      "probe.x0",
+      "probe.y0",
+      "0.0f"
+    ],
+    "direction": [
+      "probe.x1 - probe.x0",
+      "probe.y1 - probe.y0",
+      "0.0f"
+    ],
+    "tmin": "0.0f",
+    "tmax": "1.0f",
+    "description": "Cast each probe segment as a finite ray over the build-side BVH."
+  },
+  "device_programs": [
+    "__raygen__rtdl_probe",
+    "__miss__rtdl_miss",
+    "__closesthit__rtdl_refine",
+    "__intersection__rtdl_segments"
+  ],
+  "host_steps": [
+    "Upload `right` and `left` arrays using `Segment2D` / `Segment2D` layouts.",
+    "Build BVH over `right` and export an OptixTraversableHandle.",
+    "Bind launch parameters with segment buffers, output buffer, and atomic output counter.",
+    "Create OptiX module, raygen/miss/closesthit/intersection program groups, and shader binding table.",
+    "Launch one probe ray per `left` segment with t-range [0, 1].",
+    "Pack probe/build indices into payload registers p0-p3 and run exact refinement before emitting records."
+  ],
+  "bvh_policy": "build over `right`, probe with `left`"
+}
