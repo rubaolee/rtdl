@@ -21,6 +21,11 @@ There is also a manager-facing summary file:
 
    This is a single self-contained HTML file with inline styles. It keeps one row per round so someone can quickly scan version, status, review outcome, revision outcome, and final result without querying SQLite.
 
+4. GitHub-readable markdown companion
+   `history/revision_dashboard.md`
+
+   This mirrors the same round summary in Markdown so it can be read directly on GitHub without opening the HTML file.
+
 ## Why This Layout
 
 The database is good for:
@@ -54,6 +59,8 @@ This hybrid layout is more practical than:
   Helper script to register a new round and archive files into the database plus filesystem.
 - `history/revision_dashboard.html`
   Single-file HTML dashboard for managers and quick project status reviews.
+- `history/revision_dashboard.md`
+  Markdown summary of the same dashboard data for GitHub reading.
 - `history/revisions/<round-slug>/metadata.txt`
   Human-readable round summary.
 - `history/revisions/<round-slug>/external_reports/`
@@ -78,7 +85,7 @@ This hybrid layout is more practical than:
 2. Archive external review reports into `external_reports/`.
 3. Archive the relevant RTDL project files into `project_snapshot/`.
 4. Insert round metadata and file metadata into `history.db`.
-5. Regenerate `revision_dashboard.html` from the database.
+5. Regenerate `revision_dashboard.html` and `revision_dashboard.md` from the database.
 6. Keep the archive immutable after the round is closed.
 
 ## Current Seeded Round

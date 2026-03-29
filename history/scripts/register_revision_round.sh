@@ -42,6 +42,7 @@ round_dir="$history_dir/revisions/$round_slug"
 external_dir="$round_dir/external_reports"
 snapshot_dir="$round_dir/project_snapshot"
 dashboard_path="$history_dir/revision_dashboard.html"
+ledger_path="$history_dir/revision_dashboard.md"
 
 mkdir -p "$external_dir" "$snapshot_dir"
 sqlite3 "$db_path" < "$history_dir/schema.sql"
@@ -379,6 +380,27 @@ cat > "$dashboard_path" <<EOF
           <tbody>
 EOF
 
+cat > "$ledger_path" <<'EOF'
+# Revision Dashboard
+
+Manager-facing summary of RTDL review and revision rounds. This Markdown file is generated from `history/history.db` for direct reading on GitHub. The richer browser view remains available in `history/revision_dashboard.html`.
+
+## Summary
+
+EOF
+
+printf -- "- Revision rounds: %s\n" "$total_rounds" >> "$ledger_path"
+printf -- "- Archived files: %s\n" "$total_archived_files" >> "$ledger_path"
+printf -- "- External reports: %s\n" "$total_external_reports" >> "$ledger_path"
+printf -- "- Project snapshots: %s\n\n" "$total_project_snapshots" >> "$ledger_path"
+
+cat >> "$ledger_path" <<'EOF'
+## Rounds
+
+| Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+EOF
+
 sqlite3 -separator '|' "$db_path" <<SQL | while IFS='|' read -r db_version db_started_on db_status db_title db_gemini_review db_codex_revision db_final_result db_source_commit db_slug; do
 SELECT
   revision_round_status.version,
@@ -405,6 +427,16 @@ SQL
   printf '              <td><code>%s</code></td>\n' "$(html_escape "$db_source_commit")" >> "$dashboard_path"
   printf '              <td><code>%s</code></td>\n' "$(html_escape "$db_slug")" >> "$dashboard_path"
   printf '            </tr>\n' >> "$dashboard_path"
+  printf '| %s | %s | %s | %s | %s | %s | %s | `%s` | `%s` |\n' \
+    "$db_version" \
+    "$db_started_on" \
+    "$db_status" \
+    "$db_title" \
+    "$db_gemini_review" \
+    "$db_codex_revision" \
+    "$db_final_result" \
+    "$db_source_commit" \
+    "$db_slug" >> "$ledger_path"
 done
 
 cat >> "$dashboard_path" <<'EOF'
