@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RTDL Revision Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4efe5;
+      --panel: #fffdf8;
+      --ink: #1e1b18;
+      --muted: #6d655c;
+      --line: #d7cabb;
+      --accent: #0f766e;
+      --accent-soft: #d7f3ee;
+      --warn: #a16207;
+      --warn-soft: #fdf1c7;
+      --shadow: 0 18px 40px rgba(44, 33, 20, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28rem),
+        linear-gradient(180deg, #fbf7f0 0%, var(--bg) 100%);
+      color: var(--ink);
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 28px 56px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--accent);
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      max-width: 12ch;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 56rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin: 24px 0 32px;
+    }
+
+    .stat {
+      background: rgba(255, 253, 248, 0.82);
+      border: 1px solid rgba(215, 202, 187, 0.9);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 22px 24px 12px;
+      border-bottom: 1px solid rgba(215, 202, 187, 0.7);
+    }
+
+    .panel-head h2 {
+      margin: 0 0 6px;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th, td {
+      padding: 16px 18px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(215, 202, 187, 0.65);
+    }
+
+    th {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: #faf3e8;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .summary-cell {
+      min-width: 16rem;
+      line-height: 1.45;
+    }
+
+    code {
+      font-family: "SFMono-Regular", "Menlo", "Consolas", monospace;
+      font-size: 0.9em;
+      background: #f4efe6;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 24px 14px 40px; }
+      .panel-head, th, td { padding-left: 14px; padding-right: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">RTDL History</p>
+      <h1>Revision Dashboard</h1>
+      <p class="lead">Manager-facing summary of RTDL review and revision rounds. The table below is generated directly from <code>history/history.db</code> so the HTML file stays readable while SQLite remains the source of truth.</p>
+    </section>
+
+    <section class="stats">
+      <article class="stat">
+        <span class="stat-label">Revision Rounds</span>
+        <span class="stat-value">1</span>
+      </article>
+      <article class="stat">
+        <span class="stat-label">Archived Files</span>
+        <span class="stat-value">19</span>
+      </article>
+      <article class="stat">
+        <span class="stat-label">External Reports</span>
+        <span class="stat-value">4</span>
+      </article>
+      <article class="stat">
+        <span class="stat-label">Project Snapshots</span>
+        <span class="stat-value">15</span>
+      </article>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <h2>Round Summary</h2>
+        <p>Each row represents one completed review/revision round, including the version tag, review outcome, Codex response, and final project status.</p>
+      </header>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Round</th>
+              <th>Gemini Review</th>
+              <th>Codex Revision</th>
+              <th>Final Result</th>
+              <th>Commit</th>
+              <th>Archive</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>v0.1-alpha</strong></td>
+              <td>2026-03-29</td>
+              <td><span class="status">revised-locally</span></td>
+              <td class="summary-cell">Gemini Review and Codex Revision Round 1</td>
+              <td class="summary-cell">identified precision over-claim and validation/runtime gaps</td>
+              <td class="summary-cell">updated backend/docs/tests to match float_approx implementation</td>
+              <td class="summary-cell">project aligned with revised report; ready for follow-up review</td>
+              <td><code>35b68b9</code></td>
+              <td><code>2026-03-29-review-revision-round-1</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="footer">Generated by <code>history/scripts/register_revision_round.sh</code>. Update the SQLite archive first, then regenerate this HTML summary from the database.</p>
+  </main>
+</body>
+</html>

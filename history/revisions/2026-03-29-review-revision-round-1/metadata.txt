@@ -1,0 +1,11 @@
+slug: 2026-03-29-review-revision-round-1
+title: Gemini Review and Codex Revision Round 1
+version: v0.1-alpha
+status: revised-locally
+started_on: 2026-03-29
+closed_on: 2026-03-29
+source_commit: 35b68b9
+gemini_review: identified precision over-claim and validation/runtime gaps
+codex_revision: updated backend/docs/tests to match float_approx implementation
+final_result: project aligned with revised report; ready for follow-up review
+summary: Original Gemini verification, Codex revision note, Gemini agreement/final revised report, and project-side implementation of accepted revisions.
