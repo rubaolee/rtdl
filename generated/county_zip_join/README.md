@@ -2,6 +2,12 @@
 
 This directory contains generated backend artifacts for the RTDL kernel `county_zip_join`.
 
+## Workload
+
+- `lsi`
+- predicate: `segment_intersection`
+- refine mode: `analytic_float_segment_intersection`
+
 ## Contents
 
 - `plan.json`: serialized backend plan.

@@ -1,0 +1,11 @@
+slug: 2026-03-29-goal-2-multi-workload-datasets
+title: Goal 2 Multi-Workload Coverage and RayJoin Dataset Pipeline
+version: v0.1-alpha-goal2
+status: done-consensus
+started_on: 2026-03-29
+closed_on: 2026-03-29
+source_commit: 07a21be
+gemini_review: scope and evidence bar agreed; final review accepted Goal 2 as complete
+codex_revision: implemented lsi/pip/overlay workload support, CDB parsing, derived views, CPU references, docs, and tests
+final_result: Goal 2 accepted complete by Codex and Gemini consensus
+summary: Formal Goal 2 review-revision round for multi-workload RTDL coverage and RayJoin-style dataset ingestion before GPU runtime integration.

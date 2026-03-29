@@ -21,6 +21,7 @@ int main() {
     // probe_count: uint32_t [launch_size]
 
     std::cout << "Generated OptiX skeleton for kernel: county_zip_join\n";
+    std::cout << "Workload kind: lsi\n";
     std::cout << "BVH policy: build over `right`, probe with `left`\n";
     std::cout << "Ray t-range: [0.0f, 1.0f]\n";
     std::cout << "Output record: IntersectionRecord\n";

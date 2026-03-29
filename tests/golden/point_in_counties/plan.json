@@ -1,0 +1,207 @@
+{
+  "$schema": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json",
+  "accel_kind": "bvh",
+  "backend": "rayjoin",
+  "buffers": [
+    {
+      "element": "Polygon2DRef",
+      "name": "polygons",
+      "role": "device_input_build"
+    },
+    {
+      "element": "Point2D",
+      "name": "points",
+      "role": "device_input_probe"
+    },
+    {
+      "element": "PointInPolygonRecord",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    }
+  ],
+  "build_input": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "vertex_offset",
+        "scalar_type": "u32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "vertex_count",
+        "scalar_type": "u32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "polygons",
+    "layout": "Polygon2DRef",
+    "name": "polygons",
+    "role": "build"
+  },
+  "bvh_policy": "build over `polygons`, probe with `points`",
+  "device_programs": [
+    "__raygen__rtdl_pip_probe",
+    "__miss__rtdl_miss",
+    "__closesthit__rtdl_pip_refine",
+    "__intersection__rtdl_polygon_refs"
+  ],
+  "emit_fields": [
+    "point_id",
+    "polygon_id",
+    "contains"
+  ],
+  "exact_refine_mode": "analytic_float_point_in_polygon",
+  "host_steps": [
+    "Upload `polygons` polygon refs and `points` points using `Polygon2DRef` / `Point2D` layouts.",
+    "Build BVH over polygon references from `polygons` and export an OptixTraversableHandle.",
+    "Bind launch parameters with polygon refs, point probes, output buffer, output capacity, and atomic output counter.",
+    "Create OptiX module, raygen/miss/closesthit/intersection program groups, and shader binding table.",
+    "Launch one vertical parity ray per `points` point.",
+    "Pack point/polygon indices into payload registers and run float-based point-in-polygon refinement before emitting records."
+  ],
+  "kernel_name": "point_in_counties",
+  "launch_params": [
+    {
+      "c_type": "OptixTraversableHandle",
+      "name": "traversable",
+      "role": "rt_accel"
+    },
+    {
+      "c_type": "const Polygon2DRef*",
+      "name": "polygons",
+      "role": "device_input_build"
+    },
+    {
+      "c_type": "const Point2D*",
+      "name": "points",
+      "role": "device_input_probe"
+    },
+    {
+      "c_type": "PointInPolygonRecord*",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "c_type": "uint32_t*",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "probe_count",
+      "role": "launch_size"
+    }
+  ],
+  "output_record": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "name": "point_id"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "polygon_id"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "contains"
+      }
+    ],
+    "name": "PointInPolygonRecord"
+  },
+  "payload_registers": [
+    {
+      "encoding": "u32",
+      "index": 0,
+      "name": "point_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 1,
+      "name": "polygon_face_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 2,
+      "name": "winding_hits"
+    },
+    {
+      "encoding": "u32",
+      "index": 3,
+      "name": "hit_kind"
+    }
+  ],
+  "precision": "float_approx",
+  "predicate": "point_in_polygon",
+  "probe_input": {
+    "fields": [
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "points",
+    "layout": "Point2D",
+    "name": "points",
+    "role": "probe"
+  },
+  "ray_spec": {
+    "description": "Cast one upward parity ray from each probe point over the build-side polygon BVH.",
+    "direction": [
+      "0.0f",
+      "1.0f",
+      "0.0f"
+    ],
+    "origin": [
+      "probe.x",
+      "probe.y",
+      "0.0f"
+    ],
+    "tmax": "FLT_MAX",
+    "tmin": "0.0f"
+  },
+  "schema_version": "v1alpha1",
+  "workload_kind": "pip"
+}

@@ -127,17 +127,12 @@ extern "C" __global__ void __raygen__rtdl_probe() {
 }
 
 extern "C" __global__ void __miss__rtdl_miss() {
-    // Intentionally empty for the narrow segment-join path.
+    // Intentionally empty for the LSI path.
 }
 
 extern "C" __global__ void __closesthit__rtdl_refine() {
     const uint32_t probe_index = optixGetPayload_0();
     const uint32_t build_primitive_index = optixGetPayload_1();
-    const float candidate_hit_t = rtdl_u32_as_float(optixGetPayload_2());
-    const uint32_t hit_kind = optixGetPayload_3();
-    (void)candidate_hit_t;
-    (void)hit_kind;
-
     const Segment2D probe = params.left_segments[probe_index];
     const Segment2D build = params.right_segments[build_primitive_index];
     float refined_hit_t = 0.0f;

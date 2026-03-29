@@ -235,5 +235,6 @@
     "tmax": "1.0f",
     "tmin": "0.0f"
   },
-  "schema_version": "v1alpha1"
+  "schema_version": "v1alpha1",
+  "workload_kind": "lsi"
 }
