@@ -119,35 +119,62 @@ def main() -> None:
     print()
     print("CPU Simulator Sample")
     print("--------------------")
+    lsi_left = ({"id": 1, "x0": 0.0, "y0": 0.0, "x1": 2.0, "y1": 2.0},)
+    lsi_right = ({"id": 2, "x0": 0.0, "y0": 2.0, "x1": 2.0, "y1": 0.0},)
+    pip_points = (
+        {"id": 10, "x": 0.5, "y": 0.5},
+        {"id": 11, "x": 3.0, "y": 3.0},
+    )
+    pip_polygons = (
+        {"id": 20, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+    )
+    overlay_left = (
+        {"id": 30, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+    )
+    overlay_right = (
+        {"id": 31, "vertices": ((1.0, -1.0), (3.0, -1.0), (3.0, 1.0), (1.0, 1.0))},
+    )
+
     lsi_results = rt.run_cpu(
         county_zip_join,
-        left=({"id": 1, "x0": 0.0, "y0": 0.0, "x1": 2.0, "y1": 2.0},),
-        right=({"id": 2, "x0": 0.0, "y0": 2.0, "x1": 2.0, "y1": 0.0},),
+        left=lsi_left,
+        right=lsi_right,
     )
     pip_results = rt.run_cpu(
         point_in_counties,
-        points=(
-            {"id": 10, "x": 0.5, "y": 0.5},
-            {"id": 11, "x": 3.0, "y": 3.0},
-        ),
-        polygons=(
-            {"id": 20, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
-        ),
+        points=pip_points,
+        polygons=pip_polygons,
     )
     overlay_results = rt.run_cpu(
         county_soil_overlay,
-        left=(
-            {"id": 30, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
-        ),
-        right=(
-            {"id": 31, "vertices": ((1.0, -1.0), (3.0, -1.0), (3.0, 1.0), (1.0, 1.0))},
-        ),
+        left=overlay_left,
+        right=overlay_right,
     )
     ray_results = rt.run_cpu(central_ray_triangle_stats, rays=rays, triangles=triangles)
     print(f"lsi rows       : {lsi_results}")
     print(f"pip rows       : {pip_results}")
     print(f"overlay rows   : {overlay_results}")
     print(f"ray rows       : {ray_results}")
+
+    print()
+    print("Embree Runtime Sample")
+    print("---------------------")
+    embree_lsi_results = rt.run_embree(county_zip_join, left=lsi_left, right=lsi_right)
+    embree_pip_results = rt.run_embree(
+        point_in_counties,
+        points=pip_points,
+        polygons=pip_polygons,
+    )
+    embree_overlay_results = rt.run_embree(
+        county_soil_overlay,
+        left=overlay_left,
+        right=overlay_right,
+    )
+    embree_ray_results = rt.run_embree(central_ray_triangle_stats, rays=rays, triangles=triangles)
+    print(f"lsi rows       : {embree_lsi_results}")
+    print(f"pip rows       : {embree_pip_results}")
+    print(f"overlay rows   : {embree_overlay_results}")
+    print(f"ray rows       : {embree_ray_results}")
 
 
 if __name__ == "__main__":
