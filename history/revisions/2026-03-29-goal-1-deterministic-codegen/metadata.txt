@@ -1,0 +1,11 @@
+slug: 2026-03-29-goal-1-deterministic-codegen
+title: Goal 1 Deterministic Codegen and Validation
+version: v0.1-alpha-goal1
+status: done-consensus
+started_on: 2026-03-29
+closed_on: 2026-03-29
+source_commit: 3a092df
+gemini_review: pre-implementation scope approved; implementation review found no major issues
+codex_revision: implemented stable plan serialization, schema validation, golden tests, and broader negative validation
+final_result: Goal 1 accepted complete by Codex and Gemini consensus
+summary: Formal Goal 1 review-revision round for deterministic codegen, schema-backed plan artifacts, golden tests, and expanded validation.

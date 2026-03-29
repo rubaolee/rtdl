@@ -1,0 +1,169 @@
+{
+  "$id": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "kernel_name",
+    "backend",
+    "precision",
+    "build_input",
+    "probe_input",
+    "accel_kind",
+    "predicate",
+    "exact_refine_mode",
+    "emit_fields",
+    "payload_registers",
+    "launch_params",
+    "buffers",
+    "output_record",
+    "ray_spec",
+    "device_programs",
+    "host_steps",
+    "bvh_policy"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "v1alpha1"
+    },
+    "kernel_name": { "type": "string" },
+    "backend": { "type": "string", "const": "rayjoin" },
+    "precision": { "type": "string", "const": "float_approx" },
+    "build_input": { "$ref": "#/definitions/geometry_input" },
+    "probe_input": { "$ref": "#/definitions/geometry_input" },
+    "accel_kind": { "type": "string", "const": "bvh" },
+    "predicate": { "type": "string", "const": "segment_intersection" },
+    "exact_refine_mode": { "type": "string" },
+    "emit_fields": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "payload_registers": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/payload_register" }
+    },
+    "launch_params": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/launch_param" }
+    },
+    "buffers": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/buffer_spec" }
+    },
+    "output_record": { "$ref": "#/definitions/output_record" },
+    "ray_spec": { "$ref": "#/definitions/ray_spec" },
+    "device_programs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "host_steps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "bvh_policy": { "type": "string" }
+  },
+  "definitions": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "scalar_type", "c_type", "cuda_type", "size"],
+      "properties": {
+        "name": { "type": "string" },
+        "scalar_type": { "type": "string" },
+        "c_type": { "type": "string" },
+        "cuda_type": { "type": "string" },
+        "size": { "type": "integer" }
+      }
+    },
+    "geometry_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "geometry", "layout", "role", "fields"],
+      "properties": {
+        "name": { "type": "string" },
+        "geometry": { "type": "string" },
+        "layout": { "type": "string" },
+        "role": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/field" }
+        }
+      }
+    },
+    "payload_register": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "name", "encoding"],
+      "properties": {
+        "index": { "type": "integer" },
+        "name": { "type": "string" },
+        "encoding": { "type": "string" }
+      }
+    },
+    "launch_param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "c_type", "role"],
+      "properties": {
+        "name": { "type": "string" },
+        "c_type": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "buffer_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "element", "role"],
+      "properties": {
+        "name": { "type": "string" },
+        "element": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "output_field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "c_type"],
+      "properties": {
+        "name": { "type": "string" },
+        "c_type": { "type": "string" }
+      }
+    },
+    "output_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "fields"],
+      "properties": {
+        "name": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/output_field" }
+        }
+      }
+    },
+    "ray_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "direction", "tmin", "tmax", "description"],
+      "properties": {
+        "origin": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "direction": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "tmin": { "type": "string" },
+        "tmax": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}
