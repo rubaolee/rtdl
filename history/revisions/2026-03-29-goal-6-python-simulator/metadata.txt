@@ -1,0 +1,11 @@
+slug: 2026-03-29-goal-6-python-simulator
+title: Goal 6 Python Simulator
+version: v0.1-alpha-goal6
+status: done-consensus
+started_on: 2026-03-29
+closed_on: 2026-03-29
+source_commit: 3569438d984d695795eb9c1903f728b03a065dd1
+gemini_review: Gemini approved the simulator design and final implementation; no major issues were found.
+codex_revision: Added rt.run_cpu, runtime normalization/dispatch, simulator tests, docs, and local execution demos.
+final_result: Goal 6 complete; RTDL kernels now execute locally on CPU for the current workload surface.
+summary: Goal 6 adds a Python RT simulator so RTDL programs can run and return real results on non-GPU development machines.

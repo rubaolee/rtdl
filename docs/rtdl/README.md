@@ -29,3 +29,8 @@ Read these files in order:
 
 These documents are written as the authoritative language reference for the
 current compiler surface, not as future-looking design notes.
+
+The current RTDL toolchain now has two usable modes:
+
+- compile/lower/codegen for backend planning
+- `rt.run_cpu(...)` for local execution of the currently supported workloads
