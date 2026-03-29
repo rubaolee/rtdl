@@ -40,6 +40,8 @@ Current precision note:
 - `docs/vision.md`: project scope and research framing.
 - `docs/rayjoin_target.md`: how RTDL maps onto RayJoin-specific concerns.
 - `docs/v0_1_roadmap.md`: concrete scope and milestones for the first RTDL release.
+- `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
+- `examples/`: canonical language examples plus authored example programs.
 
 ## Build
 
@@ -94,3 +96,25 @@ The current Python pipeline is:
 1. `@rt.kernel` compiles Python syntax into an RT kernel IR.
 2. `rt.lower_to_rayjoin(...)` lowers that IR into a RayJoin-oriented backend plan.
 3. `rt.generate_optix_project(...)` emits OptiX/CUDA skeleton files for inspection and further backend work.
+
+## Language Docs
+
+RTDL now has a language-facing docs set for the currently implemented surface:
+
+- `docs/rtdl/dsl_reference.md`
+- `docs/rtdl/programming_guide.md`
+- `docs/rtdl/workload_cookbook.md`
+- `docs/rtdl/llm_authoring_guide.md`
+
+These documents describe the supported RTDL language for the current three
+workloads and are intended to be strong enough for both human and agent authoring.
+
+## Example Library
+
+The repository now keeps authored RTDL programs under `examples/`:
+
+- `examples/rtdl_language_reference.py`: canonical reference kernels
+- `examples/rtdl_codex_authored.py`: Codex-authored kernels
+- `examples/rtdl_gemini_authored.py`: Gemini-authored kernels
+
+Additional agent-authored kernels can be validated against the same compiler path.

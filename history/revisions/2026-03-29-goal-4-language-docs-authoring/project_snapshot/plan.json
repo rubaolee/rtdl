@@ -1,0 +1,211 @@
+{
+  "$schema": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json",
+  "accel_kind": "bvh",
+  "backend": "rayjoin",
+  "buffers": [
+    {
+      "element": "Polygon2DRef",
+      "name": "right_polygons",
+      "role": "device_input_build"
+    },
+    {
+      "element": "Polygon2DRef",
+      "name": "left_polygons",
+      "role": "device_input_probe"
+    },
+    {
+      "element": "OverlaySeedRecord",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    }
+  ],
+  "build_input": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "vertex_offset",
+        "scalar_type": "u32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "vertex_count",
+        "scalar_type": "u32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "polygons",
+    "layout": "Polygon2DRef",
+    "name": "right",
+    "role": "build"
+  },
+  "bvh_policy": "build over `right`, probe with `left`",
+  "device_programs": [
+    "__raygen__rtdl_overlay_dispatch",
+    "__miss__rtdl_miss",
+    "__closesthit__rtdl_overlay_compose"
+  ],
+  "emit_fields": [
+    "left_polygon_id",
+    "right_polygon_id",
+    "requires_lsi",
+    "requires_pip"
+  ],
+  "exact_refine_mode": "compose_lsi_plus_pip",
+  "host_steps": [
+    "Upload `right` and `left` polygon refs using `Polygon2DRef` layouts.",
+    "Build BVH over `right` polygon refs and export an OptixTraversableHandle.",
+    "Bind launch parameters for overlay seed generation and output buffering.",
+    "Create OptiX program groups for overlay dispatch and composition skeletons.",
+    "Launch one probe polygon per `left` polygon to collect overlay candidate seeds.",
+    "Compose overlay seeds from LSI-style edge intersections plus PIP-style containment checks before emitting records."
+  ],
+  "kernel_name": "overlay_kernel",
+  "launch_params": [
+    {
+      "c_type": "OptixTraversableHandle",
+      "name": "traversable",
+      "role": "rt_accel"
+    },
+    {
+      "c_type": "const Polygon2DRef*",
+      "name": "right_polygons",
+      "role": "device_input_build"
+    },
+    {
+      "c_type": "const Polygon2DRef*",
+      "name": "left_polygons",
+      "role": "device_input_probe"
+    },
+    {
+      "c_type": "OverlaySeedRecord*",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "c_type": "uint32_t*",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "probe_count",
+      "role": "launch_size"
+    }
+  ],
+  "output_record": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "name": "left_polygon_id"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "right_polygon_id"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "requires_lsi"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "requires_pip"
+      }
+    ],
+    "name": "OverlaySeedRecord"
+  },
+  "payload_registers": [
+    {
+      "encoding": "u32",
+      "index": 0,
+      "name": "left_polygon_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 1,
+      "name": "right_polygon_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 2,
+      "name": "overlay_flags"
+    },
+    {
+      "encoding": "u32",
+      "index": 3,
+      "name": "hit_kind"
+    }
+  ],
+  "precision": "float_approx",
+  "predicate": "overlay_compose",
+  "probe_input": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "vertex_offset",
+        "scalar_type": "u32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "vertex_count",
+        "scalar_type": "u32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "polygons",
+    "layout": "Polygon2DRef",
+    "name": "left",
+    "role": "probe"
+  },
+  "ray_spec": {
+    "description": "Dispatch polygon-pair overlay seeds and compose LSI/PIP subqueries at the plan level.",
+    "direction": [
+      "0.0f",
+      "0.0f",
+      "1.0f"
+    ],
+    "origin": [
+      "0.0f",
+      "0.0f",
+      "0.0f"
+    ],
+    "tmax": "1.0f",
+    "tmin": "0.0f"
+  },
+  "schema_version": "v1alpha1",
+  "workload_kind": "overlay"
+}

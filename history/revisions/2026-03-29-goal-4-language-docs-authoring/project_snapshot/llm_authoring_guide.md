@@ -1,0 +1,85 @@
+# RTDL LLM Authoring Guide
+
+This document is for LLMs and automated agents that need to write RTDL kernels.
+
+## Authoring Contract
+
+When writing RTDL in this repository:
+
+- use only the public `rtdsl` API
+- stay inside the implemented language surface
+- do not invent new predicates, emit fields, or backends
+- do not claim exact precision
+- prefer explicit roles
+
+## Required Template
+
+Use this kernel pattern:
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rayjoin", precision="float_approx")
+def kernel_name():
+    left = rt.input("left", rt.SomeGeometry, role="probe_or_build")
+    right = rt.input("right", rt.SomeGeometry, role="probe_or_build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    result = rt.refine(candidates, predicate=rt.some_supported_predicate(...))
+    return rt.emit(result, fields=[...])
+```
+
+## Supported Geometry / Predicate Pairs
+
+- `Segments x Segments` with `segment_intersection(exact=False)`
+- `Points x Polygons` with `point_in_polygon(exact=False, boundary_mode="inclusive")`
+- `Polygons x Polygons` with `overlay_compose()`
+
+## Supported Emit Fields
+
+For LSI:
+
+- `left_id`
+- `right_id`
+- `intersection_point_x`
+- `intersection_point_y`
+
+For PIP:
+
+- `point_id`
+- `polygon_id`
+- `contains`
+
+For Overlay:
+
+- `left_polygon_id`
+- `right_polygon_id`
+- `requires_lsi`
+- `requires_pip`
+
+## Do Not Do These Things
+
+- `precision="exact"`
+- `accel="grid"`
+- `point_in_polygon(boundary_mode="exclusive")`
+- custom predicates
+- emit fields outside the approved lists
+- polygon PIP with points on the build side
+
+## Success Criterion For LLM-Authored Code
+
+An RTDL program is acceptable only if:
+
+- `rt.compile_kernel(...)` succeeds
+- `rt.lower_to_rayjoin(...)` succeeds
+- the resulting plan matches one of the supported workload kinds
+
+## Recommended Prompting Pattern
+
+If another system asks for RTDL code, answer with:
+
+- one import block
+- one or more RTDL kernels
+- only public `rtdsl` API calls
+- no speculative APIs
+
+If uncertain, choose the narrower currently implemented surface.

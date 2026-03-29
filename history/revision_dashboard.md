@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 4
-- Archived files: 92
-- External reports: 13
-- Project snapshots: 79
+- Revision rounds: 5
+- Archived files: 116
+- External reports: 17
+- Project snapshots: 99
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha-goal4 | 2026-03-29 | done-consensus | Goal 4 Language Docs and Authoring Validation | Gemini found no major issues; docs and examples are sufficient for human and LLM authoring on the current RTDL surface. | Added formal RTDL docs, canonical examples, Codex/Gemini-authored kernels, and example validation tests. | Goal 4 complete; RTDL is now a documented teachable language for lsi, pip, and overlay. | `865ae551ad0e7cb064e14220c39f18c4298c4299` | `2026-03-29-goal-4-language-docs-authoring` |
 | v0.1-alpha-goal3 | 2026-03-29 | done-consensus | Goal 3 Gemini 3 Re-Review Gate | Gemini 3 re-review found no major issues; Goal 1 and Goal 2 remain acceptable baseline. | No repository revisions required; only review-environment clarifications were needed. | Goal 3 complete; proceed to next development milestone. | `0cfddbda2ea786f8caf24e78ea7b2be7f139ce00` | `2026-03-29-goal-3-gemini3-rereview` |
 | v0.1-alpha-goal2 | 2026-03-29 | done-consensus | Goal 2 Multi-Workload Coverage and RayJoin Dataset Pipeline | scope and evidence bar agreed; final review accepted Goal 2 as complete | implemented lsi/pip/overlay workload support, CDB parsing, derived views, CPU references, docs, and tests | Goal 2 accepted complete by Codex and Gemini consensus | `07a21be` | `2026-03-29-goal-2-multi-workload-datasets` |
 | v0.1-alpha-goal1 | 2026-03-29 | done-consensus | Goal 1 Deterministic Codegen and Validation | pre-implementation scope approved; implementation review found no major issues | implemented stable plan serialization, schema validation, golden tests, and broader negative validation | Goal 1 accepted complete by Codex and Gemini consensus | `3a092df` | `2026-03-29-goal-1-deterministic-codegen` |
