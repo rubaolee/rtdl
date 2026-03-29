@@ -63,6 +63,31 @@ Run the test suite:
 make test
 ```
 
+Run the local CPU simulator demo:
+
+```sh
+make run-rtdsl-sim
+```
+
+Run the Embree backend demo:
+
+```sh
+make run-rtdsl-embree
+```
+
+Embree setup on this Mac:
+
+```sh
+brew install embree
+```
+
+If Embree or TBB live outside the default Homebrew prefixes, set:
+
+```sh
+export RTDL_EMBREE_PREFIX=/custom/embree/prefix
+export RTDL_TBB_PREFIX=/custom/tbb/prefix
+```
+
 ## Python Example
 
 ```python
@@ -104,6 +129,12 @@ workloads:
 4. `rt.run_cpu(kernel_fn, **inputs)` executes the kernel through the Python
    reference semantics and returns result rows on non-GPU machines.
 
+RTDL now also has a native local Embree execution path for the currently
+supported workloads:
+
+5. `rt.run_embree(kernel_fn, **inputs)` executes the kernel through an
+   Embree-backed runtime and returns result rows on this Mac.
+
 ## Language Docs
 
 RTDL now has a language-facing docs set for the currently implemented surface:
@@ -126,5 +157,6 @@ The repository now keeps authored RTDL programs under `examples/`:
 - `examples/rtdl_ray_tri_hitcount.py`: canonical ray-query kernel plus random-data helpers
 - `examples/rtdl_codex_ray_query.py`: Codex-authored ray-query kernel
 - `examples/rtdl_simulator_demo.py`: local CPU execution demo using `rt.run_cpu(...)`
+- `examples/rtdl_embree_demo.py`: local native execution demo using `rt.run_embree(...)`
 
 Additional agent-authored kernels can be validated against the same compiler path.

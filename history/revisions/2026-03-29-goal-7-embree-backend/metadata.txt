@@ -1,0 +1,11 @@
+slug: 2026-03-29-goal-7-embree-backend
+title: Goal 7 Embree Backend
+version: v0.1-alpha-goal7
+status: done-consensus
+started_on: 2026-03-29
+closed_on: 2026-03-29
+source_commit: 4e2be7f1aa72a42f609e6045396bef47071441e8
+gemini_review: Gemini approved the Embree backend implementation and found no blocking issues.
+codex_revision: Installed Embree, added native shim and Python wrapper, added tests/demos/docs, and improved prefix configurability.
+final_result: Goal 7 complete; RTDL now runs the current workload surface on top of Embree on this Mac.
+summary: Goal 7 adds the first native local backend for RTDL using Embree while keeping run_cpu as the correctness oracle.
