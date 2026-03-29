@@ -8,7 +8,7 @@ This repository now contains:
 - a Python-hosted RT DSL prototype,
 - an initial compiler IR for RT kernels,
 - a RayJoin backend plan and OptiX/CUDA skeleton generator,
-- multi-workload compiler coverage for `lsi`, `pip`, and compositional `overlay`,
+- multi-workload compiler coverage for `lsi`, `pip`, compositional `overlay`, and 2D ray-vs-triangle hit counts,
 - a Python dataset pipeline for RayJoin-style CDB inputs, and
 - Python tests to keep the seed implementation executable.
 
@@ -84,6 +84,7 @@ Current workload coverage in the prototype:
 - `lsi`: segment-vs-segment intersection
 - `pip`: point-in-polygon as a workload-specific backend skeleton
 - `overlay`: compositional overlay seed generation over polygon inputs
+- `ray_tri_hitcount`: finite 2D rays against triangles with per-ray hit counts
 
 Current dataset support in the prototype:
 
@@ -106,7 +107,7 @@ RTDL now has a language-facing docs set for the currently implemented surface:
 - `docs/rtdl/workload_cookbook.md`
 - `docs/rtdl/llm_authoring_guide.md`
 
-These documents describe the supported RTDL language for the current three
+These documents describe the supported RTDL language for the current four
 workloads and are intended to be strong enough for both human and agent authoring.
 
 ## Example Library
@@ -116,5 +117,7 @@ The repository now keeps authored RTDL programs under `examples/`:
 - `examples/rtdl_language_reference.py`: canonical reference kernels
 - `examples/rtdl_codex_authored.py`: Codex-authored kernels
 - `examples/rtdl_gemini_authored.py`: Gemini-authored kernels
+- `examples/rtdl_ray_tri_hitcount.py`: canonical ray-query kernel plus random-data helpers
+- `examples/rtdl_codex_ray_query.py`: Codex-authored ray-query kernel
 
 Additional agent-authored kernels can be validated against the same compiler path.

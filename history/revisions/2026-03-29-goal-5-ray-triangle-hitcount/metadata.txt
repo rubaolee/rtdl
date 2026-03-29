@@ -1,0 +1,11 @@
+slug: 2026-03-29-goal-5-ray-triangle-hitcount
+title: Goal 5 Ray Triangle Hitcount
+version: v0.1-alpha-goal5
+status: done-consensus
+started_on: 2026-03-29
+closed_on: 2026-03-29
+source_commit: 3df92bb5e83fe4763a9268c45d1cde92bcf73d83
+gemini_review: Gemini found no major issues; finite 2D ray-vs-triangle hit counting is correctly integrated and documented.
+codex_revision: Added Triangles/Rays, hit-count predicate, lowering/codegen/docs/examples/tests; clarified docs after the first invalid Gemini-authored attempt.
+final_result: Goal 5 complete; RTDL now supports finite 2D ray-vs-triangle hit counts.
+summary: Goal 5 adds a fourth RTDL workload and validates it through docs, examples, CPU reference semantics, and backend planning.

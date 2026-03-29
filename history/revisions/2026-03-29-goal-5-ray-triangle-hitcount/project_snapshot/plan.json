@@ -1,0 +1,251 @@
+{
+  "$schema": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json",
+  "accel_kind": "bvh",
+  "backend": "rayjoin",
+  "buffers": [
+    {
+      "element": "Triangle2D",
+      "name": "triangles",
+      "role": "device_input_build"
+    },
+    {
+      "element": "Ray2D",
+      "name": "rays",
+      "role": "device_input_probe"
+    },
+    {
+      "element": "RayHitCountRecord",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    }
+  ],
+  "build_input": {
+    "fields": [
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x0",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y0",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x1",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y1",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x2",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y2",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "triangles",
+    "layout": "Triangle2D",
+    "name": "triangles",
+    "role": "build"
+  },
+  "bvh_policy": "build over `triangles`, probe with `rays`",
+  "device_programs": [
+    "__raygen__rtdl_ray_hitcount",
+    "__miss__rtdl_miss",
+    "__anyhit__rtdl_triangle_count",
+    "__intersection__rtdl_triangles"
+  ],
+  "emit_fields": [
+    "ray_id",
+    "hit_count"
+  ],
+  "exact_refine_mode": "analytic_float_ray_triangle_hit_count",
+  "host_steps": [
+    "Upload `triangles` triangles and `rays` rays using `Triangle2D` / `Ray2D` layouts.",
+    "Build BVH over `triangles` triangles and export an OptixTraversableHandle.",
+    "Bind launch parameters with triangle buffers, ray buffers, output buffer, output capacity, and atomic output counter.",
+    "Create OptiX module, raygen/miss/anyhit/intersection program groups, and shader binding table.",
+    "Launch one finite ray per `rays` record.",
+    "Accumulate one hit count per ray across intersected triangles before emitting a single output record."
+  ],
+  "kernel_name": "ray_triangle_hit_counter",
+  "launch_params": [
+    {
+      "c_type": "OptixTraversableHandle",
+      "name": "traversable",
+      "role": "rt_accel"
+    },
+    {
+      "c_type": "const Triangle2D*",
+      "name": "triangles",
+      "role": "device_input_build"
+    },
+    {
+      "c_type": "const Ray2D*",
+      "name": "rays",
+      "role": "device_input_probe"
+    },
+    {
+      "c_type": "RayHitCountRecord*",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "c_type": "uint32_t*",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "probe_count",
+      "role": "launch_size"
+    }
+  ],
+  "output_record": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "name": "ray_id"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "hit_count"
+      }
+    ],
+    "name": "RayHitCountRecord"
+  },
+  "payload_registers": [
+    {
+      "encoding": "u32",
+      "index": 0,
+      "name": "ray_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 1,
+      "name": "triangle_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 2,
+      "name": "hit_count"
+    },
+    {
+      "encoding": "u32",
+      "index": 3,
+      "name": "hit_kind"
+    }
+  ],
+  "precision": "float_approx",
+  "predicate": "ray_triangle_hit_count",
+  "probe_input": {
+    "fields": [
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "ox",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "oy",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "dx",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "dy",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "tmax",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "rays",
+    "layout": "Ray2D",
+    "name": "rays",
+    "role": "probe"
+  },
+  "ray_spec": {
+    "description": "Trace each finite 2D ray against the build-side triangle BVH and count triangle hits.",
+    "direction": [
+      "probe.dx",
+      "probe.dy",
+      "0.0f"
+    ],
+    "origin": [
+      "probe.ox",
+      "probe.oy",
+      "0.0f"
+    ],
+    "tmax": "probe.tmax",
+    "tmin": "0.0f"
+  },
+  "schema_version": "v1alpha1",
+  "workload_kind": "ray_tri_hitcount"
+}
