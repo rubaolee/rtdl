@@ -83,10 +83,13 @@ def input(
     role: str | None = None,
 ) -> GeometryInput:
     context = _current_context()
+    resolved_layout = layout or geometry.default_layout
+    if geometry.required_fields:
+        resolved_layout.require_fields(geometry.required_fields)
     node = GeometryInput(
         name=name,
         geometry=geometry,
-        layout=layout or geometry.default_layout,
+        layout=resolved_layout,
         role=role,
     )
     context.inputs.append(node)
@@ -100,7 +103,7 @@ def traverse(left: GeometryInput, right: GeometryInput, *, accel: str = "bvh") -
     return node
 
 
-def segment_intersection(*, exact: bool) -> Predicate:
+def segment_intersection(*, exact: bool = False) -> Predicate:
     return Predicate(name="segment_intersection", options={"exact": exact})
 
 

@@ -22,6 +22,7 @@ This directory contains generated backend artifacts for the RTDL kernel `county_
 - `left_segments`: `const Segment2D*` (device_input_probe)
 - `output_records`: `IntersectionRecord*` (device_output)
 - `output_count`: `uint32_t*` (device_counter)
+- `output_capacity`: `uint32_t` (device_limit)
 - `probe_count`: `uint32_t` (launch_size)
 
 ## Buffers
@@ -30,3 +31,4 @@ This directory contains generated backend artifacts for the RTDL kernel `county_
 - `left_segments`: `Segment2D` (device_input_probe)
 - `output_records`: `IntersectionRecord` (device_output)
 - `output_count`: `uint32_t` (device_counter)
+- `output_capacity`: `uint32_t` (device_limit)

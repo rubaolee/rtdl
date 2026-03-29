@@ -38,6 +38,7 @@ class GeometryType:
     name: str
     dimension: int
     default_layout: Layout
+    required_fields: tuple[str, ...] = ()
 
 
 def field(name: str, dtype: ScalarType) -> Field:
@@ -76,6 +77,21 @@ Polygon2DLayout = layout(
     field("id", u32),
 )
 
-Segments = GeometryType(name="segments", dimension=1, default_layout=Segment2DLayout)
-Points = GeometryType(name="points", dimension=0, default_layout=Point2DLayout)
-Polygons = GeometryType(name="polygons", dimension=2, default_layout=Polygon2DLayout)
+Segments = GeometryType(
+    name="segments",
+    dimension=1,
+    default_layout=Segment2DLayout,
+    required_fields=("x0", "y0", "x1", "y1", "id"),
+)
+Points = GeometryType(
+    name="points",
+    dimension=0,
+    default_layout=Point2DLayout,
+    required_fields=("x", "y", "id"),
+)
+Polygons = GeometryType(
+    name="polygons",
+    dimension=2,
+    default_layout=Polygon2DLayout,
+    required_fields=("vertex_offset", "vertex_count", "id"),
+)

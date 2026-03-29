@@ -10,7 +10,6 @@ from .ir import RayJoinPlan
 from .ir import RaySpec
 
 
-_SEGMENT_FIELDS = ("x0", "y0", "x1", "y1", "id")
 _EMIT_FIELD_TYPES = {
     "left_id": "uint32_t",
     "right_id": "uint32_t",
@@ -29,13 +28,20 @@ def lower_to_rayjoin(kernel: CompiledKernel) -> RayJoinPlan:
     if kernel.candidates.left.geometry.name != "segments" or kernel.candidates.right.geometry.name != "segments":
         raise ValueError("the current RayJoin lowering only supports segment-vs-segment workloads")
 
+    if kernel.precision != "float_approx":
+        raise ValueError(
+            "the current RayJoin lowering supports only precision='float_approx'; "
+            "precision='exact' is not implemented yet"
+        )
+
     predicate = kernel.refine_op.predicate
-    if predicate.name != "segment_intersection" or predicate.options.get("exact") is not True:
-        raise ValueError("the current RayJoin lowering only supports exact segment_intersection predicates")
+    if predicate.name != "segment_intersection" or predicate.options.get("exact") is not False:
+        raise ValueError(
+            "the current RayJoin lowering supports only float-based segment_intersection predicates; "
+            "use segment_intersection(exact=False)"
+        )
 
     build_input, probe_input = _choose_roles(kernel)
-    build_input.layout.require_fields(_SEGMENT_FIELDS)
-    probe_input.layout.require_fields(_SEGMENT_FIELDS)
 
     output_record = _build_output_record(kernel.emit_op.fields)
 
@@ -47,7 +53,7 @@ def lower_to_rayjoin(kernel: CompiledKernel) -> RayJoinPlan:
         probe_input=probe_input,
         accel_kind=kernel.candidates.accel,
         predicate=predicate.name,
-        exact_refine_mode="two_stage_segment_intersection",
+        exact_refine_mode="analytic_float_segment_intersection",
         emit_fields=kernel.emit_op.fields,
         payload_registers=(
             PayloadRegister(index=0, name="probe_index", encoding="u32"),
@@ -61,15 +67,16 @@ def lower_to_rayjoin(kernel: CompiledKernel) -> RayJoinPlan:
             LaunchParam(name=f"{probe_input.name}_segments", c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
             LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
             LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
             LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
         ),
         host_steps=(
             f"Upload `{build_input.name}` and `{probe_input.name}` arrays using `{build_input.layout.name}` / `{probe_input.layout.name}` layouts.",
             f"Build {kernel.candidates.accel.upper()} over `{build_input.name}` and export an OptixTraversableHandle.",
-            "Bind launch parameters with segment buffers, output buffer, and atomic output counter.",
+            "Bind launch parameters with segment buffers, output buffer, output capacity, and atomic output counter.",
             "Create OptiX module, raygen/miss/closesthit/intersection program groups, and shader binding table.",
             f"Launch one probe ray per `{probe_input.name}` segment with t-range [0, 1].",
-            "Pack probe/build indices into payload registers p0-p3 and run exact refinement before emitting records.",
+            "Pack probe/build indices into payload registers p0-p3 and run float-based refinement before emitting records.",
         ),
         device_programs=(
             "__raygen__rtdl_probe",
@@ -97,6 +104,11 @@ def lower_to_rayjoin(kernel: CompiledKernel) -> RayJoinPlan:
                 name="output_count",
                 element="uint32_t",
                 role="device_counter",
+            ),
+            BufferSpec(
+                name="output_capacity",
+                element="uint32_t",
+                role="device_limit",
             ),
         ),
         output_record=output_record,

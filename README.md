@@ -22,6 +22,12 @@ RayJoin is a strong first backend target because it already proves that non-grap
 
 RTDL aims to raise the abstraction level without hiding the performance model.
 
+Current precision note:
+
+- the implemented backend path is currently `float_approx`, not exact or robust geometric arithmetic,
+- `precision="exact"` is intentionally rejected by the current RayJoin lowering path,
+- advanced precision work remains future roadmap work.
+
 ## Repository Layout
 
 - `src/rtdsl/`: Python-hosted RT DSL prototype and IR.
@@ -57,16 +63,16 @@ make test
 ```python
 import rtdsl as rt
 
-@rt.kernel(backend="rayjoin", precision="exact")
+@rt.kernel(backend="rayjoin", precision="float_approx")
 def county_zip_join():
     left = rt.input("left", rt.Segments)
     right = rt.input("right", rt.Segments)
     candidates = rt.traverse(left, right, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=True))
-    return rt.emit(hits, fields=["left_id", "right_id", "intersection_point"])
+    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+    return rt.emit(hits, fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"])
 ```
 
-This is intentionally small. The immediate goal is to stabilize the Python frontend, the RT kernel IR, and the lowering boundary before introducing richer operators, scheduling controls, backend specialization, and code generation.
+This is intentionally small. The immediate goal is to stabilize the Python frontend, the RT kernel IR, and the lowering boundary before introducing richer operators, scheduling controls, backend specialization, and code generation. The currently implemented backend should be read as a float-based prototype path, not as an exact geometric kernel.
 
 The current Python pipeline is:
 

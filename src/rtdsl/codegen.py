@@ -104,6 +104,7 @@ struct LaunchParams {{
     const {plan.probe_input.layout.name}* {plan.probe_input.name}_segments;
     {plan.output_record.name}* output_records;
     uint32_t* output_count;
+    uint32_t output_capacity;
     uint32_t probe_count;
 }};
 
@@ -160,6 +161,9 @@ static __forceinline__ __device__ void rtdl_pack_payload(uint32_t probe_index, u
 
 static __forceinline__ __device__ void rtdl_store_record(uint32_t probe_id, uint32_t build_id, float ix, float iy) {{
     const uint32_t slot = atomicAdd(params.output_count, 1U);
+    if (slot >= params.output_capacity) {{
+        return;
+    }}
     {plan.output_record.name} record = {{}};
     record.left_id = probe_id;
     record.right_id = build_id;
@@ -295,6 +299,7 @@ int main() {{
     std::cout << "BVH policy: {plan.bvh_policy}\\n";
     std::cout << "Ray t-range: [{plan.ray_spec.tmin}, {plan.ray_spec.tmax}]\\n";
     std::cout << "Output record: {plan.output_record.name}\\n";
+    std::cout << "Precision mode: {plan.precision}\\n";
     return 0;
 }}
 """

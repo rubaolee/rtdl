@@ -2,7 +2,7 @@ import rtdsl as rt
 from pathlib import Path
 
 
-@rt.kernel(backend="rayjoin", precision="exact")
+@rt.kernel(backend="rayjoin", precision="float_approx")
 def county_zip_join():
     segment_layout = rt.layout(
         "Segment2D",
@@ -15,7 +15,7 @@ def county_zip_join():
     left = rt.input("left", rt.Segments, layout=segment_layout, role="probe")
     right = rt.input("right", rt.Segments, layout=segment_layout, role="build")
     candidates = rt.traverse(left, right, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=True))
+    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
     return rt.emit(
         hits,
         fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"],

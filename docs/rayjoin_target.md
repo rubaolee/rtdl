@@ -57,13 +57,13 @@ The seed Python-hosted syntax in this repository is intentionally compact:
 ```python
 import rtdsl as rt
 
-@rt.kernel(backend="rayjoin", precision="exact")
+@rt.kernel(backend="rayjoin", precision="float_approx")
 def county_zip_join():
     left = rt.input("left", rt.Segments)
     right = rt.input("right", rt.Segments)
     candidates = rt.traverse(left, right, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=True))
-    return rt.emit(hits, fields=["left_id", "right_id", "intersection_point"])
+    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+    return rt.emit(hits, fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"])
 ```
 
 That is enough to validate the core abstraction boundary:
@@ -71,3 +71,9 @@ That is enough to validate the core abstraction boundary:
 - the user states intent,
 - the compiler builds an RT-specific IR and decides the backend plan,
 - the backend carries the OptiX/CUDA complexity.
+
+Current repository caveat:
+
+- the implemented narrow path currently uses `precision="float_approx"`,
+- exact or robust precision handling is deferred,
+- generated code should be understood as a functional backend prototype rather than a numerically complete RayJoin replacement.

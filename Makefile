@@ -4,6 +4,7 @@ BUILD_DIR := build
 
 build:
 	mkdir -p $(BUILD_DIR)
+	PYTHONPATH=src python3 apps/rtdsl_python_demo.py >/dev/null
 
 run: run-rtdsl-py
 
