@@ -121,6 +121,49 @@ def ray_triangle_hit_count_cpu(
     return tuple(results)
 
 
+def segment_polygon_hitcount_cpu(
+    segments: tuple[Segment, ...],
+    polygons: tuple[Polygon, ...],
+) -> tuple[dict[str, int], ...]:
+    rows = []
+    for segment in segments:
+        hit_count = 0
+        for polygon in polygons:
+            if _segment_hits_polygon(segment, polygon):
+                hit_count += 1
+        rows.append({"segment_id": segment.id, "hit_count": hit_count})
+    return tuple(rows)
+
+
+def point_nearest_segment_cpu(
+    points: tuple[Point, ...],
+    segments: tuple[Segment, ...],
+) -> tuple[dict[str, float | int], ...]:
+    rows = []
+    for point in points:
+        best_segment = None
+        best_distance = None
+        for segment in segments:
+            distance = _point_segment_distance(point, segment)
+            if (
+                best_distance is None
+                or distance < best_distance - 1.0e-7
+                or (abs(distance - best_distance) <= 1.0e-7 and segment.id < best_segment.id)
+            ):
+                best_segment = segment
+                best_distance = distance
+        if best_segment is None:
+            continue
+        rows.append(
+            {
+                "point_id": point.id,
+                "segment_id": best_segment.id,
+                "distance": best_distance,
+            }
+        )
+    return tuple(rows)
+
+
 def _segments_from_polygons(polygons: tuple[Polygon, ...]) -> tuple[Segment, ...]:
     segments = []
     for polygon in polygons:
@@ -190,6 +233,39 @@ def _finite_ray_hits_triangle(ray: Ray2D, triangle: Triangle) -> bool:
         Segment(id=triangle.id, x0=triangle.x2, y0=triangle.y2, x1=triangle.x0, y1=triangle.y0),
     )
     return any(_segment_intersection(ray_segment, edge) is not None for edge in triangle_edges)
+
+
+def _segment_hits_polygon(segment: Segment, polygon: Polygon) -> bool:
+    if _point_in_polygon(segment.x0, segment.y0, polygon.vertices):
+        return True
+    if _point_in_polygon(segment.x1, segment.y1, polygon.vertices):
+        return True
+    vertices = list(polygon.vertices)
+    wrapped = vertices + [vertices[0]]
+    for start, end in zip(wrapped, wrapped[1:]):
+        edge = Segment(id=polygon.id, x0=start[0], y0=start[1], x1=end[0], y1=end[1])
+        if _segment_intersection(segment, edge) is not None:
+            return True
+    return False
+
+
+def _point_segment_distance(point: Point, segment: Segment) -> float:
+    vx = segment.x1 - segment.x0
+    vy = segment.y1 - segment.y0
+    wx = point.x - segment.x0
+    wy = point.y - segment.y0
+    denom = vx * vx + vy * vy
+    if denom < 1.0e-12:
+        dx = point.x - segment.x0
+        dy = point.y - segment.y0
+        return (dx * dx + dy * dy) ** 0.5
+    t = (wx * vx + wy * vy) / denom
+    t = max(0.0, min(1.0, t))
+    px = segment.x0 + t * vx
+    py = segment.y0 + t * vy
+    dx = point.x - px
+    dy = point.y - py
+    return (dx * dx + dy * dy) ** 0.5
 
 
 def _point_in_triangle(x: float, y: float, vertices: tuple[tuple[float, float], ...]) -> bool:

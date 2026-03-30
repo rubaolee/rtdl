@@ -10,10 +10,12 @@ from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import pip_cpu
 from .reference import Point
+from .reference import point_nearest_segment_cpu
 from .reference import Polygon
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
+from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 
 
@@ -46,6 +48,10 @@ def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
         rows = overlay_compose_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "ray_triangle_hit_count":
         rows = ray_triangle_hit_count_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
+    elif predicate_name == "segment_polygon_hitcount":
+        rows = segment_polygon_hitcount_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
+    elif predicate_name == "point_nearest_segment":
+        rows = point_nearest_segment_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     else:
         raise ValueError(f"unsupported RTDL CPU simulator predicate: {predicate_name}")
 

@@ -93,6 +93,21 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
+        ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPointNearestSegmentRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id", ctypes.c_uint32),
+        ("segment_id", ctypes.c_uint32),
+        ("distance", ctypes.c_float),
+    ]
+
+
 def run_embree(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     _validate_kernel_for_cpu(compiled)
@@ -120,6 +135,10 @@ def run_embree(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]
         return _run_overlay_embree(compiled, normalized_inputs, library)
     if predicate_name == "ray_triangle_hit_count":
         return _run_ray_hitcount_embree(compiled, normalized_inputs, library)
+    if predicate_name == "segment_polygon_hitcount":
+        return _run_segment_polygon_hitcount_embree(compiled, normalized_inputs, library)
+    if predicate_name == "point_nearest_segment":
+        return _run_point_nearest_segment_embree(compiled, normalized_inputs, library)
     raise ValueError(f"unsupported RTDL Embree predicate: {predicate_name}")
 
 
@@ -292,6 +311,85 @@ def _run_ray_hitcount_embree(compiled: CompiledKernel, normalized_inputs, librar
         library.rtdl_embree_free_rows(rows_ptr)
 
 
+def _run_segment_polygon_hitcount_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    segments_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    segments = normalized_inputs[segments_name]
+    polygons = normalized_inputs[polygons_name]
+
+    segment_array = (_RtdlSegment * len(segments))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in segments
+    ])
+    polygon_refs, vertex_array = _encode_polygons(polygons)
+
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_segment_polygon_hitcount(
+        segment_array,
+        len(segments),
+        polygon_refs,
+        len(polygons),
+        vertex_array,
+        len(vertex_array),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "segment_id": rows_ptr[index].segment_id,
+                "hit_count": rows_ptr[index].hit_count,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_embree_free_rows(rows_ptr)
+
+
+def _run_point_nearest_segment_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    points_name = compiled.candidates.left.name
+    segments_name = compiled.candidates.right.name
+    points = normalized_inputs[points_name]
+    segments = normalized_inputs[segments_name]
+
+    point_array = (_RtdlPoint * len(points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in points
+    ])
+    segment_array = (_RtdlSegment * len(segments))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in segments
+    ])
+
+    rows_ptr = ctypes.POINTER(_RtdlPointNearestSegmentRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_point_nearest_segment(
+        point_array,
+        len(points),
+        segment_array,
+        len(segments),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "point_id": rows_ptr[index].point_id,
+                "segment_id": rows_ptr[index].segment_id,
+                "distance": rows_ptr[index].distance,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_embree_free_rows(rows_ptr)
+
+
 def _encode_polygons(polygons):
     refs = []
     vertices = []
@@ -383,6 +481,32 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_run_ray_hitcount.restype = ctypes.c_int
+
+    library.rtdl_embree_run_segment_polygon_hitcount.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_run_segment_polygon_hitcount.restype = ctypes.c_int
+
+    library.rtdl_embree_run_point_nearest_segment.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPointNearestSegmentRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_run_point_nearest_segment.restype = ctypes.c_int
 
     return library
 

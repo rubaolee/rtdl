@@ -77,6 +77,17 @@ struct RtdlRayHitCountRow {
   uint32_t hit_count;
 };
 
+struct RtdlSegmentPolygonHitCountRow {
+  uint32_t segment_id;
+  uint32_t hit_count;
+};
+
+struct RtdlPointNearestSegmentRow {
+  uint32_t point_id;
+  uint32_t segment_id;
+  float distance;
+};
+
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
 int rtdl_embree_run_lsi(
     const RtdlSegment* left,
@@ -117,6 +128,26 @@ int rtdl_embree_run_ray_hitcount(
     const RtdlTriangle* triangles,
     size_t triangle_count,
     RtdlRayHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_segment_polygon_hitcount(
+    const RtdlSegment* segments,
+    size_t segment_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const float* vertices_xy,
+    size_t vertex_xy_count,
+    RtdlSegmentPolygonHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_point_nearest_segment(
+    const RtdlPoint* points,
+    size_t point_count,
+    const RtdlSegment* segments,
+    size_t segment_count,
+    RtdlPointNearestSegmentRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -338,6 +369,41 @@ bool polygon_pair_flags(const Polygon2D& left, const Polygon2D& right, bool* req
   return lsi || pip;
 }
 
+bool segment_hits_polygon(const Segment2D& segment, const Polygon2D& polygon) {
+  Point2D start {segment.id, segment.a};
+  Point2D end {segment.id, segment.b};
+  if (point_in_polygon(start, polygon) || point_in_polygon(end, polygon)) {
+    return true;
+  }
+
+  for (size_t i = 0; i < polygon.vertices.size(); ++i) {
+    Segment2D edge {
+        polygon.id,
+        polygon.vertices[i],
+        polygon.vertices[(i + 1) % polygon.vertices.size()],
+    };
+    if (segment_intersection(segment, edge, nullptr)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+float point_segment_distance(const Point2D& point, const Segment2D& segment) {
+  Vec2 v = sub(segment.b, segment.a);
+  Vec2 w = sub(point.p, segment.a);
+  float denom = v.x * v.x + v.y * v.y;
+  if (denom < 1.0e-12f) {
+    Vec2 d = sub(point.p, segment.a);
+    return std::sqrt(d.x * d.x + d.y * d.y);
+  }
+  float t = (w.x * v.x + w.y * v.y) / denom;
+  t = std::max(0.0f, std::min(1.0f, t));
+  Vec2 projection {segment.a.x + t * v.x, segment.a.y + t * v.y};
+  Vec2 d = sub(point.p, projection);
+  return std::sqrt(d.x * d.x + d.y * d.y);
+}
+
 struct EmbreeDevice {
   RTCDevice device;
 
@@ -380,6 +446,7 @@ enum class QueryKind {
   kPip,
   kOverlay,
   kRayHitCount,
+  kSegmentPolygonHitCount,
 };
 
 struct SegmentSceneData {
@@ -418,6 +485,11 @@ struct RayHitCountState {
   const RayQuery2D* ray;
   uint32_t* hit_count;
   std::unordered_set<uint32_t>* seen_triangle_ids;
+};
+
+struct SegmentPolygonHitCountState {
+  const Segment2D* segment;
+  uint32_t* hit_count;
 };
 
 thread_local QueryKind g_query_kind = QueryKind::kNone;
@@ -518,6 +590,13 @@ void polygon_intersect(const RTCIntersectFunctionNArguments* args) {
       if (requires_pip) {
         flags.requires_pip = 1;
       }
+    }
+    return;
+  }
+  if (g_query_kind == QueryKind::kSegmentPolygonHitCount) {
+    auto* state = static_cast<SegmentPolygonHitCountState*>(g_query_state);
+    if (segment_hits_polygon(*state->segment, polygon)) {
+      *state->hit_count += 1;
     }
   }
 }
@@ -843,6 +922,100 @@ extern "C" int rtdl_embree_run_ray_hitcount(
     }
     g_query_kind = QueryKind::kNone;
     g_query_state = nullptr;
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+extern "C" int rtdl_embree_run_segment_polygon_hitcount(
+    const RtdlSegment* segments,
+    size_t segment_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const float* vertices_xy,
+    size_t vertex_xy_count,
+    RtdlSegmentPolygonHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Segment2D> segment_values;
+    segment_values.reserve(segment_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+      segment_values.push_back({segments[i].id, {segments[i].x0, segments[i].y0}, {segments[i].x1, segments[i].y1}});
+    }
+    std::vector<Polygon2D> polygon_values = decode_polygons(polygons, polygon_count, vertices_xy, vertex_xy_count);
+
+    std::vector<RtdlSegmentPolygonHitCountRow> rows;
+    rows.reserve(segment_values.size());
+    for (const Segment2D& segment : segment_values) {
+      uint32_t hit_count = 0;
+      for (const Polygon2D& polygon : polygon_values) {
+        if (segment_hits_polygon(segment, polygon)) {
+          hit_count += 1;
+        }
+      }
+      rows.push_back({segment.id, hit_count});
+    }
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+extern "C" int rtdl_embree_run_point_nearest_segment(
+    const RtdlPoint* points,
+    size_t point_count,
+    const RtdlSegment* segments,
+    size_t segment_count,
+    RtdlPointNearestSegmentRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Point2D> point_values;
+    std::vector<Segment2D> segment_values;
+    point_values.reserve(point_count);
+    segment_values.reserve(segment_count);
+    for (size_t i = 0; i < point_count; ++i) {
+      point_values.push_back({points[i].id, {points[i].x, points[i].y}});
+    }
+    for (size_t i = 0; i < segment_count; ++i) {
+      segment_values.push_back({segments[i].id, {segments[i].x0, segments[i].y0}, {segments[i].x1, segments[i].y1}});
+    }
+
+    std::vector<RtdlPointNearestSegmentRow> rows;
+    rows.reserve(point_values.size());
+    for (const Point2D& point : point_values) {
+      const Segment2D* best_segment = nullptr;
+      float best_distance = 0.0f;
+      for (const Segment2D& segment : segment_values) {
+        float distance = point_segment_distance(point, segment);
+        if (best_segment == nullptr ||
+            distance < best_distance - kEps ||
+            (std::fabs(distance - best_distance) <= kEps && segment.id < best_segment->id)) {
+          best_segment = &segment;
+          best_distance = distance;
+        }
+      }
+      if (best_segment == nullptr) {
+        continue;
+      }
+      rows.push_back({point.id, best_segment->id, best_distance});
+    }
 
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();

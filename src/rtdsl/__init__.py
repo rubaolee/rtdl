@@ -3,10 +3,12 @@ from .api import emit
 from .api import input
 from .api import kernel
 from .api import overlay_compose
+from .api import point_nearest_segment
 from .api import point_in_polygon
 from .api import ray_triangle_hit_count
 from .api import refine
 from .api import segment_intersection
+from .api import segment_polygon_hitcount
 from .api import traverse
 from .baseline_contracts import BASELINE_FLOAT_ABS_TOL
 from .baseline_contracts import BASELINE_FLOAT_REL_TOL
@@ -47,12 +49,14 @@ from .plan_schema import schema_path
 from .plan_schema import validate_plan_dict
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
+from .reference import point_nearest_segment_cpu
 from .reference import pip_cpu
 from .reference import Point
 from .reference import Polygon
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
+from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 from .runtime import run_cpu
 from .types import f32
@@ -143,6 +147,7 @@ __all__ = [
     "LaunchParam",
     "Layout",
     "overlay_compose",
+    "point_nearest_segment",
     "OutputRecord",
     "PayloadRegister",
     "Points",
@@ -186,6 +191,7 @@ __all__ = [
     "parse_cdb_text",
     "pip_cpu",
     "Point",
+    "point_nearest_segment_cpu",
     "Polygon",
     "ray_triangle_hit_count",
     "ray_triangle_hit_count_cpu",
@@ -197,7 +203,9 @@ __all__ = [
     "run_cpu",
     "schema_path",
     "segment_intersection",
+    "segment_polygon_hitcount",
     "Segment",
+    "segment_polygon_hitcount_cpu",
     "summarize_baseline_benchmark",
     "traverse",
     "u32",

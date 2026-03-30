@@ -126,6 +126,14 @@ def ray_triangle_hit_count(*, exact: bool = False) -> Predicate:
     return Predicate(name="ray_triangle_hit_count", options={"exact": exact})
 
 
+def segment_polygon_hitcount(*, exact: bool = False) -> Predicate:
+    return Predicate(name="segment_polygon_hitcount", options={"exact": exact})
+
+
+def point_nearest_segment(*, exact: bool = False) -> Predicate:
+    return Predicate(name="point_nearest_segment", options={"exact": exact})
+
+
 def refine(candidates: CandidateSet, *, predicate: Predicate) -> RefineOp:
     context = _current_context()
     node = RefineOp(candidates=candidates, predicate=predicate)

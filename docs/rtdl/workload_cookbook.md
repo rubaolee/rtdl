@@ -96,6 +96,47 @@ Typical use:
 - generate many rays from a center point with random angles and lengths
 - compile the RTDL kernel and collect per-ray counts
 
+## Segment/Polygon Hit Count Example
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rayjoin", precision="float_approx")
+def road_polygon_touch_counts():
+    roads = rt.input("roads", rt.Segments, role="probe")
+    parcels = rt.input("parcels", rt.Polygons, role="build")
+    candidates = rt.traverse(roads, parcels, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_hitcount(exact=False))
+    return rt.emit(hits, fields=["segment_id", "hit_count"])
+```
+
+Notes:
+
+- probe must be segments
+- build must be polygons
+- current result is one record per segment with the number of hit polygons
+
+## Point/Nearest Segment Example
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rayjoin", precision="float_approx")
+def hydrant_nearest_road():
+    hydrants = rt.input("hydrants", rt.Points, role="probe")
+    roads = rt.input("roads", rt.Segments, role="build")
+    candidates = rt.traverse(hydrants, roads, accel="bvh")
+    nearest = rt.refine(candidates, predicate=rt.point_nearest_segment(exact=False))
+    return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
+```
+
+Notes:
+
+- probe must be points
+- build must be segments
+- current result is one nearest segment record per point
+- the Embree runtime currently implements this as a native float path within the local backend
+
 ## Local Simulator Example
 
 RTDL now has a CPU simulator for the currently supported workloads:

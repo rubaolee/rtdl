@@ -37,6 +37,10 @@ def _render_device(plan: RayJoinPlan) -> str:
         return _render_overlay_device(plan)
     if plan.workload_kind == "ray_tri_hitcount":
         return _render_ray_tri_hitcount_device(plan)
+    if plan.workload_kind == "segment_polygon_hitcount":
+        return _render_segment_polygon_hitcount_device(plan)
+    if plan.workload_kind == "point_nearest_segment":
+        return _render_point_nearest_segment_device(plan)
     raise ValueError(f"unsupported workload kind for codegen: {plan.workload_kind}")
 
 
@@ -512,6 +516,80 @@ extern "C" __global__ void __intersection__rtdl_triangles() {{
     optixSetPayload_1(triangle_index);
     optixSetPayload_3(1u);
     optixReportIntersection(0.0f, 0u);
+}}
+"""
+
+
+def _render_segment_polygon_hitcount_device(plan: RayJoinPlan) -> str:
+    build_buffer = _input_buffer_name(plan.build_input)
+    probe_buffer = _input_buffer_name(plan.probe_input)
+    return f"""#include <optix.h>
+#include <optix_device.h>
+#include <stdint.h>
+
+{_render_layout_structs(plan)}
+
+{_render_output_struct(plan)}
+
+struct LaunchParams {{
+    OptixTraversableHandle traversable;
+    const {plan.build_input.layout.name}* {build_buffer};
+    const {plan.probe_input.layout.name}* {probe_buffer};
+    {plan.output_record.name}* output_records;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t probe_count;
+}};
+
+extern "C" __constant__ LaunchParams params;
+
+extern "C" __global__ void __raygen__rtdl_segment_polygon_probe() {{
+    // Goal 10 placeholder: segment-vs-polygon hitcount lowers to a finite-segment
+    // probe over polygon bounds. The runtime contract is fixed here even though
+    // the full OptiX implementation remains future backend work.
+}}
+
+extern "C" __global__ void __closesthit__rtdl_segment_polygon_refine() {{
+    // Count polygon hits per probe segment and materialize one record per segment.
+}}
+
+extern "C" __global__ void __intersection__rtdl_polygon_refs() {{
+    // Reuse polygon-ref intersection semantics for segment-vs-polygon hitcount.
+}}
+"""
+
+
+def _render_point_nearest_segment_device(plan: RayJoinPlan) -> str:
+    build_buffer = _input_buffer_name(plan.build_input)
+    probe_buffer = _input_buffer_name(plan.probe_input)
+    return f"""#include <optix.h>
+#include <optix_device.h>
+#include <stdint.h>
+
+{_render_layout_structs(plan)}
+
+{_render_output_struct(plan)}
+
+struct LaunchParams {{
+    OptixTraversableHandle traversable;
+    const {plan.build_input.layout.name}* {build_buffer};
+    const {plan.probe_input.layout.name}* {probe_buffer};
+    {plan.output_record.name}* output_records;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t probe_count;
+}};
+
+extern "C" __constant__ LaunchParams params;
+
+extern "C" __global__ void __raygen__rtdl_point_nearest_segment() {{
+    // Goal 10 placeholder: nearest-segment queries are represented in the IR and
+    // plan, while the current executable implementation lives in the CPU/Embree
+    // runtime rather than the OptiX backend.
+}}
+
+extern "C" __global__ void __closesthit__rtdl_point_nearest_segment_refine() {{
+    // Materialize nearest segment id plus float distance for each probe point.
 }}
 """
 

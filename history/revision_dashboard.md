@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 10
-- Archived files: 257
-- External reports: 42
+- Revision rounds: 11
+- Archived files: 270
+- External reports: 47
 - Project snapshots: 148
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha-goal10 | 2026-03-30 | done-consensus | Goal 10 More Workloads | Gemini CLI was unreliable for a clean final artifact, but the substantive partial review found the scope technically sound and favored `segment_polygon_hitcount` plus `point_nearest_segment`. | Implemented the selected workload pair, parity tests, examples, docs, and compiler/runtime support; secondary Codex review found no correctness blockers. | Goal 10 complete for the parity-first scope; RTDL now supports two additional executable workload families before the acceleration-focused phase. | `pending` | `2026-03-30-goal-10-more-workloads` |
 | v0.1-alpha-goal9 | 2026-03-30 | done-consensus | Goal 9 Embree Baseline Reproduction | Gemini 3 Flash approved the Goal 9 implementation and final artifacts; no blocking issues remained. | Added the evaluation matrix, deterministic larger derived cases, benchmark-report pipeline, SVG figures, and a generated PDF report. | Goal 9 complete; RTDL now has a paper-structured Embree baseline evaluation with tables, figures, and a portable report. | `pending` | `2026-03-30-goal-9-embree-evaluation` |
 | v0.1-alpha-goal8 | 2026-03-30 | done-consensus | Goal 8 Embree Baseline Completion | Gemini 3 Flash approved the baseline plan, Step 1/2 contract freeze, and the remaining integration slice; no major issues remained. | Froze workload/ABI contracts, added representative runners, benchmark harness, summary reporting, authored-program Embree validation, and baseline docs. | Goal 8 complete; the Embree baseline is materially complete as the pre-GPU foundation for RTDL v0.1. | `b7ae0b8` | `2026-03-30-goal-8-embree-baseline-plan` |
 | v0.1-alpha-goal7 | 2026-03-29 | done-consensus | Goal 7 Embree Backend | Gemini approved the Embree backend implementation and found no blocking issues. | Installed Embree, added native shim and Python wrapper, added tests/demos/docs, and improved prefix configurability. | Goal 7 complete; RTDL now runs the current workload surface on top of Embree on this Mac. | `4e2be7f1aa72a42f609e6045396bef47071441e8` | `2026-03-29-goal-7-embree-backend` |

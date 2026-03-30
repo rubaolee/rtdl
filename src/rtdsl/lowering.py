@@ -24,6 +24,8 @@ _EMIT_FIELD_TYPES = {
     "requires_pip": "uint32_t",
     "ray_id": "uint32_t",
     "hit_count": "uint32_t",
+    "segment_id": "uint32_t",
+    "distance": "float",
 }
 
 
@@ -57,6 +59,10 @@ def lower_to_rayjoin(kernel: CompiledKernel) -> RayJoinPlan:
         return _lower_overlay(kernel, build_input, probe_input)
     if predicate.name == "ray_triangle_hit_count":
         return _lower_ray_triangle_hitcount(kernel, build_input, probe_input)
+    if predicate.name == "segment_polygon_hitcount":
+        return _lower_segment_polygon_hitcount(kernel, build_input, probe_input)
+    if predicate.name == "point_nearest_segment":
+        return _lower_point_nearest_segment(kernel, build_input, probe_input)
 
     raise ValueError(f"unsupported predicate for current RayJoin lowering: {predicate.name}")
 
@@ -270,6 +276,133 @@ def _lower_overlay(kernel: CompiledKernel, build_input, probe_input) -> RayJoinP
             tmin="0.0f",
             tmax="1.0f",
             description="Dispatch polygon-pair overlay seeds and compose LSI/PIP subqueries at the plan level.",
+        ),
+        bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
+    )
+
+
+def _lower_segment_polygon_hitcount(kernel: CompiledKernel, build_input, probe_input) -> RayJoinPlan:
+    if build_input.geometry.name != "polygons" or probe_input.geometry.name != "segments":
+        raise ValueError("segment_polygon_hitcount lowering requires polygon build input and segment probe input")
+
+    output_record = _build_output_record("SegmentPolygonHitCountRecord", kernel.emit_op.fields)
+    build_buffer_name = _input_buffer_name(build_input)
+    probe_buffer_name = _input_buffer_name(probe_input)
+
+    return RayJoinPlan(
+        kernel_name=kernel.name,
+        workload_kind="segment_polygon_hitcount",
+        backend=kernel.backend,
+        precision=kernel.precision,
+        build_input=build_input,
+        probe_input=probe_input,
+        accel_kind=kernel.candidates.accel,
+        predicate="segment_polygon_hitcount",
+        exact_refine_mode="analytic_float_segment_polygon_hitcount",
+        emit_fields=kernel.emit_op.fields,
+        payload_registers=(
+            PayloadRegister(index=0, name="segment_index", encoding="u32"),
+            PayloadRegister(index=1, name="polygon_index", encoding="u32"),
+            PayloadRegister(index=2, name="hit_count", encoding="u32"),
+            PayloadRegister(index=3, name="hit_kind", encoding="u32"),
+        ),
+        launch_params=(
+            LaunchParam(name="traversable", c_type="OptixTraversableHandle", role="rt_accel"),
+            LaunchParam(name=build_buffer_name, c_type=f"const {build_input.layout.name}*", role="device_input_build"),
+            LaunchParam(name=probe_buffer_name, c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
+            LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
+            LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
+            LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
+        ),
+        host_steps=(
+            f"Upload `{build_input.name}` polygons and `{probe_input.name}` segments.",
+            f"Build BVH over `{build_input.name}` polygon refs.",
+            "Launch one finite probe segment per segment input and count intersected polygons.",
+        ),
+        device_programs=(
+            "__raygen__rtdl_segment_polygon_probe",
+            "__miss__rtdl_miss",
+            "__closesthit__rtdl_segment_polygon_refine",
+            "__intersection__rtdl_polygon_refs",
+        ),
+        buffers=(
+            BufferSpec(name=build_buffer_name, element=build_input.layout.name, role="device_input_build"),
+            BufferSpec(name=probe_buffer_name, element=probe_input.layout.name, role="device_input_probe"),
+            BufferSpec(name="output_records", element=output_record.name, role="device_output"),
+            BufferSpec(name="output_count", element="uint32_t", role="device_counter"),
+            BufferSpec(name="output_capacity", element="uint32_t", role="device_limit"),
+        ),
+        output_record=output_record,
+        ray_spec=RaySpec(
+            origin=("probe.x0", "probe.y0", "0.0f"),
+            direction=("probe.x1 - probe.x0", "probe.y1 - probe.y0", "0.0f"),
+            tmin="0.0f",
+            tmax="1.0f",
+            description="Cast each probe segment as a finite ray against polygon bounds and count polygon hits.",
+        ),
+        bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
+    )
+
+
+def _lower_point_nearest_segment(kernel: CompiledKernel, build_input, probe_input) -> RayJoinPlan:
+    if build_input.geometry.name != "segments" or probe_input.geometry.name != "points":
+        raise ValueError("point_nearest_segment lowering requires segment build input and point probe input")
+
+    output_record = _build_output_record("PointNearestSegmentRecord", kernel.emit_op.fields)
+    build_buffer_name = _input_buffer_name(build_input)
+    probe_buffer_name = _input_buffer_name(probe_input)
+
+    return RayJoinPlan(
+        kernel_name=kernel.name,
+        workload_kind="point_nearest_segment",
+        backend=kernel.backend,
+        precision=kernel.precision,
+        build_input=build_input,
+        probe_input=probe_input,
+        accel_kind=kernel.candidates.accel,
+        predicate="point_nearest_segment",
+        exact_refine_mode="analytic_float_point_segment_distance",
+        emit_fields=kernel.emit_op.fields,
+        payload_registers=(
+            PayloadRegister(index=0, name="point_index", encoding="u32"),
+            PayloadRegister(index=1, name="segment_index", encoding="u32"),
+            PayloadRegister(index=2, name="distance_bits", encoding="f32_bits"),
+            PayloadRegister(index=3, name="query_kind", encoding="u32"),
+        ),
+        launch_params=(
+            LaunchParam(name="traversable", c_type="OptixTraversableHandle", role="rt_accel"),
+            LaunchParam(name=build_buffer_name, c_type=f"const {build_input.layout.name}*", role="device_input_build"),
+            LaunchParam(name=probe_buffer_name, c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
+            LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
+            LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
+            LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
+        ),
+        host_steps=(
+            f"Upload `{build_input.name}` segments and `{probe_input.name}` points.",
+            "Run nearest-segment queries per point and materialize nearest id plus distance.",
+            "Current lowering treats this as a nearest-query workload with a native float refinement path.",
+        ),
+        device_programs=(
+            "__raygen__rtdl_point_nearest_segment",
+            "__miss__rtdl_miss",
+            "__closesthit__rtdl_point_nearest_segment_refine",
+        ),
+        buffers=(
+            BufferSpec(name=build_buffer_name, element=build_input.layout.name, role="device_input_build"),
+            BufferSpec(name=probe_buffer_name, element=probe_input.layout.name, role="device_input_probe"),
+            BufferSpec(name="output_records", element=output_record.name, role="device_output"),
+            BufferSpec(name="output_count", element="uint32_t", role="device_counter"),
+            BufferSpec(name="output_capacity", element="uint32_t", role="device_limit"),
+        ),
+        output_record=output_record,
+        ray_spec=RaySpec(
+            origin=("probe.x", "probe.y", "0.0f"),
+            direction=("0.0f", "1.0f", "0.0f"),
+            tmin="0.0f",
+            tmax="FLT_MAX",
+            description="Nearest-query placeholder over segment bounds; current runtime uses a native float nearest-segment path.",
         ),
         bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
     )

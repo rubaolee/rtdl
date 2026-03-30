@@ -134,6 +134,8 @@ Current workload coverage in the prototype:
 - `pip`: point-in-polygon as a workload-specific backend skeleton
 - `overlay`: compositional overlay seed generation over polygon inputs
 - `ray_tri_hitcount`: finite 2D rays against triangles with per-ray hit counts
+- `segment_polygon_hitcount`: per-segment polygon hit counts
+- `point_nearest_segment`: nearest segment id plus distance per point
 
 Current dataset support in the prototype:
 
@@ -177,7 +179,7 @@ RTDL now has a language-facing docs set for the currently implemented surface:
 - `docs/rtdl/workload_cookbook.md`
 - `docs/rtdl/llm_authoring_guide.md`
 
-These documents describe the supported RTDL language for the current four
+These documents describe the supported RTDL language for the current six
 workloads and are intended to be strong enough for both human and agent authoring.
 
 ## Example Library
@@ -188,6 +190,7 @@ The repository now keeps authored RTDL programs under `examples/`:
 - `examples/rtdl_codex_authored.py`: Codex-authored kernels
 - `examples/rtdl_gemini_authored.py`: Gemini-authored kernels
 - `examples/rtdl_ray_tri_hitcount.py`: canonical ray-query kernel plus random-data helpers
+- `examples/rtdl_goal10_reference.py`: Goal 10 reference kernels for mixed-geometry hit counts and nearest-segment queries
 - `examples/rtdl_codex_ray_query.py`: Codex-authored ray-query kernel
 - `examples/rtdl_simulator_demo.py`: local CPU execution demo using `rt.run_cpu(...)`
 - `examples/rtdl_embree_demo.py`: local native execution demo using `rt.run_embree(...)`
