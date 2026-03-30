@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530">
+<style>text{font-family:Helvetica,Arial,sans-serif;font-size:12px;} .title{font-size:20px;font-weight:bold;} .small{font-size:11px;fill:#555;} </style>
+<rect width="100%" height="100%" fill="white"/>
+<text x="40" y="32" class="title">RTDL Embree Evaluation: CPU vs Embree Latency</text>
+<text x="40" y="52" class="small">Mean time per case. This is the Embree CPU baseline, not an NVIDIA/RT-core result.</text>
+<line x1="380.0" y1="60" x2="380.0" y2="490" stroke="#ddd" stroke-width="1"/>
+<text x="380.0" y="512" text-anchor="middle" class="small">0.0000s</text>
+<line x1="565.0" y1="60" x2="565.0" y2="490" stroke="#ddd" stroke-width="1"/>
+<text x="565.0" y="512" text-anchor="middle" class="small">0.0554s</text>
+<line x1="750.0" y1="60" x2="750.0" y2="490" stroke="#ddd" stroke-width="1"/>
+<text x="750.0" y="512" text-anchor="middle" class="small">0.1108s</text>
+<line x1="935.0" y1="60" x2="935.0" y2="490" stroke="#ddd" stroke-width="1"/>
+<text x="935.0" y="512" text-anchor="middle" class="small">0.1662s</text>
+<line x1="1120.0" y1="60" x2="1120.0" y2="490" stroke="#ddd" stroke-width="1"/>
+<text x="1120.0" y="512" text-anchor="middle" class="small">0.2216s</text>
+<text x="40" y="84" text-anchor="start">lsi | lsi_authored_minimal</text>
+<rect x="380" y="70" width="0.0" height="10" fill="#c96f3d"/>
+<rect x="380" y="82" width="1.3" height="10" fill="#2e7d32"/>
+<text x="40" y="114" text-anchor="start">lsi | lsi_county_slice</text>
+<rect x="380" y="100" width="0.3" height="10" fill="#c96f3d"/>
+<rect x="380" y="112" width="0.6" height="10" fill="#2e7d32"/>
+<text x="40" y="144" text-anchor="start">lsi | lsi_county_tiled_x8</text>
+<rect x="380" y="130" width="2.4" height="10" fill="#c96f3d"/>
+<rect x="380" y="142" width="2.2" height="10" fill="#2e7d32"/>
+<text x="40" y="174" text-anchor="start">pip | pip_authored_minimal</text>
+<rect x="380" y="160" width="0.0" height="10" fill="#c96f3d"/>
+<rect x="380" y="172" width="0.5" height="10" fill="#2e7d32"/>
+<text x="40" y="204" text-anchor="start">pip | pip_county_polygons</text>
+<rect x="380" y="190" width="0.6" height="10" fill="#c96f3d"/>
+<rect x="380" y="202" width="0.8" height="10" fill="#2e7d32"/>
+<text x="40" y="234" text-anchor="start">pip | pip_county_tiled_x8</text>
+<rect x="380" y="220" width="2.8" height="10" fill="#c96f3d"/>
+<rect x="380" y="232" width="1.8" height="10" fill="#2e7d32"/>
+<text x="40" y="264" text-anchor="start">overlay | overlay_authored_minimal</text>
+<rect x="380" y="250" width="0.1" height="10" fill="#c96f3d"/>
+<rect x="380" y="262" width="0.7" height="10" fill="#2e7d32"/>
+<text x="40" y="294" text-anchor="start">overlay | overlay_county_soil_fixture</text>
+<rect x="380" y="280" width="1.0" height="10" fill="#c96f3d"/>
+<rect x="380" y="292" width="1.4" height="10" fill="#2e7d32"/>
+<text x="40" y="324" text-anchor="start">overlay | overlay_county_soil_tiled_x8</text>
+<rect x="380" y="310" width="1.0" height="10" fill="#c96f3d"/>
+<rect x="380" y="322" width="0.9" height="10" fill="#2e7d32"/>
+<text x="40" y="354" text-anchor="start">ray_tri_hitcount | ray_authored_minimal</text>
+<rect x="380" y="340" width="0.1" height="10" fill="#c96f3d"/>
+<rect x="380" y="352" width="0.4" height="10" fill="#2e7d32"/>
+<text x="40" y="384" text-anchor="start">ray_tri_hitcount | ray_synthetic_small</text>
+<rect x="380" y="370" width="3.7" height="10" fill="#c96f3d"/>
+<rect x="380" y="382" width="1.3" height="10" fill="#2e7d32"/>
+<text x="40" y="414" text-anchor="start">ray_tri_hitcount | ray_synthetic_medium</text>
+<rect x="380" y="400" width="50.1" height="10" fill="#c96f3d"/>
+<rect x="380" y="412" width="2.5" height="10" fill="#2e7d32"/>
+<text x="40" y="444" text-anchor="start">ray_tri_hitcount | ray_synthetic_large</text>
+<rect x="380" y="430" width="740.0" height="10" fill="#c96f3d"/>
+<rect x="380" y="442" width="4.1" height="10" fill="#2e7d32"/>
+<rect x="380" y="475" width="14" height="10" fill="#c96f3d"/>
+<text x="400" y="484">CPU reference</text>
+<rect x="520" y="475" width="14" height="10" fill="#2e7d32"/>
+<text x="540" y="484">Embree baseline</text>
+</svg>

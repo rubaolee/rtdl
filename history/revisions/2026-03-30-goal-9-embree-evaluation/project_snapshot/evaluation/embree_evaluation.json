@@ -1,0 +1,782 @@
+{
+  "generated_at": "2026-03-30T09:01:52",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python": "3.14.0"
+  },
+  "iterations": 3,
+  "records": [
+    {
+      "case_id": "lsi_authored_minimal",
+      "category": "authored",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "authored_lsi_minimal",
+        "iterations": 3,
+        "max_sec": 1.8124934285879135e-05,
+        "mean_sec": 1.4805312578876814e-05,
+        "median_sec": 1.3582874089479446e-05,
+        "min_sec": 1.2708129361271858e-05,
+        "note": "Small authored segment intersection example.",
+        "parity": null,
+        "timings_sec": [
+          1.8124934285879135e-05,
+          1.3582874089479446e-05,
+          1.2708129361271858e-05
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          4.629208706319332e-05
+        ],
+        "workload": "lsi"
+      },
+      "dataset": "authored_lsi_minimal",
+      "description": "Small sanity-check segment join with exact expected rows.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "authored_lsi_minimal",
+        "iterations": 3,
+        "max_sec": 0.00046370900236070156,
+        "mean_sec": 0.00037475031179686386,
+        "median_sec": 0.00037366687320172787,
+        "min_sec": 0.0002868750598281622,
+        "note": "Small authored segment intersection example.",
+        "parity": null,
+        "timings_sec": [
+          0.00046370900236070156,
+          0.0002868750598281622,
+          0.00037366687320172787
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0003708750009536743
+        ],
+        "workload": "lsi"
+      },
+      "input_sizes": {
+        "left": 2,
+        "right": 1
+      },
+      "note": "Small authored segment intersection example.",
+      "parity": true,
+      "provenance": "Hand-authored segment example stored in baseline_runner.",
+      "scale_hint": 2,
+      "speedup_vs_cpu": 0.03950713878765801,
+      "title": "LSI authored minimal",
+      "workload": "lsi"
+    },
+    {
+      "case_id": "lsi_county_slice",
+      "category": "fixture",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+        "iterations": 3,
+        "max_sec": 8.90830997377634e-05,
+        "mean_sec": 7.979176007211208e-05,
+        "median_sec": 7.795915007591248e-05,
+        "min_sec": 7.233303040266037e-05,
+        "note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+        "parity": null,
+        "timings_sec": [
+          8.90830997377634e-05,
+          7.795915007591248e-05,
+          7.233303040266037e-05
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0001015830785036087
+        ],
+        "workload": "lsi"
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "description": "Deterministic county-derived segment slice preserved from the Embree baseline.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+        "iterations": 3,
+        "max_sec": 0.00019637495279312134,
+        "mean_sec": 0.00018655570844809213,
+        "median_sec": 0.00018266704864799976,
+        "min_sec": 0.00018062512390315533,
+        "note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+        "parity": null,
+        "timings_sec": [
+          0.00019637495279312134,
+          0.00018062512390315533,
+          0.00018266704864799976
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0002757080364972353
+        ],
+        "workload": "lsi"
+      },
+      "input_sizes": {
+        "left": 3,
+        "right": 3
+      },
+      "note": "Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
+      "parity": true,
+      "provenance": "Public RayJoin county sample reduced to the checked-in county subset fixture.",
+      "scale_hint": 6,
+      "speedup_vs_cpu": 0.42771009654906167,
+      "title": "LSI county subset slice",
+      "workload": "lsi"
+    },
+    {
+      "case_id": "lsi_county_tiled_x8",
+      "category": "derived",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "derived/br_county_subset_segments_tiled_x8",
+        "iterations": 3,
+        "max_sec": 0.0007330828811973333,
+        "mean_sec": 0.0007163613724211851,
+        "median_sec": 0.0007099171634763479,
+        "min_sec": 0.0007060840725898743,
+        "note": "Derived county subset segments tiled eight times with deterministic offsets.",
+        "parity": null,
+        "timings_sec": [
+          0.0007099171634763479,
+          0.0007330828811973333,
+          0.0007060840725898743
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0006470000371336937
+        ],
+        "workload": "lsi"
+      },
+      "dataset": "derived/br_county_subset_segments_tiled_x8",
+      "description": "Larger Embree-only local stress case derived from the county subset fixture.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "derived/br_county_subset_segments_tiled_x8",
+        "iterations": 3,
+        "max_sec": 0.0006928329821676016,
+        "mean_sec": 0.0006573469533274571,
+        "median_sec": 0.000683666905388236,
+        "min_sec": 0.0005955409724265337,
+        "note": "Derived county subset segments tiled eight times with deterministic offsets.",
+        "parity": null,
+        "timings_sec": [
+          0.0005955409724265337,
+          0.0006928329821676016,
+          0.000683666905388236
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.00044341711327433586
+        ],
+        "workload": "lsi"
+      },
+      "input_sizes": {
+        "left": 48,
+        "right": 48
+      },
+      "note": "Derived county subset segments tiled eight times with deterministic offsets.",
+      "parity": true,
+      "provenance": "Derived by tiling the checked-in county subset segment view eight times with deterministic offsets.",
+      "scale_hint": 24,
+      "speedup_vs_cpu": 1.0897766678540153,
+      "title": "LSI county tiled x8",
+      "workload": "lsi"
+    },
+    {
+      "case_id": "pip_authored_minimal",
+      "category": "authored",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "authored_pip_minimal",
+        "iterations": 3,
+        "max_sec": 1.4249933883547783e-05,
+        "mean_sec": 1.223594881594181e-05,
+        "median_sec": 1.13749410957098e-05,
+        "min_sec": 1.1082971468567848e-05,
+        "note": "Small authored point-in-polygon example.",
+        "parity": null,
+        "timings_sec": [
+          1.4249933883547783e-05,
+          1.13749410957098e-05,
+          1.1082971468567848e-05
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          2.3124972358345985e-05
+        ],
+        "workload": "pip"
+      },
+      "dataset": "authored_pip_minimal",
+      "description": "Small sanity-check point-in-polygon case.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "authored_pip_minimal",
+        "iterations": 3,
+        "max_sec": 0.00016787485219538212,
+        "mean_sec": 0.00014088861644268036,
+        "median_sec": 0.00014129094779491425,
+        "min_sec": 0.00011350004933774471,
+        "note": "Small authored point-in-polygon example.",
+        "parity": null,
+        "timings_sec": [
+          0.00011350004933774471,
+          0.00014129094779491425,
+          0.00016787485219538212
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.00013158400543034077
+        ],
+        "workload": "pip"
+      },
+      "input_sizes": {
+        "points": 2,
+        "polygons": 1
+      },
+      "note": "Small authored point-in-polygon example.",
+      "parity": true,
+      "provenance": "Hand-authored point-in-polygon example stored in baseline_runner.",
+      "scale_hint": 2,
+      "speedup_vs_cpu": 0.08684838509234655,
+      "title": "PIP authored minimal",
+      "workload": "pip"
+    },
+    {
+      "case_id": "pip_county_polygons",
+      "category": "fixture",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+        "iterations": 3,
+        "max_sec": 0.00028375000692903996,
+        "mean_sec": 0.0001715139951556921,
+        "median_sec": 0.0001241669524461031,
+        "min_sec": 0.00010662502609193325,
+        "note": "County subset probe points against deterministic chain-derived polygons.",
+        "parity": null,
+        "timings_sec": [
+          0.00010662502609193325,
+          0.0001241669524461031,
+          0.00028375000692903996
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          8.212495595216751e-05
+        ],
+        "workload": "pip"
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "description": "Fixture-based point-in-polygon benchmark on county-derived polygon views.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+        "iterations": 3,
+        "max_sec": 0.0003385420423001051,
+        "mean_sec": 0.00024223607033491135,
+        "median_sec": 0.0002085000742226839,
+        "min_sec": 0.00017966609448194504,
+        "note": "County subset probe points against deterministic chain-derived polygons.",
+        "parity": null,
+        "timings_sec": [
+          0.00017966609448194504,
+          0.0003385420423001051,
+          0.0002085000742226839
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.00021962495520710945
+        ],
+        "workload": "pip"
+      },
+      "input_sizes": {
+        "points": 3,
+        "polygons": 2
+      },
+      "note": "County subset probe points against deterministic chain-derived polygons.",
+      "parity": true,
+      "provenance": "Checked-in county subset fixture converted to probe points and deterministic chain-derived polygons.",
+      "scale_hint": 6,
+      "speedup_vs_cpu": 0.7080448213949304,
+      "title": "PIP county subset polygons",
+      "workload": "pip"
+    },
+    {
+      "case_id": "pip_county_tiled_x8",
+      "category": "derived",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "derived/br_county_subset_polygons_tiled_x8",
+        "iterations": 3,
+        "max_sec": 0.0012076669372618198,
+        "mean_sec": 0.0008452223458637794,
+        "median_sec": 0.0008256251458078623,
+        "min_sec": 0.000502374954521656,
+        "note": "Derived county subset points and polygons tiled eight times with deterministic offsets.",
+        "parity": null,
+        "timings_sec": [
+          0.000502374954521656,
+          0.0012076669372618198,
+          0.0008256251458078623
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0005164588801562786
+        ],
+        "workload": "pip"
+      },
+      "dataset": "derived/br_county_subset_polygons_tiled_x8",
+      "description": "Larger local point-in-polygon case derived from public RayJoin-aligned fixture data.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "derived/br_county_subset_polygons_tiled_x8",
+        "iterations": 3,
+        "max_sec": 0.0005738749168813229,
+        "mean_sec": 0.0005309026843557755,
+        "median_sec": 0.0005612079985439777,
+        "min_sec": 0.00045762513764202595,
+        "note": "Derived county subset points and polygons tiled eight times with deterministic offsets.",
+        "parity": null,
+        "timings_sec": [
+          0.0005612079985439777,
+          0.0005738749168813229,
+          0.00045762513764202595
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0006757918745279312
+        ],
+        "workload": "pip"
+      },
+      "input_sizes": {
+        "points": 24,
+        "polygons": 16
+      },
+      "note": "Derived county subset points and polygons tiled eight times with deterministic offsets.",
+      "parity": true,
+      "provenance": "Derived by tiling county subset probe points and chain-derived polygons eight times.",
+      "scale_hint": 24,
+      "speedup_vs_cpu": 1.5920476026400499,
+      "title": "PIP county tiled x8",
+      "workload": "pip"
+    },
+    {
+      "case_id": "overlay_authored_minimal",
+      "category": "authored",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "authored_overlay_minimal",
+        "iterations": 3,
+        "max_sec": 2.9041897505521774e-05,
+        "mean_sec": 2.634727085630099e-05,
+        "median_sec": 2.6124995201826096e-05,
+        "min_sec": 2.38749198615551e-05,
+        "note": "Small authored overlay seed example.",
+        "parity": null,
+        "timings_sec": [
+          2.9041897505521774e-05,
+          2.6124995201826096e-05,
+          2.38749198615551e-05
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          5.0541944801807404e-05
+        ],
+        "workload": "overlay"
+      },
+      "dataset": "authored_overlay_minimal",
+      "description": "Small compositional overlay sanity check.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "authored_overlay_minimal",
+        "iterations": 3,
+        "max_sec": 0.00030029192566871643,
+        "mean_sec": 0.00022198601315418878,
+        "median_sec": 0.00021308311261236668,
+        "min_sec": 0.00015258300118148327,
+        "note": "Small authored overlay seed example.",
+        "parity": null,
+        "timings_sec": [
+          0.00030029192566871643,
+          0.00015258300118148327,
+          0.00021308311261236668
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.00016320799477398396
+        ],
+        "workload": "overlay"
+      },
+      "input_sizes": {
+        "left": 1,
+        "right": 1
+      },
+      "note": "Small authored overlay seed example.",
+      "parity": true,
+      "provenance": "Hand-authored overlay seed example stored in baseline_runner.",
+      "scale_hint": 2,
+      "speedup_vs_cpu": 0.11868887810512863,
+      "title": "Overlay authored minimal",
+      "workload": "overlay"
+    },
+    {
+      "case_id": "overlay_county_soil_fixture",
+      "category": "fixture",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+        "iterations": 3,
+        "max_sec": 0.00039354199543595314,
+        "mean_sec": 0.0003134863606343667,
+        "median_sec": 0.0003075420390814543,
+        "min_sec": 0.0002393750473856926,
+        "note": "County and soil subset chain-derived polygons for overlay seed generation.",
+        "parity": null,
+        "timings_sec": [
+          0.0003075420390814543,
+          0.00039354199543595314,
+          0.0002393750473856926
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0003314169589430094
+        ],
+        "workload": "overlay"
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+      "description": "Fixture-based overlay seed generation over county and soil subsets.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+        "iterations": 3,
+        "max_sec": 0.0005970420315861702,
+        "mean_sec": 0.000411819356183211,
+        "median_sec": 0.00034545804373919964,
+        "min_sec": 0.0002929579932242632,
+        "note": "County and soil subset chain-derived polygons for overlay seed generation.",
+        "parity": null,
+        "timings_sec": [
+          0.0005970420315861702,
+          0.0002929579932242632,
+          0.00034545804373919964
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.00048512499779462814
+        ],
+        "workload": "overlay"
+      },
+      "input_sizes": {
+        "left": 2,
+        "right": 0
+      },
+      "note": "County and soil subset chain-derived polygons for overlay seed generation.",
+      "parity": true,
+      "provenance": "Checked-in county and soil subset fixtures converted to deterministic chain-derived polygons.",
+      "scale_hint": 4,
+      "speedup_vs_cpu": 0.7612229875249046,
+      "title": "Overlay county/soil fixture",
+      "workload": "overlay"
+    },
+    {
+      "case_id": "overlay_county_soil_tiled_x8",
+      "category": "derived",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "derived/br_county_soil_polygons_tiled_x8",
+        "iterations": 3,
+        "max_sec": 0.0003630830906331539,
+        "mean_sec": 0.0003103609972943862,
+        "median_sec": 0.0003007079940289259,
+        "min_sec": 0.00026729190722107887,
+        "note": "Derived county/soil chain-derived polygons tiled eight times with deterministic offsets.",
+        "parity": null,
+        "timings_sec": [
+          0.0003007079940289259,
+          0.00026729190722107887,
+          0.0003630830906331539
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.00025708391331136227
+        ],
+        "workload": "overlay"
+      },
+      "dataset": "derived/br_county_soil_polygons_tiled_x8",
+      "description": "Larger local overlay seed case derived from the public RayJoin-aligned fixtures.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "derived/br_county_soil_polygons_tiled_x8",
+        "iterations": 3,
+        "max_sec": 0.0002886669244617224,
+        "mean_sec": 0.00028434729514022666,
+        "median_sec": 0.00028279097750782967,
+        "min_sec": 0.000281583983451128,
+        "note": "Derived county/soil chain-derived polygons tiled eight times with deterministic offsets.",
+        "parity": null,
+        "timings_sec": [
+          0.0002886669244617224,
+          0.000281583983451128,
+          0.00028279097750782967
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0003507498186081648
+        ],
+        "workload": "overlay"
+      },
+      "input_sizes": {
+        "left": 16,
+        "right": 0
+      },
+      "note": "Derived county/soil chain-derived polygons tiled eight times with deterministic offsets.",
+      "parity": true,
+      "provenance": "Derived by tiling county and soil chain-derived polygon inputs eight times with fixed offsets.",
+      "scale_hint": 16,
+      "speedup_vs_cpu": 1.091485667698477,
+      "title": "Overlay county/soil tiled x8",
+      "workload": "overlay"
+    },
+    {
+      "case_id": "ray_authored_minimal",
+      "category": "authored",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "authored_ray_tri_minimal",
+        "iterations": 3,
+        "max_sec": 3.7833116948604584e-05,
+        "mean_sec": 3.6236364394426346e-05,
+        "median_sec": 3.5542063415050507e-05,
+        "min_sec": 3.533391281962395e-05,
+        "note": "Small authored ray-vs-triangle example.",
+        "parity": null,
+        "timings_sec": [
+          3.7833116948604584e-05,
+          3.533391281962395e-05,
+          3.5542063415050507e-05
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          4.404177889227867e-05
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "dataset": "authored_ray_tri_minimal",
+      "description": "Small sanity-check ray hit-count case.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "authored_ray_tri_minimal",
+        "iterations": 3,
+        "max_sec": 0.00012112502008676529,
+        "mean_sec": 0.00011780563121040662,
+        "median_sec": 0.00011687492951750755,
+        "min_sec": 0.00011541694402694702,
+        "note": "Small authored ray-vs-triangle example.",
+        "parity": null,
+        "timings_sec": [
+          0.00012112502008676529,
+          0.00011687492951750755,
+          0.00011541694402694702
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0001334578264504671
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "input_sizes": {
+        "rays": 2,
+        "triangles": 3
+      },
+      "note": "Small authored ray-vs-triangle example.",
+      "parity": true,
+      "provenance": "Hand-authored ray-vs-triangle example stored in baseline_runner.",
+      "scale_hint": 2,
+      "speedup_vs_cpu": 0.30759450140126515,
+      "title": "Ray/Tri authored minimal",
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "case_id": "ray_synthetic_small",
+      "category": "synthetic",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "examples/rtdl_ray_tri_hitcount.py synthetic random generators",
+        "iterations": 3,
+        "max_sec": 0.001119124935939908,
+        "mean_sec": 0.0011118889475862186,
+        "median_sec": 0.0011124999728053808,
+        "min_sec": 0.0011040419340133667,
+        "note": "Synthetic random rays and triangles from the canonical example helpers.",
+        "parity": null,
+        "timings_sec": [
+          0.001119124935939908,
+          0.0011124999728053808,
+          0.0011040419340133667
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0012459158897399902
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "dataset": "examples/rtdl_ray_tri_hitcount.py synthetic random generators",
+      "description": "Baseline random ray/triangle case from the canonical example helpers.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "examples/rtdl_ray_tri_hitcount.py synthetic random generators",
+        "iterations": 3,
+        "max_sec": 0.0007557498756796122,
+        "mean_sec": 0.00039719433213273686,
+        "median_sec": 0.0002310420386493206,
+        "min_sec": 0.00020479108206927776,
+        "note": "Synthetic random rays and triangles from the canonical example helpers.",
+        "parity": null,
+        "timings_sec": [
+          0.0007557498756796122,
+          0.0002310420386493206,
+          0.00020479108206927776
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0003608330152928829
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "input_sizes": {
+        "rays": 12,
+        "triangles": 20
+      },
+      "note": "Synthetic random rays and triangles from the canonical example helpers.",
+      "parity": true,
+      "provenance": "Canonical example helper generators with fixed seeds.",
+      "scale_hint": 12,
+      "speedup_vs_cpu": 2.7993575376967885,
+      "title": "Ray/Tri synthetic small",
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "case_id": "ray_synthetic_medium",
+      "category": "synthetic",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "synthetic/ray_tri_medium",
+        "iterations": 3,
+        "max_sec": 0.01772687491029501,
+        "mean_sec": 0.014991430565714836,
+        "median_sec": 0.013688082806766033,
+        "min_sec": 0.013559333980083466,
+        "note": "Medium deterministic synthetic ray/triangle benchmark case.",
+        "parity": null,
+        "timings_sec": [
+          0.01772687491029501,
+          0.013688082806766033,
+          0.013559333980083466
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.014830832835286856
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "dataset": "synthetic/ray_tri_medium",
+      "description": "Medium local ray query benchmark with deterministic seeds.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "synthetic/ray_tri_medium",
+        "iterations": 3,
+        "max_sec": 0.001122583169490099,
+        "mean_sec": 0.0007387776859104633,
+        "median_sec": 0.0006408339831978083,
+        "min_sec": 0.0004529159050434828,
+        "note": "Medium deterministic synthetic ray/triangle benchmark case.",
+        "parity": null,
+        "timings_sec": [
+          0.0004529159050434828,
+          0.0006408339831978083,
+          0.001122583169490099
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0006939580198377371
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "input_sizes": {
+        "rays": 48,
+        "triangles": 64
+      },
+      "note": "Medium deterministic synthetic ray/triangle benchmark case.",
+      "parity": true,
+      "provenance": "Medium-sized deterministic synthetic ray/triangle set from the canonical helper generators.",
+      "scale_hint": 48,
+      "speedup_vs_cpu": 20.29220813192202,
+      "title": "Ray/Tri synthetic medium",
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "case_id": "ray_synthetic_large",
+      "category": "synthetic",
+      "cpu": {
+        "backend": "cpu",
+        "dataset": "synthetic/ray_tri_large",
+        "iterations": 3,
+        "max_sec": 0.23070733295753598,
+        "mean_sec": 0.22158687460857132,
+        "median_sec": 0.2183262079488486,
+        "min_sec": 0.2157270829193294,
+        "note": "Large deterministic synthetic ray/triangle benchmark case.",
+        "parity": null,
+        "timings_sec": [
+          0.2183262079488486,
+          0.23070733295753598,
+          0.2157270829193294
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.22684350004419684
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "dataset": "synthetic/ray_tri_large",
+      "description": "Largest local ray query benchmark in the Embree evaluation matrix.",
+      "embree": {
+        "backend": "embree",
+        "dataset": "synthetic/ray_tri_large",
+        "iterations": 3,
+        "max_sec": 0.0013075419701635838,
+        "mean_sec": 0.0012328197093059619,
+        "median_sec": 0.001243417151272297,
+        "min_sec": 0.0011475000064820051,
+        "note": "Large deterministic synthetic ray/triangle benchmark case.",
+        "parity": null,
+        "timings_sec": [
+          0.0013075419701635838,
+          0.001243417151272297,
+          0.0011475000064820051
+        ],
+        "warmup_iterations": 1,
+        "warmup_timings_sec": [
+          0.0015851669013500214
+        ],
+        "workload": "ray_tri_hitcount"
+      },
+      "input_sizes": {
+        "rays": 192,
+        "triangles": 256
+      },
+      "note": "Large deterministic synthetic ray/triangle benchmark case.",
+      "parity": true,
+      "provenance": "Large deterministic synthetic ray/triangle set from the canonical helper generators.",
+      "scale_hint": 192,
+      "speedup_vs_cpu": 179.73988648617376,
+      "title": "Ray/Tri synthetic large",
+      "workload": "ray_tri_hitcount"
+    }
+  ],
+  "suite": "rtdl_embree_evaluation",
+  "warmup": 1
+}

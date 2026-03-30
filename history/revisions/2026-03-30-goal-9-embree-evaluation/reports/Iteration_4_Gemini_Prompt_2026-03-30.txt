@@ -1,0 +1,35 @@
+You are reviewing the implementation and final artifacts for Goal 9 in RTDL.
+
+Please review these source files:
+- /Users/rl2025/rtdl_python_only/src/rtdsl/evaluation_matrix.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/evaluation_report.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/baseline_runner.py
+- /Users/rl2025/rtdl_python_only/tests/evaluation_test.py
+- /Users/rl2025/rtdl_python_only/docs/embree_evaluation_matrix.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/reports/Iteration_2_Implementation_Report_2026-03-30_Codex.md
+
+Please review these copied final artifacts from the project snapshot archive:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/embree_evaluation.json
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/embree_evaluation_summary.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/embree_evaluation_table.csv
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/figures/latency_by_case.svg
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/figures/speedup_by_case.svg
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/figures/scaling_by_workload.svg
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/embree_gap_analysis.md
+
+The PDF report also exists at:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/project_snapshot/evaluation/embree_evaluation_report.pdf
+
+You do not need to parse the PDF binary. It is sufficient to treat the PDF as a deliverable whose presence should be considered alongside the text and figure sources above.
+
+Task:
+1. Review the Goal 9 implementation against the agreed criteria.
+2. Identify any blocking issues, over-claims, provenance gaps, or artifact-quality problems.
+3. State whether the deliverables are sufficient to claim Goal 9 complete.
+4. End with a clear decision: either 'Goal 9 complete by consensus' or 'Goal 9 not yet complete'.
+
+Return a structured markdown report with these sections:
+- Findings
+- Deliverable Assessment
+- Residual Risks
+- Final Decision

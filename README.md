@@ -43,6 +43,9 @@ Current precision note:
 - `docs/v0_1_final_plan.md`: staged plan from Embree baseline to final NVIDIA/OptiX v0.1 completion.
 - `docs/embree_baseline_plan.md`: step plan for the pre-GPU Embree baseline.
 - `docs/embree_baseline_contracts.md`: frozen workload, ABI, precision, and dataset contracts for the Embree baseline.
+- `docs/embree_evaluation_plan.md`: Goal 9 plan for reproducing the Embree baseline evaluation.
+- `docs/embree_evaluation_matrix.md`: frozen evaluation matrix for the Embree reproduction phase.
+- `docs/reports/`: generated high-level Goal 9 evaluation summaries and PDF report snapshots.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 
@@ -88,6 +91,12 @@ Run the local Embree baseline benchmark harness and summary:
 
 ```sh
 make bench-rtdsl-baseline
+```
+
+Run the Embree evaluation pipeline and generate tables, figures, and the PDF report:
+
+```sh
+make eval-rtdsl-embree
 ```
 
 Embree setup on this Mac:

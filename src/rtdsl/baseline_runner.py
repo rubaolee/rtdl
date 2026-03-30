@@ -117,6 +117,16 @@ def _load_lsi_case(dataset: str) -> DatasetCase:
             inputs={"left": tuple(segments[0:3]), "right": tuple(segments[24:27])},
             note="Deterministic county-subset segment slice chosen to preserve CPU/Embree parity.",
         )
+    if dataset == "derived/br_county_subset_segments_tiled_x8":
+        county = load_cdb(ROOT / "tests" / "fixtures" / "rayjoin" / "br_county_subset.cdb")
+        segments = tuple(segments_from_records(chains_to_segments(county)))
+        derived = tile_segments(segments[:12], copies=8, step_x=30.0, step_y=20.0)
+        return DatasetCase(
+            workload="lsi",
+            dataset=dataset,
+            inputs={"left": derived[: len(derived) // 2], "right": derived[len(derived) // 2 :]},
+            note="Derived county subset segments tiled eight times with deterministic offsets.",
+        )
     raise ValueError(f"unsupported lsi dataset `{dataset}`")
 
 
@@ -148,6 +158,19 @@ def _load_pip_case(dataset: str) -> DatasetCase:
             },
             note="County subset probe points against deterministic chain-derived polygons.",
         )
+    if dataset == "derived/br_county_subset_polygons_tiled_x8":
+        county = load_cdb(ROOT / "tests" / "fixtures" / "rayjoin" / "br_county_subset.cdb")
+        polygons = _chains_to_polygons(county, limit_chains=2)
+        points = points_from_records(chains_to_probe_points(county))
+        return DatasetCase(
+            workload="pip",
+            dataset=dataset,
+            inputs={
+                "points": tile_points(points, copies=8, step_x=30.0, step_y=20.0),
+                "polygons": tile_polygons(polygons, copies=8, step_x=30.0, step_y=20.0),
+            },
+            note="Derived county subset points and polygons tiled eight times with deterministic offsets.",
+        )
     raise ValueError(f"unsupported pip dataset `{dataset}`")
 
 
@@ -177,6 +200,18 @@ def _load_overlay_case(dataset: str) -> DatasetCase:
                 "right": _chains_to_polygons(soil, limit_chains=2),
             },
             note="County and soil subset chain-derived polygons for overlay seed generation.",
+        )
+    if dataset == "derived/br_county_soil_polygons_tiled_x8":
+        county = load_cdb(ROOT / "tests" / "fixtures" / "rayjoin" / "br_county_subset.cdb")
+        soil = load_cdb(ROOT / "tests" / "fixtures" / "rayjoin" / "br_soil_subset.cdb")
+        return DatasetCase(
+            workload="overlay",
+            dataset=dataset,
+            inputs={
+                "left": tile_polygons(_chains_to_polygons(county, limit_chains=2), copies=8, step_x=30.0, step_y=20.0),
+                "right": tile_polygons(_chains_to_polygons(soil, limit_chains=2), copies=8, step_x=30.0, step_y=20.0),
+            },
+            note="Derived county/soil chain-derived polygons tiled eight times with deterministic offsets.",
         )
     raise ValueError(f"unsupported overlay dataset `{dataset}`")
 
@@ -212,6 +247,26 @@ def _load_ray_case(dataset: str) -> DatasetCase:
             },
             note="Synthetic random rays and triangles from the canonical example helpers.",
         )
+    if dataset == "synthetic/ray_tri_medium":
+        return DatasetCase(
+            workload="ray_tri_hitcount",
+            dataset=dataset,
+            inputs={
+                "rays": make_center_rays(48, seed=23),
+                "triangles": make_random_triangles(64, seed=29),
+            },
+            note="Medium deterministic synthetic ray/triangle benchmark case.",
+        )
+    if dataset == "synthetic/ray_tri_large":
+        return DatasetCase(
+            workload="ray_tri_hitcount",
+            dataset=dataset,
+            inputs={
+                "rays": make_center_rays(192, seed=31),
+                "triangles": make_random_triangles(256, seed=37),
+            },
+            note="Large deterministic synthetic ray/triangle benchmark case.",
+        )
     raise ValueError(f"unsupported ray_tri_hitcount dataset `{dataset}`")
 
 
@@ -224,6 +279,85 @@ def _chains_to_polygons(cdb, *, limit_chains: int | None = None) -> tuple[Polygo
         vertices = tuple((point.x, point.y) for point in chain.points)
         polygons.append(Polygon(id=chain.chain_id, vertices=vertices))
     return tuple(polygons)
+
+
+def segments_from_records(records: tuple[dict[str, float | int], ...]) -> tuple[Segment, ...]:
+    return tuple(
+        Segment(
+            id=int(record["id"]),
+            x0=float(record["x0"]),
+            y0=float(record["y0"]),
+            x1=float(record["x1"]),
+            y1=float(record["y1"]),
+        )
+        for record in records
+    )
+
+
+def points_from_records(records: tuple[dict[str, float | int], ...]) -> tuple[Point, ...]:
+    return tuple(
+        Point(
+            id=int(record["id"]),
+            x=float(record["x"]),
+            y=float(record["y"]),
+        )
+        for record in records
+    )
+
+
+def tile_segments(segments: tuple[Segment, ...], *, copies: int, step_x: float, step_y: float) -> tuple[Segment, ...]:
+    tiled = []
+    next_id = 1
+    for copy_index in range(copies):
+        dx = step_x * copy_index
+        dy = step_y * copy_index
+        for segment in segments:
+            tiled.append(
+                Segment(
+                    id=next_id,
+                    x0=segment.x0 + dx,
+                    y0=segment.y0 + dy,
+                    x1=segment.x1 + dx,
+                    y1=segment.y1 + dy,
+                )
+            )
+            next_id += 1
+    return tuple(tiled)
+
+
+def tile_points(points: tuple[Point, ...], *, copies: int, step_x: float, step_y: float) -> tuple[Point, ...]:
+    tiled = []
+    next_id = 1
+    for copy_index in range(copies):
+        dx = step_x * copy_index
+        dy = step_y * copy_index
+        for point in points:
+            tiled.append(
+                Point(
+                    id=next_id,
+                    x=point.x + dx,
+                    y=point.y + dy,
+                )
+            )
+            next_id += 1
+    return tuple(tiled)
+
+
+def tile_polygons(polygons: tuple[Polygon, ...], *, copies: int, step_x: float, step_y: float) -> tuple[Polygon, ...]:
+    tiled = []
+    next_id = 1
+    for copy_index in range(copies):
+        dx = step_x * copy_index
+        dy = step_y * copy_index
+        for polygon in polygons:
+            tiled.append(
+                Polygon(
+                    id=next_id,
+                    vertices=tuple((x + dx, y + dy) for x, y in polygon.vertices),
+                )
+            )
+            next_id += 1
+    return tuple(tiled)
 
 
 def _bind_case_inputs(case: DatasetCase, compiled) -> dict[str, tuple[object, ...]]:

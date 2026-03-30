@@ -1,0 +1,179 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 2 /Kids [3 0 R 5 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2644 >>
+stream
+BT
+/F1 11 Tf
+54 748 Td
+14 TL
+(RTDL Embree Evaluation Report) Tj
+T*
+() Tj
+T*
+(Generated: 2026-03-30T09:01:52) Tj
+T*
+(Iterations: 3) Tj
+T*
+(Warmup: 1) Tj
+T*
+(Host: macOS-26.3-arm64-arm-64bit-Mach-O) Tj
+T*
+() Tj
+T*
+(This report summarizes the pre-GPU Embree evaluation for the current RTDL workload surface.) Tj
+T*
+(It is an Embree CPU baseline report, not an NVIDIA/RT-core result.) Tj
+T*
+() Tj
+T*
+(Evaluation Matrix) Tj
+T*
+() Tj
+T*
+(- lsi_authored_minimal: workload=lsi, category=authored, parity=True, cpu=0.000015s,) Tj
+T*
+(embree=0.000375s, speedup=0.04x) Tj
+T*
+(- lsi_county_slice: workload=lsi, category=fixture, parity=True, cpu=0.000080s,) Tj
+T*
+(embree=0.000187s, speedup=0.43x) Tj
+T*
+(- lsi_county_tiled_x8: workload=lsi, category=derived, parity=True, cpu=0.000716s,) Tj
+T*
+(embree=0.000657s, speedup=1.09x) Tj
+T*
+(- pip_authored_minimal: workload=pip, category=authored, parity=True, cpu=0.000012s,) Tj
+T*
+(embree=0.000141s, speedup=0.09x) Tj
+T*
+(- pip_county_polygons: workload=pip, category=fixture, parity=True, cpu=0.000172s,) Tj
+T*
+(embree=0.000242s, speedup=0.71x) Tj
+T*
+(- pip_county_tiled_x8: workload=pip, category=derived, parity=True, cpu=0.000845s,) Tj
+T*
+(embree=0.000531s, speedup=1.59x) Tj
+T*
+(- overlay_authored_minimal: workload=overlay, category=authored, parity=True, cpu=0.000026s,) Tj
+T*
+(embree=0.000222s, speedup=0.12x) Tj
+T*
+(- overlay_county_soil_fixture: workload=overlay, category=fixture, parity=True,) Tj
+T*
+(cpu=0.000313s, embree=0.000412s, speedup=0.76x) Tj
+T*
+(- overlay_county_soil_tiled_x8: workload=overlay, category=derived, parity=True,) Tj
+T*
+(cpu=0.000310s, embree=0.000284s, speedup=1.09x) Tj
+T*
+(- ray_authored_minimal: workload=ray_tri_hitcount, category=authored, parity=True,) Tj
+T*
+(cpu=0.000036s, embree=0.000118s, speedup=0.31x) Tj
+T*
+(- ray_synthetic_small: workload=ray_tri_hitcount, category=synthetic, parity=True,) Tj
+T*
+(cpu=0.001112s, embree=0.000397s, speedup=2.80x) Tj
+T*
+(- ray_synthetic_medium: workload=ray_tri_hitcount, category=synthetic, parity=True,) Tj
+T*
+(cpu=0.014991s, embree=0.000739s, speedup=20.29x) Tj
+T*
+(- ray_synthetic_large: workload=ray_tri_hitcount, category=synthetic, parity=True,) Tj
+T*
+(cpu=0.221587s, embree=0.001233s, speedup=179.74x) Tj
+T*
+() Tj
+T*
+(Key Findings) Tj
+T*
+() Tj
+T*
+(- All evaluation cases passed CPU-vs-Embree parity checks.) Tj
+T*
+(- Fastest Embree case: ray_authored_minimal at 0.000118s mean.) Tj
+T*
+(- Slowest Embree case: ray_synthetic_large at 0.001233s mean.) Tj
+T*
+(- Best Embree speedup vs CPU: ray_synthetic_large at 179.74x.) Tj
+T*
+(- lsi largest evaluated local case: lsi_county_tiled_x8 \(0.000657s Embree mean\).) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 925 >>
+stream
+BT
+/F1 11 Tf
+54 748 Td
+14 TL
+(- pip largest evaluated local case: pip_county_tiled_x8 \(0.000531s Embree mean\).) Tj
+T*
+(- overlay largest evaluated local case: overlay_county_soil_tiled_x8 \(0.000284s Embree) Tj
+T*
+(mean\).) Tj
+T*
+(- ray_tri_hitcount largest evaluated local case: ray_synthetic_large \(0.001233s Embree) Tj
+T*
+(mean\).) Tj
+T*
+() Tj
+T*
+(Generated Figures) Tj
+T*
+() Tj
+T*
+(- /Users/rl2025/rtdl_python_only/build/embree_evaluation/figures/latency_by_case.svg) Tj
+T*
+(- /Users/rl2025/rtdl_python_only/build/embree_evaluation/figures/speedup_by_case.svg) Tj
+T*
+(- /Users/rl2025/rtdl_python_only/build/embree_evaluation/figures/scaling_by_workload.svg) Tj
+T*
+() Tj
+T*
+(Limitations) Tj
+T*
+() Tj
+T*
+(- Precision remains float_approx.) Tj
+T*
+(- Dataset breadth is based on local fixtures, deterministic tiling, and synthetic) Tj
+T*
+(generators.) Tj
+T*
+(- Final OptiX/RT-core evaluation remains future work.) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000002943 00000 n 
+0000003069 00000 n 
+0000004045 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+4115
+%%EOF

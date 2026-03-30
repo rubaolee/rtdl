@@ -1,6 +1,6 @@
 BUILD_DIR := build
 
-.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline test clean
+.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree test clean
 
 build:
 	mkdir -p $(BUILD_DIR)
@@ -26,6 +26,9 @@ run-rtdsl-baseline:
 bench-rtdsl-baseline:
 	PYTHONPATH=src:. python3 -m rtdsl.baseline_benchmark --iterations 3 --warmup 1
 	PYTHONPATH=src:. python3 -m rtdsl.baseline_summary build/embree_baseline_benchmark.json
+
+eval-rtdsl-embree:
+	PYTHONPATH=src:. python3 -m rtdsl.evaluation_report --iterations 3 --warmup 1
 
 test:
 	mkdir -p $(BUILD_DIR)

@@ -1,0 +1,20 @@
+You are reviewing a pre-implementation project goal setup for RTDL.
+
+Please read these files:
+- /Users/rl2025/rtdl_python_only/docs/embree_evaluation_plan.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/reports/Goal_9_Spec_2026-03-30_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-9-embree-evaluation/reports/Iteration_1_PreImplementation_Report_2026-03-30_Codex.md
+
+Task:
+1. Decide whether the Goal 9 scope is technically sound for the current RTDL Embree baseline.
+2. Define how the later implementation should be reviewed. Do not ask Codex to use your review method; instead, state the criteria you would use to judge Goal 9 complete.
+3. State which deliverables are mandatory versus optional.
+4. End with a clear consensus decision: either 'consensus to begin execution' or 'not ready to begin execution'.
+
+Return a structured markdown report with these sections:
+- Scope Assessment
+- Review Criteria
+- Mandatory Deliverables
+- Optional Deliverables
+- Risks / Gaps
+- Final Decision

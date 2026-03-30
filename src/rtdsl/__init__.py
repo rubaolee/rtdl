@@ -29,6 +29,8 @@ from .datasets import load_cdb
 from .datasets import parse_cdb_text
 from .embree_runtime import embree_version
 from .embree_runtime import run_embree
+from .evaluation_matrix import evaluation_entries
+from .evaluation_matrix import EMBREE_EVALUATION_MATRIX
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -111,12 +113,24 @@ def summarize_baseline_benchmark(payload):
 
     return _summarize_benchmark(payload)
 
+
+def generate_embree_evaluation_artifacts(*, workloads=None, iterations: int = 5, warmup: int = 1, output_dir=None):
+    from .evaluation_report import generate_evaluation_artifacts as _generate_evaluation_artifacts
+
+    return _generate_evaluation_artifacts(
+        workloads=workloads,
+        iterations=iterations,
+        warmup=warmup,
+        output_dir=output_dir,
+    )
+
 __all__ = [
     "CdbChain",
     "CdbDataset",
     "CdbPoint",
     "BASELINE_FLOAT_ABS_TOL",
     "BASELINE_FLOAT_REL_TOL",
+    "EMBREE_EVALUATION_MATRIX",
     "BASELINE_PRECISION_MODE",
     "BASELINE_WORKLOAD_ORDER",
     "BASELINE_WORKLOADS",
@@ -149,6 +163,7 @@ __all__ = [
     "Triangle2DLayout",
     "compile_kernel",
     "compare_baseline_rows",
+    "evaluation_entries",
     "infer_workload",
     "chains_to_polygon_refs",
     "chains_to_probe_points",
@@ -159,6 +174,7 @@ __all__ = [
     "f32",
     "field",
     "generate_optix_project",
+    "generate_embree_evaluation_artifacts",
     "input",
     "kernel",
     "layout",
