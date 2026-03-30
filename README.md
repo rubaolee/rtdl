@@ -40,6 +40,7 @@ Current precision note:
 - `docs/vision.md`: project scope and research framing.
 - `docs/rayjoin_target.md`: how RTDL maps onto RayJoin-specific concerns.
 - `docs/v0_1_roadmap.md`: concrete scope and milestones for the first RTDL release.
+- `docs/v0_1_final_plan.md`: staged plan from Embree baseline to final NVIDIA/OptiX v0.1 completion.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 
