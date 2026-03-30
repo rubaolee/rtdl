@@ -1,0 +1,22 @@
+Review Goal 10 for RTDL.
+
+Read only these files:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-10-more-workloads/reports/Iteration_2_Implementation_Report_2026-03-30_Codex.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/api.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/reference.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/runtime.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py
+- /Users/rl2025/rtdl_python_only/src/native/rtdl_embree.cpp
+- /Users/rl2025/rtdl_python_only/tests/goal10_workloads_test.py
+- /Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py
+
+Task:
+1. Say whether there are any correctness blockers.
+2. Say whether segment_polygon_hitcount and point_nearest_segment are acceptable as a parity-first Goal 10 completion.
+3. End with exactly one of:
+- Goal 10 complete by consensus
+- Goal 10 not yet complete
+
+Return short markdown with sections:
+- Findings
+- Decision
