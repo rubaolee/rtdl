@@ -258,6 +258,50 @@ For repository-level validation:
 - run `make test`
 - run `make run-rtdsl-py`
 
+## Embree Baseline Runners
+
+The project now keeps a frozen baseline integration layer for the current four
+workloads.
+
+Run one workload directly:
+
+```sh
+PYTHONPATH=src:. python3 -m rtdsl.baseline_runner lsi --backend both
+PYTHONPATH=src:. python3 -m rtdsl.baseline_runner pip --backend both
+PYTHONPATH=src:. python3 -m rtdsl.baseline_runner overlay --backend both
+PYTHONPATH=src:. python3 -m rtdsl.baseline_runner ray_tri_hitcount --backend both
+```
+
+This runner:
+
+- chooses a representative dataset if one is not specified
+- executes `run_cpu(...)` and/or `run_embree(...)`
+- compares results through the frozen baseline comparison policy
+
+The source-of-truth contracts for these runs live in:
+
+- `src/rtdsl/baseline_contracts.py`
+- `docs/embree_baseline_contracts.md`
+
+## Embree Baseline Benchmark
+
+Use the local benchmark harness to record warmup-aware timing data:
+
+```sh
+PYTHONPATH=src:. python3 -m rtdsl.baseline_benchmark --iterations 3 --warmup 1
+PYTHONPATH=src:. python3 -m rtdsl.baseline_summary build/embree_baseline_benchmark.json
+```
+
+The benchmark JSON is a local-only artifact written under `build/` and is meant
+for the pre-GPU Embree phase. It records:
+
+- backend
+- workload
+- representative dataset
+- warmup count
+- iteration timings
+- summary timing statistics
+
 ## Authoring Checklist
 
 - kernel uses `backend="rayjoin"` and `precision="float_approx"`

@@ -41,6 +41,8 @@ Current precision note:
 - `docs/rayjoin_target.md`: how RTDL maps onto RayJoin-specific concerns.
 - `docs/v0_1_roadmap.md`: concrete scope and milestones for the first RTDL release.
 - `docs/v0_1_final_plan.md`: staged plan from Embree baseline to final NVIDIA/OptiX v0.1 completion.
+- `docs/embree_baseline_plan.md`: step plan for the pre-GPU Embree baseline.
+- `docs/embree_baseline_contracts.md`: frozen workload, ABI, precision, and dataset contracts for the Embree baseline.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 
@@ -74,6 +76,18 @@ Run the Embree backend demo:
 
 ```sh
 make run-rtdsl-embree
+```
+
+Run the frozen Embree baseline workloads through both CPU and Embree:
+
+```sh
+make run-rtdsl-baseline
+```
+
+Run the local Embree baseline benchmark harness and summary:
+
+```sh
+make bench-rtdsl-baseline
 ```
 
 Embree setup on this Mac:
@@ -135,6 +149,15 @@ supported workloads:
 
 5. `rt.run_embree(kernel_fn, **inputs)` executes the kernel through an
    Embree-backed runtime and returns result rows on this Mac.
+
+RTDL now also has a frozen Embree-baseline integration layer:
+
+6. `python -m rtdsl.baseline_runner <workload>` runs a representative baseline
+   workload case through CPU and/or Embree.
+7. `python -m rtdsl.baseline_benchmark` records warmup-aware timing artifacts
+   under `build/`.
+8. `python -m rtdsl.baseline_summary <json>` prints a human-readable summary of
+   those benchmark results.
 
 ## Language Docs
 

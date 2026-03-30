@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 8
-- Archived files: 185
-- External reports: 29
+- Revision rounds: 9
+- Archived files: 202
+- External reports: 36
 - Project snapshots: 156
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha-goal8 | 2026-03-30 | done-consensus | Goal 8 Embree Baseline Completion | Gemini 3 Flash approved the baseline plan, Step 1/2 contract freeze, and the remaining integration slice; no major issues remained. | Froze workload/ABI contracts, added representative runners, benchmark harness, summary reporting, authored-program Embree validation, and baseline docs. | Goal 8 complete; the Embree baseline is materially complete as the pre-GPU foundation for RTDL v0.1. | `b7ae0b8` | `2026-03-30-goal-8-embree-baseline-plan` |
 | v0.1-alpha-goal7 | 2026-03-29 | done-consensus | Goal 7 Embree Backend | Gemini approved the Embree backend implementation and found no blocking issues. | Installed Embree, added native shim and Python wrapper, added tests/demos/docs, and improved prefix configurability. | Goal 7 complete; RTDL now runs the current workload surface on top of Embree on this Mac. | `4e2be7f1aa72a42f609e6045396bef47071441e8` | `2026-03-29-goal-7-embree-backend` |
 | v0.1-alpha-goal6 | 2026-03-29 | done-consensus | Goal 6 Python Simulator | Gemini approved the simulator design and final implementation; no major issues were found. | Added rt.run_cpu, runtime normalization/dispatch, simulator tests, docs, and local execution demos. | Goal 6 complete; RTDL kernels now execute locally on CPU for the current workload surface. | `3569438d984d695795eb9c1903f728b03a065dd1` | `2026-03-29-goal-6-python-simulator` |
 | v0.1-alpha-goal5 | 2026-03-29 | done-consensus | Goal 5 Ray Triangle Hitcount | Gemini found no major issues; finite 2D ray-vs-triangle hit counting is correctly integrated and documented. | Added Triangles/Rays, hit-count predicate, lowering/codegen/docs/examples/tests; clarified docs after the first invalid Gemini-authored attempt. | Goal 5 complete; RTDL now supports finite 2D ray-vs-triangle hit counts. | `3df92bb5e83fe4763a9268c45d1cde92bcf73d83` | `2026-03-29-goal-5-ray-triangle-hitcount` |

@@ -193,3 +193,29 @@ return rt.emit(hits, fields=["point_id", "bbox_min_x"])
 Why it fails:
 
 - emit fields are workload-specific and closed in the current language
+
+## Baseline Representative Runs
+
+The Embree baseline now has named representative runs for each workload:
+
+- `lsi`
+  - `authored_lsi_minimal`
+  - `tests/fixtures/rayjoin/br_county_subset.cdb`
+- `pip`
+  - `authored_pip_minimal`
+  - `tests/fixtures/rayjoin/br_county_subset.cdb`
+- `overlay`
+  - `authored_overlay_minimal`
+  - `tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb`
+- `ray_tri_hitcount`
+  - `authored_ray_tri_minimal`
+  - `examples/rtdl_ray_tri_hitcount.py synthetic random generators`
+
+Run a representative case directly:
+
+```sh
+PYTHONPATH=src:. python3 -m rtdsl.baseline_runner overlay --backend both
+```
+
+This is the preferred way to exercise the current frozen baseline before the
+project moves to the NVIDIA/OptiX phase.

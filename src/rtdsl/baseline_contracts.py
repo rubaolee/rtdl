@@ -1,0 +1,274 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from math import isclose
+
+from .ir import CompiledKernel
+
+BASELINE_WORKLOAD_ORDER = ("lsi", "pip", "overlay", "ray_tri_hitcount")
+BASELINE_PRECISION_MODE = "float_approx"
+BASELINE_FLOAT_ABS_TOL = 1e-6
+BASELINE_FLOAT_REL_TOL = 1e-6
+
+
+@dataclass(frozen=True)
+class InputContract:
+    name: str
+    geometry: str
+    role: str
+    layout_name: str
+    layout_fields: tuple[str, ...]
+    logical_record_fields: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class WorkloadContract:
+    workload: str
+    backend: str
+    precision: str
+    predicate: str
+    accel: str
+    inputs: tuple[InputContract, ...]
+    emit_fields: tuple[str, ...]
+    comparison_mode: str
+    representative_datasets: tuple[str, ...]
+    notes: str
+
+
+BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
+    "lsi": WorkloadContract(
+        workload="lsi",
+        backend="rayjoin",
+        precision=BASELINE_PRECISION_MODE,
+        predicate="segment_intersection",
+        accel="bvh",
+        inputs=(
+            InputContract(
+                name="left",
+                geometry="segments",
+                role="probe",
+                layout_name="Segment2D",
+                layout_fields=("x0", "y0", "x1", "y1", "id"),
+                logical_record_fields=("id", "x0", "y0", "x1", "y1"),
+            ),
+            InputContract(
+                name="right",
+                geometry="segments",
+                role="build",
+                layout_name="Segment2D",
+                layout_fields=("x0", "y0", "x1", "y1", "id"),
+                logical_record_fields=("id", "x0", "y0", "x1", "y1"),
+            ),
+        ),
+        emit_fields=("left_id", "right_id", "intersection_point_x", "intersection_point_y"),
+        comparison_mode="exact_ids_and_flags_plus_float_tolerance",
+        representative_datasets=(
+            "authored_lsi_minimal",
+            "tests/fixtures/rayjoin/br_county_subset.cdb",
+        ),
+        notes="Segment-segment join. Float outputs use epsilon comparison for cross-backend checks.",
+    ),
+    "pip": WorkloadContract(
+        workload="pip",
+        backend="rayjoin",
+        precision=BASELINE_PRECISION_MODE,
+        predicate="point_in_polygon",
+        accel="bvh",
+        inputs=(
+            InputContract(
+                name="points",
+                geometry="points",
+                role="probe",
+                layout_name="Point2D",
+                layout_fields=("x", "y", "id"),
+                logical_record_fields=("id", "x", "y"),
+            ),
+            InputContract(
+                name="polygons",
+                geometry="polygons",
+                role="build",
+                layout_name="Polygon2DRef",
+                layout_fields=("vertex_offset", "vertex_count", "id"),
+                logical_record_fields=("id", "vertices"),
+            ),
+        ),
+        emit_fields=("point_id", "polygon_id", "contains"),
+        comparison_mode="exact",
+        representative_datasets=(
+            "authored_pip_minimal",
+            "tests/fixtures/rayjoin/br_county_subset.cdb",
+        ),
+        notes="Logical polygon inputs are expressed as inline vertices even though lowering uses Polygon2DRef layouts.",
+    ),
+    "overlay": WorkloadContract(
+        workload="overlay",
+        backend="rayjoin",
+        precision=BASELINE_PRECISION_MODE,
+        predicate="overlay_compose",
+        accel="bvh",
+        inputs=(
+            InputContract(
+                name="left",
+                geometry="polygons",
+                role="probe",
+                layout_name="Polygon2DRef",
+                layout_fields=("vertex_offset", "vertex_count", "id"),
+                logical_record_fields=("id", "vertices"),
+            ),
+            InputContract(
+                name="right",
+                geometry="polygons",
+                role="build",
+                layout_name="Polygon2DRef",
+                layout_fields=("vertex_offset", "vertex_count", "id"),
+                logical_record_fields=("id", "vertices"),
+            ),
+        ),
+        emit_fields=("left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"),
+        comparison_mode="exact",
+        representative_datasets=(
+            "authored_overlay_minimal",
+            "tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb",
+        ),
+        notes="Overlay is treated as compositional seed generation in the current baseline.",
+    ),
+    "ray_tri_hitcount": WorkloadContract(
+        workload="ray_tri_hitcount",
+        backend="rayjoin",
+        precision=BASELINE_PRECISION_MODE,
+        predicate="ray_triangle_hit_count",
+        accel="bvh",
+        inputs=(
+            InputContract(
+                name="rays",
+                geometry="rays",
+                role="probe",
+                layout_name="Ray2D",
+                layout_fields=("ox", "oy", "dx", "dy", "tmax", "id"),
+                logical_record_fields=("id", "ox", "oy", "dx", "dy", "tmax"),
+            ),
+            InputContract(
+                name="triangles",
+                geometry="triangles",
+                role="build",
+                layout_name="Triangle2D",
+                layout_fields=("x0", "y0", "x1", "y1", "x2", "y2", "id"),
+                logical_record_fields=("id", "x0", "y0", "x1", "y1", "x2", "y2"),
+            ),
+        ),
+        emit_fields=("ray_id", "hit_count"),
+        comparison_mode="exact",
+        representative_datasets=(
+            "authored_ray_tri_minimal",
+            "examples/rtdl_ray_tri_hitcount.py synthetic random generators",
+        ),
+        notes="Finite 2D rays against triangles with one hit-count record per ray.",
+    ),
+}
+
+
+def validate_compiled_kernel_against_baseline(
+    compiled: CompiledKernel,
+    workload: str,
+) -> None:
+    contract = BASELINE_WORKLOADS[workload]
+    if compiled.backend != contract.backend:
+        raise ValueError(
+            f"baseline workload `{workload}` requires backend `{contract.backend}`, "
+            f"got `{compiled.backend}`"
+        )
+    if compiled.precision != contract.precision:
+        raise ValueError(
+            f"baseline workload `{workload}` requires precision `{contract.precision}`, "
+            f"got `{compiled.precision}`"
+        )
+    if compiled.candidates is None or compiled.refine_op is None or compiled.emit_op is None:
+        raise ValueError(f"baseline workload `{workload}` requires traverse/refine/emit")
+    if compiled.candidates.accel != contract.accel:
+        raise ValueError(
+            f"baseline workload `{workload}` requires accel `{contract.accel}`, "
+            f"got `{compiled.candidates.accel}`"
+        )
+    if compiled.refine_op.predicate.name != contract.predicate:
+        raise ValueError(
+            f"baseline workload `{workload}` requires predicate `{contract.predicate}`, "
+            f"got `{compiled.refine_op.predicate.name}`"
+        )
+    if compiled.emit_op.fields != contract.emit_fields:
+        raise ValueError(
+            f"baseline workload `{workload}` requires emit fields {contract.emit_fields!r}, "
+            f"got {compiled.emit_op.fields!r}"
+        )
+
+    actual_inputs = {item.name: item for item in compiled.inputs}
+    expected_names = {item.name for item in contract.inputs}
+    if set(actual_inputs) != expected_names:
+        raise ValueError(
+            f"baseline workload `{workload}` requires inputs {sorted(expected_names)!r}, "
+            f"got {sorted(actual_inputs)!r}"
+        )
+
+    for expected in contract.inputs:
+        item = actual_inputs[expected.name]
+        if item.geometry.name != expected.geometry:
+            raise ValueError(
+                f"input `{expected.name}` requires geometry `{expected.geometry}`, "
+                f"got `{item.geometry.name}`"
+            )
+        if item.role != expected.role:
+            raise ValueError(
+                f"input `{expected.name}` requires role `{expected.role}`, got `{item.role}`"
+            )
+        if item.layout.name != expected.layout_name:
+            raise ValueError(
+                f"input `{expected.name}` requires layout `{expected.layout_name}`, "
+                f"got `{item.layout.name}`"
+            )
+        if item.layout.field_names() != expected.layout_fields:
+            raise ValueError(
+                f"input `{expected.name}` requires layout fields {expected.layout_fields!r}, "
+                f"got {item.layout.field_names()!r}"
+            )
+
+
+def compare_baseline_rows(
+    workload: str,
+    cpu_rows: tuple[dict[str, object], ...],
+    embree_rows: tuple[dict[str, object], ...],
+) -> bool:
+    contract = BASELINE_WORKLOADS[workload]
+    cpu_sorted = tuple(sorted(cpu_rows, key=_row_sort_key))
+    embree_sorted = tuple(sorted(embree_rows, key=_row_sort_key))
+    if len(cpu_sorted) != len(embree_sorted):
+        return False
+    for cpu_row, embree_row in zip(cpu_sorted, embree_sorted):
+        if set(cpu_row) != set(embree_row):
+            return False
+        for field in cpu_row:
+            left = cpu_row[field]
+            right = embree_row[field]
+            if contract.comparison_mode == "exact":
+                if left != right:
+                    return False
+                continue
+            if isinstance(left, float) or isinstance(right, float):
+                if not isclose(
+                    float(left),
+                    float(right),
+                    rel_tol=BASELINE_FLOAT_REL_TOL,
+                    abs_tol=BASELINE_FLOAT_ABS_TOL,
+                ):
+                    return False
+            elif left != right:
+                return False
+    return True
+
+
+def _row_sort_key(row: dict[str, object]) -> tuple[tuple[str, object], ...]:
+    normalized = []
+    for key, value in sorted(row.items()):
+        if isinstance(value, float):
+            normalized.append((key, round(value, 9)))
+        else:
+            normalized.append((key, value))
+    return tuple(normalized)
