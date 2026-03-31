@@ -65,6 +65,7 @@ Current precision note:
 - `docs/rayjoin_paper_dataset_provenance.md`: provenance mapping for RayJoin paper datasets and RTDL substitutions.
 - `docs/rtdl_feature_guide.md`: English overview of the currently supported RTDL feature surface and example kernels.
 - `docs/development_reliability_process.md`: the review, revision, validation, and archival workflow used to keep RTDL reliable.
+- `docs/ai_collaboration_workflow.md`: how Codex, Gemini, and Claude collaborate on goals, reviews, revisions, and closure decisions.
 - `docs/reports/`: generated high-level Goal 9 evaluation summaries and PDF report snapshots.
 - `docs/reports/rtdl_status_report_2026-03-31.pdf`: current project status PDF with RayJoin reference figures.
 - `docs/reports/section_5_6_scalability_report_2026-03-31.md`: current Section 5.6 Embree analogue report.

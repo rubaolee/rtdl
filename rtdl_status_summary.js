@@ -36,7 +36,7 @@ const COLORS = {
   dark: "0D1720",
 };
 
-const SLIDE_COUNT = 12;
+const SLIDE_COUNT = 14;
 
 function addBackground(slide, accent = COLORS.blue) {
   slide.background = { color: COLORS.pale };
@@ -422,7 +422,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.gold);
-  addTitle(slide, "Review and Revision History", "The project has been advanced through explicit multi-round Codex + Gemini review loops.");
+  addTitle(slide, "Review and Revision History", "The project has been advanced through explicit multi-round Codex, Gemini, and Claude review loops.");
   addPanel(slide, 0.8, 1.55, 12.0, 0.75, "History system",
     "history/history.db stores structured metadata. revision_dashboard.html is the manager-facing view. revision_dashboard.md is the GitHub-readable companion.", COLORS.white);
   addPanel(slide, 0.8, 2.55, 2.0, 3.55, "Round 1",
@@ -512,6 +512,46 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 - 16 archived review/revision rounds
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);
+}
+
+// 13. AI collaboration loop
+{
+  const slide = pptx.addSlide();
+  addBackground(slide, COLORS.teal);
+  addTitle(slide, "How the AIs Work Together", "RTDL uses a staged multi-agent loop instead of a one-pass coding workflow.");
+  addPanel(slide, 0.8, 1.55, 2.3, 4.65, "1. Goal setup",
+    "Codex writes the goal, scope, deliverables, and acceptance bar before code changes are treated as valid progress.", COLORS.white);
+  addPanel(slide, 3.35, 1.55, 2.3, 4.65, "2. Pre-review",
+    "Gemini or Claude reviews the goal first, checks whether the scope is sound, and states how completion should be verified.", COLORS.mist);
+  addPanel(slide, 5.9, 1.55, 2.3, 4.65, "3. Implement + validate",
+    "Codex updates code, tests, docs, reports, and examples, then runs the actual evidence path.", COLORS.white);
+  addPanel(slide, 8.45, 1.55, 2.3, 4.65, "4. Review + revise",
+    "Another agent reviews the implemented state. Findings trigger a direct response and another revision pass if needed.", COLORS.mist);
+  addPanel(slide, 11.0, 1.55, 1.55, 4.65, "5. Close + archive",
+    "Only after consensus does the round move into history, dashboards, and main.", COLORS.white, { bodySize: 10.2 });
+  addPanel(slide, 0.85, 6.45, 11.7, 0.58, "Why this matters",
+    "This process turns each accepted goal into an auditable repo state instead of a one-model opinion.", COLORS.mint);
+  addFooter(slide, 13);
+}
+
+// 14. Agent roles and closure rules
+{
+  const slide = pptx.addSlide();
+  addBackground(slide, COLORS.blue);
+  addTitle(slide, "Agent Roles and Closure Rules", "Different models play different roles so the project gets structured disagreement before publication.");
+  addPanel(slide, 0.8, 1.55, 3.75, 2.8, "Codex",
+    "Primary implementation driver.\n\nOwns code changes, validation runs, doc updates, rebuttals, and final repo coherence.", COLORS.white);
+  addPanel(slide, 4.8, 1.55, 3.75, 2.8, "Gemini",
+    "Fast secondary reviewer.\n\nUsually checks scope, evidence, semantic honesty, and whether a round is really ready to close.", COLORS.mist);
+  addPanel(slide, 8.8, 1.55, 3.75, 2.8, "Claude",
+    "Audit and critique pressure.\n\nOften used for deeper plan criticism, trust audits, and narrower comparison goals.", COLORS.white);
+  addBullets(slide, [
+    "Consensus means the agents agree on the final goal state, not that they produce identical reports.",
+    "A goal can close as complete, complete-for-slice, canceled-superseded, or blocked, as long as the wording matches the evidence.",
+    "The archive keeps prompts, reviews, responses, and final closure notes so future contributors can inspect why a decision was made.",
+    "This is now a core part of RTDL’s engineering method, not an ad hoc side process.",
+  ], { x: 0.95, y: 4.55, w: 11.5, h: 2.0, fontSize: 13.1 });
+  addFooter(slide, 14);
 }
 
 pptx.writeFile({ fileName: "/Users/rl2025/rtdl_python_only/rtdl_status_summary.pptx" });
