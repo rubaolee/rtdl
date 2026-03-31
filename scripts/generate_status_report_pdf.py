@@ -228,7 +228,7 @@ def build_report() -> None:
                 [
                     "RTDL is now a real executable prototype: Python-hosted DSL, compiler IR, lowering/codegen, CPU reference runtime, and a working Embree backend on this Mac.",
                     "Current audited precision is float_approx. NVIDIA/OptiX remains the final v0.1 target, but the active baseline is Embree-based execution and evaluation.",
-                    "The current working tree also includes Goal 13 planning artifacts for RayJoin paper reproduction on Embree.",
+                    "The current working tree also includes Goal 13 paper-reproduction planning, Goal 14 Section 5.6 local-profile planning, and the completed Goal 15 native C++ comparison slice.",
                 ],
             ),
             (
@@ -244,7 +244,7 @@ def build_report() -> None:
                 [
                     "Feature and audit rounds are executed with multi-agent review, revision, tests, and archived evidence in history/.",
                     "Goal 12 closed the trust-audit revision under a 2-agent Codex + Gemini rule while Claude was quota-limited.",
-                    "Goal 13 has already frozen the paper-reproduction checklist, target matrix, and dataset-provenance plan locally.",
+                    "Goal 15 added a separate native C++ + Embree versus RTDL + Embree comparison harness for deterministic correctness and host-overhead measurement.",
                 ],
             ),
         ],
@@ -266,15 +266,15 @@ def build_report() -> None:
                 [
                     "Largest current local speedup appears in the ray_tri_hitcount synthetic-large case at 165.14x Embree vs CPU on this Mac baseline.",
                     "Current evaluated lsi/pip/overlay cases are still much smaller than the full RayJoin paper campaign and should be treated as baseline validation, not paper-equivalent results.",
-                    "The evaluation harness already emits tables, CSVs, SVG figures, and a PDF report.",
+                    "The evaluation harness already emits tables, CSVs, SVG figures, a PDF report, and can now be cross-checked against a standalone native C++ comparison slice for lsi and pip.",
                 ],
             ),
             (
                 "Goal 13 paper-reproduction status",
                 [
-                    "Goal 13 is in progress locally. The initial paper-target surface is lsi, pip, and overlay only.",
+                    "Goal 13 is in progress in the repository, but it is temporarily suspended while Goal 14 scopes practical local Section 5.6 runs on this Mac.",
                     "The dataset provenance document now maps RayJoin paper labels County/Zipcode, Block/Water, and LKAF..LKSA / PKAF..PKSA to explicit dataset families and internal names.",
-                    "Next execution layers are the Table 3 analogue, Table 4 analogue, and Figure 13 / Figure 14 / Figure 15 analogue generators.",
+                    "Completed slices already include the Figure 13 / Figure 14 Embree analogue, while remaining work is the Table 3 analogue, Table 4 analogue, and Figure 15 analogue generators.",
                 ],
             ),
         ],
@@ -319,7 +319,7 @@ def build_report() -> None:
                 [
                     "Language, docs, examples, CPU runtime, Embree runtime, benchmark harness, history/audit process, and the Embree evaluation report are all real and usable.",
                     "RayJoin paper dataset naming ambiguities for LKAF/LKAS/LKAU/LKEU/LKNA/LKSA have been resolved from the RayJoin experiment scripts.",
-                    "A machine-readable paper target registry already exists locally in src/rtdsl/paper_reproduction.py.",
+                    "A machine-readable paper target registry already exists locally in src/rtdsl/paper_reproduction.py, and Goal 15 now adds a checked-in native C++ comparison report for deterministic lsi/pip fixtures.",
                 ],
             ),
             (

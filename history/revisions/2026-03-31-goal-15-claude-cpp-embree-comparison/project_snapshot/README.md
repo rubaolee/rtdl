@@ -15,10 +15,9 @@ This repository now contains:
 Current status:
 
 - The Embree baseline is complete and published.
-- Goal 13, "RayJoin paper reproduction on Embree," is in progress and now has a frozen checklist, target matrix, dataset provenance note, and machine-readable target registry.
+- Goal 13, "RayJoin paper reproduction on Embree," is in progress locally and now has a frozen checklist, target matrix, dataset provenance note, and machine-readable target registry.
 - RayJoin Section 5.6 scalability is now supported as a scaled synthetic Embree analogue for `lsi` and `pip`, with generated Figure 13 / Figure 14 analogue artifacts and a dedicated report.
-- Goal 15 is complete as an audited native C++ + Embree versus RTDL + Embree comparison slice for deterministic `lsi` and `pip` fixtures.
-- A checked-in status PDF summarizes the current RTDL state and the paper-reference figures used for the reproduction phase.
+- A local status PDF has been generated to summarize the current RTDL state and the paper-reference figures used for the reproduction phase.
 
 Current semantic/runtime boundaries:
 

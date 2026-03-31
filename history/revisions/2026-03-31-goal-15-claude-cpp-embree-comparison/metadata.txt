@@ -1,2 +1,11 @@
-Date: 2026-03-31
-Status: started
+slug: 2026-03-31-goal-15-claude-cpp-embree-comparison
+title: Goal 15 Claude C++ Embree Comparison
+version: v0.1-alpha-goal15
+status: done-consensus
+started_on: 2026-03-31
+closed_on: 2026-03-31
+source_commit: 14b815d
+gemini_review: Gemini accepted the final comparison report after Claude accepted the implementation slice and correctness/performance evidence.
+codex_revision: Codex implemented the native C++ + Embree executables, comparison harness, regression tests, and final report.
+final_result: Goal 15 complete as an audited native-wrapper versus RTDL host-path comparison slice with correctness parity and measured overhead evidence.
+summary: Goal 15 Claude C++ Embree Comparison

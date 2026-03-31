@@ -373,19 +373,21 @@ def ray_triangle_hits():
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.green);
-  addTitle(slide, "Workloads and Data Pipeline", "RTDL now covers four workload shapes and includes RayJoin-aligned fixture support.");
-  addPanel(slide, 0.8, 1.55, 2.85, 3.95, "lsi",
+  addTitle(slide, "Workloads and Data Pipeline", "RTDL now covers six workload families and includes RayJoin-aligned fixture support.");
+  addPanel(slide, 0.8, 1.55, 2.85, 3.15, "lsi",
     "Segment vs segment intersection.\n\nEmit:\nleft_id\nright_id\nintersection_point_x\nintersection_point_y", COLORS.white);
-  addPanel(slide, 3.95, 1.55, 2.85, 3.95, "pip",
+  addPanel(slide, 3.95, 1.55, 2.85, 3.15, "pip",
     "Point in polygon.\n\nEmit:\npoint_id\npolygon_id\ncontains", COLORS.white);
-  addPanel(slide, 7.1, 1.55, 2.85, 3.95, "overlay",
+  addPanel(slide, 7.1, 1.55, 2.85, 3.15, "overlay",
     "Polygon overlay preparation / seed generation.\n\nEmit:\nleft_polygon_id\nright_polygon_id\nrequires_lsi\nrequires_pip", COLORS.white);
-  addPanel(slide, 10.25, 1.55, 2.3, 3.95, "ray_tri_hitcount",
+  addPanel(slide, 10.25, 1.55, 2.3, 3.15, "ray_tri_hitcount",
     "Finite 2D rays against triangles.\n\nEmit:\nray_id\nhit_count", COLORS.white);
-  addPanel(slide, 0.8, 5.75, 5.6, 0.7, "Dataset support",
-    "datasets.py parses RayJoin-style CDB chains and derives segment, polygon, and point-probe views for non-GPU validation.", COLORS.mint);
-  addPanel(slide, 6.65, 5.75, 5.85, 0.7, "Example data sources",
-    "tests/fixtures/rayjoin/ plus authored synthetic examples for ray queries and Embree demos.", COLORS.mist);
+  addPanel(slide, 0.8, 4.95, 3.8, 1.3, "Goal 10 extensions",
+    "segment_polygon_hitcount\npoint_nearest_segment\n\nThese execute through audited native_loop local cases.", COLORS.mint);
+  addPanel(slide, 4.85, 4.95, 3.7, 1.3, "Dataset support",
+    "datasets.py parses RayJoin-style CDB chains and derives segment, polygon, and point-probe views for non-GPU validation.", COLORS.white);
+  addPanel(slide, 8.8, 4.95, 3.7, 1.3, "Example data sources",
+    "tests/fixtures/rayjoin/ plus authored synthetic examples, Section 5.6 generators, and Embree demos.", COLORS.mist);
   addFooter(slide, 6);
 }
 
@@ -431,10 +433,10 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
     "Multi-workload coverage and dataset pipeline.\n\nOutcome: lsi, pip, overlay, RayJoin-style fixtures.", COLORS.mist);
   addPanel(slide, 7.4, 2.55, 2.0, 3.55, "Goals 3-5",
     "Gemini re-review gate, formal language docs, and ray-triangle hit counts.", COLORS.white);
-  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-7",
-    "CPU simulator and Embree backend.\n\nOutcome: RTDL programs now return real results locally.", COLORS.mist);
+  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-15",
+    "CPU simulator, Embree backend, evaluation/reporting, trust audit, paper-analogue work, and native C++ comparison.", COLORS.mist);
   addPanel(slide, 11.8, 2.55, 1.0, 3.55, "Stats",
-    "8 rounds\n29 external reports\n156 archived project snapshots", COLORS.white, { bodySize: 10.2 });
+    "16 rounds\n44 external reports\n251 archived project snapshots", COLORS.white, { bodySize: 10.2 });
   addFooter(slide, 8);
 }
 
@@ -466,7 +468,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.rust);
   addTitle(slide, "What Is Proven vs. What Is Not", "Keep the current system’s claims honest.");
   addPanel(slide, 0.8, 1.55, 5.75, 4.9, "Proven now",
-    "RTDL is a real language surface for four workloads.\n\nThe same kernels can compile to IR, lower to backend plans, execute on CPU, and execute on Embree.\n\nAuthored examples from humans, Codex, and Gemini can be validated through the same pipeline.\n\nThe review history is reproducible and archived.", COLORS.mint);
+    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR, lower to backend plans, execute on CPU, and execute on Embree.\n\nA separate audited native C++ + Embree comparison slice now cross-checks deterministic lsi and pip fixtures.\n\nThe review history is reproducible and archived.", COLORS.mint);
   addPanel(slide, 6.8, 1.55, 5.75, 4.9, "Not done yet",
     "No exact / robust geometry implementation.\n\nNo real OptiX runtime integration yet.\n\nNo performance evaluation against RayJoin.\n\nNo support yet for the full range of general-purpose RT workloads beyond the current small surface.", COLORS.rose);
   addFooter(slide, 10);
@@ -480,7 +482,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 0.8, 1.55, 2.85, 3.95, "Step 1\nStabilize current surface",
     "Keep improving docs, examples, negative validation, and authored-program testing.", COLORS.white);
   addPanel(slide, 3.95, 1.55, 2.85, 3.95, "Step 2\nWiden workload support",
-    "Add more geometry/query forms beyond the current RayJoin-aligned four workloads.", COLORS.white);
+    "Add more geometry/query forms beyond the current RayJoin-aligned six-workload surface.", COLORS.white);
   addPanel(slide, 7.1, 1.55, 2.85, 3.95, "Step 3\nBring up real OptiX runtime",
     "Connect the cloud NVIDIA environment and make generated backend artifacts execute end to end.", COLORS.white);
   addPanel(slide, 10.25, 1.55, 2.3, 3.95, "Step 4\nPrecision and performance",
@@ -496,18 +498,18 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.plum);
   addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo should include the updated deck plus the Gemini-authored Embree example.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through Goal 15, including the native C++ + Embree comparison slice and refreshed history dashboard.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
     "Read docs/rtdl/*, run make test, make run-rtdsl-sim, and make run-rtdsl-embree, then author new kernels against the current contracts.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
     "Real OptiX runtime integration, generated backend validation, and progress toward replacing narrow slices of handwritten RayJoin code.", COLORS.white);
   addCodeBox(slide, 0.82, 4.15, 11.7, 1.75,
 `Current repo snapshot:
-- Four supported workloads
-- Three execution modes
+- Six supported workloads
+- CPU + Embree runtimes plus native C++ comparison slice
 - Embree 4.4.0 runtime on this Mac
-- 32 passing tests
-- 8 archived review/revision rounds
+- 57 passing tests
+- 16 archived review/revision rounds
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);
 }
