@@ -101,6 +101,20 @@ What would be required to know that difference:
 3. Run identical seeds, distributions, size series, and iteration counts on both backends.
 4. Generate the same figure/report schema for direct comparison.
 
+## Recommended One-Hour Profiles
+
+If the immediate objective is to keep both workloads near a one-hour query-only budget on this Mac, the following scaled profiles are the current recommended starting points:
+
+- `lsi` recommendation: fixed `R = 1,000,000` polygons, varying `S = 1,000,000, 2,000,000, 3,000,000, 4,000,000, 5,000,000` polygons.
+  - estimated total query-only time: `0.91 h`
+  - rationale: keeps the LSI runtime close to the original one-hour target while substantially reducing the build-side memory burden from the paper-scale `R = 5M` case.
+  - caution: the `S = 5M` endpoint is still memory-heavy because RTDL currently materializes both polygons and derived segments in Python.
+
+- `pip` recommendation: fixed `R = 1,000,000` polygons, varying `S = 20,000, 40,000, 60,000, 80,000, 100,000` polygons.
+  - estimated total query-only time: `1.00 h`
+  - rationale: reduces the previous `~55.7 h` exact-scale estimate to roughly one hour while preserving the same five-point increasing-size experiment shape.
+  - this is the practical scale-down needed for an overnight local run on the current machine.
+
 ## Practical Recommendation
 
 Goal 14 should remain an **estimation and readiness** goal for now. Before attempting exact-scale midnight runs on this Mac, RTDL should first add:

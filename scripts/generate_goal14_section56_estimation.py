@@ -78,11 +78,46 @@ def format_gb(num_bytes: int) -> str:
     return f"{num_bytes / (1024**3):.2f} GiB"
 
 
+def total_query_seconds_for_profile(payload: dict[str, object], *, workload: str, build_polygons: int, probe_series: tuple[int, ...]) -> float:
+    measured_r = payload["config"]["build_polygons"]
+    build_factor = build_size_adjustment(measured_r, build_polygons)
+    total = 0.0
+    if workload == "lsi":
+        for distribution in ("uniform", "gaussian"):
+            unit = lsi_per_probe_segment_seconds(payload, distribution) * build_factor
+            for s in probe_series:
+                total += unit * (s * 4) * (ITERATIONS_PER_CASE + WARMUP_PER_CASE)
+    elif workload == "pip":
+        for distribution in ("uniform", "gaussian"):
+            unit = pip_per_probe_point_seconds(payload, distribution) * build_factor
+            for s in probe_series:
+                total += unit * s * (ITERATIONS_PER_CASE + WARMUP_PER_CASE)
+    else:
+        raise ValueError(f"unsupported workload: {workload}")
+    return total
+
+
 def build_report() -> str:
     payload = load_payload()
     hw = hardware_summary()
     measured_r = payload["config"]["build_polygons"]
     build_factor = build_size_adjustment(measured_r, PAPER_R)
+    recommended_lsi_r = 1_000_000
+    recommended_lsi_s = (1_000_000, 2_000_000, 3_000_000, 4_000_000, 5_000_000)
+    recommended_pip_r = 1_000_000
+    recommended_pip_s = (20_000, 40_000, 60_000, 80_000, 100_000)
+    recommended_lsi_total = total_query_seconds_for_profile(
+        payload,
+        workload="lsi",
+        build_polygons=recommended_lsi_r,
+        probe_series=recommended_lsi_s,
+    )
+    recommended_pip_total = total_query_seconds_for_profile(
+        payload,
+        workload="pip",
+        build_polygons=recommended_pip_r,
+        probe_series=recommended_pip_s,
+    )
 
     lines = [
         "# Goal 14 Estimation Report: Exact-Scale Section 5.6 on the Current Mac",
@@ -190,6 +225,20 @@ def build_report() -> str:
             "2. Record build time, query time, and total wall time separately for CPU and GPU runs.",
             "3. Run identical seeds, distributions, size series, and iteration counts on both backends.",
             "4. Generate the same figure/report schema for direct comparison.",
+            "",
+            "## Recommended One-Hour Profiles",
+            "",
+            "If the immediate objective is to keep both workloads near a one-hour query-only budget on this Mac, the following scaled profiles are the current recommended starting points:",
+            "",
+            f"- `lsi` recommendation: fixed `R = {recommended_lsi_r:,}` polygons, varying `S = {', '.join(f'{v:,}' for v in recommended_lsi_s)}` polygons.",
+            f"  - estimated total query-only time: `{format_hours(recommended_lsi_total)}`",
+            "  - rationale: keeps the LSI runtime close to the original one-hour target while substantially reducing the build-side memory burden from the paper-scale `R = 5M` case.",
+            "  - caution: the `S = 5M` endpoint is still memory-heavy because RTDL currently materializes both polygons and derived segments in Python.",
+            "",
+            f"- `pip` recommendation: fixed `R = {recommended_pip_r:,}` polygons, varying `S = {', '.join(f'{v:,}' for v in recommended_pip_s)}` polygons.",
+            f"  - estimated total query-only time: `{format_hours(recommended_pip_total)}`",
+            "  - rationale: reduces the previous `~55.7 h` exact-scale estimate to roughly one hour while preserving the same five-point increasing-size experiment shape.",
+            "  - this is the practical scale-down needed for an overnight local run on the current machine.",
             "",
             "## Practical Recommendation",
             "",
