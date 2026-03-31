@@ -100,10 +100,10 @@ They are valid for:
 
 They are not yet sufficient for:
 
-- Figure 13 analogue,
-- Figure 14 analogue,
 - full Table 3 analogue,
 - or full Table 4 / Figure 15 analogue.
+
+Figure 13 and Figure 14 are now supported through a scaled synthetic Embree analogue rather than through the original paper-scale inputs.
 
 ## Scalability Dataset Policy
 
@@ -121,6 +121,16 @@ Preferred order for Goal 13:
 1. `exact-input` large public dataset if practical
 2. `derived-input` deterministic enlargement from a RayJoin-aligned public source
 3. `synthetic-input` only if no practical public path exists
+
+Current implemented Section 5.6 analogue:
+
+- generator type: `synthetic-input`
+- fixed build-side size: `R = 800 polygons`
+- varying probe-side series: `S = 160, 320, 480, 640, 800 polygons`
+- distributions: `uniform`, `gaussian`
+- workload mapping:
+  - `lsi`: polygon-set to segment-set conversion, throughput in intersections/s
+  - `pip`: polygon-set to probe-point conversion, throughput in probe-points/s
 
 ## Overlay Fidelity Note
 

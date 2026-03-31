@@ -1,0 +1,171 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 2 /Kids [3 0 R 5 0 R] >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2683 >>
+stream
+BT
+/F1 11 Tf
+54 748 Td
+14 TL
+(RTDL Section 5.6 Scalability Analogue Report) Tj
+T*
+() Tj
+T*
+(Generated: 2026-03-31T06:51:08) Tj
+T*
+(Method: Embree-phase scaled analogue of RayJoin Section 5.6) Tj
+T*
+(Fixed build-side polygons: 800) Tj
+T*
+(Probe-side series: 160, 320, 480, 640, 800) Tj
+T*
+() Tj
+T*
+(Support decision:) Tj
+T*
+(The previous RTDL baseline did not execute Section 5.6 directly. This revision adds a scaled) Tj
+T*
+(Embree-phase analogue for LSI and PIP.) Tj
+T*
+() Tj
+T*
+(Correctness gate:) Tj
+T*
+(- uniform: lsi parity=True, pip parity=True on reduced CPU-vs-Embree samples.) Tj
+T*
+(- gaussian: lsi parity=True, pip parity=True on reduced CPU-vs-Embree samples.) Tj
+T*
+() Tj
+T*
+(Results snapshot:) Tj
+T*
+(- lsi | uniform | probe=160 | time=8.295 ms | throughput=0.00 intersections/s | results=0) Tj
+T*
+(- pip | uniform | probe=160 | time=192.791 ms | throughput=829.91 probe-points/s |) Tj
+T*
+(results=128000) Tj
+T*
+(- lsi | uniform | probe=320 | time=10.247 ms | throughput=195.19 intersections/s | results=2) Tj
+T*
+(- pip | uniform | probe=320 | time=300.873 ms | throughput=1063.57 probe-points/s |) Tj
+T*
+(results=256000) Tj
+T*
+(- lsi | uniform | probe=480 | time=12.073 ms | throughput=0.00 intersections/s | results=0) Tj
+T*
+(- pip | uniform | probe=480 | time=430.850 ms | throughput=1114.08 probe-points/s |) Tj
+T*
+(results=384000) Tj
+T*
+(- lsi | uniform | probe=640 | time=9.646 ms | throughput=414.68 intersections/s | results=4) Tj
+T*
+(- pip | uniform | probe=640 | time=373.850 ms | throughput=1711.92 probe-points/s |) Tj
+T*
+(results=512000) Tj
+T*
+(- lsi | uniform | probe=800 | time=7.036 ms | throughput=1421.33 intersections/s |) Tj
+T*
+(results=10) Tj
+T*
+(- pip | uniform | probe=800 | time=366.496 ms | throughput=2182.83 probe-points/s |) Tj
+T*
+(results=640000) Tj
+T*
+(- lsi | gaussian | probe=160 | time=3.879 ms | throughput=0.00 intersections/s | results=0) Tj
+T*
+(- pip | gaussian | probe=160 | time=58.617 ms | throughput=2729.58 probe-points/s |) Tj
+T*
+(results=128000) Tj
+T*
+(- lsi | gaussian | probe=320 | time=4.139 ms | throughput=483.17 intersections/s | results=2) Tj
+T*
+(- pip | gaussian | probe=320 | time=128.788 ms | throughput=2484.71 probe-points/s |) Tj
+T*
+(results=256000) Tj
+T*
+(- lsi | gaussian | probe=480 | time=4.410 ms | throughput=2721.27 intersections/s |) Tj
+T*
+(results=12) Tj
+T*
+(- pip | gaussian | probe=480 | time=195.241 ms | throughput=2458.50 probe-points/s |) Tj
+T*
+(results=384000) Tj
+T*
+(- lsi | gaussian | probe=640 | time=5.327 ms | throughput=3378.99 intersections/s |) Tj
+T*
+(results=18) Tj
+T*
+(- pip | gaussian | probe=640 | time=326.666 ms | throughput=1959.19 probe-points/s |) Tj
+T*
+(results=512000) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 823 >>
+stream
+BT
+/F1 11 Tf
+54 748 Td
+14 TL
+(- lsi | gaussian | probe=800 | time=6.989 ms | throughput=4292.25 intersections/s |) Tj
+T*
+(results=30) Tj
+T*
+(- pip | gaussian | probe=800 | time=405.897 ms | throughput=1970.94 probe-points/s |) Tj
+T*
+(results=640000) Tj
+T*
+() Tj
+T*
+(Figure 13 analogue SVG:) Tj
+T*
+(/Users/rl2025/rtdl_python_only/build/section_5_6_scalability/figures/figure13_lsi_scalability.svg) Tj
+T*
+(Figure 14 analogue SVG:) Tj
+T*
+(/Users/rl2025/rtdl_python_only/build/section_5_6_scalability/figures/figure14_pip_scalability.svg) Tj
+T*
+() Tj
+T*
+(Limitations:) Tj
+T*
+(- This is a scaled Embree analogue, not the original 5M / 1M..5M RT-core benchmark.) Tj
+T*
+(- Overlay is not part of Section 5.6 and is not included here.) Tj
+T*
+(- The final NVIDIA phase is still needed for paper-style RT-core reproduction.) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000002982 00000 n 
+0000003108 00000 n 
+0000003982 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+4052
+%%EOF

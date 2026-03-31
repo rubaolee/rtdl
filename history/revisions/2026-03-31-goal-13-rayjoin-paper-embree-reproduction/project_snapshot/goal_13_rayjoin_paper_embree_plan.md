@@ -37,6 +37,11 @@ If RTDL can reproduce the paper's evaluation structure on Embree:
 - Figure 14 analogue for `pip` scalability
 - Figure 15 analogue for `overlay` speedup summary
 
+Current progress:
+
+- Figure 13 and Figure 14 are now implemented as scaled synthetic Embree analogues.
+- Table 3, Table 4, and Figure 15 remain open.
+
 ## Main Deliverables
 
 - frozen reproduction checklist

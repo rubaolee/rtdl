@@ -61,6 +61,12 @@ from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
+from .section_5_6_scalability import generate_section_5_6_artifacts
+from .section_5_6_scalability import generate_synthetic_polygons
+from .section_5_6_scalability import polygon_probe_points
+from .section_5_6_scalability import polygons_to_segments
+from .section_5_6_scalability import run_section_5_6
+from .section_5_6_scalability import ScalabilityConfig
 from .runtime import run_cpu
 from .types import f32
 from .types import field
@@ -182,6 +188,8 @@ __all__ = [
     "emit",
     "f32",
     "field",
+    "generate_section_5_6_artifacts",
+    "generate_synthetic_polygons",
     "generate_optix_project",
     "generate_embree_evaluation_artifacts",
     "input",
@@ -197,7 +205,9 @@ __all__ = [
     "pip_cpu",
     "Point",
     "point_nearest_segment_cpu",
+    "polygon_probe_points",
     "Polygon",
+    "polygons_to_segments",
     "ray_triangle_hit_count",
     "ray_triangle_hit_count_cpu",
     "RAYJOIN_PAPER_TARGETS",
@@ -207,6 +217,8 @@ __all__ = [
     "run_baseline_case",
     "run_embree",
     "run_cpu",
+    "run_section_5_6",
+    "ScalabilityConfig",
     "schema_path",
     "segment_intersection",
     "segment_polygon_hitcount",

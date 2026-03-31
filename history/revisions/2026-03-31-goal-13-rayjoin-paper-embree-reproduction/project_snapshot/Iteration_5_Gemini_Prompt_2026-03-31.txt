@@ -1,0 +1,32 @@
+Review the RTDL implementation for RayJoin paper Section 5.6 support on the current Embree baseline.
+
+Focus on these files:
+
+- /Users/rl2025/rtdl_python_only/src/rtdsl/section_5_6_scalability.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py
+- /Users/rl2025/rtdl_python_only/tests/section_5_6_scalability_test.py
+- /Users/rl2025/rtdl_python_only/Makefile
+- /Users/rl2025/rtdl_python_only/README.md
+- /Users/rl2025/rtdl_python_only/docs/goal_13_rayjoin_paper_embree_plan.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_checklist.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_matrix.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_dataset_provenance.md
+- /Users/rl2025/rtdl_python_only/docs/reports/section_5_6_scalability_report_2026-03-31.md
+
+Tasks:
+
+1. Decide whether the support decision is honest:
+   - was Section 5.6 unsupported before this revision?
+   - is the new result correctly described as a scaled Embree analogue rather than a paper-equivalent run?
+
+2. Check for internal inconsistencies:
+   - code vs docs
+   - config vs published report
+   - figure/report boundary
+   - workload/metric interpretation
+
+3. Identify any blockers or over-claims.
+
+If no blockers remain, end with exactly:
+
+Goal 13 Section 5.6 analogue accepted by consensus.

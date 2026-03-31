@@ -50,10 +50,10 @@ Figure 13 is LSI scalability:
 
 | Figure Target | RTDL Workload | Embree Phase Status | Dataset Strategy | Notes |
 | --- | --- | --- | --- | --- |
-| Figure 13(a) Uniform LSI Query Time | `lsi` | `planned` | deterministic synthetic scalability generator | Need 1M..5M scaling series. |
-| Figure 13(b) Gaussian LSI Query Time | `lsi` | `planned` | deterministic synthetic scalability generator | Need gaussian generator. |
-| Figure 13(c) Uniform LSI Throughput | `lsi` | `planned` | derived from same benchmark run | Output as intersects/s analogue. |
-| Figure 13(d) Gaussian LSI Throughput | `lsi` | `planned` | derived from same benchmark run | Output as intersects/s analogue. |
+| Figure 13(a) Uniform LSI Query Time | `lsi` | `done` | deterministic synthetic scalability generator | Implemented as a scaled Embree analogue with fixed `R=800` and varying `S=160..800`. |
+| Figure 13(b) Gaussian LSI Query Time | `lsi` | `done` | deterministic synthetic scalability generator | Implemented as a scaled Embree analogue with fixed `R=800` and varying `S=160..800`. |
+| Figure 13(c) Uniform LSI Throughput | `lsi` | `done` | derived from same benchmark run | Output as intersects/s analogue from RTDL result rows. |
+| Figure 13(d) Gaussian LSI Throughput | `lsi` | `done` | derived from same benchmark run | Output as intersects/s analogue from RTDL result rows. |
 
 ## Figure 14 Target Matrix
 
@@ -67,10 +67,10 @@ Figure 14 is PIP scalability:
 
 | Figure Target | RTDL Workload | Embree Phase Status | Dataset Strategy | Notes |
 | --- | --- | --- | --- | --- |
-| Figure 14(a) Uniform PIP Query Time | `pip` | `planned` | deterministic synthetic scalability generator | Need point-query scaling generator. |
-| Figure 14(b) Gaussian PIP Query Time | `pip` | `planned` | deterministic synthetic scalability generator | Need gaussian generator. |
-| Figure 14(c) Uniform PIP Throughput | `pip` | `planned` | derived from same benchmark run | Output as points/s analogue. |
-| Figure 14(d) Gaussian PIP Throughput | `pip` | `planned` | derived from same benchmark run | Output as points/s analogue. |
+| Figure 14(a) Uniform PIP Query Time | `pip` | `done` | deterministic synthetic scalability generator | Implemented as a scaled Embree analogue with fixed `R=800` and varying `S=160..800`. |
+| Figure 14(b) Gaussian PIP Query Time | `pip` | `done` | deterministic synthetic scalability generator | Implemented as a scaled Embree analogue with fixed `R=800` and varying `S=160..800`. |
+| Figure 14(c) Uniform PIP Throughput | `pip` | `done` | derived from same benchmark run | Output as probe-points/s analogue from the generated point set. |
+| Figure 14(d) Gaussian PIP Throughput | `pip` | `done` | derived from same benchmark run | Output as probe-points/s analogue from the generated point set. |
 
 ## Table 4 and Figure 15 Target Matrix
 

@@ -4,8 +4,8 @@ version: v0.1-alpha-goal13
 status: in-progress-consensus
 started_on: 2026-03-31
 closed_on: 2026-03-31
-source_commit: f3242d6
-gemini_review: Gemini accepted the setup, provenance layer, and registry layer for continued Goal 13 execution.
-codex_revision: Codex added the checklist, target matrix, provenance document, machine-readable registry, tests, and status-report artifacts.
-final_result: Goal 13 is in progress; the planning, provenance, and registry layers are accepted, while dataset acquisition and table/figure generators remain pending.
-summary: Embree-phase RayJoin paper reproduction planning and status snapshot
+source_commit: 69f7cea
+gemini_review: Gemini accepted the setup, provenance layer, registry layer, and the new Section 5.6 analogue implementation.
+codex_revision: Codex added the Section 5.6 synthetic generators, Embree experiment runner, figures, report, tests, and doc updates.
+final_result: Goal 13 remains in progress overall, but the Section 5.6 Figure 13 / Figure 14 analogue slice is now accepted by 2-agent consensus.
+summary: Goal 13 with Section 5.6 analogue support

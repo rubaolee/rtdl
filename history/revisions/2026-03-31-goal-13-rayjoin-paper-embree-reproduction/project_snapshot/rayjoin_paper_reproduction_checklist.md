@@ -33,6 +33,11 @@ The key paper artifacts to mirror are:
 - Table 4: polygon overlay execution time
 - Figure 15: polygon overlay speedup summary
 
+Current completion note:
+
+- Figure 13 and Figure 14 now have a scaled synthetic Embree analogue in the repository.
+- Table 3, Table 4, and Figure 15 remain the main open paper-target artifacts.
+
 ## RTDL Mapping Status
 
 Current RTDL status:
@@ -93,6 +98,12 @@ Add explicit output generators for:
 - Figure 13 style LSI scalability plots
 - Figure 14 style PIP scalability plots
 - Figure 15 style overlay speedup plots
+
+Current status:
+
+- Figure 13 style LSI scalability plots: implemented as a scaled Embree synthetic analogue
+- Figure 14 style PIP scalability plots: implemented as a scaled Embree synthetic analogue
+- Table 3 / Table 4 / Figure 15: still pending
 
 ### 5. Track reproduction fidelity
 
