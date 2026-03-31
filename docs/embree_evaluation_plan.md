@@ -9,7 +9,7 @@ Status note:
 
 - Goal 9 itself is complete and published.
 - This document now serves as the checked-in foundation for the newer Goal 13 paper-reproduction phase.
-- Goal 13 extends the same Embree evaluation machinery toward RayJoin-paper table and figure analogues.
+- The preserved Goal 13 artifact set extends the same Embree evaluation machinery toward RayJoin-paper table and figure analogues, even though Goal 13 itself is now canceled as superseded by Goal 15.
 
 This is not the final RT-core result. It is the local pre-GPU evaluation phase.
 

@@ -4,18 +4,19 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 16
-- Archived files: 295
-- External reports: 44
-- Project snapshots: 251
+- Revision rounds: 17
+- Archived files: 302
+- External reports: 46
+- Project snapshots: 256
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha-goal13-close | 2026-03-31 | done-consensus | Goal 13 Cancellation Consensus | Gemini accepted cancellation as technically honest if Goal 13 artifacts are preserved as valid partial results. | Codex marked Goal 13 canceled and superseded by Goal 15 while preserving completed Goal 13 artifacts as accepted references. | Goal 13 closure accepted by Claude and Gemini; Goal 13 is canceled as superseded by Goal 15 while completed Goal 13 slices remain valid references. | `e3484d2` | `2026-03-31-goal-13-cancelation-consensus-g15` |
 | v0.1-alpha-goal15 | 2026-03-31 | done-consensus | Goal 15 Claude C++ Embree Comparison | Gemini accepted the final comparison report after Claude accepted the implementation slice and correctness/performance evidence. | Codex implemented the native C++ + Embree executables, comparison harness, regression tests, and final report. | Goal 15 complete as an audited native-wrapper versus RTDL host-path comparison slice with correctness parity and measured overhead evidence. | `14b815d` | `2026-03-31-goal-15-claude-cpp-embree-comparison` |
 | v0.1-alpha-goal14 | 2026-03-31 | done-consensus | Goal 14 Section 5.6 Exact-Scale Estimation | Gemini reviewed the estimate and accepted it as technically honest, with only a minor note that the log-scaling model should be treated as optimistic. | Codex added a reproducible estimator, a plan note, Goal 13 suspension note, and a machine/resource feasibility analysis for exact-scale Section 5.6 on the current Mac. | Goal 14 complete as an estimation/report goal; exact-scale Section 5.6 should not be scheduled on this Mac until the host-side data path is refactored. | `1458e31` | `2026-03-31-goal-14-section-5-6-exact-scale-estimation` |
-| v0.1-alpha-goal13 | 2026-03-31 | in-progress-consensus | Goal 13 RayJoin Paper Embree Reproduction | Gemini accepted the setup, provenance layer, registry layer, and the new Section 5.6 analogue implementation. | Codex added the Section 5.6 synthetic generators, Embree experiment runner, figures, report, tests, and doc updates. | Goal 13 remains in progress overall, but the Section 5.6 Figure 13 / Figure 14 analogue slice is now accepted by 2-agent consensus. | `f3242d6` | `2026-03-31-goal-13-rayjoin-paper-embree-reproduction` |
+| v0.1-alpha-goal13 | 2026-03-31 | canceled-superseded | Goal 13 RayJoin Paper Embree Reproduction | Gemini accepted cancellation as technically honest if Goal 13 artifacts are preserved as valid partial results. | Codex marked Goal 13 canceled and superseded by Goal 15 while preserving completed Goal 13 artifacts as accepted references. | Goal 13 canceled as superseded by Goal 15; completed Goal 13 artifacts remain valid partial results and accepted references. | `f3242d6` | `2026-03-31-goal-13-rayjoin-paper-embree-reproduction` |
 | v0.1-alpha | 2026-03-31 | 2-agent-audited | Goal 12 Claude Trust Audit | Claude audit blocked by quota; Gemini accepted final revised snapshot | Codex implemented audit-driven revisions, verification, and rebuttal evidence | 2-agent audited version accepted by consensus; optional Claude recheck remains | `208c04b466ba4efc1dfc814fe8ba25bd48217191` | `2026-03-31-goal-12-claude-trust-audit` |
 | v0.1-alpha-goal10 | 2026-03-30 | done-consensus | Goal 10 More Workloads | Gemini ultimately confirmed no blockers after the final consistency and parity review for the Goal 10 workload extensions. | Implemented segment_polygon_hitcount and point_nearest_segment with parity tests, examples, docs, and compiler/runtime support. | Goal 10 complete for the parity-first scope; RTDL now supports two additional executable workload families before the acceleration-focused phase. | `d32bef4` | `2026-03-30-goal-10-more-workloads` |
 | v0.1-alpha-goal9 | 2026-03-30 | done-consensus | Goal 9 Embree Baseline Reproduction | Gemini 3 Flash approved the Goal 9 implementation and final artifacts; no blocking issues remained. | Added the evaluation matrix, deterministic larger derived cases, benchmark-report pipeline, SVG figures, and a generated PDF report. | Goal 9 complete; RTDL now has a paper-structured Embree baseline evaluation with tables, figures, and a portable report. | `b4288a8` | `2026-03-30-goal-9-embree-evaluation` |

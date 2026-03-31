@@ -1,0 +1,19 @@
+Review this repo state for a closure decision only.
+
+Context:
+- Goal 13 was broad RayJoin paper reproduction on Embree.
+- It produced valid partial artifacts: dataset provenance, reproduction matrix, and an accepted Figure 13 / Figure 14 Section 5.6 analogue slice.
+- Later Goal 15 added a narrower but more concrete native C++ + Embree vs RTDL + Embree comparison slice and is now the more relevant next-step baseline.
+
+Question:
+Is it technically honest to mark Goal 13 as canceled/superseded by Goal 15, while preserving completed Goal 13 artifacts as valid partial results rather than failed work?
+
+Respond with 3 sections only:
+Decision
+Reasoning
+Required wording
+
+End with one exact line:
+Consensus to cancel Goal 13 as superseded by Goal 15.
+or
+Blocked.

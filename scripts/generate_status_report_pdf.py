@@ -228,7 +228,7 @@ def build_report() -> None:
                 [
                     "RTDL is now a real executable prototype: Python-hosted DSL, compiler IR, lowering/codegen, CPU reference runtime, and a working Embree backend on this Mac.",
                     "Current audited precision is float_approx. NVIDIA/OptiX remains the final v0.1 target, but the active baseline is Embree-based execution and evaluation.",
-                    "The current working tree also includes Goal 13 paper-reproduction planning, Goal 14 Section 5.6 local-profile planning, and the completed Goal 15 native C++ comparison slice.",
+                    "The current working tree also includes preserved Goal 13 paper-reproduction artifacts, Goal 14 Section 5.6 local-profile planning, and the completed Goal 15 native C++ comparison slice.",
                 ],
             ),
             (
@@ -272,7 +272,7 @@ def build_report() -> None:
             (
                 "Goal 13 paper-reproduction status",
                 [
-                    "Goal 13 is in progress in the repository, but it is temporarily suspended while Goal 14 scopes practical local Section 5.6 runs on this Mac.",
+                    "Goal 13 is canceled as superseded by Goal 15, but its preserved artifacts remain valid references for any future GPU-phase paper-reproduction work.",
                     "The dataset provenance document now maps RayJoin paper labels County/Zipcode, Block/Water, and LKAF..LKSA / PKAF..PKSA to explicit dataset families and internal names.",
                     "Completed slices already include the Figure 13 / Figure 14 Embree analogue, while remaining work is the Table 3 analogue, Table 4 analogue, and Figure 15 analogue generators.",
                 ],
@@ -291,7 +291,7 @@ def build_report() -> None:
         "RayJoin Figure 13 Reference: LSI Scalability",
         figure_lsi,
         [
-            "Reference figure from the RayJoin repository. This is the target style for Goal 13 Figure 13 analogues on the Embree phase.",
+            "Reference figure from the RayJoin repository. This remains the style target for any future resumed paper-reproduction work on the Embree phase.",
             "RTDL does not yet regenerate this figure; current local work has only frozen the target matrix, dataset provenance, and registry needed to drive that implementation.",
         ],
     )
@@ -300,7 +300,7 @@ def build_report() -> None:
         figure_pip,
         [
             "Reference figure from the RayJoin repository for PIP scalability.",
-            "Goal 13 intends to reproduce the structure, not the GPU numbers: fixed-size synthetic series, uniform and gaussian distributions, query time, and throughput analogues.",
+            "Any future resumed paper-reproduction work should reproduce the structure, not the GPU numbers: fixed-size synthetic series, uniform and gaussian distributions, query time, and throughput analogues.",
         ],
     )
     pdf.add_image_page(
