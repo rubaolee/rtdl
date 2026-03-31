@@ -1,0 +1,11 @@
+slug: 2026-03-30-goal-8-embree-baseline-plan
+title: Goal 8 Embree Baseline Completion
+version: v0.1-alpha-goal8
+status: done-consensus
+started_on: 2026-03-30
+closed_on: 2026-03-30
+source_commit: 305d638
+gemini_review: Gemini 3 Flash approved the baseline plan, Step 1/2 contract freeze, and the remaining integration slice; no major issues remained.
+codex_revision: Froze workload/ABI contracts, added representative runners, benchmark harness, summary reporting, authored-program Embree validation, and baseline docs.
+final_result: Goal 8 complete; the Embree baseline is materially complete as the pre-GPU foundation for RTDL v0.1.
+summary: Embree baseline completion round.

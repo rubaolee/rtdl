@@ -200,19 +200,19 @@
     <section class="stats">
       <article class="stat">
         <span class="stat-label">Revision Rounds</span>
-        <span class="stat-value">11</span>
+        <span class="stat-value">12</span>
       </article>
       <article class="stat">
         <span class="stat-label">Archived Files</span>
-        <span class="stat-value">270</span>
+        <span class="stat-value">208</span>
       </article>
       <article class="stat">
         <span class="stat-label">External Reports</span>
-        <span class="stat-value">47</span>
+        <span class="stat-value">30</span>
       </article>
       <article class="stat">
         <span class="stat-label">Project Snapshots</span>
-        <span class="stat-value">148</span>
+        <span class="stat-value">178</span>
       </article>
     </section>
 
@@ -242,10 +242,10 @@
               <td>2026-03-30</td>
               <td><span class="status">done-consensus</span></td>
               <td class="summary-cell">Goal 10 More Workloads</td>
-              <td class="summary-cell">Gemini CLI was unreliable for a clean final artifact, but the substantive partial review found the scope technically sound and favored <code>segment_polygon_hitcount</code> plus <code>point_nearest_segment</code>.</td>
-              <td class="summary-cell">Implemented the selected workload pair, parity tests, examples, docs, and compiler/runtime support; secondary Codex review found no correctness blockers.</td>
+              <td class="summary-cell">Gemini ultimately confirmed no blockers after the final consistency and parity review for the Goal 10 workload extensions.</td>
+              <td class="summary-cell">Implemented segment_polygon_hitcount and point_nearest_segment with parity tests, examples, docs, and compiler/runtime support.</td>
               <td class="summary-cell">Goal 10 complete for the parity-first scope; RTDL now supports two additional executable workload families before the acceleration-focused phase.</td>
-              <td><code>pending</code></td>
+              <td><code>d32bef4</code></td>
               <td><code>2026-03-30-goal-10-more-workloads</code></td>
             </tr>
             <tr>
@@ -256,7 +256,7 @@
               <td class="summary-cell">Gemini 3 Flash approved the Goal 9 implementation and final artifacts; no blocking issues remained.</td>
               <td class="summary-cell">Added the evaluation matrix, deterministic larger derived cases, benchmark-report pipeline, SVG figures, and a generated PDF report.</td>
               <td class="summary-cell">Goal 9 complete; RTDL now has a paper-structured Embree baseline evaluation with tables, figures, and a portable report.</td>
-              <td><code>pending</code></td>
+              <td><code>b4288a8</code></td>
               <td><code>2026-03-30-goal-9-embree-evaluation</code></td>
             </tr>
             <tr>
@@ -267,8 +267,19 @@
               <td class="summary-cell">Gemini 3 Flash approved the baseline plan, Step 1/2 contract freeze, and the remaining integration slice; no major issues remained.</td>
               <td class="summary-cell">Froze workload/ABI contracts, added representative runners, benchmark harness, summary reporting, authored-program Embree validation, and baseline docs.</td>
               <td class="summary-cell">Goal 8 complete; the Embree baseline is materially complete as the pre-GPU foundation for RTDL v0.1.</td>
-              <td><code>b7ae0b8</code></td>
+              <td><code>305d638</code></td>
               <td><code>2026-03-30-goal-8-embree-baseline-plan</code></td>
+            </tr>
+            <tr>
+              <td><strong>v0.1-alpha-goal11</strong></td>
+              <td>2026-03-30</td>
+              <td><span class="status">done-consensus</span></td>
+              <td class="summary-cell">Goal 11 Consistency Audit</td>
+              <td class="summary-cell">Gemini reviewed the revised snapshot and reported no blockers after the doc, schema, and test-consistency fixes.</td>
+              <td class="summary-cell">Codex audited the repo, fixed setup/doc/schema drift, widened regression coverage, and clarified Gemini CLI operational guidance.</td>
+              <td class="summary-cell">Goal 11 complete; the current repository baseline is internally consistent and accepted for continued development.</td>
+              <td><code>d856c583ee8eb101087466b0f5f81664961167a6</code></td>
+              <td><code>2026-03-30-goal-11-consistency-audit</code></td>
             </tr>
             <tr>
               <td><strong>v0.1-alpha-goal7</strong></td>

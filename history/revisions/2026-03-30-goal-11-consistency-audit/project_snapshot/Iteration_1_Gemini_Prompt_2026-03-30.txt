@@ -1,0 +1,10 @@
+Review the repository at /Users/rl2025/rtdl_python_only for correctness and consistency only. Do not propose new features. Focus on README.md, docs/, apps/, examples/, src/rtdsl/, src/native/rtdl_embree.cpp, tests/, and the history dashboards where they describe current behavior. The review snapshot commit is d856c583ee8eb101087466b0f5f81664961167a6.
+
+Prioritize:
+- doc/code drift
+- example/runtime drift
+- stale or overstated claims
+- unsupported or misleading instructions
+- mismatches between tests and documented behavior
+
+Return findings first, ordered by severity with file references. If there are no blockers, say that explicitly and list residual risks. End with one explicit decision line: either `Consensus to revise`, `No blockers`, or `Blocked`.

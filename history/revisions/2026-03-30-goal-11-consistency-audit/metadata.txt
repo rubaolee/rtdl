@@ -1,0 +1,11 @@
+slug: 2026-03-30-goal-11-consistency-audit
+title: Goal 11 Consistency Audit
+version: v0.1-alpha-goal11
+status: done-consensus
+started_on: 2026-03-30
+closed_on: 2026-03-30
+source_commit: d856c583ee8eb101087466b0f5f81664961167a6
+gemini_review: Gemini reviewed the revised snapshot and reported no blockers after the doc, schema, and test-consistency fixes.
+codex_revision: Codex audited the repo, fixed setup/doc/schema drift, widened regression coverage, and clarified Gemini CLI operational guidance.
+final_result: Goal 11 complete; the current repository baseline is internally consistent and accepted for continued development.
+summary: Full consistency audit over docs, code, examples, tests, and process artifacts.

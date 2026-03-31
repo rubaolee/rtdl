@@ -1,0 +1,11 @@
+slug: 2026-03-30-goal-9-embree-evaluation
+title: Goal 9 Embree Baseline Reproduction
+version: v0.1-alpha-goal9
+status: done-consensus
+started_on: 2026-03-30
+closed_on: 2026-03-30
+source_commit: b4288a8
+gemini_review: Gemini 3 Flash approved the Goal 9 implementation and final artifacts; no blocking issues remained.
+codex_revision: Added the evaluation matrix, deterministic larger derived cases, benchmark-report pipeline, SVG figures, and a generated PDF report.
+final_result: Goal 9 complete; RTDL now has a paper-structured Embree baseline evaluation with tables, figures, and a portable report.
+summary: Embree baseline evaluation round.

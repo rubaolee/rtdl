@@ -1,0 +1,11 @@
+slug: 2026-03-30-goal-10-more-workloads
+title: Goal 10 More Workloads
+version: v0.1-alpha-goal10
+status: done-consensus
+started_on: 2026-03-30
+closed_on: 2026-03-30
+source_commit: d32bef4
+gemini_review: Gemini ultimately confirmed no blockers after the final consistency and parity review for the Goal 10 workload extensions.
+codex_revision: Implemented segment_polygon_hitcount and point_nearest_segment with parity tests, examples, docs, and compiler/runtime support.
+final_result: Goal 10 complete for the parity-first scope; RTDL now supports two additional executable workload families before the acceleration-focused phase.
+summary: Goal 10 workload expansion round.

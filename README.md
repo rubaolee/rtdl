@@ -8,7 +8,7 @@ This repository now contains:
 - a Python-hosted RT DSL prototype,
 - an initial compiler IR for RT kernels,
 - a RayJoin backend plan and OptiX/CUDA skeleton generator,
-- multi-workload compiler coverage for `lsi`, `pip`, compositional `overlay`, and 2D ray-vs-triangle hit counts,
+- multi-workload compiler coverage for `lsi`, `pip`, compositional `overlay`, `ray_tri_hitcount`, `segment_polygon_hitcount`, and `point_nearest_segment`,
 - a Python dataset pipeline for RayJoin-style CDB inputs, and
 - Python tests to keep the seed implementation executable.
 
@@ -53,22 +53,32 @@ Current precision note:
 
 ## Build
 
-Prepare the workspace:
+Prepare the compiler/runtime workspace:
 
 ```sh
 make build
-```
-
-Run the Python RTDSL example:
-
-```sh
-make run-rtdsl-py
 ```
 
 Run the test suite:
 
 ```sh
 make test
+```
+
+The default `build` and `test` targets do not require Embree. They validate the
+current compiler surface and skip Embree-only checks automatically when Embree is
+not installed.
+
+Install Embree before using the native local backend:
+
+```sh
+brew install embree
+```
+
+Run the Python RTDL example:
+
+```sh
+make run-rtdsl-py
 ```
 
 Run the local CPU simulator demo:
@@ -99,12 +109,6 @@ Run the Embree evaluation pipeline and generate tables, figures, and the PDF rep
 
 ```sh
 make eval-rtdsl-embree
-```
-
-Embree setup on this Mac:
-
-```sh
-brew install embree
 ```
 
 If Embree or TBB live outside the default Homebrew prefixes, set:

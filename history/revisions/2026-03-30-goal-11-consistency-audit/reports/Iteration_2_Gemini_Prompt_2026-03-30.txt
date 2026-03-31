@@ -1,0 +1,26 @@
+Review the revised repository at /Users/rl2025/rtdl_python_only for correctness and consistency only. This is the Goal 11 consistency audit round after fixes.
+
+Please review these files first:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-11-consistency-audit/reports/Iteration_1_Independent_Codex_Review_2026-03-30_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-30-goal-11-consistency-audit/reports/Iteration_2_Implementation_Report_2026-03-30_Codex.md
+
+Then review the revised repository surface, prioritizing:
+- /Users/rl2025/rtdl_python_only/README.md
+- /Users/rl2025/rtdl_python_only/Makefile
+- /Users/rl2025/rtdl_python_only/docs/rtdl/README.md
+- /Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md
+- /Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md
+- /Users/rl2025/rtdl_python_only/docs/rtdl/llm_authoring_guide.md
+- /Users/rl2025/rtdl_python_only/schemas/rayjoin_plan.schema.json
+- /Users/rl2025/rtdl_python_only/tests/rtdsl_language_test.py
+- /Users/rl2025/rtdl_python_only/tests/rtdsl_embree_test.py
+- /Users/rl2025/rtdl_python_only/tests/goal10_workloads_test.py
+- /Users/rl2025/rtdl_python_only/tests/baseline_integration_test.py
+- /Users/rl2025/rtdl_python_only/tests/evaluation_test.py
+
+Known local verification already run on the revised snapshot:
+- `make build`
+- `python3 -m unittest discover -s tests -p '*_test.py'`
+- `PYTHONPATH=src:. python3 apps/rtdsl_python_demo.py`
+
+Return findings first, ordered by severity with file references. If no blockers remain, say that explicitly and list residual risks. End with one explicit decision line: either `Consensus to revise`, `No blockers`, or `Blocked`.
