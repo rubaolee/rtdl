@@ -4,6 +4,11 @@ Goal 13 aims to reproduce as much of the RayJoin paper evaluation as possible on
 
 This is still a pre-NVIDIA phase.
 
+Current status:
+
+- Goal 13 remains active overall, but it is temporarily suspended while Goal 14 evaluates exact-scale readiness for Section 5.6 on the current Mac.
+- Completed Goal 13 slices remain valid, especially the accepted Figure 13 / Figure 14 Embree analogue work.
+
 ## Purpose
 
 The purpose of Goal 13 is to make RTDL capable of:

@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 14
-- Archived files: 272
-- External reports: 38
-- Project snapshots: 234
+- Revision rounds: 15
+- Archived files: 280
+- External reports: 39
+- Project snapshots: 241
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha-goal14 | 2026-03-31 | done-consensus | Goal 14 Section 5.6 Exact-Scale Estimation | Gemini reviewed the estimate and accepted it as technically honest, with only a minor note that the log-scaling model should be treated as optimistic. | Codex added a reproducible estimator, a plan note, Goal 13 suspension note, and a machine/resource feasibility analysis for exact-scale Section 5.6 on the current Mac. | Goal 14 complete as an estimation/report goal; exact-scale Section 5.6 should not be scheduled on this Mac until the host-side data path is refactored. | `1458e31` | `2026-03-31-goal-14-section-5-6-exact-scale-estimation` |
 | v0.1-alpha-goal13 | 2026-03-31 | in-progress-consensus | Goal 13 RayJoin Paper Embree Reproduction | Gemini accepted the setup, provenance layer, registry layer, and the new Section 5.6 analogue implementation. | Codex added the Section 5.6 synthetic generators, Embree experiment runner, figures, report, tests, and doc updates. | Goal 13 remains in progress overall, but the Section 5.6 Figure 13 / Figure 14 analogue slice is now accepted by 2-agent consensus. | `f3242d6` | `2026-03-31-goal-13-rayjoin-paper-embree-reproduction` |
 | v0.1-alpha | 2026-03-31 | 2-agent-audited | Goal 12 Claude Trust Audit | Claude audit blocked by quota; Gemini accepted final revised snapshot | Codex implemented audit-driven revisions, verification, and rebuttal evidence | 2-agent audited version accepted by consensus; optional Claude recheck remains | `208c04b466ba4efc1dfc814fe8ba25bd48217191` | `2026-03-31-goal-12-claude-trust-audit` |
 | v0.1-alpha-goal10 | 2026-03-30 | done-consensus | Goal 10 More Workloads | Gemini ultimately confirmed no blockers after the final consistency and parity review for the Goal 10 workload extensions. | Implemented segment_polygon_hitcount and point_nearest_segment with parity tests, examples, docs, and compiler/runtime support. | Goal 10 complete for the parity-first scope; RTDL now supports two additional executable workload families before the acceleration-focused phase. | `d32bef4` | `2026-03-30-goal-10-more-workloads` |

@@ -1,6 +1,6 @@
 BUILD_DIR := build
 
-.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 report-rtdsl-paper test clean
+.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 report-rtdsl-paper report-goal14-section-5-6-estimate test clean
 
 build:
 	mkdir -p $(BUILD_DIR)
@@ -35,6 +35,9 @@ eval-section-5-6:
 
 report-rtdsl-paper:
 	python3 scripts/generate_embree_paper_report.py
+
+report-goal14-section-5-6-estimate:
+	python3 scripts/generate_goal14_section56_estimation.py
 
 test:
 	mkdir -p $(BUILD_DIR)

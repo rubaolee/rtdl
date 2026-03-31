@@ -1,0 +1,11 @@
+slug: 2026-03-31-goal-14-section-5-6-exact-scale-estimation
+title: Goal 14 Section 5.6 Exact-Scale Estimation
+version: v0.1-alpha-goal14
+status: done-consensus
+started_on: 2026-03-31
+closed_on: 2026-03-31
+source_commit: 1458e31
+gemini_review: Gemini reviewed the estimate and accepted it as technically honest, with only a minor note that the log-scaling model should be treated as optimistic.
+codex_revision: Codex added a reproducible estimator, a plan note, Goal 13 suspension note, and a machine/resource feasibility analysis for exact-scale Section 5.6 on the current Mac.
+final_result: Goal 14 complete as an estimation/report goal; exact-scale Section 5.6 should not be scheduled on this Mac until the host-side data path is refactored.
+summary: Exact-scale Section 5.6 readiness estimate for the current Mac and current RTDL implementation.
