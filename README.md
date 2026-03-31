@@ -68,6 +68,8 @@ Current precision note:
 - `docs/reports/rtdl_status_report_2026-03-31.pdf`: current project status PDF with RayJoin reference figures.
 - `docs/reports/section_5_6_scalability_report_2026-03-31.md`: current Section 5.6 Embree analogue report.
 - `docs/reports/section_5_6_scalability_report_2026-03-31.pdf`: PDF summary of the current Section 5.6 Embree analogue.
+- `docs/reports/rtdl_embree_paper_report_2026-03-31.md`: paper-style consolidated report for the current Embree-phase reproduction effort.
+- `docs/reports/rtdl_embree_paper_report_2026-03-31.pdf`: paper-style consolidated PDF with RTDL figures and corresponding RayJoin reference figures.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 
@@ -141,6 +143,12 @@ Run the current Section 5.6 scalability analogue and generate the report plus Fi
 
 ```sh
 PYTHONPATH=src:. python3 -m rtdsl.section_5_6_scalability
+```
+
+Generate the consolidated paper-style Embree report:
+
+```sh
+make report-rtdsl-paper
 ```
 
 If Embree or TBB live outside the default Homebrew prefixes, set:

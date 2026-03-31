@@ -1,6 +1,6 @@
 BUILD_DIR := build
 
-.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 test clean
+.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 report-rtdsl-paper test clean
 
 build:
 	mkdir -p $(BUILD_DIR)
@@ -32,6 +32,9 @@ eval-rtdsl-embree:
 
 eval-section-5-6:
 	PYTHONPATH=src:. python3 -m rtdsl.section_5_6_scalability
+
+report-rtdsl-paper:
+	python3 scripts/generate_embree_paper_report.py
 
 test:
 	mkdir -p $(BUILD_DIR)
