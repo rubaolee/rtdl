@@ -45,6 +45,8 @@ Current precision note:
 - `docs/embree_baseline_contracts.md`: frozen workload, ABI, precision, and dataset contracts for the Embree baseline.
 - `docs/embree_evaluation_plan.md`: Goal 9 plan for reproducing the Embree baseline evaluation.
 - `docs/embree_evaluation_matrix.md`: frozen evaluation matrix for the Embree reproduction phase.
+- `docs/rtdl_feature_guide.md`: English overview of the currently supported RTDL feature surface and example kernels.
+- `docs/development_reliability_process.md`: the review, revision, validation, and archival workflow used to keep RTDL reliable.
 - `docs/reports/`: generated high-level Goal 9 evaluation summaries and PDF report snapshots.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
