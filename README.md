@@ -72,6 +72,7 @@ Current precision note:
 - `docs/reports/rtdl_embree_paper_report_2026-03-31.pdf`: paper-style consolidated PDF with RTDL figures and corresponding RayJoin reference figures.
 - `docs/goal_14_section_5_6_exact_scale_plan.md`: Goal 14 plan for five-minute local Section 5.6 profiles on the current Mac.
 - `docs/reports/goal_14_section_5_6_exact_scale_estimation_2026-03-31.md`: exact-scale feasibility and runtime estimate for Section 5.6 on the current Mac.
+- `docs/reports/goal15_cpp_embree_comparison_2026-03-31.md`: Goal 15 native C++ + Embree versus RTDL + Embree comparison report.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 
@@ -157,6 +158,12 @@ Generate the Goal 14 Section 5.6 estimation report and five-minute local profile
 
 ```sh
 make report-goal14-section-5-6-estimate
+```
+
+Run the Goal 15 native C++ + Embree versus RTDL + Embree comparison harness:
+
+```sh
+make run-goal15-compare
 ```
 
 If Embree or TBB live outside the default Homebrew prefixes, set:

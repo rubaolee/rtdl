@@ -1,0 +1,23 @@
+You already accepted Goal 15 in principle. Now provide the missing concrete pre-action plan details only.
+
+Context:
+- Goal 15 compares RTDL+Embree against direct C/C++ + Embree for Section 5.6-style `lsi` and `pip`.
+- Codex agrees with the goal, but says implementation should not start until the concrete plan is specified.
+
+Your response must specify:
+1. the exact minimal native programs to implement first
+2. the exact output artifact format for correctness comparison
+3. the exact correctness comparison method against RTDL+Embree
+4. the exact timing methodology for fair performance comparison
+5. the exact first implementation slice to build before anything else
+
+Constraints:
+- keep it concrete
+- no code yet
+- be explicit about what should and should not be timed
+- be explicit about float comparisons versus exact comparisons
+
+End with exactly one line:
+Consensus to begin implementation
+or
+Revise the plan before implementation

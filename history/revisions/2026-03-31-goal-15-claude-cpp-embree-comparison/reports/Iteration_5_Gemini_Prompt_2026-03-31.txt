@@ -1,0 +1,26 @@
+Write the final report for Goal 15.
+
+Review these files:
+- /Users/rl2025/rtdl_python_only/apps/goal15_lsi_native.cpp
+- /Users/rl2025/rtdl_python_only/apps/goal15_pip_native.cpp
+- /Users/rl2025/rtdl_python_only/scripts/goal15_compare_embree.py
+- /Users/rl2025/rtdl_python_only/tests/goal15_compare_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal15_cpp_embree_comparison_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-15-claude-cpp-embree-comparison/reports/Iteration_4_Implementation_Report_2026-03-31_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-15-claude-cpp-embree-comparison/external_reports/Iteration_4_Final_Review_2026-03-31_Claude.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-15-claude-cpp-embree-comparison/reports/Iteration_4_Final_Consensus_2026-03-31_Codex.md
+
+Important scope boundary:
+- the native executables are standalone C++ front ends with no RTDL DSL involvement
+- but they currently call the same underlying Embree C API implementation already used by RTDL
+- so this goal validates correctness parity on deterministic fixtures and measures native-wrapper vs RTDL host-path overhead
+- it does not claim a comparison between two independent native geometry implementations
+
+Write a concise final report that states:
+1. what Goal 15 accomplished
+2. what it did not accomplish
+3. whether the current slice is technically honest and acceptable
+4. any residual risks or next-step recommendations
+
+End with exactly one line:
+Goal 15 final report accepted

@@ -1,0 +1,24 @@
+Revise your Goal 15 pre-action plan. Codex found these blockers in your previous plan:
+
+1. Output-format contradiction: you said no header line, but your example included a header.
+2. LSI predicate is not precise enough: "fat rays (zero-thickness)" is contradictory, and "Cohen-Sutherland or Shamos-Hoey" is not a precise pairwise segment-intersection contract.
+3. PIP via triangle fans is risky because it may change the semantic object under test relative to RTDL polygon semantics.
+4. `fractions.Fraction` is too strong as the only oracle for scale-up; the plan should distinguish tiny exact fixtures from medium-size RTDL `run_cpu(...)` parity fixtures.
+5. Timing fairness still needs an explicit split between query/build-only timing and RTDL end-to-end host-path timing.
+
+Please provide a revised concrete pre-action plan that fixes those issues.
+
+Your revised response must specify:
+- one exact output format rule
+- one precise LSI pair-membership predicate
+- one safer PIP comparison strategy aligned to RTDL semantics
+- a two-tier or three-tier oracle strategy
+- an explicit timing-view split for fair comparison
+- the first implementation slice after this revision
+
+No code yet.
+
+End with exactly one line:
+Consensus to begin implementation
+or
+Revise the plan before implementation

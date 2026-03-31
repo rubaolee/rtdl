@@ -1,0 +1,31 @@
+You are reviewing RTDL Goal 15 in /Users/rl2025/rtdl_python_only.
+
+Read only these files first:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-15-claude-cpp-embree-comparison/reports/Goal_15_Spec_2026-03-31_Codex.md
+- /Users/rl2025/rtdl_python_only/docs/goal_14_section_5_6_exact_scale_plan.md
+- /Users/rl2025/rtdl_python_only/docs/reports/goal_14_section_5_6_exact_scale_estimation_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/docs/reports/section_5_6_scalability_report_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/docs/development_reliability_process.md
+
+Task for this round:
+- do a pre-action review only
+- do not implement code yet
+- write a concrete plan for comparing RTDL+Embree against pure C/C++ + Embree programs for Section 5.6-style `lsi` and `pip`
+
+Your report must include:
+1. your review of whether this is a sound next goal
+2. the minimal pure C/C++ + Embree programs you think should be implemented first
+3. how correctness should be compared against RTDL+Embree
+4. how performance should be compared fairly
+5. the main technical risks
+6. a decision on whether Codex should begin implementation after your plan
+
+Constraints:
+- be technically critical
+- do not rubber-stamp the idea
+- call out any over-claim or unfair comparison risk
+- assume the purpose is correctness and performance comparison, not replacing RTDL
+
+Finish with one of exactly these lines:
+- Consensus to begin implementation
+- Revise the plan before implementation

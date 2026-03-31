@@ -1,0 +1,176 @@
+#include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
+extern "C" {
+
+struct RtdlSegment {
+  uint32_t id;
+  float x0;
+  float y0;
+  float x1;
+  float y1;
+};
+
+struct RtdlLsiRow {
+  uint32_t left_id;
+  uint32_t right_id;
+  float intersection_point_x;
+  float intersection_point_y;
+};
+
+int rtdl_embree_run_lsi(
+    const RtdlSegment* left,
+    size_t left_count,
+    const RtdlSegment* right,
+    size_t right_count,
+    RtdlLsiRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_free_rows(void* rows);
+
+}
+
+namespace {
+
+bool read_segments_csv(const std::string& path, std::vector<RtdlSegment>* out) {
+  std::ifstream stream(path);
+  if (!stream) {
+    std::cerr << "failed to open " << path << "\n";
+    return false;
+  }
+  std::string line;
+  while (std::getline(stream, line)) {
+    if (line.empty()) {
+      continue;
+    }
+    std::stringstream ss(line);
+    std::string item;
+    std::vector<std::string> fields;
+    while (std::getline(ss, item, ',')) {
+      fields.push_back(item);
+    }
+    if (fields.size() != 5) {
+      std::cerr << "invalid segment row: " << line << "\n";
+      return false;
+    }
+    out->push_back(
+        RtdlSegment{
+            static_cast<uint32_t>(std::stoul(fields[0])),
+            std::stof(fields[1]),
+            std::stof(fields[2]),
+            std::stof(fields[3]),
+            std::stof(fields[4]),
+        });
+  }
+  return true;
+}
+
+bool write_pairs_csv(
+    const std::string& path,
+    std::vector<std::pair<uint32_t, uint32_t>> rows) {
+  std::sort(rows.begin(), rows.end());
+  std::ofstream stream(path);
+  if (!stream) {
+    std::cerr << "failed to write " << path << "\n";
+    return false;
+  }
+  for (const auto& row : rows) {
+    stream << row.first << "," << row.second << "\n";
+  }
+  return true;
+}
+
+bool write_timing_json(
+    const std::string& path,
+    double total_sec,
+    size_t row_count) {
+  std::ofstream stream(path);
+  if (!stream) {
+    std::cerr << "failed to write " << path << "\n";
+    return false;
+  }
+  stream << std::fixed << std::setprecision(9);
+  stream << "{\n";
+  stream << "  \"total_sec\": " << total_sec << ",\n";
+  stream << "  \"row_count\": " << row_count << "\n";
+  stream << "}\n";
+  return true;
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+  std::string left_path;
+  std::string right_path;
+  std::string pairs_out;
+  std::string timing_out;
+  for (int i = 1; i < argc; ++i) {
+    std::string arg = argv[i];
+    if (arg == "--left" && i + 1 < argc) {
+      left_path = argv[++i];
+    } else if (arg == "--right" && i + 1 < argc) {
+      right_path = argv[++i];
+    } else if (arg == "--pairs-out" && i + 1 < argc) {
+      pairs_out = argv[++i];
+    } else if (arg == "--timing-out" && i + 1 < argc) {
+      timing_out = argv[++i];
+    } else {
+      std::cerr << "usage: goal15_lsi_native --left path --right path --pairs-out path --timing-out path\n";
+      return 2;
+    }
+  }
+  if (left_path.empty() || right_path.empty() || pairs_out.empty() || timing_out.empty()) {
+    std::cerr << "missing required arguments\n";
+    return 2;
+  }
+
+  std::vector<RtdlSegment> left;
+  std::vector<RtdlSegment> right;
+  if (!read_segments_csv(left_path, &left) || !read_segments_csv(right_path, &right)) {
+    return 1;
+  }
+
+  RtdlLsiRow* rows_ptr = nullptr;
+  size_t row_count = 0;
+  char error_buf[512] = {0};
+  const auto start = std::chrono::steady_clock::now();
+  const int status = rtdl_embree_run_lsi(
+      left.data(),
+      left.size(),
+      right.data(),
+      right.size(),
+      &rows_ptr,
+      &row_count,
+      error_buf,
+      sizeof(error_buf));
+  const auto end = std::chrono::steady_clock::now();
+  if (status != 0) {
+    std::cerr << (error_buf[0] ? error_buf : "native lsi failed") << "\n";
+    return 1;
+  }
+
+  std::vector<std::pair<uint32_t, uint32_t>> pairs;
+  pairs.reserve(row_count);
+  for (size_t i = 0; i < row_count; ++i) {
+    pairs.emplace_back(rows_ptr[i].left_id, rows_ptr[i].right_id);
+  }
+  rtdl_embree_free_rows(rows_ptr);
+
+  const double total_sec =
+      std::chrono::duration<double>(end - start).count();
+  if (!write_pairs_csv(pairs_out, pairs) ||
+      !write_timing_json(timing_out, total_sec, pairs.size())) {
+    return 1;
+  }
+  return 0;
+}
