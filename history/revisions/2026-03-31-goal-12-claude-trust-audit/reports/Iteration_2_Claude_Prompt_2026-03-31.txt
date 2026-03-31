@@ -1,0 +1,23 @@
+You previously produced this audit report:
+
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-12-claude-trust-audit/external_reports/trust_audit_2026-03-31.md
+
+Codex has responded here:
+
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-12-claude-trust-audit/reports/Iteration_1_Response_2026-03-31_Codex.md
+
+Task:
+
+Create a concrete revision plan for this audit round.
+
+Please do all of the following:
+
+1. confirm which discrepancies should be revised in code vs. docs vs. tests
+2. give a prioritized implementation plan
+3. state the exact acceptance criteria for final closure
+4. say how you will review the revised repository afterward
+
+Return findings and plan in Markdown. End with one explicit line:
+
+- `Consensus to revise`
+- or `Blocked`

@@ -1,0 +1,19 @@
+You audited this repository and found four top discrepancies.
+
+Use these two files only:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-12-claude-trust-audit/external_reports/trust_audit_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-12-claude-trust-audit/reports/Iteration_1_Response_2026-03-31_Codex.md
+
+Task:
+
+Write a concise revision plan for Goal 12.
+
+Required sections:
+1. `Accepted Issues`
+2. `Revision Plan`
+3. `Acceptance Criteria`
+4. `Review Method`
+
+Keep it concrete and implementation-oriented. End with exactly one line:
+
+`Consensus to revise`

@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 12
-- Archived files: 208
-- External reports: 30
-- Project snapshots: 178
+- Revision rounds: 13
+- Archived files: 240
+- External reports: 34
+- Project snapshots: 206
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha | 2026-03-31 | 2-agent-audited | Goal 12 Claude Trust Audit | Claude audit blocked by quota; Gemini accepted final revised snapshot | Codex implemented audit-driven revisions, verification, and rebuttal evidence | 2-agent audited version accepted by consensus; optional Claude recheck remains | `208c04b466ba4efc1dfc814fe8ba25bd48217191` | `2026-03-31-goal-12-claude-trust-audit` |
 | v0.1-alpha-goal10 | 2026-03-30 | done-consensus | Goal 10 More Workloads | Gemini ultimately confirmed no blockers after the final consistency and parity review for the Goal 10 workload extensions. | Implemented segment_polygon_hitcount and point_nearest_segment with parity tests, examples, docs, and compiler/runtime support. | Goal 10 complete for the parity-first scope; RTDL now supports two additional executable workload families before the acceleration-focused phase. | `d32bef4` | `2026-03-30-goal-10-more-workloads` |
 | v0.1-alpha-goal9 | 2026-03-30 | done-consensus | Goal 9 Embree Baseline Reproduction | Gemini 3 Flash approved the Goal 9 implementation and final artifacts; no blocking issues remained. | Added the evaluation matrix, deterministic larger derived cases, benchmark-report pipeline, SVG figures, and a generated PDF report. | Goal 9 complete; RTDL now has a paper-structured Embree baseline evaluation with tables, figures, and a portable report. | `b4288a8` | `2026-03-30-goal-9-embree-evaluation` |
 | v0.1-alpha-goal8 | 2026-03-30 | done-consensus | Goal 8 Embree Baseline Completion | Gemini 3 Flash approved the baseline plan, Step 1/2 contract freeze, and the remaining integration slice; no major issues remained. | Froze workload/ABI contracts, added representative runners, benchmark harness, summary reporting, authored-program Embree validation, and baseline docs. | Goal 8 complete; the Embree baseline is materially complete as the pre-GPU foundation for RTDL v0.1. | `305d638` | `2026-03-30-goal-8-embree-baseline-plan` |

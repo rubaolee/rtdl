@@ -1,0 +1,44 @@
+Review this revised Goal 12 audit closure for RTDL.
+
+Context:
+- Claude's final re-review is temporarily blocked by quota.
+- This review is for 2-agent consensus on the revised snapshot.
+- Focus only on whether the revised repository state closes the original audit items and is internally consistent.
+
+Read these files only:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-12-claude-trust-audit/external_reports/trust_audit_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-12-claude-trust-audit/reports/Iteration_4_Implementation_Report_2026-03-31_Codex.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/reference.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/runtime.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py
+- /Users/rl2025/rtdl_python_only/src/native/rtdl_embree.cpp
+- /Users/rl2025/rtdl_python_only/src/rtdsl/lowering.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/baseline_contracts.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/baseline_runner.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/baseline_benchmark.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/evaluation_matrix.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/evaluation_report.py
+- /Users/rl2025/rtdl_python_only/tests/rtdsl_embree_test.py
+- /Users/rl2025/rtdl_python_only/tests/baseline_integration_test.py
+- /Users/rl2025/rtdl_python_only/tests/evaluation_test.py
+- /Users/rl2025/rtdl_python_only/README.md
+- /Users/rl2025/rtdl_python_only/docs/embree_baseline_contracts.md
+- /Users/rl2025/rtdl_python_only/docs/embree_evaluation_matrix.md
+- /Users/rl2025/rtdl_python_only/docs/reports/embree_evaluation_summary_2026-03-30.md
+- /Users/rl2025/rtdl_python_only/docs/reports/embree_gap_analysis_2026-03-30.md
+
+Verification already run and passed locally:
+- make build
+- python3 -m unittest discover -s tests -p '*_test.py'
+- make eval-rtdsl-embree
+
+Please produce:
+1. Findings first, ordered by severity.
+2. Then a short conclusion.
+3. End with exactly one of these lines:
+   - 2-agent audited version accepted by consensus
+   - Further revision required
+
+Important:
+- Re-evaluate the original LSI all-hits concern in light of the new regression test and implementation evidence.
+- Focus on whether the original audit items are now resolved, rebutted with evidence, or still open.
