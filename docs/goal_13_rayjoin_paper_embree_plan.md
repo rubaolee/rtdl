@@ -6,7 +6,7 @@ This is still a pre-NVIDIA phase.
 
 Current status:
 
-- Goal 13 remains active overall, but it is temporarily suspended while Goal 14 evaluates exact-scale readiness for Section 5.6 on the current Mac.
+- Goal 13 remains active overall, but it is temporarily suspended while Goal 14 defines five-minute local Section 5.6 profiles for the current Mac.
 - Completed Goal 13 slices remain valid, especially the accepted Figure 13 / Figure 14 Embree analogue work.
 
 ## Purpose

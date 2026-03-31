@@ -39,6 +39,26 @@ class Section56ScalabilityTest(unittest.TestCase):
             self.assertIn("Figure 13 analogue", Path(artifacts["markdown"]).read_text(encoding="utf-8"))
             self.assertGreater(Path(artifacts["pdf"]).stat().st_size, 200)
 
+    def test_single_workload_generation_keeps_other_figure_placeholder(self) -> None:
+        cfg = rt.ScalabilityConfig(
+            build_polygons=30,
+            probe_series=(10, 20),
+            iterations=1,
+            warmup=0,
+            base_seed=13,
+            workloads=("lsi",),
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            artifacts = rt.generate_section_5_6_artifacts(
+                output_dir=tmpdir,
+                config=cfg,
+                publish_docs=False,
+            )
+            payload = Path(artifacts["json"]).read_text(encoding="utf-8")
+            figure14 = Path(artifacts["figure14_svg"]).read_text(encoding="utf-8")
+            self.assertIn('"workloads": [', payload)
+            self.assertIn("Figure 14 analogue not generated for this run.", figure14)
+
 
 if __name__ == "__main__":
     unittest.main()

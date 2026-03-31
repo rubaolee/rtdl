@@ -1,10 +1,10 @@
-# Goal 14 Estimation Report: Exact-Scale Section 5.6 on the Current Mac
+# Goal 14 Estimation Report: Five-Minute Section 5.6 Local Profiles
 
 ## Goal Definition
 
-Goal 14 narrows the current paper-reproduction work to one question only: can RTDL repeat RayJoin Section 5.6 with the **same nominal data sizes** on the current Mac, and if so, what should we expect for runtime and interpretability?
+Goal 14 now narrows the current paper-reproduction work to one practical question only: what Section 5.6 profile sizes let `lsi` and `pip` finish in about **five minutes each** on the current Mac while preserving the paper's two-distribution, five-point experiment shape?
 
-This document is an **estimation report**, not a completion claim for the exact-scale run.
+This document is an **estimation report**, not a completion claim for a full paper-scale run.
 
 ## Current Machine
 
@@ -14,7 +14,7 @@ This document is an **estimation report**, not a completion claim for the exact-
 - Physical cores: `10`
 - Memory: `16.0 GiB`
 
-## Paper Target
+## Paper Target Context
 
 - Fixed build-side polygons: `R = 5,000,000`
 - Probe-side series: `S = 1,000,000 .. 5,000,000`
@@ -37,32 +37,32 @@ Current build-size adjustment factor from `800` to `5,000,000`: `2.31x`
 
 | Workload | Distribution | S polygons | Mean query estimate | Case estimate with 1 warmup + 5 measured runs |
 | --- | --- | ---: | ---: | ---: |
-| `lsi` | `uniform` | 1,000,000 | 0.01 h | 0.03 h |
-| `pip` | `uniform` | 1,000,000 | 0.29 h | 1.76 h |
-| `lsi` | `uniform` | 2,000,000 | 0.01 h | 0.07 h |
-| `pip` | `uniform` | 2,000,000 | 0.59 h | 3.52 h |
-| `lsi` | `uniform` | 3,000,000 | 0.02 h | 0.10 h |
-| `pip` | `uniform` | 3,000,000 | 0.88 h | 5.29 h |
-| `lsi` | `uniform` | 4,000,000 | 0.02 h | 0.14 h |
-| `pip` | `uniform` | 4,000,000 | 1.17 h | 7.05 h |
-| `lsi` | `uniform` | 5,000,000 | 0.03 h | 0.17 h |
-| `pip` | `uniform` | 5,000,000 | 1.47 h | 8.81 h |
-| `lsi` | `gaussian` | 1,000,000 | 0.01 h | 0.03 h |
-| `pip` | `gaussian` | 1,000,000 | 0.33 h | 1.95 h |
-| `lsi` | `gaussian` | 2,000,000 | 0.01 h | 0.07 h |
-| `pip` | `gaussian` | 2,000,000 | 0.65 h | 3.90 h |
-| `lsi` | `gaussian` | 3,000,000 | 0.02 h | 0.10 h |
-| `pip` | `gaussian` | 3,000,000 | 0.98 h | 5.85 h |
-| `lsi` | `gaussian` | 4,000,000 | 0.02 h | 0.13 h |
-| `pip` | `gaussian` | 4,000,000 | 1.30 h | 7.81 h |
-| `lsi` | `gaussian` | 5,000,000 | 0.03 h | 0.17 h |
-| `pip` | `gaussian` | 5,000,000 | 1.63 h | 9.76 h |
+| `lsi` | `uniform` | 1,000,000 | 0.00 h | 0.02 h |
+| `pip` | `uniform` | 1,000,000 | 0.22 h | 1.29 h |
+| `lsi` | `uniform` | 2,000,000 | 0.01 h | 0.04 h |
+| `pip` | `uniform` | 2,000,000 | 0.43 h | 2.59 h |
+| `lsi` | `uniform` | 3,000,000 | 0.01 h | 0.06 h |
+| `pip` | `uniform` | 3,000,000 | 0.65 h | 3.88 h |
+| `lsi` | `uniform` | 4,000,000 | 0.01 h | 0.08 h |
+| `pip` | `uniform` | 4,000,000 | 0.86 h | 5.17 h |
+| `lsi` | `uniform` | 5,000,000 | 0.02 h | 0.10 h |
+| `pip` | `uniform` | 5,000,000 | 1.08 h | 6.47 h |
+| `lsi` | `gaussian` | 1,000,000 | 0.01 h | 0.05 h |
+| `pip` | `gaussian` | 1,000,000 | 0.20 h | 1.21 h |
+| `lsi` | `gaussian` | 2,000,000 | 0.02 h | 0.09 h |
+| `pip` | `gaussian` | 2,000,000 | 0.40 h | 2.41 h |
+| `lsi` | `gaussian` | 3,000,000 | 0.02 h | 0.14 h |
+| `pip` | `gaussian` | 3,000,000 | 0.60 h | 3.62 h |
+| `lsi` | `gaussian` | 4,000,000 | 0.03 h | 0.18 h |
+| `pip` | `gaussian` | 4,000,000 | 0.80 h | 4.83 h |
+| `lsi` | `gaussian` | 5,000,000 | 0.04 h | 0.23 h |
+| `pip` | `gaussian` | 5,000,000 | 1.01 h | 6.03 h |
 
 ## Overnight Runtime Summary
 
-- Estimated total `lsi` query wall time for all `uniform + gaussian` Section 5.6 cases: `1.01 h`
-- Estimated total `pip` query wall time for all `uniform + gaussian` Section 5.6 cases: `55.70 h`
-- Estimated total query wall time for the combined Goal 14 exact-scale Section 5.6 run: `56.71 h`
+- Estimated total `lsi` query wall time for all `uniform + gaussian` Section 5.6 cases: `0.97 h`
+- Estimated total `pip` query wall time for all `uniform + gaussian` Section 5.6 cases: `37.50 h`
+- Estimated total query wall time for the combined Goal 14 exact-scale Section 5.6 run: `38.47 h`
 
 These numbers exclude Python-side data construction, Embree scene build time, file serialization, OS memory pressure, and thermal throttling. On this fanless MacBook Air, they should be treated as optimistic lower bounds.
 
@@ -101,23 +101,25 @@ What would be required to know that difference:
 3. Run identical seeds, distributions, size series, and iteration counts on both backends.
 4. Generate the same figure/report schema for direct comparison.
 
-## Recommended One-Hour Profiles
+## Recommended Five-Minute Profiles
 
-If the immediate objective is to keep both workloads near a one-hour query-only budget on this Mac, the following scaled profiles are the current recommended starting points:
+If the immediate objective is to keep both workloads near a five-minute query-only budget on this Mac, the following scaled profiles are the current recommended starting points:
 
-- `lsi` recommendation: fixed `R = 1,000,000` polygons, varying `S = 1,000,000, 2,000,000, 3,000,000, 4,000,000, 5,000,000` polygons.
-  - estimated total query-only time: `0.91 h`
-  - rationale: keeps the LSI runtime close to the original one-hour target while substantially reducing the build-side memory burden from the paper-scale `R = 5M` case.
-  - caution: the `S = 5M` endpoint is still memory-heavy because RTDL currently materializes both polygons and derived segments in Python.
+- `lsi` recommendation: fixed `R = 100,000` polygons, varying `S = 100,000, 200,000, 300,000, 400,000, 500,000` polygons.
+  - estimated total query-only time: `0.07 h`
+  - estimated total query-only time in minutes: `4.34 min`
+  - rationale: this is the largest five-point `lsi` series that still stays under the five-minute query-only target under the current calibration model.
+  - caution: this is still an estimate; total wall time can be higher if Python materialization and background Mac usage add overhead.
 
-- `pip` recommendation: fixed `R = 1,000,000` polygons, varying `S = 20,000, 40,000, 60,000, 80,000, 100,000` polygons.
-  - estimated total query-only time: `1.00 h`
-  - rationale: reduces the previous `~55.7 h` exact-scale estimate to roughly one hour while preserving the same five-point increasing-size experiment shape.
-  - this is the practical scale-down needed for an overnight local run on the current machine.
+- `pip` recommendation: fixed `R = 100,000` polygons, varying `S = 2,000, 4,000, 6,000, 8,000, 10,000` polygons.
+  - estimated total query-only time: `0.06 h`
+  - estimated total query-only time in minutes: `3.36 min`
+  - rationale: this is the largest five-point `pip` series that stays near the five-minute query-only target under the current calibration model.
+  - this profile is much smaller than paper scale because the current PIP path is substantially more expensive on this CPU-only Embree baseline.
 
 ## Practical Recommendation
 
-Goal 14 should remain an **estimation and readiness** goal for now. Before attempting exact-scale midnight runs on this Mac, RTDL should first add:
+Goal 14 should remain a **scaled local-execution** goal for now. The accepted next step is to run these five-minute profiles, not the paper-scale exact-size series. Before attempting exact-scale midnight runs on this Mac, RTDL would still need:
 
 - packed or memory-mapped numeric dataset generation instead of Python object materialization,
 - chunked probe processing so the build side can stay fixed while probe batches stream through Embree,
@@ -127,5 +129,6 @@ Goal 14 should remain an **estimation and readiness** goal for now. Before attem
 ## Bottom Line
 
 - The current RTDL implementation does **not** yet support a trustworthy exact-size repetition of RayJoin Section 5.6 on this Mac.
-- If the host-side memory model were removed as a blocker, the query-only estimate is roughly `1.01 h` for LSI and `55.70 h` for PIP across the full paper-style run.
-- The reliable next step is not the midnight run itself; it is refactoring the Section 5.6 path so exact-scale inputs can be generated and consumed without Python-object explosion.
+- The full paper-scale query-only estimate is still roughly `0.97 h` for LSI and `37.50 h` for PIP across the complete Section 5.6 run.
+- The practical Goal 14 target is now the five-minute local profile: `4.34 min` estimated query-only for LSI and `3.36 min` estimated query-only for PIP.
+- The reliable next step is to run those scaled local profiles and record real wall-clock behavior on this Mac.

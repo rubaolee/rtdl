@@ -1,10 +1,10 @@
 # RTDL Section 5.6 Scalability Analogue Report
 
-- Generated: `2026-03-31T06:51:08`
+- Generated: `2026-03-31T10:35:17`
 - Method: `Embree-phase scaled analogue of RayJoin Section 5.6`
-- Fixed build-side polygons: `800`
-- Probe-side series: `160, 320, 480, 640, 800`
-- Iterations: `2`
+- Fixed build-side polygons: `100000`
+- Probe-side series: `100000, 200000, 300000, 400000, 500000`
+- Iterations: `5`
 - Warmup: `1`
 
 ## Support Decision
@@ -21,38 +21,28 @@ This report is therefore a **revised Embree-phase scaled analogue**, not a claim
 
 ## Correctness Gate
 
-- `uniform` parity sample: `lsi=True`, `pip=True` on reduced CPU-vs-Embree checks.
-- `gaussian` parity sample: `lsi=True`, `pip=True` on reduced CPU-vs-Embree checks.
+- `uniform` parity sample: `lsi=True`, `pip=None` on reduced CPU-vs-Embree checks.
+- `gaussian` parity sample: `lsi=True`, `pip=None` on reduced CPU-vs-Embree checks.
 
 ## Results
 
 | Workload | Distribution | Probe Polygons | Query Time (ms) | Throughput | Output Rows |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `lsi` | `uniform` | 160 | 8.295 | 0.00 `intersections/s` | 0 |
-| `pip` | `uniform` | 160 | 192.791 | 829.91 `probe-points/s` | 128000 |
-| `lsi` | `uniform` | 320 | 10.247 | 195.19 `intersections/s` | 2 |
-| `pip` | `uniform` | 320 | 300.873 | 1063.57 `probe-points/s` | 256000 |
-| `lsi` | `uniform` | 480 | 12.073 | 0.00 `intersections/s` | 0 |
-| `pip` | `uniform` | 480 | 430.850 | 1114.08 `probe-points/s` | 384000 |
-| `lsi` | `uniform` | 640 | 9.646 | 414.68 `intersections/s` | 4 |
-| `pip` | `uniform` | 640 | 373.850 | 1711.92 `probe-points/s` | 512000 |
-| `lsi` | `uniform` | 800 | 7.036 | 1421.33 `intersections/s` | 10 |
-| `pip` | `uniform` | 800 | 366.496 | 2182.83 `probe-points/s` | 640000 |
-| `lsi` | `gaussian` | 160 | 3.879 | 0.00 `intersections/s` | 0 |
-| `pip` | `gaussian` | 160 | 58.617 | 2729.58 `probe-points/s` | 128000 |
-| `lsi` | `gaussian` | 320 | 4.139 | 483.17 `intersections/s` | 2 |
-| `pip` | `gaussian` | 320 | 128.788 | 2484.71 `probe-points/s` | 256000 |
-| `lsi` | `gaussian` | 480 | 4.410 | 2721.27 `intersections/s` | 12 |
-| `pip` | `gaussian` | 480 | 195.241 | 2458.50 `probe-points/s` | 384000 |
-| `lsi` | `gaussian` | 640 | 5.327 | 3378.99 `intersections/s` | 18 |
-| `pip` | `gaussian` | 640 | 326.666 | 1959.19 `probe-points/s` | 512000 |
-| `lsi` | `gaussian` | 800 | 6.989 | 4292.25 `intersections/s` | 30 |
-| `pip` | `gaussian` | 800 | 405.897 | 1970.94 `probe-points/s` | 640000 |
+| `lsi` | `uniform` | 100000 | 743.293 | 88094.42 `intersections/s` | 65480 |
+| `lsi` | `uniform` | 200000 | 1304.533 | 99998.21 `intersections/s` | 130451 |
+| `lsi` | `uniform` | 300000 | 1928.766 | 101474.19 `intersections/s` | 195720 |
+| `lsi` | `uniform` | 400000 | 2739.473 | 94571.83 `intersections/s` | 259077 |
+| `lsi` | `uniform` | 500000 | 3629.051 | 89420.07 `intersections/s` | 324510 |
+| `lsi` | `gaussian` | 100000 | 1086.436 | 306206.75 `intersections/s` | 332674 |
+| `lsi` | `gaussian` | 200000 | 1943.597 | 340601.47 `intersections/s` | 661992 |
+| `lsi` | `gaussian` | 300000 | 3057.244 | 325140.60 `intersections/s` | 994034 |
+| `lsi` | `gaussian` | 400000 | 4426.805 | 298831.09 `intersections/s` | 1322867 |
+| `lsi` | `gaussian` | 500000 | 5883.610 | 282883.11 `intersections/s` | 1664374 |
 
 ## Generated Figures
 
-- `/Users/rl2025/rtdl_python_only/build/section_5_6_scalability/figures/figure13_lsi_scalability.svg`
-- `/Users/rl2025/rtdl_python_only/build/section_5_6_scalability/figures/figure14_pip_scalability.svg`
+- `build/goal14_5min_lsi/figures/figure13_lsi_scalability.svg`
+- `build/goal14_5min_lsi/figures/figure14_pip_scalability.svg`
 
 ## Interpretation
 

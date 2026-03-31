@@ -74,6 +74,10 @@ def format_hours(seconds: float) -> str:
     return f"{seconds / 3600.0:.2f} h"
 
 
+def format_minutes(seconds: float) -> str:
+    return f"{seconds / 60.0:.2f} min"
+
+
 def format_gb(num_bytes: int) -> str:
     return f"{num_bytes / (1024**3):.2f} GiB"
 
@@ -102,10 +106,10 @@ def build_report() -> str:
     hw = hardware_summary()
     measured_r = payload["config"]["build_polygons"]
     build_factor = build_size_adjustment(measured_r, PAPER_R)
-    recommended_lsi_r = 1_000_000
-    recommended_lsi_s = (1_000_000, 2_000_000, 3_000_000, 4_000_000, 5_000_000)
-    recommended_pip_r = 1_000_000
-    recommended_pip_s = (20_000, 40_000, 60_000, 80_000, 100_000)
+    recommended_lsi_r = 100_000
+    recommended_lsi_s = (100_000, 200_000, 300_000, 400_000, 500_000)
+    recommended_pip_r = 100_000
+    recommended_pip_s = (2_000, 4_000, 6_000, 8_000, 10_000)
     recommended_lsi_total = total_query_seconds_for_profile(
         payload,
         workload="lsi",
@@ -120,13 +124,13 @@ def build_report() -> str:
     )
 
     lines = [
-        "# Goal 14 Estimation Report: Exact-Scale Section 5.6 on the Current Mac",
+        "# Goal 14 Estimation Report: Five-Minute Section 5.6 Local Profiles",
         "",
         "## Goal Definition",
         "",
-        "Goal 14 narrows the current paper-reproduction work to one question only: can RTDL repeat RayJoin Section 5.6 with the **same nominal data sizes** on the current Mac, and if so, what should we expect for runtime and interpretability?",
+        "Goal 14 now narrows the current paper-reproduction work to one practical question only: what Section 5.6 profile sizes let `lsi` and `pip` finish in about **five minutes each** on the current Mac while preserving the paper's two-distribution, five-point experiment shape?",
         "",
-        "This document is an **estimation report**, not a completion claim for the exact-scale run.",
+        "This document is an **estimation report**, not a completion claim for a full paper-scale run.",
         "",
         "## Current Machine",
         "",
@@ -136,7 +140,7 @@ def build_report() -> str:
         f"- Physical cores: `{hw['physical_cores']}`",
         f"- Memory: `{hw['memory_gb']} GiB`",
         "",
-        "## Paper Target",
+        "## Paper Target Context",
         "",
         "- Fixed build-side polygons: `R = 5,000,000`",
         "- Probe-side series: `S = 1,000,000 .. 5,000,000`",
@@ -226,23 +230,25 @@ def build_report() -> str:
             "3. Run identical seeds, distributions, size series, and iteration counts on both backends.",
             "4. Generate the same figure/report schema for direct comparison.",
             "",
-            "## Recommended One-Hour Profiles",
+        "## Recommended Five-Minute Profiles",
             "",
-            "If the immediate objective is to keep both workloads near a one-hour query-only budget on this Mac, the following scaled profiles are the current recommended starting points:",
+            "If the immediate objective is to keep both workloads near a five-minute query-only budget on this Mac, the following scaled profiles are the current recommended starting points:",
             "",
             f"- `lsi` recommendation: fixed `R = {recommended_lsi_r:,}` polygons, varying `S = {', '.join(f'{v:,}' for v in recommended_lsi_s)}` polygons.",
             f"  - estimated total query-only time: `{format_hours(recommended_lsi_total)}`",
-            "  - rationale: keeps the LSI runtime close to the original one-hour target while substantially reducing the build-side memory burden from the paper-scale `R = 5M` case.",
-            "  - caution: the `S = 5M` endpoint is still memory-heavy because RTDL currently materializes both polygons and derived segments in Python.",
+            f"  - estimated total query-only time in minutes: `{format_minutes(recommended_lsi_total)}`",
+            "  - rationale: this is the largest five-point `lsi` series that still stays under the five-minute query-only target under the current calibration model.",
+            "  - caution: this is still an estimate; total wall time can be higher if Python materialization and background Mac usage add overhead.",
             "",
             f"- `pip` recommendation: fixed `R = {recommended_pip_r:,}` polygons, varying `S = {', '.join(f'{v:,}' for v in recommended_pip_s)}` polygons.",
             f"  - estimated total query-only time: `{format_hours(recommended_pip_total)}`",
-            "  - rationale: reduces the previous `~55.7 h` exact-scale estimate to roughly one hour while preserving the same five-point increasing-size experiment shape.",
-            "  - this is the practical scale-down needed for an overnight local run on the current machine.",
+            f"  - estimated total query-only time in minutes: `{format_minutes(recommended_pip_total)}`",
+            "  - rationale: this is the largest five-point `pip` series that stays near the five-minute query-only target under the current calibration model.",
+            "  - this profile is much smaller than paper scale because the current PIP path is substantially more expensive on this CPU-only Embree baseline.",
             "",
             "## Practical Recommendation",
             "",
-            "Goal 14 should remain an **estimation and readiness** goal for now. Before attempting exact-scale midnight runs on this Mac, RTDL should first add:",
+            "Goal 14 should remain a **scaled local-execution** goal for now. The accepted next step is to run these five-minute profiles, not the paper-scale exact-size series. Before attempting exact-scale midnight runs on this Mac, RTDL would still need:",
             "",
             "- packed or memory-mapped numeric dataset generation instead of Python object materialization,",
             "- chunked probe processing so the build side can stay fixed while probe batches stream through Embree,",
@@ -252,8 +258,9 @@ def build_report() -> str:
             "## Bottom Line",
             "",
             "- The current RTDL implementation does **not** yet support a trustworthy exact-size repetition of RayJoin Section 5.6 on this Mac.",
-            f"- If the host-side memory model were removed as a blocker, the query-only estimate is roughly `{format_hours(total_by_workload['lsi'])}` for LSI and `{format_hours(total_by_workload['pip'])}` for PIP across the full paper-style run.",
-            "- The reliable next step is not the midnight run itself; it is refactoring the Section 5.6 path so exact-scale inputs can be generated and consumed without Python-object explosion.",
+            f"- The full paper-scale query-only estimate is still roughly `{format_hours(total_by_workload['lsi'])}` for LSI and `{format_hours(total_by_workload['pip'])}` for PIP across the complete Section 5.6 run.",
+            f"- The practical Goal 14 target is now the five-minute local profile: `{format_minutes(recommended_lsi_total)}` estimated query-only for LSI and `{format_minutes(recommended_pip_total)}` estimated query-only for PIP.",
+            "- The reliable next step is to run those scaled local profiles and record real wall-clock behavior on this Mac.",
         ]
     )
     return "\n".join(lines).rstrip() + "\n"

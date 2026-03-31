@@ -1,0 +1,23 @@
+Review the Goal 14 update for correctness and consistency. Focus only on these files:
+
+- /Users/rl2025/rtdl_python_only/docs/goal_14_section_5_6_exact_scale_plan.md
+- /Users/rl2025/rtdl_python_only/docs/reports/goal_14_section_5_6_exact_scale_estimation_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/scripts/generate_goal14_section56_estimation.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/section_5_6_scalability.py
+- /Users/rl2025/rtdl_python_only/tests/section_5_6_scalability_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/section_5_6_scalability_report_2026-03-31.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-14-section-5-6-exact-scale-estimation/reports/Iteration_3_Implementation_Report_2026-03-31_Codex.md
+
+Context:
+- Goal 14 used to target roughly one-hour local profiles.
+- The user changed the target so `lsi` and `pip` should each finish in about five minutes on this Mac.
+- The published Section 5.6 analogue report had also been accidentally overwritten by a tiny smoke run and has now been restored.
+
+Questions:
+1. Are the new five-minute profile recommendations technically honest and consistent with the current calibration model?
+2. Is the new workload-filtering support in `section_5_6_scalability.py` the right minimal code change for this goal?
+3. Are the docs now consistent about exact-scale context versus the actual Goal 14 run target?
+4. Are there any blockers before we accept this Goal 14 update?
+
+Return findings first if any. If there are no blockers, end with exactly:
+Goal 14 five-minute profile update accepted by consensus

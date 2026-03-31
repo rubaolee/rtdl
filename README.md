@@ -70,7 +70,7 @@ Current precision note:
 - `docs/reports/section_5_6_scalability_report_2026-03-31.pdf`: PDF summary of the current Section 5.6 Embree analogue.
 - `docs/reports/rtdl_embree_paper_report_2026-03-31.md`: paper-style consolidated report for the current Embree-phase reproduction effort.
 - `docs/reports/rtdl_embree_paper_report_2026-03-31.pdf`: paper-style consolidated PDF with RTDL figures and corresponding RayJoin reference figures.
-- `docs/goal_14_section_5_6_exact_scale_plan.md`: Goal 14 plan for exact-scale Section 5.6 readiness on the current Mac.
+- `docs/goal_14_section_5_6_exact_scale_plan.md`: Goal 14 plan for five-minute local Section 5.6 profiles on the current Mac.
 - `docs/reports/goal_14_section_5_6_exact_scale_estimation_2026-03-31.md`: exact-scale feasibility and runtime estimate for Section 5.6 on the current Mac.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
@@ -153,7 +153,7 @@ Generate the consolidated paper-style Embree report:
 make report-rtdsl-paper
 ```
 
-Generate the Goal 14 exact-scale Section 5.6 estimation report:
+Generate the Goal 14 Section 5.6 estimation report and five-minute local profile recommendation:
 
 ```sh
 make report-goal14-section-5-6-estimate

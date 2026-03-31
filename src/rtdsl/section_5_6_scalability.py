@@ -32,6 +32,7 @@ class ScalabilityConfig:
     iterations: int = 3
     warmup: int = 1
     base_seed: int = 17
+    workloads: tuple[str, ...] = ("lsi", "pip")
 
 
 def generate_section_5_6_artifacts(
@@ -53,8 +54,14 @@ def generate_section_5_6_artifacts(
 
     figure13_svg = figures_dir / "figure13_lsi_scalability.svg"
     figure14_svg = figures_dir / "figure14_pip_scalability.svg"
-    figure13_svg.write_text(build_scalability_figure_svg(payload, workload="lsi", title="Figure 13 Analogue: LSI Scalability"), encoding="utf-8")
-    figure14_svg.write_text(build_scalability_figure_svg(payload, workload="pip", title="Figure 14 Analogue: PIP Scalability"), encoding="utf-8")
+    if "lsi" in cfg.workloads:
+        figure13_svg.write_text(build_scalability_figure_svg(payload, workload="lsi", title="Figure 13 Analogue: LSI Scalability"), encoding="utf-8")
+    else:
+        figure13_svg.write_text(_empty_figure_svg("Figure 13 analogue not generated for this run."), encoding="utf-8")
+    if "pip" in cfg.workloads:
+        figure14_svg.write_text(build_scalability_figure_svg(payload, workload="pip", title="Figure 14 Analogue: PIP Scalability"), encoding="utf-8")
+    else:
+        figure14_svg.write_text(_empty_figure_svg("Figure 14 analogue not generated for this run."), encoding="utf-8")
 
     markdown_path = output_root / "section_5_6_scalability_report.md"
     markdown_path.write_text(generate_markdown_report(payload, figure13_svg, figure14_svg), encoding="utf-8")
@@ -85,6 +92,7 @@ def run_section_5_6(config: ScalabilityConfig) -> dict[str, object]:
 
     lsi_kernel = county_zip_join_reference
     pip_kernel = point_in_counties_reference
+    selected = set(config.workloads)
 
     records: list[dict[str, object]] = []
     parity_checks: list[dict[str, object]] = []
@@ -107,54 +115,54 @@ def run_section_5_6(config: ScalabilityConfig) -> dict[str, object]:
             probe_segments = polygons_to_segments(probe_polygons)
             probe_points = polygon_probe_points(probe_polygons)
 
-            lsi_rows, lsi_timings = _benchmark_kernel(
-                lsi_kernel,
-                inputs={"left": probe_segments, "right": build_segments},
-                iterations=config.iterations,
-                warmup=config.warmup,
-            )
-            pip_rows, pip_timings = _benchmark_kernel(
-                pip_kernel,
-                inputs={"points": probe_points, "polygons": build_polygons},
-                iterations=config.iterations,
-                warmup=config.warmup,
-            )
-
-            lsi_intersections = len(lsi_rows)
-            pip_probe_points = len(probe_points)
-
-            records.append(
-                {
-                    "workload": "lsi",
-                    "distribution": distribution,
-                    "build_polygons": config.build_polygons,
-                    "probe_polygons": probe_polygons_count,
-                    "query_time_ms": _mean_ms(lsi_timings),
-                    "throughput": (
-                        lsi_intersections / statistics.mean(lsi_timings)
-                        if statistics.mean(lsi_timings) > 0
-                        else 0.0
-                    ),
-                    "throughput_unit": "intersections/s",
-                    "result_count": lsi_intersections,
-                }
-            )
-            records.append(
-                {
-                    "workload": "pip",
-                    "distribution": distribution,
-                    "build_polygons": config.build_polygons,
-                    "probe_polygons": probe_polygons_count,
-                    "query_time_ms": _mean_ms(pip_timings),
-                    "throughput": (
-                        pip_probe_points / statistics.mean(pip_timings)
-                        if statistics.mean(pip_timings) > 0
-                        else 0.0
-                    ),
-                    "throughput_unit": "probe-points/s",
-                    "result_count": len(pip_rows),
-                }
-            )
+            if "lsi" in selected:
+                lsi_rows, lsi_timings = _benchmark_kernel(
+                    lsi_kernel,
+                    inputs={"left": probe_segments, "right": build_segments},
+                    iterations=config.iterations,
+                    warmup=config.warmup,
+                )
+                lsi_intersections = len(lsi_rows)
+                records.append(
+                    {
+                        "workload": "lsi",
+                        "distribution": distribution,
+                        "build_polygons": config.build_polygons,
+                        "probe_polygons": probe_polygons_count,
+                        "query_time_ms": _mean_ms(lsi_timings),
+                        "throughput": (
+                            lsi_intersections / statistics.mean(lsi_timings)
+                            if statistics.mean(lsi_timings) > 0
+                            else 0.0
+                        ),
+                        "throughput_unit": "intersections/s",
+                        "result_count": lsi_intersections,
+                    }
+                )
+            if "pip" in selected:
+                pip_rows, pip_timings = _benchmark_kernel(
+                    pip_kernel,
+                    inputs={"points": probe_points, "polygons": build_polygons},
+                    iterations=config.iterations,
+                    warmup=config.warmup,
+                )
+                pip_probe_points = len(probe_points)
+                records.append(
+                    {
+                        "workload": "pip",
+                        "distribution": distribution,
+                        "build_polygons": config.build_polygons,
+                        "probe_polygons": probe_polygons_count,
+                        "query_time_ms": _mean_ms(pip_timings),
+                        "throughput": (
+                            pip_probe_points / statistics.mean(pip_timings)
+                            if statistics.mean(pip_timings) > 0
+                            else 0.0
+                        ),
+                        "throughput_unit": "probe-points/s",
+                        "result_count": len(pip_rows),
+                    }
+                )
 
         # Reduced-size correctness checks against CPU on one representative size per distribution.
         parity_probe_polygons = generate_synthetic_polygons(
@@ -167,35 +175,41 @@ def run_section_5_6(config: ScalabilityConfig) -> dict[str, object]:
             distribution=distribution,
             seed=config.base_seed + 1999 + _distribution_seed_offset(distribution),
         )
-        parity_lsi_cpu = run_cpu(
-            lsi_kernel,
-            left=polygons_to_segments(parity_probe_polygons),
-            right=polygons_to_segments(parity_build_polygons),
-        )
-        parity_lsi_embree = run_embree(
-            lsi_kernel,
-            left=polygons_to_segments(parity_probe_polygons),
-            right=polygons_to_segments(parity_build_polygons),
-        )
-        parity_pip_cpu = run_cpu(
-            pip_kernel,
-            points=polygon_probe_points(parity_probe_polygons),
-            polygons=parity_build_polygons,
-        )
-        parity_pip_embree = run_embree(
-            pip_kernel,
-            points=polygon_probe_points(parity_probe_polygons),
-            polygons=parity_build_polygons,
-        )
+        lsi_parity = None
+        pip_parity = None
+        if "lsi" in selected:
+            parity_lsi_cpu = run_cpu(
+                lsi_kernel,
+                left=polygons_to_segments(parity_probe_polygons),
+                right=polygons_to_segments(parity_build_polygons),
+            )
+            parity_lsi_embree = run_embree(
+                lsi_kernel,
+                left=polygons_to_segments(parity_probe_polygons),
+                right=polygons_to_segments(parity_build_polygons),
+            )
+            lsi_parity = parity_lsi_cpu == parity_lsi_embree
+        if "pip" in selected:
+            parity_pip_cpu = run_cpu(
+                pip_kernel,
+                points=polygon_probe_points(parity_probe_polygons),
+                polygons=parity_build_polygons,
+            )
+            parity_pip_embree = run_embree(
+                pip_kernel,
+                points=polygon_probe_points(parity_probe_polygons),
+                polygons=parity_build_polygons,
+            )
+            pip_parity = parity_pip_cpu == parity_pip_embree
         parity_checks.append(
             {
                 "distribution": distribution,
-                "lsi_parity": parity_lsi_cpu == parity_lsi_embree,
-                "pip_parity": parity_pip_cpu == parity_pip_embree,
-                "lsi_probe_polygons": 120,
-                "lsi_build_polygons": 160,
-                "pip_probe_polygons": 120,
-                "pip_build_polygons": 160,
+                "lsi_parity": lsi_parity,
+                "pip_parity": pip_parity,
+                "lsi_probe_polygons": 120 if "lsi" in selected else None,
+                "lsi_build_polygons": 160 if "lsi" in selected else None,
+                "pip_probe_polygons": 120 if "pip" in selected else None,
+                "pip_build_polygons": 160 if "pip" in selected else None,
             }
         )
 
@@ -209,6 +223,7 @@ def run_section_5_6(config: ScalabilityConfig) -> dict[str, object]:
             "iterations": config.iterations,
             "warmup": config.warmup,
             "distributions": list(SCALABILITY_DISTRIBUTIONS),
+            "workloads": list(config.workloads),
         },
         "records": records,
         "parity_checks": parity_checks,
@@ -278,6 +293,8 @@ def polygon_probe_points(polygons: tuple[Polygon, ...]) -> tuple[Point, ...]:
 
 def build_scalability_figure_svg(payload: dict[str, object], *, workload: str, title: str) -> str:
     records = [record for record in payload["records"] if record["workload"] == workload]
+    if not records:
+        return _empty_figure_svg(f"No `{workload}` records for this run.")
     width = 1200
     height = 820
     margin = 70
@@ -321,6 +338,17 @@ def build_scalability_figure_svg(payload: dict[str, object], *, workload: str, t
 
     parts.append("</svg>")
     return "\n".join(parts)
+
+
+def _empty_figure_svg(message: str) -> str:
+    return "\n".join(
+        [
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820">',
+            '<rect width="100%" height="100%" fill="white"/>',
+            f'<text x="600" y="410" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="28" fill="#555">{_svg_escape(message)}</text>',
+            "</svg>",
+        ]
+    )
 
 
 def generate_markdown_report(payload: dict[str, object], figure13_svg: Path, figure14_svg: Path) -> str:
@@ -606,6 +634,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--probe-series", default="500,1000,1500,2000,2500")
     parser.add_argument("--iterations", type=int, default=3)
     parser.add_argument("--warmup", type=int, default=1)
+    parser.add_argument("--workloads", default="lsi,pip")
     args = parser.parse_args(argv)
 
     cfg = ScalabilityConfig(
@@ -613,6 +642,7 @@ def main(argv: list[str] | None = None) -> int:
         probe_series=tuple(int(item) for item in args.probe_series.split(",") if item),
         iterations=args.iterations,
         warmup=args.warmup,
+        workloads=tuple(item.strip() for item in args.workloads.split(",") if item.strip()),
     )
     artifacts = generate_section_5_6_artifacts(output_dir=args.output_dir, config=cfg, publish_docs=True)
     print(artifacts["markdown"])
