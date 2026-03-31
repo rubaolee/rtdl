@@ -1,0 +1,11 @@
+slug: 2026-03-31-goal-13-rayjoin-paper-embree-reproduction
+title: Goal 13 RayJoin Paper Embree Reproduction
+version: v0.1-alpha-goal13
+status: in-progress-consensus
+started_on: 2026-03-31
+closed_on: 2026-03-31
+source_commit: f3242d6
+gemini_review: Gemini accepted the setup, provenance layer, and registry layer for continued Goal 13 execution.
+codex_revision: Codex added the checklist, target matrix, provenance document, machine-readable registry, tests, and status-report artifacts.
+final_result: Goal 13 is in progress; the planning, provenance, and registry layers are accepted, while dataset acquisition and table/figure generators remain pending.
+summary: Embree-phase RayJoin paper reproduction planning and status snapshot

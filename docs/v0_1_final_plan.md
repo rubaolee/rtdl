@@ -35,6 +35,21 @@ That baseline goal is:
 
 This baseline is not a side project. It is the precondition for a stable OptiX bring-up.
 
+## Current Progress Snapshot
+
+As of March 31, 2026:
+
+- the Embree baseline is complete and published,
+- the current RTDL feature surface includes six executable workload families,
+- the first Embree evaluation report has already been generated,
+- and the active next layer is Goal 13: reproducing as much of the RayJoin paper structure as possible on the Embree baseline before NVIDIA hardware is available.
+
+Goal 13 is explicitly an Embree-phase reproduction effort. It should be read as:
+
+- a workload-and-dataset expansion of the current local baseline,
+- not the final OptiX/RT-core reproduction,
+- and not a claim that all paper datasets are already ingested.
+
 ## Why the Embree Baseline Matters
 
 - It proves RTDL is more than a frontend sketch.

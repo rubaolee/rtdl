@@ -1,0 +1,28 @@
+Review this Goal 13 implementation slice for RTDL.
+
+Scope of this slice:
+- add a machine-readable paper-reproduction target registry
+- resolve the `LKxx ⊲⊳ PKxx` internal dataset mapping using RayJoin's own experiment scripts
+- freeze tests for the paper-target label surface
+
+Read these files:
+- /Users/rl2025/rtdl_python_only/src/rtdsl/paper_reproduction.py
+- /Users/rl2025/rtdl_python_only/tests/paper_reproduction_test.py
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_dataset_provenance.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_matrix.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-13-rayjoin-paper-embree-reproduction/reports/Iteration_3_Implementation_Report_2026-03-31_Codex.md
+
+Verification already passed locally:
+- PYTHONPATH=src:. python3 -m unittest tests.paper_reproduction_test
+- python3 -m unittest discover -s tests -p '*_test.py'
+
+Please provide:
+1. Findings first, ordered by severity.
+2. Then a short conclusion.
+3. End with exactly one of these lines:
+   - Consensus to continue execution
+   - Further revision required
+
+Important:
+- Focus on whether the registry is a correct and useful execution contract for the next Goal 13 steps.
+- Do not require NVIDIA-only outputs in this review.

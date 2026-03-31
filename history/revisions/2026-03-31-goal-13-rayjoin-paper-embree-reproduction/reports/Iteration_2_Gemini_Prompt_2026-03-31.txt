@@ -1,0 +1,23 @@
+Review this Goal 13 implementation slice for RTDL.
+
+Scope of this slice:
+- add the dataset provenance manifest for the RayJoin paper reproduction effort
+- keep the reproduction matrix honest about current Embree-phase limits
+
+Read these files:
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_checklist.md
+- /Users/rl2025/rtdl_python_only/docs/goal_13_rayjoin_paper_embree_plan.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_matrix.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_dataset_provenance.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-13-rayjoin-paper-embree-reproduction/reports/Iteration_2_Implementation_Report_2026-03-31_Codex.md
+
+Please provide:
+1. Findings first, ordered by severity.
+2. Then a short conclusion.
+3. End with exactly one of these lines:
+   - Consensus to continue execution
+   - Further revision required
+
+Important:
+- Focus on whether the provenance layer is honest, useful, and sufficient as the next execution base.
+- Do not ask for NVIDIA-only deliverables in this review.

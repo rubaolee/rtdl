@@ -30,6 +30,12 @@ So the current project is no longer just a code generator. It already includes:
 - a runnable CPU reference backend
 - a runnable Embree backend on this Mac
 
+For the current paper-reproduction phase, also see:
+
+- [Goal 13 plan](/Users/rl2025/rtdl_python_only/docs/goal_13_rayjoin_paper_embree_plan.md)
+- [RayJoin paper reproduction checklist](/Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_checklist.md)
+- [RayJoin paper dataset provenance](/Users/rl2025/rtdl_python_only/docs/rayjoin_paper_dataset_provenance.md)
+
 ## 2. Workloads supported today
 
 The current RTDL supports six workload families:

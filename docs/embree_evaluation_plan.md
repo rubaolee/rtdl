@@ -5,6 +5,12 @@
 Goal 9 is to reproduce as much of the RayJoin evaluation structure as practical
 on the RTDL Embree baseline engine before the NVIDIA/OptiX phase begins.
 
+Status note:
+
+- Goal 9 itself is complete and published.
+- This document now serves as the checked-in foundation for the newer Goal 13 paper-reproduction phase.
+- Goal 13 extends the same Embree evaluation machinery toward RayJoin-paper table and figure analogues.
+
 This is not the final RT-core result. It is the local pre-GPU evaluation phase.
 
 The outputs of Goal 9 are:

@@ -1,0 +1,25 @@
+Review this Goal 13 setup for RTDL.
+
+Goal:
+Use RTDL and the current Embree backend to reproduce as much of the RayJoin paper evaluation surface as possible before the NVIDIA phase.
+
+Read these files:
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_checklist.md
+- /Users/rl2025/rtdl_python_only/docs/goal_13_rayjoin_paper_embree_plan.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-13-rayjoin-paper-embree-reproduction/reports/Goal_13_Spec_2026-03-31_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-03-31-goal-13-rayjoin-paper-embree-reproduction/reports/Iteration_1_PreImplementation_Report_2026-03-31_Codex.md
+- /Users/rl2025/rtdl_python_only/docs/embree_evaluation_matrix.md
+- /Users/rl2025/rtdl_python_only/docs/embree_evaluation_plan.md
+- /Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md
+
+Please provide:
+1. Findings first, ordered by severity.
+2. Then a concise conclusion.
+3. Then state what evidence should be required before Goal 13 can be accepted.
+4. End with exactly one of these lines:
+   - Consensus to begin execution
+   - Further revision required
+
+Important:
+- Do not assume paper-complete workload coverage already exists.
+- Evaluate whether the proposed goal is well scoped for the Embree-only phase.

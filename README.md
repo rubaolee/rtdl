@@ -12,6 +12,12 @@ This repository now contains:
 - a Python dataset pipeline for RayJoin-style CDB inputs, and
 - Python tests to keep the seed implementation executable.
 
+Current status:
+
+- The Embree baseline is complete and published.
+- Goal 13, "RayJoin paper reproduction on Embree," is in progress locally and now has a frozen checklist, target matrix, dataset provenance note, and machine-readable target registry.
+- A local status PDF has been generated to summarize the current RTDL state and the paper-reference figures used for the reproduction phase.
+
 Current semantic/runtime boundaries:
 
 - `point_in_polygon(..., boundary_mode="inclusive")` is the only supported PIP boundary mode in the audited baseline.
@@ -51,9 +57,14 @@ Current precision note:
 - `docs/embree_baseline_contracts.md`: frozen workload, ABI, precision, and dataset contracts for the Embree baseline.
 - `docs/embree_evaluation_plan.md`: Goal 9 plan for reproducing the Embree baseline evaluation.
 - `docs/embree_evaluation_matrix.md`: frozen evaluation matrix for the Embree reproduction phase.
+- `docs/goal_13_rayjoin_paper_embree_plan.md`: active Goal 13 plan for reproducing the RayJoin paper structure on Embree.
+- `docs/rayjoin_paper_reproduction_checklist.md`: checklist for re-testing RayJoin workloads through RTDL.
+- `docs/rayjoin_paper_reproduction_matrix.md`: frozen paper-target matrix for Table 3 / Table 4 / Figure 13 / Figure 14 / Figure 15 analogues.
+- `docs/rayjoin_paper_dataset_provenance.md`: provenance mapping for RayJoin paper datasets and RTDL substitutions.
 - `docs/rtdl_feature_guide.md`: English overview of the currently supported RTDL feature surface and example kernels.
 - `docs/development_reliability_process.md`: the review, revision, validation, and archival workflow used to keep RTDL reliable.
 - `docs/reports/`: generated high-level Goal 9 evaluation summaries and PDF report snapshots.
+- `docs/reports/rtdl_status_report_2026-03-31.pdf`: current project status PDF with RayJoin reference figures.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 
@@ -115,6 +126,12 @@ Run the Embree evaluation pipeline and generate tables, figures, and the PDF rep
 
 ```sh
 make eval-rtdsl-embree
+```
+
+Generate the current project status PDF with RayJoin reference figures:
+
+```sh
+python3 scripts/generate_status_report_pdf.py
 ```
 
 If Embree or TBB live outside the default Homebrew prefixes, set:
