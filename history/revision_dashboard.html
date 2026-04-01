@@ -200,19 +200,19 @@
     <section class="stats">
       <article class="stat">
         <span class="stat-label">Revision Rounds</span>
-        <span class="stat-value">18</span>
+        <span class="stat-value">19</span>
       </article>
       <article class="stat">
         <span class="stat-label">Archived Files</span>
-        <span class="stat-value">322</span>
+        <span class="stat-value">337</span>
       </article>
       <article class="stat">
         <span class="stat-label">External Reports</span>
-        <span class="stat-value">52</span>
+        <span class="stat-value">56</span>
       </article>
       <article class="stat">
         <span class="stat-label">Project Snapshots</span>
-        <span class="stat-value">270</span>
+        <span class="stat-value">281</span>
       </article>
     </section>
 
@@ -237,6 +237,17 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><strong>v0.1-alpha-goal17</strong></td>
+              <td>2026-03-31</td>
+              <td><span class="status">done-consensus</span></td>
+              <td class="summary-cell">Goal 17 Low-Overhead Embree Runtime</td>
+              <td class="summary-cell">Gemini accepted the first slice as an honest and successful low-overhead runtime result, with the caveat that the ordinary dict-return path remains unoptimized.</td>
+              <td class="summary-cell">Codex implemented packed inputs, prepared Embree execution, a thin raw-row result view, tests, benchmarks, and the first architecture report for the low-overhead path.</td>
+              <td class="summary-cell">Goal 17 first slice complete; RTDL now has a packed + prepared + raw-row Embree path for lsi and pip that materially closes the native performance gap while preserving the Python-like DSL.</td>
+              <td><code>8a87682</code></td>
+              <td><code>2026-03-31-goal-17-low-overhead-runtime</code></td>
+            </tr>
             <tr>
               <td><strong>v0.1-alpha-goal16</strong></td>
               <td>2026-03-31</td>

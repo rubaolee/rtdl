@@ -1,0 +1,18 @@
+Review Goal 17 pre-implementation scope for RTDL.
+
+Context:
+- Repo: /Users/rl2025/rtdl_python_only
+- Goal doc: docs/goal_17_low_overhead_runtime_plan.md
+- Spec: history/revisions/2026-03-31-goal-17-low-overhead-runtime/reports/Goal_17_Spec_2026-03-31_Codex.md
+- Pre-implementation report: history/revisions/2026-03-31-goal-17-low-overhead-runtime/reports/Iteration_1_PreImplementation_Report_2026-03-31_Codex.md
+- Runtime-overhead doc: docs/runtime_overhead_architecture.md
+- Performance evidence: docs/reports/goal15_cpp_embree_comparison_2026-03-31.md
+
+Question:
+- Is this the right first slice to reduce RTDL host/runtime overhead while preserving the Python-like DSL?
+- What must be true for you to approve implementation?
+
+Output format:
+1. Decision: `Consensus to begin implementation.` or `Blocked.`
+2. Short reasoning
+3. Acceptance criteria you want to use for final review

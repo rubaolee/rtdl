@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-04-01T02:16:05Z",
+  "repeats": 25,
+  "workloads": {
+    "lsi": {
+      "bind_sec": 1.5083933249115944e-05,
+      "current_pair_count": 24000,
+      "current_rtdl_embree_total_sec": 0.019190500024706125,
+      "gap_to_goal15_native_hot": 21.442198437442627,
+      "gap_to_goal15_native_raw_hot": 0.5761180233714999,
+      "goal15_native_total_sec": 0.001047166,
+      "pack_inputs_sec": 0.00029191700741648674,
+      "prepare_kernel_sec": 6.0959020629525185e-05,
+      "prepared_first_run_sec": 0.022675207816064358,
+      "prepared_hot_median_sec": 0.022453541168943048,
+      "prepared_matches_current": true,
+      "prepared_pair_count": 24000,
+      "prepared_raw_dict_hot_median_sec": 0.021378250094130635,
+      "prepared_raw_hot_median_sec": 0.0006032912060618401,
+      "speedup_vs_current_hot": 0.8546758785313451,
+      "speedup_vs_current_raw_hot": 31.809679690141238
+    },
+    "pip": {
+      "bind_sec": 9.95909795165062e-06,
+      "current_pair_count": 24000,
+      "current_rtdl_embree_total_sec": 0.016894791973754764,
+      "gap_to_goal15_native_hot": 37.530621709333055,
+      "gap_to_goal15_native_raw_hot": 0.7851298870082825,
+      "goal15_native_total_sec": 0.000418667,
+      "pack_inputs_sec": 0.0004997500218451023,
+      "prepare_kernel_sec": 4.7625042498111725e-05,
+      "prepared_first_run_sec": 0.014522915938869119,
+      "prepared_hot_median_sec": 0.015712832799181342,
+      "prepared_matches_current": true,
+      "prepared_pair_count": 24000,
+      "prepared_raw_dict_hot_median_sec": 0.015342833008617163,
+      "prepared_raw_hot_median_sec": 0.0003287079744040966,
+      "speedup_vs_current_hot": 1.0752225387795766,
+      "speedup_vs_current_raw_hot": 51.397572585157846
+    }
+  }
+}

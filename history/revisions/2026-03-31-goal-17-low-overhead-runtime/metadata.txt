@@ -1,0 +1,11 @@
+slug: 2026-03-31-goal-17-low-overhead-runtime
+title: Goal 17 Low-Overhead Embree Runtime
+version: v0.1-alpha-goal17
+status: done-consensus
+started_on: 2026-03-31
+closed_on: 2026-03-31
+source_commit: 8a87682
+gemini_review: Gemini accepted the first slice as an honest and successful low-overhead runtime result, with the caveat that the ordinary dict-return path remains unoptimized.
+codex_revision: Codex implemented packed inputs, prepared Embree execution, a thin raw-row result view, tests, benchmarks, and the first architecture report for the low-overhead path.
+final_result: Goal 17 first slice complete; RTDL now has a packed + prepared + raw-row Embree path for lsi and pip that materially closes the native performance gap while preserving the Python-like DSL.
+summary: First low-overhead runtime slice adding packed inputs, prepared execution, and raw result views for lsi and pip.

@@ -1,0 +1,28 @@
+Review this Goal 17 summary only.
+
+Summary:
+- RTDL kept the Python-like DSL unchanged.
+- Added packed inputs: `pack_segments`, `pack_points`, `pack_polygons`.
+- Added prepared execution: `prepare_embree`, `PreparedEmbreeKernel`, `PreparedEmbreeExecution`.
+- Added thin raw result view: `EmbreeRowView`.
+- Current prepared slice supports `lsi` and `pip`.
+- Full test suite passed: `74` tests.
+- Goal 17 report is in `docs/reports/goal17_low_overhead_runtime_2026-03-31.md`.
+- Measured result:
+  - `lsi` current RTDL Embree: `0.019190500024706125`
+  - `lsi` prepared raw hot median: `0.0006032912060618401`
+  - `lsi` raw speedup vs current: about `31.81x`
+  - `pip` current RTDL Embree: `0.016894791973754764`
+  - `pip` prepared raw hot median: `0.0003287079744040966`
+  - `pip` raw speedup vs current: about `51.40x`
+- Honest boundary:
+  - ordinary dict-return path is still much slower than native
+  - the successful low-overhead slice is the packed + prepared + raw-row path
+
+Question:
+- Is Goal 17 first slice acceptable by consensus?
+
+Output format:
+1. `Goal 17 first slice accepted by consensus.` or `Blocked.`
+2. One short reason
+3. One short remaining-risk sentence

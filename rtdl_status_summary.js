@@ -36,7 +36,7 @@ const COLORS = {
   dark: "0D1720",
 };
 
-const SLIDE_COUNT = 14;
+const SLIDE_COUNT = 15;
 
 function addBackground(slide, accent = COLORS.blue) {
   slide.background = { color: COLORS.pale };
@@ -250,7 +250,7 @@ function addFooter(slide, page) {
     color: COLORS.ink,
     margin: 0,
   });
-  slide.addText("Research status as of March 29, 2026", {
+  slide.addText("Research status as of March 31, 2026", {
     x: 0.75,
     y: 2.42,
     w: 4.5,
@@ -436,7 +436,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-15",
     "CPU simulator, Embree backend, evaluation/reporting, trust audit, paper-analogue work, and native C++ comparison.", COLORS.mist);
   addPanel(slide, 11.8, 2.55, 1.0, 3.55, "Stats",
-    "16 rounds\n44 external reports\n251 archived project snapshots", COLORS.white, { bodySize: 10.2 });
+    "19 rounds\n56 external reports\n281 archived project snapshots", COLORS.white, { bodySize: 10.2 });
   addFooter(slide, 8);
 }
 
@@ -498,7 +498,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.plum);
   addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo are in sync through Goal 15, including the native C++ + Embree comparison slice and refreshed history dashboard.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through Goal 17 first-slice closure, including the low-overhead Embree runtime path and refreshed history dashboard.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
     "Read docs/rtdl/*, run make test, make run-rtdsl-sim, and make run-rtdsl-embree, then author new kernels against the current contracts.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
@@ -508,7 +508,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 - Six supported workloads
 - CPU + Embree runtimes plus native C++ comparison slice
 - Embree 4.4.0 runtime on this Mac
-- 57 passing tests
+- 74 passing tests
 - 16 archived review/revision rounds
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);
@@ -552,6 +552,20 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
     "This is now a core part of RTDL’s engineering method, not an ad hoc side process.",
   ], { x: 0.95, y: 4.55, w: 11.5, h: 2.0, fontSize: 13.1 });
   addFooter(slide, 14);
+}
+
+// 15. Runtime overhead architecture
+{
+  const slide = pptx.addSlide();
+  addBackground(slide, COLORS.rust);
+  addTitle(slide, "RTDL vs Native Runtime Path", "The Python-like DSL is preserved, but the current runtime path is still too heavy compared with a thin native wrapper.");
+  addPanel(slide, 0.8, 1.55, 5.75, 4.35, "Current RTDL + Embree path",
+    "1. Python DSL kernel\n2. compile / validate / lower\n3. Python input normalization\n4. ctypes marshaling\n5. native Embree backend\n6. native rows\n7. Python dict rows\n\nMeasured Goal 15 gap:\n- lsi: about 7.6x slower than native\n- pip: about 37x slower than native", COLORS.white);
+  addPanel(slide, 6.8, 1.55, 5.75, 4.35, "Pure C++ + Embree path",
+    "1. native input arrays\n2. direct native call\n3. native rows\n4. output serialization\n\nThe current comparison uses the same Embree-native core, so the gap mainly comes from RTDL host/runtime overhead rather than a different traversal engine.", COLORS.mist);
+  addPanel(slide, 0.85, 6.1, 11.7, 0.68, "Design implication",
+    "Keep the Python-like DSL, but move execution toward compiled plans plus flat native-ready buffers. Python should remain the control plane, not the main data plane.", COLORS.sand);
+  addFooter(slide, 15);
 }
 
 pptx.writeFile({ fileName: "/Users/rl2025/rtdl_python_only/rtdl_status_summary.pptx" });
