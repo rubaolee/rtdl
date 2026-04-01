@@ -18,11 +18,11 @@ from tests._embree_support import embree_available
 
 @unittest.skipUnless(embree_available(), "Embree runtime is not available")
 class Goal17PreparedRuntimeTest(unittest.TestCase):
-    def test_prepare_embree_rejects_unsupported_workload(self) -> None:
+    def test_prepare_embree_accepts_overlay_after_goal18_extension(self) -> None:
         from examples.rtdl_language_reference import county_soil_overlay_reference
 
-        with self.assertRaisesRegex(ValueError, "supports only"):
-            rt.prepare_embree(county_soil_overlay_reference)
+        prepared = rt.prepare_embree(county_soil_overlay_reference)
+        self.assertEqual(prepared.predicate_name, "overlay_compose")
 
     def test_prepared_lsi_matches_current_embree(self) -> None:
         left, right = build_lsi_dataset(build_count=12, probe_count=8, distribution="uniform")

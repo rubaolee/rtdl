@@ -1,0 +1,20 @@
+Review this Goal 18 continuation summary only.
+
+Summary:
+- Goal 17 proved the successful low-overhead path is packed inputs + prepared execution + raw-row views.
+- Goal 17 only covered `lsi` and `pip`.
+- Goal 18 continuation scope:
+  - make the low-overhead path easier to use directly from `run_embree(...)`
+  - extend prepared/raw support beyond `lsi` and `pip`
+  - add packed input support for any remaining geometry kinds needed
+  - keep the Python-like DSL unchanged
+  - keep performance claims honest: native comparison only where native baseline exists
+
+Question:
+- Is this the right continuation slice?
+- Which workloads must be included for the round to count?
+
+Output format:
+1. `Consensus to begin implementation.` or `Blocked.`
+2. One short reason
+3. One short acceptance-criteria sentence

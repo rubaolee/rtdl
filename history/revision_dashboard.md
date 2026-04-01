@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 19
-- Archived files: 337
-- External reports: 56
-- Project snapshots: 281
+- Revision rounds: 20
+- Archived files: 347
+- External reports: 60
+- Project snapshots: 287
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-01 | complete-consensus | Goal 18 Low-Overhead Runtime Continuation | accepted | implemented | Goal 18 complete by consensus | `1487690f2ced0c5823976f7907d61d680ca7979c` | `2026-04-01-goal-18-low-overhead-runtime-continuation` |
 | v0.1-alpha-goal17 | 2026-03-31 | done-consensus | Goal 17 Low-Overhead Embree Runtime | Gemini accepted the first slice as an honest and successful low-overhead runtime result, with the caveat that the ordinary dict-return path remains unoptimized. | Codex implemented packed inputs, prepared Embree execution, a thin raw-row result view, tests, benchmarks, and the first architecture report for the low-overhead path. | Goal 17 first slice complete; RTDL now has a packed + prepared + raw-row Embree path for lsi and pip that materially closes the native performance gap while preserving the Python-like DSL. | `8a87682` | `2026-03-31-goal-17-low-overhead-runtime` |
 | v0.1-alpha-goal16 | 2026-03-31 | done-consensus | Goal 16 Testing Hardening | Gemini approved the final testing hardening package and accepted Goal 16 as complete by consensus. | Codex implemented the test package, fixed subprocess verification issues and shared-output test races, ran the full suite, and added a unified verification entry point. | Goal 16 complete; RTDL now has a comprehensive local testing hardening package with 68 passing tests, stable artifact-generation tests, and a make verify audit path. | `d56662c` | `2026-03-31-goal-16-testing-hardening` |
 | v0.1-alpha-goal13-close | 2026-03-31 | done-consensus | Goal 13 Cancellation Consensus | Gemini accepted cancellation as technically honest if Goal 13 artifacts are preserved as valid partial results. | Codex marked Goal 13 canceled and superseded by Goal 15 while preserving completed Goal 13 artifacts as accepted references. | Goal 13 closure accepted by Claude and Gemini; Goal 13 is canceled as superseded by Goal 15 while completed Goal 13 slices remain valid references. | `e3484d2` | `2026-03-31-goal-13-cancelation-consensus-g15` |

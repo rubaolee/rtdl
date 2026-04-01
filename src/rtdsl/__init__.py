@@ -33,10 +33,14 @@ from .embree_runtime import embree_version
 from .embree_runtime import EmbreeRowView
 from .embree_runtime import pack_points
 from .embree_runtime import pack_polygons
+from .embree_runtime import pack_rays
 from .embree_runtime import pack_segments
+from .embree_runtime import pack_triangles
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
+from .embree_runtime import PackedRays
 from .embree_runtime import PackedSegments
+from .embree_runtime import PackedTriangles
 from .embree_runtime import prepare_embree
 from .embree_runtime import PreparedEmbreeExecution
 from .embree_runtime import PreparedEmbreeKernel
@@ -171,7 +175,9 @@ __all__ = [
     "PaperTarget",
     "PackedPoints",
     "PackedPolygons",
+    "PackedRays",
     "PackedSegments",
+    "PackedTriangles",
     "PayloadRegister",
     "Points",
     "Point2DLayout",
@@ -213,7 +219,9 @@ __all__ = [
     "paper_targets",
     "pack_points",
     "pack_polygons",
+    "pack_rays",
     "pack_segments",
+    "pack_triangles",
     "lower_to_rayjoin",
     "load_plan_schema",
     "lsi_cpu",

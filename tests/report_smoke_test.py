@@ -11,6 +11,7 @@ sys.path.insert(0, ".")
 sys.path.insert(0, "scripts")
 
 import rtdsl as rt
+from goal18_compare_result_modes import compare_goal18
 from run_full_verification import run_full_verification
 
 
@@ -63,6 +64,13 @@ class ReportSmokeTest(unittest.TestCase):
             self.assertGreaterEqual(len(payload["records"]), 1)
             self.assertEqual({record["workload"] for record in payload["records"]}, {"lsi"})
             self.assertTrue(artifacts["pdf"].read_bytes().startswith(b"%PDF-1.4"))
+
+    def test_goal18_compare_smoke_outputs_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            payload = compare_goal18(Path(tmpdir) / "goal18", repeats=3)
+        self.assertIn("workloads", payload)
+        self.assertTrue(payload["workloads"]["lsi"]["raw_matches_dict"])
+        self.assertTrue(payload["workloads"]["pip"]["raw_matches_dict"])
 
 
 if __name__ == "__main__":

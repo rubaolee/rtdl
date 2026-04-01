@@ -1,0 +1,11 @@
+slug: 2026-04-01-goal-18-low-overhead-runtime-continuation
+title: Goal 18 Low-Overhead Runtime Continuation
+version: 1
+status: complete-consensus
+started_on: 2026-04-01
+closed_on: 2026-04-01
+source_commit: 1487690f2ced0c5823976f7907d61d680ca7979c
+gemini_review: accepted
+codex_revision: implemented
+final_result: Goal 18 complete by consensus
+summary: First-class raw result mode and extended prepared Embree coverage across the current local workload surface.

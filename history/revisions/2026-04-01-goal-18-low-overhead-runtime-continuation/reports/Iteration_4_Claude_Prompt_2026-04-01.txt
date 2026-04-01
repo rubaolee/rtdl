@@ -1,0 +1,26 @@
+Review Goal 18 implementation in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_18_low_overhead_runtime_continuation.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-18-low-overhead-runtime-continuation/reports/Iteration_4_Implementation_Report_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py
+- /Users/rl2025/rtdl_python_only/scripts/goal18_compare_result_modes.py
+- /Users/rl2025/rtdl_python_only/tests/goal18_result_mode_test.py
+- /Users/rl2025/rtdl_python_only/tests/goal17_prepared_runtime_test.py
+- /Users/rl2025/rtdl_python_only/tests/report_smoke_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal18_low_overhead_runtime_continuation_2026-04-01.md
+
+Review criteria:
+1. Is run_embree(..., result_mode="raw") now a first-class path rather than only a packed-input special case?
+2. Does prepared/raw support now cover the intended local Embree workloads beyond lsi/pip?
+3. Are correctness claims supported by the tests and report?
+4. Are native performance claims limited honestly to workloads with real native baselines?
+5. Are there any blockers to accepting Goal 18?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Goal 18 complete by consensus
+  - Blocked

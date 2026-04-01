@@ -1,0 +1,17 @@
+Review Goal 18 pre-implementation scope for RTDL.
+
+Context:
+- Goal 17 report: docs/reports/goal17_low_overhead_runtime_2026-03-31.md
+- Goal 18 plan: docs/goal_18_low_overhead_runtime_continuation.md
+- Goal 18 spec: history/revisions/2026-04-01-goal-18-low-overhead-runtime-continuation/reports/Goal_18_Spec_2026-04-01_Codex.md
+- Pre-implementation report: history/revisions/2026-04-01-goal-18-low-overhead-runtime-continuation/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+
+Question:
+- Is this the right continuation slice?
+- Which workloads must be included?
+- What evidence is required for final acceptance?
+
+Output format:
+1. `Consensus to begin implementation.` or `Blocked.`
+2. Short reasoning
+3. Acceptance criteria

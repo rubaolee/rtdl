@@ -1,0 +1,12 @@
+Answer only with:
+1. `Consensus to begin implementation.` or `Blocked.`
+2. one sentence of reason
+3. one sentence naming the minimum acceptance bar
+
+Context:
+- Goal 17 proved packed + prepared + raw-row path is the successful low-overhead path.
+- Goal 18 continuation is:
+  - add first-class `result_mode` to `run_embree(...)`
+  - extend prepared/raw support beyond `lsi` and `pip`
+  - keep the Python-like DSL unchanged
+  - keep native-comparison claims only where native baselines exist

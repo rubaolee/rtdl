@@ -130,6 +130,18 @@ class PackedPolygons:
     vertex_xy_count: int
 
 
+@dataclass(frozen=True)
+class PackedTriangles:
+    records: object
+    count: int
+
+
+@dataclass(frozen=True)
+class PackedRays:
+    records: object
+    count: int
+
+
 @dataclass
 class EmbreeRowView:
     library: object
@@ -177,9 +189,16 @@ class PreparedEmbreeKernel:
         self.library = _load_embree_library()
         self.expected_inputs = {item.name: item for item in compiled.inputs}
         predicate = compiled.refine_op.predicate.name
-        if predicate not in {"segment_intersection", "point_in_polygon"}:
+        if predicate not in {
+            "segment_intersection",
+            "point_in_polygon",
+            "overlay_compose",
+            "ray_triangle_hit_count",
+            "segment_polygon_hitcount",
+            "point_nearest_segment",
+        }:
             raise ValueError(
-                "the current prepared Embree path supports only `segment_intersection` and `point_in_polygon`"
+                "the current prepared Embree path supports only Embree-backed local workloads"
             )
         self.predicate_name = predicate
 
@@ -213,6 +232,14 @@ class PreparedEmbreeExecution:
             return _call_lsi_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "point_in_polygon":
             return _call_pip_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "overlay_compose":
+            return _call_overlay_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "ray_triangle_hit_count":
+            return _call_ray_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "segment_polygon_hitcount":
+            return _call_segment_polygon_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "point_nearest_segment":
+            return _call_point_nearest_segment_embree_packed(self.compiled, self.packed_inputs, self.library)
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
 
     def run(self) -> tuple[dict[str, object], ...]:
@@ -315,7 +342,68 @@ def pack_polygons(
     )
 
 
-def run_embree(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
+def pack_triangles(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None, x2=None, y2=None) -> PackedTriangles:
+    if records is not None:
+        normalized = _normalize_records("triangles", "triangles", records)
+        array = (_RtdlTriangle * len(normalized))(*[
+            _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
+            for item in normalized
+        ])
+        return PackedTriangles(records=array, count=len(normalized))
+
+    ids_list = _coerce_list("ids", ids)
+    x0_list = _coerce_list("x0", x0)
+    y0_list = _coerce_list("y0", y0)
+    x1_list = _coerce_list("x1", x1)
+    y1_list = _coerce_list("y1", y1)
+    x2_list = _coerce_list("x2", x2)
+    y2_list = _coerce_list("y2", y2)
+    count = _validate_equal_lengths("triangles", ids_list, x0_list, y0_list, x1_list, y1_list, x2_list, y2_list)
+    array = (_RtdlTriangle * count)(*[
+        _RtdlTriangle(
+            int(ids_list[i]),
+            float(x0_list[i]),
+            float(y0_list[i]),
+            float(x1_list[i]),
+            float(y1_list[i]),
+            float(x2_list[i]),
+            float(y2_list[i]),
+        )
+        for i in range(count)
+    ])
+    return PackedTriangles(records=array, count=count)
+
+
+def pack_rays(records=None, *, ids=None, ox=None, oy=None, dx=None, dy=None, tmax=None) -> PackedRays:
+    if records is not None:
+        normalized = _normalize_records("rays", "rays", records)
+        array = (_RtdlRay2D * len(normalized))(*[
+            _RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in normalized
+        ])
+        return PackedRays(records=array, count=len(normalized))
+
+    ids_list = _coerce_list("ids", ids)
+    ox_list = _coerce_list("ox", ox)
+    oy_list = _coerce_list("oy", oy)
+    dx_list = _coerce_list("dx", dx)
+    dy_list = _coerce_list("dy", dy)
+    tmax_list = _coerce_list("tmax", tmax)
+    count = _validate_equal_lengths("rays", ids_list, ox_list, oy_list, dx_list, dy_list, tmax_list)
+    array = (_RtdlRay2D * count)(*[
+        _RtdlRay2D(
+            int(ids_list[i]),
+            float(ox_list[i]),
+            float(oy_list[i]),
+            float(dx_list[i]),
+            float(dy_list[i]),
+            float(tmax_list[i]),
+        )
+        for i in range(count)
+    ])
+    return PackedRays(records=array, count=count)
+
+
+def run_embree(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     _validate_kernel_for_cpu(compiled)
     expected_inputs = {item.name: item for item in compiled.inputs}
@@ -327,12 +415,20 @@ def run_embree(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]
     if unexpected:
         raise ValueError(f"unexpected RTDL Embree inputs: {', '.join(sorted(unexpected))}")
 
+    if result_mode not in {"dict", "raw"}:
+        raise ValueError("Embree result_mode must be one of: dict, raw")
+
     predicate_name = compiled.refine_op.predicate.name
-    if predicate_name in {"segment_intersection", "point_in_polygon"} and all(
+    if all(
         _is_packed_for_geometry(expected_inputs[name].geometry.name, payload)
         for name, payload in inputs.items()
     ):
-        return prepare_embree(compiled).run(**inputs)
+        prepared = prepare_embree(compiled).bind(**inputs)
+        return prepared.run_raw() if result_mode == "raw" else prepared.run()
+
+    if result_mode == "raw":
+        prepared = prepare_embree(compiled).bind(**inputs)
+        return prepared.run_raw()
 
     normalized_inputs = {
         name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
@@ -567,6 +663,47 @@ def _run_overlay_embree(compiled: CompiledKernel, normalized_inputs, library) ->
         library.rtdl_embree_free_rows(rows_ptr)
 
 
+def _run_overlay_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_overlay_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_overlay_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left = packed_inputs[left_name]
+    right = packed_inputs[right_name]
+
+    rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_overlay(
+        left.refs,
+        left.polygon_count,
+        left.vertices_xy,
+        left.vertex_xy_count,
+        right.refs,
+        right.polygon_count,
+        right.vertices_xy,
+        right.vertex_xy_count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlOverlayRow,
+        field_names=("left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"),
+    )
+
+
 def _run_ray_hitcount_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     rays_name = compiled.candidates.left.name
     triangles_name = compiled.candidates.right.name
@@ -607,6 +744,43 @@ def _run_ray_hitcount_embree(compiled: CompiledKernel, normalized_inputs, librar
         library.rtdl_embree_free_rows(rows_ptr)
 
 
+def _run_ray_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_ray_hitcount_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_ray_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    rays_name = compiled.candidates.left.name
+    triangles_name = compiled.candidates.right.name
+    rays = packed_inputs[rays_name]
+    triangles = packed_inputs[triangles_name]
+
+    rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_ray_hitcount(
+        rays.records,
+        rays.count,
+        triangles.records,
+        triangles.count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlRayHitCountRow,
+        field_names=("ray_id", "hit_count"),
+    )
+
+
 def _run_segment_polygon_hitcount_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     segments_name = compiled.candidates.left.name
     polygons_name = compiled.candidates.right.name
@@ -644,6 +818,45 @@ def _run_segment_polygon_hitcount_embree(compiled: CompiledKernel, normalized_in
         )
     finally:
         library.rtdl_embree_free_rows(rows_ptr)
+
+
+def _run_segment_polygon_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_segment_polygon_hitcount_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_segment_polygon_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    segments_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    segments = packed_inputs[segments_name]
+    polygons = packed_inputs[polygons_name]
+
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_segment_polygon_hitcount(
+        segments.records,
+        segments.count,
+        polygons.refs,
+        polygons.polygon_count,
+        polygons.vertices_xy,
+        polygons.vertex_xy_count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlSegmentPolygonHitCountRow,
+        field_names=("segment_id", "hit_count"),
+    )
 
 
 def _run_point_nearest_segment_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
@@ -686,6 +899,43 @@ def _run_point_nearest_segment_embree(compiled: CompiledKernel, normalized_input
         library.rtdl_embree_free_rows(rows_ptr)
 
 
+def _run_point_nearest_segment_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_point_nearest_segment_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_point_nearest_segment_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    points_name = compiled.candidates.left.name
+    segments_name = compiled.candidates.right.name
+    points = packed_inputs[points_name]
+    segments = packed_inputs[segments_name]
+
+    rows_ptr = ctypes.POINTER(_RtdlPointNearestSegmentRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_point_nearest_segment(
+        points.records,
+        points.count,
+        segments.records,
+        segments.count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlPointNearestSegmentRow,
+        field_names=("point_id", "segment_id", "distance"),
+    )
+
+
 def _encode_polygons(polygons):
     refs = []
     vertices = []
@@ -720,6 +970,10 @@ def _pack_for_geometry(geometry_name: str, payload):
         return payload if isinstance(payload, PackedPoints) else pack_points(records=payload)
     if geometry_name == "polygons":
         return payload if isinstance(payload, PackedPolygons) else pack_polygons(records=payload)
+    if geometry_name == "triangles":
+        return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)
+    if geometry_name == "rays":
+        return payload if isinstance(payload, PackedRays) else pack_rays(records=payload)
     raise ValueError(f"the current prepared Embree path does not support geometry `{geometry_name}`")
 
 
@@ -728,6 +982,8 @@ def _is_packed_for_geometry(geometry_name: str, payload) -> bool:
         (geometry_name == "segments" and isinstance(payload, PackedSegments))
         or (geometry_name == "points" and isinstance(payload, PackedPoints))
         or (geometry_name == "polygons" and isinstance(payload, PackedPolygons))
+        or (geometry_name == "triangles" and isinstance(payload, PackedTriangles))
+        or (geometry_name == "rays" and isinstance(payload, PackedRays))
     )
 
 
