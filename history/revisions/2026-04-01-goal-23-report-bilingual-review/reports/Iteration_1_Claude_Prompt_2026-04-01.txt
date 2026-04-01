@@ -1,0 +1,17 @@
+Review these two Goal 23 reports carefully:
+1. /Users/rl2025/rtdl_python_only/docs/reports/goal23_embree_reproduction_report_2026-04-01.md
+2. /Users/rl2025/rtdl_python_only/docs/reports/goal23_embree_reproduction_report_2026-04-01_zh.md
+
+Task:
+- Check factual consistency against each other and against the current project state implied by Goal 23.
+- Check whether the Chinese report accurately reflects the English report without overclaiming.
+- Check whether there are any misleading statements, omissions, or wording that should be revised before the Chinese report is published.
+- Be strict about research-paper honesty and scope boundaries.
+
+Output format:
+1. Findings (if any), ordered by severity.
+2. Suggested revisions.
+3. Final decision line with exactly one of:
+   - Approved as-is
+   - Approved with revisions
+   - Blocked
