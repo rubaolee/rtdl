@@ -3,74 +3,733 @@
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 2 0 obj
-<< /Length 3840 >>
-stream
-BT
-/F1 11 Tf
-1 0 0 1 72 770 Tm (Goal 23 Embree Reproduction Report) Tj
-1 0 0 1 72 754 Tm () Tj
-1 0 0 1 72 738 Tm (Generated: 2026-04-01T12:11:56) Tj
-1 0 0 1 72 722 Tm (Boundary: bounded-local executable slice only; missing source-identified families remain reported but unexecuted) Tj
-1 0 0 1 72 706 Tm (Total package wall time: 286.25 s) Tj
-1 0 0 1 72 690 Tm () Tj
-1 0 0 1 72 674 Tm (Executed slice:) Tj
-1 0 0 1 72 658 Tm (- Table 3 partial bounded local analogue rows only) Tj
-1 0 0 1 72 642 Tm (- Figure 13 bounded synthetic LSI analogue) Tj
-1 0 0 1 72 626 Tm (- Figure 14 bounded synthetic PIP analogue) Tj
-1 0 0 1 72 610 Tm (- Table 4 bounded overlay-seed analogue) Tj
-1 0 0 1 72 594 Tm (- Figure 15 bounded overlay speedup analogue) Tj
-1 0 0 1 72 578 Tm () Tj
-1 0 0 1 72 562 Tm (Missing / unexecuted families:) Tj
-1 0 0 1 72 546 Tm (- Block ⊲⊳ Water / lsi: missing \(Add public acquisition and conversion path before any bounded local analogue is treated as complete.\)) Tj
-1 0 0 1 72 530 Tm (- Block ⊲⊳ Water / pip: missing \(Add public acquisition and conversion path before any bounded local analogue is treated as complete.\)) Tj
-1 0 0 1 72 514 Tm (- LKAF ⊲⊳ PKAF / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 498 Tm (- LKAF ⊲⊳ PKAF / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 482 Tm (- LKAS ⊲⊳ PKAS / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 466 Tm (- LKAS ⊲⊳ PKAS / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 450 Tm (- LKAU ⊲⊳ PKAU / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 434 Tm (- LKAU ⊲⊳ PKAU / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 418 Tm (- LKEU ⊲⊳ PKEU / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 402 Tm (- LKEU ⊲⊳ PKEU / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 386 Tm (- LKNA ⊲⊳ PKNA / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 370 Tm (- LKNA ⊲⊳ PKNA / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 354 Tm (- LKSA ⊲⊳ PKSA / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 338 Tm (- LKSA ⊲⊳ PKSA / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-1 0 0 1 72 322 Tm () Tj
-1 0 0 1 72 306 Tm (Executed Table 3 rows:) Tj
-1 0 0 1 72 290 Tm (- county_fixture_subset_lsi: County ⊲⊳ Zipcode / lsi / fixture-subset / speedup=0.58x) Tj
-1 0 0 1 72 274 Tm (- county_tiled_x8_lsi: County ⊲⊳ Zipcode / lsi / derived-input / speedup=3.52x) Tj
-1 0 0 1 72 258 Tm (- county_fixture_subset_pip: County ⊲⊳ Zipcode / pip / fixture-subset / speedup=0.80x) Tj
-1 0 0 1 72 242 Tm (- county_tiled_x8_pip: County ⊲⊳ Zipcode / pip / derived-input / speedup=3.46x) Tj
-1 0 0 1 72 226 Tm () Tj
-1 0 0 1 72 210 Tm (Overlay rows:) Tj
-1 0 0 1 72 194 Tm (- overlay_fixture_subset: speedup=0.89x / overlay-seed analogue / fixture-subset) Tj
-1 0 0 1 72 178 Tm (- overlay_tiled_x8: speedup=1.34x / overlay-seed analogue / derived-input) Tj
-1 0 0 1 72 162 Tm () Tj
-1 0 0 1 72 146 Tm (Figure 13 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure13_lsi_bounded.svg) Tj
-1 0 0 1 72 130 Tm (Figure 14 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure14_pip_bounded.svg) Tj
-1 0 0 1 72 114 Tm (Figure 15 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure15_overlay_speedup_bounded.svg) Tj
-ET
-endstream
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
 endobj
 3 0 obj
-<< /Type /Page /Parent 4 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+<< /Length 2866 >>
+stream
+BT /F2 24.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 102.72 564.00 Tm (RTDL Embree Reproduction of RayJoin Experiments) Tj ET
+BT /F1 14.00 Tf 0.250 0.250 0.250 rg 1 0 0 1 279.52 536.00 Tm (Bounded Local Report for Goal 23) Tj ET
+q 0.200 0.200 0.200 RG 1.50 w 54.00 514.00 m 738.00 514.00 l S Q
+BT /F2 15.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 486.00 Tm (Abstract) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 464.00 Tm (This paper-style report summarizes the current bounded local reproduction of the RayJoin evaluation structure on top of) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 448.00 Tm (RTDL's Intel Embree backend. The current system does not claim exact paper-scale equivalence. Instead, it provides a) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 432.00 Tm (reproducible Embree-phase baseline that executes the currently supported workload family, reports explicit fidelity) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 416.00 Tm (labels, and keeps the total local package within a 5-10 minute development budget.) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 388.00 Tm (RTDL is a Python-like DSL for ray-join style spatial workloads. Its current execution stack lowers a kernel through a) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 372.00 Tm (backend-neutral compiled form and a RayJoin-shaped backend plan, then executes through prepared Embree kernels with) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 356.00 Tm (either dictionary or raw-row result materialization. Goal 23 packages the current bounded reproduction slice into) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 340.00 Tm (tables and figures corresponding to RayJoin Table 3, Table 4, Figure 13, Figure 14, and Figure 15.) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 310.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 310.00 Tm (Generated at 2026-04-01T15:05:13) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 294.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 294.00 Tm (Total package wall time: 289.38 s) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 278.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 278.00 Tm (Backend: Intel Embree only \(no GPU path in this report\)) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 262.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 262.00 Tm (Figure 13 and Figure 14 use prepared raw execution with bounded synthetic inputs) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 246.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 246.00 Tm (Table 3 and Table 4 remain explicit about executed analogues vs missing families) Tj ET
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (1) Tj ET
+endstream
 endobj
 4 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
 endobj
 5 0 obj
-<< /Type /Catalog /Pages 4 0 R >>
+<< /Length 3917 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 568.00 Tm (1. RTDL Language and Architecture) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 538.00 Tm (RTDL keeps the authoring surface compact: a kernel declares typed geometry inputs, a candidate traversal, a predicate) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 523.00 Tm (refinement, and an emitted row schema. The current Embree phase executes these kernels through prepared low-overhead) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 508.00 Tm (bindings so the report reflects the best local runtime path rather than the older Python-dictionary hot path.) Tj ET
+q 0.960 0.970 0.990 rg 0.200 0.200 0.200 RG 1.00 w 60.00 374.00 92.00 48.00 re B Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 67.00 395.00 Tm (Python-like DSL) Tj ET
+q 0.960 0.970 0.990 rg 0.200 0.200 0.200 RG 1.00 w 185.00 374.00 92.00 48.00 re B Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 194.60 395.00 Tm (CompiledKernel) Tj ET
+q 0.960 0.970 0.990 rg 0.200 0.200 0.200 RG 1.00 w 310.00 374.00 92.00 48.00 re B Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 324.80 395.00 Tm (RayJoin Plan) Tj ET
+q 0.960 0.970 0.990 rg 0.200 0.200 0.200 RG 1.00 w 435.00 374.00 92.00 48.00 re B Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 444.60 395.00 Tm (Packed Buffers) Tj ET
+q 0.960 0.970 0.990 rg 0.200 0.200 0.200 RG 1.00 w 560.00 374.00 92.00 48.00 re B Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 567.00 395.00 Tm (Prepared Embree) Tj ET
+q 0.960 0.970 0.990 rg 0.200 0.200 0.200 RG 1.00 w 685.00 374.00 92.00 48.00 re B Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 686.80 395.00 Tm (Raw Rows / Tables) Tj ET
+q 0.150 0.150 0.150 RG 1.20 w 152.00 398.00 m 185.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 177.00 402.00 m 185.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 177.00 394.00 m 185.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 277.00 398.00 m 310.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 302.00 402.00 m 310.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 302.00 394.00 m 310.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 402.00 398.00 m 435.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 427.00 402.00 m 435.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 427.00 394.00 m 435.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 527.00 398.00 m 560.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 552.00 402.00 m 560.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 552.00 394.00 m 560.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 652.00 398.00 m 685.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 677.00 402.00 m 685.00 398.00 l S Q
+q 0.150 0.150 0.150 RG 1.20 w 677.00 394.00 m 685.00 398.00 l S Q
+BT /F2 14.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 328.00 Tm (Execution Notes) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 306.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 306.00 Tm (The DSL surface currently supports six workloads in the local Embree baseline: lsi, pip, overlay,) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 291.00 Tm (ray_tri_hitcount, segment_polygon_hitcount, and point_nearest_segment.) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 276.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 276.00 Tm (Figure 13 and Figure 14 use the prepared raw execution path because it is the only local path shown to stay) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 261.00 Tm (close to native C/C++ Embree performance in the Goal 19 comparison.) Tj ET
+BT /F2 12.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 66.00 246.00 Tm (•) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 246.00 Tm (This report therefore describes the current best local execution architecture while keeping the language surface) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 82.00 231.00 Tm (unchanged.) Tj ET
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (2) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 5677 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 568.00 Tm (2. Data Sources and Experimental Setup) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 538.00 Tm (Goal 23 mixes executed local analogues with source-identified but unexecuted paper families. This split is intentional:) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 523.00 Tm (the report is meant to be honest about what currently runs on the local machine and what still requires public-source) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 508.00 Tm (acquisition and conversion.) Tj ET
+BT /F2 14.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 481.00 Tm (Public Source Registry) Tj ET
+q 0.920 0.940 0.970 rg 0.500 0.500 0.500 RG 0.80 w 54.00 437.00 684.00 24.00 re B Q
+BT /F2 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 446.00 Tm (Asset) Tj ET
+BT /F2 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 446.00 Tm (Status) Tj ET
+BT /F2 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 446.00 Tm (Preferred Use) Tj ET
+q 0.780 0.780 0.780 RG 0.50 w 54.00 413.00 684.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 437.00 m 54.00 413.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 422.00 Tm (rayjoin_preprocessed_share) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 214.00 437.00 m 214.00 413.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 422.00 Tm (source-identified) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 324.00 437.00 m 324.00 413.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 422.00 Tm (Preferred exact-input source for all paper dataset families when accessible.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 437.00 m 738.00 413.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 389.00 684.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 413.00 m 54.00 389.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 398.00 Tm (uscounty_arcgis) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 214.00 413.00 m 214.00 389.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 398.00 Tm (source-identified) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 324.00 413.00 m 324.00 389.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 398.00 Tm (Exact-input source family for County ⊲⊳ Zipcode when using raw public data.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 413.00 m 738.00 389.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 365.00 684.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 389.00 m 54.00 365.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 374.00 Tm (zipcode_arcgis) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 214.00 389.00 m 214.00 365.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 374.00 Tm (source-identified) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 324.00 389.00 m 324.00 365.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 374.00 Tm (Exact-input source family for County ⊲⊳ Zipcode when using raw public data.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 389.00 m 738.00 365.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 341.00 684.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 365.00 m 54.00 341.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 350.00 Tm (blockgroup_arcgis) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 214.00 365.00 m 214.00 341.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 350.00 Tm (source-identified) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 324.00 365.00 m 324.00 341.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 350.00 Tm (Exact-input source family for Block ⊲⊳ Water when using raw public data.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 365.00 m 738.00 341.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 317.00 684.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 341.00 m 54.00 317.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 326.00 Tm (waterbodies_arcgis) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 214.00 341.00 m 214.00 317.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 326.00 Tm (source-identified) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 324.00 341.00 m 324.00 317.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 326.00 Tm (Exact-input source family for Block ⊲⊳ Water when using raw public data.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 341.00 m 738.00 317.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 293.00 684.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 317.00 m 54.00 293.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 302.00 Tm (lakes_parks_spatialhadoop) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 214.00 317.00 m 214.00 293.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 218.00 302.00 Tm (source-identified) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 324.00 317.00 m 324.00 293.00 l S Q
+BT /F1 9.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 328.00 302.00 Tm (Derived-input source for continent-level Lakes/Parks pairs when exact-input share…) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 317.00 m 738.00 293.00 l S Q
+BT /F2 14.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 275.00 Tm (Bounded Local Profiles) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 255.00 Tm (Figure 13 \(LSI\): fixed build side R=100000 polygons; probe side S=100000, 200000, 300000, 400000, 500000.) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 240.00 Tm (Figure 14 \(PIP\): fixed build side R=100000 polygons; probe side S=2000, 4000, 6000, 8000, 10000.) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 225.00 Tm (All bounded local comparisons keep the total package near the frozen 5-10 minute target so the reproduction loop) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 210.00 Tm (remains practical on the current Mac.) Tj ET
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (3) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Length 11624 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 568.00 Tm (3. Table 3: Executed Bounded Local Rows) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 540.00 Tm (The rows below are the currently executable Table 3 analogues. They are local bounded runs over available fixture) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 525.00 Tm (subsets or deterministic enlargements, not exact paper-original dataset pairs.) Tj ET
+q 0.920 0.940 0.970 rg 0.500 0.500 0.500 RG 0.80 w 54.00 474.00 630.00 22.00 re B Q
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 481.00 Tm (Paper Pair) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 190.00 481.00 Tm (Workload) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 244.00 481.00 Tm (Local Case) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 376.00 481.00 Tm (Fidelity) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 472.00 481.00 Tm (CPU \(s\)) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 544.00 481.00 Tm (Embree \(s\)) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 616.00 481.00 Tm (Speedup) Tj ET
+q 0.780 0.780 0.780 RG 0.50 w 54.00 452.00 630.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 474.00 m 54.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 459.00 Tm (County ⊲⊳ Zipcode) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 186.00 474.00 m 186.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 190.00 459.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 240.00 474.00 m 240.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 244.00 459.00 Tm (county_fixture_subset_lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 372.00 474.00 m 372.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 376.00 459.00 Tm (fixture-subset) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 468.00 474.00 m 468.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 472.00 459.00 Tm (0.000071) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 540.00 474.00 m 540.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 544.00 459.00 Tm (0.000169) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 612.00 474.00 m 612.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 616.00 459.00 Tm (0.42x) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 684.00 474.00 m 684.00 452.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 430.00 630.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 452.00 m 54.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 437.00 Tm (County ⊲⊳ Zipcode) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 186.00 452.00 m 186.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 190.00 437.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 240.00 452.00 m 240.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 244.00 437.00 Tm (county_tiled_x8_lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 372.00 452.00 m 372.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 376.00 437.00 Tm (derived-input) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 468.00 452.00 m 468.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 472.00 437.00 Tm (0.000624) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 540.00 452.00 m 540.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 544.00 437.00 Tm (0.000182) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 612.00 452.00 m 612.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 616.00 437.00 Tm (3.43x) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 684.00 452.00 m 684.00 430.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 408.00 630.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 430.00 m 54.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 415.00 Tm (County ⊲⊳ Zipcode) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 186.00 430.00 m 186.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 190.00 415.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 240.00 430.00 m 240.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 244.00 415.00 Tm (county_fixture_subset_pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 372.00 430.00 m 372.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 376.00 415.00 Tm (fixture-subset) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 468.00 430.00 m 468.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 472.00 415.00 Tm (0.000066) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 540.00 430.00 m 540.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 544.00 415.00 Tm (0.000085) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 612.00 430.00 m 612.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 616.00 415.00 Tm (0.78x) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 684.00 430.00 m 684.00 408.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 386.00 630.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 408.00 m 54.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 393.00 Tm (County ⊲⊳ Zipcode) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 186.00 408.00 m 186.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 190.00 393.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 240.00 408.00 m 240.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 244.00 393.00 Tm (county_tiled_x8_pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 372.00 408.00 m 372.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 376.00 393.00 Tm (derived-input) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 468.00 408.00 m 468.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 472.00 393.00 Tm (0.000986) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 540.00 408.00 m 540.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 544.00 393.00 Tm (0.000289) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 612.00 408.00 m 612.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 616.00 393.00 Tm (3.41x) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 684.00 408.00 m 684.00 386.00 l S Q
+BT /F2 14.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 366.00 Tm (Missing / Unexecuted Families) Tj ET
+q 0.920 0.940 0.970 rg 0.500 0.500 0.500 RG 0.80 w 54.00 326.00 684.00 22.00 re B Q
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 333.00 Tm (Paper Pair) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 333.00 Tm (Workload) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 333.00 Tm (Status) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 333.00 Tm (Source Requirement) Tj ET
+q 0.780 0.780 0.780 RG 0.50 w 54.00 304.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 326.00 m 54.00 304.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 311.00 Tm (Block ⊲⊳ Water) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 326.00 m 232.00 304.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 311.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 326.00 m 290.00 304.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 311.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 326.00 m 376.00 304.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 311.00 Tm (Add public acquisition and conversion path before any bounded local ana…) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 326.00 m 738.00 304.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 282.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 304.00 m 54.00 282.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 289.00 Tm (Block ⊲⊳ Water) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 304.00 m 232.00 282.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 289.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 304.00 m 290.00 282.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 289.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 304.00 m 376.00 282.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 289.00 Tm (Add public acquisition and conversion path before any bounded local ana…) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 304.00 m 738.00 282.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 260.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 282.00 m 54.00 260.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 267.00 Tm (LKAF ⊲⊳ PKAF) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 282.00 m 232.00 260.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 267.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 282.00 m 290.00 260.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 267.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 282.00 m 376.00 260.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 267.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 282.00 m 738.00 260.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 238.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 260.00 m 54.00 238.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 245.00 Tm (LKAF ⊲⊳ PKAF) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 260.00 m 232.00 238.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 245.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 260.00 m 290.00 238.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 245.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 260.00 m 376.00 238.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 245.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 260.00 m 738.00 238.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 216.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 238.00 m 54.00 216.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 223.00 Tm (LKAS ⊲⊳ PKAS) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 238.00 m 232.00 216.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 223.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 238.00 m 290.00 216.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 223.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 238.00 m 376.00 216.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 223.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 238.00 m 738.00 216.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 194.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 216.00 m 54.00 194.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 201.00 Tm (LKAS ⊲⊳ PKAS) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 216.00 m 232.00 194.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 201.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 216.00 m 290.00 194.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 201.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 216.00 m 376.00 194.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 201.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 216.00 m 738.00 194.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 172.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 194.00 m 54.00 172.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 179.00 Tm (LKAU ⊲⊳ PKAU) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 194.00 m 232.00 172.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 179.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 194.00 m 290.00 172.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 179.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 194.00 m 376.00 172.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 179.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 194.00 m 738.00 172.00 l S Q
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (4) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 9 0 R >>
+endobj
+11 0 obj
+<< /Length 8242 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 568.00 Tm (4. Remaining Families and Table 4) Tj ET
+q 0.920 0.940 0.970 rg 0.500 0.500 0.500 RG 0.80 w 54.00 518.00 684.00 22.00 re B Q
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 525.00 Tm (Paper Pair) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 525.00 Tm (Workload) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 525.00 Tm (Status) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 525.00 Tm (Source Requirement) Tj ET
+q 0.780 0.780 0.780 RG 0.50 w 54.00 496.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 518.00 m 54.00 496.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 503.00 Tm (LKAU ⊲⊳ PKAU) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 518.00 m 232.00 496.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 503.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 518.00 m 290.00 496.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 503.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 518.00 m 376.00 496.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 503.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 518.00 m 738.00 496.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 474.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 496.00 m 54.00 474.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 481.00 Tm (LKEU ⊲⊳ PKEU) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 496.00 m 232.00 474.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 481.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 496.00 m 290.00 474.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 481.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 496.00 m 376.00 474.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 481.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 496.00 m 738.00 474.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 452.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 474.00 m 54.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 459.00 Tm (LKEU ⊲⊳ PKEU) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 474.00 m 232.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 459.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 474.00 m 290.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 459.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 474.00 m 376.00 452.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 459.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 474.00 m 738.00 452.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 430.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 452.00 m 54.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 437.00 Tm (LKNA ⊲⊳ PKNA) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 452.00 m 232.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 437.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 452.00 m 290.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 437.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 452.00 m 376.00 430.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 437.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 452.00 m 738.00 430.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 408.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 430.00 m 54.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 415.00 Tm (LKNA ⊲⊳ PKNA) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 430.00 m 232.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 415.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 430.00 m 290.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 415.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 430.00 m 376.00 408.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 415.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 430.00 m 738.00 408.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 386.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 408.00 m 54.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 393.00 Tm (LKSA ⊲⊳ PKSA) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 408.00 m 232.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 393.00 Tm (lsi) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 408.00 m 290.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 393.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 408.00 m 376.00 386.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 393.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 408.00 m 738.00 386.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 364.00 684.00 22.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 386.00 m 54.00 364.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 371.00 Tm (LKSA ⊲⊳ PKSA) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 232.00 386.00 m 232.00 364.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 236.00 371.00 Tm (pip) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 290.00 386.00 m 290.00 364.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 294.00 371.00 Tm (missing) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 376.00 386.00 m 376.00 364.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 380.00 371.00 Tm (Acquire or derive the continent pair before bounded local runs.) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 738.00 386.00 m 738.00 364.00 l S Q
+BT /F2 14.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 344.00 Tm (Table 4. Overlay-Seed Analogue Rows) Tj ET
+q 0.920 0.940 0.970 rg 0.500 0.500 0.500 RG 0.80 w 54.00 302.00 658.00 24.00 re B Q
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 311.00 Tm (Local Case) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 228.00 311.00 Tm (Fidelity) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 488.00 311.00 Tm (CPU \(s\)) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 564.00 311.00 Tm (Embree \(s\)) Tj ET
+BT /F2 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 640.00 311.00 Tm (Speedup) Tj ET
+q 0.780 0.780 0.780 RG 0.50 w 54.00 278.00 658.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 302.00 m 54.00 278.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 287.00 Tm (overlay_fixture_subset) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 224.00 302.00 m 224.00 278.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 228.00 287.00 Tm (overlay-seed analogue / fixture-subset) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 484.00 302.00 m 484.00 278.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 488.00 287.00 Tm (0.000103) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 560.00 302.00 m 560.00 278.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 564.00 287.00 Tm (0.000123) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 636.00 302.00 m 636.00 278.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 640.00 287.00 Tm (0.84x) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 712.00 302.00 m 712.00 278.00 l S Q
+q 0.780 0.780 0.780 RG 0.50 w 54.00 254.00 658.00 24.00 re S Q
+q 0.800 0.800 0.800 RG 0.40 w 54.00 278.00 m 54.00 254.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 58.00 263.00 Tm (overlay_tiled_x8) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 224.00 278.00 m 224.00 254.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 228.00 263.00 Tm (overlay-seed analogue / derived-input) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 484.00 278.00 m 484.00 254.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 488.00 263.00 Tm (0.000230) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 560.00 278.00 m 560.00 254.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 564.00 263.00 Tm (0.000178) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 636.00 278.00 m 636.00 254.00 l S Q
+BT /F1 8.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 640.00 263.00 Tm (1.29x) Tj ET
+q 0.800 0.800 0.800 RG 0.40 w 712.00 278.00 m 712.00 254.00 l S Q
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (5) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 11 0 R >>
+endobj
+13 0 obj
+<< /Length 8058 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 572.00 Tm (Figure 13. Bounded LSI Analogue) Tj ET
+BT /F1 10.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 54.00 552.00 Tm (Fixed build side R=100000 polygons; prepared raw Embree execution.) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 54.00 334.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 62.00 508.00 Tm (\(a\) Uniform - Query Time) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 98.00 362.00 m 336.00 362.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 98.00 500.00 m 98.00 362.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 98.00 362.00 m 336.00 362.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 77.44 358.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 396.50 m 336.00 396.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 392.50 Tm (164.7) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 431.00 m 336.00 431.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 427.00 Tm (329.5) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 465.50 m 336.00 465.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 461.50 Tm (494.2) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 500.00 m 336.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 496.00 Tm (658.9) Tj ET
+q 0.080 0.400 0.750 rg 143.40 375.54 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 134.68 344.00 Tm (100000) Tj ET
+q 0.080 0.400 0.750 rg 191.00 383.59 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 182.28 344.00 Tm (200000) Tj ET
+q 0.080 0.400 0.750 rg 238.60 393.34 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 229.88 344.00 Tm (300000) Tj ET
+q 0.080 0.400 0.750 rg 286.20 400.03 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 277.48 344.00 Tm (400000) Tj ET
+q 0.080 0.400 0.750 rg 333.80 497.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 325.08 344.00 Tm (500000) Tj ET
+q 0.080 0.400 0.750 RG 1.50 w 145.60 377.74 m 193.20 385.79 l 240.80 395.54 l 288.40 402.23 l 336.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 162.14 342.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 66.00 429.00 Tm (Query Time \(ms\)) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 414.00 334.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 422.00 508.00 Tm (\(b\) Gaussian - Query Time) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 458.00 362.00 m 696.00 362.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 458.00 500.00 m 458.00 362.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 458.00 362.00 m 696.00 362.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 358.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 396.50 m 696.00 396.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 392.50 Tm (118.7) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 431.00 m 696.00 431.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 427.00 Tm (237.3) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 465.50 m 696.00 465.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 461.50 Tm (356.0) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 500.00 m 696.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 496.00 Tm (474.7) Tj ET
+q 0.420 0.110 0.600 rg 503.40 397.61 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 494.68 344.00 Tm (100000) Tj ET
+q 0.420 0.110 0.600 rg 551.00 419.44 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 542.28 344.00 Tm (200000) Tj ET
+q 0.420 0.110 0.600 rg 598.60 445.42 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 589.88 344.00 Tm (300000) Tj ET
+q 0.420 0.110 0.600 rg 646.20 470.96 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 637.48 344.00 Tm (400000) Tj ET
+q 0.420 0.110 0.600 rg 693.80 497.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 685.08 344.00 Tm (500000) Tj ET
+q 0.420 0.110 0.600 RG 1.50 w 505.60 399.81 m 553.20 421.64 l 600.80 447.62 l 648.40 473.16 l 696.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 522.14 342.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.00 429.00 Tm (Query Time \(ms\)) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 54.00 90.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 62.00 264.00 Tm (\(c\) Uniform - Throughput) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 98.00 118.00 m 336.00 118.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 98.00 256.00 m 98.00 118.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 98.00 118.00 m 336.00 118.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 77.44 114.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 152.50 m 336.00 152.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 70.16 148.50 Tm (337169) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 187.00 m 336.00 187.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 70.16 183.00 Tm (674338) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 221.50 m 336.00 221.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 66.52 217.50 Tm (1011507) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 256.00 m 336.00 256.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 66.52 252.00 Tm (1348676) Tj ET
+q 0.180 0.490 0.200 rg 143.40 204.95 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 134.68 100.00 Tm (100000) Tj ET
+q 0.180 0.490 0.200 rg 191.00 233.31 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 182.28 100.00 Tm (200000) Tj ET
+q 0.180 0.490 0.200 rg 238.60 240.86 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 229.88 100.00 Tm (300000) Tj ET
+q 0.180 0.490 0.200 rg 286.20 253.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 277.48 100.00 Tm (400000) Tj ET
+q 0.180 0.490 0.200 rg 333.80 166.19 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 325.08 100.00 Tm (500000) Tj ET
+q 0.180 0.490 0.200 RG 1.50 w 145.60 207.15 m 193.20 235.51 l 240.80 243.06 l 288.40 256.00 l 336.00 168.39 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 162.14 98.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 66.00 185.00 Tm (Intersections/s) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 414.00 90.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 422.00 264.00 Tm (\(d\) Gaussian - Throughput) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 458.00 118.00 m 696.00 118.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 458.00 256.00 m 458.00 118.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 458.00 118.00 m 696.00 118.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 114.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 152.50 m 696.00 152.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 430.16 148.50 Tm (876625) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 187.00 m 696.00 187.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.52 183.00 Tm (1753250) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 221.50 m 696.00 221.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.52 217.50 Tm (2629874) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 256.00 m 696.00 256.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.52 252.00 Tm (3506499) Tj ET
+q 0.940 0.420 0.000 rg 503.40 216.48 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 494.68 100.00 Tm (100000) Tj ET
+q 0.940 0.420 0.000 rg 551.00 242.81 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 542.28 100.00 Tm (200000) Tj ET
+q 0.940 0.420 0.000 rg 598.60 248.65 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 589.88 100.00 Tm (300000) Tj ET
+q 0.940 0.420 0.000 rg 646.20 251.97 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 637.48 100.00 Tm (400000) Tj ET
+q 0.940 0.420 0.000 rg 693.80 253.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 685.08 100.00 Tm (500000) Tj ET
+q 0.940 0.420 0.000 RG 1.50 w 505.60 218.68 m 553.20 245.01 l 600.80 250.85 l 648.40 254.17 l 696.00 256.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 522.14 98.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.00 185.00 Tm (Intersections/s) Tj ET
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (6) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 13 0 R >>
+endobj
+15 0 obj
+<< /Length 8001 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 572.00 Tm (Figure 14. Bounded PIP Analogue) Tj ET
+BT /F1 10.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 54.00 552.00 Tm (Fixed build side R=100000 polygons; prepared raw Embree execution.) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 54.00 334.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 62.00 508.00 Tm (\(a\) Uniform - Query Time) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 98.00 362.00 m 336.00 362.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 98.00 500.00 m 98.00 362.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 98.00 362.00 m 336.00 362.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 77.44 358.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 396.50 m 336.00 396.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 77.44 392.50 Tm (3389) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 431.00 m 336.00 431.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 77.44 427.00 Tm (6777) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 465.50 m 336.00 465.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 461.50 Tm (10166) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 500.00 m 336.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 496.00 Tm (13555) Tj ET
+q 0.080 0.400 0.750 rg 143.40 389.96 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 138.32 344.00 Tm (2000) Tj ET
+q 0.080 0.400 0.750 rg 191.00 408.25 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 185.92 344.00 Tm (4000) Tj ET
+q 0.080 0.400 0.750 rg 238.60 437.54 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 233.52 344.00 Tm (6000) Tj ET
+q 0.080 0.400 0.750 rg 286.20 473.67 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 281.12 344.00 Tm (8000) Tj ET
+q 0.080 0.400 0.750 rg 333.80 497.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 326.90 344.00 Tm (10000) Tj ET
+q 0.080 0.400 0.750 RG 1.50 w 145.60 392.16 m 193.20 410.45 l 240.80 439.74 l 288.40 475.87 l 336.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 162.14 342.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 66.00 429.00 Tm (Query Time \(ms\)) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 414.00 334.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 422.00 508.00 Tm (\(b\) Gaussian - Query Time) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 458.00 362.00 m 696.00 362.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 458.00 500.00 m 458.00 362.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 458.00 362.00 m 696.00 362.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 358.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 396.50 m 696.00 396.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 392.50 Tm (3316) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 431.00 m 696.00 431.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 427.00 Tm (6632) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 465.50 m 696.00 465.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 461.50 Tm (9948) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 500.00 m 696.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 496.00 Tm (13264) Tj ET
+q 0.420 0.110 0.600 rg 503.40 375.95 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 498.32 344.00 Tm (2000) Tj ET
+q 0.420 0.110 0.600 rg 551.00 406.49 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 545.92 344.00 Tm (4000) Tj ET
+q 0.420 0.110 0.600 rg 598.60 439.03 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 593.52 344.00 Tm (6000) Tj ET
+q 0.420 0.110 0.600 rg 646.20 464.18 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 641.12 344.00 Tm (8000) Tj ET
+q 0.420 0.110 0.600 rg 693.80 497.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 686.90 344.00 Tm (10000) Tj ET
+q 0.420 0.110 0.600 RG 1.50 w 505.60 378.15 m 553.20 408.69 l 600.80 441.23 l 648.40 466.38 l 696.00 500.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 522.14 342.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.00 429.00 Tm (Query Time \(ms\)) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 54.00 90.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 62.00 264.00 Tm (\(c\) Uniform - Throughput) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 98.00 118.00 m 336.00 118.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 98.00 256.00 m 98.00 118.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 98.00 118.00 m 336.00 118.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 77.44 114.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 152.50 m 336.00 152.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 148.50 Tm (210.1) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 187.00 m 336.00 187.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 183.00 Tm (420.3) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 221.50 m 336.00 221.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 217.50 Tm (630.4) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 98.00 256.00 m 336.00 256.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 73.80 252.00 Tm (840.6) Tj ET
+q 0.180 0.490 0.200 rg 143.40 226.63 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 138.32 100.00 Tm (2000) Tj ET
+q 0.180 0.490 0.200 rg 191.00 253.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 185.92 100.00 Tm (4000) Tj ET
+q 0.180 0.490 0.200 rg 238.60 244.81 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 233.52 100.00 Tm (6000) Tj ET
+q 0.180 0.490 0.200 rg 286.20 233.23 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 281.12 100.00 Tm (8000) Tj ET
+q 0.180 0.490 0.200 rg 333.80 236.92 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 326.90 100.00 Tm (10000) Tj ET
+q 0.180 0.490 0.200 RG 1.50 w 145.60 228.83 m 193.20 256.00 l 240.80 247.01 l 288.40 235.43 l 336.00 239.12 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 162.14 98.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 66.00 185.00 Tm (Probe-points/s) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 414.00 90.00 300.00 190.00 re S Q
+BT /F2 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 422.00 264.00 Tm (\(d\) Gaussian - Throughput) Tj ET
+q 0.200 0.200 0.200 RG 0.80 w 458.00 118.00 m 696.00 118.00 l S Q
+q 0.200 0.200 0.200 RG 0.80 w 458.00 256.00 m 458.00 118.00 l S Q
+q 0.880 0.880 0.880 RG 0.50 w 458.00 118.00 m 696.00 118.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 114.00 Tm (0.00) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 152.50 m 696.00 152.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 148.50 Tm (322.0) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 187.00 m 696.00 187.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 183.00 Tm (644.1) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 221.50 m 696.00 221.50 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 433.80 217.50 Tm (966.1) Tj ET
+q 0.880 0.880 0.880 RG 0.50 w 458.00 256.00 m 696.00 256.00 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 437.44 252.00 Tm (1288) Tj ET
+q 0.940 0.420 0.000 rg 503.40 253.80 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 498.32 100.00 Tm (2000) Tj ET
+q 0.940 0.420 0.000 rg 551.00 211.29 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 545.92 100.00 Tm (4000) Tj ET
+q 0.940 0.420 0.000 rg 598.60 200.21 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 593.52 100.00 Tm (6000) Tj ET
+q 0.940 0.420 0.000 rg 646.20 201.22 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 641.12 100.00 Tm (8000) Tj ET
+q 0.940 0.420 0.000 rg 693.80 196.57 4.40 4.40 re f Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 686.90 100.00 Tm (10000) Tj ET
+q 0.940 0.420 0.000 RG 1.50 w 505.60 256.00 m 553.20 213.49 l 600.80 202.41 l 648.40 203.42 l 696.00 198.77 l S Q
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 522.14 98.00 Tm (Probe-side polygons \(S\)) Tj ET
+BT /F1 7.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 426.00 185.00 Tm (Probe-points/s) Tj ET
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (7) Tj ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 15 0 R >>
+endobj
+17 0 obj
+<< /Length 2194 >>
+stream
+BT /F2 18.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 568.00 Tm (7. Figure 15 and Summary) Tj ET
+BT /F1 10.00 Tf 0.350 0.350 0.350 rg 1 0 0 1 54.00 544.00 Tm (Bounded overlay-seed analogue: Embree speedup over CPU for the currently executable local cases.) Tj ET
+q 0.750 0.750 0.750 RG 0.80 w 72.00 296.00 648.00 210.00 re S Q
+q 0.200 0.200 0.200 RG 0.80 w 272.00 330.00 m 690.00 330.00 l S Q
+BT /F1 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 78.00 453.00 Tm (overlay_fixture_subset) Tj ET
+q 0.080 0.400 0.750 rg 272.00 442.00 272.37 28.00 re f Q
+BT /F1 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 552.37 453.00 Tm (0.84x) Tj ET
+BT /F1 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 78.00 395.00 Tm (overlay_tiled_x8) Tj ET
+q 0.080 0.400 0.750 rg 272.00 384.00 418.00 28.00 re f Q
+BT /F1 10.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 698.00 395.00 Tm (1.29x) Tj ET
+BT /F2 14.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 260.00 Tm (Discussion) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 240.00 Tm (The executed slice shows that RTDL can already reproduce a meaningful bounded subset of the RayJoin evaluation) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 225.00 Tm (structure on a local Embree backend. Figure 13 and Figure 14 are now first-class generated artefacts rather than) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 210.00 Tm (planning placeholders.) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 189.00 Tm (The main remaining gap is dataset completeness rather than report infrastructure. Most Table 3 paper rows are still) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 174.00 Tm (source-identified but unexecuted, and Table 4 remains an overlay-seed analogue rather than a full) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 159.00 Tm (polygon-materialization claim.) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 138.00 Tm (This report should therefore be interpreted as the current Embree-phase research baseline: executable, reproducible,) Tj ET
+BT /F1 11.00 Tf 0.000 0.000 0.000 rg 1 0 0 1 54.00 123.00 Tm (bounded, and explicit about fidelity boundaries.) Tj ET
+BT /F1 10.00 Tf 0.400 0.400 0.400 rg 1 0 0 1 732.80 26.00 Tm (8) Tj ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 19 0 R /MediaBox [0 0 792 612] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 17 0 R >>
+endobj
+19 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R] /Count 8 >>
+endobj
+20 0 obj
+<< /Type /Catalog /Pages 19 0 R >>
 endobj
 xref
-0 6
+0 21
 0000000000 65535 f 
 0000000009 00000 n 
 0000000079 00000 n 
-0000003971 00000 n 
-0000004097 00000 n 
-0000004154 00000 n 
+0000000154 00000 n 
+0000003072 00000 n 
+0000003209 00000 n 
+0000007178 00000 n 
+0000007315 00000 n 
+0000013044 00000 n 
+0000013181 00000 n 
+0000024858 00000 n 
+0000024996 00000 n 
+0000033291 00000 n 
+0000033430 00000 n 
+0000041541 00000 n 
+0000041680 00000 n 
+0000049734 00000 n 
+0000049873 00000 n 
+0000052120 00000 n 
+0000052259 00000 n 
+0000052364 00000 n 
 trailer
-<< /Size 6 /Root 5 0 R >>
+<< /Size 21 /Root 20 0 R >>
 startxref
-4203
+52415
 %%EOF

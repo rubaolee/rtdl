@@ -62,6 +62,9 @@ class Goal23ReproductionTest(unittest.TestCase):
             report_text = Path(artifacts["report_markdown"]).read_text(encoding="utf-8")
             self.assertIn("bounded-local executable slice only", report_text)
             self.assertIn("Missing / Unexecuted Families", report_text)
+            self.assertIn("## Abstract", report_text)
+            self.assertIn("## 3. Architecture", report_text)
+            self.assertIn("Figure 13 bounded LSI analogue", report_text)
 
 
 if __name__ == "__main__":
