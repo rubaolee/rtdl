@@ -19,6 +19,7 @@ Current status:
 - RayJoin Section 5.6 scalability is now supported as a scaled synthetic Embree analogue for `lsi` and `pip`, with generated Figure 13 / Figure 14 analogue artifacts and a dedicated report.
 - Goal 15 is complete as an audited native C++ + Embree versus RTDL + Embree comparison slice for deterministic `lsi` and `pip` fixtures.
 - Goal 18 is complete as the current low-overhead runtime continuation slice; `run_embree(..., result_mode="raw")` is now first-class and the packed/prepared Embree path covers all six current local Embree workloads.
+- Goal 19 is now measured locally for `lsi` and `pip`: the ordinary dict-return path remains far slower than native, while the raw and prepared-raw RTDL Embree paths are close to native on matched deterministic and larger-profile runs.
 - A checked-in status PDF summarizes the current RTDL state and the paper-reference figures used for the reproduction phase.
 
 Current semantic/runtime boundaries:
@@ -79,6 +80,8 @@ Current precision note:
 - `docs/reports/goal17_low_overhead_runtime_2026-03-31.md`: Goal 17 first low-overhead runtime slice report.
 - `docs/goal_18_low_overhead_runtime_continuation.md`: Goal 18 plan for turning the low-overhead path into a more first-class runtime mode.
 - `docs/reports/goal18_low_overhead_runtime_continuation_2026-04-01.md`: Goal 18 continuation report for raw-result mode and extended prepared/runtime coverage.
+- `docs/goal_19_embree_performance_comparison_plan.md`: Goal 19 plan for RTDL vs pure C/C++ Embree performance comparison under a 5–10 minute local runtime budget.
+- `docs/reports/goal19_embree_performance_comparison_2026-04-01.md`: Goal 19 report comparing RTDL dict/raw/prepared paths against native Embree for `lsi` and `pip`.
 - `docs/runtime_overhead_architecture.md`: architecture note describing the current host-path overhead and the redesign target.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
@@ -191,6 +194,12 @@ Run the Goal 18 low-overhead result-mode comparison harness:
 make run-goal18-compare
 ```
 
+Run the Goal 19 RTDL vs native Embree performance comparison harness:
+
+```sh
+make run-goal19-compare
+```
+
 If Embree or TBB live outside the default Homebrew prefixes, set:
 
 ```sh
@@ -234,6 +243,11 @@ Current low-overhead runtime slice:
   - `ray_tri_hitcount`
   - `segment_polygon_hitcount`
   - `point_nearest_segment`
+
+Current measured performance conclusion:
+
+- the ordinary dict-return `run_embree(...)` path is still not performance-comparable to native C++ + Embree
+- the first-class raw path and the prepared raw path are close to native on the current matched `lsi` and `pip` comparisons
 - `pack_segments(...)`, `pack_points(...)`, and `pack_polygons(...)` for native-ready packed inputs
 - `EmbreeRowView` as a thin raw-row result view
 - currently implemented for `lsi` and `pip`

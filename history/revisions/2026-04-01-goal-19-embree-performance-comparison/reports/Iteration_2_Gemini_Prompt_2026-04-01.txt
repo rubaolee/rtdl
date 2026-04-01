@@ -1,0 +1,25 @@
+Review Goal 19 implementation in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_19_embree_performance_comparison_plan.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-19-embree-performance-comparison/reports/Iteration_2_Implementation_Report_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/apps/goal15_lsi_native.cpp
+- /Users/rl2025/rtdl_python_only/apps/goal15_pip_native.cpp
+- /Users/rl2025/rtdl_python_only/scripts/goal19_compare_embree_performance.py
+- /Users/rl2025/rtdl_python_only/tests/goal19_compare_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal19_embree_performance_comparison_2026-04-01.md
+- /Users/rl2025/rtdl_python_only/README.md
+
+Review criteria:
+1. Are the compared paths and matched inputs technically sound?
+2. Does the benchmark package satisfy the agreed 5-10 minute local budget?
+3. Are the correctness checks sufficient before timing claims?
+4. Is the conclusion honest about dict-path vs raw/prepared-path performance?
+5. Are there any blockers to accepting Goal 19?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Goal 19 complete by consensus
+  - Blocked

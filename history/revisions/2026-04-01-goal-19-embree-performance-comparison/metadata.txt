@@ -1,0 +1,11 @@
+slug: 2026-04-01-goal-19-embree-performance-comparison
+title: Goal 19 Embree Performance Comparison
+version: 1
+status: complete-consensus
+started_on: 2026-04-01
+closed_on: 2026-04-01
+source_commit: 4df3bbb
+gemini_review: accepted
+codex_revision: implemented
+final_result: Goal 19 complete by consensus
+summary: Measured RTDL dict/raw/prepared Embree performance against pure native C++ Embree for lsi and pip within an 8.74 minute local package.

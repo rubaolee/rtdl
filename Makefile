@@ -1,6 +1,6 @@
 BUILD_DIR := build
 
-.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare test verify clean
+.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare test verify clean
 
 build:
 	mkdir -p $(BUILD_DIR)
@@ -44,6 +44,9 @@ run-goal15-compare:
 
 run-goal18-compare:
 	PYTHONPATH=src:. python3 scripts/goal18_compare_result_modes.py
+
+run-goal19-compare:
+	PYTHONPATH=src:.:scripts python3 scripts/goal19_compare_embree_performance.py
 
 test:
 	mkdir -p $(BUILD_DIR)

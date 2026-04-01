@@ -93,7 +93,8 @@ bool write_pairs_csv(
 bool write_timing_json(
     const std::string& path,
     double total_sec,
-    size_t row_count) {
+    size_t row_count,
+    uint64_t pair_hash) {
   std::ofstream stream(path);
   if (!stream) {
     std::cerr << "failed to write " << path << "\n";
@@ -102,9 +103,26 @@ bool write_timing_json(
   stream << std::fixed << std::setprecision(9);
   stream << "{\n";
   stream << "  \"total_sec\": " << total_sec << ",\n";
-  stream << "  \"row_count\": " << row_count << "\n";
+  stream << "  \"row_count\": " << row_count << ",\n";
+  stream << "  \"pair_hash\": \"" << std::hex << std::setw(16) << std::setfill('0') << pair_hash << "\"\n";
   stream << "}\n";
   return true;
+}
+
+uint64_t hash_pairs(std::vector<std::pair<uint32_t, uint32_t>> rows) {
+  std::sort(rows.begin(), rows.end());
+  uint64_t hash = 1469598103934665603ull;
+  for (const auto& row : rows) {
+    for (int shift = 0; shift < 32; shift += 8) {
+      hash ^= static_cast<uint8_t>((row.first >> shift) & 0xffu);
+      hash *= 1099511628211ull;
+    }
+    for (int shift = 0; shift < 32; shift += 8) {
+      hash ^= static_cast<uint8_t>((row.second >> shift) & 0xffu);
+      hash *= 1099511628211ull;
+    }
+  }
+  return hash;
 }
 
 }  // namespace
@@ -125,11 +143,11 @@ int main(int argc, char** argv) {
     } else if (arg == "--timing-out" && i + 1 < argc) {
       timing_out = argv[++i];
     } else {
-      std::cerr << "usage: goal15_lsi_native --left path --right path --pairs-out path --timing-out path\n";
+      std::cerr << "usage: goal15_lsi_native --left path --right path [--pairs-out path] --timing-out path\n";
       return 2;
     }
   }
-  if (left_path.empty() || right_path.empty() || pairs_out.empty() || timing_out.empty()) {
+  if (left_path.empty() || right_path.empty() || timing_out.empty()) {
     std::cerr << "missing required arguments\n";
     return 2;
   }
@@ -168,8 +186,9 @@ int main(int argc, char** argv) {
 
   const double total_sec =
       std::chrono::duration<double>(end - start).count();
-  if (!write_pairs_csv(pairs_out, pairs) ||
-      !write_timing_json(timing_out, total_sec, pairs.size())) {
+  const uint64_t pair_hash = hash_pairs(pairs);
+  if ((!pairs_out.empty() && !write_pairs_csv(pairs_out, pairs)) ||
+      !write_timing_json(timing_out, total_sec, pairs.size(), pair_hash)) {
     return 1;
   }
   return 0;

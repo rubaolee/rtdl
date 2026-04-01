@@ -1,0 +1,20 @@
+Review Goal 19 setup in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_19_embree_performance_comparison_plan.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-19-embree-performance-comparison/reports/Goal_19_Spec_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-19-embree-performance-comparison/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+
+Review criteria:
+1. Is the goal technically sound for answering the current performance question?
+2. Is the minimum scope (`lsi` + `pip`) sufficient?
+3. Is the 5-10 minute total runtime budget reasonable and well-scoped?
+4. Are the acceptance criteria honest and measurable?
+5. Should implementation begin?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Consensus to begin implementation.
+  - Blocked
