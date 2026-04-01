@@ -1,0 +1,20 @@
+Review Goal 22 setup in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_22_rayjoin_gap_closure.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-22-rayjoin-gap-closure/reports/Goal_22_Spec_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-22-rayjoin-gap-closure/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/docs/goal_21_rayjoin_matrix_dataset_frozen.md
+
+Review criteria:
+1. Is this the right first Goal 22 slice?
+2. Is it acceptable to prioritize registry + generator closure before full public-dataset acquisition?
+3. Does the slice stay within the Goal 21 blocker list?
+4. Should implementation begin?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Consensus to begin implementation.
+  - Blocked

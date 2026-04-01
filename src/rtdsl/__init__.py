@@ -62,6 +62,8 @@ from .plan_schema import load_plan_schema
 from .plan_schema import schema_path
 from .plan_schema import validate_plan_dict
 from .paper_reproduction import paper_targets
+from .paper_reproduction import dataset_families
+from .paper_reproduction import local_profiles
 from .paper_reproduction import PaperTarget
 from .paper_reproduction import RAYJOIN_PAPER_TARGETS
 from .reference import lsi_cpu
@@ -196,6 +198,7 @@ __all__ = [
     "Triangle",
     "Triangle2DLayout",
     "compile_kernel",
+    "dataset_families",
     "compare_baseline_rows",
     "evaluation_entries",
     "infer_workload",
@@ -216,6 +219,7 @@ __all__ = [
     "kernel",
     "layout",
     "load_cdb",
+    "local_profiles",
     "paper_targets",
     "pack_points",
     "pack_polygons",

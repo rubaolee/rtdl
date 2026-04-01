@@ -1,0 +1,20 @@
+Review Goal 21 setup in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/embree_rayjoin_reproduction_program.md
+- /Users/rl2025/rtdl_python_only/docs/goal_21_rayjoin_matrix_dataset_setup.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-21-rayjoin-matrix-dataset-setup/reports/Goal_21_Spec_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-21-rayjoin-matrix-dataset-setup/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+
+Monitoring criteria:
+1. Is the decomposition evidence-based and not just scope inflation?
+2. Does Goal 21 isolate the right planning/data work before code changes?
+3. Is the local runtime-budget policy clear enough to constrain later goals?
+4. Should implementation begin?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Consensus to begin implementation.
+  - Blocked

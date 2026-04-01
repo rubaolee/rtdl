@@ -4,15 +4,17 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 22
-- Archived files: 371
-- External reports: 69
-- Project snapshots: 302
+- Revision rounds: 24
+- Archived files: 395
+- External reports: 77
+- Project snapshots: 318
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-01 | complete-consensus | Goal 21 RayJoin Matrix and Dataset Setup | accepted | implemented | Goal 21 accepted by consensus | `e373d7a9897aa23140935b82824d49777e8e4f73` | `2026-04-01-goal-21-rayjoin-matrix-dataset-setup` |
+| 1 | 2026-04-01 | complete-consensus | Goal 22 RayJoin Embree Gap Closure | accepted | implemented | Goal 22 first slice accepted by consensus | `e373d7a9897aa23140935b82824d49777e8e4f73` | `2026-04-01-goal-22-rayjoin-gap-closure` |
 | 1 | 2026-04-01 | complete-consensus | Goal 20 Claude External Audit Response | accepted | implemented | Goal 20 doc-response slice accepted by consensus | `96babecdea08af4d4d665cdcb16032b7a1898680` | `2026-04-01-goal-20-claude-audit-response` |
 | 1 | 2026-04-01 | complete-consensus | Goal 19 Embree Performance Comparison | accepted | implemented | Goal 19 complete by consensus | `4df3bbb` | `2026-04-01-goal-19-embree-performance-comparison` |
 | 1 | 2026-04-01 | complete-consensus | Goal 18 Low-Overhead Runtime Continuation | accepted | implemented | Goal 18 complete by consensus | `1487690f2ced0c5823976f7907d61d680ca7979c` | `2026-04-01-goal-18-low-overhead-runtime-continuation` |
