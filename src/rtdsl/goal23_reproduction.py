@@ -590,7 +590,7 @@ def _section56_simple_pdf_from_lines(lines: list[str]) -> bytes:
         y = 770
         for line in page_lines:
             safe = line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-            content.append(f"72 {y} Td ({safe}) Tj")
+            content.append(f"1 0 0 1 72 {y} Tm ({safe}) Tj")
             y -= 16
         content.append("ET")
         stream = "\n".join(content).encode("utf-8")

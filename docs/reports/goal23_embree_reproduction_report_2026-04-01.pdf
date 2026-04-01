@@ -3,52 +3,52 @@
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 2 0 obj
-<< /Length 3504 >>
+<< /Length 3840 >>
 stream
 BT
 /F1 11 Tf
-72 770 Td (Goal 23 Embree Reproduction Report) Tj
-72 754 Td () Tj
-72 738 Td (Generated: 2026-04-01T12:11:56) Tj
-72 722 Td (Boundary: bounded-local executable slice only; missing source-identified families remain reported but unexecuted) Tj
-72 706 Td (Total package wall time: 286.25 s) Tj
-72 690 Td () Tj
-72 674 Td (Executed slice:) Tj
-72 658 Td (- Table 3 partial bounded local analogue rows only) Tj
-72 642 Td (- Figure 13 bounded synthetic LSI analogue) Tj
-72 626 Td (- Figure 14 bounded synthetic PIP analogue) Tj
-72 610 Td (- Table 4 bounded overlay-seed analogue) Tj
-72 594 Td (- Figure 15 bounded overlay speedup analogue) Tj
-72 578 Td () Tj
-72 562 Td (Missing / unexecuted families:) Tj
-72 546 Td (- Block ⊲⊳ Water / lsi: missing \(Add public acquisition and conversion path before any bounded local analogue is treated as complete.\)) Tj
-72 530 Td (- Block ⊲⊳ Water / pip: missing \(Add public acquisition and conversion path before any bounded local analogue is treated as complete.\)) Tj
-72 514 Td (- LKAF ⊲⊳ PKAF / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 498 Td (- LKAF ⊲⊳ PKAF / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 482 Td (- LKAS ⊲⊳ PKAS / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 466 Td (- LKAS ⊲⊳ PKAS / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 450 Td (- LKAU ⊲⊳ PKAU / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 434 Td (- LKAU ⊲⊳ PKAU / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 418 Td (- LKEU ⊲⊳ PKEU / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 402 Td (- LKEU ⊲⊳ PKEU / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 386 Td (- LKNA ⊲⊳ PKNA / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 370 Td (- LKNA ⊲⊳ PKNA / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 354 Td (- LKSA ⊲⊳ PKSA / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 338 Td (- LKSA ⊲⊳ PKSA / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
-72 322 Td () Tj
-72 306 Td (Executed Table 3 rows:) Tj
-72 290 Td (- county_fixture_subset_lsi: County ⊲⊳ Zipcode / lsi / fixture-subset / speedup=0.58x) Tj
-72 274 Td (- county_tiled_x8_lsi: County ⊲⊳ Zipcode / lsi / derived-input / speedup=3.52x) Tj
-72 258 Td (- county_fixture_subset_pip: County ⊲⊳ Zipcode / pip / fixture-subset / speedup=0.80x) Tj
-72 242 Td (- county_tiled_x8_pip: County ⊲⊳ Zipcode / pip / derived-input / speedup=3.46x) Tj
-72 226 Td () Tj
-72 210 Td (Overlay rows:) Tj
-72 194 Td (- overlay_fixture_subset: speedup=0.89x / overlay-seed analogue / fixture-subset) Tj
-72 178 Td (- overlay_tiled_x8: speedup=1.34x / overlay-seed analogue / derived-input) Tj
-72 162 Td () Tj
-72 146 Td (Figure 13 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure13_lsi_bounded.svg) Tj
-72 130 Td (Figure 14 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure14_pip_bounded.svg) Tj
-72 114 Td (Figure 15 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure15_overlay_speedup_bounded.svg) Tj
+1 0 0 1 72 770 Tm (Goal 23 Embree Reproduction Report) Tj
+1 0 0 1 72 754 Tm () Tj
+1 0 0 1 72 738 Tm (Generated: 2026-04-01T12:11:56) Tj
+1 0 0 1 72 722 Tm (Boundary: bounded-local executable slice only; missing source-identified families remain reported but unexecuted) Tj
+1 0 0 1 72 706 Tm (Total package wall time: 286.25 s) Tj
+1 0 0 1 72 690 Tm () Tj
+1 0 0 1 72 674 Tm (Executed slice:) Tj
+1 0 0 1 72 658 Tm (- Table 3 partial bounded local analogue rows only) Tj
+1 0 0 1 72 642 Tm (- Figure 13 bounded synthetic LSI analogue) Tj
+1 0 0 1 72 626 Tm (- Figure 14 bounded synthetic PIP analogue) Tj
+1 0 0 1 72 610 Tm (- Table 4 bounded overlay-seed analogue) Tj
+1 0 0 1 72 594 Tm (- Figure 15 bounded overlay speedup analogue) Tj
+1 0 0 1 72 578 Tm () Tj
+1 0 0 1 72 562 Tm (Missing / unexecuted families:) Tj
+1 0 0 1 72 546 Tm (- Block ⊲⊳ Water / lsi: missing \(Add public acquisition and conversion path before any bounded local analogue is treated as complete.\)) Tj
+1 0 0 1 72 530 Tm (- Block ⊲⊳ Water / pip: missing \(Add public acquisition and conversion path before any bounded local analogue is treated as complete.\)) Tj
+1 0 0 1 72 514 Tm (- LKAF ⊲⊳ PKAF / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 498 Tm (- LKAF ⊲⊳ PKAF / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 482 Tm (- LKAS ⊲⊳ PKAS / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 466 Tm (- LKAS ⊲⊳ PKAS / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 450 Tm (- LKAU ⊲⊳ PKAU / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 434 Tm (- LKAU ⊲⊳ PKAU / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 418 Tm (- LKEU ⊲⊳ PKEU / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 402 Tm (- LKEU ⊲⊳ PKEU / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 386 Tm (- LKNA ⊲⊳ PKNA / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 370 Tm (- LKNA ⊲⊳ PKNA / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 354 Tm (- LKSA ⊲⊳ PKSA / lsi: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 338 Tm (- LKSA ⊲⊳ PKSA / pip: missing \(Acquire or derive the continent pair before bounded local runs.\)) Tj
+1 0 0 1 72 322 Tm () Tj
+1 0 0 1 72 306 Tm (Executed Table 3 rows:) Tj
+1 0 0 1 72 290 Tm (- county_fixture_subset_lsi: County ⊲⊳ Zipcode / lsi / fixture-subset / speedup=0.58x) Tj
+1 0 0 1 72 274 Tm (- county_tiled_x8_lsi: County ⊲⊳ Zipcode / lsi / derived-input / speedup=3.52x) Tj
+1 0 0 1 72 258 Tm (- county_fixture_subset_pip: County ⊲⊳ Zipcode / pip / fixture-subset / speedup=0.80x) Tj
+1 0 0 1 72 242 Tm (- county_tiled_x8_pip: County ⊲⊳ Zipcode / pip / derived-input / speedup=3.46x) Tj
+1 0 0 1 72 226 Tm () Tj
+1 0 0 1 72 210 Tm (Overlay rows:) Tj
+1 0 0 1 72 194 Tm (- overlay_fixture_subset: speedup=0.89x / overlay-seed analogue / fixture-subset) Tj
+1 0 0 1 72 178 Tm (- overlay_tiled_x8: speedup=1.34x / overlay-seed analogue / derived-input) Tj
+1 0 0 1 72 162 Tm () Tj
+1 0 0 1 72 146 Tm (Figure 13 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure13_lsi_bounded.svg) Tj
+1 0 0 1 72 130 Tm (Figure 14 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure14_pip_bounded.svg) Tj
+1 0 0 1 72 114 Tm (Figure 15 SVG: /Users/rl2025/rtdl_python_only/build/goal23_reproduction/figures/figure15_overlay_speedup_bounded.svg) Tj
 ET
 endstream
 endobj
@@ -66,11 +66,11 @@ xref
 0000000000 65535 f 
 0000000009 00000 n 
 0000000079 00000 n 
-0000003635 00000 n 
-0000003761 00000 n 
-0000003818 00000 n 
+0000003971 00000 n 
+0000004097 00000 n 
+0000004154 00000 n 
 trailer
 << /Size 6 /Root 5 0 R >>
 startxref
-3867
+4203
 %%EOF
