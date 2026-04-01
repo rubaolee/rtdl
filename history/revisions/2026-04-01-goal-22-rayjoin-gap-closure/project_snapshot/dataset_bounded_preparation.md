@@ -1,0 +1,9 @@
+# Goal 22 Bounded Dataset Preparation
+
+This artifact records the deterministic bounded-local preparation policy for the missing RayJoin paper dataset families.
+
+| Handle | Current Status | Source Requirement | Runtime Target | Deterministic Rule | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `USCounty__Zipcode` | `source-identified` | Need zipcode source acquisition plus conversion into RayJoin-compatible CDB before bounded County ⊲⊳ Zipcode runs. | 5-10 minutes total package for the local comparison and reproduction loop. | Prefer exact-input Dryad share; otherwise derive a bounded CDB subset from raw USCounty + Zipcode with a fixed face/chain limit and stable sort by chain id. | County-side fixture exists now; zipcode-side local bounded subset does not. |
+| `USACensusBlockGroupBoundaries__USADetailedWaterBodies` | `source-identified` | Need both BlockGroup and WaterBodies acquisition plus conversion into RayJoin-compatible CDB before bounded Block ⊲⊳ Water runs. | 5-10 minutes total package for the local comparison and reproduction loop. | Prefer exact-input Dryad share; otherwise derive bounded CDB subsets from raw BlockGroup + WaterBodies with fixed chain/face limits and stable sort by chain id. | No checked-in local subset currently exists for either family. |
+| `lakes_parks_continents` | `source-identified` | Need exact preprocessed continent pairs from Dryad or deterministic continent extraction from public Lakes/Parks sources before bounded LK* ⊲⊳ PK* runs. | 5-10 minutes total package for Table 3 / Table 4 / Figure 15 analogue generation. | If exact-input share is unavailable, derive each continent pair deterministically from public Lakes/Parks sources and then apply a fixed chain-limit reduction per continent. | Goal 21 already froze the continent handle mapping from RayJoin scripts. |

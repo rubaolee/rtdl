@@ -1,0 +1,24 @@
+Monitor and review Goal 22 dataset-source and bounded-preparation slice in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_22_rayjoin_gap_closure.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_public_dataset_sources.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/rayjoin_artifacts.py
+- /Users/rl2025/rtdl_python_only/tests/goal22_reproduction_test.py
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-22-rayjoin-gap-closure/reports/Iteration_3_Implementation_Report_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-22-rayjoin-gap-closure/project_snapshot/dataset_sources.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-22-rayjoin-gap-closure/project_snapshot/dataset_bounded_preparation.md
+
+Review criteria:
+1. Does the implementation stay within Goal 22 scope?
+2. Is the public-source picture honest and machine-readable?
+3. Is the bounded local preparation policy explicit enough for Goal 23?
+4. Can this slice close by consensus?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Goal 22 dataset-source slice accepted by consensus.
+  - Blocked

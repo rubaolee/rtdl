@@ -96,6 +96,11 @@ Current precision note:
 - `docs/goal_19_embree_performance_comparison_plan.md`: Goal 19 plan for RTDL vs pure C/C++ Embree performance comparison under a 5–10 minute local runtime budget.
 - `docs/reports/goal19_embree_performance_comparison_2026-04-01.md`: Goal 19 report comparing RTDL dict/raw/prepared paths against native Embree for `lsi` and `pip`.
 - `docs/runtime_overhead_architecture.md`: architecture note describing the current host-path overhead and the redesign target.
+- `docs/embree_rayjoin_reproduction_program.md`: staged program for the current RayJoin-on-Embree reproduction effort.
+- `docs/goal_21_rayjoin_matrix_dataset_setup.md`: Goal 21 setup and frozen matrix/provenance handoff.
+- `docs/goal_21_rayjoin_matrix_dataset_frozen.md`: frozen paper-target matrix, bounded local profile policy, and Goal 22 blocker list.
+- `docs/goal_22_rayjoin_gap_closure.md`: Goal 22 scope for dataset/provenance/reporting blockers ahead of bounded local runs.
+- `docs/rayjoin_public_dataset_sources.md`: current public-source acquisition and bounded-preparation picture for the remaining RayJoin dataset families.
 - `docs/rtdl/`: language reference, programming guide, cookbook, and LLM authoring guide.
 - `examples/`: canonical language examples plus authored example programs.
 

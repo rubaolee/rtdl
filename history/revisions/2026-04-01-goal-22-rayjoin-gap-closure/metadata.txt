@@ -4,8 +4,8 @@ version: 1
 status: complete-consensus
 started_on: 2026-04-01
 closed_on: 2026-04-01
-source_commit: e373d7a9897aa23140935b82824d49777e8e4f73
+source_commit: fc8b20d
 gemini_review: accepted
 codex_revision: implemented
-final_result: Goal 22 first slice accepted by consensus
-summary: Registry and analogue-generator slice for the bounded RayJoin-on-Embree reproduction program.
+final_result: Goal 22 dataset-source slice accepted by consensus
+summary: Generator plus dataset-source/bounded-preparation machinery for the bounded RayJoin-on-Embree reproduction program.

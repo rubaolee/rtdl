@@ -37,3 +37,19 @@ Goal 22 is complete when:
 3. the overlay-seed analogue boundary is encoded in the reporting path
 4. any still-missing public dataset is labeled clearly rather than silently skipped
 5. Gemini approves the implementation and Claude accepts the goal-level closure
+
+## Current Goal 22 Progress
+
+Goal 22 has been split into slices.
+
+- The first slice closed the matrix/reporting/generator blockers.
+- The current slice closes the public-source and bounded-preparation machinery for the missing RayJoin dataset families.
+
+Current deliverables for this slice:
+
+- a machine-readable public-source registry for exact-input and derived-input paths
+- a machine-readable bounded-local preparation registry
+- deterministic helper functions for slicing and writing CDB subsets
+- generated artifacts that expose the public-source and bounded-preparation picture directly
+
+This slice still distinguishes `source-identified` from `acquired`.
