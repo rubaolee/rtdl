@@ -498,7 +498,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.plum);
   addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo are in sync through Goal 17 first-slice closure, including the low-overhead Embree runtime path and refreshed history dashboard.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through Goal 19 closure, including the first-class raw Embree runtime path, the native-vs-RTDL performance comparison, and the refreshed history dashboard.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
     "Read docs/rtdl/*, run make test, make run-rtdsl-sim, and make run-rtdsl-embree, then author new kernels against the current contracts.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
@@ -506,10 +506,11 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addCodeBox(slide, 0.82, 4.15, 11.7, 1.75,
 `Current repo snapshot:
 - Six supported workloads
-- CPU + Embree runtimes plus native C++ comparison slice
+- CPU + Embree runtimes plus native C++ comparison slices
 - Embree 4.4.0 runtime on this Mac
-- 74 passing tests
-- 16 archived review/revision rounds
+- 80 passing tests
+- 21 archived review/revision rounds
+- First-class raw + prepared raw runtime modes
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);
 }
@@ -558,13 +559,13 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.rust);
-  addTitle(slide, "RTDL vs Native Runtime Path", "The Python-like DSL is preserved, but the current runtime path is still too heavy compared with a thin native wrapper.");
+  addTitle(slide, "RTDL vs Native Runtime Path", "Goal 19 sharpened the conclusion: the DSL is viable, but only the low-overhead runtime modes are close to native.");
   addPanel(slide, 0.8, 1.55, 5.75, 4.35, "Current RTDL + Embree path",
-    "1. Python DSL kernel\n2. compile / validate / lower\n3. Python input normalization\n4. ctypes marshaling\n5. native Embree backend\n6. native rows\n7. Python dict rows\n\nMeasured Goal 15 gap:\n- lsi: about 7.6x slower than native\n- pip: about 37x slower than native", COLORS.white);
+    "1. Python DSL kernel\n2. compile / validate / lower\n3. Python input normalization\n4. ctypes marshaling\n5. native Embree backend\n6. native rows\n7. Python dict rows\n\nGoal 19 larger-profile gap:\n- lsi dict path: about 101.6x slower than native\n- pip dict path: about 225.3x slower than native", COLORS.white);
   addPanel(slide, 6.8, 1.55, 5.75, 4.35, "Pure C++ + Embree path",
-    "1. native input arrays\n2. direct native call\n3. native rows\n4. output serialization\n\nThe current comparison uses the same Embree-native core, so the gap mainly comes from RTDL host/runtime overhead rather than a different traversal engine.", COLORS.mist);
+    "1. native input arrays\n2. direct native call\n3. native rows\n4. output serialization\n\nGoal 19 larger-profile result:\n- lsi raw/prepared-raw: about 0.98x / 0.89x of native\n- pip raw/prepared-raw: about 0.87x / 0.83x of native", COLORS.mist);
   addPanel(slide, 0.85, 6.1, 11.7, 0.68, "Design implication",
-    "Keep the Python-like DSL, but move execution toward compiled plans plus flat native-ready buffers. Python should remain the control plane, not the main data plane.", COLORS.sand);
+    "Keep the Python-like DSL. Treat dict-return execution as a convenience mode, and treat raw / prepared-raw execution as the serious performance path. Python should remain the control plane, not the main data plane.", COLORS.sand);
   addFooter(slide, 15);
 }
 

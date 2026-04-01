@@ -135,3 +135,58 @@ The measured result was:
 - packed inputs plus a thin native result view did materially reduce the gap
 
 That means the redesign direction is now supported by measured repo evidence rather than only architectural argument.
+
+## Goal 18 Runtime Result
+
+Goal 18 turned that direction into a more first-class runtime mode.
+
+What changed:
+
+- `run_embree(..., result_mode="raw")` became a first-class path
+- packed/prepared execution expanded from the Goal 17 pair to the full current local Embree workload surface
+
+Current local workloads supported by the low-overhead path:
+
+- `lsi`
+- `pip`
+- `overlay`
+- `ray_tri_hitcount`
+- `segment_polygon_hitcount`
+- `point_nearest_segment`
+
+The important result from Goal 18 was:
+
+- the low-overhead runtime is no longer an experimental side API
+- the caller can stay on `run_embree(...)` and still select the thin raw-row path
+
+## Goal 19 Performance Result
+
+Goal 19 measured the current RTDL runtime modes against the pure native C++ + Embree path for `lsi` and `pip`.
+
+The comparison used:
+
+- deterministic fixture profiles
+- larger matched profiles
+- a full local package that finished in `8.74 min`
+
+The main result was:
+
+- the ordinary dict-return RTDL path is still far slower than native
+- the raw and prepared-raw RTDL paths are close to native on the measured workloads
+
+Larger-profile result summary:
+
+- `lsi`
+  - dict gap vs native: `101.56x`
+  - raw gap vs native: `0.98x`
+  - prepared raw gap vs native: `0.89x`
+- `pip`
+  - dict gap vs native: `225.33x`
+  - raw gap vs native: `0.87x`
+  - prepared raw gap vs native: `0.83x`
+
+So the current architecture conclusion is sharper now:
+
+- the Python-like DSL is still viable
+- the dict-return runtime path should be treated as a convenience path
+- the serious performance path is now the raw / prepared-raw execution path
