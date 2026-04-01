@@ -1,0 +1,23 @@
+Review Goal 20 revised state in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/external_reports/Iteration_0_External_Audit_2026-04-01_Claude.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/reports/Iteration_1_Response_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/reports/Iteration_2_Implementation_Report_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/README.md
+- /Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md
+- /Users/rl2025/rtdl_python_only/docs/runtime_overhead_architecture.md
+
+Monitoring criteria:
+1. Did the revision actually resolve the accepted doc-level issues?
+2. Does the closure claim stay within the evidence?
+3. Are deferred code/architecture items kept clearly deferred rather than implied fixed?
+4. Is the process ready for closure?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Goal 20 doc-response slice accepted by consensus.
+  - Blocked

@@ -1,0 +1,21 @@
+Review Goal 20 setup in /Users/rl2025/rtdl_python_only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_20_claude_audit_response_plan.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/external_reports/Iteration_0_External_Audit_2026-04-01_Claude.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/reports/Goal_20_Spec_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+
+Review criteria:
+1. Is the Codex classification of the uploaded audit fair to the current repository state?
+2. Which findings should be revised now, and which should be deferred?
+3. Is the "silent truncation" claim still valid for the current local Embree path, or is it outdated?
+4. Is the proposed revision scope honest and sufficient?
+5. Should implementation begin?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Consensus to begin implementation.
+  - Blocked

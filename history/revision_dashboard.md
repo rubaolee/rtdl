@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 21
-- Archived files: 357
-- External reports: 64
-- Project snapshots: 293
+- Revision rounds: 22
+- Archived files: 371
+- External reports: 69
+- Project snapshots: 302
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-01 | complete-consensus | Goal 20 Claude External Audit Response | accepted | implemented | Goal 20 doc-response slice accepted by consensus | `96babecdea08af4d4d665cdcb16032b7a1898680` | `2026-04-01-goal-20-claude-audit-response` |
 | 1 | 2026-04-01 | complete-consensus | Goal 19 Embree Performance Comparison | accepted | implemented | Goal 19 complete by consensus | `4df3bbb` | `2026-04-01-goal-19-embree-performance-comparison` |
 | 1 | 2026-04-01 | complete-consensus | Goal 18 Low-Overhead Runtime Continuation | accepted | implemented | Goal 18 complete by consensus | `1487690f2ced0c5823976f7907d61d680ca7979c` | `2026-04-01-goal-18-low-overhead-runtime-continuation` |
 | v0.1-alpha-goal17 | 2026-03-31 | done-consensus | Goal 17 Low-Overhead Embree Runtime | Gemini accepted the first slice as an honest and successful low-overhead runtime result, with the caveat that the ordinary dict-return path remains unoptimized. | Codex implemented packed inputs, prepared Embree execution, a thin raw-row result view, tests, benchmarks, and the first architecture report for the low-overhead path. | Goal 17 first slice complete; RTDL now has a packed + prepared + raw-row Embree path for lsi and pip that materially closes the native performance gap while preserving the Python-like DSL. | `8a87682` | `2026-03-31-goal-17-low-overhead-runtime` |
