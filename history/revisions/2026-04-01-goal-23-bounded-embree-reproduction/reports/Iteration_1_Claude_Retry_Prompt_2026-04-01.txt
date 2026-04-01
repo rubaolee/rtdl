@@ -1,0 +1,25 @@
+Review Goal 23 plan/setup in /Users/rl2025/rtdl_python_only.
+
+Do not write any files. Reply in stdout only.
+
+Required files:
+- /Users/rl2025/rtdl_python_only/docs/goal_23_bounded_embree_reproduction.md
+- /Users/rl2025/rtdl_python_only/docs/embree_rayjoin_reproduction_program.md
+- /Users/rl2025/rtdl_python_only/docs/goal_21_rayjoin_matrix_dataset_frozen.md
+- /Users/rl2025/rtdl_python_only/docs/goal_22_rayjoin_gap_closure.md
+- /Users/rl2025/rtdl_python_only/docs/rayjoin_public_dataset_sources.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-23-bounded-embree-reproduction/reports/Goal_23_Spec_2026-04-01_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-23-bounded-embree-reproduction/reports/Iteration_1_PreImplementation_Report_2026-04-01_Codex.md
+
+Review criteria:
+1. Is the bounded executable slice technically honest?
+2. Does it avoid over-claiming unavailable dataset families?
+3. Is the scope tight enough for a single implementation round?
+4. Can Goal 23 begin implementation on this basis?
+
+Output format:
+- short findings section
+- short decision section
+- final line must be exactly one of:
+  - Consensus to begin implementation.
+  - Blocked

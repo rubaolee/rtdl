@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 24
-- Archived files: 407
-- External reports: 79
-- Project snapshots: 328
+- Revision rounds: 25
+- Archived files: 423
+- External reports: 83
+- Project snapshots: 340
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-01 | complete-consensus | Goal 23 Bounded Embree Reproduction Runs | accepted | implemented | Goal 23 accepted by consensus | `68c3ab1` | `2026-04-01-goal-23-bounded-embree-reproduction` |
 | 1 | 2026-04-01 | complete-consensus | Goal 21 RayJoin Matrix and Dataset Setup | accepted | implemented | Goal 21 accepted by consensus | `e373d7a9897aa23140935b82824d49777e8e4f73` | `2026-04-01-goal-21-rayjoin-matrix-dataset-setup` |
 | 1 | 2026-04-01 | complete-consensus | Goal 22 RayJoin Embree Gap Closure | accepted | implemented | Goal 22 dataset-source slice accepted by consensus | `e373d7a9897aa23140935b82824d49777e8e4f73` | `2026-04-01-goal-22-rayjoin-gap-closure` |
 | 1 | 2026-04-01 | complete-consensus | Goal 20 Claude External Audit Response | accepted | implemented | Goal 20 doc-response slice accepted by consensus | `96babecdea08af4d4d665cdcb16032b7a1898680` | `2026-04-01-goal-20-claude-audit-response` |

@@ -1,0 +1,11 @@
+slug: 2026-04-01-goal-23-bounded-embree-reproduction
+title: Goal 23 Bounded Embree Reproduction Runs
+version: 1
+status: complete-consensus
+started_on: 2026-04-01
+closed_on: 2026-04-01
+source_commit: 68c3ab1
+gemini_review: accepted
+codex_revision: implemented
+final_result: Goal 23 accepted by consensus
+summary: Executed the bounded local RayJoin-on-Embree reproduction slice with final tables, figures, and report.

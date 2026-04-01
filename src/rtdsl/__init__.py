@@ -53,6 +53,8 @@ from .embree_runtime import PreparedEmbreeKernel
 from .embree_runtime import run_embree
 from .evaluation_matrix import evaluation_entries
 from .evaluation_matrix import EMBREE_EVALUATION_MATRIX
+from .goal23_reproduction import generate_goal23_artifacts
+from .goal23_reproduction import run_goal23_reproduction
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -222,6 +224,7 @@ __all__ = [
     "generate_section_5_6_artifacts",
     "generate_synthetic_polygons",
     "generate_optix_project",
+    "generate_goal23_artifacts",
     "generate_embree_evaluation_artifacts",
     "input",
     "kernel",
@@ -258,6 +261,7 @@ __all__ = [
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_embree",
+    "run_goal23_reproduction",
     "run_cpu",
     "run_section_5_6",
     "ScalabilityConfig",
