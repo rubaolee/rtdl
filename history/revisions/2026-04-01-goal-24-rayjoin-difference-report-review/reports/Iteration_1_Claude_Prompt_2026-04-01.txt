@@ -1,0 +1,19 @@
+Review this report as if it will be sent to the RayJoin first author:
+/Users/rl2025/rtdl_python_only/docs/reports/rayjoin_vs_rtdl_embree_difference_report_2026-04-01.md
+
+Review criteria:
+- factual honesty
+- no overclaiming
+- consistency with current RTDL project state
+- clear distinction between original RayJoin experiments and current RTDL-on-Embree work
+- usefulness as a discussion memo with the first author
+
+Be strict. If any wording could mislead the author into thinking we reproduced more than we did, call it out.
+
+Output format:
+1. Findings (if any), ordered by severity.
+2. Suggested revisions.
+3. Final decision line with exactly one of:
+   - Approved as-is
+   - Approved with revisions
+   - Blocked

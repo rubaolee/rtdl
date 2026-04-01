@@ -1,0 +1,9 @@
+Final short check on the revised memo:
+/Users/rl2025/rtdl_python_only/docs/reports/rayjoin_vs_rtdl_embree_difference_report_2026-04-01.md
+
+The only remaining issue you found was dead absolute local file links. Those have now been replaced by plain companion-document references.
+
+Please answer with exactly one line:
+- Approved as-is
+- Approved with revisions
+- Blocked
