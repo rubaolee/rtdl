@@ -1,0 +1,11 @@
+slug: 2026-03-31-goal-16-testing-hardening
+title: Goal 16 Testing Hardening
+version: v0.1-alpha-goal16
+status: done-consensus
+started_on: 2026-03-31
+closed_on: 2026-03-31
+source_commit: d56662c
+gemini_review: Gemini approved the final testing hardening package and accepted Goal 16 as complete by consensus.
+codex_revision: Codex implemented the test package, fixed subprocess verification issues and shared-output test races, ran the full suite, and added a unified verification entry point.
+final_result: Goal 16 complete; RTDL now has a comprehensive local testing hardening package with 68 passing tests, stable artifact-generation tests, and a make verify audit path.
+summary: Testing hardening round adding negative tests, six-workload CPU/Embree parity, report smokes, unified verification, and temp-dir isolation for generated-artifact tests.

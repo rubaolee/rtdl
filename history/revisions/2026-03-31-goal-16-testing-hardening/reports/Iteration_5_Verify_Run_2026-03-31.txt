@@ -1,0 +1,40 @@
+mkdir -p build
+PYTHONPATH=src:. python3 scripts/run_full_verification.py
+{
+  "artifacts": {
+    "evaluation_artifacts": [
+      "csv",
+      "gap_analysis",
+      "json",
+      "latency_svg",
+      "markdown",
+      "pdf",
+      "scaling_svg",
+      "speedup_svg"
+    ],
+    "goal15_compare": {
+      "lsi_pairs": 24000,
+      "pip_pairs": 120
+    }
+  },
+  "cli": {
+    "baseline_runner_cpu": {
+      "rows": 2
+    },
+    "baseline_runner_invalid_dataset": {
+      "returncode": 1
+    },
+    "baseline_runner_missing_arg": {
+      "returncode": 2
+    }
+  },
+  "embree": {
+    "cpu_rows": 2,
+    "parity": true,
+    "skipped": false
+  },
+  "unittest": {
+    "command": "python3 -m unittest discover -s tests -p '*_test.py'",
+    "output": "....................................................................\n----------------------------------------------------------------------\nRan 68 tests in 6.334s\n\nOK"
+  }
+}

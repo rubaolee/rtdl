@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 17
-- Archived files: 302
-- External reports: 46
-- Project snapshots: 256
+- Revision rounds: 18
+- Archived files: 322
+- External reports: 52
+- Project snapshots: 270
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1-alpha-goal16 | 2026-03-31 | done-consensus | Goal 16 Testing Hardening | Gemini approved the final testing hardening package and accepted Goal 16 as complete by consensus. | Codex implemented the test package, fixed subprocess verification issues and shared-output test races, ran the full suite, and added a unified verification entry point. | Goal 16 complete; RTDL now has a comprehensive local testing hardening package with 68 passing tests, stable artifact-generation tests, and a make verify audit path. | `d56662c` | `2026-03-31-goal-16-testing-hardening` |
 | v0.1-alpha-goal13-close | 2026-03-31 | done-consensus | Goal 13 Cancellation Consensus | Gemini accepted cancellation as technically honest if Goal 13 artifacts are preserved as valid partial results. | Codex marked Goal 13 canceled and superseded by Goal 15 while preserving completed Goal 13 artifacts as accepted references. | Goal 13 closure accepted by Claude and Gemini; Goal 13 is canceled as superseded by Goal 15 while completed Goal 13 slices remain valid references. | `e3484d2` | `2026-03-31-goal-13-cancelation-consensus-g15` |
 | v0.1-alpha-goal15 | 2026-03-31 | done-consensus | Goal 15 Claude C++ Embree Comparison | Gemini accepted the final comparison report after Claude accepted the implementation slice and correctness/performance evidence. | Codex implemented the native C++ + Embree executables, comparison harness, regression tests, and final report. | Goal 15 complete as an audited native-wrapper versus RTDL host-path comparison slice with correctness parity and measured overhead evidence. | `14b815d` | `2026-03-31-goal-15-claude-cpp-embree-comparison` |
 | v0.1-alpha-goal14 | 2026-03-31 | done-consensus | Goal 14 Section 5.6 Exact-Scale Estimation | Gemini reviewed the estimate and accepted it as technically honest, with only a minor note that the log-scaling model should be treated as optimistic. | Codex added a reproducible estimator, a plan note, Goal 13 suspension note, and a machine/resource feasibility analysis for exact-scale Section 5.6 on the current Mac. | Goal 14 complete as an estimation/report goal; exact-scale Section 5.6 should not be scheduled on this Mac until the host-side data path is refactored. | `1458e31` | `2026-03-31-goal-14-section-5-6-exact-scale-estimation` |

@@ -1,0 +1,26 @@
+Propose a concrete comprehensive testing package for Goal 16.
+
+Context:
+- Repo: /Users/rl2025/rtdl_python_only
+- Existing tests: tests/*.py include compiler, language, simulator, Embree, baseline, evaluation, Goal 10, Goal 15, and Section 5.6 tests.
+- Current top-level test entry point is `make test` running unittest discovery.
+- Goal: strengthen unit/integration/system confidence without adding new product features or NVIDIA dependencies.
+
+What I need from you:
+- exact recommended test additions or expansions
+- specific file names you recommend adding or changing
+- any recommended top-level verification command or script
+- negative/adversarial cases you think are essential
+- report/artifact/CLI paths that should get smoke coverage
+- a minimum acceptable first implementation slice
+
+Respond with these sections only:
+Recommended package
+Why this package
+Minimum acceptable slice
+Risks to watch
+
+Do not write code yet. End with one exact line:
+Consensus proposal ready for implementation review.
+or
+Blocked.
