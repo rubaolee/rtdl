@@ -8,24 +8,38 @@ OPTIX_LIB_NAME := librtdl_optix.so
 endif
 
 OPTIX_PREFIX ?= /opt/optix
+ifneq ("$(wildcard /usr/local/cuda)","")
 CUDA_PREFIX ?= /usr/local/cuda
+else ifneq ("$(wildcard /usr/lib/cuda)","")
+CUDA_PREFIX ?= /usr/lib/cuda
+else
+CUDA_PREFIX ?= /usr/local/cuda
+endif
 
 OPTIX_INCLUDE := $(OPTIX_PREFIX)/include
 CUDA_INCLUDE := $(CUDA_PREFIX)/include
+ifneq ("$(wildcard $(CUDA_PREFIX)/lib64)","")
 CUDA_LIB := $(CUDA_PREFIX)/lib64
+else
+CUDA_LIB := /usr/lib/x86_64-linux-gnu
+endif
 
+ifneq ("$(wildcard $(CUDA_PREFIX)/bin/nvcc)","")
 NVCC ?= $(CUDA_PREFIX)/bin/nvcc
+else
+NVCC ?= /usr/bin/nvcc
+endif
 CXX_OPTIX ?= $(NVCC)
 
 OPTIX_CXXFLAGS := \
-	-std=c++17 -O3 -shared -fPIC \
+	-std=c++17 -O3 -shared \
 	-I$(OPTIX_INCLUDE) \
 	-I$(CUDA_INCLUDE) \
-	-DRTDL_OPTIX_INCLUDE_DIR='"$(OPTIX_INCLUDE)"' \
-	-DRTDL_CUDA_INCLUDE_DIR='"$(CUDA_INCLUDE)"' \
+	-DRTDL_OPTIX_INCLUDE_DIR=\"$(OPTIX_INCLUDE)\" \
+	-DRTDL_CUDA_INCLUDE_DIR=\"$(CUDA_INCLUDE)\" \
 	-Xcompiler -fPIC
 
-OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc -Wl,-rpath,$(CUDA_LIB)
+OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc
 
 .PHONY: build build-optix run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 

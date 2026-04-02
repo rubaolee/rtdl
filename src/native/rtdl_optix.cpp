@@ -378,6 +378,27 @@ struct AccelHolder {
     }
     AccelHolder(const AccelHolder&)            = delete;
     AccelHolder& operator=(const AccelHolder&) = delete;
+    AccelHolder(AccelHolder&& other) noexcept
+        : output_buf(other.output_buf),
+          aabb_buf(other.aabb_buf),
+          handle(other.handle) {
+        other.output_buf = 0;
+        other.aabb_buf = 0;
+        other.handle = 0;
+    }
+    AccelHolder& operator=(AccelHolder&& other) noexcept {
+        if (this != &other) {
+            if (output_buf) cuMemFree(output_buf);
+            if (aabb_buf) cuMemFree(aabb_buf);
+            output_buf = other.output_buf;
+            aabb_buf = other.aabb_buf;
+            handle = other.handle;
+            other.output_buf = 0;
+            other.aabb_buf = 0;
+            other.handle = 0;
+        }
+        return *this;
+    }
 };
 
 static AccelHolder build_custom_accel(OptixDeviceContext ctx,
