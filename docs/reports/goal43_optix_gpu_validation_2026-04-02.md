@@ -100,3 +100,25 @@ The next correct OptiX goal is:
 - fix the post-success teardown segfault
 - then rerun the Goal 43 ladder before attempting broader OptiX performance or
   larger data
+
+## Deferred Claude audit plan
+
+After the later OptiX fix round closed the two blocked issues above, a final
+Claude audit is still required as a follow-up review artifact.
+
+That deferred Claude audit should specifically check:
+
+- the final `overlay` parity fix in
+  `/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp`
+- the shutdown-stability fix that prevents the post-success teardown crash
+- the validated remote rerun showing all 8 Goal 43 targets parity-clean on
+  `192.168.1.20`
+- the current host/runtime boundary:
+  - OptiX runtime `9.0`
+  - SDK headers pinned to `v9.0.0`
+  - `RTDL_OPTIX_PTX_COMPILER=nvcc`
+  - `RTDL_NVCC=/usr/bin/nvcc`
+
+The deferred Claude audit should end with an explicit yes/no decision on
+whether the corrected Goal 43 state is acceptable for continued OptiX
+development before broader GPU testing begins.

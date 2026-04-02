@@ -63,3 +63,27 @@ This goal is successful if it produces:
 
 It does **not** require all workloads to pass. Honest boundary documentation is
 acceptable and expected.
+
+## Deferred Claude audit
+
+After the final post-Goal-43 fixes are in place, Claude must perform one more
+audit pass over the controlled OptiX implementation before broader GPU work
+continues.
+
+The Claude follow-up audit should review:
+
+- the final `overlay` parity fix in
+  `/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp`
+- the shutdown-stability fix that keeps cached OptiX pipeline state alive until
+  process exit
+- the validated remote host results on `192.168.1.20`
+- the current PTX-generation boundary:
+  - `nvcc` fallback is working
+  - default NVRTC is still not the trusted path on this host
+
+Expected output of that Claude audit:
+
+- explicit `APPROVE` or `BLOCK`
+- any remaining correctness or lifecycle findings
+- a recommendation on whether the backend is ready to move from validation into
+  broader development and testing
