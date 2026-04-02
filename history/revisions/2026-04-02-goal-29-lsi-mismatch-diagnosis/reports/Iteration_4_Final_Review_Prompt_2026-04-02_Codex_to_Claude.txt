@@ -1,0 +1,22 @@
+Goal 29 final review request.
+
+This round is closing as a diagnosis-only goal, not as a parity-fix goal.
+
+Files to review:
+- `docs/goal_29_lsi_mismatch_diagnosis.md`
+- `docs/reports/goal29_lsi_mismatch_diagnosis_2026-04-02.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/reports/Iteration_3_Diagnosis_Report_2026-04-02_Codex.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/external_reports/Iteration_2_PreImplementation_Review_2026-04-02_Claude.md`
+
+Frozen technical conclusions from this round:
+- the `k=5` larger exact-source `lsi` mismatch remains reproducible
+- a 4-left / 4-right exact-source segment reproducer isolates the missing pairs
+- float32 truncation in the active native geometry ABI is a confirmed contributing factor
+- attempted local fixes did not produce a publishable parity-clean runtime revision in this round
+- the repo was intentionally restored to a doc-only state for Goal 29 closure
+
+Please assess whether this diagnosis-only closure is technically honest and whether any blocker remains.
+
+Please end with one of:
+- `Approved diagnosis closure.`
+- `Blocked: diagnosis still incomplete.`

@@ -1,0 +1,40 @@
+Goal 29 pre-implementation review request.
+
+Please review the Goal 29 plan and current diagnosis snapshot for the larger-slice `lsi` mismatch between:
+- Python reference path: `rt.run_cpu(...)`
+- Embree backend: `rt.run_embree(...)`
+
+Files to review:
+- `docs/goal_29_lsi_mismatch_diagnosis.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/reports/Goal_29_Spec_2026-04-02_Codex.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md`
+- `scripts/goal29_debug_lsi_slice.py`
+- `scripts/goal29_inspect_lsi_pairs.py`
+- `src/rtdsl/reference.py`
+- `src/rtdsl/runtime.py`
+- `src/rtdsl/embree_runtime.py`
+- `src/native/rtdl_embree.cpp`
+
+Frozen mismatch evidence:
+- On the frozen `k=5` slice, CPU returns 7 pairs and Embree returns 3 pairs.
+- CPU-only pairs are `(24,368)`, `(25,367)`, `(26,365)`, `(111,345)`.
+- Embree-only pairs are empty.
+- All four missing hits share the same `left_chain_id=27489` and `right_chain_id=4706`.
+- Example missing pair:
+  - left segment: `[-92.864493, 42.202805] -> [-92.86446, 42.21008]`
+  - right segment: `[-92.864443, 42.210078] -> [-92.864472, 42.210078]`
+  - expected intersection near `(-92.86446000907216, 42.210078)`
+
+Current working hypothesis:
+- this is not general data conversion failure
+- this is likely an all-hit collection issue in the Embree `lsi` path, not random precision drift
+
+Tasks:
+1. review whether the diagnosis plan is technically sound
+2. identify any flawed assumptions or missing checks
+3. say whether it is reasonable to proceed with a fix in `src/native/rtdl_embree.cpp`
+4. if you see a likely root cause, state it explicitly
+
+Please end with one of:
+- `Consensus to begin implementation.`
+- `Blocked pending further diagnosis.`

@@ -1,0 +1,21 @@
+Goal 29 final monitoring review request.
+
+Please review the diagnosis-only closure for Goal 29.
+
+Review these files:
+- `docs/goal_29_lsi_mismatch_diagnosis.md`
+- `docs/reports/goal29_lsi_mismatch_diagnosis_2026-04-02.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/reports/Iteration_3_Diagnosis_Report_2026-04-02_Codex.md`
+
+Summary you should evaluate:
+- Goal 29 did not find a safe parity fix
+- Goal 29 did produce a tighter diagnosis
+- float32 truncation in the active native geometry ABI is confirmed to contribute
+- an unresolved Embree-side `lsi` broad-phase/candidate problem remains
+- no speculative runtime changes were kept
+
+Please assess whether this is a technically honest closure for the round.
+
+Please end with one of:
+- `Approved diagnosis closure.`
+- `Blocked: diagnosis still incomplete.`

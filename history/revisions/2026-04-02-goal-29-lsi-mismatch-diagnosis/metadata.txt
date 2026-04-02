@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-29-lsi-mismatch-diagnosis
+title: Goal 29 LSI mismatch diagnosis
+version: Goal 29
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 776bf48
+gemini_review: Approved diagnosis closure.
+codex_revision: Diagnosis-only closure accepted
+final_result: Diagnosis-only accepted
+summary: Diagnosed the larger-slice LSI mismatch without publishing speculative runtime changes; float32 ABI loss confirmed and Embree-side candidate completeness remains unresolved.

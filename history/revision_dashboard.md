@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 31
-- Archived files: 499
-- External reports: 102
-- Project snapshots: 397
+- Revision rounds: 32
+- Archived files: 512
+- External reports: 105
+- Project snapshots: 407
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Goal 29 | 2026-04-02 | complete-consensus | Goal 29 LSI mismatch diagnosis | Approved diagnosis closure. | Diagnosis-only closure accepted | Diagnosis-only accepted | `776bf48` | `2026-04-02-goal-29-lsi-mismatch-diagnosis` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28D Linux County Zipcode Larger Exact-Source Execution | accepted | implemented | Goal 28D complete by consensus | `8db6eb38a7ce4b3d76048fd9d85e02ccd4d437c2` | `2026-04-02-goal-28d-linux-county-zipcode-larger-execution` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28C Linux County Zipcode Exact-Source Execution | accepted | implemented | Goal 28C complete by consensus | `31abd92d27450401981959c990eb46cb294b85c1` | `2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28A Linux Exact-Input Feasibility | accepted | implemented | Goal 28A complete by 2-AI consensus | `e1525b7` | `2026-04-02-goal-28a-linux-exact-input-feasibility` |

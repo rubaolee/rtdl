@@ -1,0 +1,29 @@
+Goal 29 monitoring review request.
+
+Please monitor and review the pre-implementation state for Goal 29, which targets the larger-slice `lsi` mismatch between the Python reference path and the Embree backend.
+
+Review these files:
+- `docs/goal_29_lsi_mismatch_diagnosis.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/reports/Goal_29_Spec_2026-04-02_Codex.md`
+- `history/revisions/2026-04-02-goal-29-lsi-mismatch-diagnosis/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md`
+- `scripts/goal29_debug_lsi_slice.py`
+- `scripts/goal29_inspect_lsi_pairs.py`
+- `src/rtdsl/reference.py`
+- `src/rtdsl/runtime.py`
+- `src/rtdsl/embree_runtime.py`
+- `src/native/rtdl_embree.cpp`
+
+Frozen mismatch evidence:
+- CPU returns 7 pairs, Embree returns 3 pairs on the frozen `k=5` slice.
+- CPU-only pairs: `(24,368)`, `(25,367)`, `(26,365)`, `(111,345)`.
+- Embree-only pairs: none.
+- All missing pairs share one left chain and one right chain.
+
+Please assess:
+1. whether the Goal 29 plan is technically honest and well scoped
+2. whether the current evidence supports proceeding to implementation
+3. whether any important monitoring or validation step is missing
+
+Please end with one of:
+- `Consensus to begin implementation.`
+- `Blocked pending further diagnosis.`
