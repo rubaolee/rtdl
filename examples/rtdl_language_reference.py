@@ -1,7 +1,7 @@
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def county_zip_join_reference():
     left = rt.input("left", rt.Segments, layout=rt.Segment2DLayout, role="probe")
     right = rt.input("right", rt.Segments, layout=rt.Segment2DLayout, role="build")
@@ -13,7 +13,7 @@ def county_zip_join_reference():
     )
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def point_in_counties_reference():
     points = rt.input("points", rt.Points, layout=rt.Point2DLayout, role="probe")
     polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
@@ -25,7 +25,7 @@ def point_in_counties_reference():
     return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def county_soil_overlay_reference():
     left = rt.input("left", rt.Polygons, layout=rt.Polygon2DLayout, role="probe")
     right = rt.input("right", rt.Polygons, layout=rt.Polygon2DLayout, role="build")

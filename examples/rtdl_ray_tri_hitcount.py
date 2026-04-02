@@ -6,7 +6,7 @@ import random
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def ray_triangle_hitcount_reference():
     rays = rt.input("rays", rt.Rays, layout=rt.Ray2DLayout, role="probe")
     triangles = rt.input("triangles", rt.Triangles, layout=rt.Triangle2DLayout, role="build")

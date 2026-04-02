@@ -1,7 +1,7 @@
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def ray_triangle_hit_counter():
     rays = rt.input("rays", rt.Rays, role="probe")
     triangles = rt.input("triangles", rt.Triangles, role="build")

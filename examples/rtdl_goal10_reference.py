@@ -3,7 +3,7 @@ from __future__ import annotations
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def segment_polygon_hitcount_reference():
     segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="probe")
     polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
@@ -12,7 +12,7 @@ def segment_polygon_hitcount_reference():
     return rt.emit(hits, fields=["segment_id", "hit_count"])
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def point_nearest_segment_reference():
     points = rt.input("points", rt.Points, layout=rt.Point2DLayout, role="probe")
     segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="build")

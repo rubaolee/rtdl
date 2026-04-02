@@ -1,7 +1,7 @@
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def gemini_embree_polygon_test():
     points = rt.input("points", rt.Points, role="probe")
     polygons = rt.input("polygons", rt.Polygons, role="build")

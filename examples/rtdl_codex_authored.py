@@ -1,7 +1,7 @@
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def road_boundary_crossings():
     roads = rt.input("roads", rt.Segments, role="probe")
     boundaries = rt.input("boundaries", rt.Segments, role="build")
@@ -13,7 +13,7 @@ def road_boundary_crossings():
     )
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def station_in_districts():
     stations = rt.input("stations", rt.Points, role="probe")
     districts = rt.input("districts", rt.Polygons, role="build")
@@ -25,7 +25,7 @@ def station_in_districts():
     return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def parcel_flood_overlay():
     parcels = rt.input("parcels", rt.Polygons, role="probe")
     floodzones = rt.input("floodzones", rt.Polygons, role="build")

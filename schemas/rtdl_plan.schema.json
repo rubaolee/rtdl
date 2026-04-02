@@ -1,5 +1,5 @@
 {
-  "$id": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json",
+  "$id": "https://rtdl.dev/schemas/rtdl-plan-v1alpha1.json",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -27,7 +27,7 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "const": "https://rtdl.dev/schemas/rayjoin-plan-v1alpha1.json"
+      "const": "https://rtdl.dev/schemas/rtdl-plan-v1alpha1.json"
     },
     "schema_version": {
       "type": "string",
@@ -38,7 +38,7 @@
       "type": "string",
       "enum": ["lsi", "pip", "overlay", "ray_tri_hitcount", "segment_polygon_hitcount", "point_nearest_segment"]
     },
-    "backend": { "type": "string", "const": "rayjoin" },
+    "backend": { "type": "string", "const": "rtdl" },
     "precision": { "type": "string", "const": "float_approx" },
     "build_input": { "$ref": "#/definitions/geometry_input" },
     "probe_input": { "$ref": "#/definitions/geometry_input" },

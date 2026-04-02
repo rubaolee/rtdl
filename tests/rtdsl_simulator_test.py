@@ -111,7 +111,7 @@ class RtDslSimulatorTest(unittest.TestCase):
             )
 
     def test_run_cpu_rejects_non_float_approx_precision(self) -> None:
-        @rt.kernel(backend="rayjoin", precision="exact")
+        @rt.kernel(backend="rtdl", precision="exact")
         def exact_kernel():
             left = rt.input("left", rt.Segments, role="probe")
             right = rt.input("right", rt.Segments, role="build")

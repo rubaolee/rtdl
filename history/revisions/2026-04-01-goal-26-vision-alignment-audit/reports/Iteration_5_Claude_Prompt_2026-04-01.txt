@@ -1,0 +1,36 @@
+Review the revised Goal 26 state after Codex addressed the Iteration 4 findings.
+
+Repository root:
+/Users/rl2025/rtdl_python_only
+
+Read these first:
+
+1. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-26-vision-alignment-audit/external_reports/Iteration_4_Implementation_Review_2026-04-01_Claude.md
+2. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-26-vision-alignment-audit/reports/Iteration_4_Response_2026-04-01_Codex.md
+3. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-26-vision-alignment-audit/reports/Iteration_3_Implementation_Report_2026-04-01_Codex.md
+
+Then review the revised live surface with emphasis on:
+
+- `README.md`
+- `docs/vision.md`
+- `docs/v0_1_final_plan.md`
+- `docs/v0_1_roadmap.md`
+- `docs/rtdl/`
+- `src/rtdsl/ir.py`
+- `src/rtdsl/lowering.py`
+- `src/rtdsl/plan_schema.py`
+- `src/rtdsl/__init__.py`
+- `generated/`
+- `schemas/`
+
+Task:
+
+- determine whether Goal 26 is now acceptable as a completed vision-alignment audit/revision round
+- identify any remaining blocker only if it is real and high-signal
+
+Output requirements:
+
+- concise findings ordered by severity if any remain
+- one exact final-decision line:
+  - `Goal 26 complete by consensus`
+  - `Blocked`

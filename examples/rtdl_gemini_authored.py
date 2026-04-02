@@ -1,7 +1,7 @@
 import rtdsl as rt
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def lsi_kernel():
     left = rt.input("left", rt.Segments, role="probe")
     right = rt.input("right", rt.Segments, role="build")
@@ -13,7 +13,7 @@ def lsi_kernel():
     )
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def pip_kernel():
     points = rt.input("points", rt.Points, role="probe")
     polygons = rt.input("polygons", rt.Polygons, role="build")
@@ -25,7 +25,7 @@ def pip_kernel():
     return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 
 
-@rt.kernel(backend="rayjoin", precision="float_approx")
+@rt.kernel(backend="rtdl", precision="float_approx")
 def overlay_kernel():
     left = rt.input("left", rt.Polygons, role="probe")
     right = rt.input("right", rt.Polygons, role="build")

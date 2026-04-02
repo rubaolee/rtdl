@@ -10,7 +10,7 @@ from examples.rtdl_language_reference import county_zip_join_reference
 
 class DslNegativeTest(unittest.TestCase):
     def test_input_rejects_duplicate_name(self) -> None:
-        @rt.kernel(backend="rayjoin", precision="float_approx")
+        @rt.kernel(backend="rtdl", precision="float_approx")
         def bad_kernel():
             rt.input("left", rt.Segments, role="probe")
             rt.input("left", rt.Segments, role="build")
@@ -21,7 +21,7 @@ class DslNegativeTest(unittest.TestCase):
             rt.compile_kernel(bad_kernel)
 
     def test_input_rejects_invalid_role(self) -> None:
-        @rt.kernel(backend="rayjoin", precision="float_approx")
+        @rt.kernel(backend="rtdl", precision="float_approx")
         def bad_role():
             left = rt.input("left", rt.Segments, role="invalid")
             right = rt.input("right", rt.Segments, role="build")
@@ -32,7 +32,7 @@ class DslNegativeTest(unittest.TestCase):
             rt.compile_kernel(bad_role)
 
     def test_kernel_must_return_emit(self) -> None:
-        @rt.kernel(backend="rayjoin", precision="float_approx")
+        @rt.kernel(backend="rtdl", precision="float_approx")
         def bad_return():
             left = rt.input("left", rt.Segments, role="probe")
             right = rt.input("right", rt.Segments, role="build")

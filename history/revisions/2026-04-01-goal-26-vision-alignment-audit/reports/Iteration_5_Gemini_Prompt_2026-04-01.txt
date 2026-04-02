@@ -1,0 +1,24 @@
+Monitor the revised Goal 26 final state.
+
+Repository root:
+/Users/rl2025/rtdl_python_only
+
+Read these first:
+
+1. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-26-vision-alignment-audit/external_reports/Iteration_3_Implementation_Review_2026-04-01_Gemini.md
+2. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-26-vision-alignment-audit/external_reports/Iteration_4_Implementation_Review_2026-04-01_Claude.md
+3. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-26-vision-alignment-audit/reports/Iteration_4_Response_2026-04-01_Codex.md
+
+Task:
+
+- verify whether Goal 26 now leaves the repository in a materially more honest and internally consistent state with respect to:
+  - whole-project multi-backend vision
+  - current v0.1 RayJoin slice
+  - current local Embree-only reality
+
+Output requirements:
+
+- concise structured review
+- one exact final-decision line:
+  - `Goal 26 complete by consensus`
+  - `Blocked`
