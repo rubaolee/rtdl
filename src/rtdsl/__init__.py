@@ -81,6 +81,7 @@ from .ir import RTExecutionPlan
 from .ir import RefineOp
 from .lowering import lower_to_execution_plan
 from .lowering import lower_to_rayjoin
+from .oracle_runtime import oracle_version
 from .plan_schema import load_plan_schema
 from .plan_schema import schema_path
 from .plan_schema import validate_plan_dict
@@ -107,6 +108,7 @@ from .section_5_6_scalability import polygons_to_segments
 from .section_5_6_scalability import run_section_5_6
 from .section_5_6_scalability import ScalabilityConfig
 from .runtime import run_cpu
+from .runtime import run_cpu_python_reference
 from .types import f32
 from .types import field
 from .types import GeometryType
@@ -195,6 +197,7 @@ __all__ = [
     "LaunchParam",
     "Layout",
     "overlay_compose",
+    "oracle_version",
     "point_nearest_segment",
     "OutputRecord",
     "OverpassElementStats",
@@ -293,6 +296,7 @@ __all__ = [
     "run_embree",
     "run_goal23_reproduction",
     "run_cpu",
+    "run_cpu_python_reference",
     "run_section_5_6",
     "ScalabilityConfig",
     "schema_path",

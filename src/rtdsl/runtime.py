@@ -6,6 +6,7 @@ from dataclasses import is_dataclass
 
 from .api import compile_kernel
 from .ir import CompiledKernel
+from .oracle_runtime import run_oracle
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import pip_cpu
@@ -36,6 +37,45 @@ def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
         for name, payload in inputs.items()
     }
 
+    return _project_rows(compiled, run_oracle(compiled, normalized_inputs))
+
+
+def run_cpu_python_reference(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
+    compiled = _resolve_kernel(kernel_fn_or_compiled)
+    _validate_kernel_for_cpu(compiled)
+    expected_inputs = {item.name: item for item in compiled.inputs}
+
+    missing = [name for name in expected_inputs if name not in inputs]
+    unexpected = [name for name in inputs if name not in expected_inputs]
+    if missing:
+        raise ValueError(f"missing RTDL simulator inputs: {', '.join(sorted(missing))}")
+    if unexpected:
+        raise ValueError(f"unexpected RTDL simulator inputs: {', '.join(sorted(unexpected))}")
+
+    normalized_inputs = {
+        name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
+        for name, payload in inputs.items()
+    }
+    return _run_cpu_python_reference_from_normalized(compiled, normalized_inputs)
+
+
+def _resolve_kernel(kernel_fn_or_compiled) -> CompiledKernel:
+    if isinstance(kernel_fn_or_compiled, CompiledKernel):
+        return kernel_fn_or_compiled
+    return compile_kernel(kernel_fn_or_compiled)
+
+
+def _validate_kernel_for_cpu(compiled: CompiledKernel) -> None:
+    if compiled.precision != "float_approx":
+        raise ValueError("RTDL CPU simulator currently supports only precision='float_approx'")
+    if compiled.candidates is None or compiled.refine_op is None or compiled.emit_op is None:
+        raise ValueError("RTDL CPU simulator requires a fully compiled kernel with traverse/refine/emit")
+
+
+def _run_cpu_python_reference_from_normalized(
+    compiled: CompiledKernel,
+    normalized_inputs,
+) -> tuple[dict[str, object], ...]:
     predicate_name = compiled.refine_op.predicate.name
     left_name = compiled.candidates.left.name
     right_name = compiled.candidates.right.name
@@ -59,6 +99,10 @@ def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
     else:
         raise ValueError(f"unsupported RTDL CPU simulator predicate: {predicate_name}")
 
+    return _project_rows(compiled, rows)
+
+
+def _project_rows(compiled: CompiledKernel, rows) -> tuple[dict[str, object], ...]:
     emit_fields = compiled.emit_op.fields
     projected_rows = []
     for row in rows:
@@ -70,19 +114,6 @@ def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
             )
         projected_rows.append({field: row[field] for field in emit_fields})
     return tuple(projected_rows)
-
-
-def _resolve_kernel(kernel_fn_or_compiled) -> CompiledKernel:
-    if isinstance(kernel_fn_or_compiled, CompiledKernel):
-        return kernel_fn_or_compiled
-    return compile_kernel(kernel_fn_or_compiled)
-
-
-def _validate_kernel_for_cpu(compiled: CompiledKernel) -> None:
-    if compiled.precision != "float_approx":
-        raise ValueError("RTDL CPU simulator currently supports only precision='float_approx'")
-    if compiled.candidates is None or compiled.refine_op is None or compiled.emit_op is None:
-        raise ValueError("RTDL CPU simulator requires a fully compiled kernel with traverse/refine/emit")
 
 
 def _normalize_records(name: str, geometry_name: str, payload) -> tuple[object, ...]:
