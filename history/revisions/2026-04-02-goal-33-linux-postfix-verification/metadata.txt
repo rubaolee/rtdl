@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-33-linux-postfix-verification
+title: Goal 33 Linux Post-Fix Verification
+version: v1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 081c3d7
+gemini_review: Gemini-only fallback review approved; Linux host verification report is technically honest and consistent with the measured results.
+codex_revision: Linux post-fix verification accepted
+final_result: Linux Goal 31/32 verification accepted
+summary: Verified on 192.168.1.20 that the Goal 31/32 lsi fix holds on Linux too, including the old exact-source 1x5, 1x6, and 1x8 slices.
