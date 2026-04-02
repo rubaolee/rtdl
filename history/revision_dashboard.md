@@ -4,7 +4,7 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 28
+- Revision rounds: 29
 - Archived files: 487
 - External reports: 98
 - Project snapshots: 389
@@ -13,6 +13,7 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-02 | complete-consensus | Goal 28A Linux Exact-Input Feasibility | accepted | implemented | Goal 28A complete by 2-AI consensus | `e1525b7` | `2026-04-02-goal-28a-linux-exact-input-feasibility` |
 | 1 | 2026-04-02 | complete-consensus | Goal 27 Linux Embree Test Environment | accepted | implemented | Goal 27 complete by 2-AI consensus | `3965e22` | `2026-04-02-goal-27-linux-embree-test-environment` |
 | 1 | 2026-04-01 | complete-consensus | Goal 26 Vision Alignment Audit | accepted | implemented | Goal 26 complete by consensus | `669a5a6` | `2026-04-01-goal-26-vision-alignment-audit` |
 | 1 | 2026-04-01 | complete-consensus | Goal 25 Full Project Audit | accepted | implemented | Goal 25 accepted by consensus | `bde73a0` | `2026-04-01-goal-25-full-project-audit` |

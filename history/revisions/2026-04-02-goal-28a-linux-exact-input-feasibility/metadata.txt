@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-28a-linux-exact-input-feasibility
+title: Goal 28A Linux Exact-Input Feasibility
+version: 1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: e1525b7
+gemini_review: accepted
+codex_revision: implemented
+final_result: Goal 28A complete by 2-AI consensus
+summary: Audited the Linux host 192.168.1.20 for serious Embree reproduction work, found the documented Dryad exact-input URL unavailable, staged reachable public-source materials, and established a host-backed feasibility policy that prioritizes County/Zipcode as the first serious Linux-host target.
