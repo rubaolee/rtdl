@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-28d-linux-county-zipcode-larger-execution
+title: Goal 28D Linux County Zipcode Larger Exact-Source Execution
+version: 1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 8db6eb38a7ce4b3d76048fd9d85e02ccd4d437c2
+gemini_review: accepted
+codex_revision: implemented
+final_result: Goal 28D complete by consensus
+summary: Full Zipcode staging plus a larger parity-clean County ⊲⊳ Zipcode Linux exact-source slice accepted by Claude, Gemini, and Codex.

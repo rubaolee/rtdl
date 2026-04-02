@@ -1,0 +1,11 @@
+Monitor Goal 28D pre-implementation scope only.
+
+Files:
+- /Users/rl2025/rtdl_python_only/docs/goal_28d_linux_county_zipcode_larger_execution.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28d-linux-county-zipcode-larger-execution/reports/Goal_28D_Spec_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28d-linux-county-zipcode-larger-execution/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28c_linux_county_zipcode_exact_source_execution_2026-04-02.md
+
+Task:
+- monitor whether the plan is technically honest and sufficient for the next step
+- end with exactly one line: `Consensus to begin execution` or `Blocked`

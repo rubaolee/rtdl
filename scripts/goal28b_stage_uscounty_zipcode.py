@@ -40,6 +40,13 @@ def write_bytes(destination: Path, payload: bytes, *, use_gzip: bool) -> Path:
     return destination
 
 
+def read_page_payload(page_path: Path) -> dict[str, Any]:
+    if page_path.suffix == ".gz":
+        with gzip.open(page_path, "rt", encoding="utf-8") as handle:
+            return json.load(handle)
+    return json.loads(page_path.read_text(encoding="utf-8"))
+
+
 def stage_asset(
     asset: rt.RayJoinFeatureServiceLayer,
     *,
@@ -48,6 +55,7 @@ def stage_asset(
     sleep_sec: float,
     use_gzip: bool,
     response_format: str,
+    resume_skip_existing: bool,
 ) -> dict[str, Any]:
     asset_root = output_dir / asset.asset_id
     asset_root.mkdir(parents=True, exist_ok=True)
@@ -67,21 +75,30 @@ def stage_asset(
     pages: list[dict[str, Any]] = []
     downloaded = 0
     for offset in range(0, total, page_size):
-        query_url = rt.build_arcgis_query_url(
-            asset.service_url,
-            asset.layer_id,
-            offset=offset,
-            record_count=min(page_size, total - offset),
-            response_format=response_format,
-        )
-        try:
-            payload = fetch_bytes(query_url)
-        except HTTPError as error:
-            raise RuntimeError(f"{asset.asset_id} page fetch failed at offset={offset}: {error}") from error
         suffix = "geojson" if response_format == "geojson" else "json"
         page_name = f"page_{offset:06d}.{suffix}"
-        page_path = write_bytes(asset_root / page_name, payload, use_gzip=use_gzip)
-        decoded = json.loads(payload.decode("utf-8"))
+        raw_path = asset_root / page_name
+        page_path = raw_path.with_suffix(raw_path.suffix + ".gz") if use_gzip else raw_path
+        reused_existing = resume_skip_existing and page_path.exists()
+        if reused_existing:
+            try:
+                decoded = read_page_payload(page_path)
+            except (json.JSONDecodeError, OSError):
+                reused_existing = False
+        if not reused_existing:
+            query_url = rt.build_arcgis_query_url(
+                asset.service_url,
+                asset.layer_id,
+                offset=offset,
+                record_count=min(page_size, total - offset),
+                response_format=response_format,
+            )
+            try:
+                payload = fetch_bytes(query_url)
+            except HTTPError as error:
+                raise RuntimeError(f"{asset.asset_id} page fetch failed at offset={offset}: {error}") from error
+            page_path = write_bytes(raw_path, payload, use_gzip=use_gzip)
+            decoded = json.loads(payload.decode("utf-8"))
         feature_count = len(decoded.get("features", ()))
         downloaded += feature_count
         pages.append(
@@ -90,13 +107,14 @@ def stage_asset(
                 "requested": min(page_size, total - offset),
                 "downloaded": feature_count,
                 "path": str(page_path),
+                "reused_existing": reused_existing,
             }
         )
         print(
             f"[goal28b] {asset.asset_id} offset={offset} requested={min(page_size, total - offset)} downloaded={feature_count}",
             flush=True,
         )
-        if sleep_sec > 0:
+        if sleep_sec > 0 and not reused_existing:
             time.sleep(sleep_sec)
 
     asset_manifest = {
@@ -166,6 +184,11 @@ def parse_args() -> argparse.Namespace:
         default="json",
         help="FeatureServer response format used for paginated page downloads.",
     )
+    parser.add_argument(
+        "--resume-skip-existing",
+        action="store_true",
+        help="Reuse already-downloaded page files that match the expected page naming scheme.",
+    )
     return parser.parse_args()
 
 
@@ -190,6 +213,7 @@ def main() -> int:
             sleep_sec=args.sleep_sec,
             use_gzip=args.gzip,
             response_format=args.response_format,
+            resume_skip_existing=args.resume_skip_existing,
         )
         for asset in selected_assets
     ]

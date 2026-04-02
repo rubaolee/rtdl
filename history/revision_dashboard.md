@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 30
-- Archived files: 493
-- External reports: 100
-- Project snapshots: 393
+- Revision rounds: 31
+- Archived files: 499
+- External reports: 102
+- Project snapshots: 397
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-02 | complete-consensus | Goal 28D Linux County Zipcode Larger Exact-Source Execution | accepted | implemented | Goal 28D complete by consensus | `8db6eb38a7ce4b3d76048fd9d85e02ccd4d437c2` | `2026-04-02-goal-28d-linux-county-zipcode-larger-execution` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28C Linux County Zipcode Exact-Source Execution | accepted | implemented | Goal 28C complete by consensus | `31abd92d27450401981959c990eb46cb294b85c1` | `2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28A Linux Exact-Input Feasibility | accepted | implemented | Goal 28A complete by 2-AI consensus | `e1525b7` | `2026-04-02-goal-28a-linux-exact-input-feasibility` |
 | 1 | 2026-04-02 | complete-consensus | Goal 27 Linux Embree Test Environment | accepted | implemented | Goal 27 complete by 2-AI consensus | `3965e22` | `2026-04-02-goal-27-linux-embree-test-environment` |
