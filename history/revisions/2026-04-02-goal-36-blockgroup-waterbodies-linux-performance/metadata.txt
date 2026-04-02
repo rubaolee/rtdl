@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-36-blockgroup-waterbodies-linux-performance
+title: Goal 36 BlockGroup WaterBodies Linux Performance
+version: v0.1
+status: complete-user-waived-claude
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: c73dc32
+gemini_review: approved
+codex_revision: goal36-linux-embree-performance
+final_result: accepted
+summary: Parity-clean Linux Embree performance ladder for exact-source regional BlockGroup WaterBodies slices.

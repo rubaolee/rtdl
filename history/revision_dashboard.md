@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 38
-- Archived files: 577
-- External reports: 123
-- Project snapshots: 454
+- Revision rounds: 39
+- Archived files: 587
+- External reports: 126
+- Project snapshots: 461
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1 | 2026-04-02 | complete-user-waived-claude | Goal 36 BlockGroup WaterBodies Linux Performance | approved | goal36-linux-embree-performance | accepted | `c73dc32` | `2026-04-02-goal-36-blockgroup-waterbodies-linux-performance` |
 | v1 | 2026-04-02 | complete-consensus | Goal 35 BlockGroup WaterBodies Linux Slice | Gemini approved the final Goal 35 report as accurate to the measured Linux exact-source slice results. | Goal 35 accepted under Codex+Gemini fallback | First exact-source Linux BlockGroup-WaterBodies slice accepted | `87becfb` | `2026-04-02-goal-35-blockgroup-waterbodies-linux-slice` |
 | v1 | 2026-04-02 | complete-consensus | Goal 34 Linux Embree Performance Characterization | Gemini approved the Goal 34 plan and final Linux performance report as technically honest and consistent with the measured host data. | Linux Embree performance characterization accepted | Goal 34 accepted by consensus | `f0e9cc8` | `2026-04-02-goal-34-linux-embree-performance` |
 | v1 | 2026-04-02 | complete-consensus | Goal 33 Linux Post-Fix Verification | Gemini-only fallback review approved; Linux host verification report is technically honest and consistent with the measured results. | Linux post-fix verification accepted | Linux Goal 31/32 verification accepted | `081c3d7` | `2026-04-02-goal-33-linux-postfix-verification` |
