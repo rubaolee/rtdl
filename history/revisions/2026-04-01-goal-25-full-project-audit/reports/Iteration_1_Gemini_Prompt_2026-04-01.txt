@@ -1,0 +1,17 @@
+Monitor this Goal 25 audit setup for the RTDL repository at:
+/Users/rl2025/rtdl_python_only
+
+Your role is not the main auditor. Claude is the main auditor. You should evaluate whether the proposed audit scope and process are technically honest and likely to catch meaningful repo-level issues.
+
+Focus on:
+- whether the audit scope is broad enough
+- whether the Codex plan is honest about current project boundaries
+- whether anything important is missing from the process before implementation/revision begins
+
+Output format:
+1. Findings (if any), ordered by severity.
+2. Suggested process revisions.
+3. Final decision line with exactly one of:
+   - Consensus to begin audit
+   - Consensus to begin audit with revisions
+   - Blocked

@@ -1,0 +1,20 @@
+Run a strict full-project audit of the RTDL repository at:
+/Users/rl2025/rtdl_python_only
+
+Primary focus:
+- factual honesty of docs and reports
+- consistency between code, tests, examples, and docs
+- stale or contradictory project framing
+- current-vs-future backend boundaries
+- runtime/performance claims
+- correctness and experiment/report integrity
+
+Please review representative top-level docs, relevant source/runtime code, tests, examples, and current published reports. Be strict about overclaiming. If the repository could mislead an external reader, call it out.
+
+Output format:
+1. Findings (if any), ordered by severity.
+2. Suggested revisions.
+3. Final decision line with exactly one of:
+   - Approved as-is
+   - Approved with revisions
+   - Blocked

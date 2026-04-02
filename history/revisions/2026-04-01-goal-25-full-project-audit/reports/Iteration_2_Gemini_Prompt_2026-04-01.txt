@@ -1,0 +1,25 @@
+Monitor Goal 25 as an independent process reviewer.
+
+Repository root:
+/Users/rl2025/rtdl_python_only
+
+Read these first:
+
+1. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-25-full-project-audit/external_reports/Iteration_1_PreImplementation_Review_2026-04-01_Gemini.md
+2. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-25-full-project-audit/external_reports/Iteration_1_Full_Audit_2026-04-01_Claude.md
+3. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-25-full-project-audit/reports/Iteration_2_Implementation_Report_2026-04-01_Codex.md
+
+Your task:
+
+- verify whether Codex's revisions actually address Claude's blocked findings
+- monitor whether the Goal 25 process remained honest and evidence-based
+- report any remaining process or technical-integrity gap
+
+Output requirements:
+
+- Keep the response concise and structured.
+- State whether each major Claude finding family is resolved, partially resolved, or unresolved.
+- If you find a remaining blocker, say so explicitly.
+- End with one exact final-decision line:
+  - `Consensus to close`
+  - `Blocked`

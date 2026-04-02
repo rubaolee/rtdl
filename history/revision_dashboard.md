@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 25
-- Archived files: 423
-- External reports: 83
-- Project snapshots: 340
+- Revision rounds: 26
+- Archived files: 445
+- External reports: 90
+- Project snapshots: 355
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-01 | complete-consensus | Goal 25 Full Project Audit | accepted | implemented | Goal 25 accepted by consensus | `bde73a0` | `2026-04-01-goal-25-full-project-audit` |
 | 1 | 2026-04-01 | complete-consensus | Goal 23 Bounded Embree Reproduction Runs | accepted | implemented | Goal 23 accepted by consensus | `68c3ab1` | `2026-04-01-goal-23-bounded-embree-reproduction` |
 | 1 | 2026-04-01 | complete-consensus | Goal 21 RayJoin Matrix and Dataset Setup | accepted | implemented | Goal 21 accepted by consensus | `e373d7a9897aa23140935b82824d49777e8e4f73` | `2026-04-01-goal-21-rayjoin-matrix-dataset-setup` |
 | 1 | 2026-04-01 | complete-consensus | Goal 22 RayJoin Embree Gap Closure | accepted | implemented | Goal 22 dataset-source slice accepted by consensus | `e373d7a9897aa23140935b82824d49777e8e4f73` | `2026-04-01-goal-22-rayjoin-gap-closure` |

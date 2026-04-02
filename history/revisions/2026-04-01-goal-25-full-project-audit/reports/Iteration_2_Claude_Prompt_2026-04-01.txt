@@ -1,0 +1,33 @@
+You are re-auditing the repository after revisions for Goal 25.
+
+Repository root:
+/Users/rl2025/rtdl_python_only
+
+Primary audit context to review first:
+
+1. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-25-full-project-audit/external_reports/Iteration_1_Full_Audit_2026-04-01_Claude.md
+2. /Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-25-full-project-audit/reports/Iteration_2_Implementation_Report_2026-04-01_Codex.md
+
+Re-audit the revised repository carefully, with special attention to the findings you previously reported:
+
+- Section 5.6 reproducibility and workload-claim integrity
+- README/native-comparison methodology honesty
+- Goal 18 report methodology wording
+- low-overhead runtime boundary wording for native_loop workloads
+- duplicate or ambiguous README wording
+- machine-specific paths in checked-in reports
+
+Output requirements:
+
+- Keep findings ordered by severity.
+- For each remaining finding, include:
+  - location
+  - short explanation
+  - severity
+  - concrete requested fix
+- If a previous finding is resolved, say so explicitly.
+- End with one exact final-decision line:
+  - `Approved`
+  - `Blocked`
+
+Do not just restate the previous audit. Re-evaluate the revised repository state.
