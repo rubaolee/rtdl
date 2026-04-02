@@ -1285,28 +1285,28 @@ extern "C" __global__ void point_nearest_segment(
 // ──────────────────────────────────────────────────────────────────────────────
 
 struct LsiPipeline {
-    std::unique_ptr<PipelineHolder> pipe;
-    std::once_flag                  init;
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
 };
 
 struct PipPipeline {
-    std::unique_ptr<PipelineHolder> pipe;
-    std::once_flag                  init;
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
 };
 
 struct OverlayPipeline {
-    std::unique_ptr<PipelineHolder> pipe;
-    std::once_flag                  init;
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
 };
 
 struct RayHitCountPipeline {
-    std::unique_ptr<PipelineHolder> pipe;
-    std::once_flag                  init;
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
 };
 
 struct SegPolyPipeline {
-    std::unique_ptr<PipelineHolder> pipe;
-    std::once_flag                  init;
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
 };
 
 struct PnsCuFunction {
@@ -1372,7 +1372,7 @@ static void run_lsi_optix(
             "__intersection__lsi_isect",
             "__anyhit__lsi_anyhit",
             nullptr,   // no closesthit
-            4);
+            4).release();
     });
 
     // Upload segments
@@ -1475,7 +1475,7 @@ static void run_pip_optix(
             "__miss__pip_miss",
             "__intersection__pip_isect",
             "__anyhit__pip_anyhit",
-            nullptr, 4);
+            nullptr, 4).release();
     });
 
     size_t vert_count = vertex_xy_count / 2;
@@ -1597,7 +1597,7 @@ static void run_overlay_optix(
             "__miss__overlay_miss",
             "__intersection__overlay_isect",
             "__anyhit__overlay_anyhit",
-            nullptr, 4);
+            nullptr, 4).release();
     });
 
     size_t lv_count = left_vert_xy_count / 2;
@@ -1680,7 +1680,8 @@ static void run_overlay_optix(
     std::vector<GpuOverlayFlags> gpu_flags(out_count);
     download(gpu_flags.data(), d_output.ptr, out_count);
 
-    // CPU PIP supplement: check right vertices inside left polygon and vice versa
+    // CPU PIP supplement: match the current RTDL oracle semantics exactly.
+    // overlay_compose_cpu checks only the first vertex of each polygon.
     auto pip_check = [&](float px, float py,
                           const RtdlPolygonRef& poly, const double* vxy) -> bool {
         uint32_t n = poly.vertex_count, off = poly.vertex_offset;
@@ -1699,18 +1700,16 @@ static void run_overlay_optix(
         for (size_t ri = 0; ri < right_count; ++ri) {
             size_t slot = li * right_count + ri;
             if (gpu_flags[slot].requires_pip) continue; // already set by GPU
-            // Check ALL left-polygon vertices against right polygon
             bool found = false;
-            for (uint32_t v = 0; v < left_polys[li].vertex_count && !found; ++v) {
-                float lxv = (float)left_verts_xy[(left_polys[li].vertex_offset + v) * 2];
-                float lyv = (float)left_verts_xy[(left_polys[li].vertex_offset + v) * 2 + 1];
+            if (left_polys[li].vertex_count > 0) {
+                float lxv = (float)left_verts_xy[left_polys[li].vertex_offset * 2];
+                float lyv = (float)left_verts_xy[left_polys[li].vertex_offset * 2 + 1];
                 if (pip_check(lxv, lyv, right_polys[ri], right_verts_xy))
                     found = true;
             }
-            // Check ALL right-polygon vertices against left polygon
-            for (uint32_t v = 0; v < right_polys[ri].vertex_count && !found; ++v) {
-                float rxv = (float)right_verts_xy[(right_polys[ri].vertex_offset + v) * 2];
-                float ryv = (float)right_verts_xy[(right_polys[ri].vertex_offset + v) * 2 + 1];
+            if (!found && right_polys[ri].vertex_count > 0) {
+                float rxv = (float)right_verts_xy[right_polys[ri].vertex_offset * 2];
+                float ryv = (float)right_verts_xy[right_polys[ri].vertex_offset * 2 + 1];
                 if (pip_check(rxv, ryv, left_polys[li], left_verts_xy))
                     found = true;
             }
@@ -1755,7 +1754,7 @@ static void run_ray_hitcount_optix(
             "__miss__rayhit_miss",
             "__intersection__rayhit_isect",
             "__anyhit__rayhit_anyhit",
-            nullptr, 4);
+            nullptr, 4).release();
     });
 
     std::vector<GpuRay>      gpu_rays(ray_count);
@@ -1840,7 +1839,7 @@ static void run_seg_poly_hitcount_optix(
             "__miss__segpoly_miss",
             "__intersection__segpoly_isect",
             "__anyhit__segpoly_anyhit",
-            nullptr, 4);
+            nullptr, 4).release();
     });
 
     size_t vert_count = vertex_xy_count / 2;
