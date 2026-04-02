@@ -36,6 +36,7 @@ Current status:
 - Goal 19 is now measured locally for `lsi` and `pip`: the ordinary dict-return path remains far slower than the current native wrapper baseline, while the raw and prepared-raw RTDL Embree paths are close to that baseline on matched deterministic and larger-profile runs.
 - Goal 23 is complete as the current bounded Embree reproduction package: Figure 13 / Figure 14 bounded analogues, partial Table 3 bounded rows, Table 4 overlay-seed analogue, Figure 15 overlay speedup analogue, and a final report with explicit missing-family labeling.
 - Goal 31 is complete as the current exact-source `lsi` correctness-restoration round: the broken local BVH candidate path was removed from active use, and the local `lsi` backend now closes the known Mac/Linux reproducers through an audited `native_loop` implementation.
+- Goal 32 is complete as the current local `lsi` optimization follow-up: the Goal 31 brute-force `native_loop` was replaced with a parity-safe double-precision sort-sweep candidate pass, improving local native performance while keeping the same exact-source correctness boundary.
 - A checked-in status PDF summarizes the current RTDL state and the paper-reference figures used for the reproduction phase.
 
 Current top-level interpretation:

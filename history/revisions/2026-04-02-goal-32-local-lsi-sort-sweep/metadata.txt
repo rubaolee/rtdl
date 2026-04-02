@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-32-local-lsi-sort-sweep
+title: Goal 32 Local LSI Sort-Sweep
+version: v1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: ab69331
+gemini_review: Temporary Codex+Gemini closure accepted; local lsi must remain explicitly documented as native_loop.
+codex_revision: Local lsi sort-sweep optimization accepted
+final_result: Local lsi sort-sweep accepted
+summary: Optimized the Goal 31 local lsi native_loop with a parity-safe double-precision sort-sweep candidate pass and a measured native speedup over the brute-force baseline.

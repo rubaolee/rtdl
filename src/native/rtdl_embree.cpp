@@ -283,14 +283,101 @@ bool segment_intersection(
 std::vector<RtdlLsiRow> lsi_native_loop(
     const std::vector<Segment2D>& left_segments,
     const std::vector<Segment2D>& right_segments) {
-  std::vector<RtdlLsiRow> rows;
-  for (const Segment2D& probe : left_segments) {
-    for (const Segment2D& build : right_segments) {
-      Vec2 point {};
-      if (!segment_intersection(probe, build, &point)) {
+  struct IndexedSegmentBounds {
+    size_t original_index;
+    const Segment2D* segment;
+    double min_x;
+    double max_x;
+    double min_y;
+    double max_y;
+  };
+
+  std::vector<IndexedSegmentBounds> build_sorted;
+  build_sorted.reserve(right_segments.size());
+  for (size_t index = 0; index < right_segments.size(); ++index) {
+    const Segment2D& build = right_segments[index];
+    Bounds2D bounds = bounds_for_segment(build);
+    build_sorted.push_back({
+        index,
+        &build,
+        bounds.min_x,
+        bounds.max_x,
+        bounds.min_y,
+        bounds.max_y,
+    });
+  }
+  std::stable_sort(
+      build_sorted.begin(),
+      build_sorted.end(),
+      [](const IndexedSegmentBounds& left, const IndexedSegmentBounds& right) {
+        return left.min_x < right.min_x;
+      });
+
+  std::vector<IndexedSegmentBounds> probe_sorted;
+  probe_sorted.reserve(left_segments.size());
+  for (size_t index = 0; index < left_segments.size(); ++index) {
+    const Segment2D& probe = left_segments[index];
+    Bounds2D bounds = bounds_for_segment(probe);
+    probe_sorted.push_back({
+        index,
+        &probe,
+        bounds.min_x,
+        bounds.max_x,
+        bounds.min_y,
+        bounds.max_y,
+    });
+  }
+  std::stable_sort(
+      probe_sorted.begin(),
+      probe_sorted.end(),
+      [](const IndexedSegmentBounds& left, const IndexedSegmentBounds& right) {
+        return left.min_x < right.min_x;
+      });
+
+  std::vector<std::vector<std::pair<size_t, RtdlLsiRow>>> hits_by_probe(left_segments.size());
+  std::vector<size_t> active;
+  std::vector<size_t> next_active;
+  size_t build_cursor = 0;
+
+  for (const IndexedSegmentBounds& probe : probe_sorted) {
+    while (build_cursor < build_sorted.size() && build_sorted[build_cursor].min_x <= probe.max_x) {
+      active.push_back(build_cursor);
+      build_cursor += 1;
+    }
+
+    next_active.clear();
+    std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits = hits_by_probe[probe.original_index];
+    for (size_t active_index : active) {
+      const IndexedSegmentBounds& build = build_sorted[active_index];
+      if (build.max_x < probe.min_x) {
         continue;
       }
-      rows.push_back({probe.id, build.id, point.x, point.y});
+      next_active.push_back(active_index);
+      if (build.max_y < probe.min_y || build.min_y > probe.max_y) {
+        continue;
+      }
+      Vec2 point {};
+      if (!segment_intersection(*probe.segment, *build.segment, &point)) {
+        continue;
+      }
+      probe_hits.push_back({
+          build.original_index,
+          {probe.segment->id, build.segment->id, point.x, point.y},
+      });
+    }
+    active.swap(next_active);
+  }
+
+  std::vector<RtdlLsiRow> rows;
+  for (std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits : hits_by_probe) {
+    std::stable_sort(
+        probe_hits.begin(),
+        probe_hits.end(),
+        [](const auto& left, const auto& right) {
+          return left.first < right.first;
+        });
+    for (const auto& hit : probe_hits) {
+      rows.push_back(hit.second);
     }
   }
   return rows;
