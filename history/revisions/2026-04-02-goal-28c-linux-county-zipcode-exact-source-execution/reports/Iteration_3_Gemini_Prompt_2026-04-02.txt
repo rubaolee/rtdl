@@ -1,0 +1,19 @@
+Re-review this revised Goal 28C snapshot for RTDL.
+
+Codex response:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_2_Response_2026-04-02_Codex.md
+
+Files:
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py
+- /Users/rl2025/rtdl_python_only/scripts/goal28c_convert_and_run_county_zipcode.py
+- /Users/rl2025/rtdl_python_only/tests/goal28c_conversion_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28c_linux_county_zipcode_exact_source_execution_2026-04-02.md
+
+Return:
+- findings first if any
+- then a short verdict
+- end with exactly one of:
+  - Approved
+  - Approved with minor notes
+  - Blocked

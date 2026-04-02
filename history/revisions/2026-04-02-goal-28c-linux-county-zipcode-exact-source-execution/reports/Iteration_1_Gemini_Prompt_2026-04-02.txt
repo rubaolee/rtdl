@@ -1,0 +1,23 @@
+Monitor and review this Goal 28C plan for RTDL.
+
+Scope:
+- First executable Linux-host exact-source `County ⊲⊳ Zipcode` slice from the staged ArcGIS pages on `192.168.1.20`.
+
+Files:
+- /Users/rl2025/rtdl_python_only/docs/goal_28c_linux_county_zipcode_exact_source_execution.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Goal_28C_Spec_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28b_linux_uscounty_zipcode_staging_2026-04-02.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+
+Questions:
+1. Does the closure boundary stay within what the staged Linux data can support?
+2. Is the distinction between exact-source, partial exact-source, and chain-derived polygon approximation clear enough?
+3. Should execution begin?
+
+Return:
+- findings first
+- then a short verdict
+- end with exactly one of:
+  - Consensus to begin execution
+  - Blocked

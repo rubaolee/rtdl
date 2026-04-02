@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 29
-- Archived files: 487
-- External reports: 98
-- Project snapshots: 389
+- Revision rounds: 30
+- Archived files: 493
+- External reports: 100
+- Project snapshots: 393
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2026-04-02 | complete-consensus | Goal 28C Linux County Zipcode Exact-Source Execution | accepted | implemented | Goal 28C complete by consensus | `31abd92d27450401981959c990eb46cb294b85c1` | `2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28A Linux Exact-Input Feasibility | accepted | implemented | Goal 28A complete by 2-AI consensus | `e1525b7` | `2026-04-02-goal-28a-linux-exact-input-feasibility` |
 | 1 | 2026-04-02 | complete-consensus | Goal 27 Linux Embree Test Environment | accepted | implemented | Goal 27 complete by 2-AI consensus | `3965e22` | `2026-04-02-goal-27-linux-embree-test-environment` |
 | 1 | 2026-04-01 | complete-consensus | Goal 26 Vision Alignment Audit | accepted | implemented | Goal 26 complete by consensus | `669a5a6` | `2026-04-01-goal-26-vision-alignment-audit` |

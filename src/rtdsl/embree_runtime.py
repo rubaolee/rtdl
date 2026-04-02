@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import ctypes
+import ctypes.util
 import functools
 import os
+import platform
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -1099,34 +1101,53 @@ def _ensure_embree_library() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
     build_dir = repo_root / "build"
     build_dir.mkdir(exist_ok=True)
-    library_path = build_dir / "librtdl_embree.dylib"
     source_path = repo_root / "src" / "native" / "rtdl_embree.cpp"
-    embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", "/opt/homebrew/opt/embree"))
-    tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/opt/homebrew/opt/tbb"))
+    system = platform.system()
+    library_ext = ".dylib" if system == "Darwin" else ".so"
+    library_path = build_dir / f"librtdl_embree{library_ext}"
+    if system == "Darwin":
+        embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", "/opt/homebrew/opt/embree"))
+        tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/opt/homebrew/opt/tbb"))
+        compiler = os.environ.get("CXX", "clang++")
+        shared_flags = ["-dynamiclib", "-fPIC"]
+    else:
+        embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", "/usr"))
+        tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/usr"))
+        compiler = os.environ.get("CXX", "g++")
+        shared_flags = ["-shared", "-fPIC"]
 
-    if not embree_prefix.exists():
+    embree_include = embree_prefix / "include"
+    if not embree_prefix.exists() or not embree_include.exists():
         raise RuntimeError(
             "Embree is not installed at the configured prefix. "
-            "Set RTDL_EMBREE_PREFIX or install Embree via Homebrew."
+            "Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or install Embree first."
         )
 
     needs_build = not library_path.exists() or library_path.stat().st_mtime < source_path.stat().st_mtime
     if needs_build:
         command = [
-            "clang++",
+            compiler,
             "-std=c++17",
             "-O2",
-            "-dynamiclib",
-            "-fPIC",
+            *shared_flags,
             str(source_path),
             "-o",
             str(library_path),
-            f"-I{embree_prefix / 'include'}",
-            f"-L{embree_prefix / 'lib'}",
-            f"-Wl,-rpath,{embree_prefix / 'lib'}",
+            f"-I{embree_include}",
             "-lembree4",
         ]
-        if tbb_prefix.exists():
+        embree_lib = embree_prefix / "lib"
+        if embree_lib.exists():
+            command.extend([
+                f"-L{embree_lib}",
+                f"-Wl,-rpath,{embree_lib}",
+            ])
+        elif system == "Darwin":
+            raise RuntimeError(
+                "Embree library directory was not found under the configured prefix. "
+                "Set RTDL_EMBREE_PREFIX to the Homebrew embree prefix."
+            )
+        if tbb_prefix.exists() and (tbb_prefix / "lib").exists():
             command.extend([
                 f"-L{tbb_prefix / 'lib'}",
                 f"-Wl,-rpath,{tbb_prefix / 'lib'}",

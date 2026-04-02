@@ -20,9 +20,11 @@ from .baseline_contracts import InputContract
 from .baseline_contracts import validate_compiled_kernel_against_baseline
 from .baseline_contracts import WorkloadContract
 from .codegen import generate_optix_project
+from .datasets import arcgis_pages_to_cdb
 from .datasets import build_arcgis_geojson_query_url
 from .datasets import build_arcgis_query_url
 from .datasets import build_arcgis_layer_url
+from .datasets import chains_to_polygons
 from .datasets import chains_to_polygon_refs
 from .datasets import chains_to_probe_points
 from .datasets import chains_to_segments
@@ -30,6 +32,8 @@ from .datasets import CdbChain
 from .datasets import CdbDataset
 from .datasets import CdbPoint
 from .datasets import download_rayjoin_sample
+from .datasets import count_arcgis_loaded_pages
+from .datasets import load_arcgis_feature_pages
 from .datasets import load_cdb
 from .datasets import parse_cdb_text
 from .datasets import RayJoinBoundedPlan
@@ -221,12 +225,15 @@ __all__ = [
     "compare_baseline_rows",
     "evaluation_entries",
     "infer_workload",
+    "arcgis_pages_to_cdb",
     "build_arcgis_geojson_query_url",
     "build_arcgis_query_url",
     "build_arcgis_layer_url",
+    "chains_to_polygons",
     "chains_to_polygon_refs",
     "chains_to_probe_points",
     "chains_to_segments",
+    "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
     "EmbreeRowView",
     "embree_version",
@@ -241,6 +248,7 @@ __all__ = [
     "input",
     "kernel",
     "layout",
+    "load_arcgis_feature_pages",
     "load_cdb",
     "local_profiles",
     "paper_targets",

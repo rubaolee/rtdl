@@ -1,0 +1,26 @@
+Monitor and review this implemented Goal 28C snapshot for RTDL.
+
+Files:
+- /Users/rl2025/rtdl_python_only/docs/goal_28c_linux_county_zipcode_exact_source_execution.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Goal_28C_Spec_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_1_Response_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_2_Implementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py
+- /Users/rl2025/rtdl_python_only/src/native/rtdl_embree.cpp
+- /Users/rl2025/rtdl_python_only/scripts/goal28c_convert_and_run_county_zipcode.py
+- /Users/rl2025/rtdl_python_only/tests/goal28c_conversion_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28c_linux_county_zipcode_exact_source_execution_2026-04-02.md
+
+Questions:
+1. Does the implementation satisfy the declared closure boundary honestly?
+2. Are the Linux-host execution results and portability fixes represented correctly?
+3. Is the report clear about what remains open?
+
+Return:
+- findings first
+- then a short verdict
+- end with exactly one of:
+  - Approved
+  - Approved with minor notes
+  - Blocked

@@ -1,0 +1,18 @@
+Goal 28C short closure check.
+
+You already reviewed the revised files.
+
+Question:
+Does the current Goal 28C snapshot satisfy its declared closure boundary?
+
+Boundary:
+- full USCounty exact-source conversion
+- staged-checkpoint Zipcode conversion
+- first feature-limited Linux exact-source lsi/pip execution slice
+- CPU vs Embree parity on the executed slice
+- explicit report language about partial Zipcode input and chain-derived polygon approximation
+
+Return exactly:
+- Approved
+or
+- Blocked

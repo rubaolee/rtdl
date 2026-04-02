@@ -1,0 +1,30 @@
+Review this implemented Goal 28C snapshot for RTDL.
+
+Files:
+- /Users/rl2025/rtdl_python_only/docs/goal_28c_linux_county_zipcode_exact_source_execution.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Goal_28C_Spec_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_1_Response_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution/reports/Iteration_2_Implementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py
+- /Users/rl2025/rtdl_python_only/src/native/rtdl_embree.cpp
+- /Users/rl2025/rtdl_python_only/scripts/goal28c_convert_and_run_county_zipcode.py
+- /Users/rl2025/rtdl_python_only/tests/goal28c_conversion_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28c_linux_county_zipcode_exact_source_execution_2026-04-02.md
+
+Required closure boundary:
+- full USCounty exact-source conversion
+- staged-checkpoint Zipcode conversion
+- first feature-limited Linux exact-source lsi/pip execution slice
+- CPU vs Embree parity on the executed slice
+- explicit report language about partial zipcode input and chain-derived polygon approximation
+
+Return:
+- findings first, ordered by severity
+- then a short verdict
+- end with exactly one of:
+  - Approved
+  - Approved with minor notes
+  - Blocked

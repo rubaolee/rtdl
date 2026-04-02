@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution
+title: Goal 28C Linux County Zipcode Exact-Source Execution
+version: 1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 31abd92d27450401981959c990eb46cb294b85c1
+gemini_review: accepted
+codex_revision: implemented
+final_result: Goal 28C complete by consensus
+summary: Linux exact-source conversion and first execution slice for County ⊲⊳ Zipcode accepted by Claude, Gemini, and Codex with explicit execution boundaries.

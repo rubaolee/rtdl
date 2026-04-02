@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import gzip
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlencode
@@ -379,6 +381,109 @@ def slice_cdb_dataset(
     return CdbDataset(name=name or dataset.name, chains=tuple(chains))
 
 
+def load_arcgis_feature_pages(
+    root: str | Path,
+    *,
+    max_pages: int | None = None,
+    ignore_invalid_tail: bool = False,
+) -> tuple[dict[str, object], ...]:
+    root_path = Path(root)
+    page_paths = sorted(
+        list(root_path.glob("page_*.json")) + list(root_path.glob("page_*.json.gz")),
+        key=lambda path: path.name.replace(".gz", ""),
+    )
+    if max_pages is not None:
+        page_paths = page_paths[:max_pages]
+
+    features: list[dict[str, object]] = []
+    for page_path in page_paths:
+        try:
+            if page_path.suffix == ".gz":
+                with gzip.open(page_path, "rt", encoding="utf-8") as handle:
+                    payload = json.load(handle)
+            else:
+                payload = json.loads(page_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            if ignore_invalid_tail:
+                break
+            raise
+        features.extend(payload.get("features", ()))
+    return tuple(features)
+
+
+def count_arcgis_loaded_pages(
+    root: str | Path,
+    *,
+    max_pages: int | None = None,
+    ignore_invalid_tail: bool = False,
+) -> int:
+    root_path = Path(root)
+    page_paths = sorted(
+        list(root_path.glob("page_*.json")) + list(root_path.glob("page_*.json.gz")),
+        key=lambda path: path.name.replace(".gz", ""),
+    )
+    if max_pages is not None:
+        page_paths = page_paths[:max_pages]
+
+    loaded = 0
+    for page_path in page_paths:
+        try:
+            if page_path.suffix == ".gz":
+                with gzip.open(page_path, "rt", encoding="utf-8") as handle:
+                    json.load(handle)
+            else:
+                json.loads(page_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            if ignore_invalid_tail:
+                break
+            raise
+        loaded += 1
+    return loaded
+
+
+def arcgis_pages_to_cdb(
+    root: str | Path,
+    *,
+    name: str,
+    feature_id_field: str = "OBJECTID",
+    max_pages: int | None = None,
+    max_features: int | None = None,
+    ignore_invalid_tail: bool = False,
+) -> CdbDataset:
+    features = list(load_arcgis_feature_pages(root, max_pages=max_pages, ignore_invalid_tail=ignore_invalid_tail))
+    if max_features is not None:
+        features = features[:max_features]
+
+    chains: list[CdbChain] = []
+    next_chain_id = 1
+    next_point_id = 1
+    for feature in features:
+        attributes = feature.get("attributes", {})
+        geometry = feature.get("geometry", {})
+        face_id = int(attributes[feature_id_field])
+        rings = geometry.get("rings", ())
+        for ring in rings:
+            if len(ring) < 3:
+                continue
+            points = tuple(CdbPoint(x=float(vertex[0]), y=float(vertex[1])) for vertex in ring)
+            point_count = len(points)
+            chains.append(
+                CdbChain(
+                    chain_id=next_chain_id,
+                    point_count=point_count,
+                    first_point_id=next_point_id,
+                    last_point_id=next_point_id + point_count - 1,
+                    left_face_id=face_id,
+                    right_face_id=0,
+                    points=points,
+                )
+            )
+            next_chain_id += 1
+            next_point_id += point_count
+
+    return CdbDataset(name=name, chains=tuple(chains))
+
+
 def chains_to_segments(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, float | int], ...]:
     chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
     records = []
@@ -397,6 +502,22 @@ def chains_to_segments(dataset: CdbDataset, *, limit_chains: int | None = None) 
             )
             next_id += 1
     return tuple(records)
+
+
+def chains_to_polygons(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, object], ...]:
+    chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
+    polygons = []
+    for chain in chains:
+        if len(chain.points) < 3:
+            continue
+        polygons.append(
+            {
+                "id": chain.chain_id,
+                "vertices": tuple((point.x, point.y) for point in chain.points),
+                "source_chain_id": chain.chain_id,
+            }
+        )
+    return tuple(polygons)
 
 
 def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, float | int], ...]:
