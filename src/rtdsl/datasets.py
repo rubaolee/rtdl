@@ -92,6 +92,16 @@ class RayJoinFeatureServiceLayer:
     notes: str
 
 
+@dataclass(frozen=True)
+class OverpassElementStats:
+    element_count: int
+    polygon_like_count: int
+    closed_way_count: int
+    skipped_non_way_count: int
+    skipped_short_geometry_count: int
+    skipped_open_way_count: int
+
+
 RAYJOIN_PUBLIC_ASSETS: tuple[RayJoinPublicAsset, ...] = (
     RayJoinPublicAsset(
         asset_id="rayjoin_preprocessed_share",
@@ -436,6 +446,87 @@ def load_arcgis_feature_pages(
             raise
         features.extend(payload.get("features", ()))
     return tuple(features)
+
+
+def load_overpass_elements(path: str | Path) -> tuple[dict[str, object], ...]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    return tuple(payload.get("elements", ()))
+
+
+def overpass_elements_stats(elements: tuple[dict[str, object], ...] | list[dict[str, object]]) -> OverpassElementStats:
+    skipped_non_way_count = 0
+    skipped_short_geometry_count = 0
+    skipped_open_way_count = 0
+    polygon_like_count = 0
+    closed_way_count = 0
+    for element in elements:
+        if element.get("type") != "way":
+            skipped_non_way_count += 1
+            continue
+        geometry = element.get("geometry", ())
+        if len(geometry) < 4:
+            skipped_short_geometry_count += 1
+            continue
+        polygon_like_count += 1
+        first = geometry[0]
+        last = geometry[-1]
+        if first.get("lat") == last.get("lat") and first.get("lon") == last.get("lon"):
+            closed_way_count += 1
+        else:
+            skipped_open_way_count += 1
+    return OverpassElementStats(
+        element_count=len(elements),
+        polygon_like_count=polygon_like_count,
+        closed_way_count=closed_way_count,
+        skipped_non_way_count=skipped_non_way_count,
+        skipped_short_geometry_count=skipped_short_geometry_count,
+        skipped_open_way_count=skipped_open_way_count,
+    )
+
+
+def overpass_elements_to_cdb(
+    elements: tuple[dict[str, object], ...] | list[dict[str, object]],
+    *,
+    name: str,
+    max_features: int | None = None,
+) -> CdbDataset:
+    chains: list[CdbChain] = []
+    next_chain_id = 1
+    next_point_id = 1
+    converted_features = 0
+    for element in elements:
+        if element.get("type") != "way":
+            continue
+        geometry = element.get("geometry", ())
+        if len(geometry) < 4:
+            continue
+        first = geometry[0]
+        last = geometry[-1]
+        if first.get("lat") != last.get("lat") or first.get("lon") != last.get("lon"):
+            continue
+        face_id = int(element["id"])
+        points = tuple(
+            CdbPoint(x=float(vertex["lon"]), y=float(vertex["lat"]))
+            for vertex in geometry
+        )
+        point_count = len(points)
+        chains.append(
+            CdbChain(
+                chain_id=next_chain_id,
+                point_count=point_count,
+                first_point_id=next_point_id,
+                last_point_id=next_point_id + point_count - 1,
+                left_face_id=face_id,
+                right_face_id=0,
+                points=points,
+            )
+        )
+        next_chain_id += 1
+        next_point_id += point_count
+        converted_features += 1
+        if max_features is not None and converted_features >= max_features:
+            break
+    return CdbDataset(name=name, chains=tuple(chains))
 
 
 def count_arcgis_loaded_pages(

@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-37-lkau-pkau-linux-slice
+title: Goal 37 LKAU PKAU Linux Slice
+version: v0.1
+status: complete-user-waived-claude
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: a93a6a9
+gemini_review: approved
+codex_revision: goal37-lkau-pkau-linux-slice
+final_result: accepted
+summary: Closed the first bounded LKAU-PKAU Linux Embree slice from live public OSM with parity-clean lsi and pip results.

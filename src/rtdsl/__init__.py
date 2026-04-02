@@ -35,6 +35,10 @@ from .datasets import download_rayjoin_sample
 from .datasets import count_arcgis_loaded_pages
 from .datasets import load_arcgis_feature_pages
 from .datasets import load_cdb
+from .datasets import load_overpass_elements
+from .datasets import overpass_elements_stats
+from .datasets import overpass_elements_to_cdb
+from .datasets import OverpassElementStats
 from .datasets import parse_cdb_text
 from .datasets import RayJoinBoundedPlan
 from .datasets import RayJoinFeatureServiceLayer
@@ -193,6 +197,7 @@ __all__ = [
     "overlay_compose",
     "point_nearest_segment",
     "OutputRecord",
+    "OverpassElementStats",
     "PaperTarget",
     "PackedPoints",
     "PackedPolygons",
@@ -250,7 +255,10 @@ __all__ = [
     "layout",
     "load_arcgis_feature_pages",
     "load_cdb",
+    "load_overpass_elements",
     "local_profiles",
+    "overpass_elements_stats",
+    "overpass_elements_to_cdb",
     "paper_targets",
     "pack_points",
     "pack_polygons",
