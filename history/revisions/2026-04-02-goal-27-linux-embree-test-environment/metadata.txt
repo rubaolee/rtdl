@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-27-linux-embree-test-environment
+title: Goal 27 Linux Embree Test Environment
+version: 1
+status: complete
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 3965e22
+gemini_review: not-requested
+codex_revision: implemented
+final_result: Goal 27 complete
+summary: Prepared Ubuntu host 192.168.1.20 for RTDL Embree backend testing, verified native Embree triangle-hit execution, and confirmed RTDL make build passes on the host.
