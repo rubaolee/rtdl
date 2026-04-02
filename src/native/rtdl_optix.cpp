@@ -244,8 +244,12 @@ std::string compile_to_ptx(const char* cuda_src,
 #ifndef RTDL_CUDA_INCLUDE_DIR
 #define RTDL_CUDA_INCLUDE_DIR ""
 #endif
+#ifndef RTDL_CUDA_SYSTEM_INCLUDE_DIR
+#define RTDL_CUDA_SYSTEM_INCLUDE_DIR ""
+#endif
     std::string optix_inc = std::string("-I") + RTDL_OPTIX_INCLUDE_DIR;
     std::string cuda_inc  = std::string("-I") + RTDL_CUDA_INCLUDE_DIR;
+    std::string cuda_sys_inc = std::string("-I") + RTDL_CUDA_SYSTEM_INCLUDE_DIR;
 
     std::vector<const char*> opts = {
         optix_inc.c_str(),
@@ -253,6 +257,9 @@ std::string compile_to_ptx(const char* cuda_src,
         "--std=c++14",
         "-default-device",
     };
+    if (std::strlen(RTDL_CUDA_SYSTEM_INCLUDE_DIR) > 0) {
+        opts.push_back(cuda_sys_inc.c_str());
+    }
     for (const char* o : extra_opts) opts.push_back(o);
 
     nvrtcProgram prog;

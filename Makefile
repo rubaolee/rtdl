@@ -18,6 +18,11 @@ endif
 
 OPTIX_INCLUDE := $(OPTIX_PREFIX)/include
 CUDA_INCLUDE := $(CUDA_PREFIX)/include
+ifneq ("$(wildcard /usr/include/x86_64-linux-gnu)","")
+CUDA_SYSTEM_INCLUDE := /usr/include/x86_64-linux-gnu
+else
+CUDA_SYSTEM_INCLUDE :=
+endif
 ifneq ("$(wildcard $(CUDA_PREFIX)/lib64)","")
 CUDA_LIB := $(CUDA_PREFIX)/lib64
 else
@@ -37,6 +42,7 @@ OPTIX_CXXFLAGS := \
 	-I$(CUDA_INCLUDE) \
 	-DRTDL_OPTIX_INCLUDE_DIR=\"$(OPTIX_INCLUDE)\" \
 	-DRTDL_CUDA_INCLUDE_DIR=\"$(CUDA_INCLUDE)\" \
+	-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"$(CUDA_SYSTEM_INCLUDE)\" \
 	-Xcompiler -fPIC
 
 OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc
