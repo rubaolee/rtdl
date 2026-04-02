@@ -169,3 +169,19 @@ So the current truthful state is:
 - Claude has not yet produced a corrective revision
 - the OptiX prototype remains external and unmerged
 - no changes are allowed into the controlled RTDL repository until a later Claude revision round is completed and re-reviewed
+
+## Scheduled Follow-Up
+
+The next OptiX action is explicitly deferred until Claude CLI is available again after its reported reset time of roughly `1:00 PM America/New_York` on `2026-04-02`.
+
+That follow-up round is already scoped:
+
+- Claude revises only the external workspace:
+  - `/Users/rl2025/claude-work/2026-04-02/rtdl`
+- revision targets are limited to:
+  - payload-register mismatches
+  - overlay containment correctness
+  - macOS build/load artifact naming
+- Codex then performs a file-level review of Claude's revision
+- Gemini reviews both the revision and the Codex review
+- no OptiX code may move into `/Users/rl2025/rtdl_python_only` before that consensus exists

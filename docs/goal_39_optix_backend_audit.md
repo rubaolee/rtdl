@@ -87,3 +87,21 @@ Therefore Goal 39 currently remains:
 - externally reviewed,
 - unmerged,
 - and waiting for a future Claude revision round before any 3-way implementation consensus can exist
+
+## Next Scheduled Step
+
+After Claude CLI resets at approximately `1:00 PM America/New_York` on `2026-04-02`, the next Goal 39 action is:
+
+1. invoke Claude only in:
+   - `/Users/rl2025/claude-work/2026-04-02/rtdl`
+2. require Claude to revise only these blocking issues:
+   - payload-register mismatches
+   - overlay containment correctness gap
+   - macOS build/load artifact mismatch
+3. require Claude to leave the controlled repo unchanged:
+   - `/Users/rl2025/rtdl_python_only`
+4. have Codex review Claude's external revision file-by-file
+5. have Gemini review both:
+   - Claude's revision
+   - Codex's revision review
+6. only after 3-way consensus, allow the accepted OptiX changes to be ported into the controlled repository
