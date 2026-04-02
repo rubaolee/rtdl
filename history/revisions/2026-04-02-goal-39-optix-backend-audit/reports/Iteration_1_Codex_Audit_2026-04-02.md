@@ -17,3 +17,10 @@ Codex judgment:
 - require a new Gemini review informed by the concrete findings
 - require a Claude revision round before any final consensus
 - keep Claude coding restricted to `/Users/rl2025/claude-work/2026-04-02/rtdl` until 3-way consensus is reached
+
+Follow-up state:
+
+- Gemini completed the requested re-review and materially agreed with the blocking findings
+- Gemini also judged its earlier review to have overclaimed readiness
+- Claude revision did not begin in this cycle because the CLI returned a quota block
+- the external OptiX prototype therefore remains unmerged and not yet in a revision-consensus state

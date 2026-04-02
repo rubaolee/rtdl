@@ -145,3 +145,27 @@ The correct conclusion is:
 - a substantial external OptiX prototype exists,
 - Gemini's first review overstated its readiness,
 - and the project now has a concrete audited basis for a corrected OptiX revision round under an external-workspace-first rule.
+
+## Current Goal 39 Status Update
+
+After the Codex audit, Gemini was re-run against the concrete blocking findings and produced a narrower second review:
+
+- [Iteration_2_ReReview_2026-04-02_Gemini.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_2_ReReview_2026-04-02_Gemini.md)
+
+That re-review materially agrees with the Codex audit:
+
+- payload-register mismatches are real
+- the overlay containment fallback is incomplete
+- the macOS build/load path is broken
+- and the earlier Gemini review overclaimed readiness
+
+Claude was then invoked at the user-provided CLI path to begin an external-workspace-only revision round, but the CLI returned a quota block:
+
+- [Iteration_2_Quota_Block_2026-04-02_Claude.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_2_Quota_Block_2026-04-02_Claude.md)
+
+So the current truthful state is:
+
+- Gemini has now re-reviewed and tightened its position
+- Claude has not yet produced a corrective revision
+- the OptiX prototype remains external and unmerged
+- no changes are allowed into the controlled RTDL repository until a later Claude revision round is completed and re-reviewed
