@@ -48,9 +48,21 @@ Before this goal closes, the project should treat the OptiX backend as:
 
 1. Codex audits the implementation and writes concrete findings.
 2. Gemini re-reviews the corrected plan and the Codex findings.
-3. Claude revises the implementation once available.
+3. Claude revises the implementation in its own external workspace only:
+   - `/Users/rl2025/claude-work/2026-04-02/rtdl`
 4. Codex and Gemini review Claude's revision.
 5. Final consensus is recorded only after the revised implementation is re-audited.
+6. Only after that consensus is reached may the OptiX changes be ported into the controlled RTDL repository.
+
+## Workspace Control Rule
+
+For the current OptiX goal:
+
+- Claude may code only in:
+  - `/Users/rl2025/claude-work/2026-04-02/rtdl`
+- Codex reviews Claude's code in that external workspace first.
+- Gemini reviews both the revised implementation and the Codex review.
+- The main RTDL repository must remain unchanged by Claude until 3-way consensus is reached.
 
 ## Acceptance
 

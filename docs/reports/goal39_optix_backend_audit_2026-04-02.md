@@ -120,10 +120,12 @@ After this audit, the correct OptiX status is:
 The next OptiX round should proceed in this order:
 
 1. Gemini re-reviews the audit findings and acknowledges the earlier review overreached.
-2. Claude revises the external OptiX implementation to address the concrete blockers.
+2. Claude revises the external OptiX implementation only in:
+   - `/Users/rl2025/claude-work/2026-04-02/rtdl`
 3. Codex reviews the revised implementation file-by-file.
 4. Gemini reviews the revised implementation and Codex review.
 5. Final consensus is recorded only after the revision is re-audited.
+6. Only then may the accepted OptiX changes be copied into the controlled RTDL repository.
 
 ## Recommended Revision Targets for Claude
 
@@ -142,4 +144,4 @@ The correct conclusion is:
 
 - a substantial external OptiX prototype exists,
 - Gemini's first review overstated its readiness,
-- and the project now has a concrete audited basis for a corrected OptiX revision round.
+- and the project now has a concrete audited basis for a corrected OptiX revision round under an external-workspace-first rule.

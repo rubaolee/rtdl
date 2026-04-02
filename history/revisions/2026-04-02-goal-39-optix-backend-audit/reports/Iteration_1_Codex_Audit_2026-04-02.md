@@ -16,3 +16,4 @@ Codex judgment:
 - treat it as an external prototype pending revision
 - require a new Gemini review informed by the concrete findings
 - require a Claude revision round before any final consensus
+- keep Claude coding restricted to `/Users/rl2025/claude-work/2026-04-02/rtdl` until 3-way consensus is reached
