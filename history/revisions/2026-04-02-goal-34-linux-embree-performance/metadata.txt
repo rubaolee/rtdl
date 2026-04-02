@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-34-linux-embree-performance
+title: Goal 34 Linux Embree Performance Characterization
+version: v1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: f0e9cc8
+gemini_review: Gemini approved the Goal 34 plan and final Linux performance report as technically honest and consistent with the measured host data.
+codex_revision: Linux Embree performance characterization accepted
+final_result: Goal 34 accepted by consensus
+summary: Used 192.168.1.20 as the serious Linux Embree host and measured accepted parity-clean exact-source County- Zipcode slices from 1x4 through 1x12.

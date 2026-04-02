@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 36
-- Archived files: 555
-- External reports: 117
-- Project snapshots: 438
+- Revision rounds: 37
+- Archived files: 565
+- External reports: 120
+- Project snapshots: 445
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v1 | 2026-04-02 | complete-consensus | Goal 34 Linux Embree Performance Characterization | Gemini approved the Goal 34 plan and final Linux performance report as technically honest and consistent with the measured host data. | Linux Embree performance characterization accepted | Goal 34 accepted by consensus | `f0e9cc8` | `2026-04-02-goal-34-linux-embree-performance` |
 | v1 | 2026-04-02 | complete-consensus | Goal 33 Linux Post-Fix Verification | Gemini-only fallback review approved; Linux host verification report is technically honest and consistent with the measured results. | Linux post-fix verification accepted | Linux Goal 31/32 verification accepted | `081c3d7` | `2026-04-02-goal-33-linux-postfix-verification` |
 | v1 | 2026-04-02 | complete-consensus | Goal 32 Local LSI Sort-Sweep | Temporary Codex+Gemini closure accepted; local lsi must remain explicitly documented as native_loop. | Local lsi sort-sweep optimization accepted | Local lsi sort-sweep accepted | `ab69331` | `2026-04-02-goal-32-local-lsi-sort-sweep` |
 | v1 | 2026-04-02 | complete-consensus | Goal 31 LSI Gap Closure | Goal 31 can close; local lsi must remain explicitly documented as native_loop. | Local lsi gap closure accepted | Exact-source lsi parity restored | `0947055` | `2026-04-02-goal-31-lsi-gap-closure` |
