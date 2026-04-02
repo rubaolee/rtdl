@@ -25,6 +25,7 @@
 
 #include <optix.h>
 #include <optix_function_table_definition.h>
+#include <optix_stack_size.h>
 #include <optix_stubs.h>
 
 #include <cuda.h>
@@ -36,13 +37,18 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
+#include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <memory>
 #include <mutex>
 #include <new>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <unistd.h>
 #include <vector>
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -251,11 +257,51 @@ std::string compile_to_ptx(const char* cuda_src,
     std::string cuda_inc  = std::string("-I") + RTDL_CUDA_INCLUDE_DIR;
     std::string cuda_sys_inc = std::string("-I") + RTDL_CUDA_SYSTEM_INCLUDE_DIR;
 
+    if (const char* compiler = std::getenv("RTDL_OPTIX_PTX_COMPILER");
+        compiler && std::string(compiler) == "nvcc") {
+        char dir_template[] = "/tmp/rtdl-optix-XXXXXX";
+        char* tmp_dir = mkdtemp(dir_template);
+        if (!tmp_dir) {
+            throw std::runtime_error("failed to create temporary directory for nvcc PTX compilation");
+        }
+        std::string src_path = std::string(tmp_dir) + "/" + name;
+        std::string ptx_path = src_path + ".ptx";
+        std::string log_path = src_path + ".log";
+        {
+            std::ofstream src_file(src_path, std::ios::binary);
+            if (!src_file) {
+                throw std::runtime_error("failed to write temporary CUDA source for nvcc PTX compilation");
+            }
+            src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
+        }
+        std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
+        std::ostringstream cmd;
+        cmd << "\"" << nvcc << "\" -ptx --std=c++14 -O3 "
+            << "\"" << optix_inc << "\" "
+            << "\"" << cuda_inc << "\" ";
+        if (std::strlen(RTDL_CUDA_SYSTEM_INCLUDE_DIR) > 0) {
+            cmd << "\"" << cuda_sys_inc << "\" ";
+        }
+        cmd << "\"" << src_path << "\" -o \"" << ptx_path << "\" >\"" << log_path << "\" 2>&1";
+        int rc = std::system(cmd.str().c_str());
+        if (rc != 0) {
+            std::ifstream log_file(log_path, std::ios::binary);
+            std::string log((std::istreambuf_iterator<char>(log_file)),
+                            std::istreambuf_iterator<char>());
+            throw std::runtime_error("nvcc PTX compile failed for " + std::string(name) + ":\n" + log);
+        }
+        std::ifstream ptx_file(ptx_path, std::ios::binary);
+        if (!ptx_file) {
+            throw std::runtime_error("nvcc PTX compile succeeded but PTX output was not found");
+        }
+        return std::string((std::istreambuf_iterator<char>(ptx_file)),
+                           std::istreambuf_iterator<char>());
+    }
+
     std::vector<const char*> opts = {
         optix_inc.c_str(),
         cuda_inc.c_str(),
         "--std=c++14",
-        "-default-device",
     };
     if (std::strlen(RTDL_CUDA_SYSTEM_INCLUDE_DIR) > 0) {
         opts.push_back(cuda_sys_inc.c_str());
@@ -283,6 +329,12 @@ std::string compile_to_ptx(const char* cuda_src,
     std::string ptx(ptx_size, '\0');
     NVRTC_CHECK(nvrtcGetPTX(prog, ptx.data()));
     nvrtcDestroyProgram(&prog);
+
+    if (const char* dump_dir = std::getenv("RTDL_DUMP_PTX_DIR")) {
+        std::string path = std::string(dump_dir) + "/" + name + ".ptx";
+        std::ofstream out(path, std::ios::binary);
+        if (out) out.write(ptx.data(), static_cast<std::streamsize>(ptx.size()));
+    }
     return ptx;
 }
 
@@ -290,6 +342,10 @@ std::string compile_to_ptx(const char* cuda_src,
 
 static OptixDeviceContext g_optix_ctx = nullptr;
 static std::once_flag     g_optix_init_flag;
+
+static void optix_log_callback(unsigned int level, const char* tag, const char* message, void*) {
+    std::fprintf(stderr, "[optix][%u][%s] %s\n", level, tag ? tag : "", message ? message : "");
+}
 
 static void init_optix_context() {
     CU_CHECK(cuInit(0));
@@ -299,7 +355,10 @@ static void init_optix_context() {
     CU_CHECK(cuCtxCreate(&cu_ctx, 0, dev));
     OPTIX_CHECK(optixInit());
     OptixDeviceContextOptions opts = {};
-    opts.logCallbackLevel = 1;
+    if (const char* log_level = std::getenv("RTDL_OPTIX_LOG_LEVEL")) {
+        opts.logCallbackFunction = optix_log_callback;
+        opts.logCallbackLevel = static_cast<unsigned int>(std::max(0, std::atoi(log_level)));
+    }
     OPTIX_CHECK(optixDeviceContextCreate(cu_ctx, &opts, &g_optix_ctx));
 }
 
@@ -552,6 +611,28 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
                                      nullptr, nullptr,
                                      &holder->pipeline));
 
+    // OptiX requires an explicit stack-size configuration before launch.
+    OptixStackSizes stack_sizes = {};
+    OPTIX_CHECK(optixUtilAccumulateStackSizes(holder->raygen_pg, &stack_sizes, holder->pipeline));
+    OPTIX_CHECK(optixUtilAccumulateStackSizes(holder->miss_pg, &stack_sizes, holder->pipeline));
+    OPTIX_CHECK(optixUtilAccumulateStackSizes(holder->hit_pg, &stack_sizes, holder->pipeline));
+
+    uint32_t dc_from_traversal = 0;
+    uint32_t dc_from_state = 0;
+    uint32_t continuation = 0;
+    OPTIX_CHECK(optixUtilComputeStackSizes(&stack_sizes,
+                                           plo.maxTraceDepth,
+                                           0,  // no continuation callables
+                                           0,  // no direct callables
+                                           &dc_from_traversal,
+                                           &dc_from_state,
+                                           &continuation));
+    OPTIX_CHECK(optixPipelineSetStackSize(holder->pipeline,
+                                          dc_from_traversal,
+                                          dc_from_state,
+                                          continuation,
+                                          1));
+
     // SBT
     RaygenRecord raygen_rec = {};
     MissRecord   miss_rec   = {};
@@ -589,7 +670,6 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
 static const char* kLsiKernelSrc = R"CUDA(
 #include <optix_device.h>
 #include <stdint.h>
-#include <math.h>
 
 struct GpuSegment {
     float x0, y0, x1, y1;
@@ -611,7 +691,13 @@ struct LsiParams {
     uint32_t  probe_count;
 };
 
-extern "C" __constant__ LsiParams params;
+extern "C" {
+__constant__ LsiParams params;
+}
+
+static __forceinline__ __device__ float dabsf(float x) {
+    return x < 0.0f ? -x : x;
+}
 
 static __forceinline__ __device__ bool seg_intersect(
         float ax0, float ay0, float ax1, float ay1,
@@ -621,7 +707,7 @@ static __forceinline__ __device__ bool seg_intersect(
     float rx = ax1 - ax0, ry = ay1 - ay0;
     float sx = bx1 - bx0, sy = by1 - by0;
     float denom = rx * sy - ry * sx;
-    if (fabsf(denom) < 1.0e-7f) return false;
+    if (dabsf(denom) < 1.0e-7f) return false;
     float qpx = bx0 - ax0, qpy = by0 - ay0;
     float t = (qpx * sy - qpy * sx) / denom;
     float u = (qpx * ry - qpy * rx) / denom;
@@ -711,7 +797,9 @@ struct PipParams {
     uint32_t probe_count;
 };
 
-extern "C" __constant__ PipParams params;
+extern "C" {
+__constant__ PipParams params;
+}
 
 static __forceinline__ __device__ bool point_in_polygon(
         float px, float py,
@@ -819,7 +907,9 @@ struct OverlayParams {
     uint32_t  max_edges_per_poly; // raygen stride
 };
 
-extern "C" __constant__ OverlayParams params;
+extern "C" {
+__constant__ OverlayParams params;
+}
 
 static __forceinline__ __device__ bool seg_intersect_flag(
         float ax0, float ay0, float ax1, float ay1,
@@ -950,7 +1040,9 @@ struct RayHitCountParams {
     uint32_t ray_count;
 };
 
-extern "C" __constant__ RayHitCountParams params;
+extern "C" {
+__constant__ RayHitCountParams params;
+}
 
 static __forceinline__ __device__ bool ray_hits_triangle(
         float ox, float oy,
@@ -1064,7 +1156,9 @@ struct SegPolyParams {
     uint32_t segment_count;
 };
 
-extern "C" __constant__ SegPolyParams params;
+extern "C" {
+__constant__ SegPolyParams params;
+}
 
 static __forceinline__ __device__ bool seg_hits_polygon(
         float sx0, float sy0, float sx1, float sy1,
