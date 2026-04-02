@@ -27,15 +27,15 @@ The RayJoin README also points to public source families that can be used when t
 - Zipcode
   - [ArcGIS item](https://www.arcgis.com/home/item.html?id=d6f7ee6129e241cc9b6f75978e47128b)
 - BlockGroup
-  - [ArcGIS item](https://www.arcgis.com/home/item.html?id=1c924a53319a491ab43d5cb1d55d8561)
+  - [ArcGIS item](https://www.arcgis.com/home/item.html?id=2f5e592494d243b0aa5c253e75e792a4)
 - WaterBodies
   - [ArcGIS item](https://www.arcgis.com/home/item.html?id=48c77cbde9a0470fb371f8c8a8a7421a)
 
-As of this Goal 22 slice:
+Current status:
 
-- `USCounty`, `Zipcode`, and `WaterBodies` resolve to current ArcGIS-hosted items.
-- `BlockGroup` resolves to a currently listed ArcGIS item, but the item type is a retired layer-package listing rather than a clean Feature Service endpoint.
-- all four are treated as `source-identified`, not `acquired`.
+- `USCounty`, `Zipcode`, `BlockGroup`, and `WaterBodies` all resolve to current ArcGIS-hosted Feature Service items.
+- `BlockGroup` previously had only a retired layer-package path in the repo notes, but the current live Feature Service item has now been verified.
+- the families are still distinct from `acquired` or `fully staged nationwide` status; a live source does not imply the full family is already staged locally.
 
 ### Lakes / Parks Families
 

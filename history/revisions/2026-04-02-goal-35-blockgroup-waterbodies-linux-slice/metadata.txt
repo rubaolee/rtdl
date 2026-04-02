@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-35-blockgroup-waterbodies-linux-slice
+title: Goal 35 BlockGroup WaterBodies Linux Slice
+version: v1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 87becfb
+gemini_review: Gemini approved the final Goal 35 report as accurate to the measured Linux exact-source slice results.
+codex_revision: Goal 35 accepted under Codex+Gemini fallback
+final_result: First exact-source Linux BlockGroup-WaterBodies slice accepted
+summary: Closed the first exact-source Linux BlockGroup-WaterBodies slice on Embree, with a stronger accepted regional slice at county2300_bbox.
