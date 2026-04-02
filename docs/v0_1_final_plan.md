@@ -2,16 +2,29 @@
 
 ## Purpose
 
-This document separates the project into two layers of goals:
+This document defines **v0.1** as the first vertical slice inside the larger RTDL project vision.
 
-- a **baseline Embree goal** that can be completed before NVIDIA hardware is available, and
-- a **final NVIDIA/OptiX goal** that defines RTDL v0.1 completion.
+The whole project is broader than v0.1:
 
-The reason for this split is practical: the Embree path is the staging ground for the final RayJoin-on-RT-cores result.
+- RTDL is intended to become a DSL for non-graphical RT-based applications across multiple backends and ecosystems.
+- v0.1 narrows that vision to one serious application family and the currently available local backend path.
+
+So this plan separates v0.1 into two layers:
+
+- an **Embree-backed v0.1 baseline** that is executable now on this Mac, and
+- a **final NVIDIA/OptiX v0.1 target** that completes the first RayJoin-focused vertical slice once hardware is available.
 
 ## Final v0.1 Goal
 
-RTDL v0.1 should be able to express selected RayJoin workloads in the DSL, lower them into a real OptiX/CUDA backend, run them on NVIDIA RT cores, and regenerate the performance-figure workflow from the RayJoin paper.
+RTDL v0.1 should prove the project vision on one concrete application family:
+
+- RayJoin-style workloads
+
+and one final target backend family:
+
+- NVIDIA OptiX / CUDA
+
+That means RTDL v0.1 should be able to express selected RayJoin workloads in the DSL, lower them into a real OptiX/CUDA backend, run them on NVIDIA RT cores, and regenerate the performance-figure workflow from the RayJoin paper.
 
 The reproduced figures do not need to match the paper numerically. The requirement is to regenerate the same style of experiment structure:
 
@@ -24,6 +37,8 @@ The reproduced figures do not need to match the paper numerically. The requireme
 In short:
 
 > RTDL v0.1 should execute RayJoin-style workloads on NVIDIA RT cores and reproduce the paper's benchmark/figure pipeline with RTDL-generated implementations.
+
+Equally important, this should be read as a **v0.1 application slice**, not as the full definition of the whole RTDL project.
 
 ## Baseline Goal Before NVIDIA Hardware
 
@@ -45,6 +60,13 @@ As of March 31, 2026:
 - Goal 13 has been canceled as superseded by Goal 15 while preserving its accepted partial artifacts,
 - and the active pre-NVIDIA comparison layer is Goal 15: native C++ + Embree versus RTDL + Embree on deterministic fixtures.
 
+As of the current reset, the framing should now be understood as:
+
+- **whole-project vision**: multi-backend DSL for non-graphical RT applications
+- **v0.1 scope**: RayJoin-focused vertical slice
+- **current local execution target**: Embree on this Mac
+- **future final v0.1 target**: NVIDIA OptiX / CUDA
+
 The preserved Goal 13 artifact set is still useful as an Embree-phase reproduction reference. It should be read as:
 
 - a workload-and-dataset expansion of the current local baseline,
@@ -61,7 +83,7 @@ The preserved Goal 13 artifact set is still useful as an Embree-phase reproducti
 
 ## Goal Structure
 
-### Goal A: Embree Baseline
+### Goal A: Embree-Backed v0.1 Baseline
 
 RTDL should run the selected workload surface locally through:
 
@@ -71,7 +93,7 @@ RTDL should run the selected workload surface locally through:
 - shared output schemas,
 - shared validation rules.
 
-### Goal B: NVIDIA Finalization
+### Goal B: NVIDIA Finalization for v0.1
 
 RTDL should then add:
 
@@ -144,7 +166,7 @@ This ordering matters because backend debugging is much easier once the language
 
 ## Suggested Phases
 
-### Phase 1: Complete Embree Baseline
+### Phase 1: Complete Embree-Backed v0.1 Baseline
 
 Deliverables:
 
@@ -157,7 +179,7 @@ Success condition:
 
 - RTDL is a reliable executable system before any NVIDIA-specific work starts.
 
-### Phase 2: Freeze Final v0.1 Scope
+### Phase 2: Freeze Final RayJoin v0.1 Scope
 
 Deliverables:
 
@@ -170,7 +192,7 @@ Success condition:
 
 - no ambiguity remains about what counts as v0.1 completion.
 
-### Phase 3: First OptiX Bring-Up
+### Phase 3: First OptiX Bring-Up for the RayJoin Slice
 
 Deliverables:
 
@@ -180,7 +202,7 @@ Success condition:
 
 - RTDL executes one real workload on NVIDIA RT cores.
 
-### Phase 4: Full Workload Coverage on NVIDIA
+### Phase 4: Full RayJoin Workload Coverage on NVIDIA
 
 Deliverables:
 
@@ -190,7 +212,7 @@ Success condition:
 
 - RTDL covers the selected RayJoin workload set on RT cores.
 
-### Phase 5: Benchmark and Figure Reproduction
+### Phase 5: Benchmark and Figure Reproduction for the RayJoin Slice
 
 Deliverables:
 
@@ -244,4 +266,4 @@ When the NVIDIA machine is ready:
 
 The clearest way to describe the project now is:
 
-> RTDL is currently in an Embree-backed baseline phase. The final v0.1 milestone is RayJoin-style execution on NVIDIA RT cores with paper-style benchmark figure regeneration.
+> RTDL as a whole is a multi-backend DSL project for non-graphical RT applications. RTDL v0.1 is the first RayJoin-focused vertical slice: currently grounded in an Embree-backed local baseline, and eventually completed through NVIDIA RT-core execution and paper-style figure regeneration.

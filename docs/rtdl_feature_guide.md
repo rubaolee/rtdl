@@ -10,6 +10,11 @@ It is meant to answer a practical question:
 
 RTDL is a Python-hosted DSL for non-graphics ray tracing workloads.
 
+The whole-project vision is broader than the current repository slice:
+
+- long term: support non-graphical RT applications across multiple backends and hardware ecosystems
+- current v0.1 focus: RayJoin-style workloads on the currently available local Embree backend, with future extension to NVIDIA
+
 Users stay in Python, but instead of writing low-level Embree, OptiX, or CUDA orchestration directly, they describe:
 
 - geometry inputs
@@ -23,7 +28,7 @@ The current system has three meaningful layers:
 - Compiler layer: compile the DSL into RTDL IR, lower it to a RayJoin-oriented plan, and generate OptiX/CUDA skeleton artifacts
 - Runtime layer: execute supported workloads through either a Python reference executor or the local Embree backend
 
-So the current project is no longer just a code generator. It already includes:
+So the current v0.1 slice is no longer just a code generator. It already includes:
 
 - a usable DSL surface
 - an inspectable IR and lowering path

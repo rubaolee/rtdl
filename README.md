@@ -1,6 +1,18 @@
 # RTDL
 
-RTDL is a research project for making non-graphics ray tracing programming substantially easier. The initial target is RayJoin, an OptiX/CUDA system for spatial joins on NVIDIA RT cores. The project is now framed as a Python-hosted DSL with a compiler IR underneath it: users stay in Python, describe geometry, traversal, refinement, and outputs, while the compiler and runtime handle BVH construction, ray formulation, payload packing, shader wiring, and backend-specific launch details.
+RTDL is a research project for making non-graphics ray tracing programming substantially easier. The **whole-project goal** is to build a Python-hosted DSL and runtime/compiler stack for non-graphical, re-purposed RT-based applications across multiple underlying RT libraries, hardware targets, and software ecosystems.
+
+The long-term backend picture includes:
+
+- CPU RT libraries such as Intel Embree,
+- NVIDIA OptiX / CUDA,
+- AMD HIP RT,
+- Intel RT hardware/software stacks,
+- Apple RT ecosystems,
+- Qualcomm/mobile RT ecosystems,
+- and other practical RT backends over time.
+
+The **current v0.1 goal** is narrower: prove that vision on one concrete application family, RayJoin-style workloads. Right now, this repository therefore focuses on a RayJoin-oriented vertical slice, using a Python-hosted DSL with a compiler IR underneath it: users stay in Python, describe geometry, traversal, refinement, and outputs, while the compiler and runtime handle BVH construction, ray formulation, payload packing, shader wiring, and backend-specific launch details.
 
 This repository now contains:
 
@@ -14,6 +26,8 @@ This repository now contains:
 
 Current status:
 
+- Whole-project framing: multi-backend DSL for non-graphical RT applications.
+- Current v0.1 framing: RayJoin-focused vertical slice.
 - The Embree baseline is complete and published.
 - Goal 13, "RayJoin paper reproduction on Embree," is canceled as superseded by Goal 15; its checklist, target matrix, dataset provenance note, and accepted Section 5.6 analogue remain valid reference artifacts.
 - RayJoin Section 5.6 scalability is now supported as a scaled synthetic Embree analogue for `lsi` and `pip`, with generated Figure 13 / Figure 14 analogue artifacts and a dedicated report.
@@ -22,6 +36,12 @@ Current status:
 - Goal 19 is now measured locally for `lsi` and `pip`: the ordinary dict-return path remains far slower than native, while the raw and prepared-raw RTDL Embree paths are close to native on matched deterministic and larger-profile runs.
 - Goal 23 is complete as the current bounded Embree reproduction package: Figure 13 / Figure 14 bounded analogues, partial Table 3 bounded rows, Table 4 overlay-seed analogue, Figure 15 overlay speedup analogue, and a final report with explicit missing-family labeling.
 - A checked-in status PDF summarizes the current RTDL state and the paper-reference figures used for the reproduction phase.
+
+Current top-level interpretation:
+
+- the project vision is broader than RayJoin and broader than Embree,
+- but the current v0.1 slice is intentionally centered on RayJoin workloads,
+- and the current local executable backend is Embree on this Mac.
 
 Current semantic/runtime boundaries:
 
@@ -44,7 +64,7 @@ Current OptiX/codegen caveat:
 
 ## Why RayJoin First
 
-RayJoin is a strong first backend target because it already proves that non-graphics workloads can benefit from RT cores, but it also exposes the current programming cost:
+RayJoin is the right **first application target** for RTDL because it already proves that non-graphics workloads can benefit from RT cores, but it also exposes the current programming cost:
 
 - developers still have to reason about OptiX program stages,
 - problem formulation is expressed indirectly through rays and hit programs,
@@ -53,6 +73,12 @@ RayJoin is a strong first backend target because it already proves that non-grap
 - debugging requires understanding CUDA, OptiX, and the application domain at once.
 
 RTDL aims to raise the abstraction level without hiding the performance model.
+
+So the intended hierarchy is:
+
+- **whole project**: general DSL for non-graphical RT applications across many backends
+- **v0.1**: first serious RayJoin-style vertical slice
+- **current local phase**: Embree-backed baseline and reproduction work on this Mac
 
 Current precision note:
 
@@ -68,9 +94,10 @@ Current precision note:
 - `tests/fixtures/rayjoin/`: tiny CDB fixtures extracted from the public RayJoin sample data.
 - `generated/`: emitted backend skeletons from the Python DSL pipeline.
 - `docs/vision.md`: project scope and research framing.
+- `docs/vision.md`: whole-project vision and how v0.1 fits inside it.
 - `docs/rayjoin_target.md`: how RTDL maps onto RayJoin-specific concerns.
 - `docs/v0_1_roadmap.md`: concrete scope and milestones for the first RTDL release.
-- `docs/v0_1_final_plan.md`: staged plan from Embree baseline to final NVIDIA/OptiX v0.1 completion.
+- `docs/v0_1_final_plan.md`: staged plan for the RayJoin-focused v0.1 slice, from Embree baseline to final NVIDIA/OptiX completion.
 - `docs/embree_baseline_plan.md`: step plan for the pre-GPU Embree baseline.
 - `docs/embree_baseline_contracts.md`: frozen workload, ABI, precision, and dataset contracts for the Embree baseline.
 - `docs/embree_evaluation_plan.md`: Goal 9 plan for reproducing the Embree baseline evaluation.

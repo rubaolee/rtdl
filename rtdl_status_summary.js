@@ -250,7 +250,7 @@ function addFooter(slide, page) {
     color: COLORS.ink,
     margin: 0,
   });
-  slide.addText("Research status as of March 31, 2026", {
+  slide.addText("Research status as of April 1, 2026", {
     x: 0.75,
     y: 2.42,
     w: 4.5,
@@ -267,7 +267,7 @@ function addFooter(slide, page) {
     4.7,
     2.55,
     "Project Thesis",
-    "Lower the difficulty of non-graphics ray tracing programming by about 10x.\n\nInitial focus: RayJoin-style workloads. Users stay in Python; RTDL handles geometry contracts, traversal, refinement, launch planning, and backend wiring.",
+    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: RayJoin-style workloads on the local Embree path first, with future NVIDIA bring-up when hardware is available.",
     COLORS.sand
   );
   addMetric(slide, 0.8, 4.0, 1.7, "Workloads", "4", COLORS.white);
@@ -282,7 +282,7 @@ function addFooter(slide, page) {
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.gold);
-  addTitle(slide, "Vision and Problem", "Why this project exists and why RayJoin is the right first target.");
+  addTitle(slide, "Vision and Problem", "Broad multi-backend project vision, with RayJoin as the current v0.1 vertical slice.");
   addPanel(slide, 0.75, 1.55, 4.0, 4.95, "Why Ray Tracing Is Hard Today",
     "Application developers must understand GPU launch structure, acceleration structures, payload packing, intersection programs, and numerical behavior at the same time.\n\nFor non-graphics workloads, the programming tax is usually far higher than the conceptual query itself.",
     COLORS.white);
