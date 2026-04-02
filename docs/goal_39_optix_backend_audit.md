@@ -24,9 +24,8 @@ This goal includes:
 
 This goal does not include:
 
-- merging Claude's OptiX code into the main repository
-- claiming the OptiX backend is runnable in RTDL
-- updating public docs to say OptiX is now complete
+- claiming the OptiX backend is runnable on local hardware
+- updating public docs to say OptiX is production-ready without a real NVIDIA execution round
 
 ## Required Outputs
 
@@ -40,9 +39,10 @@ This goal does not include:
 Before this goal closes, the project should treat the OptiX backend as:
 
 - externally prototyped,
-- audited but not accepted,
-- pending a corrected review/revision loop,
-- and not yet part of the controlled RTDL codebase.
+- audited,
+- revised in Claude's external workspace first,
+- re-reviewed by Gemini and Codex,
+- and only then eligible for controlled import into the main RTDL codebase.
 
 ## Required Consensus Sequence
 
@@ -68,40 +68,27 @@ For the current OptiX goal:
 
 Goal 39 is accepted if:
 
-- the current OptiX claims are downgraded to an honest audited status,
+- the current OptiX claims are reduced to an honest audited status first,
 - Gemini's original review quality is explicitly assessed,
-- the next OptiX revision loop is clearly defined,
-- and the repository contains the audit artifacts needed to restart the OptiX effort correctly later.
+- Claude revises the external workspace to clear the concrete blockers,
+- Gemini and Codex re-review that revision,
+- and only then the accepted OptiX slice is ported into the controlled repository.
 
-## Current Review State
+## Final Goal 39 State
 
-As of the current audit cycle:
+As of the final audit/import cycle:
 
 - Codex completed the initial blocking audit
 - Gemini completed a second narrower re-review and confirmed the main blocking findings
-- Claude was invoked at `/Users/rl2025/.local/bin/claude` but is presently quota-blocked, so no corrective external-workspace revision has yet started
+- Claude revised the external workspace at:
+  - `/Users/rl2025/claude-work/2026-04-02/rtdl`
+- Codex reviewed that revised workspace and found the original blocked issues fixed
+- Gemini completed a final post-fix re-review and marked the external OptiX slice `MERGE-READY`
+- the accepted OptiX files were then imported into:
+  - `/Users/rl2025/rtdl_python_only`
 
-Therefore Goal 39 currently remains:
+So Goal 39 now closes as:
 
 - audited,
-- externally reviewed,
-- unmerged,
-- and waiting for a future Claude revision round before any 3-way implementation consensus can exist
-
-## Next Scheduled Step
-
-After Claude CLI resets at approximately `1:00 PM America/New_York` on `2026-04-02`, the next Goal 39 action is:
-
-1. invoke Claude only in:
-   - `/Users/rl2025/claude-work/2026-04-02/rtdl`
-2. require Claude to revise only these blocking issues:
-   - payload-register mismatches
-   - overlay containment correctness gap
-   - macOS build/load artifact mismatch
-3. require Claude to leave the controlled repo unchanged:
-   - `/Users/rl2025/rtdl_python_only`
-4. have Codex review Claude's external revision file-by-file
-5. have Gemini review both:
-   - Claude's revision
-   - Codex's revision review
-6. only after 3-way consensus, allow the accepted OptiX changes to be ported into the controlled repository
+- consensus-reviewed,
+- and controlled-import complete for the accepted OptiX runtime slice.

@@ -1,6 +1,40 @@
 BUILD_DIR := build
 
-.PHONY: build run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+OPTIX_LIB_NAME := librtdl_optix.dylib
+else
+OPTIX_LIB_NAME := librtdl_optix.so
+endif
+
+OPTIX_PREFIX ?= /opt/optix
+CUDA_PREFIX ?= /usr/local/cuda
+
+OPTIX_INCLUDE := $(OPTIX_PREFIX)/include
+CUDA_INCLUDE := $(CUDA_PREFIX)/include
+CUDA_LIB := $(CUDA_PREFIX)/lib64
+
+NVCC ?= $(CUDA_PREFIX)/bin/nvcc
+CXX_OPTIX ?= $(NVCC)
+
+OPTIX_CXXFLAGS := \
+	-std=c++17 -O3 -shared -fPIC \
+	-I$(OPTIX_INCLUDE) \
+	-I$(CUDA_INCLUDE) \
+	-DRTDL_OPTIX_INCLUDE_DIR='"$(OPTIX_INCLUDE)"' \
+	-DRTDL_CUDA_INCLUDE_DIR='"$(CUDA_INCLUDE)"' \
+	-Xcompiler -fPIC
+
+OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc -Wl,-rpath,$(CUDA_LIB)
+
+.PHONY: build build-optix run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+
+build-optix:
+	mkdir -p $(BUILD_DIR)
+	$(CXX_OPTIX) $(OPTIX_CXXFLAGS) \
+		src/native/rtdl_optix.cpp \
+		$(OPTIX_LDFLAGS) \
+		-o $(BUILD_DIR)/$(OPTIX_LIB_NAME)
 
 build:
 	mkdir -p $(BUILD_DIR)

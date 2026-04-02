@@ -49,6 +49,12 @@ from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import embree_version
+from .optix_runtime import optix_version
+from .optix_runtime import OptixRowView
+from .optix_runtime import prepare_optix
+from .optix_runtime import PreparedOptixExecution
+from .optix_runtime import PreparedOptixKernel
+from .optix_runtime import run_optix
 from .embree_runtime import EmbreeRowView
 from .embree_runtime import pack_points
 from .embree_runtime import pack_polygons
@@ -245,6 +251,12 @@ __all__ = [
     "download_rayjoin_sample",
     "EmbreeRowView",
     "embree_version",
+    "OptixRowView",
+    "optix_version",
+    "prepare_optix",
+    "PreparedOptixExecution",
+    "PreparedOptixKernel",
+    "run_optix",
     "emit",
     "f32",
     "field",
