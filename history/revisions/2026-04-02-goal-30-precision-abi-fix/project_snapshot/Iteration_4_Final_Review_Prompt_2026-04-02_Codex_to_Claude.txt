@@ -1,0 +1,26 @@
+Goal 30 final review request.
+
+This round is closing as a precision-fix round, not as a full `lsi` parity-fix round.
+
+Please review:
+- `docs/goal_30_precision_abi_fix.md`
+- `docs/reports/goal30_precision_abi_fix_2026-04-02.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/reports/Iteration_3_Result_Report_2026-04-02_Codex.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/external_reports/Iteration_2_PreImplementation_Review_2026-04-02_Claude.md`
+- `src/rtdsl/embree_runtime.py`
+- `src/native/rtdl_embree.cpp`
+- `apps/goal15_lsi_native.cpp`
+- `apps/goal15_pip_native.cpp`
+- `tests/goal30_precision_abi_test.py`
+
+Frozen result summary:
+- native geometry ABI widened from float to double
+- targeted ABI/regression tests passed
+- minimal exact-source 4-pair `lsi` reproducer still returned 0 Embree pairs
+- frozen `k=5` slice remained 7 CPU vs 3 Embree pairs
+
+Please assess whether this is a technically honest closure for Goal 30.
+
+Please end with one of:
+- `Approved precision-fix closure.`
+- `Blocked: closure overclaims the result.`

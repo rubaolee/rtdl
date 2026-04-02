@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-30-precision-abi-fix
+title: Goal 30 Precision ABI Fix
+version: v1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 6ce3caf
+gemini_review: Approved precision-fix closure.
+codex_revision: Precision-fix closure accepted
+final_result: Precision-fix accepted
+summary: Narrow fix for the float32 geometry ABI; exact-source LSI mismatch remains unresolved.

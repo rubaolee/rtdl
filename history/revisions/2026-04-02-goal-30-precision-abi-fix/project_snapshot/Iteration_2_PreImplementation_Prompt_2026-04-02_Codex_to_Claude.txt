@@ -1,0 +1,24 @@
+Goal 30 pre-implementation review request.
+
+This round is intentionally narrow.
+
+Scope:
+- fix only the first confirmed problem from Goal 29: float32 truncation in the native RTDL-to-Embree geometry ABI
+- do not redesign the Embree `lsi` broad phase in this round
+
+Please review:
+- `docs/goal_30_precision_abi_fix.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/reports/Goal_30_Spec_2026-04-02_Codex.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md`
+- `docs/reports/goal29_lsi_mismatch_diagnosis_2026-04-02.md`
+- `src/rtdsl/embree_runtime.py`
+- `src/native/rtdl_embree.cpp`
+
+Please assess:
+1. whether this scope is technically sound
+2. whether fixing the geometry ABI first is the right next step
+3. whether any important file or compatibility surface is missing from the implementation plan
+
+Please end with one of:
+- `Consensus to begin implementation.`
+- `Blocked pending scope revision.`

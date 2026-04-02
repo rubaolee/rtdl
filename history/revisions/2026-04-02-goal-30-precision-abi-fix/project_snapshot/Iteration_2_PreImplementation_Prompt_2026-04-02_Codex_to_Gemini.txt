@@ -1,0 +1,19 @@
+Goal 30 monitoring review request.
+
+Please monitor and review the pre-implementation scope for Goal 30.
+
+Scope summary:
+- Goal 30 fixes only the confirmed float32 native geometry ABI issue from Goal 29
+- it does not attempt to solve the separate Embree `lsi` broad-phase problem
+
+Review:
+- `docs/goal_30_precision_abi_fix.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/reports/Goal_30_Spec_2026-04-02_Codex.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/reports/Iteration_1_PreImplementation_Report_2026-04-02_Codex.md`
+- `docs/reports/goal29_lsi_mismatch_diagnosis_2026-04-02.md`
+
+Please assess whether this is a technically honest next round and whether any monitoring step is missing.
+
+Please end with one of:
+- `Consensus to begin implementation.`
+- `Blocked pending scope revision.`

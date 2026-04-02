@@ -18,18 +18,18 @@ from .runtime import _validate_kernel_for_cpu
 class _RtdlSegment(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
-        ("x0", ctypes.c_float),
-        ("y0", ctypes.c_float),
-        ("x1", ctypes.c_float),
-        ("y1", ctypes.c_float),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
     ]
 
 
 class _RtdlPoint(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
-        ("x", ctypes.c_float),
-        ("y", ctypes.c_float),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
     ]
 
 
@@ -44,23 +44,23 @@ class _RtdlPolygonRef(ctypes.Structure):
 class _RtdlTriangle(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
-        ("x0", ctypes.c_float),
-        ("y0", ctypes.c_float),
-        ("x1", ctypes.c_float),
-        ("y1", ctypes.c_float),
-        ("x2", ctypes.c_float),
-        ("y2", ctypes.c_float),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("x2", ctypes.c_double),
+        ("y2", ctypes.c_double),
     ]
 
 
 class _RtdlRay2D(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
-        ("ox", ctypes.c_float),
-        ("oy", ctypes.c_float),
-        ("dx", ctypes.c_float),
-        ("dy", ctypes.c_float),
-        ("tmax", ctypes.c_float),
+        ("ox", ctypes.c_double),
+        ("oy", ctypes.c_double),
+        ("dx", ctypes.c_double),
+        ("dy", ctypes.c_double),
+        ("tmax", ctypes.c_double),
     ]
 
 
@@ -68,8 +68,8 @@ class _RtdlLsiRow(ctypes.Structure):
     _fields_ = [
         ("left_id", ctypes.c_uint32),
         ("right_id", ctypes.c_uint32),
-        ("intersection_point_x", ctypes.c_float),
-        ("intersection_point_y", ctypes.c_float),
+        ("intersection_point_x", ctypes.c_double),
+        ("intersection_point_y", ctypes.c_double),
     ]
 
 
@@ -108,7 +108,7 @@ class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id", ctypes.c_uint32),
         ("segment_id", ctypes.c_uint32),
-        ("distance", ctypes.c_float),
+        ("distance", ctypes.c_double),
     ]
 
 
@@ -321,7 +321,7 @@ def pack_polygons(
     polygon_count = _validate_equal_lengths("polygons", ids_list, offsets_list, counts_list)
 
     if len(vertices_list) % 2 != 0:
-        raise ValueError("packed polygon vertices_xy must contain an even number of float coordinates")
+        raise ValueError("packed polygon vertices_xy must contain an even number of coordinates")
 
     refs = []
     for idx in range(polygon_count):
@@ -335,7 +335,7 @@ def pack_polygons(
         refs.append(_RtdlPolygonRef(polygon_id, offset, count))
 
     ref_array = (_RtdlPolygonRef * polygon_count)(*refs)
-    vertex_array = (ctypes.c_float * len(vertices_list))(*[float(value) for value in vertices_list])
+    vertex_array = (ctypes.c_double * len(vertices_list))(*[float(value) for value in vertices_list])
     return PackedPolygons(
         refs=ref_array,
         polygon_count=polygon_count,
@@ -948,7 +948,7 @@ def _encode_polygons(polygons):
             vertices.extend([float(vertex[0]), float(vertex[1])])
         offset += len(polygon.vertices)
     ref_array = (_RtdlPolygonRef * len(refs))(*refs)
-    vertex_array = (ctypes.c_float * len(vertices))(*vertices) if vertices else (ctypes.c_float * 0)()
+    vertex_array = (ctypes.c_double * len(vertices))(*vertices) if vertices else (ctypes.c_double * 0)()
     return ref_array, vertex_array
 
 
@@ -1031,7 +1031,7 @@ def _load_embree_library():
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_double),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlPipRow)),
         ctypes.POINTER(ctypes.c_size_t),
@@ -1043,11 +1043,11 @@ def _load_embree_library():
     library.rtdl_embree_run_overlay.argtypes = [
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_double),
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_double),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlOverlayRow)),
         ctypes.POINTER(ctypes.c_size_t),
@@ -1073,7 +1073,7 @@ def _load_embree_library():
         ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef),
         ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_double),
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)),
         ctypes.POINTER(ctypes.c_size_t),

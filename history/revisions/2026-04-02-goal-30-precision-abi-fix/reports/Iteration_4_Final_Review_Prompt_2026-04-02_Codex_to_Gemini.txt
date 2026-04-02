@@ -1,0 +1,17 @@
+Goal 30 final monitoring review request.
+
+Please review the Goal 30 precision-fix closure.
+
+Review:
+- `docs/goal_30_precision_abi_fix.md`
+- `docs/reports/goal30_precision_abi_fix_2026-04-02.md`
+- `history/revisions/2026-04-02-goal-30-precision-abi-fix/reports/Iteration_3_Result_Report_2026-04-02_Codex.md`
+
+Summary to assess:
+- the active RTDL native geometry ABI now uses double precision
+- the known exact-source `lsi` mismatch did not improve on the minimal reproducer or the frozen `k=5` slice
+- the round closes as a successful precision-fix step but not a parity-fix step
+
+Please end with one of:
+- `Approved precision-fix closure.`
+- `Blocked: closure overclaims the result.`

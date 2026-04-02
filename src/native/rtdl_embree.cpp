@@ -16,16 +16,16 @@ extern "C" {
 
 struct RtdlSegment {
   uint32_t id;
-  float x0;
-  float y0;
-  float x1;
-  float y1;
+  double x0;
+  double y0;
+  double x1;
+  double y1;
 };
 
 struct RtdlPoint {
   uint32_t id;
-  float x;
-  float y;
+  double x;
+  double y;
 };
 
 struct RtdlPolygonRef {
@@ -36,28 +36,28 @@ struct RtdlPolygonRef {
 
 struct RtdlTriangle {
   uint32_t id;
-  float x0;
-  float y0;
-  float x1;
-  float y1;
-  float x2;
-  float y2;
+  double x0;
+  double y0;
+  double x1;
+  double y1;
+  double x2;
+  double y2;
 };
 
 struct RtdlRay2D {
   uint32_t id;
-  float ox;
-  float oy;
-  float dx;
-  float dy;
-  float tmax;
+  double ox;
+  double oy;
+  double dx;
+  double dy;
+  double tmax;
 };
 
 struct RtdlLsiRow {
   uint32_t left_id;
   uint32_t right_id;
-  float intersection_point_x;
-  float intersection_point_y;
+  double intersection_point_x;
+  double intersection_point_y;
 };
 
 struct RtdlPipRow {
@@ -86,7 +86,7 @@ struct RtdlSegmentPolygonHitCountRow {
 struct RtdlPointNearestSegmentRow {
   uint32_t point_id;
   uint32_t segment_id;
-  float distance;
+  double distance;
 };
 
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
@@ -104,7 +104,7 @@ int rtdl_embree_run_pip(
     size_t point_count,
     const RtdlPolygonRef* polygons,
     size_t polygon_count,
-    const float* vertices_xy,
+    const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
@@ -113,11 +113,11 @@ int rtdl_embree_run_pip(
 int rtdl_embree_run_overlay(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
-    const float* left_vertices_xy,
+    const double* left_vertices_xy,
     size_t left_vertex_xy_count,
     const RtdlPolygonRef* right_polygons,
     size_t right_count,
-    const float* right_vertices_xy,
+    const double* right_vertices_xy,
     size_t right_vertex_xy_count,
     RtdlOverlayRow** rows_out,
     size_t* row_count_out,
@@ -137,7 +137,7 @@ int rtdl_embree_run_segment_polygon_hitcount(
     size_t segment_count,
     const RtdlPolygonRef* polygons,
     size_t polygon_count,
-    const float* vertices_xy,
+    const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlSegmentPolygonHitCountRow** rows_out,
     size_t* row_count_out,
@@ -171,8 +171,8 @@ void set_error(const std::string& message, T* error_out, size_t error_size) {
 }
 
 struct Vec2 {
-  float x;
-  float y;
+  double x;
+  double y;
 };
 
 struct Segment2D {
@@ -202,14 +202,14 @@ struct RayQuery2D {
   uint32_t id;
   Vec2 o;
   Vec2 d;
-  float tmax;
+  double tmax;
 };
 
 struct Bounds2D {
-  float min_x;
-  float min_y;
-  float max_x;
-  float max_y;
+  double min_x;
+  double min_y;
+  double max_x;
+  double max_y;
 };
 
 Bounds2D bounds_for_segment(const Segment2D& segment) {
@@ -246,7 +246,7 @@ Bounds2D bounds_for_polygon(const Polygon2D& polygon) {
   return bounds;
 }
 
-float cross(const Vec2& a, const Vec2& b) {
+double cross(const Vec2& a, const Vec2& b) {
   return a.x * b.y - a.y * b.x;
 }
 
@@ -262,13 +262,13 @@ bool segment_intersection(
   Vec2 r = sub(left.b, left.a);
   Vec2 q = right.a;
   Vec2 s = sub(right.b, right.a);
-  float denom = cross(r, s);
+  double denom = cross(r, s);
   if (std::fabs(denom) < kEps) {
     return false;
   }
   Vec2 qmp = sub(q, p);
-  float t = cross(qmp, s) / denom;
-  float u = cross(qmp, r) / denom;
+  double t = cross(qmp, s) / denom;
+  double u = cross(qmp, r) / denom;
   if (t < 0.0f || t > 1.0f || u < 0.0f || u > 1.0f) {
     return false;
   }
@@ -416,16 +416,16 @@ bool segment_hits_polygon(const Segment2D& segment, const Polygon2D& polygon) {
   return false;
 }
 
-float point_segment_distance(const Point2D& point, const Segment2D& segment) {
+double point_segment_distance(const Point2D& point, const Segment2D& segment) {
   Vec2 v = sub(segment.b, segment.a);
   Vec2 w = sub(point.p, segment.a);
-  float denom = v.x * v.x + v.y * v.y;
+  double denom = v.x * v.x + v.y * v.y;
   if (denom < 1.0e-12f) {
     Vec2 d = sub(point.p, segment.a);
     return std::sqrt(d.x * d.x + d.y * d.y);
   }
-  float t = (w.x * v.x + w.y * v.y) / denom;
-  t = std::max(0.0f, std::min(1.0f, t));
+  double t = (w.x * v.x + w.y * v.y) / denom;
+  t = std::max(0.0, std::min(1.0, t));
   Vec2 projection {segment.a.x + t * v.x, segment.a.y + t * v.y};
   Vec2 d = sub(point.p, projection);
   return std::sqrt(d.x * d.x + d.y * d.y);
@@ -649,7 +649,7 @@ void triangle_intersect(const RTCIntersectFunctionNArguments* args) {
 std::vector<Polygon2D> decode_polygons(
     const RtdlPolygonRef* refs,
     size_t ref_count,
-    const float* vertices_xy,
+    const double* vertices_xy,
     size_t vertex_xy_count) {
   std::vector<Polygon2D> polygons;
   polygons.reserve(ref_count);
@@ -774,7 +774,7 @@ extern "C" int rtdl_embree_run_pip(
     size_t point_count,
     const RtdlPolygonRef* polygons,
     size_t polygon_count,
-    const float* vertices_xy,
+    const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
@@ -810,11 +810,11 @@ extern "C" int rtdl_embree_run_pip(
 extern "C" int rtdl_embree_run_overlay(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
-    const float* left_vertices_xy,
+    const double* left_vertices_xy,
     size_t left_vertex_xy_count,
     const RtdlPolygonRef* right_polygons,
     size_t right_count,
-    const float* right_vertices_xy,
+    const double* right_vertices_xy,
     size_t right_vertex_xy_count,
     RtdlOverlayRow** rows_out,
     size_t* row_count_out,
@@ -939,7 +939,7 @@ extern "C" int rtdl_embree_run_segment_polygon_hitcount(
     size_t segment_count,
     const RtdlPolygonRef* polygons,
     size_t polygon_count,
-    const float* vertices_xy,
+    const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlSegmentPolygonHitCountRow** rows_out,
     size_t* row_count_out,

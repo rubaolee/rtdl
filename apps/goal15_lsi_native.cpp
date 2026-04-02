@@ -14,17 +14,17 @@ extern "C" {
 
 struct RtdlSegment {
   uint32_t id;
-  float x0;
-  float y0;
-  float x1;
-  float y1;
+  double x0;
+  double y0;
+  double x1;
+  double y1;
 };
 
 struct RtdlLsiRow {
   uint32_t left_id;
   uint32_t right_id;
-  float intersection_point_x;
-  float intersection_point_y;
+  double intersection_point_x;
+  double intersection_point_y;
 };
 
 int rtdl_embree_run_lsi(
@@ -66,10 +66,10 @@ bool read_segments_csv(const std::string& path, std::vector<RtdlSegment>* out) {
     out->push_back(
         RtdlSegment{
             static_cast<uint32_t>(std::stoul(fields[0])),
-            std::stof(fields[1]),
-            std::stof(fields[2]),
-            std::stof(fields[3]),
-            std::stof(fields[4]),
+            std::stod(fields[1]),
+            std::stod(fields[2]),
+            std::stod(fields[3]),
+            std::stod(fields[4]),
         });
   }
   return true;

@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 32
-- Archived files: 512
-- External reports: 105
-- Project snapshots: 407
+- Revision rounds: 33
+- Archived files: 527
+- External reports: 109
+- Project snapshots: 418
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v1 | 2026-04-02 | complete-consensus | Goal 30 Precision ABI Fix | Approved precision-fix closure. | Precision-fix closure accepted | Precision-fix accepted | `6ce3caf` | `2026-04-02-goal-30-precision-abi-fix` |
 | Goal 29 | 2026-04-02 | complete-consensus | Goal 29 LSI mismatch diagnosis | Approved diagnosis closure. | Diagnosis-only closure accepted | Diagnosis-only accepted | `776bf48` | `2026-04-02-goal-29-lsi-mismatch-diagnosis` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28D Linux County Zipcode Larger Exact-Source Execution | accepted | implemented | Goal 28D complete by consensus | `8db6eb38a7ce4b3d76048fd9d85e02ccd4d437c2` | `2026-04-02-goal-28d-linux-county-zipcode-larger-execution` |
 | 1 | 2026-04-02 | complete-consensus | Goal 28C Linux County Zipcode Exact-Source Execution | accepted | implemented | Goal 28C complete by consensus | `31abd92d27450401981959c990eb46cb294b85c1` | `2026-04-02-goal-28c-linux-county-zipcode-exact-source-execution` |

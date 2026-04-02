@@ -13,8 +13,8 @@ extern "C" {
 
 struct RtdlPoint {
   uint32_t id;
-  float x;
-  float y;
+  double x;
+  double y;
 };
 
 struct RtdlPolygonRef {
@@ -34,7 +34,7 @@ int rtdl_embree_run_pip(
     size_t point_count,
     const RtdlPolygonRef* polygons,
     size_t polygon_count,
-    const float* vertices_xy,
+    const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
@@ -70,8 +70,8 @@ bool read_points_csv(const std::string& path, std::vector<RtdlPoint>* out) {
     out->push_back(
         RtdlPoint{
             static_cast<uint32_t>(std::stoul(fields[0])),
-            std::stof(fields[1]),
-            std::stof(fields[2]),
+            std::stod(fields[1]),
+            std::stod(fields[2]),
         });
   }
   return true;
@@ -80,7 +80,7 @@ bool read_points_csv(const std::string& path, std::vector<RtdlPoint>* out) {
 bool read_polygons_csv(
     const std::string& path,
     std::vector<RtdlPolygonRef>* polygons_out,
-    std::vector<float>* vertices_out) {
+    std::vector<double>* vertices_out) {
   std::ifstream stream(path);
   if (!stream) {
     std::cerr << "failed to open " << path << "\n";
@@ -109,7 +109,7 @@ bool read_polygons_csv(
             4,
         });
     for (size_t i = 1; i < fields.size(); ++i) {
-      vertices_out->push_back(std::stof(fields[i]));
+      vertices_out->push_back(std::stod(fields[i]));
     }
     offset += 4;
   }
@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
 
   std::vector<RtdlPoint> points;
   std::vector<RtdlPolygonRef> polygons;
-  std::vector<float> vertices_xy;
+  std::vector<double> vertices_xy;
   if (!read_points_csv(points_path, &points) ||
       !read_polygons_csv(polygons_path, &polygons, &vertices_xy)) {
     return 1;
