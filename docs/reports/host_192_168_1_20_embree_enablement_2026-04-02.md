@@ -99,6 +99,41 @@ embree_smoke_ok
 
 This confirms that Embree is usable on the machine.
 
+### Native repository validation program
+
+Added a stronger native validation program in the RTDL repository:
+
+- `apps/embree_remote_validation.cpp`
+
+This program does more than create a device. It:
+
+1. creates an Embree device and scene
+2. allocates one triangle geometry
+3. commits the geometry and scene
+4. shoots a ray from `(0.25, 0.25, 1.0)` toward `-Z`
+5. verifies that the ray hits the triangle at:
+   - `geomID = 0`
+   - `primID = 0`
+   - `tfar = 1.0`
+   - barycentric coordinates `u = 0.25`, `v = 0.25`
+
+Compile command used on the host:
+
+```sh
+c++ -std=c++17 -O2 -Wall -Wextra -I/usr/include \
+  apps/embree_remote_validation.cpp \
+  -L/usr/lib/x86_64-linux-gnu -lembree4 \
+  -o /tmp/embree_remote_validation_test
+```
+
+Observed result on `192.168.1.20`:
+
+```text
+embree_validation_ok geomID=0 primID=0 tfar=1 u=0.25 v=0.25
+```
+
+This confirms that the host can not only load Embree, but also build a scene and execute a basic intersection query successfully.
+
 ## RTDL Workspace Preparation
 
 Prepared a working RTDL checkout on the host:
@@ -125,6 +160,13 @@ Observed result:
 - `make build` passed on `192.168.1.20`
 - the Python-hosted RTDL plan-lowering path executed successfully
 
+Representative build output:
+
+```text
+mkdir -p build
+PYTHONPATH=src:. python3 -c "import rtdsl as rt; ... [rt.lower_to_execution_plan(...) ...]"
+```
+
 ## Final Status
 
 `192.168.1.20` is now available for RTDL Embree-based work.
@@ -138,6 +180,7 @@ Current readiness:
 - `pip3`: yes
 - Embree installed: yes
 - native Embree smoke test: yes
+- native Embree triangle-hit validation program: yes
 - RTDL repo cloned: yes
 - RTDL `make build`: yes
 
