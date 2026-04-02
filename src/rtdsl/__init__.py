@@ -20,6 +20,9 @@ from .baseline_contracts import InputContract
 from .baseline_contracts import validate_compiled_kernel_against_baseline
 from .baseline_contracts import WorkloadContract
 from .codegen import generate_optix_project
+from .datasets import build_arcgis_geojson_query_url
+from .datasets import build_arcgis_query_url
+from .datasets import build_arcgis_layer_url
 from .datasets import chains_to_polygon_refs
 from .datasets import chains_to_probe_points
 from .datasets import chains_to_segments
@@ -30,7 +33,9 @@ from .datasets import download_rayjoin_sample
 from .datasets import load_cdb
 from .datasets import parse_cdb_text
 from .datasets import RayJoinBoundedPlan
+from .datasets import RayJoinFeatureServiceLayer
 from .datasets import rayjoin_bounded_plans
+from .datasets import rayjoin_feature_service_layers
 from .datasets import RayJoinPublicAsset
 from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
@@ -203,6 +208,7 @@ __all__ = [
     "RayJoinPlan",
     "RTExecutionPlan",
     "RayJoinBoundedPlan",
+    "RayJoinFeatureServiceLayer",
     "RayJoinPublicAsset",
     "RefineOp",
     "Segment2DLayout",
@@ -215,6 +221,9 @@ __all__ = [
     "compare_baseline_rows",
     "evaluation_entries",
     "infer_workload",
+    "build_arcgis_geojson_query_url",
+    "build_arcgis_query_url",
+    "build_arcgis_layer_url",
     "chains_to_polygon_refs",
     "chains_to_probe_points",
     "chains_to_segments",
@@ -259,6 +268,7 @@ __all__ = [
     "ray_triangle_hit_count_cpu",
     "RAYJOIN_PAPER_TARGETS",
     "rayjoin_bounded_plans",
+    "rayjoin_feature_service_layers",
     "rayjoin_public_assets",
     "representative_dataset_names",
     "refine",

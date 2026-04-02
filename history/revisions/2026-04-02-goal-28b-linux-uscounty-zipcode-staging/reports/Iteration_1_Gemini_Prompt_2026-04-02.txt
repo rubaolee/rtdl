@@ -1,0 +1,31 @@
+Review this Goal 28B first-slice snapshot for RTDL.
+
+Scope:
+- Goal is the first serious Linux-host exact-source acquisition slice for RayJoin County ⊲⊳ Zipcode on 192.168.1.20.
+- Required closure boundary:
+  - reproducible raw-source staging path exists
+  - USCounty is staged fully on Linux
+  - Zipcode staging is demonstrated and partially completed with real host evidence
+  - report clearly says CDB conversion and exact-input execution are not done yet
+
+Files to review:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28b-linux-uscounty-zipcode-staging/reports/Goal_28B_Spec_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28b-linux-uscounty-zipcode-staging/reports/Iteration_1_Implementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/scripts/goal28b_stage_uscounty_zipcode.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py
+- /Users/rl2025/rtdl_python_only/tests/goal28b_staging_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28b_linux_uscounty_zipcode_staging_2026-04-02.md
+
+Review questions:
+1. Does the implemented slice satisfy the stated closure boundary honestly?
+2. Are there any correctness, reproducibility, or over-claim problems in the code or report?
+3. Is the report clear that this is raw-source staging, not CDB conversion or exact-input execution?
+
+Return:
+- Findings first, ordered by severity.
+- Then a short verdict.
+- End with exactly one of:
+  - Approved
+  - Approved with minor notes
+  - Blocked

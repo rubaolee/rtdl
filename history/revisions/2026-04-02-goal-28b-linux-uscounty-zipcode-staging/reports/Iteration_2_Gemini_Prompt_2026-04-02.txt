@@ -1,0 +1,22 @@
+Re-review this revised Goal 28B first-slice snapshot for RTDL.
+
+The previous Claude review found only minor notes. Codex addressed them in:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28b-linux-uscounty-zipcode-staging/reports/Iteration_1_Response_2026-04-02_Codex.md
+
+Files to re-review:
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28b-linux-uscounty-zipcode-staging/reports/Goal_28B_Spec_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28b-linux-uscounty-zipcode-staging/reports/Iteration_1_Implementation_Report_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-28b-linux-uscounty-zipcode-staging/reports/Iteration_1_Response_2026-04-02_Codex.md
+- /Users/rl2025/rtdl_python_only/scripts/goal28b_stage_uscounty_zipcode.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py
+- /Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py
+- /Users/rl2025/rtdl_python_only/tests/goal28b_staging_test.py
+- /Users/rl2025/rtdl_python_only/docs/reports/goal28b_linux_uscounty_zipcode_staging_2026-04-02.md
+
+Return:
+- findings first if any
+- then a short verdict
+- end with exactly one of:
+  - Approved
+  - Approved with minor notes
+  - Blocked

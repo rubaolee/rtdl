@@ -1,0 +1,7 @@
+slug: 2026-04-02-goal-28b-linux-uscounty-zipcode-staging
+date: 2026-04-02
+title: Goal 28B first slice Linux USCounty/Zipcode staging
+status: complete-consensus
+codex_result: accepted first-slice closure for Linux raw-source staging
+claude_review: approved
+gemini_review: approved with minor notes

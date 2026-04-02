@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlencode
 from urllib.request import urlopen
 
 
@@ -71,6 +72,20 @@ class RayJoinBoundedPlan:
     source_requirement: str
     bounded_runtime_target: str
     deterministic_rule: str
+    current_status: str
+    notes: str
+
+
+@dataclass(frozen=True)
+class RayJoinFeatureServiceLayer:
+    asset_id: str
+    title: str
+    source_url: str
+    service_url: str
+    layer_id: int
+    geometry_type: str
+    max_record_count: int
+    feature_count: int
     current_status: str
     notes: str
 
@@ -161,6 +176,46 @@ RAYJOIN_BOUNDED_PLANS: tuple[RayJoinBoundedPlan, ...] = (
 )
 
 
+RAYJOIN_FEATURE_SERVICE_LAYERS: tuple[RayJoinFeatureServiceLayer, ...] = (
+    RayJoinFeatureServiceLayer(
+        asset_id="uscounty_feature_layer",
+        title="USA Census Counties Feature Layer",
+        source_url=RAYJOIN_PUBLIC_SOURCE_URLS["USCounty_item"],
+        service_url="https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer",
+        layer_id=0,
+        geometry_type="esriGeometryPolygon",
+        max_record_count=2000,
+        feature_count=3144,
+        current_status="verified-live",
+        notes="Verified via ArcGIS REST item metadata and layer query on 2026-04-02.",
+    ),
+    RayJoinFeatureServiceLayer(
+        asset_id="zipcode_feature_layer",
+        title="USA ZIP Code Boundaries Feature Layer",
+        source_url=RAYJOIN_PUBLIC_SOURCE_URLS["Zipcode_item"],
+        service_url="https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer",
+        layer_id=0,
+        geometry_type="esriGeometryPolygon",
+        max_record_count=2000,
+        feature_count=32294,
+        current_status="verified-live",
+        notes="Verified via ArcGIS REST item metadata and layer query on 2026-04-02.",
+    ),
+    RayJoinFeatureServiceLayer(
+        asset_id="waterbodies_feature_layer",
+        title="USA Detailed Water Bodies Feature Layer",
+        source_url=RAYJOIN_PUBLIC_SOURCE_URLS["WaterBodies_item"],
+        service_url="https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+        layer_id=0,
+        geometry_type="esriGeometryPolygon",
+        max_record_count=1000,
+        feature_count=463591,
+        current_status="verified-live",
+        notes="Verified via ArcGIS REST item metadata and layer query on 2026-04-02; too large for the first Linux exact-input slice.",
+    ),
+)
+
+
 def download_rayjoin_sample(name: str, destination: str | Path) -> Path:
     url = RAYJOIN_SAMPLE_URLS.get(name)
     if url is None:
@@ -178,6 +233,67 @@ def rayjoin_public_assets() -> tuple[RayJoinPublicAsset, ...]:
 
 def rayjoin_bounded_plans() -> tuple[RayJoinBoundedPlan, ...]:
     return RAYJOIN_BOUNDED_PLANS
+
+
+def rayjoin_feature_service_layers() -> tuple[RayJoinFeatureServiceLayer, ...]:
+    return RAYJOIN_FEATURE_SERVICE_LAYERS
+
+
+def build_arcgis_layer_url(service_url: str, layer_id: int) -> str:
+    return f"{service_url.rstrip('/')}/{layer_id}"
+
+
+def build_arcgis_query_url(
+    service_url: str,
+    layer_id: int,
+    *,
+    offset: int,
+    record_count: int,
+    response_format: str = "geojson",
+    where: str = "1=1",
+    order_by_fields: str = "OBJECTID",
+    out_fields: str = "*",
+    out_sr: int = 4326,
+) -> str:
+    layer_url = build_arcgis_layer_url(service_url, layer_id)
+    query = urlencode(
+        {
+            "where": where,
+            "outFields": out_fields,
+            "returnGeometry": "true",
+            "f": response_format,
+            "resultOffset": offset,
+            "resultRecordCount": record_count,
+            "orderByFields": order_by_fields,
+            "outSR": out_sr,
+        }
+    )
+    return f"{layer_url}/query?{query}"
+
+
+def build_arcgis_geojson_query_url(
+    service_url: str,
+    layer_id: int,
+    *,
+    offset: int,
+    record_count: int,
+    response_format: str = "geojson",
+    where: str = "1=1",
+    order_by_fields: str = "OBJECTID",
+    out_fields: str = "*",
+    out_sr: int = 4326,
+) -> str:
+    return build_arcgis_query_url(
+        service_url,
+        layer_id,
+        offset=offset,
+        record_count=record_count,
+        response_format=response_format,
+        where=where,
+        order_by_fields=order_by_fields,
+        out_fields=out_fields,
+        out_sr=out_sr,
+    )
 
 
 def load_cdb(path: str | Path) -> CdbDataset:
