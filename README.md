@@ -35,6 +35,7 @@ Current status:
 - Goal 18 is complete as the current low-overhead runtime continuation slice; `run_embree(..., result_mode="raw")` is now first-class and the packed/prepared Embree path covers all six current local Embree workloads.
 - Goal 19 is now measured locally for `lsi` and `pip`: the ordinary dict-return path remains far slower than the current native wrapper baseline, while the raw and prepared-raw RTDL Embree paths are close to that baseline on matched deterministic and larger-profile runs.
 - Goal 23 is complete as the current bounded Embree reproduction package: Figure 13 / Figure 14 bounded analogues, partial Table 3 bounded rows, Table 4 overlay-seed analogue, Figure 15 overlay speedup analogue, and a final report with explicit missing-family labeling.
+- Goal 31 is complete as the current exact-source `lsi` correctness-restoration round: the broken local BVH candidate path was removed from active use, and the local `lsi` backend now closes the known Mac/Linux reproducers through an audited `native_loop` implementation.
 - A checked-in status PDF summarizes the current RTDL state and the paper-reference figures used for the reproduction phase.
 
 Current top-level interpretation:
@@ -46,7 +47,7 @@ Current top-level interpretation:
 Current semantic/runtime boundaries:
 
 - `point_in_polygon(..., boundary_mode="inclusive")` is the only supported PIP boundary mode in the audited baseline.
-- `segment_polygon_hitcount` and `point_nearest_segment` are valid RTDL workloads, but the current local backend lowers them to audited `native_loop` execution rather than BVH-backed traversal.
+- `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` are valid RTDL workloads, but the current local backend lowers them to audited `native_loop` execution rather than BVH-backed traversal.
 - Precision remains `float_approx`; RTDL does not yet claim robust or exact computational geometry.
 - The current automated verification story is still local-only; this repo does not yet have a CI pipeline or a cross-platform test matrix.
 
@@ -57,7 +58,7 @@ Current execution-mode guidance:
 - `prepare_embree(kernel).bind(...).run_raw()` is the preferred repeated-execution path when performance matters.
 - For the current matched `lsi` and `pip` comparisons, the raw and prepared-raw paths are close to the current native Embree wrapper baseline while the dict path is still much slower.
 - That native baseline uses the same compiled Embree shared library as RTDL, so the measured gap is mainly Python/ctypes host-path overhead rather than two independent native geometry engines.
-- In the current low-overhead slice, `segment_polygon_hitcount` and `point_nearest_segment` still use audited `native_loop` execution rather than BVH-backed traversal.
+- In the current low-overhead slice, `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` still use audited `native_loop` execution rather than BVH-backed traversal.
 
 Current OptiX/codegen caveat:
 

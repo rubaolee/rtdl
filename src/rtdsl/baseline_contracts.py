@@ -73,7 +73,7 @@ BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
             "authored_lsi_minimal",
             "tests/fixtures/rayjoin/br_county_subset.cdb",
         ),
-        notes="Segment-segment join. Float outputs use epsilon comparison for cross-backend checks.",
+        notes="Current local backend lowers this workload to native_loop for exact-source parity; float outputs use epsilon comparison for cross-backend checks.",
     ),
     "pip": WorkloadContract(
         workload="pip",

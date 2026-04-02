@@ -50,7 +50,7 @@ Current comparison tolerances:
 Additional frozen rules:
 
 - `point_in_polygon` supports only `boundary_mode="inclusive"` in both the CPU and Embree runtimes.
-- `segment_polygon_hitcount` and `point_nearest_segment` remain part of the baseline, but their current local execution contract is `native_loop` rather than BVH traversal.
+- `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` remain part of the baseline, but their current local execution contract is `native_loop` rather than BVH traversal.
 
 ## Shared Runtime ABI
 

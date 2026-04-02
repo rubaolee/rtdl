@@ -1,6 +1,6 @@
 {
   "$schema": "https://rtdl.dev/schemas/rtdl-plan-v1alpha1.json",
-  "accel_kind": "bvh",
+  "accel_kind": "native_loop",
   "backend": "rtdl",
   "buffers": [
     {
@@ -72,7 +72,7 @@
     "name": "right",
     "role": "build"
   },
-  "bvh_policy": "build over `right`, probe with `left`",
+  "bvh_policy": "current local backend uses native_loop for this workload; BVH-backed candidate traversal is suspended pending a parity-safe redesign",
   "device_programs": [
     "__raygen__rtdl_probe",
     "__miss__rtdl_miss",
@@ -88,11 +88,10 @@
   "exact_refine_mode": "analytic_float_segment_intersection",
   "host_steps": [
     "Upload `right` and `left` arrays using `Segment2D` / `Segment2D` layouts.",
-    "Build BVH over `right` and export an OptixTraversableHandle.",
+    "Current local backend uses a native analytic nested-loop segment intersection path for correctness.",
     "Bind launch parameters with segment buffers, output buffer, output capacity, and atomic output counter.",
-    "Create OptiX module, raygen/miss/closesthit/intersection program groups, and shader binding table.",
-    "Launch one probe ray per `left` segment with t-range [0, 1].",
-    "Pack probe/build indices into payload registers p0-p3 and run float-based refinement before emitting records."
+    "Future GPU backends may still lower this workload through BVH-backed candidate traversal once candidate completeness is demonstrated.",
+    "Run one analytic segment-vs-segment pass per probe/build pair and emit intersection rows."
   ],
   "kernel_name": "county_zip_join",
   "launch_params": [
@@ -221,7 +220,7 @@
     "role": "probe"
   },
   "ray_spec": {
-    "description": "Cast each probe segment as a finite ray over the build-side BVH.",
+    "description": "Current local backend does not use the historical segment-as-ray Embree path; this placeholder records the intended finite-segment query shape.",
     "direction": [
       "probe.x1 - probe.x0",
       "probe.y1 - probe.y0",

@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-31-lsi-gap-closure
+title: Goal 31 LSI Gap Closure
+version: v1
+status: complete-consensus
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: 0947055
+gemini_review: Goal 31 can close; local lsi must remain explicitly documented as native_loop.
+codex_revision: Local lsi gap closure accepted
+final_result: Exact-source lsi parity restored
+summary: Restored CPU-vs-Embree parity on the minimal reproducer and frozen k=5 slice by replacing the broken local BVH lsi path with an audited native_loop implementation.

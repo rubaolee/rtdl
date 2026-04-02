@@ -83,7 +83,7 @@ Current predicate/refine operators include:
 Current audited limits:
 
 - PIP supports only `boundary_mode="inclusive"`.
-- `segment_polygon_hitcount` and `point_nearest_segment` run end to end today, but the current local backend executes them through audited `native_loop` paths instead of BVH-backed traversal.
+- `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` run end to end today, but the current local backend executes them through audited `native_loop` paths instead of BVH-backed traversal.
 - Precision remains `float_approx`.
 - The current automated verification story is local-only; this repo still has no CI pipeline or cross-platform test matrix.
 
@@ -404,7 +404,7 @@ The current RTDL can express and run several non-graphics RT workloads, but it s
 
 - precision is still `float_approx`
 - PIP supports only `boundary_mode="inclusive"`
-- `segment_polygon_hitcount` and `point_nearest_segment` remain audited `native_loop` workloads on the local backend rather than BVH-backed traversal
+- `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` remain audited `native_loop` workloads on the local backend rather than BVH-backed traversal
 - exact or robust geometric arithmetic is not yet implemented
 - workload growth is still explicit and enumerated rather than fully open-ended
 - the current local Embree runtime does not appear to silently truncate output rows, but the generated OptiX/CUDA skeleton still contains an `output_capacity` overflow pattern that must be redesigned before a real NVIDIA backend is trusted

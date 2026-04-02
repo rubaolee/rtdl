@@ -88,7 +88,7 @@ def _lower_lsi(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionP
         precision=kernel.precision,
         build_input=build_input,
         probe_input=probe_input,
-        accel_kind=kernel.candidates.accel,
+        accel_kind="native_loop",
         predicate=predicate.name,
         exact_refine_mode="analytic_float_segment_intersection",
         emit_fields=kernel.emit_op.fields,
@@ -109,11 +109,10 @@ def _lower_lsi(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionP
         ),
         host_steps=(
             f"Upload `{build_input.name}` and `{probe_input.name}` arrays using `{build_input.layout.name}` / `{probe_input.layout.name}` layouts.",
-            f"Build BVH over `{build_input.name}` and export an OptixTraversableHandle.",
+            "Current local backend uses a native analytic nested-loop segment intersection path for correctness.",
             "Bind launch parameters with segment buffers, output buffer, output capacity, and atomic output counter.",
-            "Create OptiX module, raygen/miss/closesthit/intersection program groups, and shader binding table.",
-            f"Launch one probe ray per `{probe_input.name}` segment with t-range [0, 1].",
-            "Pack probe/build indices into payload registers p0-p3 and run float-based refinement before emitting records.",
+            "Future GPU backends may still lower this workload through BVH-backed candidate traversal once candidate completeness is demonstrated.",
+            "Run one analytic segment-vs-segment pass per probe/build pair and emit intersection rows.",
         ),
         device_programs=(
             "__raygen__rtdl_probe",
@@ -134,9 +133,9 @@ def _lower_lsi(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionP
             direction=("probe.x1 - probe.x0", "probe.y1 - probe.y0", "0.0f"),
             tmin="0.0f",
             tmax="1.0f",
-            description="Cast each probe segment as a finite ray over the build-side BVH.",
+            description="Current local backend does not use the historical segment-as-ray Embree path; this placeholder records the intended finite-segment query shape.",
         ),
-        bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
+        bvh_policy="current local backend uses native_loop for this workload; BVH-backed candidate traversal is suspended pending a parity-safe redesign",
     )
 
 

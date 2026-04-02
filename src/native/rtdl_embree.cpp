@@ -158,7 +158,8 @@ void rtdl_embree_free_rows(void* rows);
 
 namespace {
 
-constexpr float kEps = 1.0e-6f;
+constexpr double kEps = 1.0e-6;
+constexpr double kSegmentIntersectionEps = 1.0e-7;
 
 template <typename T>
 void set_error(const std::string& message, T* error_out, size_t error_size) {
@@ -263,13 +264,13 @@ bool segment_intersection(
   Vec2 q = right.a;
   Vec2 s = sub(right.b, right.a);
   double denom = cross(r, s);
-  if (std::fabs(denom) < kEps) {
+  if (std::fabs(denom) < kSegmentIntersectionEps) {
     return false;
   }
   Vec2 qmp = sub(q, p);
   double t = cross(qmp, s) / denom;
   double u = cross(qmp, r) / denom;
-  if (t < 0.0f || t > 1.0f || u < 0.0f || u > 1.0f) {
+  if (t < 0.0 || t > 1.0 || u < 0.0 || u > 1.0) {
     return false;
   }
   if (point_out != nullptr) {
@@ -277,6 +278,22 @@ bool segment_intersection(
     point_out->y = p.y + t * r.y;
   }
   return true;
+}
+
+std::vector<RtdlLsiRow> lsi_native_loop(
+    const std::vector<Segment2D>& left_segments,
+    const std::vector<Segment2D>& right_segments) {
+  std::vector<RtdlLsiRow> rows;
+  for (const Segment2D& probe : left_segments) {
+    for (const Segment2D& build : right_segments) {
+      Vec2 point {};
+      if (!segment_intersection(probe, build, &point)) {
+        continue;
+      }
+      rows.push_back({probe.id, build.id, point.x, point.y});
+    }
+  }
+  return rows;
 }
 
 bool point_on_segment(const Point2D& point, const Vec2& start, const Vec2& end) {
@@ -733,37 +750,7 @@ extern "C" int rtdl_embree_run_lsi(
       right_segments.push_back({right[i].id, {right[i].x0, right[i].y0}, {right[i].x1, right[i].y1}});
     }
 
-    EmbreeDevice device;
-    SegmentSceneData data {&right_segments};
-    SceneHolder holder(device.device);
-    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
-    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(right_segments.size()));
-    rtcSetGeometryUserData(holder.geometry, &data);
-    rtcSetGeometryBoundsFunction(holder.geometry, segment_bounds, nullptr);
-    rtcSetGeometryIntersectFunction(holder.geometry, segment_intersect);
-    rtcCommitGeometry(holder.geometry);
-    rtcAttachGeometry(holder.scene, holder.geometry);
-    rtcCommitScene(holder.scene);
-
-    std::vector<RtdlLsiRow> rows;
-    for (const Segment2D& probe : left_segments) {
-      Vec2 dir = sub(probe.b, probe.a);
-      float length = std::max(std::fabs(dir.x), std::fabs(dir.y));
-      if (length < kEps) {
-        continue;
-      }
-      LsiQueryState state {&probe, &rows};
-      g_query_kind = QueryKind::kLsi;
-      g_query_state = &state;
-      RTCRayHit rayhit;
-      set_ray(&rayhit, probe.a, dir, 1.0f);
-      RTCIntersectArguments args;
-      rtcInitIntersectArguments(&args);
-      rtcIntersect1(holder.scene, &rayhit, &args);
-    }
-    g_query_kind = QueryKind::kNone;
-    g_query_state = nullptr;
-
+    std::vector<RtdlLsiRow> rows = lsi_native_loop(left_segments, right_segments);
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);

@@ -29,5 +29,5 @@ Rules for this matrix:
 - Every case must pass CPU-vs-Embree parity before timing results are reported.
 - The output precision mode remains `float_approx`.
 - Derived datasets must be reproducible from checked-in fixtures or deterministic helper generators.
-- The first four workloads use the BVH-oriented Embree path; `segment_polygon_hitcount` and `point_nearest_segment` are currently included as audited `native_loop` local cases.
+- `pip`, `overlay`, and `ray_tri_hitcount` use the current BVH-oriented Embree path; `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` are currently included as audited `native_loop` local cases.
 - Any future added case should be recorded in both this document and `src/rtdsl/evaluation_matrix.py`.
