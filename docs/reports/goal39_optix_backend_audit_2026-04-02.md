@@ -185,3 +185,32 @@ That follow-up round is already scoped:
 - Codex then performs a file-level review of Claude's revision
 - Gemini reviews both the revision and the Codex review
 - no OptiX code may move into `/Users/rl2025/rtdl_python_only` before that consensus exists
+
+## Post-Claude Revision Update
+
+Claude later revised the external workspace at:
+
+- `/Users/rl2025/claude-work/2026-04-02/rtdl`
+
+Codex review of that revised workspace found that the original three blocked findings were materially addressed:
+
+- payload-register counts were widened in the previously mismatched pipelines
+- the overlay containment fallback now checks all relevant vertices instead of a first-vertex shortcut
+- the macOS build/load artifact naming is now platform-aware across the Makefile and Python loader
+
+Gemini then re-reviewed the revised workspace:
+
+- [Iteration_3_PostClaude_ReReview_2026-04-02_Gemini.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_3_PostClaude_ReReview_2026-04-02_Gemini.md)
+
+That re-review concluded:
+
+- the original three blockers are fixed
+- but the external OptiX workspace is still **NO-MERGE**
+- because packed-geometry interoperability is still not clean between the top-level package exports and `optix_runtime.py`
+
+So the current truthful OptiX status is now:
+
+- Claude revision exists externally
+- the original blocked implementation issues are no longer the main blocker
+- a new integration blocker remains
+- and the external OptiX prototype is still not ready to port into the controlled RTDL repository
