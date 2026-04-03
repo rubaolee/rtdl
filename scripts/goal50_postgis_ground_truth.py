@@ -22,9 +22,15 @@ class HashingSink:
         self._hasher = hashlib.sha256()
         self.row_count = 0
 
-    def write(self, data: str) -> int:
-        self._hasher.update(data.encode("utf-8"))
-        self.row_count += data.count("\n")
+    def write(self, data: str | bytes) -> int:
+        if isinstance(data, bytes):
+            payload = data
+            newline_count = data.count(b"\n")
+        else:
+            payload = data.encode("utf-8")
+            newline_count = data.count("\n")
+        self._hasher.update(payload)
+        self.row_count += newline_count
         return len(data)
 
     @property
