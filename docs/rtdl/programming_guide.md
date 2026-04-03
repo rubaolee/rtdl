@@ -126,6 +126,18 @@ Current trusted GPU path:
 - bounded, correctness-checked runs
 - trusted PTX generation on `192.168.1.20` uses the `nvcc` fallback
 
+### Vulkan
+
+Use `rt.run_vulkan(...)` only when:
+
+- you are explicitly working on the provisional Vulkan backend
+- you understand that its current validation surface is weaker than Embree and OptiX
+
+Current boundary:
+
+- Vulkan remains in-repo and usable for directed work
+- it is not yet validated to the same acceptance level as Embree or the accepted OptiX path
+
 ## 6. Validation Workflow
 
 When adding or changing a kernel:
@@ -135,6 +147,7 @@ When adding or changing a kernel:
 3. inspect the plan if needed
 4. run it through the oracle
 5. compare it against Embree and/or OptiX when relevant
+6. compare accepted bounded real-data packages against indexed PostGIS ground truth when the goal requires an external checker
 
 Typical flow:
 

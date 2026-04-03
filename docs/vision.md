@@ -55,10 +55,11 @@ Validated backends:
 
 - **Intel Embree**: high-precision CPU baseline
 - **NVIDIA OptiX**: high-performance CUDA-based GPU path
-- **Vulkan KHR**: cross-vendor GPU path (Level 1 implementation)
+- **Vulkan KHR**: provisional cross-vendor GPU path retained in the repo, but not yet validated to the same level as Embree/OptiX
 
 Target workloads:
 
 - RayJoin workload family (LSI, PIP, Overlay, etc.)
 - exact-source real-data validation
 - performance characterization vs research baseline
+- external ground-truth comparison against indexed PostGIS queries on the Linux host

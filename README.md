@@ -14,7 +14,7 @@ Current validated execution surface:
 - native C/C++ oracle via `rt.run_cpu(...)`
 - Intel Embree backend via `rt.run_embree(...)`
 - NVIDIA OptiX backend via `rt.run_optix(...)` on `192.168.1.20`
-- Vulkan KHR Ray-Tracing backend via `rt.run_vulkan(...)` (Level 1 integrated)
+- provisional Vulkan KHR Ray-Tracing backend via `rt.run_vulkan(...)`
 
 ## Current supported workloads:
 
@@ -30,7 +30,8 @@ Current v0.1 application slice:
 - RayJoin-style workloads
 - exact-source and bounded reproduction work on Embree
 - first real-data OptiX validation on the Linux GPU host
-- initial Vulkan KHR cross-vendor GPU backend
+- a PostGIS ground-truth comparison track in progress on the Linux host
+- initial Vulkan KHR cross-vendor GPU backend kept as provisional code
 
 Important current boundaries:
 
@@ -38,7 +39,7 @@ Important current boundaries:
 - RTDL does not claim robust/exact computational geometry yet
 - the generated OptiX/CUDA skeleton path is not the trusted runtime path
 - large-scale GPU scaling still needs further work
-- Vulkan backend is float32-only and awaiting Goal 51 parity validation
+- Vulkan backend is float32-only and still provisional pending stronger parity/scaling validation
 
 ## Project Goal
 

@@ -29,6 +29,7 @@ The language docs describe a public surface that can currently be used through:
 - `rt.run_cpu(...)` as the native C/C++ oracle
 - `rt.run_embree(...)` as the controlled CPU backend
 - `rt.run_optix(...)` as the controlled GPU backend on supported NVIDIA hosts
+- `rt.run_vulkan(...)` as a provisional backend surface under active validation
 
 The language surface is still intentionally narrow, but it is no longer only a
 planning or code-generation surface.

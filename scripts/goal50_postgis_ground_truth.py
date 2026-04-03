@@ -95,6 +95,22 @@ def hash_tuples(rows: list[tuple[int, ...]], *, presorted: bool = False) -> dict
     return {"row_count": len(rows), "sha256": hasher.hexdigest()}
 
 
+def hash_full_pip_truth(
+    point_ids: tuple[int, ...],
+    polygon_ids: tuple[int, ...],
+    positive_hits: tuple[tuple[int, int], ...],
+) -> dict[str, object]:
+    hasher = hashlib.sha256()
+    positive_set = set(positive_hits)
+    row_count = 0
+    for point_id in point_ids:
+        for polygon_id in polygon_ids:
+            contains = 1 if (point_id, polygon_id) in positive_set else 0
+            hasher.update(f"{point_id}\t{polygon_id}\t{contains}\n".encode("utf-8"))
+            row_count += 1
+    return {"row_count": row_count, "sha256": hasher.hexdigest(), "positive_row_count": len(positive_hits)}
+
+
 def time_call(fn, *args, **kwargs):
     start = time.perf_counter()
     result = fn(*args, **kwargs)
@@ -250,6 +266,11 @@ def copy_query_hash(cur, sql: str) -> tuple[str, int]:
     return sink.hexdigest, sink.row_count
 
 
+def fetch_query_tuples(cur, sql: str) -> tuple[tuple[int, ...], ...]:
+    cur.execute(sql)
+    return tuple(tuple(int(value) for value in row) for row in cur.fetchall())
+
+
 def build_postgis_lsi_sql(prefix: str) -> str:
     return f"""
 COPY (
@@ -264,6 +285,21 @@ COPY (
            / (((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) BETWEEN 0.0 AND 1.0
     ORDER BY 1, 2
 ) TO STDOUT WITH (FORMAT csv, DELIMITER E'\\t')
+"""
+
+
+def build_postgis_lsi_select_sql(prefix: str) -> str:
+    return f"""
+SELECT l.id, r.id
+FROM goal50.{prefix}_left_segments AS l
+JOIN goal50.{prefix}_right_segments AS r
+  ON l.geom && r.geom
+ AND ABS(((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) >= 1.0e-7
+ AND (((r.x0 - l.x0) * (r.y1 - r.y0)) - ((r.y0 - l.y0) * (r.x1 - r.x0)))
+       / (((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) BETWEEN 0.0 AND 1.0
+ AND (((r.x0 - l.x0) * (l.y1 - l.y0)) - ((r.y0 - l.y0) * (l.x1 - l.x0)))
+       / (((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) BETWEEN 0.0 AND 1.0
+ORDER BY 1, 2
 """
 
 
@@ -289,13 +325,57 @@ COPY (
 """
 
 
+def build_postgis_pip_select_sql(prefix: str) -> str:
+    return f"""
+SELECT p.id, g.id, 1
+FROM goal50.{prefix}_points AS p
+JOIN goal50.{prefix}_polygons AS g
+  ON g.geom && p.geom
+ AND ST_Covers(g.geom, p.geom)
+ORDER BY 1, 2, 3
+"""
+
+
 def run_postgis_pip(conn, prefix: str) -> tuple[dict[str, object], float]:
-    sql = build_postgis_pip_sql(prefix)
+    sql = build_postgis_pip_select_sql(prefix)
     with conn.cursor() as cur:
         start = time.perf_counter()
-        digest, row_count = copy_query_hash(cur, sql)
+        rows = fetch_query_tuples(cur, sql)
         end = time.perf_counter()
-    return {"row_count": row_count, "sha256": digest}, end - start
+    return {"positive_hits": rows}, end - start
+
+
+def explain_json(cur, select_sql: str) -> dict[str, object]:
+    cur.execute(f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {select_sql}")
+    payload = cur.fetchone()[0]
+    if isinstance(payload, list):
+        return payload[0]
+    return payload
+
+
+def summarize_plan(plan_json: dict[str, object]) -> dict[str, object]:
+    plan_root = plan_json["Plan"]
+    node_types: set[str] = set()
+    index_names: set[str] = set()
+
+    def walk(node: dict[str, object]) -> None:
+        node_types.add(str(node.get("Node Type", "")))
+        if "Index Name" in node:
+            index_names.add(str(node["Index Name"]))
+        for child in node.get("Plans", []) or []:
+            walk(child)
+
+    walk(plan_root)
+    node_types_list = sorted(node for node in node_types if node)
+    index_names_list = sorted(index_names)
+    uses_index = any("Index" in node for node in node_types_list) or bool(index_names_list)
+    return {
+        "execution_time_ms": plan_json.get("Execution Time"),
+        "planning_time_ms": plan_json.get("Planning Time"),
+        "node_types": node_types_list,
+        "index_names": index_names_list,
+        "uses_index": uses_index,
+    }
 
 
 def render_markdown(summary: dict[str, object]) -> str:
@@ -308,18 +388,25 @@ def render_markdown(summary: dict[str, object]) -> str:
             f"- load sec: `{payload['load_sec']:.9f}`",
             f"- compared backends: `{', '.join(payload['compared_backends'])}`",
             f"- PostGIS query mode: `{payload['postgis_mode']}`",
+            f"- PostGIS lsi indexed plan: `{payload['lsi']['plan']['uses_index']}`",
+            f"- PostGIS pip indexed plan: `{payload['pip']['plan']['uses_index']}`",
             f"- lsi parity vs postgis: `{lsi_parity}`",
             f"- pip parity vs postgis: `{pip_parity}`",
             "",
             "### LSI",
             "",
             f"- PostGIS: `{payload['lsi']['postgis_sec']:.9f} s`",
+            f"- plan uses index: `{payload['lsi']['plan']['uses_index']}`",
+            f"- plan nodes: `{', '.join(payload['lsi']['plan']['node_types'])}`",
             f"- row count: `{payload['lsi']['postgis']['row_count']}`",
             "",
             "### PIP",
             "",
             f"- PostGIS: `{payload['pip']['postgis_sec']:.9f} s`",
+            f"- plan uses index: `{payload['pip']['plan']['uses_index']}`",
+            f"- plan nodes: `{', '.join(payload['pip']['plan']['node_types'])}`",
             f"- row count: `{payload['pip']['postgis']['row_count']}`",
+            f"- positive hit count: `{payload['pip']['positive_hit_count']}`",
             "",
         ]
         for backend_name in payload["compared_backends"]:
@@ -343,7 +430,7 @@ def render_markdown(summary: dict[str, object]) -> str:
         "- compares PostGIS against RTDL C oracle, Embree, and OptiX on the same bounded real-data packages already accepted in the Linux validation track",
         "- PostGIS is measured as a loaded-and-indexed query engine; load time is reported separately from query time",
         "- `lsi` uses index-assisted segment candidate pruning plus RTDL-matching exact segment math",
-        "- `pip` uses an index-assisted positive-hit join via `&&` + `ST_Covers`; RTDL rows are reduced to `contains=1` for the database comparison",
+        "- `pip` uses an index-assisted positive-hit join via `&&` + `ST_Covers`; that hit set is then expanded into RTDL's full point × polygon `contains=0/1` semantics for parity",
         "",
     ]
     if "county_zipcode" in summary:
@@ -351,6 +438,11 @@ def render_markdown(summary: dict[str, object]) -> str:
     if "blockgroup_waterbodies" in summary:
         lines.extend(section("BlockGroup/WaterBodies `county2300_s10`", summary["blockgroup_waterbodies"]))
     return "\n".join(lines)
+
+
+def persist_summary(output_dir: Path, summary: dict[str, object]) -> None:
+    (output_dir / "goal50_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
+    (output_dir / "goal50_summary.md").write_text(render_markdown(summary), encoding="utf-8")
 
 
 def backend_payload(
@@ -424,19 +516,32 @@ def run_case(
     )
 
     lsi_postgis, lsi_postgis_sec = run_postgis_lsi(conn, prefix)
-    pip_postgis, pip_postgis_sec = run_postgis_pip(conn, prefix)
+    pip_postgis_hits, pip_postgis_sec = run_postgis_pip(conn, prefix)
+    with conn.cursor() as cur:
+        lsi_plan = summarize_plan(explain_json(cur, build_postgis_lsi_select_sql(prefix)))
+        pip_plan = summarize_plan(explain_json(cur, build_postgis_pip_select_sql(prefix)))
+    point_ids = tuple(int(row["id"]) for row in points)
+    polygon_ids = tuple(int(row["id"]) for row in polygons)
+    pip_postgis = hash_full_pip_truth(
+        point_ids,
+        polygon_ids,
+        tuple((point_id, polygon_id) for point_id, polygon_id, _ in pip_postgis_hits["positive_hits"]),
+    )
 
     lsi_summary = {
         "load_sec": load_stats["load_sec"],
         "compared_backends": list(compared_backends),
-        "postgis_mode": "index-assisted positive-hit joins",
+        "postgis_mode": "indexed GiST-assisted joins with separate load/query timing",
         "lsi": {
             "postgis": lsi_postgis,
             "postgis_sec": lsi_postgis_sec,
+            "plan": lsi_plan,
         },
         "pip": {
             "postgis": pip_postgis,
             "postgis_sec": pip_postgis_sec,
+            "positive_hit_count": len(pip_postgis_hits["positive_hits"]),
+            "plan": pip_plan,
         },
     }
 
@@ -458,7 +563,6 @@ def run_case(
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
                 presorted=True,
-                positive_only=True,
                 points=points,
                 polygons=polygons,
             )
@@ -478,7 +582,6 @@ def run_case(
                 kind="pip",
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
-                positive_only=True,
                 points=points,
                 polygons=polygons,
             )
@@ -498,7 +601,6 @@ def run_case(
                 kind="pip",
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
-                positive_only=True,
                 points=points,
                 polygons=polygons,
             )
@@ -542,6 +644,12 @@ def main() -> int:
         with conn.cursor() as cur:
             recreate_schema(cur)
 
+        summary = {
+            "host_label": args.host_label,
+            "db_name": args.db_name,
+            "compared_backends": list(compared_backends),
+            "selected_cases": list(selected_cases),
+        }
         if "county_zipcode" in selected_cases:
             county_case, county_sizes = run_case(
                 conn,
@@ -552,8 +660,15 @@ def main() -> int:
                 points=county_points,
                 polygons=county_polygons,
             )
+            summary["county_zipcode"] = {
+                "county": county_summary,
+                "zipcode": zipcode_summary,
+                "derived_sizes": county_sizes,
+                **county_case,
+            }
+            persist_summary(output_dir, summary)
         else:
-            county_case, county_sizes = None, None
+            county_case = None
         if "blockgroup_waterbodies" in selected_cases:
             block_case, block_sizes = run_case(
                 conn,
@@ -564,34 +679,18 @@ def main() -> int:
                 points=block_points,
                 polygons=block_polygons,
             )
+            summary["blockgroup_waterbodies"] = {
+                "blockgroup": block_summary,
+                "waterbodies": water_summary,
+                "derived_sizes": block_sizes,
+                **block_case,
+            }
+            persist_summary(output_dir, summary)
         else:
-            block_case, block_sizes = None, None
+            block_case = None
     finally:
         conn.close()
-
-    summary = {
-        "host_label": args.host_label,
-        "db_name": args.db_name,
-        "compared_backends": list(compared_backends),
-        "selected_cases": list(selected_cases),
-    }
-    if county_case is not None:
-        summary["county_zipcode"] = {
-            "county": county_summary,
-            "zipcode": zipcode_summary,
-            "derived_sizes": county_sizes,
-            **county_case,
-        }
-    if block_case is not None:
-        summary["blockgroup_waterbodies"] = {
-            "blockgroup": block_summary,
-            "waterbodies": water_summary,
-            "derived_sizes": block_sizes,
-            **block_case,
-        }
-
-    (output_dir / "goal50_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
-    (output_dir / "goal50_summary.md").write_text(render_markdown(summary), encoding="utf-8")
+    persist_summary(output_dir, summary)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0
 

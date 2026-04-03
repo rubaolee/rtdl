@@ -21,6 +21,8 @@ Current v0.1 scope:
 - backends:
   - Embree on CPU
   - OptiX on NVIDIA GPU
+- external checker:
+  - indexed PostGIS comparison on the Linux validation host
 
 ## What Is Already Complete
 
@@ -63,6 +65,12 @@ Current v0.1 scope:
   - `County ⊲⊳ Zipcode`
   - `BlockGroup ⊲⊳ WaterBodies`
 
+### External ground-truth path
+
+- PostGIS is installed on the Linux host
+- the project is moving toward indexed PostGIS-based ground-truth comparison for accepted bounded real-data packages
+- that PostGIS comparison track is in progress and is not yet a closed v0.1 result
+
 ## What Is Still Missing
 
 v0.1 is **not** finished just because both backends exist.
@@ -74,6 +82,7 @@ That mainly means:
 
 - broader exact-source family coverage
 - more apples-to-apples backend comparisons
+- finish the PostGIS ground-truth comparison track on accepted bounded packages
 - clearer final experiment matrix closure
 - final packaging of what is:
   - exact-source and accepted

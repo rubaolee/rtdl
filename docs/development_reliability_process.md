@@ -37,6 +37,10 @@ Then backend validation compares that oracle against:
 - `rt.run_embree(...)`
 - `rt.run_optix(...)`
 
+When an external checker is part of the goal, the current repo also treats
+indexed PostGIS queries on the Linux host as an additional ground-truth check
+for accepted bounded real-data packages.
+
 That is the main correctness pattern in the current repo.
 
 ## Expected Goal Loop

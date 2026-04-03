@@ -21,7 +21,7 @@ Today it includes:
 - a native C/C++ oracle
 - a controlled Embree backend
 - a controlled OptiX backend
-- a cross-vendor Vulkan KHR backend
+- a provisional cross-vendor Vulkan KHR backend
 
 Current supported workload families:
 
@@ -40,8 +40,9 @@ The current repo can:
 - compile and lower them
 - run them through the native oracle
 - run them on Embree
-- run them on Vulkan KHR (via `rt.run_vulkan`)
 - run bounded validated workloads on OptiX
+- keep a provisional Vulkan KHR backend in the repo for continued validation
+- compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
 - support a RayJoin-oriented experiment/reporting workflow
 
 ## What RTDL Cannot Yet Claim
@@ -52,3 +53,4 @@ RTDL does not yet claim:
 - a finished generalized multi-backend optimizer
 - paper-scale reproduction on GPU backends
 - high-precision support on Vulkan (currently float32)
+- that the PostGIS comparison track is fully closed

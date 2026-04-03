@@ -26,6 +26,12 @@ There is also a manager-facing summary file:
 
    This mirrors the same round summary in Markdown so it can be read directly on GitHub without opening the HTML file.
 
+5. Ad hoc review notes
+   `history/ad_hoc_reviews/`
+
+   This stores accepted standalone review memos and consensus notes that are
+   intentionally kept outside the per-round archive layout.
+
 ## Why This Layout
 
 The database is good for:
@@ -61,6 +67,9 @@ This hybrid layout is more practical than:
   Single-file HTML dashboard for managers and quick project status reviews.
 - `history/revision_dashboard.md`
   Markdown summary of the same dashboard data for GitHub reading.
+- `history/ad_hoc_reviews/`
+  Standalone review memos and consensus notes that were accepted without being
+  folded into a dedicated per-round `history/revisions/<round-slug>/` archive.
 - `history/revisions/<round-slug>/metadata.txt`
   Human-readable round summary.
 - `history/revisions/<round-slug>/external_reports/`
@@ -88,11 +97,20 @@ This hybrid layout is more practical than:
 5. Regenerate `revision_dashboard.html` and `revision_dashboard.md` from the database.
 6. Keep the archive immutable after the round is closed.
 
-## Current Seeded Round
+## Current State
 
-This archive is seeded with the March 29, 2026 review-and-revision cycle covering:
+This archive began with the March 29, 2026 review-and-revision cycle and now
+contains many later rounds covering:
 
-- the original Gemini verification report,
-- the Codex revision note,
-- the Gemini review log and final revised report,
-- and the RTDL project changes that implemented the accepted revisions.
+- language/runtime bring-up
+- Embree validation and RayJoin-style reproduction work
+- OptiX bring-up and bounded real-data validation
+- full-project audits, documentation rewrites, and backend comparison notes
+- ad hoc review memos and consensus notes that complement the structured rounds
+
+The immutable rule still applies:
+
+- do not rewrite accepted historical reports
+- do not rewrite archived per-round snapshots
+- only update live guide/index material such as this file when the archive
+  structure or workflow description changes

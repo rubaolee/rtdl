@@ -250,7 +250,7 @@ function addFooter(slide, page) {
     color: COLORS.ink,
     margin: 0,
   });
-  slide.addText("Research status as of April 1, 2026", {
+  slide.addText("Research status as of April 3, 2026", {
     x: 0.75,
     y: 2.42,
     w: 4.5,
@@ -267,14 +267,14 @@ function addFooter(slide, page) {
     4.7,
     2.55,
     "Project Thesis",
-    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: RayJoin-style workloads on the local Embree path first, with future NVIDIA bring-up when hardware is available.",
+    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: RayJoin-style workloads validated through a native oracle plus Embree and OptiX, with PostGIS ground-truth comparison in progress.",
     COLORS.sand
   );
-  addMetric(slide, 0.8, 4.0, 1.7, "Workloads", "4", COLORS.white);
-  addMetric(slide, 2.7, 4.0, 1.9, "Tests", "32", COLORS.white);
-  addMetric(slide, 4.8, 4.0, 2.1, "Review Rounds", "8", COLORS.white);
-  addMetric(slide, 7.1, 4.0, 2.1, "Local Runtime", "Embree", COLORS.white);
-  addMetric(slide, 9.45, 4.0, 2.8, "Execution Modes", "3", COLORS.white);
+  addMetric(slide, 0.8, 4.0, 1.7, "Workloads", "6", COLORS.white);
+  addMetric(slide, 2.7, 4.0, 1.9, "Tests", "160", COLORS.white);
+  addMetric(slide, 4.8, 4.0, 2.1, "Review", "50+", COLORS.white);
+  addMetric(slide, 7.1, 4.0, 2.1, "Validated RT", "CPU + GPU", COLORS.white);
+  addMetric(slide, 9.45, 4.0, 2.8, "Backends", "3 core", COLORS.white);
   addFooter(slide, 1);
 }
 
@@ -303,15 +303,16 @@ function addFooter(slide, page) {
   addPanel(slide, 0.8, 1.55, 3.0, 2.2, "Language Surface",
     "Python-hosted DSL with @rt.kernel, rt.input, rt.traverse, rt.refine, and rt.emit.\n\nDocumented for human and LLM authoring.", COLORS.white);
   addPanel(slide, 4.05, 1.55, 3.0, 2.2, "Workloads",
-    "lsi\npip\noverlay\nray_tri_hitcount", COLORS.white);
+    "lsi\npip\noverlay\nray_tri_hitcount\nsegment_polygon_hitcount\npoint_nearest_segment", COLORS.white);
   addPanel(slide, 7.3, 1.55, 2.55, 2.2, "Execution",
-    "Compiler-only planning\nPython CPU simulator\nNative Embree runtime", COLORS.white);
+    "Native C++ oracle\nEmbree runtime\nOptiX runtime\nVulkan (provisional)", COLORS.white);
   addPanel(slide, 10.1, 1.55, 2.4, 2.2, "Codegen",
-    "RayJoin lowering\nplan.json schema\nOptiX/CUDA skeleton artifacts", COLORS.white);
+    "RayJoin lowering\nplan.json schema\nPostGIS comparison\nGPU backend plumbing", COLORS.white);
   addBullets(slide, [
     "Implemented precision mode is float_approx. Exact or robust geometry remains future work.",
     "The Mac backend is real: current RTDL programs can return results through Embree.",
-    "The OptiX path is still a planning and code-generation backend, not a finished runtime.",
+    "The OptiX path is a real controlled runtime on 192.168.1.20, with bounded accepted real-data validation.",
+    "The Vulkan path is present in-repo but still provisional.",
     "Language docs, cookbook, and authored examples are in the repo and validated by tests.",
   ], { x: 0.95, y: 4.2, w: 11.7, h: 2.0, fontSize: 13.5, spaceAfter: 8 });
   addFooter(slide, 3);
@@ -359,13 +360,13 @@ def ray_triangle_hits():
   slide.addShape(pptx.ShapeType.chevron, {
     x: 8.95, y: 2.45, w: 0.6, h: 0.55, line: { color: COLORS.teal, transparency: 100 }, fill: { color: COLORS.teal }
   });
-  addPanel(slide, 9.65, 2.1, 2.95, 1.2, "Outputs", "CPU runtime\nEmbree runtime\nOptiX skeleton codegen", COLORS.white);
+  addPanel(slide, 9.65, 2.1, 2.95, 1.2, "Outputs", "Oracle runtime\nEmbree runtime\nOptiX runtime\nVulkan runtime (provisional)", COLORS.white);
   addPanel(slide, 0.8, 4.1, 3.8, 1.75, "Key modules",
     "api.py\nir.py\ntypes.py\nlowering.py\ncodegen.py\nruntime.py\nembree_runtime.py\nreference.py\ndatasets.py", COLORS.mint);
   addPanel(slide, 4.85, 4.1, 3.8, 1.75, "Execution contract",
     "The same kernel can be compiled, lowered, and then either executed locally or used to generate backend artifacts. That keeps language semantics and backend strategy separate.", COLORS.white);
-  addPanel(slide, 8.9, 4.1, 3.6, 1.75, "Native Mac runtime",
-    "Embree 4.4.0 on this Mac via src/native/rtdl_embree.cpp.\n\nPublic API: rt.run_embree(...)", COLORS.sand);
+  addPanel(slide, 8.9, 4.1, 3.6, 1.75, "Validated runtime surface",
+    "Embree-backed local validation on this Mac, plus larger Linux validation and OptiX execution on 192.168.1.20.\n\nPublic APIs: rt.run_embree(...), rt.run_optix(...)", COLORS.sand);
   addFooter(slide, 5);
 }
 
@@ -385,9 +386,9 @@ def ray_triangle_hits():
   addPanel(slide, 0.8, 4.95, 3.8, 1.3, "Goal 10 extensions",
     "segment_polygon_hitcount\npoint_nearest_segment\n\nThese execute through audited native_loop local cases.", COLORS.mint);
   addPanel(slide, 4.85, 4.95, 3.7, 1.3, "Dataset support",
-    "datasets.py parses RayJoin-style CDB chains and derives segment, polygon, and point-probe views for non-GPU validation.", COLORS.white);
+    "datasets.py parses RayJoin-style CDB chains and derives segment, polygon, and point-probe views for oracle, Embree, OptiX, and PostGIS comparison.", COLORS.white);
   addPanel(slide, 8.8, 4.95, 3.7, 1.3, "Example data sources",
-    "tests/fixtures/rayjoin/ plus authored synthetic examples, Section 5.6 generators, and Embree demos.", COLORS.mist);
+    "tests/fixtures/rayjoin/, exact-source public datasets, bounded Linux validation slices, and synthetic generators.", COLORS.mist);
   addFooter(slide, 6);
 }
 
@@ -398,10 +399,10 @@ def ray_triangle_hits():
   addTitle(slide, "How You Can Run It Today", "Three useful ways to work with the current RTDL repository.");
   addPanel(slide, 0.82, 1.55, 3.8, 1.5, "1. Compiler / codegen demo",
     "make run-rtdsl-py\n\nCompiles kernels, prints lowering plans, and emits generated backend files under generated/.", COLORS.white);
-  addPanel(slide, 4.77, 1.55, 3.8, 1.5, "2. Python simulator",
-    "make run-rtdsl-sim\n\nRuns the current workload surface through the CPU reference runtime.", COLORS.white);
+  addPanel(slide, 4.77, 1.55, 3.8, 1.5, "2. Native oracle",
+    "Use rt.run_cpu(...)\n\nRuns the current workload surface through the native C/C++ ground-truth path.", COLORS.white);
   addPanel(slide, 8.72, 1.55, 3.8, 1.5, "3. Native Embree runtime",
-    "make run-rtdsl-embree\n\nRuns the same workloads through the local Embree backend on this Mac.", COLORS.white);
+    "Use rt.run_embree(...)\n\nRuns the same workloads through the controlled Embree backend; OptiX runs on the Linux GPU host.", COLORS.white);
   addCodeBox(slide, 0.84, 3.35, 5.95, 2.65,
 `Embree Version: (4, 4, 0)
 LSI: ({'left_id': 1, 'right_id': 10, ...})
@@ -433,10 +434,10 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
     "Multi-workload coverage and dataset pipeline.\n\nOutcome: lsi, pip, overlay, RayJoin-style fixtures.", COLORS.mist);
   addPanel(slide, 7.4, 2.55, 2.0, 3.55, "Goals 3-5",
     "Gemini re-review gate, formal language docs, and ray-triangle hit counts.", COLORS.white);
-  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-15",
-    "CPU simulator, Embree backend, evaluation/reporting, trust audit, paper-analogue work, and native C++ comparison.", COLORS.mist);
+  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-50",
+    "Native oracle, Embree maturity, OptiX bring-up, three-backend checks, docs rewrite, full audit, and PostGIS ground-truth work.", COLORS.mist);
   addPanel(slide, 11.8, 2.55, 1.0, 3.55, "Stats",
-    "19 rounds\n56 external reports\n281 archived project snapshots", COLORS.white, { bodySize: 10.2 });
+    "50+ goals\n2-3 AI review\nclean audited repo", COLORS.white, { bodySize: 10.2 });
   addFooter(slide, 8);
 }
 
@@ -448,16 +449,17 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 0.8, 1.55, 3.0, 2.15, "Reference CPU",
     "Purpose: semantic oracle and portable execution.\n\nStatus: implemented as rt.run_cpu(...).", COLORS.white);
   addPanel(slide, 4.05, 1.55, 3.0, 2.15, "Embree",
-    "Purpose: real local native runtime on this Mac.\n\nStatus: implemented as rt.run_embree(...).", COLORS.white);
+    "Purpose: controlled CPU backend for validated real-data work.\n\nStatus: implemented as rt.run_embree(...).", COLORS.white);
   addPanel(slide, 7.3, 1.55, 2.75, 2.15, "OptiX / RayJoin",
-    "Purpose: original target backend and future RT-core execution path.\n\nStatus: lowering + skeleton codegen only.", COLORS.white);
+    "Purpose: NVIDIA GPU backend for the RayJoin-style target slice.\n\nStatus: implemented and validated on bounded accepted workloads.", COLORS.white);
   addPanel(slide, 10.3, 1.55, 2.2, 2.15, "Future Mac GPU",
-    "Most plausible future option: Metal ray tracing.\n\nNot started.", COLORS.white);
+    "Vulkan KHR path is in-repo but provisional.\n\nApple/Metal work is still future.", COLORS.white);
   addBullets(slide, [
     "RTDL is designed so backend specifics live under the IR and lowering boundary, not in user kernels.",
-    "Embree de-risks runtime semantics before the NVIDIA GPU environment is connected.",
-    "OptiX remains the research-critical backend for matching the original RayJoin direction.",
-    "A broader future architecture can support CPU, Mac GPU, and NVIDIA RT hardware under one language.",
+    "Embree is the strongest validated backend today.",
+    "OptiX is real and correctness-checked on bounded real-data workloads.",
+    "Vulkan is retained as provisional backend code, not as an equally accepted backend.",
+    "A broader future architecture can still support CPU, NVIDIA, Vulkan-class, and future Apple/mobile RT targets.",
   ], { x: 0.95, y: 4.2, w: 11.6, h: 2.0, fontSize: 13.4 });
   addFooter(slide, 9);
 }
@@ -468,9 +470,9 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.rust);
   addTitle(slide, "What Is Proven vs. What Is Not", "Keep the current system’s claims honest.");
   addPanel(slide, 0.8, 1.55, 5.75, 4.9, "Proven now",
-    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR, lower to backend plans, execute on CPU, and execute on Embree.\n\nA separate audited native C++ + Embree comparison slice now cross-checks deterministic lsi and pip fixtures.\n\nThe review history is reproducible and archived.", COLORS.mint);
+    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR and execute through the native oracle, Embree, and accepted bounded OptiX paths.\n\nThree-backend checks exist on the Linux host for accepted real-data packages.\n\nThe review history is reproducible and archived.", COLORS.mint);
   addPanel(slide, 6.8, 1.55, 5.75, 4.9, "Not done yet",
-    "No exact / robust geometry implementation.\n\nNo real OptiX runtime integration yet.\n\nNo performance evaluation against RayJoin.\n\nNo support yet for the full range of general-purpose RT workloads beyond the current small surface.", COLORS.rose);
+    "No exact / robust geometry implementation.\n\nNo closed PostGIS ground-truth comparison result yet.\n\nNo final bounded full RayJoin-style reproduction package across all current targets yet.\n\nVulkan is not yet validated to the same level as Embree or OptiX.", COLORS.rose);
   addFooter(slide, 10);
 }
 
@@ -478,15 +480,15 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.green);
-  addTitle(slide, "Roadmap to a Fully Functional DSL", "The next steps after the current Mac-local milestone.");
+  addTitle(slide, "Roadmap to a Fully Functional DSL", "The next steps after the current multi-backend bring-up milestone.");
   addPanel(slide, 0.8, 1.55, 2.85, 3.95, "Step 1\nStabilize current surface",
     "Keep improving docs, examples, negative validation, and authored-program testing.", COLORS.white);
   addPanel(slide, 3.95, 1.55, 2.85, 3.95, "Step 2\nWiden workload support",
     "Add more geometry/query forms beyond the current RayJoin-aligned six-workload surface.", COLORS.white);
-  addPanel(slide, 7.1, 1.55, 2.85, 3.95, "Step 3\nBring up real OptiX runtime",
-    "Connect the cloud NVIDIA environment and make generated backend artifacts execute end to end.", COLORS.white);
+  addPanel(slide, 7.1, 1.55, 2.85, 3.95, "Step 3\nClose external truth and matrix",
+    "Finish PostGIS ground-truth comparison and close the bounded RayJoin-style experiment matrix across the current accepted backends.", COLORS.white);
   addPanel(slide, 10.25, 1.55, 2.3, 3.95, "Step 4\nPrecision and performance",
-    "Add robust arithmetic strategy, benchmark against RayJoin, and refine backend specialization.", COLORS.white);
+    "Add robust arithmetic strategy, continue apples-to-apples backend comparisons, and refine backend specialization.", COLORS.white);
   addPanel(slide, 0.8, 5.8, 11.75, 0.62, "Key research transition",
     "The project has moved from a language sketch to an executable system. The next phase is backend maturity, not basic feasibility.", COLORS.mint);
   addFooter(slide, 11);
@@ -498,18 +500,19 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.plum);
   addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo are in sync through Goal 19 closure, including the first-class raw Embree runtime path, the native-vs-RTDL performance comparison, and the refreshed history dashboard.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nEmbree and OptiX are real; Vulkan is provisional; the PostGIS truth track is active.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
-    "Read docs/rtdl/*, run make test, make run-rtdsl-sim, and make run-rtdsl-embree, then author new kernels against the current contracts.", COLORS.white);
+    "Read docs/rtdl/*, run make test, validate kernels against the oracle, and compare them against Embree and OptiX on accepted targets.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
-    "Real OptiX runtime integration, generated backend validation, and progress toward replacing narrow slices of handwritten RayJoin code.", COLORS.white);
+    "Bounded real-data GPU validation, apples-to-apples backend comparison, and progress toward a bounded RayJoin-style reproduction package.", COLORS.white);
   addCodeBox(slide, 0.82, 4.15, 11.7, 1.75,
 `Current repo snapshot:
 - Six supported workloads
-- CPU + Embree runtimes plus native C++ comparison slices
-- Embree 4.4.0 runtime on this Mac
-- 80 passing tests
-- 21 archived review/revision rounds
+- Native oracle + Embree + OptiX
+- PostGIS ground-truth track in progress
+- Vulkan retained as provisional backend code
+- 160 passing tests
+- 50+ reviewed goal rounds
 - First-class raw + prepared raw runtime modes
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);

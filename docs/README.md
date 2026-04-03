@@ -36,3 +36,10 @@ These are still useful, but they are not the primary current-state narrative:
 - preserved reproduction matrices and older plan docs
 
 Use them when you need detailed historical or goal-specific context.
+
+Current live state to keep in mind while reading:
+
+- Embree is the strongest validated backend today
+- OptiX is real and validated on bounded accepted workloads on `192.168.1.20`
+- Vulkan is currently kept as provisional backend code
+- the PostGIS ground-truth comparison track is in progress and not yet a closed result
