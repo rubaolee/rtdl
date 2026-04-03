@@ -11,8 +11,8 @@ Scope of this file:
 
 This guide is intentionally different from:
 
-- [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md): exact contract
-- [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md): copyable examples
+- [DSL Reference](dsl_reference.md): exact contract
+- [Workload Cookbook](workload_cookbook.md): copyable examples
 
 ## 1. Start With The Current Kernel Header
 
@@ -176,6 +176,6 @@ Avoid:
 
 ## 8. Where To Go Next
 
-- for exact contracts: [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
-- for workload snippets: [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
-- for project-level context: [Feature Guide](/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md)
+- for exact contracts: [DSL Reference](dsl_reference.md)
+- for workload snippets: [Workload Cookbook](workload_cookbook.md)
+- for project-level context: [Feature Guide](../rtdl_feature_guide.md)

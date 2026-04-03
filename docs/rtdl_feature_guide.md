@@ -70,13 +70,13 @@ Current practical interpretation:
 If you need:
 
 - exact language contract:
-  [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
+  [DSL Reference](rtdl/dsl_reference.md)
 - authoring guidance:
-  [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
+  [Programming Guide](rtdl/programming_guide.md)
 - copyable examples:
-  [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+  [Workload Cookbook](rtdl/workload_cookbook.md)
 - whole-project framing:
-  [Vision](/Users/rl2025/rtdl_python_only/docs/vision.md)
+  [Vision](vision.md)
 
 ## Bottom Line
 

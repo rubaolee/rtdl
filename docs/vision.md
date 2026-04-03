@@ -35,12 +35,12 @@ RTDL aims to separate those concerns:
 
 The long-term backend picture includes:
 
-- Intel Embree / CPU
-- NVIDIA OptiX / CUDA
-- AMD HIP RT
-- Intel RT stacks
-- Apple RT ecosystems
-- Qualcomm/mobile RT ecosystems
+- CPU-based ray-tracing libraries such as Intel Embree
+- NVIDIA OptiX/CUDA-based GPU backends
+- AMD HIP RT-based backends
+- Intel ray-tracing hardware/software platforms
+- Apple ray-tracing platforms
+- Qualcomm and other mobile ray-tracing platforms
 
 The current repo validates only a subset of that ambition, but the project
 framing should stay multi-backend.

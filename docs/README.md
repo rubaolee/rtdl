@@ -11,21 +11,21 @@ If you want the current project story, read the canonical set first.
 
 Project-level:
 
-1. [Vision](/Users/rl2025/rtdl_python_only/docs/vision.md)
-2. [v0.1 Plan](/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md)
-3. [RayJoin Target](/Users/rl2025/rtdl_python_only/docs/rayjoin_target.md)
-4. [Dataset Summary](/Users/rl2025/rtdl_python_only/docs/rayjoin_datasets.md)
-5. [Public Dataset Sources](/Users/rl2025/rtdl_python_only/docs/rayjoin_public_dataset_sources.md)
+1. [Vision](vision.md)
+2. [v0.1 Plan](v0_1_final_plan.md)
+3. [RayJoin Target](rayjoin_target.md)
+4. [Dataset Summary](rayjoin_datasets.md)
+5. [Public Dataset Sources](rayjoin_public_dataset_sources.md)
 
 Language-level:
 
-1. [RTDL Language Docs Index](/Users/rl2025/rtdl_python_only/docs/rtdl/README.md)
-2. [Feature Guide](/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md)
+1. [RTDL Language Docs Index](rtdl/README.md)
+2. [Feature Guide](rtdl_feature_guide.md)
 
 Process-level:
 
-1. [Development Reliability Process](/Users/rl2025/rtdl_python_only/docs/development_reliability_process.md)
-2. [AI Collaboration Workflow](/Users/rl2025/rtdl_python_only/docs/ai_collaboration_workflow.md)
+1. [Development Reliability Process](development_reliability_process.md)
+2. [AI Collaboration Workflow](ai_collaboration_workflow.md)
 
 ## Reference Material
 

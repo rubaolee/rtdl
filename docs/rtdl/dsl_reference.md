@@ -12,8 +12,8 @@ Use this file for:
 
 For guided usage, read:
 
-- [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
-- [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+- [Programming Guide](programming_guide.md)
+- [Workload Cookbook](workload_cookbook.md)
 
 ## Scope
 

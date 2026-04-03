@@ -24,7 +24,7 @@ RTDL currently uses three dataset classes:
 
 ## Where To Read More
 
-- [Public Dataset Sources](/Users/rl2025/rtdl_python_only/docs/rayjoin_public_dataset_sources.md)
+- [Public Dataset Sources](rayjoin_public_dataset_sources.md)
 - accepted reports in `docs/reports/`
 
 ## Boundary

@@ -42,15 +42,15 @@ Important current boundaries:
 The whole-project goal is broader than RayJoin and broader than the currently
 validated backends.
 
-RTDL is intended to become a language/runtime system for non-graphical RT
-applications across multiple backend families, including:
+RTDL is intended to become a language and runtime system for non-graphical
+ray-tracing applications across multiple backend families, including:
 
-- Embree / CPU
-- OptiX / CUDA
-- AMD HIP RT
-- Intel RT stacks
-- Apple RT ecosystems
-- Qualcomm/mobile RT ecosystems
+- CPU-based ray-tracing libraries such as Intel Embree
+- NVIDIA OptiX/CUDA-based GPU backends
+- AMD HIP RT-based backends
+- Intel ray-tracing hardware/software platforms
+- Apple ray-tracing platforms
+- Qualcomm and other mobile ray-tracing platforms
 
 The current repository should be read as:
 
@@ -62,22 +62,22 @@ The current repository should be read as:
 
 Start here:
 
-1. [Project Vision](/Users/rl2025/rtdl_python_only/docs/vision.md)
-2. [v0.1 Plan](/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md)
-3. [Docs Index](/Users/rl2025/rtdl_python_only/docs/README.md)
+1. [Project Vision](docs/vision.md)
+2. [v0.1 Plan](docs/v0_1_final_plan.md)
+3. [Docs Index](docs/README.md)
 
 Language docs:
 
-- [RTDL Language Docs](/Users/rl2025/rtdl_python_only/docs/rtdl/README.md)
-- [Feature Guide](/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md)
+- [RTDL Language Docs](docs/rtdl/README.md)
+- [Feature Guide](docs/rtdl_feature_guide.md)
 
 Project/workflow docs:
 
-- [RayJoin Target](/Users/rl2025/rtdl_python_only/docs/rayjoin_target.md)
-- [Dataset Summary](/Users/rl2025/rtdl_python_only/docs/rayjoin_datasets.md)
-- [Public Dataset Sources](/Users/rl2025/rtdl_python_only/docs/rayjoin_public_dataset_sources.md)
-- [Reliability Process](/Users/rl2025/rtdl_python_only/docs/development_reliability_process.md)
-- [AI Collaboration Workflow](/Users/rl2025/rtdl_python_only/docs/ai_collaboration_workflow.md)
+- [RayJoin Target](docs/rayjoin_target.md)
+- [Dataset Summary](docs/rayjoin_datasets.md)
+- [Public Dataset Sources](docs/rayjoin_public_dataset_sources.md)
+- [Reliability Process](docs/development_reliability_process.md)
+- [AI Collaboration Workflow](docs/ai_collaboration_workflow.md)
 
 ## Repository Layout
 

@@ -150,5 +150,5 @@ rows = rt.run_optix(kernel_fn, **inputs)
 
 For the precise contract behind these examples, see:
 
-- [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
-- [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
+- [DSL Reference](dsl_reference.md)
+- [Programming Guide](programming_guide.md)
