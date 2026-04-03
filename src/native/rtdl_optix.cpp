@@ -47,6 +47,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <unistd.h>
 #include <vector>
@@ -384,15 +386,17 @@ using HitRecord    = SbtRecord<EmptyData>;
 // ---------- AABB helpers ----------------------------------------------------
 
 constexpr float kAabbPad = 1.0e-5f;
+constexpr float kSegmentAabbPad = 1.0e-4f;
+constexpr float kLsiTraceTmaxPad = 1.0e-4f;
 
 OptixAabb aabb_for_segment(float x0, float y0, float x1, float y1) {
     OptixAabb a;
-    a.minX = std::min(x0, x1) - kAabbPad;
-    a.minY = std::min(y0, y1) - kAabbPad;
-    a.minZ = -kAabbPad;
-    a.maxX = std::max(x0, x1) + kAabbPad;
-    a.maxY = std::max(y0, y1) + kAabbPad;
-    a.maxZ =  kAabbPad;
+    a.minX = std::min(x0, x1) - kSegmentAabbPad;
+    a.minY = std::min(y0, y1) - kSegmentAabbPad;
+    a.minZ = -kSegmentAabbPad;
+    a.maxX = std::max(x0, x1) + kSegmentAabbPad;
+    a.maxY = std::max(y0, y1) + kSegmentAabbPad;
+    a.maxZ =  kSegmentAabbPad;
     return a;
 }
 
@@ -726,7 +730,7 @@ extern "C" __global__ void __raygen__lsi_probe() {
     optixTrace(params.traversable,
                make_float3(p.x0, p.y0, 0.0f),
                make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
-               0.0f, 1.0f, 0.0f,
+               0.0f, 1.0f + 1.0e-4f, 0.0f,
                OptixVisibilityMask(255),
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
@@ -737,17 +741,12 @@ extern "C" __global__ void __miss__lsi_miss() {}
 
 extern "C" __global__ void __intersection__lsi_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
-    const uint32_t pidx = optixGetPayload_0();
-    const GpuSegment b = params.right_segs[prim];
-    const GpuSegment p = params.left_segs[pidx];
-    float t, ix, iy;
-    if (!seg_intersect(p.x0, p.y0, p.x1, p.y1,
-                       b.x0, b.y0, b.x1, b.y1,
-                       &t, &ix, &iy)) return;
     optixSetPayload_1(prim);
-    optixSetPayload_2(__float_as_uint(ix));
-    optixSetPayload_3(__float_as_uint(iy));
-    optixReportIntersection(t, 0u);
+    optixSetPayload_2(0u);
+    optixSetPayload_3(0u);
+    // Report the AABB overlap as a candidate; host-side exact refine decides
+    // the true segment-segment intersection and removes false positives.
+    optixReportIntersection(0.5f, 0u);
 }
 
 extern "C" __global__ void __anyhit__lsi_anyhit() {
@@ -1342,6 +1341,95 @@ struct GpuSegPolyRecord { uint32_t segment_id, hit_count; };
 struct GpuPnsRecord     { uint32_t point_id, segment_id; float distance; };
 #pragma pack(pop)
 
+static bool exact_segment_intersection(
+        const RtdlSegment& left,
+        const RtdlSegment& right,
+        double* ix_out,
+        double* iy_out)
+{
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+
+    const double denom = rx * sy - ry * sx;
+    if (std::abs(denom) < 1.0e-7) {
+        return false;
+    }
+
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    if (!(0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0)) {
+        return false;
+    }
+
+    *ix_out = px + t * rx;
+    *iy_out = py + t * ry;
+    return true;
+}
+
+static bool exact_point_on_segment(
+        double px,
+        double py,
+        double ax,
+        double ay,
+        double bx,
+        double by)
+{
+    const double cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (std::abs(cross) > 1.0e-7) {
+        return false;
+    }
+    const double dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
+    if (dot < -1.0e-7) {
+        return false;
+    }
+    const double len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
+    return dot <= len2 + 1.0e-7;
+}
+
+static bool exact_point_in_polygon(
+        double x,
+        double y,
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1) % n;
+        const double ax = vertices_xy[(off + i) * 2];
+        const double ay = vertices_xy[(off + i) * 2 + 1];
+        const double bx = vertices_xy[(off + j) * 2];
+        const double by = vertices_xy[(off + j) * 2 + 1];
+        if (exact_point_on_segment(x, y, ax, ay, bx, by)) {
+            return true;
+        }
+    }
+
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const double xi = vertices_xy[(off + i) * 2];
+        const double yi = vertices_xy[(off + i) * 2 + 1];
+        const double xj = vertices_xy[(off + j) * 2];
+        const double yj = vertices_xy[(off + j) * 2 + 1];
+        if ((yi > y) != (yj > y)) {
+            const double denom = (yj - yi) != 0.0 ? (yj - yi) : 1.0e-20;
+            const double x_cross = (xj - xi) * (y - yi) / denom + xi;
+            if (x <= x_cross) {
+                inside = !inside;
+            }
+        }
+    }
+    return inside;
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Workload implementations
 // ──────────────────────────────────────────────────────────────────────────────
@@ -1433,17 +1521,56 @@ static void run_lsi_optix(
     if (gpu_count > 0)
         download(gpu_rows.data(), d_output.ptr, gpu_count);
 
-    // Marshal to output
-    auto* out = static_cast<RtdlLsiRow*>(std::malloc(sizeof(RtdlLsiRow) * gpu_count));
-    if (!out && gpu_count > 0) throw std::bad_alloc();
+    std::unordered_map<uint32_t, const RtdlSegment*> left_by_id;
+    std::unordered_map<uint32_t, const RtdlSegment*> right_by_id;
+    left_by_id.reserve(left_count);
+    right_by_id.reserve(right_count);
+    for (size_t i = 0; i < left_count; ++i) {
+        left_by_id.emplace(left[i].id, &left[i]);
+    }
+    for (size_t i = 0; i < right_count; ++i) {
+        right_by_id.emplace(right[i].id, &right[i]);
+    }
+
+    std::vector<RtdlLsiRow> refined;
+    refined.reserve(gpu_count);
+    std::unordered_set<uint64_t> seen_pairs;
+    seen_pairs.reserve(gpu_count * 2 + 1);
+
     for (uint32_t i = 0; i < gpu_count; ++i) {
-        out[i].left_id              = gpu_rows[i].left_id;
-        out[i].right_id             = gpu_rows[i].right_id;
-        out[i].intersection_point_x = static_cast<double>(gpu_rows[i].ix);
-        out[i].intersection_point_y = static_cast<double>(gpu_rows[i].iy);
+        const auto left_it = left_by_id.find(gpu_rows[i].left_id);
+        const auto right_it = right_by_id.find(gpu_rows[i].right_id);
+        if (left_it == left_by_id.end() || right_it == right_by_id.end()) {
+            continue;
+        }
+        const uint64_t pair_key =
+            (static_cast<uint64_t>(gpu_rows[i].left_id) << 32) |
+            static_cast<uint64_t>(gpu_rows[i].right_id);
+        if (seen_pairs.find(pair_key) != seen_pairs.end()) {
+            continue;
+        }
+        double ix = 0.0;
+        double iy = 0.0;
+        if (!exact_segment_intersection(*left_it->second, *right_it->second, &ix, &iy)) {
+            continue;
+        }
+        seen_pairs.insert(pair_key);
+        refined.push_back(
+            RtdlLsiRow{
+                gpu_rows[i].left_id,
+                gpu_rows[i].right_id,
+                ix,
+                iy,
+            });
+    }
+
+    auto* out = static_cast<RtdlLsiRow*>(std::malloc(sizeof(RtdlLsiRow) * refined.size()));
+    if (!out && !refined.empty()) throw std::bad_alloc();
+    for (size_t i = 0; i < refined.size(); ++i) {
+        out[i] = refined[i];
     }
     *rows_out      = out;
-    *row_count_out = gpu_count;
+    *row_count_out = refined.size();
 }
 
 // ---------- PIP --------------------------------------------------------------
@@ -1560,6 +1687,32 @@ static void run_pip_optix(
         out[i].point_id   = gpu_rows[i].point_id;
         out[i].polygon_id = gpu_rows[i].polygon_id;
         out[i].contains   = gpu_rows[i].contains;
+    }
+
+    std::unordered_map<uint32_t, const RtdlPoint*> point_by_id;
+    std::unordered_map<uint32_t, const RtdlPolygonRef*> poly_by_id;
+    point_by_id.reserve(point_count);
+    poly_by_id.reserve(poly_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        point_by_id.emplace(points[i].id, &points[i]);
+    }
+    for (size_t i = 0; i < poly_count; ++i) {
+        poly_by_id.emplace(polys[i].id, &polys[i]);
+    }
+    for (size_t i = 0; i < out_count; ++i) {
+        const auto point_it = point_by_id.find(out[i].point_id);
+        const auto poly_it = poly_by_id.find(out[i].polygon_id);
+        if (point_it == point_by_id.end() || poly_it == poly_by_id.end()) {
+            out[i].contains = 0;
+            continue;
+        }
+        out[i].contains = exact_point_in_polygon(
+            point_it->second->x,
+            point_it->second->y,
+            *poly_it->second,
+            vertices_xy)
+            ? 1u
+            : 0u;
     }
     *rows_out      = out;
     *row_count_out = out_count;
