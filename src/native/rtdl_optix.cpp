@@ -55,6 +55,17 @@
 #include <unistd.h>
 #include <vector>
 
+#if defined(__has_include)
+#  if __has_include(<geos_c.h>)
+#    include <geos_c.h>
+#    define RTDL_OPTIX_HAS_GEOS 1
+#  else
+#    define RTDL_OPTIX_HAS_GEOS 0
+#  endif
+#else
+#  define RTDL_OPTIX_HAS_GEOS 0
+#endif
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Public C ABI (mirrors rtdl_embree.cpp)
 // ──────────────────────────────────────────────────────────────────────────────
@@ -852,6 +863,7 @@ static __forceinline__ __device__ bool point_in_polygon(
         float px, float py,
         const GpuPolygonRef& poly)
 {
+    const float point_eps = 1.0e-7f;
     uint32_t n = poly.vertex_count;
     uint32_t off = poly.vertex_offset;
     // Boundary check
@@ -861,11 +873,16 @@ static __forceinline__ __device__ bool point_in_polygon(
         float bx = params.vertices_x[off + (i + 1) % n];
         float by = params.vertices_y[off + (i + 1) % n];
         // Check if point lies on this edge
+        float len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
+        if (len2 <= point_eps * point_eps) {
+            if (fabsf(px - ax) <= point_eps && fabsf(py - ay) <= point_eps)
+                return true;
+            continue;
+        }
         float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
-        if (fabsf(cross) < 1.0e-6f) {
+        if (fabsf(cross) <= point_eps * sqrtf(len2)) {
             float dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
-            float len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
-            if (dot >= -1.0e-6f && dot <= len2 + 1.0e-6f)
+            if (dot >= -point_eps && dot <= len2 + point_eps)
                 return true;
         }
     }
@@ -1422,6 +1439,115 @@ static bool exact_segment_intersection(
     return true;
 }
 
+#if RTDL_OPTIX_HAS_GEOS
+class GeosPreparedPolygonRefs {
+  public:
+    GeosPreparedPolygonRefs(const RtdlPolygonRef* polys, size_t poly_count, const double* vertices_xy)
+        : context_(GEOS_init_r()) {
+        if (context_ == nullptr) {
+            throw std::runtime_error("failed to initialize GEOS context");
+        }
+        geometries_.reserve(poly_count);
+        prepared_.reserve(poly_count);
+        for (size_t i = 0; i < poly_count; ++i) {
+            GEOSGeometry* geometry = build_polygon_geometry(polys[i], vertices_xy);
+            if (geometry == nullptr) {
+                throw std::runtime_error("failed to build GEOS polygon geometry");
+            }
+            const GEOSPreparedGeometry* prepared = GEOSPrepare_r(context_, geometry);
+            if (prepared == nullptr) {
+                GEOSGeom_destroy_r(context_, geometry);
+                throw std::runtime_error("failed to prepare GEOS polygon geometry");
+            }
+            geometries_.push_back(geometry);
+            prepared_.push_back(prepared);
+        }
+    }
+
+    GeosPreparedPolygonRefs(const GeosPreparedPolygonRefs&) = delete;
+    GeosPreparedPolygonRefs& operator=(const GeosPreparedPolygonRefs&) = delete;
+
+    ~GeosPreparedPolygonRefs() {
+        if (context_ == nullptr) return;
+        for (const GEOSPreparedGeometry* prepared : prepared_) {
+            if (prepared != nullptr) {
+                GEOSPreparedGeom_destroy_r(context_, prepared);
+            }
+        }
+        for (GEOSGeometry* geometry : geometries_) {
+            if (geometry != nullptr) {
+                GEOSGeom_destroy_r(context_, geometry);
+            }
+        }
+        GEOS_finish_r(context_);
+    }
+
+    bool covers(size_t polygon_index, double x, double y) const {
+        GEOSGeometry* point = build_point_geometry(x, y);
+        if (point == nullptr) {
+            throw std::runtime_error("failed to build GEOS point geometry");
+        }
+        char covers_value = GEOSPreparedCovers_r(context_, prepared_.at(polygon_index), point);
+        GEOSGeom_destroy_r(context_, point);
+        if (covers_value == 2) {
+            throw std::runtime_error("GEOSPreparedCovers_r failed");
+        }
+        return covers_value == 1;
+    }
+
+  private:
+    GEOSGeometry* build_point_geometry(double x, double y) const {
+        GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, 1, 2);
+        if (sequence == nullptr) return nullptr;
+        if (!GEOSCoordSeq_setX_r(context_, sequence, 0, x) ||
+            !GEOSCoordSeq_setY_r(context_, sequence, 0, y)) {
+            GEOSCoordSeq_destroy_r(context_, sequence);
+            return nullptr;
+        }
+        return GEOSGeom_createPoint_r(context_, sequence);
+    }
+
+    GEOSGeometry* build_polygon_geometry(const RtdlPolygonRef& poly, const double* vertices_xy) const {
+        size_t ring_size = poly.vertex_count;
+        bool closed = ring_size > 0 &&
+                      vertices_xy[poly.vertex_offset * 2] == vertices_xy[(poly.vertex_offset + poly.vertex_count - 1) * 2] &&
+                      vertices_xy[poly.vertex_offset * 2 + 1] == vertices_xy[(poly.vertex_offset + poly.vertex_count - 1) * 2 + 1];
+        if (!closed) {
+            ring_size += 1;
+        }
+        GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, ring_size, 2);
+        if (sequence == nullptr) return nullptr;
+        for (size_t i = 0; i < poly.vertex_count; ++i) {
+            const size_t vertex_index = poly.vertex_offset + i;
+            if (!GEOSCoordSeq_setX_r(context_, sequence, i, vertices_xy[vertex_index * 2]) ||
+                !GEOSCoordSeq_setY_r(context_, sequence, i, vertices_xy[vertex_index * 2 + 1])) {
+                GEOSCoordSeq_destroy_r(context_, sequence);
+                return nullptr;
+            }
+        }
+        if (!closed) {
+            if (!GEOSCoordSeq_setX_r(context_, sequence, ring_size - 1, vertices_xy[poly.vertex_offset * 2]) ||
+                !GEOSCoordSeq_setY_r(context_, sequence, ring_size - 1, vertices_xy[poly.vertex_offset * 2 + 1])) {
+                GEOSCoordSeq_destroy_r(context_, sequence);
+                return nullptr;
+            }
+        }
+        GEOSGeometry* ring = GEOSGeom_createLinearRing_r(context_, sequence);
+        if (ring == nullptr) return nullptr;
+        GEOSGeometry* polygon = GEOSGeom_createPolygon_r(context_, ring, nullptr, 0);
+        if (polygon == nullptr) {
+            GEOSGeom_destroy_r(context_, ring);
+            return nullptr;
+        }
+        return polygon;
+    }
+
+    GEOSContextHandle_t context_;
+    std::vector<GEOSGeometry*> geometries_;
+    std::vector<const GEOSPreparedGeometry*> prepared_;
+};
+#endif
+
 static bool exact_point_on_segment(
         double px,
         double py,
@@ -1430,16 +1556,22 @@ static bool exact_point_on_segment(
         double bx,
         double by)
 {
+    const double point_eps = 1.0e-12;
+    const double len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
+    if (len2 <= point_eps * point_eps) {
+        return std::abs(px - ax) <= point_eps && std::abs(py - ay) <= point_eps;
+    }
+    const double len = std::sqrt(len2);
     const double cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
-    if (std::abs(cross) > 1.0e-7) {
+    if (std::abs(cross) > point_eps * len) {
         return false;
     }
     const double dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
-    if (dot < -1.0e-7) {
+    const double along_eps = point_eps * len;
+    if (dot < -along_eps) {
         return false;
     }
-    const double len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
-    return dot <= len2 + 1.0e-7;
+    return dot <= len2 + along_eps;
 }
 
 static bool exact_point_in_polygon(
@@ -1737,6 +1869,17 @@ static void run_pip_optix(
         out[i].contains   = gpu_rows[i].contains;
     }
 
+#if RTDL_OPTIX_HAS_GEOS
+    GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+    for (size_t pi = 0; pi < point_count; ++pi) {
+        for (size_t qi = 0; qi < poly_count; ++qi) {
+            const size_t out_index = pi * poly_count + qi;
+            out[out_index].point_id = points[pi].id;
+            out[out_index].polygon_id = polys[qi].id;
+            out[out_index].contains = geos.covers(qi, points[pi].x, points[pi].y) ? 1u : 0u;
+        }
+    }
+#else
     std::unordered_map<uint32_t, const RtdlPoint*> point_by_id;
     std::unordered_map<uint32_t, const RtdlPolygonRef*> poly_by_id;
     point_by_id.reserve(point_count);
@@ -1762,6 +1905,7 @@ static void run_pip_optix(
             ? 1u
             : 0u;
     }
+#endif
     *rows_out      = out;
     *row_count_out = out_count;
 }

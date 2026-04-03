@@ -10,6 +10,19 @@ from pathlib import Path
 from .ir import CompiledKernel
 
 
+def _pkg_config_flags(package: str, option: str) -> list[str]:
+    try:
+        result = subprocess.run(
+            ["pkg-config", option, package],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return []
+    return result.stdout.split()
+
+
 class _RtdlSegment(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -497,6 +510,8 @@ def _ensure_oracle_library() -> Path:
     library_path = build_dir / f"librtdl_oracle{library_ext}"
     compiler = os.environ.get("CXX", "clang++" if system == "Darwin" else "g++")
     shared_flags = ["-dynamiclib", "-fPIC"] if system == "Darwin" else ["-shared", "-fPIC"]
+    geos_cflags = _pkg_config_flags("geos", "--cflags")
+    geos_libs = _pkg_config_flags("geos", "--libs")
     needs_build = not library_path.exists() or library_path.stat().st_mtime < source_path.stat().st_mtime
     if needs_build:
         subprocess.run(
@@ -505,7 +520,9 @@ def _ensure_oracle_library() -> Path:
                 "-std=c++17",
                 "-O2",
                 *shared_flags,
+                *geos_cflags,
                 str(source_path),
+                *geos_libs,
                 "-o",
                 str(library_path),
             ],

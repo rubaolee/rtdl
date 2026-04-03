@@ -66,6 +66,57 @@ class RtDslEmbreeTest(unittest.TestCase):
             rt.run_cpu(point_in_counties_reference, points=points, polygons=polygons),
         )
 
+    def test_run_embree_pip_handles_repeated_closing_vertex(self) -> None:
+        points = (
+            {"id": 100, "x": 3.0, "y": 3.0},
+        )
+        polygons = (
+            {"id": 200, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0), (0.0, 0.0))},
+        )
+        expected = ({"point_id": 100, "polygon_id": 200, "contains": 0},)
+        self.assertEqual(rt.run_cpu(point_in_counties_reference, points=points, polygons=polygons), expected)
+        self.assertEqual(
+            rt.run_embree(point_in_counties_reference, points=points, polygons=polygons),
+            expected,
+        )
+
+    def test_run_embree_pip_rejects_near_collinear_outside_point_on_short_edge(self) -> None:
+        points = (
+            {"id": 100, "x": 0.0005, "y": -0.000001},
+        )
+        polygons = (
+            {"id": 200, "vertices": ((0.0, 0.0), (0.001, 0.0), (0.001, 1.0), (0.0, 1.0), (0.0, 0.0))},
+        )
+        expected = ({"point_id": 100, "polygon_id": 200, "contains": 0},)
+        self.assertEqual(rt.run_cpu(point_in_counties_reference, points=points, polygons=polygons), expected)
+        self.assertEqual(
+            rt.run_embree(point_in_counties_reference, points=points, polygons=polygons),
+            expected,
+        )
+
+    def test_run_embree_pip_rejects_near_collinear_point_past_tiny_segment_endpoint(self) -> None:
+        points = (
+            {"id": 100, "x": -122.840168, "y": 38.863527},
+        )
+        polygons = (
+            {
+                "id": 200,
+                "vertices": (
+                    (-122.840126, 38.8632190000001),
+                    (-122.840129, 38.8632410000001),
+                    (-122.8401, 38.8635),
+                    (-122.8404, 38.8635),
+                    (-122.840126, 38.8632190000001),
+                ),
+            },
+        )
+        expected = ({"point_id": 100, "polygon_id": 200, "contains": 0},)
+        self.assertEqual(rt.run_cpu(point_in_counties_reference, points=points, polygons=polygons), expected)
+        self.assertEqual(
+            rt.run_embree(point_in_counties_reference, points=points, polygons=polygons),
+            expected,
+        )
+
     def test_run_embree_overlay_matches_cpu(self) -> None:
         left = (
             {"id": 300, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},

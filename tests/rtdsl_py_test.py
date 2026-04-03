@@ -193,6 +193,63 @@ class RtDslPythonTest(unittest.TestCase):
         self.assertEqual(overlay_hits[0]["right_polygon_id"], 2)
         self.assertEqual(overlay_hits[0]["requires_lsi"], 1)
 
+    def test_reference_pip_ignores_degenerate_closing_edge_for_outside_point(self) -> None:
+        points = (
+            rt.Point(id=10, x=3.0, y=3.0),
+        )
+        polygons = (
+            rt.Polygon(
+                id=20,
+                vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0), (0.0, 0.0)),
+            ),
+        )
+
+        python_rows = rt.pip_cpu(points, polygons)
+        native_rows = rt.run_cpu(point_in_counties, points=points, polygons=polygons)
+
+        self.assertEqual(python_rows, ({"point_id": 10, "polygon_id": 20, "contains": 0},))
+        self.assertEqual(native_rows, python_rows)
+
+    def test_reference_pip_rejects_near_collinear_outside_point_on_short_edge(self) -> None:
+        points = (
+            rt.Point(id=10, x=0.0005, y=-0.000001),
+        )
+        polygons = (
+            rt.Polygon(
+                id=20,
+                vertices=((0.0, 0.0), (0.001, 0.0), (0.001, 1.0), (0.0, 1.0), (0.0, 0.0)),
+            ),
+        )
+
+        python_rows = rt.pip_cpu(points, polygons)
+        native_rows = rt.run_cpu(point_in_counties, points=points, polygons=polygons)
+
+        self.assertEqual(python_rows, ({"point_id": 10, "polygon_id": 20, "contains": 0},))
+        self.assertEqual(native_rows, python_rows)
+
+    def test_reference_pip_rejects_near_collinear_point_past_tiny_segment_endpoint(self) -> None:
+        points = (
+            rt.Point(id=10, x=-122.840168, y=38.863527),
+        )
+        polygons = (
+            rt.Polygon(
+                id=20,
+                vertices=(
+                    (-122.840126, 38.8632190000001),
+                    (-122.840129, 38.8632410000001),
+                    (-122.8401, 38.8635),
+                    (-122.8404, 38.8635),
+                    (-122.840126, 38.8632190000001),
+                ),
+            ),
+        )
+
+        python_rows = rt.pip_cpu(points, polygons)
+        native_rows = rt.run_cpu(point_in_counties, points=points, polygons=polygons)
+
+        self.assertEqual(python_rows, ({"point_id": 10, "polygon_id": 20, "contains": 0},))
+        self.assertEqual(native_rows, python_rows)
+
     def test_lower_rejects_invalid_pip_boundary_mode(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")
         def bad_pip():

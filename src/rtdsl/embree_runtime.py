@@ -15,6 +15,19 @@ from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 
 
+def _pkg_config_flags(package: str, option: str) -> list[str]:
+    try:
+        result = subprocess.run(
+            ["pkg-config", option, package],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return []
+    return result.stdout.split()
+
+
 class _RtdlSegment(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -1115,6 +1128,8 @@ def _ensure_embree_library() -> Path:
         tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/usr"))
         compiler = os.environ.get("CXX", "g++")
         shared_flags = ["-shared", "-fPIC"]
+    geos_cflags = _pkg_config_flags("geos", "--cflags")
+    geos_libs = _pkg_config_flags("geos", "--libs")
 
     embree_include = embree_prefix / "include"
     if not embree_prefix.exists() or not embree_include.exists():
@@ -1130,11 +1145,13 @@ def _ensure_embree_library() -> Path:
             "-std=c++17",
             "-O2",
             *shared_flags,
+            *geos_cflags,
             str(source_path),
             "-o",
             str(library_path),
             f"-I{embree_include}",
             "-lembree4",
+            *geos_libs,
         ]
         embree_lib = embree_prefix / "lib"
         if embree_lib.exists():

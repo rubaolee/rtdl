@@ -236,17 +236,23 @@ def _point_on_segment(
     start: tuple[float, float],
     end: tuple[float, float],
 ) -> bool:
+    eps = 1.0e-12
     px, py = point
     ax, ay = start
     bx, by = end
+    length_sq = (bx - ax) ** 2 + (by - ay) ** 2
+    if length_sq <= (eps ** 2):
+        return abs(px - ax) <= eps and abs(py - ay) <= eps
+
     cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax)
-    if abs(cross) > 1.0e-7:
+    length = length_sq ** 0.5
+    if abs(cross) > eps * length:
         return False
     dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay)
-    if dot < -1.0e-7:
+    along_eps = eps * length
+    if dot < -along_eps:
         return False
-    length_sq = (bx - ax) ** 2 + (by - ay) ** 2
-    if dot - length_sq > 1.0e-7:
+    if dot - length_sq > along_eps:
         return False
     return True
 

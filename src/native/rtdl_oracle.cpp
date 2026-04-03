@@ -9,6 +9,17 @@
 #include <utility>
 #include <vector>
 
+#if defined(__has_include)
+#  if __has_include(<geos_c.h>)
+#    include <geos_c.h>
+#    define RTDL_ORACLE_HAS_GEOS 1
+#  else
+#    define RTDL_ORACLE_HAS_GEOS 0
+#  endif
+#else
+#  define RTDL_ORACLE_HAS_GEOS 0
+#endif
+
 extern "C" {
 
 struct RtdlSegment {
@@ -156,7 +167,7 @@ void rtdl_oracle_free_rows(void* rows);
 namespace {
 
 constexpr double kSegmentIntersectionEps = 1.0e-7;
-constexpr double kPointEps = 1.0e-7;
+constexpr double kPointEps = 1.0e-12;
 constexpr double kDegenerateDistanceEps = 1.0e-12;
 constexpr double kRayCrossingDenomEps = 1.0e-20;
 
@@ -228,6 +239,121 @@ struct RayQuery2D {
   Vec2 d;
   double tmax;
 };
+
+#if RTDL_ORACLE_HAS_GEOS
+class GeosPreparedPolygonSet {
+ public:
+  explicit GeosPreparedPolygonSet(const std::vector<Polygon2D>& polygons) : context_(GEOS_init_r()) {
+    if (context_ == nullptr) {
+      throw std::runtime_error("failed to initialize GEOS context");
+    }
+    geometries_.reserve(polygons.size());
+    prepared_.reserve(polygons.size());
+    for (const Polygon2D& polygon : polygons) {
+      GEOSGeometry* geometry = build_polygon_geometry(polygon.vertices);
+      if (geometry == nullptr) {
+        throw std::runtime_error("failed to build GEOS polygon geometry");
+      }
+      const GEOSPreparedGeometry* prepared = GEOSPrepare_r(context_, geometry);
+      if (prepared == nullptr) {
+        GEOSGeom_destroy_r(context_, geometry);
+        throw std::runtime_error("failed to prepare GEOS polygon geometry");
+      }
+      geometries_.push_back(geometry);
+      prepared_.push_back(prepared);
+    }
+  }
+
+  GeosPreparedPolygonSet(const GeosPreparedPolygonSet&) = delete;
+  GeosPreparedPolygonSet& operator=(const GeosPreparedPolygonSet&) = delete;
+
+  ~GeosPreparedPolygonSet() {
+    if (context_ == nullptr) {
+      return;
+    }
+    for (const GEOSPreparedGeometry* prepared : prepared_) {
+      if (prepared != nullptr) {
+        GEOSPreparedGeom_destroy_r(context_, prepared);
+      }
+    }
+    for (GEOSGeometry* geometry : geometries_) {
+      if (geometry != nullptr) {
+        GEOSGeom_destroy_r(context_, geometry);
+      }
+    }
+    GEOS_finish_r(context_);
+  }
+
+  bool covers(size_t polygon_index, double x, double y) const {
+    GEOSGeometry* point = build_point_geometry(x, y);
+    if (point == nullptr) {
+      throw std::runtime_error("failed to build GEOS point geometry");
+    }
+    char covers_value = GEOSPreparedCovers_r(context_, prepared_.at(polygon_index), point);
+    GEOSGeom_destroy_r(context_, point);
+    if (covers_value == 2) {
+      throw std::runtime_error("GEOSPreparedCovers_r failed");
+    }
+    return covers_value == 1;
+  }
+
+ private:
+  GEOSGeometry* build_point_geometry(double x, double y) const {
+    GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, 1, 2);
+    if (sequence == nullptr) {
+      return nullptr;
+    }
+    if (!GEOSCoordSeq_setX_r(context_, sequence, 0, x) ||
+        !GEOSCoordSeq_setY_r(context_, sequence, 0, y)) {
+      GEOSCoordSeq_destroy_r(context_, sequence);
+      return nullptr;
+    }
+    return GEOSGeom_createPoint_r(context_, sequence);
+  }
+
+  GEOSGeometry* build_polygon_geometry(const std::vector<Vec2>& vertices) const {
+    size_t ring_size = vertices.size();
+    bool closed = ring_size > 0 &&
+                  vertices.front().x == vertices.back().x &&
+                  vertices.front().y == vertices.back().y;
+    if (!closed) {
+      ring_size += 1;
+    }
+    GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, ring_size, 2);
+    if (sequence == nullptr) {
+      return nullptr;
+    }
+    for (size_t i = 0; i < vertices.size(); ++i) {
+      if (!GEOSCoordSeq_setX_r(context_, sequence, i, vertices[i].x) ||
+          !GEOSCoordSeq_setY_r(context_, sequence, i, vertices[i].y)) {
+        GEOSCoordSeq_destroy_r(context_, sequence);
+        return nullptr;
+      }
+    }
+    if (!closed) {
+      if (!GEOSCoordSeq_setX_r(context_, sequence, ring_size - 1, vertices.front().x) ||
+          !GEOSCoordSeq_setY_r(context_, sequence, ring_size - 1, vertices.front().y)) {
+        GEOSCoordSeq_destroy_r(context_, sequence);
+        return nullptr;
+      }
+    }
+    GEOSGeometry* ring = GEOSGeom_createLinearRing_r(context_, sequence);
+    if (ring == nullptr) {
+      return nullptr;
+    }
+    GEOSGeometry* polygon = GEOSGeom_createPolygon_r(context_, ring, nullptr, 0);
+    if (polygon == nullptr) {
+      GEOSGeom_destroy_r(context_, ring);
+      return nullptr;
+    }
+    return polygon;
+  }
+
+  GEOSContextHandle_t context_;
+  std::vector<GEOSGeometry*> geometries_;
+  std::vector<const GEOSPreparedGeometry*> prepared_;
+};
+#endif
 
 Vec2 sub(const Vec2& a, const Vec2& b) {
   return {a.x - b.x, a.y - b.y};
@@ -327,16 +453,22 @@ bool segment_intersection(const Segment2D& left, const Segment2D& right, Vec2* p
 }
 
 bool point_on_segment(const Vec2& point, const Vec2& start, const Vec2& end) {
+  double length_sq = (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y);
+  if (length_sq <= kPointEps * kPointEps) {
+    return std::fabs(point.x - start.x) <= kPointEps &&
+           std::fabs(point.y - start.y) <= kPointEps;
+  }
+  double length = std::sqrt(length_sq);
   double cross_value = (point.x - start.x) * (end.y - start.y) - (point.y - start.y) * (end.x - start.x);
-  if (std::fabs(cross_value) > kPointEps) {
+  if (std::fabs(cross_value) > kPointEps * length) {
     return false;
   }
   double dot = (point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y);
-  if (dot < -kPointEps) {
+  double along_eps = kPointEps * length;
+  if (dot < -along_eps) {
     return false;
   }
-  double length_sq = (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y);
-  if (dot - length_sq > kPointEps) {
+  if (dot - length_sq > along_eps) {
     return false;
   }
   return true;
@@ -485,6 +617,15 @@ std::vector<RtdlPipRow> oracle_pip(
     const std::vector<Polygon2D>& polygons) {
   std::vector<RtdlPipRow> rows;
   rows.reserve(points.size() * polygons.size());
+#if RTDL_ORACLE_HAS_GEOS
+  GeosPreparedPolygonSet geos(polygons);
+  for (const Point2D& point : points) {
+    for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
+      rows.push_back({point.id, polygons[polygon_index].id, geos.covers(polygon_index, point.p.x, point.p.y) ? 1u : 0u});
+    }
+  }
+  return rows;
+#endif
   for (const Point2D& point : points) {
     for (const Polygon2D& polygon : polygons) {
       rows.push_back({point.id, polygon.id, point_in_polygon(point.p.x, point.p.y, polygon.vertices) ? 1u : 0u});

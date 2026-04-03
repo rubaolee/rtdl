@@ -37,17 +37,20 @@ else
 NVCC ?= /usr/bin/nvcc
 endif
 CXX_OPTIX ?= $(NVCC)
+GEOS_CFLAGS := $(shell pkg-config --cflags geos 2>/dev/null)
+GEOS_LIBS := $(shell pkg-config --libs geos 2>/dev/null)
 
 OPTIX_CXXFLAGS := \
 	-std=c++17 -O3 -shared \
 	-I$(OPTIX_INCLUDE) \
 	-I$(CUDA_INCLUDE) \
+	$(GEOS_CFLAGS) \
 	-DRTDL_OPTIX_INCLUDE_DIR=\"$(OPTIX_INCLUDE)\" \
 	-DRTDL_CUDA_INCLUDE_DIR=\"$(CUDA_INCLUDE)\" \
 	-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"$(CUDA_SYSTEM_INCLUDE)\" \
 	-Xcompiler -fPIC
 
-OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc
+OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc $(GEOS_LIBS)
 
 # ── Vulkan backend build configuration ────────────────────────────────────────
 # Requires: Vulkan SDK (vulkan/vulkan.h), shaderc (shaderc/shaderc.h)
