@@ -222,7 +222,7 @@ rows_cpu = rt.run_cpu(county_zip_join, left=left_segments, right=right_segments)
 rows_embree = rt.run_embree(county_zip_join, left=left_segments, right=right_segments)
 ```
 
-- `run_cpu(...)` is the Python reference semantics
+- `run_cpu(...)` is now the native C/C++ oracle path, while `run_cpu_python_reference(...)` preserves the old Python reference semantics
 - `run_embree(...)` is the native Embree backend
 
 ## 6. Example: point-in-polygon (`pip`)
@@ -377,7 +377,7 @@ rows = rt.run_cpu(kernel_fn, **inputs)
 
 This path:
 
-- executes the current workload through Python reference semantics
+- executes the current workload through the native C/C++ oracle path
 - provides the semantic baseline for correctness checks
 
 ### Embree path
@@ -407,16 +407,16 @@ The current RTDL can express and run several non-graphics RT workloads, but it s
 - `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` remain audited `native_loop` workloads on the local backend rather than BVH-backed traversal
 - exact or robust geometric arithmetic is not yet implemented
 - workload growth is still explicit and enumerated rather than fully open-ended
-- the current local Embree runtime does not appear to silently truncate output rows, but the generated OptiX/CUDA skeleton still contains an `output_capacity` overflow pattern that must be redesigned before a real NVIDIA backend is trusted
+- the current local Embree runtime does not appear to silently truncate output rows, and the controlled OptiX runtime is now bring-up-validated on the GTX 1070 host, but the generated OptiX/CUDA skeleton path still contains an `output_capacity` overflow pattern and is not the trusted runtime path
 - the automated verification story is still local-only rather than CI-backed
-- the NVIDIA/OptiX backend is not yet a real runnable execution path
-- generated OptiX/CUDA files are still primarily for backend planning and skeleton validation
+- the NVIDIA/OptiX backend is now a real runnable execution path on the first Linux GPU host, but broader real-data validation is still bounded
+- generated OptiX/CUDA files still exist as backend-planning artifacts alongside the controlled runtime
 
 So the most accurate current statement is:
 
 - RTDL is already a writable, compilable, locally executable DSL prototype
 - the Embree backend is real
-- the NVIDIA RT-core backend remains the next major stage
+- the NVIDIA GPU backend is now in the first real bring-up stage, and broader real-data validation remains the next major step
 
 ## 11. Recommended reading order
 

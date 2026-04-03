@@ -141,7 +141,7 @@ One of the strongest current reliability mechanisms in RTDL is the dual executio
 
 Here:
 
-- `run_cpu(...)` is the Python reference semantics
+- `run_cpu(...)` is now the native C/C++ oracle path, while `run_cpu_python_reference(...)` preserves the old Python semantics for regression checks
 - `run_embree(...)` is the real local native backend
 
 That means the project does not rely on one implementation alone.
@@ -302,8 +302,8 @@ Current limits still include:
 3. Gemini CLI is not fully reliable
    Some reviews require retries, narrower prompts, or archived snapshots instead of direct file inspection.
 
-4. The NVIDIA/OptiX backend is not yet the real execution path
-   So the current process strengthens the pre-GPU system, but does not replace future NVIDIA runtime validation.
+4. The NVIDIA/OptiX backend is now a real execution path, but it is still in an early bounded-validation stage
+   So the current process strengthens both the CPU/Embree system and the first GPU path, but does not replace broader future NVIDIA runtime validation on real workloads.
 
 So the accurate statement is:
 

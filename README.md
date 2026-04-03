@@ -19,7 +19,7 @@ This repository now contains:
 - design notes for the first version of the project,
 - a Python-hosted RT DSL prototype,
 - an initial compiler IR for RT kernels,
-- a RayJoin backend plan and OptiX/CUDA skeleton generator,
+- a RayJoin backend plan, OptiX/CUDA code generator, and now a controlled runnable OptiX runtime,
 - multi-workload compiler coverage for `lsi`, `pip`, compositional `overlay`, `ray_tri_hitcount`, `segment_polygon_hitcount`, and `point_nearest_segment`,
 - a Python dataset pipeline for RayJoin-style CDB inputs, and
 - Python tests to keep the seed implementation executable.
@@ -37,13 +37,17 @@ Current status:
 - Goal 23 is complete as the current bounded Embree reproduction package: Figure 13 / Figure 14 bounded analogues, partial Table 3 bounded rows, Table 4 overlay-seed analogue, Figure 15 overlay speedup analogue, and a final report with explicit missing-family labeling.
 - Goal 31 is complete as the current exact-source `lsi` correctness-restoration round: the broken local BVH candidate path was removed from active use, and the local `lsi` backend now closes the known Mac/Linux reproducers through an audited `native_loop` implementation.
 - Goal 32 is complete as the current local `lsi` optimization follow-up: the Goal 31 brute-force `native_loop` was replaced with a parity-safe double-precision sort-sweep candidate pass, improving local native performance while keeping the same exact-source correctness boundary.
+- Goal 40 is complete as the native C/C++ oracle replacement round: `run_cpu(...)` now routes through a native oracle while `run_cpu_python_reference(...)` preserves the old Python semantics for regression checks.
+- Goal 41 is complete as the cross-host oracle correctness round: Python oracle, native oracle, and Embree match on small cases across Mac/Linux, and native oracle matches Embree on larger validated cases.
+- Goal 43 is complete as the first OptiX GPU validation ladder on `192.168.1.20`; the current OptiX path is parity-clean across the bounded validation suite.
+- Goal 44 is complete as the first bounded OptiX large-scale synthetic performance round, establishing a GPU baseline on the GTX 1070 host for deterministic PIP workloads.
 - A checked-in status PDF summarizes the current RTDL state and the paper-reference figures used for the reproduction phase.
 
 Current top-level interpretation:
 
 - the project vision is broader than RayJoin and broader than Embree,
 - but the current v0.1 slice is intentionally centered on RayJoin workloads,
-- and the current local executable backend is Embree on this Mac.
+- and the currently validated executable backends are Embree on this Mac and OptiX on the Linux GPU host `192.168.1.20`.
 
 Current semantic/runtime boundaries:
 
@@ -64,7 +68,7 @@ Current execution-mode guidance:
 Current OptiX/codegen caveat:
 
 - The current local Embree runtime does not appear to silently truncate output rows.
-- The generated OptiX/CUDA skeleton still carries an `output_capacity` plus `atomicAdd` overflow pattern that could drop rows silently if it were used unchanged in a future real GPU backend.
+- The controlled OptiX runtime is now real and GPU-validated on a GTX 1070 host, but the generated OptiX/CUDA skeleton path still carries an `output_capacity` plus `atomicAdd` overflow pattern that should not be treated as the trusted runtime path.
 
 ## Why RayJoin First
 
@@ -334,13 +338,13 @@ The current Python pipeline is:
 
 1. `@rt.kernel` compiles Python syntax into an RT kernel IR.
 2. `rt.lower_to_execution_plan(...)` lowers that IR into an RTDL backend plan for the current v0.1 slice.
-3. `rt.generate_optix_project(...)` emits OptiX/CUDA skeleton files for inspection and further backend work.
+3. `rt.generate_optix_project(...)` emits OptiX/CUDA skeleton files for inspection and backend experimentation.
 
 RTDL now also has a local CPU execution path for the currently supported
 workloads:
 
 4. `rt.run_cpu(kernel_fn, **inputs)` executes the kernel through the Python
-   reference semantics and returns result rows on non-GPU machines.
+   host stack using the native C/C++ oracle semantics and returns result rows on non-GPU machines.
 
 RTDL now also has a native local Embree execution path for the currently
 supported workloads:
@@ -348,13 +352,20 @@ supported workloads:
 5. `rt.run_embree(kernel_fn, **inputs)` executes the kernel through an
    Embree-backed runtime and returns result rows on this Mac.
 
+RTDL now also has a controlled OptiX execution path for the current workload
+surface on the first NVIDIA host:
+
+6. `rt.run_optix(kernel_fn, **inputs)` executes the kernel through the OptiX
+   runtime on supported NVIDIA machines. The currently trusted bring-up path is
+   the Linux GTX 1070 host `192.168.1.20` using the `nvcc` PTX fallback.
+
 RTDL now also has a frozen Embree-baseline integration layer:
 
-6. `python -m rtdsl.baseline_runner <workload>` runs a representative baseline
+7. `python -m rtdsl.baseline_runner <workload>` runs a representative baseline
    workload case through CPU and/or Embree.
-7. `python -m rtdsl.baseline_benchmark` records warmup-aware timing artifacts
+8. `python -m rtdsl.baseline_benchmark` records warmup-aware timing artifacts
    under `build/`.
-8. `python -m rtdsl.baseline_summary <json>` prints a human-readable summary of
+9. `python -m rtdsl.baseline_summary <json>` prints a human-readable summary of
    those benchmark results.
 
 ## Language Docs
