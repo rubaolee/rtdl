@@ -1,269 +1,101 @@
-# RTDL v0.1 Final Plan
+# RTDL v0.1 Plan
 
-## Purpose
+## Definition
 
-This document defines **v0.1** as the first vertical slice inside the larger RTDL project vision.
+RTDL v0.1 is the first serious vertical slice of the broader project vision.
 
-The whole project is broader than v0.1:
+It is not “all of RTDL.” It is the first bounded proof that the project can:
 
-- RTDL is intended to become a DSL for non-graphical RT-based applications across multiple backends and ecosystems.
-- v0.1 narrows that vision to one serious application family and the currently available local backend path.
+- express RayJoin-style workloads in the DSL
+- preserve a trustworthy correctness baseline
+- run those workloads on more than one backend
+- support a reproducible experiment/reporting workflow
 
-So this plan separates v0.1 into two layers:
+## What v0.1 Means Today
 
-- an **Embree-backed v0.1 baseline** that is executable now on this Mac, and
-- a **final NVIDIA/OptiX v0.1 target** that completes the first RayJoin-focused vertical slice once hardware is available.
+Current v0.1 scope:
 
-## Final v0.1 Goal
+- application family: RayJoin-style spatial join workloads
+- language surface: six current RTDL workloads
+- oracle: native C/C++ ground-truth path
+- backends:
+  - Embree on CPU
+  - OptiX on NVIDIA GPU
 
-RTDL v0.1 should prove the project vision on one concrete application family:
+## What Is Already Complete
 
-- RayJoin-style workloads
+### Core language/runtime baseline
 
-and one final target backend family:
+- Python-hosted kernel authoring surface
+- compiler IR and lowering
+- current workload coverage:
+  - `lsi`
+  - `pip`
+  - `overlay`
+  - `ray_tri_hitcount`
+  - `segment_polygon_hitcount`
+  - `point_nearest_segment`
 
-- NVIDIA OptiX / CUDA
+### Correctness baseline
 
-That means RTDL v0.1 should be able to express selected RayJoin workloads in the DSL, lower them into a real OptiX/CUDA backend, run them on NVIDIA RT cores, and regenerate the performance-figure workflow from the RayJoin paper.
+- native C/C++ oracle is in place
+- old Python oracle remains available for regression checks
+- cross-checking exists across:
+  - Python oracle
+  - native oracle
+  - Embree
+  - OptiX on validated bounded targets
 
-The reproduced figures do not need to match the paper numerically. The requirement is to regenerate the same style of experiment structure:
+### Embree path
 
-- same workload families,
-- same or equivalent datasets,
-- same measurement categories,
-- same comparison layout,
-- same figure-generation workflow.
+- mature controlled CPU backend
+- real-data validation on Linux host
+- multiple RayJoin-style families exercised
+- larger bounded reproduction and performance work completed
 
-In short:
+### OptiX path
 
-> RTDL v0.1 should execute RayJoin-style workloads on NVIDIA RT cores and reproduce the paper's benchmark/figure pipeline with RTDL-generated implementations.
+- real GPU bring-up completed
+- corrected controlled runtime is in the repo
+- bounded correctness ladders completed
+- first real-data family validation completed
+- larger Goal 41-style GPU checks completed for:
+  - `County ⊲⊳ Zipcode`
+  - `BlockGroup ⊲⊳ WaterBodies`
 
-Equally important, this should be read as a **v0.1 application slice**, not as the full definition of the whole RTDL project.
+## What Is Still Missing
 
-## Baseline Goal Before NVIDIA Hardware
+v0.1 is **not** finished just because both backends exist.
 
-Before the NVIDIA machine is available, RTDL should become a complete executable system on top of Embree.
+The remaining work is to finish a bounded, trustworthy RayJoin-style repetition
+package across the current backends.
 
-That baseline goal is:
+That mainly means:
 
-> RTDL should support the current RayJoin-aligned workload surface through the DSL, IR, dataset pipeline, CPU reference runtime, and Embree backend, with correctness checks and a benchmarkable harness.
+- broader exact-source family coverage
+- more apples-to-apples backend comparisons
+- clearer final experiment matrix closure
+- final packaging of what is:
+  - exact-source and accepted
+  - bounded but accepted
+  - synthetic only
+  - still missing
 
-This baseline is not a side project. It is the precondition for a stable OptiX bring-up.
+## Current Acceptance Standard
 
-## Current Progress Snapshot
+A v0.1 experiment/result only counts when:
 
-As of March 31, 2026:
+- the goal was explicit
+- the result is honestly scoped
+- correctness is checked against the oracle where required
+- review/consensus artifacts exist
+- the repo state is documented cleanly enough to support the next goal
 
-- the Embree baseline is complete and published,
-- the current RTDL feature surface includes six executable workload families,
-- the first Embree evaluation report has already been generated,
-- Goal 13 has been canceled as superseded by Goal 15 while preserving its accepted partial artifacts,
-- and the active pre-NVIDIA comparison layer is Goal 15: native C++ + Embree versus RTDL + Embree on deterministic fixtures.
+## Immediate Priority
 
-As of the current reset, the framing should now be understood as:
+The next v0.1 work should continue from the current clean audited state and aim
+at finishing the remaining bounded RayJoin-style experiment matrix across
+Embree and OptiX.
 
-- **whole-project vision**: multi-backend DSL for non-graphical RT applications
-- **v0.1 scope**: RayJoin-focused vertical slice
-- **current local execution target**: Embree on this Mac
-- **future final v0.1 target**: NVIDIA OptiX / CUDA
-
-The preserved Goal 13 artifact set is still useful as an Embree-phase reproduction reference. It should be read as:
-
-- a workload-and-dataset expansion of the current local baseline,
-- not the final OptiX/RT-core reproduction,
-- and not a claim that all paper datasets are already ingested.
-
-## Why the Embree Baseline Matters
-
-- It proves RTDL is more than a frontend sketch.
-- It forces stable input/layout/output contracts.
-- It gives the project a real native backend before GPU-specific debugging begins.
-- It provides a correctness cross-check against future OptiX execution.
-- It lets the benchmark harness, dataset flow, and workload semantics mature early.
-
-## Goal Structure
-
-### Goal A: Embree-Backed v0.1 Baseline
-
-RTDL should run the selected workload surface locally through:
-
-- `rt.run_cpu(...)` as semantic reference,
-- `rt.run_embree(...)` as real native backend execution,
-- shared workload and dataset contracts,
-- shared output schemas,
-- shared validation rules.
-
-### Goal B: NVIDIA Finalization for v0.1
-
-RTDL should then add:
-
-- real OptiX runtime execution,
-- generated host/device integration,
-- RT-core execution on NVIDIA hardware,
-- benchmark automation,
-- figure regeneration.
-
-## What the Embree Baseline Must Deliver
-
-The Embree baseline should deliver the following before NVIDIA bring-up:
-
-1. Stable workload surface
-   RTDL can express the selected v0.1 workload set with documented source-level patterns.
-
-2. Stable IR and lowering boundary
-   Each workload compiles into a well-defined IR and lowering contract.
-
-3. Stable dataset pipeline
-   The project can load representative RayJoin-aligned datasets and normalize them for execution.
-
-4. Stable runtime ABI
-   Layouts, IDs, geometry roles, and emitted records are frozen enough to reuse in OptiX.
-
-5. CPU vs Embree correctness checks
-   Each supported workload has automated comparison between `run_cpu(...)` and `run_embree(...)`.
-
-6. Local benchmark harness
-   The repository can run repeatable local measurements on the Embree backend even if those numbers are not part of the final paper reproduction.
-
-7. Documentation and examples
-   Human and agent users can write RTDL programs and understand the supported execution modes.
-
-## What the Final NVIDIA Goal Must Deliver
-
-After the hardware is available, the final phase should deliver:
-
-1. Real OptiX runtime integration
-   Replace the current skeleton-only path with a runnable generated backend.
-
-2. Workload execution on NVIDIA RT cores
-   Execute the target RTDL workloads through OptiX/CUDA on the cloud GPU machine.
-
-3. Correctness validation
-   Cross-check GPU results against `run_cpu(...)` and, where appropriate, `run_embree(...)`.
-
-4. Benchmark harness
-   A stable scriptable pipeline for running workload/dataset experiments and saving results.
-
-5. Figure regeneration
-   Scripts that regenerate the selected RayJoin paper figures from fresh benchmark outputs.
-
-6. Final packaging
-   Docs, commands, plots, and limitations needed to present RTDL v0.1 clearly.
-
-## Dependency Order
-
-The dependency order should be explicit:
-
-1. Finish the Embree baseline.
-2. Freeze the workload and dataset scope for v0.1.
-3. Freeze the runtime ABI shared by Embree and OptiX.
-4. Bring up the first real OptiX workload on NVIDIA.
-5. Validate correctness against CPU and Embree.
-6. Expand to the full in-scope workload set.
-7. Run benchmarks and regenerate figures.
-
-This ordering matters because backend debugging is much easier once the language and runtime contracts are already stable.
-
-## Suggested Phases
-
-### Phase 1: Complete Embree-Backed v0.1 Baseline
-
-Deliverables:
-
-- all selected pre-GPU workloads runnable on CPU and Embree,
-- correctness comparisons,
-- local benchmark scripts,
-- stable docs and examples.
-
-Success condition:
-
-- RTDL is a reliable executable system before any NVIDIA-specific work starts.
-
-### Phase 2: Freeze Final RayJoin v0.1 Scope
-
-Deliverables:
-
-- selected RayJoin workloads,
-- selected datasets,
-- selected figures to regenerate,
-- explicit out-of-scope items.
-
-Success condition:
-
-- no ambiguity remains about what counts as v0.1 completion.
-
-### Phase 3: First OptiX Bring-Up for the RayJoin Slice
-
-Deliverables:
-
-- one workload running end to end through generated OptiX/CUDA code.
-
-Success condition:
-
-- RTDL executes one real workload on NVIDIA RT cores.
-
-### Phase 4: Full RayJoin Workload Coverage on NVIDIA
-
-Deliverables:
-
-- all in-scope workloads executable on the NVIDIA backend.
-
-Success condition:
-
-- RTDL covers the selected RayJoin workload set on RT cores.
-
-### Phase 5: Benchmark and Figure Reproduction for the RayJoin Slice
-
-Deliverables:
-
-- raw benchmark outputs,
-- plotting scripts,
-- regenerated figure set.
-
-Success condition:
-
-- the RayJoin paper's experiment structure has been reproduced with RTDL-generated implementations.
-
-## Acceptance Criteria
-
-### Embree Baseline Acceptance
-
-The baseline is complete when:
-
-- the selected workload set executes through `run_cpu(...)`,
-- the same workload set executes through `run_embree(...)`,
-- dataset loading and normalization are stable,
-- tests cover correctness on representative inputs,
-- docs explain how to author and run the workloads.
-
-### Final v0.1 Acceptance
-
-v0.1 is complete when:
-
-- the selected workload set executes through the NVIDIA/OptiX backend,
-- the benchmark harness runs the selected datasets,
-- figure-generation scripts reproduce the selected paper-style plots,
-- results and limitations are documented honestly.
-
-## Immediate Next Steps
-
-Before the NVIDIA machine arrives:
-
-1. finish the Embree baseline as the main active goal,
-2. choose the exact workload and figure scope for final v0.1,
-3. make the benchmark harness and dataset pipeline reusable across backends,
-4. lock the runtime ABI that OptiX will inherit.
-
-When the NVIDIA machine is ready:
-
-1. install CUDA/OptiX toolchain,
-2. run the first generated OptiX workload,
-3. compare outputs against CPU and Embree,
-4. expand to the remaining in-scope workloads,
-5. regenerate figures.
-
-## Positioning Statement
-
-The clearest way to describe the project now is:
-
-> RTDL as a whole is a multi-backend DSL project for non-graphical RT applications. RTDL v0.1 is the first RayJoin-focused vertical slice: currently grounded in an Embree-backed local baseline, and eventually completed through NVIDIA RT-core execution and paper-style figure regeneration.
+That is the right interpretation of “finishing v0.1” from the repo’s current
+position.

@@ -1,446 +1,89 @@
 # RTDL Feature Guide
 
-This document summarizes the RTDL feature surface that exists today, shows representative programs, and explains what those programs mean.
+This is the **high-level orientation guide** for RTDL.
 
-It is meant to answer a practical question:
+Audience:
 
-"What can the current RTDL actually express and run?"
+- readers who want a fast overview of what RTDL currently is
+- people deciding whether the current system fits their use case
+- reviewers who need the feature surface without reading the full language docs
 
-## 1. What RTDL is today
+This guide is intentionally lighter than the documents in `docs/rtdl/`.
 
-RTDL is a Python-hosted DSL for non-graphics ray tracing workloads.
+## What RTDL Is Today
 
-The whole-project vision is broader than the current repository slice:
+RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
 
-- long term: support non-graphical RT applications across multiple backends and hardware ecosystems
-- current v0.1 focus: RayJoin-style workloads on the currently available local Embree backend, with future extension to NVIDIA
+Today it includes:
 
-Users stay in Python, but instead of writing low-level Embree, OptiX, or CUDA orchestration directly, they describe:
+- a kernel authoring surface
+- compiler IR and lowering
+- a native C/C++ oracle
+- a controlled Embree backend
+- a controlled OptiX backend
 
-- geometry inputs
-- traversal intent
-- refinement predicates
-- emitted result fields
+Current supported workload families:
 
-The current system has three meaningful layers:
+- `lsi`
+- `pip`
+- `overlay`
+- `ray_tri_hitcount`
+- `segment_polygon_hitcount`
+- `point_nearest_segment`
 
-- Language layer: write kernels with `@rt.kernel(...)`, `rt.input(...)`, `rt.traverse(...)`, `rt.refine(...)`, and `rt.emit(...)`
-- Compiler layer: compile the DSL into RTDL IR, lower it to a RayJoin-oriented plan, and generate OptiX/CUDA skeleton artifacts
-- Runtime layer: execute supported workloads through either a Python reference executor or the local Embree backend
+## What RTDL Can Currently Do
 
-So the current v0.1 slice is no longer just a code generator. It already includes:
+The current repo can:
 
-- a usable DSL surface
-- an inspectable IR and lowering path
-- a runnable CPU reference backend
-- a runnable Embree backend on this Mac
+- author kernels in a constrained Python DSL
+- compile and lower them
+- run them through the native oracle
+- run them on Embree
+- run bounded validated workloads on OptiX
+- support a RayJoin-oriented experiment/reporting workflow
 
-For the current paper-reproduction phase, also see:
+## What RTDL Cannot Yet Claim
 
-- [Preserved Goal 13 plan](/Users/rl2025/rtdl_python_only/docs/goal_13_rayjoin_paper_embree_plan.md)
-- [RayJoin paper reproduction checklist](/Users/rl2025/rtdl_python_only/docs/rayjoin_paper_reproduction_checklist.md)
-- [RayJoin paper dataset provenance](/Users/rl2025/rtdl_python_only/docs/rayjoin_paper_dataset_provenance.md)
+RTDL does not yet claim:
 
-## 2. Workloads supported today
+- exact computational geometry
+- a finished generalized multi-backend optimizer
+- full paper-scale reproduction for every RayJoin family
+- broad CI-backed cross-platform enforcement
 
-The current RTDL supports six workload families:
+## Runtime Surface
 
-1. `lsi`
-   Segment-segment intersection
+Current execution paths:
 
-2. `pip`
-   Point-in-polygon
+- `rt.run_cpu(...)`: native oracle
+- `rt.run_embree(...)`: controlled CPU backend
+- `rt.run_optix(...)`: controlled GPU backend
 
-3. `overlay`
-   Compositional polygon overlay seed generation
+Current practical interpretation:
 
-4. `ray_tri_hitcount`
-   Finite 2D ray vs triangle hit counting
+- oracle for ground truth
+- Embree for mature CPU execution
+- OptiX for validated but still earlier-stage GPU execution
 
-5. `segment_polygon_hitcount`
-   Per-segment polygon hit counting
+## Recommended Reading
 
-6. `point_nearest_segment`
-   Nearest-segment lookup per point
+If you need:
 
-Geometry types currently supported include:
+- exact language contract:
+  [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
+- authoring guidance:
+  [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
+- copyable examples:
+  [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+- whole-project framing:
+  [Vision](/Users/rl2025/rtdl_python_only/docs/vision.md)
 
-- `rt.Points`
-- `rt.Segments`
-- `rt.Polygons`
-- `rt.Triangles`
-- `rt.Rays`
+## Bottom Line
 
-Current predicate/refine operators include:
+RTDL is already a real multi-backend research system, but still a bounded one.
 
-- `rt.segment_intersection(exact=False)`
-- `rt.point_in_polygon(exact=False)`
-- `rt.overlay_compose()`
-- `rt.ray_triangle_hit_count(exact=False)`
-- `rt.segment_polygon_hitcount(exact=False)`
-- `rt.point_nearest_segment(exact=False)`
+The right way to read the current repo is:
 
-Current audited limits:
-
-- PIP supports only `boundary_mode="inclusive"`.
-- `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` run end to end today, but the current local backend executes them through audited `native_loop` paths instead of BVH-backed traversal.
-- Precision remains `float_approx`.
-- The current automated verification story is local-only; this repo still has no CI pipeline or cross-platform test matrix.
-
-## 3. Execution modes
-
-The current Embree runtime exposes three practical modes.
-
-### `dict`
-
-```python
-rows = rt.run_embree(kernel, **inputs)
-```
-
-Use this when convenience matters more than speed and you want Python dictionaries immediately.
-
-### `raw`
-
-```python
-rows = rt.run_embree(kernel, result_mode="raw", **inputs)
-try:
-    print(len(rows))
-finally:
-    rows.close()
-```
-
-Use this when you want the normal `run_embree(...)` entry point but do not want immediate dict materialization overhead.
-
-### prepared raw
-
-```python
-prepared = rt.prepare_embree(kernel)
-execution = prepared.bind(**inputs)
-rows = execution.run_raw()
-try:
-    print(len(rows))
-finally:
-    rows.close()
-```
-
-Use this when the same kernel is executed repeatedly and performance matters.
-
-Packed helpers such as `rt.pack_segments(...)`, `rt.pack_points(...)`, `rt.pack_polygons(...)`, `rt.pack_rays(...)`, and `rt.pack_triangles(...)` allow native-ready inputs to be bound directly to the prepared path.
-
-Current rule of thumb:
-
-- `dict` is the convenience path
-- `raw` is the main low-overhead path
-- prepared raw is the serious repeated-execution path
-
-For the current matched Goal 19 `lsi` and `pip` comparisons, raw and prepared-raw are close to the current native wrapper baseline while the dict path remains much slower. That baseline uses the same compiled Embree shared library as RTDL, so the measured gap is mainly Python/ctypes host-path overhead.
-
-## 4. Basic RTDL kernel structure
-
-Most RTDL kernels follow this pattern:
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def some_query():
-    left = rt.input("left", rt.Segments, layout=rt.Segment2DLayout, role="probe")
-    right = rt.input("right", rt.Segments, layout=rt.Segment2DLayout, role="build")
-    candidates = rt.traverse(left, right, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
-    return rt.emit(
-        hits,
-        fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"],
-    )
-```
-
-The structure has five semantic steps:
-
-1. `@rt.kernel(...)`
-   Declares an RTDL kernel.
-
-2. `rt.input(...)`
-   Declares each input, its geometry kind, layout, and query role.
-
-3. `rt.traverse(...)`
-   Declares how candidate pairs are formed. Today the common mode is `accel="bvh"`.
-
-4. `rt.refine(...)`
-   Applies the actual geometric predicate or refinement logic to the candidate set.
-
-5. `rt.emit(...)`
-   Declares the output row schema.
-
-## 5. Example: segment intersection (`lsi`)
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def county_zip_join():
-    left = rt.input("left", rt.Segments, layout=rt.Segment2DLayout, role="probe")
-    right = rt.input("right", rt.Segments, layout=rt.Segment2DLayout, role="build")
-    candidates = rt.traverse(left, right, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
-    return rt.emit(
-        hits,
-        fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"],
-    )
-```
-
-### What this code means
-
-`@rt.kernel(backend="rtdl", precision="float_approx")`
-
-- `backend="rtdl"` is the canonical live spelling for the current RTDL lowering surface. The legacy spelling `backend="rayjoin"` is still accepted for compatibility inside the current v0.1 slice.
-- `precision="float_approx"` means the implemented path is floating-point approximate, not exact arithmetic.
-
-`left = rt.input(...)` and `right = rt.input(...)`
-
-- These declare two segment sets.
-- `role="probe"` and `role="build"` distinguish the probing side from the side that owns the acceleration structure.
-
-`candidates = rt.traverse(left, right, accel="bvh")`
-
-- This does not immediately compute intersections.
-- It first defines candidate generation through BVH-style traversal.
-
-`hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))`
-
-- This is the actual segment-segment intersection test.
-
-`rt.emit(...)`
-
-- This emits both input ids plus the intersection point coordinates.
-
-### How to run it
-
-The same kernel can run on two currently supported execution paths:
-
-```python
-rows_cpu = rt.run_cpu(county_zip_join, left=left_segments, right=right_segments)
-rows_embree = rt.run_embree(county_zip_join, left=left_segments, right=right_segments)
-```
-
-- `run_cpu(...)` is now the native C/C++ oracle path, while `run_cpu_python_reference(...)` preserves the old Python reference semantics
-- `run_embree(...)` is the native Embree backend
-
-## 6. Example: point-in-polygon (`pip`)
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def point_in_counties():
-    points = rt.input("points", rt.Points, layout=rt.Point2DLayout, role="probe")
-    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
-    candidates = rt.traverse(points, polygons, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.point_in_polygon(exact=False))
-    return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
-```
-
-### What this code means
-
-- The inputs are a point set and a polygon set.
-- `traverse(...)` creates point-polygon candidate pairs.
-- `point_in_polygon(...)` tests containment.
-- The output row schema is:
-  - `point_id`
-  - `polygon_id`
-  - `contains`
-
-If `contains=1`, the point is inside the polygon. If `contains=0`, it is outside.
-
-## 7. Example: rays from a center point against random triangles
-
-This example is closer to a more general RT query language than the original RayJoin workloads.
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def central_ray_triangle_stats():
-    rays = rt.input("rays", rt.Rays, layout=rt.Ray2DLayout, role="probe")
-    triangles = rt.input("triangles", rt.Triangles, layout=rt.Triangle2DLayout, role="build")
-    candidates = rt.traverse(rays, triangles, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
-    return rt.emit(hits, fields=["ray_id", "hit_count"])
-```
-
-### What this code means
-
-`rays = rt.input("rays", rt.Rays, ...)`
-
-- The input is a set of finite 2D rays.
-- Each ray usually carries:
-  - origin
-  - direction
-  - a finite length via `tmax`
-  - an id
-
-`triangles = rt.input("triangles", rt.Triangles, ...)`
-
-- The input is a set of triangles.
-
-`rt.ray_triangle_hit_count(exact=False)`
-
-- Counts how many triangles each finite ray hits.
-
-`rt.emit(hits, fields=["ray_id", "hit_count"])`
-
-- Emits one result row per ray:
-  - `ray_id`
-  - `hit_count`
-
-### Intuition
-
-If the user wants to ask:
-
-"In a 2D space, place many random triangles, then shoot rays from the center with random angles and finite lengths, and count how many triangles each ray hits."
-
-The current RTDL can already express and execute that query.
-
-## 8. Example: Goal 10 workload extensions
-
-### `segment_polygon_hitcount`
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def segment_polygon_hitcount_reference():
-    segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="probe")
-    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
-    candidates = rt.traverse(segments, polygons, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_polygon_hitcount(exact=False))
-    return rt.emit(hits, fields=["segment_id", "hit_count"])
-```
-
-This program means:
-
-- input a segment set and a polygon set
-- for each segment, count how many polygons it hits
-- output:
-  - `segment_id`
-  - `hit_count`
-
-### `point_nearest_segment`
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def point_nearest_segment_reference():
-    points = rt.input("points", rt.Points, layout=rt.Point2DLayout, role="probe")
-    segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="build")
-    candidates = rt.traverse(points, segments, accel="bvh")
-    nearest = rt.refine(candidates, predicate=rt.point_nearest_segment(exact=False))
-    return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
-```
-
-This program means:
-
-- input a point set and a segment set
-- for each point, find the nearest segment
-- output:
-  - `point_id`
-  - `segment_id`
-  - `distance`
-
-Here `distance` is the point-to-segment distance.
-
-## 9. How RTDL programs run today
-
-RTDL currently has two backend families and three practical local Embree result modes:
-
-### Compiler path
-
-```python
-compiled = rt.compile_kernel(kernel_fn)
-plan = rt.lower_to_execution_plan(compiled)
-generated = rt.generate_optix_project(plan, output_dir)
-```
-
-This path:
-
-- compiles the DSL to IR
-- lowers the IR to a RayJoin-style backend plan
-- generates OptiX/CUDA skeleton files
-
-This mainly serves the future NVIDIA/OptiX backend.
-
-### CPU path
-
-```python
-rows = rt.run_cpu(kernel_fn, **inputs)
-```
-
-This path:
-
-- executes the current workload through the native C/C++ oracle path
-- provides the semantic baseline for correctness checks
-
-### Embree path
-
-```python
-rows = rt.run_embree(kernel_fn, **inputs)
-raw_rows = rt.run_embree(kernel_fn, result_mode="raw", **inputs)
-prepared = rt.prepare_embree(kernel_fn).bind(**inputs)
-```
-
-This path:
-
-- uses the same DSL kernel
-- lowers the logical workload into the local Embree-backed runtime
-- returns real execution results on this Mac
-- can return either dict rows or a thin raw-row view
-- can separate one-time setup from repeated execution through the prepared API
-
-So the current system is no longer "codegen only." It already has a real executable backend on macOS.
-
-## 10. Current boundaries
-
-The current RTDL can express and run several non-graphics RT workloads, but it still has clear limits:
-
-- precision is still `float_approx`
-- PIP supports only `boundary_mode="inclusive"`
-- `lsi`, `segment_polygon_hitcount`, and `point_nearest_segment` remain audited `native_loop` workloads on the local backend rather than BVH-backed traversal
-- exact or robust geometric arithmetic is not yet implemented
-- workload growth is still explicit and enumerated rather than fully open-ended
-- the current local Embree runtime does not appear to silently truncate output rows, and the controlled OptiX runtime is now bring-up-validated on the GTX 1070 host, but the generated OptiX/CUDA skeleton path still contains an `output_capacity` overflow pattern and is not the trusted runtime path
-- the automated verification story is still local-only rather than CI-backed
-- the NVIDIA/OptiX backend is now a real runnable execution path on the first Linux GPU host, but broader real-data validation is still bounded
-- generated OptiX/CUDA files still exist as backend-planning artifacts alongside the controlled runtime
-
-So the most accurate current statement is:
-
-- RTDL is already a writable, compilable, locally executable DSL prototype
-- the Embree backend is real
-- the NVIDIA GPU backend is now in the first real bring-up stage, and broader real-data validation remains the next major step
-
-## 11. Recommended reading order
-
-For a developer new to the current RTDL, this is a good reading order:
-
-1. [README.md](/Users/rl2025/rtdl_python_only/README.md)
-2. [rtdsl_python_demo.py](/Users/rl2025/rtdl_python_only/apps/rtdsl_python_demo.py)
-3. [programming_guide.md](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
-4. [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py)
-5. [api.py](/Users/rl2025/rtdl_python_only/src/rtdsl/api.py)
-6. [runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/runtime.py)
-7. [embree_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py)
-
-## 12. Summary
-
-At the current stage, RTDL already supports:
-
-- six workload families
-- Python DSL authoring
-- IR, lowering, and code generation
-- CPU reference execution
-- Embree native execution
-- benchmarking, tables, and figure generation
-
-The best way to understand the project now is:
-
-RTDL has moved from "research idea" to "executable language prototype." It has not yet reached the final NVIDIA RT-core goal, but it has already established a working Embree baseline and a DSL surface that can continue to grow.
+- live, executable, and validated on its accepted workloads
+- still narrow and correctness-conscious
+- still expanding toward a fuller bounded RayJoin-style reproduction package

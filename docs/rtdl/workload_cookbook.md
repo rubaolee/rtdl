@@ -1,9 +1,19 @@
 # RTDL Workload Cookbook
 
-This cookbook gives copyable RTDL examples for the currently supported workload
-families.
+This cookbook provides **copyable workload patterns** for the current RTDL
+surface.
 
-## LSI Example
+Scope of this file:
+
+- one compact example per workload
+- required geometry roles
+- emitted fields
+- quick execution examples
+
+This file is intentionally example-first. It should not duplicate the full
+semantic explanations from the programming guide.
+
+## LSI
 
 ```python
 import rtdsl as rt
@@ -20,12 +30,12 @@ def road_boundary_crossings():
     )
 ```
 
-Notes:
+Rules:
 
-- both inputs must be `rt.Segments`
-- current lowering requires `exact=False`
+- both sides are `rt.Segments`
+- output is one row per accepted segment intersection
 
-## PIP Example
+## PIP
 
 ```python
 import rtdsl as rt
@@ -42,13 +52,13 @@ def station_in_districts():
     return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 ```
 
-Notes:
+Rules:
 
-- probe must be points
-- build must be polygons
-- boundary mode must currently stay `"inclusive"`
+- probe side must be points
+- build side must be polygons
+- current boundary mode is only `"inclusive"`
 
-## Overlay Example
+## Overlay
 
 ```python
 import rtdsl as rt
@@ -65,12 +75,11 @@ def parcel_flood_overlay():
     )
 ```
 
-Notes:
+Rule:
 
-- both inputs must be polygons
-- current result is an overlay seed schema, not a final polygon overlay mesh
+- output is an overlay-seed schema, not final overlay polygons
 
-## Ray/Triangle Hit Count Example
+## Ray/Triangle Hit Count
 
 ```python
 import rtdsl as rt
@@ -84,19 +93,7 @@ def central_ray_triangle_stats():
     return rt.emit(hits, fields=["ray_id", "hit_count"])
 ```
 
-Notes:
-
-- rays are finite, not infinite
-- triangles are explicit 2D primitives in the current surface
-- current result is one record per ray with its total triangle hit count
-
-Typical use:
-
-- generate many random triangles
-- generate many rays from a center point with random angles and lengths
-- compile the RTDL kernel and collect per-ray counts
-
-## Segment/Polygon Hit Count Example
+## Segment/Polygon Hit Count
 
 ```python
 import rtdsl as rt
@@ -110,13 +107,7 @@ def road_polygon_touch_counts():
     return rt.emit(hits, fields=["segment_id", "hit_count"])
 ```
 
-Notes:
-
-- probe must be segments
-- build must be polygons
-- current result is one record per segment with the number of hit polygons
-
-## Point/Nearest Segment Example
+## Point/Nearest Segment
 
 ```python
 import rtdsl as rt
@@ -130,133 +121,34 @@ def hydrant_nearest_road():
     return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
 ```
 
-Notes:
+## Quick Execution Examples
 
-- probe must be points
-- build must be segments
-- current result is one nearest segment record per point
-- the Embree runtime currently implements this as a native float path within the local backend
-
-## Local Simulator Example
-
-RTDL now has a CPU simulator for the currently supported workloads:
+Oracle:
 
 ```python
-rows = rt.run_cpu(
-    central_ray_triangle_stats,
-    rays=(
-        {"id": 1, "ox": 0.0, "oy": 0.0, "dx": 1.0, "dy": 0.0, "tmax": 10.0},
-    ),
-    triangles=(
-        {"id": 10, "x0": 2.0, "y0": -1.0, "x1": 3.0, "y1": 1.0, "x2": 4.0, "y2": -1.0},
-    ),
-)
+rows = rt.run_cpu(kernel_fn, **inputs)
 ```
 
-Notes:
-
-- this is for correctness/debugging, not performance
-- results come from the Python CPU reference semantics
-- polygon inputs in simulator mode should use inline `vertices`
-
-## Embree Backend Example
+Embree:
 
 ```python
-rows = rt.run_embree(
-    central_ray_triangle_stats,
-    rays=(
-        {"id": 1, "ox": 0.0, "oy": 0.0, "dx": 1.0, "dy": 0.0, "tmax": 10.0},
-    ),
-    triangles=(
-        {"id": 10, "x0": 2.0, "y0": -1.0, "x1": 3.0, "y1": 1.0, "x2": 4.0, "y2": -1.0},
-    ),
-)
+rows = rt.run_embree(kernel_fn, **inputs)
 ```
 
-Notes:
-
-- install Embree first with `brew install embree`
-- current local setup expects Homebrew Embree in `/opt/homebrew/opt/embree`
-- on non-default installs, set `RTDL_EMBREE_PREFIX` and optionally `RTDL_TBB_PREFIX`
-- `run_embree(...)` supports the same current workload surface as `run_cpu(...)`
-- use `run_cpu(...)` as the baseline when validating new kernels or backend changes
-
-## Common Errors
-
-### Wrong Precision
-
-Bad:
+OptiX:
 
 ```python
-@rt.kernel(backend="rtdl", precision="exact")
+rows = rt.run_optix(kernel_fn, **inputs)
 ```
 
-Why it fails:
+## Common Mistakes
 
-- the current lowering rejects anything except `float_approx`
+- wrong geometry roles for `pip`
+- unsupported precision modes
+- expecting overlay to return final polygon fragments
+- treating generated code skeletons as the trusted runtime path
 
-### Wrong PIP Geometry Order
+For the precise contract behind these examples, see:
 
-Bad:
-
-```python
-left = rt.input("left", rt.Segments)
-right = rt.input("right", rt.Polygons)
-hits = rt.refine(candidates, predicate=rt.point_in_polygon(exact=False))
-```
-
-Why it fails:
-
-- PIP requires polygon build plus point probe
-
-### Wrong Ray/Triangle Geometry Pair
-
-Bad:
-
-```python
-rays = rt.input("rays", rt.Rays, role="build")
-triangles = rt.input("triangles", rt.Triangles, role="probe")
-hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
-```
-
-Why it fails:
-
-- current lowering requires triangle build plus ray probe
-
-### Unsupported Emit Schema
-
-Bad:
-
-```python
-return rt.emit(hits, fields=["point_id", "bbox_min_x"])
-```
-
-Why it fails:
-
-- emit fields are workload-specific and closed in the current language
-
-## Baseline Representative Runs
-
-The Embree baseline now has named representative runs for each workload:
-
-- `lsi`
-  - `authored_lsi_minimal`
-  - `tests/fixtures/rayjoin/br_county_subset.cdb`
-- `pip`
-  - `authored_pip_minimal`
-  - `tests/fixtures/rayjoin/br_county_subset.cdb`
-- `overlay`
-  - `authored_overlay_minimal`
-  - `tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb`
-- `ray_tri_hitcount`
-  - `authored_ray_tri_minimal`
-  - `examples/rtdl_ray_tri_hitcount.py synthetic random generators`
-
-Run a representative case directly:
-
-```sh
-PYTHONPATH=src:. python3 -m rtdsl.baseline_runner overlay --backend both
-```
-
-This is the preferred way to exercise the current frozen baseline before the
-project moves to the NVIDIA/OptiX phase.
+- [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
+- [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)

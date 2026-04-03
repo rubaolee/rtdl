@@ -1,26 +1,37 @@
 # RTDL Programming Guide
 
-This guide explains how to write RTDL kernels correctly for the current language
-surface.
+This guide explains **how to author RTDL kernels correctly**.
 
-## 1. Start With The Kernel Header
+Scope of this file:
 
-Every RTDL kernel starts with:
+- kernel shape
+- how to choose inputs, roles, and predicates
+- how to execute kernels through the current runtime surface
+- how to validate new kernels
+
+This guide is intentionally different from:
+
+- [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md): exact contract
+- [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md): copyable examples
+
+## 1. Start With The Current Kernel Header
+
+Current canonical header:
 
 ```python
 @rt.kernel(backend="rtdl", precision="float_approx")
 ```
 
-Do not vary these values in the current implementation.
+Current rules:
 
-Also:
+- use `backend="rtdl"` as the canonical spelling
+- `backend="rayjoin"` remains compatibility-only
+- current lowering accepts only `precision="float_approx"`
+- kernel functions take no Python arguments
 
-- the kernel function takes no Python arguments
-- the body should only use RTDL operations
+## 2. Declare Inputs Clearly
 
-## 2. Declare Inputs First
-
-Inputs come first and should be given clear domain names:
+Declare inputs first and use meaningful domain names:
 
 ```python
 roads = rt.input("roads", rt.Segments, role="probe")
@@ -29,306 +40,142 @@ boundaries = rt.input("boundaries", rt.Segments, role="build")
 
 Recommendations:
 
-- use explicit roles
-- keep the Python variable name aligned with the input name string
-- use built-in geometry types unless a custom layout is necessary
+- prefer explicit `role=...`
+- keep the variable name aligned with the input name
+- use built-in layouts unless you have a concrete reason not to
 
-## 3. Add Traversal
+## 3. Use The Standard Kernel Shape
 
-Current RTDL only supports BVH traversal:
-
-```python
-candidates = rt.traverse(roads, boundaries, accel="bvh")
-```
-
-## 4. Add Refinement
-
-Choose one supported predicate.
-
-### For LSI
+Most current RTDL kernels follow this pattern:
 
 ```python
-hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def some_query():
+    left = rt.input("left", rt.Segments, role="probe")
+    right = rt.input("right", rt.Segments, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+    return rt.emit(
+        hits,
+        fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"],
+    )
 ```
 
-### For PIP
+Semantics:
+
+1. `rt.input(...)` declares geometry and roles
+2. `rt.traverse(...)` defines candidate generation
+3. `rt.refine(...)` applies the geometric predicate
+4. `rt.emit(...)` defines the output row schema
+
+## 4. Choose The Right Predicate
+
+Current built-in predicate families:
+
+- `rt.segment_intersection(exact=False)`
+- `rt.point_in_polygon(exact=False, boundary_mode="inclusive")`
+- `rt.overlay_compose()`
+- `rt.ray_triangle_hit_count(exact=False)`
+- `rt.segment_polygon_hitcount(exact=False)`
+- `rt.point_nearest_segment(exact=False)`
+
+Important boundaries:
+
+- `boundary_mode="inclusive"` is the only accepted PIP boundary mode
+- current paths are approximate/float-based, not exact arithmetic
+- overlay emits overlay seeds, not final polygon fragments
+
+## 5. Choose The Right Execution Path
+
+### Oracle
+
+Use `rt.run_cpu(...)` when:
+
+- correctness is the priority
+- you are validating a new kernel
+- you need the project ground truth
+
+The old Python reference path is still available as:
+
+- `rt.run_cpu_python_reference(...)`
+
+### Embree
+
+Use `rt.run_embree(...)` when:
+
+- you want the controlled CPU backend
+- you need real backend timing or behavior
+
+Execution modes:
+
+- `dict`: easiest, slowest
+- `raw`: lower-overhead native row view
+- prepared raw: best repeated-execution path
+
+### OptiX
+
+Use `rt.run_optix(...)` when:
+
+- you are on a supported NVIDIA host
+- you want the controlled GPU backend
+
+Current trusted GPU path:
+
+- bounded, correctness-checked runs
+- trusted PTX generation on `192.168.1.20` uses the `nvcc` fallback
+
+## 6. Validation Workflow
+
+When adding or changing a kernel:
+
+1. compile it
+2. lower it
+3. inspect the plan if needed
+4. run it through the oracle
+5. compare it against Embree and/or OptiX when relevant
+
+Typical flow:
 
 ```python
-hits = rt.refine(
-    candidates,
-    predicate=rt.point_in_polygon(exact=False, boundary_mode="inclusive"),
-)
+compiled = rt.compile_kernel(kernel_fn)
+plan = rt.lower_to_execution_plan(compiled)
+rows = rt.run_cpu(kernel_fn, **inputs)
 ```
 
-### For Overlay
+For backend validation:
 
 ```python
-seeds = rt.refine(candidates, predicate=rt.overlay_compose())
+oracle_rows = rt.run_cpu(kernel_fn, **inputs)
+embree_rows = rt.run_embree(kernel_fn, **inputs)
 ```
 
-### For Ray/Triangle Hit Count
+or
 
 ```python
-hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+oracle_rows = rt.run_cpu(kernel_fn, **inputs)
+optix_rows = rt.run_optix(kernel_fn, **inputs)
 ```
 
-### For Segment/Polygon Hit Count
+## 7. Current Authoring Boundaries
 
-```python
-hits = rt.refine(candidates, predicate=rt.segment_polygon_hitcount(exact=False))
-```
+RTDL is not currently:
 
-### For Point/Nearest Segment
+- an imperative per-element kernel language
+- a general scheduling language
+- an exact computational-geometry system
+- a fully general backend-independent optimizer
 
-```python
-nearest = rt.refine(candidates, predicate=rt.point_nearest_segment(exact=False))
-```
+Avoid:
 
-## 5. Return Emit
+- explicit loops in the DSL body
+- custom mutable accumulation patterns
+- unsupported precision modes
+- unsupported geometry/predicate combinations
 
-The kernel must end with `return rt.emit(...)`.
+## 8. Where To Go Next
 
-```python
-return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
-```
-
-## What RTDL Is Not
-
-RTDL is not currently an imperative per-element kernel language.
-
-Do not write:
-
-- `for` loops over inputs
-- mutable local accumulators as part of the DSL
-- typed kernel arguments like `ray: rt.Ray2D`
-- user-written calls like `rt.intersect(...)`
-- output objects like `rt.Output[...]`
-
-## Choosing Layouts
-
-Use the default layouts unless you need to be explicit in docs or tests.
-
-Built-in defaults:
-
-- `rt.Segment2DLayout`
-- `rt.Point2DLayout`
-- `rt.Polygon2DLayout`
-- `rt.Triangle2DLayout`
-- `rt.Ray2DLayout`
-
-If you write a custom layout, it must still include the required fields for the
-chosen geometry type.
-
-## Choosing Roles
-
-Prefer explicit roles.
-
-Good:
-
-```python
-points = rt.input("points", rt.Points, role="probe")
-polygons = rt.input("polygons", rt.Polygons, role="build")
-```
-
-Avoid relying on implicit role assignment unless you are intentionally using the
-default behavior.
-
-## Workload Recipes
-
-### Segment Intersection
-
-Use when both inputs are segment sets and you want intersection pairs plus the
-intersection point.
-
-### Point In Polygon
-
-Use when probe data are points and build data are polygon references.
-
-### Overlay
-
-Use when both inputs are polygon references and you want overlay seed records
-instead of final overlay polygons.
-
-### Ray/Triangle Hit Count
-
-Use when probe data are finite 2D rays and build data are triangles, and you
-want one count record per ray.
-
-Recommended ray layout:
-
-- origin: `ox`, `oy`
-- direction: `dx`, `dy`
-- finite extent: `tmax`
-- identifier: `id`
-
-Typical use:
-
-- many random triangles in 2D
-- many rays from a center point with random angle and random length
-- one emitted result per ray with total hit count
-
-### Segment/Polygon Hit Count
-
-Use when probe data are segments and build data are polygons, and you want one
-hit-count record per segment.
-
-### Point/Nearest Segment
-
-Use when probe data are points and build data are segments, and you want one
-nearest-segment record per point.
-
-## Current Limitations
-
-- only the current RTDL lowering surface (`backend="rtdl"`, with legacy `rayjoin` compatibility)
-- only `float_approx` precision
-- only `bvh`
-- only six built-in workload predicates
-- ray/triangle hit count remains 2D-only
-- overlay is a composition-level skeleton, not a finished geometric overlay runtime
-- generated OptiX/CUDA output is still backend skeleton code
-
-## Dataset Guidance
-
-For RayJoin-style data:
-
-- load CDB chain files with `rt.load_cdb(...)`
-- derive segments with `rt.chains_to_segments(...)`
-- derive probe points with `rt.chains_to_probe_points(...)`
-- derive polygon refs with `rt.chains_to_polygon_refs(...)`
-
-For synthetic ray-query examples:
-
-- use `examples/rtdl_ray_tri_hitcount.py`
-- generate triangles with `make_random_triangles(...)`
-- generate rays with `make_center_rays(...)`
-
-## Validation Workflow
-
-To validate a kernel:
-
-1. compile it with `rt.compile_kernel(...)`
-2. lower it with `rt.lower_to_execution_plan(...)`
-3. generate backend artifacts with `rt.generate_optix_project(...)`
-
-To execute a currently supported kernel locally on CPU:
-
-1. write the RTDL kernel as usual
-2. prepare Python-side input records
-3. call `rt.run_cpu(kernel_fn, **inputs)`
-
-Example:
-
-```python
-rows = rt.run_cpu(
-    central_ray_triangle_stats,
-    rays=(
-        {"id": 1, "ox": 0.0, "oy": 0.0, "dx": 1.0, "dy": 0.0, "tmax": 10.0},
-    ),
-    triangles=(
-        {"id": 10, "x0": 2.0, "y0": -1.0, "x1": 3.0, "y1": 1.0, "x2": 4.0, "y2": -1.0},
-    ),
-)
-```
-
-The CPU simulator:
-
-- compiles the kernel
-- validates required input names
-- converts records into RTDL reference dataclasses
-- dispatches to the workload-specific CPU semantics
-- returns rows shaped exactly like the kernel's `emit` fields
-
-### CPU Simulator Input Rules
-
-- segments, points, triangles, and rays may be provided as RTDL reference dataclasses or dictionaries
-- dictionaries may contain extra bookkeeping fields; required geometry fields are read and extras are ignored
-- polygons are special in simulator mode: provide logical polygon records with `id` and inline `vertices`
-- simulator mode currently supports only `precision="float_approx"`
-
-### Embree Execution Mode
-
-RTDL also supports a native local execution path:
-
-```python
-rows = rt.run_embree(
-    central_ray_triangle_stats,
-    rays=(
-        {"id": 1, "ox": 0.0, "oy": 0.0, "dx": 1.0, "dy": 0.0, "tmax": 10.0},
-    ),
-    triangles=(
-        {"id": 10, "x0": 2.0, "y0": -1.0, "x1": 3.0, "y1": 1.0, "x2": 4.0, "y2": -1.0},
-    ),
-)
-```
-
-Requirements:
-
-- install Embree locally with `brew install embree`
-- current implementation expects Homebrew Embree under `/opt/homebrew/opt/embree`
-- current implementation supports the same six workloads as `rt.run_cpu(...)`
-- on non-default setups, set `RTDL_EMBREE_PREFIX` and optionally `RTDL_TBB_PREFIX`
-
-Notes:
-
-- `run_embree(...)` uses Embree for traversal/candidate execution on this Mac
-- `run_cpu(...)` remains the correctness baseline
-- polygons still use logical inline `vertices` inputs in local execution mode
-- the current Embree path is a local runtime backend, not a replacement for the future GPU backend
-
-For repository-level validation:
-
-- run `make test`
-- run `make run-rtdsl-py`
-
-## Embree Baseline Runners
-
-The project now keeps a frozen baseline integration layer for the current four
-workloads.
-
-Run one workload directly:
-
-```sh
-PYTHONPATH=src:. python3 -m rtdsl.baseline_runner lsi --backend both
-PYTHONPATH=src:. python3 -m rtdsl.baseline_runner pip --backend both
-PYTHONPATH=src:. python3 -m rtdsl.baseline_runner overlay --backend both
-PYTHONPATH=src:. python3 -m rtdsl.baseline_runner ray_tri_hitcount --backend both
-```
-
-This runner:
-
-- chooses a representative dataset if one is not specified
-- executes `run_cpu(...)` and/or `run_embree(...)`
-- compares results through the frozen baseline comparison policy
-
-The source-of-truth contracts for these runs live in:
-
-- `src/rtdsl/baseline_contracts.py`
-- `docs/embree_baseline_contracts.md`
-
-## Embree Baseline Benchmark
-
-Use the local benchmark harness to record warmup-aware timing data:
-
-```sh
-PYTHONPATH=src:. python3 -m rtdsl.baseline_benchmark --iterations 3 --warmup 1
-PYTHONPATH=src:. python3 -m rtdsl.baseline_summary build/embree_baseline_benchmark.json
-```
-
-The benchmark JSON is a local-only artifact written under `build/` and is meant
-for the pre-GPU Embree phase. It records:
-
-- backend
-- workload
-- representative dataset
-- warmup count
-- iteration timings
-- summary timing statistics
-
-## Authoring Checklist
-
-- kernel uses `backend="rtdl"` and `precision="float_approx"`
-- every input has a unique name
-- `accel="bvh"`
-- predicate matches the geometry pair
-- emit fields match the workload
-- kernel returns `rt.emit(...)`
+- for exact contracts: [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
+- for workload snippets: [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+- for project-level context: [Feature Guide](/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md)

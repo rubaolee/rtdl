@@ -1,79 +1,53 @@
 # RayJoin Target
 
-## Why RayJoin is the Right First Backend
+RayJoin is the first serious application target for RTDL because it shows the
+core project problem clearly:
 
-RayJoin already demonstrates three properties that make it the right first target for RTDL:
+- the workload is not graphics
+- the implementation maps well to RT traversal and candidate generation
+- the original implementation burden is still backend-heavy and low-level
 
-- the workload is not graphics, but it maps well to RT-core traversal,
-- the implementation depends on OptiX/CUDA details that are too low level for most users, and
-- the paper and codebase already expose clear abstractions to lift into a DSL.
+## Why It Fits RTDL
+
+RayJoin-style workloads require users to reason about:
+
+- data roles
+- traversal/candidate generation
+- geometric refine semantics
+- backend-specific launch/runtime structure
+
+Those are exactly the layers RTDL is meant to separate.
 
 ## What RTDL Should Abstract
 
-For a RayJoin-style system, users should not need to directly program:
+Users should not need to directly author:
 
-- ray generation versus intersection shader split,
-- hit program plumbing,
-- payload register packing,
-- BVH build invocation details,
-- shader binding table setup,
-- OptiX module and program group creation,
-- launch dimensions, and
-- cache invalidation workarounds.
+- OptiX program groups
+- payload packing
+- BVH build plumbing
+- SBT setup
+- module/pipeline launch mechanics
+- backend-specific runtime glue
 
-These are backend concerns. They are important for performance, but they should be compiler responsibilities.
+Those should remain backend/compiler responsibilities.
 
 ## What RTDL Should Keep Visible
 
-The source language should preserve the choices that materially affect correctness or performance:
+The source language should still make these explicit:
 
-- query family: `lsi`, `pip`, `touches`, `intersects`, `intersection`,
-- geometry roles: build side versus probe side,
-- precision mode: fast, conservative, exact,
-- output policy: boolean, candidate pairs, exact intersections, overlay fragments,
-- optional batching or memory budget hints.
+- workload family
+- geometry roles
+- output schema
+- precision boundary
+- execution-mode consequences
 
-## First Lowering Model
+## Current RayJoin State In This Repo
 
-The initial lowering target for RayJoin should produce an explicit backend plan with these stages:
+Current validated RayJoin-style work includes:
 
-1. Input normalization
-   Validate geometry kinds and assign left/right roles.
-2. Precision policy selection
-   Choose the representation strategy and conservative bounds rules.
-3. Acceleration planning
-   Decide which side builds the BVH and how queries are batched.
-4. Ray formulation
-   Convert the high-level query to ray primitives and hit semantics.
-5. Result materialization
-   Emit candidate pairs, exact intersections, or derived overlay structures.
+- substantial Embree-side exact-source and bounded reproduction work
+- native-oracle-backed correctness checks
+- first real-data OptiX validation on bounded RayJoin-family workloads
 
-This plan is a better first milestone than full code generation because it lets the project stabilize semantics before binding tightly to OptiX internals. In this repository, that plan now feeds a skeleton code generator so the lowering boundary is visible and testable.
-
-## Initial Python Surface Syntax
-
-The seed Python-hosted syntax in this repository is intentionally compact:
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def county_zip_join():
-    left = rt.input("left", rt.Segments)
-    right = rt.input("right", rt.Segments)
-    candidates = rt.traverse(left, right, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
-    return rt.emit(hits, fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"])
-```
-
-That is enough to validate the core abstraction boundary:
-
-- the user states intent,
-- the compiler builds an RT-specific IR and decides the backend plan,
-- the backend carries the OptiX/CUDA complexity.
-
-Current repository caveat:
-
-- the implemented narrow path currently uses `precision="float_approx"`,
-- exact or robust precision handling is deferred,
-- generated code should be understood as a functional backend prototype rather than a numerically complete RayJoin replacement.
+So RayJoin is no longer only a future target in this repo. It is the active
+application slice that drives the current v0.1 validation work.

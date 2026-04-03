@@ -1,7 +1,19 @@
 # RTDL DSL Reference
 
-RTDL is a Python-hosted DSL for non-graphics ray tracing kernels. The current
-language surface is intentionally small and explicit.
+RTDL is a Python-hosted DSL for non-graphics ray tracing kernels. This file is
+the **authoritative syntax and contract reference** for the current language
+surface.
+
+Use this file for:
+
+- exact accepted kernel shape
+- exact geometry/layout requirements
+- exact predicate/workload contracts
+
+For guided usage, read:
+
+- [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
+- [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
 
 ## Scope
 

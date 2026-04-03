@@ -1,42 +1,34 @@
 # RTDL Language Docs
 
-This directory is the language-facing documentation for the current RTDL surface.
+This directory is the canonical language-facing documentation for the **current
+public RTDL surface**.
 
-RTDL is currently a Python-hosted language with a constrained kernel subset. The
-host language is Python, but only a small RTDL authoring model is considered part
-of the language:
+The documents here have different roles and should not overlap heavily.
 
-- `@rt.kernel(...)`
-- `rt.input(...)`
-- `rt.traverse(...)`
-- `rt.refine(...)`
-- `rt.emit(...)`
-- the currently supported geometry types, layouts, predicates, and emit schemas
+## Read In This Order
 
-The current language coverage is intentionally limited to six workload families:
+1. [DSL Reference](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
+   - precise syntax and contract
+   - authoritative source for what the language accepts
 
-- `lsi`
-- `pip`
-- `overlay`
-- `ray_tri_hitcount`
-- `segment_polygon_hitcount`
-- `point_nearest_segment`
+2. [Programming Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
+   - how to author kernels correctly
+   - how to choose inputs, predicates, and execution paths
 
-Read these files in order:
+3. [Workload Cookbook](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+   - copyable workload patterns
+   - concrete examples by workload family
 
-1. `dsl_reference.md`
-2. `programming_guide.md`
-3. `workload_cookbook.md`
-4. `llm_authoring_guide.md`
+4. [LLM Authoring Guide](/Users/rl2025/rtdl_python_only/docs/rtdl/llm_authoring_guide.md)
+   - agent-facing guidance for generating RTDL code
 
-These documents are written as the authoritative language reference for the
-current compiler surface, not as future-looking design notes.
+## Current Runtime Surface
 
-The current RTDL toolchain now has two usable modes:
+The language docs describe a public surface that can currently be used through:
 
-- compile/lower/codegen for backend planning
-- `rt.run_cpu(...)` for local execution of the currently supported workloads
-- `rt.run_embree(...)` for native local execution on macOS with Embree installed
+- `rt.run_cpu(...)` as the native C/C++ oracle
+- `rt.run_embree(...)` as the controlled CPU backend
+- `rt.run_optix(...)` as the controlled GPU backend on supported NVIDIA hosts
 
-The language docs in this directory are intended to describe the current public
-surface, including the two Goal 10 workload extensions.
+The language surface is still intentionally narrow, but it is no longer only a
+planning or code-generation surface.

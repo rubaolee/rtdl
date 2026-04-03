@@ -1,43 +1,33 @@
 # RayJoin Datasets In RTDL
 
-RTDL Goal 2 adds a Python-side dataset pipeline for RayJoin-style CDB inputs before GPU runtime integration.
+This file is the short current-state dataset map for the RayJoin-oriented RTDL
+slice.
 
-## Current Scope
+## Current Dataset Classes
 
-The current dataset work is aimed at:
+RTDL currently uses three dataset classes:
 
-- parsing CDB chain files,
-- deriving RTDL-friendly segment views,
-- deriving point-probe views from chain starts,
-- deriving polygon-reference views from face ids,
-- and using tiny RayJoin-derived fixtures for repeatable local tests.
+1. tiny in-repo fixtures
+   - for unit tests and small examples
 
-## RayJoin-Origin Sources
+2. bounded exact-source subsets
+   - for controlled correctness and performance work
 
-The prototype is aligned with the public RayJoin sample data:
+3. larger exact-source staged datasets
+   - for accepted larger checks on the Linux hosts
 
-- `br_county_clean_25_odyssey_final.txt`
-- `br_soil_ascii_odyssey_final.txt`
-- `br_countyXbr_soil_answer.txt`
+## Representative Families Already Exercised
 
-These source URLs are tracked in `src/rtdsl/datasets.py`.
+- `County ⊲⊳ Zipcode`
+- `BlockGroup ⊲⊳ WaterBodies`
+- bounded `LKAU ⊲⊳ PKAU`
 
-## In-Repo Test Fixtures
+## Where To Read More
 
-For local, deterministic tests, RTDL keeps tiny subsets extracted from the RayJoin sample data under:
+- [Public Dataset Sources](/Users/rl2025/rtdl_python_only/docs/rayjoin_public_dataset_sources.md)
+- accepted reports in `docs/reports/`
 
-- `tests/fixtures/rayjoin/br_county_subset.cdb`
-- `tests/fixtures/rayjoin/br_soil_subset.cdb`
+## Boundary
 
-These are not intended to be representative benchmark datasets. They exist to validate:
-
-- CDB parsing,
-- chain-to-segment transformation,
-- chain-to-point transformation,
-- and face-based polygon-reference extraction.
-
-## Limitations
-
-This dataset pipeline does not yet reconstruct full topologically correct polygon faces from arbitrary CDB inputs. The current polygon-reference view is sufficient for compiler/dataflow work and CPU-side testing of workload plumbing, but not yet for a complete runtime-faithful polygon execution path.
-
-That fuller reconstruction work should happen together with later runtime integration and stronger geometry validation.
+This file is intentionally short. It is the dataset map, not the detailed
+provenance log or the historical reproduction matrix.
