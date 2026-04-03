@@ -5,6 +5,12 @@
 Goal 43 expanded the first OptiX GPU bring-up on `192.168.1.20` into a small
 multi-workload validation ladder using the C oracle as ground truth.
 
+This report records the initial Goal 43 pre-fix state. Later fixes for
+`overlay` parity and teardown stability are captured in:
+
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal43_claude_audit_2026-04-02.md`
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal46_optix_county_zipcode_parity_2026-04-02.md`
+
 The host is a valid first OptiX machine:
 
 - GPU: `NVIDIA GeForce GTX 1070`
@@ -36,7 +42,7 @@ and compares:
 
 ## Results on `192.168.1.20`
 
-### Parity-clean
+### Initial parity-clean
 
 - `lsi` authored minimal: parity `true`
 - `pip` authored minimal: parity `true`
@@ -46,7 +52,7 @@ and compares:
 - derived `lsi` tiled x8: parity `true`
 - derived `pip` tiled x8: parity `true`
 
-### Parity-failing
+### Initial parity-failing
 
 - `overlay` authored minimal: parity `false`
 
@@ -101,24 +107,16 @@ The next correct OptiX goal is:
 - then rerun the Goal 43 ladder before attempting broader OptiX performance or
   larger data
 
-## Deferred Claude audit plan
+## Later Claude audit result
 
-After the later OptiX fix round closed the two blocked issues above, a final
-Claude audit is still required as a follow-up review artifact.
+The deferred Claude audit for this Goal 43 corrected state later completed in:
 
-That deferred Claude audit should specifically check:
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal43_claude_audit_2026-04-02.md`
 
-- the final `overlay` parity fix in
-  `/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp`
-- the shutdown-stability fix that prevents the post-success teardown crash
-- the validated remote rerun showing all 8 Goal 43 targets parity-clean on
-  `192.168.1.20`
-- the current host/runtime boundary:
-  - OptiX runtime `9.0`
-  - SDK headers pinned to `v9.0.0`
-  - `RTDL_OPTIX_PTX_COMPILER=nvcc`
-  - `RTDL_NVCC=/usr/bin/nvcc`
+That later audit ended with:
 
-The deferred Claude audit should end with an explicit yes/no decision on
-whether the corrected Goal 43 state is acceptable for continued OptiX
-development before broader GPU testing begins.
+- Claude: `APPROVE`
+- accepted `overlay` parity fix
+- accepted shutdown-stability fix
+- confirmed the validated rerun remained `8/8` parity-clean on `192.168.1.20`
+- accepted continued OptiX development on the trusted `nvcc` PTX path

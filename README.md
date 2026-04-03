@@ -289,12 +289,18 @@ def county_zip_join():
     return rt.emit(hits, fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"])
 ```
 
-This is intentionally small. The immediate goal is to stabilize the Python frontend, the RT kernel IR, and the lowering boundary before introducing richer operators, scheduling controls, backend specialization, and code generation. The currently implemented backend should be read as a float-based prototype path, not as an exact geometric kernel.
+This is intentionally small. The immediate goal is to stabilize the Python
+frontend, the RT kernel IR, and the lowering boundary before introducing richer
+operators, scheduling controls, backend specialization, and code generation.
+The language surface is still intentionally narrow, but the controlled runtime
+surface is no longer just a float-only prototype: the current v0.1 slice has a
+native C/C++ oracle plus validated Embree and OptiX execution paths for the
+supported workloads.
 
 Current workload coverage in the prototype:
 
 - `lsi`: segment-vs-segment intersection
-- `pip`: point-in-polygon as a workload-specific backend skeleton
+- `pip`: point-in-polygon
 - `overlay`: compositional overlay seed generation over polygon inputs
 - `ray_tri_hitcount`: finite 2D rays against triangles with per-ray hit counts
 - `segment_polygon_hitcount`: per-segment polygon hit counts
@@ -343,8 +349,8 @@ The current Python pipeline is:
 RTDL now also has a local CPU execution path for the currently supported
 workloads:
 
-4. `rt.run_cpu(kernel_fn, **inputs)` executes the kernel through the Python
-   host stack using the native C/C++ oracle semantics and returns result rows on non-GPU machines.
+4. `rt.run_cpu(kernel_fn, **inputs)` executes the kernel through the native
+   C/C++ oracle path and returns result rows on non-GPU machines.
 
 RTDL now also has a native local Embree execution path for the currently
 supported workloads:

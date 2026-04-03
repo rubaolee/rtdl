@@ -41,6 +41,7 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <new>
@@ -50,6 +51,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
 
@@ -261,14 +263,26 @@ std::string compile_to_ptx(const char* cuda_src,
 
     if (const char* compiler = std::getenv("RTDL_OPTIX_PTX_COMPILER");
         compiler && std::string(compiler) == "nvcc") {
+        namespace fs = std::filesystem;
         char dir_template[] = "/tmp/rtdl-optix-XXXXXX";
         char* tmp_dir = mkdtemp(dir_template);
         if (!tmp_dir) {
             throw std::runtime_error("failed to create temporary directory for nvcc PTX compilation");
         }
-        std::string src_path = std::string(tmp_dir) + "/" + name;
-        std::string ptx_path = src_path + ".ptx";
-        std::string log_path = src_path + ".log";
+        fs::path tmp_root(tmp_dir);
+        struct TempDirCleanup {
+            fs::path path;
+            ~TempDirCleanup() {
+                std::error_code ignored;
+                fs::remove_all(path, ignored);
+            }
+        } cleanup{tmp_root};
+
+        fs::path src_path = tmp_root / name;
+        fs::path ptx_path = src_path;
+        ptx_path += ".ptx";
+        fs::path log_path = src_path;
+        log_path += ".log";
         {
             std::ofstream src_file(src_path, std::ios::binary);
             if (!src_file) {
@@ -277,16 +291,50 @@ std::string compile_to_ptx(const char* cuda_src,
             src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
         }
         std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
-        std::ostringstream cmd;
-        cmd << "\"" << nvcc << "\" -ptx --std=c++14 -O3 "
-            << "\"" << optix_inc << "\" "
-            << "\"" << cuda_inc << "\" ";
+        std::vector<std::string> argv_storage = {
+            nvcc,
+            "-ptx",
+            "--std=c++14",
+            "-O3",
+            optix_inc,
+            cuda_inc,
+        };
         if (std::strlen(RTDL_CUDA_SYSTEM_INCLUDE_DIR) > 0) {
-            cmd << "\"" << cuda_sys_inc << "\" ";
+            argv_storage.push_back(cuda_sys_inc);
         }
-        cmd << "\"" << src_path << "\" -o \"" << ptx_path << "\" >\"" << log_path << "\" 2>&1";
-        int rc = std::system(cmd.str().c_str());
-        if (rc != 0) {
+        argv_storage.push_back(src_path.string());
+        argv_storage.push_back("-o");
+        argv_storage.push_back(ptx_path.string());
+
+        std::vector<char*> argv;
+        argv.reserve(argv_storage.size() + 1);
+        for (std::string& arg : argv_storage) {
+            argv.push_back(arg.data());
+        }
+        argv.push_back(nullptr);
+
+        pid_t pid = fork();
+        if (pid < 0) {
+            throw std::runtime_error("failed to fork nvcc PTX compilation process");
+        }
+        if (pid == 0) {
+            FILE* log_file = std::fopen(log_path.c_str(), "wb");
+            if (!log_file) _exit(127);
+            int log_fd = fileno(log_file);
+            if (dup2(log_fd, STDOUT_FILENO) < 0 || dup2(log_fd, STDERR_FILENO) < 0) {
+                std::fclose(log_file);
+                _exit(127);
+            }
+            std::fclose(log_file);
+            execvp(nvcc.c_str(), argv.data());
+            _exit(127);
+        }
+
+        int status = 0;
+        if (waitpid(pid, &status, 0) < 0) {
+            throw std::runtime_error("failed to wait for nvcc PTX compilation process");
+        }
+        if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
             std::ifstream log_file(log_path, std::ios::binary);
             std::string log((std::istreambuf_iterator<char>(log_file)),
                             std::istreambuf_iterator<char>());
