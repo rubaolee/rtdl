@@ -51,6 +51,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--host-label", default="unknown")
     parser.add_argument("--db-name", default="rtdl_postgis")
     parser.add_argument("--db-user", default=None)
+    parser.add_argument(
+        "--cases",
+        default="county_zipcode,blockgroup_waterbodies",
+        help="Comma-separated subset of cases: county_zipcode,blockgroup_waterbodies",
+    )
+    parser.add_argument(
+        "--backends",
+        default="cpu,embree,optix",
+        help="Comma-separated subset of RTDL backends to compare against PostGIS: cpu,embree,optix",
+    )
     return parser.parse_args()
 
 
@@ -234,30 +244,37 @@ COPY (
 
 def render_markdown(summary: dict[str, object]) -> str:
     def section(label: str, payload: dict[str, object]) -> list[str]:
+        lsi_parity = ", ".join(f"{name}={payload['lsi'][name]['parity_vs_postgis']}" for name in payload["compared_backends"])
+        pip_parity = ", ".join(f"{name}={payload['pip'][name]['parity_vs_postgis']}" for name in payload["compared_backends"])
         lines = [
             f"## {label}",
             "",
             f"- load sec: `{payload['load_sec']:.9f}`",
-            f"- lsi parity vs postgis: `{payload['lsi']['cpu']['parity_vs_postgis']}` / `{payload['lsi']['embree']['parity_vs_postgis']}` / `{payload['lsi']['optix']['parity_vs_postgis']}`",
-            f"- pip parity vs postgis: `{payload['pip']['cpu']['parity_vs_postgis']}` / `{payload['pip']['embree']['parity_vs_postgis']}` / `{payload['pip']['optix']['parity_vs_postgis']}`",
+            f"- compared backends: `{', '.join(payload['compared_backends'])}`",
+            f"- lsi parity vs postgis: `{lsi_parity}`",
+            f"- pip parity vs postgis: `{pip_parity}`",
             "",
             "### LSI",
             "",
             f"- PostGIS: `{payload['lsi']['postgis_sec']:.9f} s`",
-            f"- C oracle: `{payload['lsi']['cpu']['sec']:.9f} s`",
-            f"- Embree: `{payload['lsi']['embree']['sec']:.9f} s`",
-            f"- OptiX: `{payload['lsi']['optix']['sec']:.9f} s`",
             f"- row count: `{payload['lsi']['postgis']['row_count']}`",
             "",
             "### PIP",
             "",
             f"- PostGIS: `{payload['pip']['postgis_sec']:.9f} s`",
-            f"- C oracle: `{payload['pip']['cpu']['sec']:.9f} s`",
-            f"- Embree: `{payload['pip']['embree']['sec']:.9f} s`",
-            f"- OptiX: `{payload['pip']['optix']['sec']:.9f} s`",
             f"- row count: `{payload['pip']['postgis']['row_count']}`",
             "",
         ]
+        for backend_name in payload["compared_backends"]:
+            lines.extend(
+                [
+                    f"#### {backend_name.upper()}",
+                    "",
+                    f"- lsi: `{payload['lsi'][backend_name]['sec']:.9f} s` parity `{payload['lsi'][backend_name]['parity_vs_postgis']}`",
+                    f"- pip: `{payload['pip'][backend_name]['sec']:.9f} s` parity `{payload['pip'][backend_name]['parity_vs_postgis']}`",
+                    "",
+                ]
+            )
         return lines
 
     lines = [
@@ -299,6 +316,7 @@ def run_case(
     conn,
     *,
     prefix: str,
+    compared_backends: tuple[str, ...],
     left_segments,
     right_segments,
     points,
@@ -316,43 +334,30 @@ def run_case(
     lsi_postgis, lsi_postgis_sec = run_postgis_lsi(conn, prefix)
     pip_postgis, pip_postgis_sec = run_postgis_pip(conn, prefix)
 
-    summary = {
+    lsi_summary = {
         "load_sec": load_stats["load_sec"],
+        "compared_backends": list(compared_backends),
         "lsi": {
             "postgis": lsi_postgis,
             "postgis_sec": lsi_postgis_sec,
-            "cpu": run_backend_payload(
-                rt.run_cpu,
-                county_zip_join_reference,
-                kind="lsi",
-                postgis_digest=lsi_postgis["sha256"],
-                postgis_count=lsi_postgis["row_count"],
-                left=left_segments,
-                right=right_segments,
-            ),
-            "embree": run_backend_payload(
-                rt.run_embree,
-                county_zip_join_reference,
-                kind="lsi",
-                postgis_digest=lsi_postgis["sha256"],
-                postgis_count=lsi_postgis["row_count"],
-                left=left_segments,
-                right=right_segments,
-            ),
-            "optix": run_backend_payload(
-                rt.run_optix,
-                county_zip_join_reference,
-                kind="lsi",
-                postgis_digest=lsi_postgis["sha256"],
-                postgis_count=lsi_postgis["row_count"],
-                left=left_segments,
-                right=right_segments,
-            ),
         },
         "pip": {
             "postgis": pip_postgis,
             "postgis_sec": pip_postgis_sec,
-            "cpu": run_backend_payload(
+        },
+    }
+
+    if "cpu" in compared_backends:
+        lsi_summary["lsi"]["cpu"] = run_backend_payload(
+                rt.run_cpu,
+                county_zip_join_reference,
+                kind="lsi",
+                postgis_digest=lsi_postgis["sha256"],
+                postgis_count=lsi_postgis["row_count"],
+                left=left_segments,
+                right=right_segments,
+            )
+        lsi_summary["pip"]["cpu"] = run_backend_payload(
                 rt.run_cpu,
                 point_in_counties_reference,
                 kind="pip",
@@ -360,8 +365,18 @@ def run_case(
                 postgis_count=pip_postgis["row_count"],
                 points=points,
                 polygons=polygons,
-            ),
-            "embree": run_backend_payload(
+            )
+    if "embree" in compared_backends:
+        lsi_summary["lsi"]["embree"] = run_backend_payload(
+                rt.run_embree,
+                county_zip_join_reference,
+                kind="lsi",
+                postgis_digest=lsi_postgis["sha256"],
+                postgis_count=lsi_postgis["row_count"],
+                left=left_segments,
+                right=right_segments,
+            )
+        lsi_summary["pip"]["embree"] = run_backend_payload(
                 rt.run_embree,
                 point_in_counties_reference,
                 kind="pip",
@@ -369,8 +384,18 @@ def run_case(
                 postgis_count=pip_postgis["row_count"],
                 points=points,
                 polygons=polygons,
-            ),
-            "optix": run_backend_payload(
+            )
+    if "optix" in compared_backends:
+        lsi_summary["lsi"]["optix"] = run_backend_payload(
+                rt.run_optix,
+                county_zip_join_reference,
+                kind="lsi",
+                postgis_digest=lsi_postgis["sha256"],
+                postgis_count=lsi_postgis["row_count"],
+                left=left_segments,
+                right=right_segments,
+            )
+        lsi_summary["pip"]["optix"] = run_backend_payload(
                 rt.run_optix,
                 point_in_counties_reference,
                 kind="pip",
@@ -378,10 +403,8 @@ def run_case(
                 postgis_count=pip_postgis["row_count"],
                 points=points,
                 polygons=polygons,
-            ),
-        },
-    }
-    return summary, {
+            )
+    return lsi_summary, {
         "left_segments": len(left_segments),
         "right_segments": len(right_segments),
         "points": len(points),
@@ -391,6 +414,8 @@ def run_case(
 
 def main() -> int:
     args = parse_args()
+    selected_cases = tuple(part.strip() for part in args.cases.split(",") if part.strip())
+    compared_backends = tuple(part.strip() for part in args.backends.split(",") if part.strip())
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -419,41 +444,53 @@ def main() -> int:
         with conn.cursor() as cur:
             recreate_schema(cur)
 
-        county_case, county_sizes = run_case(
-            conn,
-            prefix="county_zipcode",
-            left_segments=county_left,
-            right_segments=county_right,
-            points=county_points,
-            polygons=county_polygons,
-        )
-        block_case, block_sizes = run_case(
-            conn,
-            prefix="blockgroup_waterbodies",
-            left_segments=block_left,
-            right_segments=block_right,
-            points=block_points,
-            polygons=block_polygons,
-        )
+        if "county_zipcode" in selected_cases:
+            county_case, county_sizes = run_case(
+                conn,
+                prefix="county_zipcode",
+                compared_backends=compared_backends,
+                left_segments=county_left,
+                right_segments=county_right,
+                points=county_points,
+                polygons=county_polygons,
+            )
+        else:
+            county_case, county_sizes = None, None
+        if "blockgroup_waterbodies" in selected_cases:
+            block_case, block_sizes = run_case(
+                conn,
+                prefix="blockgroup_waterbodies",
+                compared_backends=compared_backends,
+                left_segments=block_left,
+                right_segments=block_right,
+                points=block_points,
+                polygons=block_polygons,
+            )
+        else:
+            block_case, block_sizes = None, None
     finally:
         conn.close()
 
     summary = {
         "host_label": args.host_label,
         "db_name": args.db_name,
-        "county_zipcode": {
+        "compared_backends": list(compared_backends),
+        "selected_cases": list(selected_cases),
+    }
+    if county_case is not None:
+        summary["county_zipcode"] = {
             "county": county_summary,
             "zipcode": zipcode_summary,
             "derived_sizes": county_sizes,
             **county_case,
-        },
-        "blockgroup_waterbodies": {
+        }
+    if block_case is not None:
+        summary["blockgroup_waterbodies"] = {
             "blockgroup": block_summary,
             "waterbodies": water_summary,
             "derived_sizes": block_sizes,
             **block_case,
-        },
-    }
+        }
 
     (output_dir / "goal50_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     (output_dir / "goal50_summary.md").write_text(render_markdown(summary), encoding="utf-8")
