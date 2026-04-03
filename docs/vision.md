@@ -11,6 +11,7 @@ RTDL is not intended to be:
 - only a RayJoin reimplementation
 - only an Embree wrapper
 - only an OptiX experiment
+- only a Vulkan exercise
 
 It is intended to become a language/runtime system for writing a broader class
 of RT-style applications once and mapping them onto different backend families.
@@ -37,6 +38,7 @@ The long-term backend picture includes:
 
 - CPU-based ray-tracing libraries such as Intel Embree
 - NVIDIA OptiX/CUDA-based GPU backends
+- Vulkan KHR ray-tracing-based GPU backends
 - AMD HIP RT-based backends
 - Intel ray-tracing hardware/software platforms
 - Apple ray-tracing platforms
@@ -49,37 +51,14 @@ framing should stay multi-backend.
 
 The current **v0.1** slice is intentionally narrower than the whole vision.
 
-v0.1 means:
+Validated backends:
 
-- application focus: RayJoin-style workloads
-- language focus: Python-hosted RTDL kernels
-- correctness focus: native C/C++ oracle as project ground truth
-- backend focus: controlled Embree and OptiX execution paths
+- **Intel Embree**: high-precision CPU baseline
+- **NVIDIA OptiX**: high-performance CUDA-based GPU path
+- **Vulkan KHR**: cross-vendor GPU path (Level 1 implementation)
 
-Current reality:
+Target workloads:
 
-- Embree is the stronger, more mature backend today
-- OptiX is now real and validated, but still earlier in maturity
-- the validated surface is bounded and workload-specific, not a full general RT
-  language yet
-
-## Design Principles
-
-- Keep the source language smaller than the implementation ambition.
-- Preserve performance visibility rather than hiding all cost drivers.
-- Keep lowering inspectable.
-- Make correctness boundaries explicit.
-- Treat ray tracing as an execution strategy, not the source language.
-- Prefer a stable oracle-backed runtime surface before broad backend expansion.
-
-## Near-Term Goal
-
-The next practical phase is not a redesign of RTDL’s vision.
-
-It is to keep strengthening the same v0.1 slice by:
-
-- tightening correctness and performance on Embree and OptiX
-- expanding real-data validation
-- improving documentation and trustworthiness
-- moving closer to a bounded, honest RayJoin-style reproduction package across
-  both current backends
+- RayJoin workload family (LSI, PIP, Overlay, etc.)
+- exact-source real-data validation
+- performance characterization vs research baseline

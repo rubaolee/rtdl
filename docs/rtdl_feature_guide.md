@@ -21,6 +21,7 @@ Today it includes:
 - a native C/C++ oracle
 - a controlled Embree backend
 - a controlled OptiX backend
+- a cross-vendor Vulkan KHR backend
 
 Current supported workload families:
 
@@ -39,6 +40,7 @@ The current repo can:
 - compile and lower them
 - run them through the native oracle
 - run them on Embree
+- run them on Vulkan KHR (via `rt.run_vulkan`)
 - run bounded validated workloads on OptiX
 - support a RayJoin-oriented experiment/reporting workflow
 
@@ -48,42 +50,5 @@ RTDL does not yet claim:
 
 - exact computational geometry
 - a finished generalized multi-backend optimizer
-- full paper-scale reproduction for every RayJoin family
-- broad CI-backed cross-platform enforcement
-
-## Runtime Surface
-
-Current execution paths:
-
-- `rt.run_cpu(...)`: native oracle
-- `rt.run_embree(...)`: controlled CPU backend
-- `rt.run_optix(...)`: controlled GPU backend
-
-Current practical interpretation:
-
-- oracle for ground truth
-- Embree for mature CPU execution
-- OptiX for validated but still earlier-stage GPU execution
-
-## Recommended Reading
-
-If you need:
-
-- exact language contract:
-  [DSL Reference](rtdl/dsl_reference.md)
-- authoring guidance:
-  [Programming Guide](rtdl/programming_guide.md)
-- copyable examples:
-  [Workload Cookbook](rtdl/workload_cookbook.md)
-- whole-project framing:
-  [Vision](vision.md)
-
-## Bottom Line
-
-RTDL is already a real multi-backend research system, but still a bounded one.
-
-The right way to read the current repo is:
-
-- live, executable, and validated on its accepted workloads
-- still narrow and correctness-conscious
-- still expanding toward a fuller bounded RayJoin-style reproduction package
+- paper-scale reproduction on GPU backends
+- high-precision support on Vulkan (currently float32)
