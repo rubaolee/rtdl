@@ -55,6 +55,12 @@ from .optix_runtime import prepare_optix
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import run_optix
+from .vulkan_runtime import vulkan_version
+from .vulkan_runtime import VulkanRowView
+from .vulkan_runtime import prepare_vulkan
+from .vulkan_runtime import PreparedVulkanExecution
+from .vulkan_runtime import PreparedVulkanKernel
+from .vulkan_runtime import run_vulkan
 from .embree_runtime import EmbreeRowView
 from .embree_runtime import pack_points
 from .embree_runtime import pack_polygons
@@ -257,6 +263,12 @@ __all__ = [
     "PreparedOptixExecution",
     "PreparedOptixKernel",
     "run_optix",
+    "VulkanRowView",
+    "vulkan_version",
+    "prepare_vulkan",
+    "PreparedVulkanExecution",
+    "PreparedVulkanKernel",
+    "run_vulkan",
     "emit",
     "f32",
     "field",

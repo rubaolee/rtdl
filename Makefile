@@ -2,9 +2,11 @@ BUILD_DIR := build
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-OPTIX_LIB_NAME := librtdl_optix.dylib
+OPTIX_LIB_NAME   := librtdl_optix.dylib
+VULKAN_LIB_NAME  := librtdl_vulkan.dylib
 else
-OPTIX_LIB_NAME := librtdl_optix.so
+OPTIX_LIB_NAME   := librtdl_optix.so
+VULKAN_LIB_NAME  := librtdl_vulkan.so
 endif
 
 OPTIX_PREFIX ?= /opt/optix
@@ -47,7 +49,46 @@ OPTIX_CXXFLAGS := \
 
 OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc
 
-.PHONY: build build-optix run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+# ── Vulkan backend build configuration ────────────────────────────────────────
+# Requires: Vulkan SDK (vulkan/vulkan.h), shaderc (shaderc/shaderc.h)
+# Set VULKAN_SDK to your Vulkan SDK root, or ensure headers/libs are on system paths.
+#
+# Example (Linux with LunarG SDK):
+#   export VULKAN_SDK=/path/to/VulkanSDK/1.3.xxx/x86_64
+#   make build-vulkan
+#
+VULKAN_SDK      ?= /usr
+VULKAN_INCLUDE  := $(VULKAN_SDK)/include
+VULKAN_LIB_DIR  := $(VULKAN_SDK)/lib
+
+ifneq ("$(wildcard $(VULKAN_SDK)/lib/libshaderc.so)","")
+SHADERC_LINK := -lshaderc
+else ifneq ("$(wildcard $(VULKAN_SDK)/lib64/libshaderc.so)","")
+SHADERC_LINK := -lshaderc
+VULKAN_LIB_DIR := $(VULKAN_SDK)/lib64
+else ifneq ("$(wildcard $(VULKAN_SDK)/lib/libshaderc_combined.a)","")
+SHADERC_LINK := -lshaderc_combined
+else
+SHADERC_LINK := -lshaderc
+endif
+
+CXX_VULKAN ?= g++
+
+VULKAN_CXXFLAGS := \
+	-std=c++17 -O3 -shared -fPIC \
+	-I$(VULKAN_INCLUDE) \
+	-DRTDL_VULKAN_INCLUDE_DIR=\"$(VULKAN_INCLUDE)\"
+
+VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK)
+
+.PHONY: build build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+
+build-vulkan:
+	mkdir -p $(BUILD_DIR)
+	$(CXX_VULKAN) $(VULKAN_CXXFLAGS) \
+		src/native/rtdl_vulkan.cpp \
+		$(VULKAN_LDFLAGS) \
+		-o $(BUILD_DIR)/$(VULKAN_LIB_NAME)
 
 build-optix:
 	mkdir -p $(BUILD_DIR)
