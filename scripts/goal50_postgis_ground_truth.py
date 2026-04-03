@@ -110,6 +110,10 @@ def pip_triplets(rows) -> list[tuple[int, int, int]]:
     return [(int(row["point_id"]), int(row["polygon_id"]), int(row["contains"])) for row in rows]
 
 
+def pip_positive_triplets(rows) -> list[tuple[int, int, int]]:
+    return [(int(row["point_id"]), int(row["polygon_id"]), 1) for row in rows if int(row["contains"]) == 1]
+
+
 def dataset_summary(dataset: rt.CdbDataset) -> dict[str, int]:
     return {
         "feature_count": len(dataset.face_ids()),
@@ -252,7 +256,8 @@ COPY (
     SELECT l.id, r.id
     FROM goal50.{prefix}_left_segments AS l
     JOIN goal50.{prefix}_right_segments AS r
-      ON ABS(((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) >= 1.0e-7
+      ON l.geom && r.geom
+     AND ABS(((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) >= 1.0e-7
      AND (((r.x0 - l.x0) * (r.y1 - r.y0)) - ((r.y0 - l.y0) * (r.x1 - r.x0)))
            / (((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) BETWEEN 0.0 AND 1.0
      AND (((r.x0 - l.x0) * (l.y1 - l.y0)) - ((r.y0 - l.y0) * (l.x1 - l.x0)))
@@ -270,9 +275,11 @@ COPY (
 def run_postgis_pip(conn, prefix: str) -> tuple[dict[str, object], float]:
     sql = f"""
 COPY (
-    SELECT p.id, g.id, CASE WHEN ST_Covers(g.geom, p.geom) THEN 1 ELSE 0 END
+    SELECT p.id, g.id, 1
     FROM goal50.{prefix}_points AS p
-    CROSS JOIN goal50.{prefix}_polygons AS g
+    JOIN goal50.{prefix}_polygons AS g
+      ON g.geom && p.geom
+     AND ST_Covers(g.geom, p.geom)
     ORDER BY 1, 2, 3
 ) TO STDOUT WITH (FORMAT csv, DELIMITER E'\\t')
 """
@@ -292,6 +299,7 @@ def render_markdown(summary: dict[str, object]) -> str:
             "",
             f"- load sec: `{payload['load_sec']:.9f}`",
             f"- compared backends: `{', '.join(payload['compared_backends'])}`",
+            f"- PostGIS query mode: `{payload['postgis_mode']}`",
             f"- lsi parity vs postgis: `{lsi_parity}`",
             f"- pip parity vs postgis: `{pip_parity}`",
             "",
@@ -326,7 +334,8 @@ def render_markdown(summary: dict[str, object]) -> str:
         "",
         "- compares PostGIS against RTDL C oracle, Embree, and OptiX on the same bounded real-data packages already accepted in the Linux validation track",
         "- PostGIS is measured as a loaded-and-indexed query engine; load time is reported separately from query time",
-        "- `lsi` uses segment tables and `ST_Intersects`; `pip` uses probe points, polygon rings, and boundary-inclusive `ST_Covers`",
+        "- `lsi` uses index-assisted segment candidate pruning plus RTDL-matching exact segment math",
+        "- `pip` uses an index-assisted positive-hit join via `&&` + `ST_Covers`; RTDL rows are reduced to `contains=1` for the database comparison",
         "",
     ]
     if "county_zipcode" in summary:
@@ -336,8 +345,22 @@ def render_markdown(summary: dict[str, object]) -> str:
     return "\n".join(lines)
 
 
-def backend_payload(rows, sec: float, postgis_digest: str, postgis_count: int, kind: str, *, presorted: bool = False) -> dict[str, object]:
-    tuples = lsi_pairs(rows) if kind == "lsi" else pip_triplets(rows)
+def backend_payload(
+    rows,
+    sec: float,
+    postgis_digest: str,
+    postgis_count: int,
+    kind: str,
+    *,
+    presorted: bool = False,
+    positive_only: bool = False,
+) -> dict[str, object]:
+    if kind == "lsi":
+        tuples = lsi_pairs(rows)
+    elif positive_only:
+        tuples = pip_positive_triplets(rows)
+    else:
+        tuples = pip_triplets(rows)
     hashed = hash_tuples(tuples, presorted=presorted)
     return {
         "sec": sec,
@@ -347,9 +370,27 @@ def backend_payload(rows, sec: float, postgis_digest: str, postgis_count: int, k
     }
 
 
-def run_backend_payload(fn, kernel, *, kind: str, postgis_digest: str, postgis_count: int, presorted: bool = False, **kwargs) -> dict[str, object]:
+def run_backend_payload(
+    fn,
+    kernel,
+    *,
+    kind: str,
+    postgis_digest: str,
+    postgis_count: int,
+    presorted: bool = False,
+    positive_only: bool = False,
+    **kwargs,
+) -> dict[str, object]:
     rows, sec = time_call(fn, kernel, **kwargs)
-    payload = backend_payload(rows, sec, postgis_digest, postgis_count, kind, presorted=presorted)
+    payload = backend_payload(
+        rows,
+        sec,
+        postgis_digest,
+        postgis_count,
+        kind,
+        presorted=presorted,
+        positive_only=positive_only,
+    )
     del rows
     gc.collect()
     return payload
@@ -380,6 +421,7 @@ def run_case(
     lsi_summary = {
         "load_sec": load_stats["load_sec"],
         "compared_backends": list(compared_backends),
+        "postgis_mode": "index-assisted positive-hit joins",
         "lsi": {
             "postgis": lsi_postgis,
             "postgis_sec": lsi_postgis_sec,
@@ -408,6 +450,7 @@ def run_case(
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
                 presorted=True,
+                positive_only=True,
                 points=points,
                 polygons=polygons,
             )
@@ -427,6 +470,7 @@ def run_case(
                 kind="pip",
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
+                positive_only=True,
                 points=points,
                 polygons=polygons,
             )
@@ -446,6 +490,7 @@ def run_case(
                 kind="pip",
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
+                positive_only=True,
                 points=points,
                 polygons=polygons,
             )
