@@ -132,12 +132,71 @@ def recreate_schema(cur) -> None:
     cur.execute("CREATE SCHEMA goal50")
 
 
-def copy_geom_rows(cur, table: str, geom_type: str, rows: list[tuple[int, str]]) -> None:
+def copy_segment_rows(cur, table: str, rows: tuple[dict[str, float | int], ...]) -> None:
+    cur.execute(f"CREATE TABLE goal50.{table}_raw (id BIGINT, x0 DOUBLE PRECISION, y0 DOUBLE PRECISION, x1 DOUBLE PRECISION, y1 DOUBLE PRECISION)")
+    payload = io.StringIO()
+    writer = csv.writer(payload, delimiter="\t", lineterminator="\n")
+    for row in rows:
+        writer.writerow([int(row["id"]), row["x0"], row["y0"], row["x1"], row["y1"]])
+    payload.seek(0)
+    cur.copy_expert(
+        f"COPY goal50.{table}_raw (id, x0, y0, x1, y1) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",
+        payload,
+    )
+    cur.execute(
+        f"""
+        CREATE TABLE goal50.{table} AS
+        SELECT
+            id,
+            x0,
+            y0,
+            x1,
+            y1,
+            ST_GeomFromText(
+                'LINESTRING(' || x0 || ' ' || y0 || ',' || x1 || ' ' || y1 || ')',
+                %s
+            )::geometry(LINESTRING, {SRID}) AS geom
+        FROM goal50.{table}_raw
+        """,
+        (SRID,),
+    )
+    cur.execute(f"CREATE INDEX {table}_geom_idx ON goal50.{table} USING GIST (geom)")
+    cur.execute(f"ANALYZE goal50.{table}")
+
+
+def copy_point_rows(cur, table: str, rows: tuple[dict[str, float | int], ...]) -> None:
+    cur.execute(f"CREATE TABLE goal50.{table}_raw (id BIGINT, x DOUBLE PRECISION, y DOUBLE PRECISION)")
+    payload = io.StringIO()
+    writer = csv.writer(payload, delimiter="\t", lineterminator="\n")
+    for row in rows:
+        writer.writerow([int(row["id"]), row["x"], row["y"]])
+    payload.seek(0)
+    cur.copy_expert(
+        f"COPY goal50.{table}_raw (id, x, y) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",
+        payload,
+    )
+    cur.execute(
+        f"""
+        CREATE TABLE goal50.{table} AS
+        SELECT
+            id,
+            x,
+            y,
+            ST_GeomFromText('POINT(' || x || ' ' || y || ')', %s)::geometry(POINT, {SRID}) AS geom
+        FROM goal50.{table}_raw
+        """,
+        (SRID,),
+    )
+    cur.execute(f"CREATE INDEX {table}_geom_idx ON goal50.{table} USING GIST (geom)")
+    cur.execute(f"ANALYZE goal50.{table}")
+
+
+def copy_polygon_rows(cur, table: str, rows: tuple[dict[str, object], ...]) -> None:
     cur.execute(f"CREATE TABLE goal50.{table}_raw (id BIGINT, wkt TEXT)")
     payload = io.StringIO()
     writer = csv.writer(payload, delimiter="\t", lineterminator="\n")
-    for row_id, wkt in rows:
-        writer.writerow([row_id, wkt])
+    for row in rows:
+        writer.writerow([int(row["id"]), polygon_wkt(tuple(row["vertices"]))])
     payload.seek(0)
     cur.copy_expert(
         f"COPY goal50.{table}_raw (id, wkt) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",
@@ -146,7 +205,7 @@ def copy_geom_rows(cur, table: str, geom_type: str, rows: list[tuple[int, str]])
     cur.execute(
         f"""
         CREATE TABLE goal50.{table} AS
-        SELECT id, ST_GeomFromText(wkt, %s)::geometry({geom_type}, {SRID}) AS geom
+        SELECT id, ST_GeomFromText(wkt, %s)::geometry(POLYGON, {SRID}) AS geom
         FROM goal50.{table}_raw
         """,
         (SRID,),
@@ -168,33 +227,13 @@ def load_case_geometry(
     with conn.cursor() as cur:
         start = time.perf_counter()
         if left_segments is not None:
-            copy_geom_rows(
-                cur,
-                f"{prefix}_left_segments",
-                "LINESTRING",
-                [(int(row["id"]), linestring_wkt(row["x0"], row["y0"], row["x1"], row["y1"])) for row in left_segments],
-            )
+            copy_segment_rows(cur, f"{prefix}_left_segments", left_segments)
         if right_segments is not None:
-            copy_geom_rows(
-                cur,
-                f"{prefix}_right_segments",
-                "LINESTRING",
-                [(int(row["id"]), linestring_wkt(row["x0"], row["y0"], row["x1"], row["y1"])) for row in right_segments],
-            )
+            copy_segment_rows(cur, f"{prefix}_right_segments", right_segments)
         if points is not None:
-            copy_geom_rows(
-                cur,
-                f"{prefix}_points",
-                "POINT",
-                [(int(row["id"]), point_wkt(row["x"], row["y"])) for row in points],
-            )
+            copy_point_rows(cur, f"{prefix}_points", points)
         if polygons is not None:
-            copy_geom_rows(
-                cur,
-                f"{prefix}_polygons",
-                "POLYGON",
-                [(int(row["id"]), polygon_wkt(tuple(row["vertices"]))) for row in polygons],
-            )
+            copy_polygon_rows(cur, f"{prefix}_polygons", polygons)
         end = time.perf_counter()
         timings["load_sec"] = end - start
     return timings
@@ -212,8 +251,11 @@ COPY (
     SELECT l.id, r.id
     FROM goal50.{prefix}_left_segments AS l
     JOIN goal50.{prefix}_right_segments AS r
-      ON l.geom && r.geom
-     AND ST_Intersects(l.geom, r.geom)
+      ON ABS(((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) >= 1.0e-7
+     AND (((r.x0 - l.x0) * (r.y1 - r.y0)) - ((r.y0 - l.y0) * (r.x1 - r.x0)))
+           / (((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) BETWEEN 0.0 AND 1.0
+     AND (((r.x0 - l.x0) * (l.y1 - l.y0)) - ((r.y0 - l.y0) * (l.x1 - l.x0)))
+           / (((l.x1 - l.x0) * (r.y1 - r.y0)) - ((l.y1 - l.y0) * (r.x1 - r.x0))) BETWEEN 0.0 AND 1.0
     ORDER BY 1, 2
 ) TO STDOUT WITH (FORMAT csv, DELIMITER E'\\t')
 """
@@ -227,11 +269,9 @@ COPY (
 def run_postgis_pip(conn, prefix: str) -> tuple[dict[str, object], float]:
     sql = f"""
 COPY (
-    SELECT p.id, g.id, 1
+    SELECT p.id, g.id, CASE WHEN ST_Covers(g.geom, p.geom) THEN 1 ELSE 0 END
     FROM goal50.{prefix}_points AS p
-    JOIN goal50.{prefix}_polygons AS g
-      ON g.geom && p.geom
-     AND ST_Covers(g.geom, p.geom)
+    CROSS JOIN goal50.{prefix}_polygons AS g
     ORDER BY 1, 2, 3
 ) TO STDOUT WITH (FORMAT csv, DELIMITER E'\\t')
 """
@@ -288,8 +328,10 @@ def render_markdown(summary: dict[str, object]) -> str:
         "- `lsi` uses segment tables and `ST_Intersects`; `pip` uses probe points, polygon rings, and boundary-inclusive `ST_Covers`",
         "",
     ]
-    lines.extend(section("County/Zipcode `top4_tx_ca_ny_pa`", summary["county_zipcode"]))
-    lines.extend(section("BlockGroup/WaterBodies `county2300_s10`", summary["blockgroup_waterbodies"]))
+    if "county_zipcode" in summary:
+        lines.extend(section("County/Zipcode `top4_tx_ca_ny_pa`", summary["county_zipcode"]))
+    if "blockgroup_waterbodies" in summary:
+        lines.extend(section("BlockGroup/WaterBodies `county2300_s10`", summary["blockgroup_waterbodies"]))
     return "\n".join(lines)
 
 
