@@ -63,7 +63,7 @@ Two levels of verification were completed:
 - minimal smoke program:
   - create/release an Embree device
 - stronger repository validation program:
-  - [embree_remote_validation.cpp](/Users/rl2025/rtdl_python_only/apps/embree_remote_validation.cpp)
+  - [embree_remote_validation.cpp](../apps/embree_remote_validation.cpp)
   - builds a one-triangle scene
   - casts a ray
   - checks:
@@ -118,14 +118,14 @@ The native validation program and the updated host report were reviewed by Claud
 
 Saved review note:
 
-- [2026-04-02-claude-review-host-192-168-1-20-embree.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-02-claude-review-host-192-168-1-20-embree.md)
+- [2026-04-02-claude-review-host-192-168-1-20-embree.md](../history/ad_hoc_reviews/2026-04-02-claude-review-host-192-168-1-20-embree.md)
 
 ## Deliverables
 
 - environment report:
-  - [host_192_168_1_20_embree_enablement_2026-04-02.md](/Users/rl2025/rtdl_python_only/docs/reports/host_192_168_1_20_embree_enablement_2026-04-02.md)
+  - [host_192_168_1_20_embree_enablement_2026-04-02.md](reports/host_192_168_1_20_embree_enablement_2026-04-02.md)
 - native validation program:
-  - [embree_remote_validation.cpp](/Users/rl2025/rtdl_python_only/apps/embree_remote_validation.cpp)
+  - [embree_remote_validation.cpp](../apps/embree_remote_validation.cpp)
 
 ## Final Result
 

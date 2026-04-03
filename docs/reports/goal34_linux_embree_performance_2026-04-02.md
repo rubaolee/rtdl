@@ -59,11 +59,11 @@ Planned ladder:
 
 The round added a dedicated reproducible harness:
 
-- [goal34_linux_embree_performance.py](/Users/rl2025/rtdl_python_only/scripts/goal34_linux_embree_performance.py)
+- [goal34_linux_embree_performance.py](../../scripts/goal34_linux_embree_performance.py)
 
 and test coverage:
 
-- [goal34_performance_test.py](/Users/rl2025/rtdl_python_only/tests/goal34_performance_test.py)
+- [goal34_performance_test.py](../../tests/goal34_performance_test.py)
 
 ## Results
 

@@ -33,12 +33,12 @@ Verified count:
 
 ## New Code
 
-- [datasets.py](/Users/rl2025/rtdl_python_only/src/rtdsl/datasets.py)
+- [datasets.py](../../src/rtdsl/datasets.py)
   - live BlockGroup Feature Service registry entry
   - bbox/envelope support in ArcGIS query URL generation
-- [goal35_stage_blockgroup_waterbodies_bbox.py](/Users/rl2025/rtdl_python_only/scripts/goal35_stage_blockgroup_waterbodies_bbox.py)
-- [goal35_convert_and_run_blockgroup_waterbodies.py](/Users/rl2025/rtdl_python_only/scripts/goal35_convert_and_run_blockgroup_waterbodies.py)
-- [goal35_blockgroup_waterbodies_test.py](/Users/rl2025/rtdl_python_only/tests/goal35_blockgroup_waterbodies_test.py)
+- [goal35_stage_blockgroup_waterbodies_bbox.py](../../scripts/goal35_stage_blockgroup_waterbodies_bbox.py)
+- [goal35_convert_and_run_blockgroup_waterbodies.py](../../scripts/goal35_convert_and_run_blockgroup_waterbodies.py)
+- [goal35_blockgroup_waterbodies_test.py](../../tests/goal35_blockgroup_waterbodies_test.py)
 
 ## Host
 

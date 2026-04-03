@@ -27,11 +27,11 @@ The validated execution path used:
 
 New harness:
 
-- [goal43_optix_validation.py](/Users/rl2025/rtdl_python_only/scripts/goal43_optix_validation.py)
+- [goal43_optix_validation.py](../../scripts/goal43_optix_validation.py)
 
 New test:
 
-- [goal43_optix_validation_test.py](/Users/rl2025/rtdl_python_only/tests/goal43_optix_validation_test.py)
+- [goal43_optix_validation_test.py](../../tests/goal43_optix_validation_test.py)
 
 The harness runs representative tiny authored cases across all six current
 local workloads, plus two slightly larger derived cases for `lsi` and `pip`,

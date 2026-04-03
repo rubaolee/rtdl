@@ -62,7 +62,7 @@ I then reran the old Goal 28D larger-slice driver on the Linux host using the st
 
 The same driver was used:
 
-- [goal28d_complete_and_run_county_zipcode.py](/Users/rl2025/rtdl_python_only/scripts/goal28d_complete_and_run_county_zipcode.py)
+- [goal28d_complete_and_run_county_zipcode.py](../../scripts/goal28d_complete_and_run_county_zipcode.py)
 
 ### `1 x 5` Slice
 

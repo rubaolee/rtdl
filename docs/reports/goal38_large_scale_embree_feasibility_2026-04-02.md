@@ -132,6 +132,6 @@ It should be one of:
 This report is based on:
 
 - the live remote checkpoint summary copied from `192.168.1.20`
-- [goal_38_large_scale_embree_feasibility.md](/Users/rl2025/rtdl_python_only/docs/goal_38_large_scale_embree_feasibility.md)
-- [goal38_linux_county_zipcode_feasibility.py](/Users/rl2025/rtdl_python_only/scripts/goal38_linux_county_zipcode_feasibility.py)
-- [goal38_feasibility_test.py](/Users/rl2025/rtdl_python_only/tests/goal38_feasibility_test.py)
+- [goal_38_large_scale_embree_feasibility.md](../goal_38_large_scale_embree_feasibility.md)
+- [goal38_linux_county_zipcode_feasibility.py](../../scripts/goal38_linux_county_zipcode_feasibility.py)
+- [goal38_feasibility_test.py](../../tests/goal38_feasibility_test.py)

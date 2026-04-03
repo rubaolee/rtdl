@@ -96,7 +96,7 @@ What is still not solved:
 
 ## Main Files
 
-- [embree_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py)
-- [__init__.py](/Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py)
-- [goal17_compare_prepared_embree.py](/Users/rl2025/rtdl_python_only/scripts/goal17_compare_prepared_embree.py)
-- [goal17_prepared_runtime_test.py](/Users/rl2025/rtdl_python_only/tests/goal17_prepared_runtime_test.py)
+- [embree_runtime.py](../../src/rtdsl/embree_runtime.py)
+- [__init__.py](../../src/rtdsl/__init__.py)
+- [goal17_compare_prepared_embree.py](../../scripts/goal17_compare_prepared_embree.py)
+- [goal17_prepared_runtime_test.py](../../tests/goal17_prepared_runtime_test.py)

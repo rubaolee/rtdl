@@ -92,7 +92,7 @@ Native-comparison numbers are only reported for `lsi` and `pip`, because those a
 
 ## Main Files
 
-- [embree_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/embree_runtime.py)
-- [__init__.py](/Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py)
-- [goal18_compare_result_modes.py](/Users/rl2025/rtdl_python_only/scripts/goal18_compare_result_modes.py)
-- [goal18_result_mode_test.py](/Users/rl2025/rtdl_python_only/tests/goal18_result_mode_test.py)
+- [embree_runtime.py](../../src/rtdsl/embree_runtime.py)
+- [__init__.py](../../src/rtdsl/__init__.py)
+- [goal18_compare_result_modes.py](../../scripts/goal18_compare_result_modes.py)
+- [goal18_result_mode_test.py](../../tests/goal18_result_mode_test.py)

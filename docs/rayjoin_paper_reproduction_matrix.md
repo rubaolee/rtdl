@@ -12,7 +12,7 @@ It is a planning and execution contract. A case should not be treated as part of
 
 For dataset provenance details, see:
 
-- [docs/rayjoin_paper_dataset_provenance.md](/Users/rl2025/rtdl_python_only/docs/rayjoin_paper_dataset_provenance.md)
+- [docs/rayjoin_paper_dataset_provenance.md](rayjoin_paper_dataset_provenance.md)
 
 ## Table 3 Target Matrix
 

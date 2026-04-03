@@ -17,7 +17,7 @@ Gemini monitors the full round and verifies that:
 
 ## Inputs
 
-- external audit: [Iteration_0_External_Audit_2026-04-01_Claude.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-01-goal-20-claude-audit-response/external_reports/Iteration_0_External_Audit_2026-04-01_Claude.md)
+- external audit: [Iteration_0_External_Audit_2026-04-01_Claude.md](../history/revisions/2026-04-01-goal-20-claude-audit-response/external_reports/Iteration_0_External_Audit_2026-04-01_Claude.md)
 - current repo state through Goal 19
 
 ## Required Workflow

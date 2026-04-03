@@ -21,9 +21,9 @@ Goal 28D continued the first serious Linux-host exact-source family after Goal 2
 
 ## New Code in This Round
 
-- resumable staging in [goal28b_stage_uscounty_zipcode.py](/Users/rl2025/rtdl_python_only/scripts/goal28b_stage_uscounty_zipcode.py)
-- larger-slice runner in [goal28d_complete_and_run_county_zipcode.py](/Users/rl2025/rtdl_python_only/scripts/goal28d_complete_and_run_county_zipcode.py)
-- tests in [goal28b_staging_test.py](/Users/rl2025/rtdl_python_only/tests/goal28b_staging_test.py) and [goal28d_execution_test.py](/Users/rl2025/rtdl_python_only/tests/goal28d_execution_test.py)
+- resumable staging in [goal28b_stage_uscounty_zipcode.py](../../scripts/goal28b_stage_uscounty_zipcode.py)
+- larger-slice runner in [goal28d_complete_and_run_county_zipcode.py](../../scripts/goal28d_complete_and_run_county_zipcode.py)
+- tests in [goal28b_staging_test.py](../../tests/goal28b_staging_test.py) and [goal28d_execution_test.py](../../tests/goal28d_execution_test.py)
 
 The staging change matters because the Linux host already had a partial `Zipcode` checkpoint from Goal 28B, including one corrupt tail page at offset `7000`. Goal 28D added the ability to reuse existing valid pages and re-fetch a corrupt page in place instead of restarting the entire acquisition.
 

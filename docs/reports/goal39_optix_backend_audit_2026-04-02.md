@@ -7,9 +7,9 @@ Date: 2026-04-02
 Two external artifacts were provided:
 
 - Gemini review:
-  [Iteration_0_Original_Review_2026-04-02_Gemini.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_0_Original_Review_2026-04-02_Gemini.md)
+  [Iteration_0_Original_Review_2026-04-02_Gemini.md](../../history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_0_Original_Review_2026-04-02_Gemini.md)
 - Claude implementation log:
-  [Iteration_0_Implementation_Log_2026-04-02_Claude.txt](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_0_Implementation_Log_2026-04-02_Claude.txt)
+  [Iteration_0_Implementation_Log_2026-04-02_Claude.txt](../../history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_0_Implementation_Log_2026-04-02_Claude.txt)
 
 The claimed implementation was reviewed in Claude's workspace:
 
@@ -150,7 +150,7 @@ The correct conclusion is:
 
 After the Codex audit, Gemini was re-run against the concrete blocking findings and produced a narrower second review:
 
-- [Iteration_2_ReReview_2026-04-02_Gemini.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_2_ReReview_2026-04-02_Gemini.md)
+- [Iteration_2_ReReview_2026-04-02_Gemini.md](../../history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_2_ReReview_2026-04-02_Gemini.md)
 
 That re-review materially agrees with the Codex audit:
 
@@ -161,7 +161,7 @@ That re-review materially agrees with the Codex audit:
 
 Claude was then invoked at the user-provided CLI path to begin an external-workspace-only revision round, but the CLI returned a quota block:
 
-- [Iteration_2_Quota_Block_2026-04-02_Claude.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_2_Quota_Block_2026-04-02_Claude.md)
+- [Iteration_2_Quota_Block_2026-04-02_Claude.md](../../history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_2_Quota_Block_2026-04-02_Claude.md)
 
 So the current truthful state is:
 
@@ -200,7 +200,7 @@ Codex review of that revised workspace found that the original three blocked fin
 
 Gemini then re-reviewed the revised workspace:
 
-- [Iteration_3_PostClaude_ReReview_2026-04-02_Gemini.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_3_PostClaude_ReReview_2026-04-02_Gemini.md)
+- [Iteration_3_PostClaude_ReReview_2026-04-02_Gemini.md](../../history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_3_PostClaude_ReReview_2026-04-02_Gemini.md)
 
 That re-review concluded:
 
@@ -227,7 +227,7 @@ The accepted revision changed the external OptiX runtime so that:
 - `src/rtdsl/optix_runtime.py` imports the canonical `Packed*` classes and `_Rtdl*` geometry structs from `embree_runtime.py`
 - top-level `rt.pack_*` objects are treated as already packed by the OptiX runtime
 - a focused regression suite exists in:
-  - [optix_embree_interop_test.py](/Users/rl2025/rtdl_python_only/tests/optix_embree_interop_test.py)
+  - [optix_embree_interop_test.py](../../tests/optix_embree_interop_test.py)
 
 Codex review found the interop blocker fixed, and the targeted test passed in the controlled repository:
 
@@ -235,7 +235,7 @@ Codex review found the interop blocker fixed, and the targeted test passed in th
 
 Gemini then completed a final post-fix re-review:
 
-- [Iteration_4_Final_Review_2026-04-02_Gemini.md](/Users/rl2025/rtdl_python_only/history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_4_Final_Review_2026-04-02_Gemini.md)
+- [Iteration_4_Final_Review_2026-04-02_Gemini.md](../../history/revisions/2026-04-02-goal-39-optix-backend-audit/external_reports/Iteration_4_Final_Review_2026-04-02_Gemini.md)
 
 That final re-review concluded:
 
@@ -246,14 +246,14 @@ That final re-review concluded:
 
 Based on that consensus, the accepted OptiX slice was imported into the controlled RTDL repository as:
 
-- [rtdl_optix.cpp](/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp)
-- [optix_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/optix_runtime.py)
-- [optix_embree_interop_test.py](/Users/rl2025/rtdl_python_only/tests/optix_embree_interop_test.py)
+- [rtdl_optix.cpp](../../src/native/rtdl_optix.cpp)
+- [optix_runtime.py](../../src/rtdsl/optix_runtime.py)
+- [optix_embree_interop_test.py](../../tests/optix_embree_interop_test.py)
 
 with matching integration updates in:
 
-- [Makefile](/Users/rl2025/rtdl_python_only/Makefile)
-- [__init__.py](/Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py)
+- [Makefile](../../Makefile)
+- [__init__.py](../../src/rtdsl/__init__.py)
 
 ## Final Conclusion
 

@@ -20,9 +20,9 @@ paths:
 ## Source reports
 
 - C oracle vs Embree:
-  - [/Users/rl2025/rtdl_python_only/docs/reports/goal41_cross_host_oracle_correctness_2026-04-02.md](/Users/rl2025/rtdl_python_only/docs/reports/goal41_cross_host_oracle_correctness_2026-04-02.md)
+  - [/Users/rl2025/rtdl_python_only/docs/reports/goal41_cross_host_oracle_correctness_2026-04-02.md](goal41_cross_host_oracle_correctness_2026-04-02.md)
 - C oracle vs OptiX:
-  - [/Users/rl2025/rtdl_python_only/docs/reports/goal47_optix_goal41_large_checks_2026-04-02.md](/Users/rl2025/rtdl_python_only/docs/reports/goal47_optix_goal41_large_checks_2026-04-02.md)
+  - [/Users/rl2025/rtdl_python_only/docs/reports/goal47_optix_goal41_large_checks_2026-04-02.md](goal47_optix_goal41_large_checks_2026-04-02.md)
 
 ## Important comparison boundary
 

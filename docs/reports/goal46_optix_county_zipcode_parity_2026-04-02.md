@@ -50,7 +50,7 @@ The practical conclusion was:
 
 File changed:
 
-- [/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp](/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp)
+- [/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp](../../src/native/rtdl_optix.cpp)
 
 Main changes:
 

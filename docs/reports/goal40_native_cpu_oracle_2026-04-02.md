@@ -6,15 +6,15 @@ Date: 2026-04-02
 
 A new standalone native oracle was added in:
 
-- [rtdl_oracle.cpp](/Users/rl2025/rtdl_python_only/src/native/rtdl_oracle.cpp)
+- [rtdl_oracle.cpp](../../src/native/rtdl_oracle.cpp)
 
 with a Python runtime wrapper in:
 
-- [oracle_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/oracle_runtime.py)
+- [oracle_runtime.py](../../src/rtdsl/oracle_runtime.py)
 
 `run_cpu(...)` now routes through that native oracle, while the old Python path remains available as:
 
-- [run_cpu_python_reference](/Users/rl2025/rtdl_python_only/src/rtdsl/runtime.py)
+- [run_cpu_python_reference](../../src/rtdsl/runtime.py)
 
 The native oracle mirrors the old `reference.py` semantics for:
 
