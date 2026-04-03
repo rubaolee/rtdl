@@ -5,7 +5,7 @@
 **Participants:** Claude (Author), Gemini CLI (Reviewer), Codex (Auditor)
 
 ## 1. Summary of Consensus
-The participants reached a unanimous consensus that the Vulkan KHR ray-tracing backend is **structurally complete, technically sound, and ready for integration**. The implementation successfully mirrors the existing OptiX and Embree backends, providing a high-quality "Level 1" GPU-accelerated path without CUDA dependencies.
+The participants reached consensus that the Vulkan KHR ray-tracing backend is structurally substantial and worth keeping in the repository, but its status should be treated as **provisional integration** rather than fully accepted release maturity. The implementation mirrors the existing OptiX and Embree backends and provides a credible cross-vendor GPU path, but it still requires stronger validation and tighter scaling guardrails.
 
 ## 2. Technical Agreement
 - **Structural Parity:** The backend achieves full API and ABI parity with the OptiX and Embree paths.
@@ -19,4 +19,4 @@ The participants reached a unanimous consensus that the Vulkan KHR ray-tracing b
 - **Cleanup:** An explicit shutdown mechanism for the Vulkan singleton should be considered for long-running environments.
 
 ## 4. Final Verdict
-The Vulkan backend is **approved for formal integration and public release**. The project will now proceed to "Goal 45" for exhaustive validation and performance benchmarking.
+The Vulkan backend is approved to remain in the repository as a **provisional backend**. It should not be described as public-release-ready until the committed validation surface and output-capacity guardrails are strengthened.

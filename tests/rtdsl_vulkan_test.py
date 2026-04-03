@@ -9,6 +9,8 @@ import rtdsl as rt
 from examples.rtdl_language_reference import county_soil_overlay_reference
 from examples.rtdl_language_reference import county_zip_join_reference
 from examples.rtdl_language_reference import point_in_counties_reference
+from examples.rtdl_goal10_reference import point_nearest_segment_reference
+from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 from rtdsl.baseline_contracts import compare_baseline_rows
 
@@ -94,6 +96,40 @@ class RtDslVulkanTest(unittest.TestCase):
                 "ray_tri_hitcount",
                 rt.run_cpu(ray_triangle_hitcount_reference, rays=rays, triangles=triangles),
                 rt.run_vulkan(ray_triangle_hitcount_reference, rays=rays, triangles=triangles)
+            )
+        )
+
+    def test_run_vulkan_segment_polygon_hitcount_matches_cpu(self) -> None:
+        segments = (
+            {"id": 1, "x0": -1.0, "y0": 1.0, "x1": 3.0, "y1": 1.0},
+            {"id": 2, "x0": 5.0, "y0": 5.0, "x1": 6.0, "y1": 6.0},
+        )
+        polygons = (
+            {"id": 10, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+            {"id": 11, "vertices": ((4.0, 4.0), (7.0, 4.0), (7.0, 7.0), (4.0, 7.0))},
+        )
+        self.assertTrue(
+            compare_baseline_rows(
+                "segment_polygon_hitcount",
+                rt.run_cpu(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
+                rt.run_vulkan(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
+            )
+        )
+
+    def test_run_vulkan_point_nearest_segment_matches_cpu(self) -> None:
+        points = (
+            {"id": 100, "x": 0.5, "y": 0.5},
+            {"id": 101, "x": 3.5, "y": 1.0},
+        )
+        segments = (
+            {"id": 1, "x0": 0.0, "y0": 0.0, "x1": 0.0, "y1": 2.0},
+            {"id": 2, "x0": 4.0, "y0": 0.0, "x1": 4.0, "y1": 2.0},
+        )
+        self.assertTrue(
+            compare_baseline_rows(
+                "point_nearest_segment",
+                rt.run_cpu(point_nearest_segment_reference, points=points, segments=segments),
+                rt.run_vulkan(point_nearest_segment_reference, points=points, segments=segments),
             )
         )
 

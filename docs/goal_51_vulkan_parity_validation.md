@@ -39,4 +39,4 @@ Record execution time for:
 ## Acceptance
 - New test harness `tests/rtdsl_vulkan_test.py` passes locally.
 - A summary report `docs/reports/goal51_vulkan_parity_results.md` documents parity results across all targets.
-- The Vulkan backend is confirmed as a reliable cross-vendor GPU path for RTDL v0.1.
+- The Vulkan backend can be upgraded from provisional to accepted status for RTDL v0.1.

@@ -28,8 +28,8 @@ Install PostgreSQL/PostGIS on the Linux validation host `192.168.1.20`, load the
    - `chains_to_polygons(...)`
    - `chains_to_probe_points(...)`
 4. Run PostGIS joins:
-   - `lsi`: segment-vs-segment `ST_Intersects`
-   - `pip`: point-vs-polygon `ST_Covers` for boundary-inclusive containment
+   - `lsi`: index-assisted `l.geom && r.geom` bbox pruning plus RTDL-matching exact segment math
+   - `pip`: index-assisted `g.geom && p.geom` plus `ST_Covers` for boundary-inclusive positive hits
 5. Compare ordered row hashes and row counts against RTDL:
    - `run_cpu(...)`
    - `run_embree(...)`

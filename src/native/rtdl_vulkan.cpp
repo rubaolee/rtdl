@@ -41,6 +41,7 @@
 #include <memory>
 #include <mutex>
 #include <new>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -510,7 +511,34 @@ static void destroy_accel(VkContext* ctx, AccelResult& a) {
 }
 
 static constexpr float kAabbEps = 1e-4f;
+static constexpr size_t kMaxOutputBytes = 512ull * 1024ull * 1024ull;
 struct GpuAabb { float min_x, min_y, min_z, max_x, max_y, max_z; };
+
+static size_t checked_mul_size_t(size_t a, size_t b, const char* label) {
+    if (a != 0 && b > (std::numeric_limits<size_t>::max() / a)) {
+        throw std::runtime_error(std::string(label) + " row-count overflow");
+    }
+    return a * b;
+}
+
+static size_t checked_output_bytes(size_t row_count, size_t row_size, const char* label) {
+    size_t bytes = checked_mul_size_t(row_count, row_size, label);
+    if (bytes > kMaxOutputBytes) {
+        throw std::runtime_error(
+            std::string(label) + " output exceeds current Vulkan guardrail of "
+            + std::to_string(kMaxOutputBytes) + " bytes");
+    }
+    return bytes;
+}
+
+static uint32_t checked_output_capacity_u32(size_t a, size_t b, size_t row_size, const char* label) {
+    size_t rows = checked_mul_size_t(a, b, label);
+    if (rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error(std::string(label) + " row-count exceeds uint32_t capacity");
+    }
+    checked_output_bytes(rows, row_size, label);
+    return static_cast<uint32_t>(rows);
+}
 
 static GpuAabb aabb_for_segment(float x0, float y0, float x1, float y1) {
     return { std::min(x0,x1) - kAabbEps, std::min(y0,y1) - kAabbEps, -0.5f,
@@ -1665,8 +1693,10 @@ static void run_lsi_vulkan(
     AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
 
     // Output buffer + counter
-    uint32_t capacity = static_cast<uint32_t>(left_count * right_count);
-    BufMem d_output  = alloc_buffer(ctx, sizeof(GpuLsiRecord) * capacity,
+    uint32_t capacity = checked_output_capacity_u32(
+        left_count, right_count, sizeof(GpuLsiRecord), "Vulkan LSI");
+    VkDeviceSize output_sz = checked_output_bytes(capacity, sizeof(GpuLsiRecord), "Vulkan LSI");
+    BufMem d_output  = alloc_buffer(ctx, output_sz,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     BufMem d_counter = alloc_buffer(ctx, sizeof(uint32_t),
@@ -1685,7 +1715,7 @@ static void run_lsi_vulkan(
     // Descriptor set
     DescriptorSet ds = alloc_descriptor_set(ctx, g_lsi_pipe->dset_layout, 6, true);
     bind_tlas(ctx,       ds.set, tlas.handle, 0);
-    bind_ssbo(ctx->device, ds.set, d_output.buffer,  sizeof(GpuLsiRecord) * capacity, 1);
+    bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
     bind_ssbo(ctx->device, ds.set, d_counter.buffer, sizeof(uint32_t), 2);
     bind_ubo (ctx->device, ds.set, d_params.buffer,  sizeof(params), 3);
     bind_ssbo(ctx->device, ds.set, d_left.buffer,    left_sz,  4);
@@ -1700,7 +1730,8 @@ static void run_lsi_vulkan(
 
     std::vector<GpuLsiRecord> gpu_rows(gpu_count);
     if (gpu_count > 0) {
-        BufMem d_sub = alloc_buffer(ctx, sizeof(GpuLsiRecord) * gpu_count,
+        VkDeviceSize sub_sz = checked_output_bytes(gpu_count, sizeof(GpuLsiRecord), "Vulkan LSI");
+        BufMem d_sub = alloc_buffer(ctx, sub_sz,
             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         // Copy just the valid rows
         VkCommandBuffer cmd;
@@ -1711,7 +1742,7 @@ static void run_lsi_vulkan(
         VkCommandBufferBeginInfo beg{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
         beg.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         vkBeginCommandBuffer(cmd, &beg);
-        VkBufferCopy copy{ 0, 0, sizeof(GpuLsiRecord) * gpu_count };
+        VkBufferCopy copy{ 0, 0, sub_sz };
         vkCmdCopyBuffer(cmd, d_output.buffer, d_sub.buffer, 1, &copy);
         vkEndCommandBuffer(cmd);
         VkSubmitInfo sub{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
@@ -1719,7 +1750,7 @@ static void run_lsi_vulkan(
         vkQueueSubmit(ctx->queue, 1, &sub, VK_NULL_HANDLE);
         vkQueueWaitIdle(ctx->queue);
         vkFreeCommandBuffers(ctx->device, ctx->cmd_pool, 1, &cmd);
-        download_from_buf(ctx, gpu_rows.data(), d_sub, sizeof(GpuLsiRecord) * gpu_count);
+        download_from_buf(ctx, gpu_rows.data(), d_sub, sub_sz);
         free_buf(ctx, d_sub);
     }
 
@@ -1798,8 +1829,9 @@ static void run_pip_vulkan(
     AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
 
     // Pre-allocate output: npoints × npoly GpuPipRecord, initialized to 0
-    size_t out_count = point_count * poly_count;
-    BufMem d_output = alloc_buffer(ctx, sizeof(GpuPipRecord) * out_count,
+    size_t out_count = checked_mul_size_t(point_count, poly_count, "Vulkan PIP");
+    VkDeviceSize output_sz = checked_output_bytes(out_count, sizeof(GpuPipRecord), "Vulkan PIP");
+    BufMem d_output = alloc_buffer(ctx, output_sz,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     zero_buf(ctx, d_output);
@@ -1809,7 +1841,7 @@ static void run_pip_vulkan(
     for (size_t i = 0; i < point_count; ++i)
         for (size_t j = 0; j < poly_count; ++j)
             init_rows[i * poly_count + j] = { points[i].id, polys[j].id, 0u };
-    upload_to_buf(ctx, d_output, init_rows.data(), sizeof(GpuPipRecord) * out_count);
+    upload_to_buf(ctx, d_output, init_rows.data(), output_sz);
 
     struct { uint32_t npoints, npolygons; } params{ (uint32_t)point_count, (uint32_t)poly_count };
     BufMem d_params = alloc_buffer(ctx, sizeof(params),
@@ -1820,7 +1852,7 @@ static void run_pip_vulkan(
 
     DescriptorSet ds = alloc_descriptor_set(ctx, g_pip_pipe->dset_layout, 7, true);
     bind_tlas(ctx,       ds.set, tlas.handle, 0);
-    bind_ssbo(ctx->device, ds.set, d_output.buffer, sizeof(GpuPipRecord) * out_count, 1);
+    bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
     // binding 2 unused for PIP (no counter) — bind a dummy 4-byte buffer
     BufMem d_dummy = alloc_buffer(ctx, 4,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
@@ -1834,7 +1866,7 @@ static void run_pip_vulkan(
     dispatch_rt(ctx, *g_pip_pipe, ds.set, (uint32_t)point_count);
 
     std::vector<GpuPipRecord> gpu_rows(out_count);
-    download_from_buf(ctx, gpu_rows.data(), d_output, sizeof(GpuPipRecord) * out_count);
+    download_from_buf(ctx, gpu_rows.data(), d_output, output_sz);
 
     vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
     free_buf(ctx, d_pts); free_buf(ctx, d_poly); free_buf(ctx, d_vert);
@@ -1900,8 +1932,9 @@ static void run_overlay_vulkan(
     AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
 
     // Pre-allocated output: left_count × right_count GpuOverlayFlags, zeroed
-    size_t out_count = left_count * right_count;
-    BufMem d_output = alloc_buffer(ctx, sizeof(GpuOverlayFlags) * out_count,
+    size_t out_count = checked_mul_size_t(left_count, right_count, "Vulkan Overlay");
+    VkDeviceSize output_sz = checked_output_bytes(out_count, sizeof(GpuOverlayFlags), "Vulkan Overlay");
+    BufMem d_output = alloc_buffer(ctx, output_sz,
         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     zero_buf(ctx, d_output);
@@ -1921,7 +1954,7 @@ static void run_overlay_vulkan(
 
     DescriptorSet ds = alloc_descriptor_set(ctx, g_overlay_pipe->dset_layout, 8, true);
     bind_tlas(ctx,       ds.set, tlas.handle, 0);
-    bind_ssbo(ctx->device, ds.set, d_output.buffer, sizeof(GpuOverlayFlags) * out_count, 1);
+    bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
     BufMem d_dummy = alloc_buffer(ctx, 4, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
     bind_ssbo(ctx->device, ds.set, d_dummy.buffer, 4, 2);
     bind_ubo (ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
@@ -1933,7 +1966,7 @@ static void run_overlay_vulkan(
     dispatch_rt(ctx, *g_overlay_pipe, ds.set, launch_count);
 
     std::vector<GpuOverlayFlags> gpu_flags(out_count);
-    download_from_buf(ctx, gpu_flags.data(), d_output, sizeof(GpuOverlayFlags) * out_count);
+    download_from_buf(ctx, gpu_flags.data(), d_output, output_sz);
 
     vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
     free_buf(ctx, d_lp); free_buf(ctx, d_lv);

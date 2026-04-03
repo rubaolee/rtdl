@@ -250,8 +250,8 @@ def copy_query_hash(cur, sql: str) -> tuple[str, int]:
     return sink.hexdigest, sink.row_count
 
 
-def run_postgis_lsi(conn, prefix: str) -> tuple[dict[str, object], float]:
-    sql = f"""
+def build_postgis_lsi_sql(prefix: str) -> str:
+    return f"""
 COPY (
     SELECT l.id, r.id
     FROM goal50.{prefix}_left_segments AS l
@@ -265,6 +265,10 @@ COPY (
     ORDER BY 1, 2
 ) TO STDOUT WITH (FORMAT csv, DELIMITER E'\\t')
 """
+
+
+def run_postgis_lsi(conn, prefix: str) -> tuple[dict[str, object], float]:
+    sql = build_postgis_lsi_sql(prefix)
     with conn.cursor() as cur:
         start = time.perf_counter()
         digest, row_count = copy_query_hash(cur, sql)
@@ -272,8 +276,8 @@ COPY (
     return {"row_count": row_count, "sha256": digest}, end - start
 
 
-def run_postgis_pip(conn, prefix: str) -> tuple[dict[str, object], float]:
-    sql = f"""
+def build_postgis_pip_sql(prefix: str) -> str:
+    return f"""
 COPY (
     SELECT p.id, g.id, 1
     FROM goal50.{prefix}_points AS p
@@ -283,6 +287,10 @@ COPY (
     ORDER BY 1, 2, 3
 ) TO STDOUT WITH (FORMAT csv, DELIMITER E'\\t')
 """
+
+
+def run_postgis_pip(conn, prefix: str) -> tuple[dict[str, object], float]:
+    sql = build_postgis_pip_sql(prefix)
     with conn.cursor() as cur:
         start = time.perf_counter()
         digest, row_count = copy_query_hash(cur, sql)

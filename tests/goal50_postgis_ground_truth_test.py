@@ -28,6 +28,16 @@ class Goal50PostgisGroundTruthTest(unittest.TestCase):
         self.assertEqual(sink.row_count, 2)
         self.assertEqual(len(sink.hexdigest), 64)
 
+    def test_lsi_sql_uses_bbox_index_predicate(self) -> None:
+        sql = MODULE.build_postgis_lsi_sql("county_zipcode")
+        self.assertIn("l.geom && r.geom", sql)
+        self.assertNotIn("ST_Intersects", sql)
+
+    def test_pip_sql_uses_bbox_and_covers(self) -> None:
+        sql = MODULE.build_postgis_pip_sql("county_zipcode")
+        self.assertIn("g.geom && p.geom", sql)
+        self.assertIn("ST_Covers(g.geom, p.geom)", sql)
+
 
 if __name__ == "__main__":
     unittest.main()
