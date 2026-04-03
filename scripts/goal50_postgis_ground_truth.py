@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gc
 import hashlib
 import io
 import json
@@ -286,6 +287,14 @@ def backend_payload(rows, sec: float, postgis_digest: str, postgis_count: int, k
     }
 
 
+def run_backend_payload(fn, kernel, *, kind: str, postgis_digest: str, postgis_count: int, **kwargs) -> dict[str, object]:
+    rows, sec = time_call(fn, kernel, **kwargs)
+    payload = backend_payload(rows, sec, postgis_digest, postgis_count, kind)
+    del rows
+    gc.collect()
+    return payload
+
+
 def run_case(
     conn,
     *,
@@ -307,29 +316,69 @@ def run_case(
     lsi_postgis, lsi_postgis_sec = run_postgis_lsi(conn, prefix)
     pip_postgis, pip_postgis_sec = run_postgis_pip(conn, prefix)
 
-    cpu_lsi_rows, cpu_lsi_sec = time_call(rt.run_cpu, county_zip_join_reference, left=left_segments, right=right_segments)
-    embree_lsi_rows, embree_lsi_sec = time_call(rt.run_embree, county_zip_join_reference, left=left_segments, right=right_segments)
-    optix_lsi_rows, optix_lsi_sec = time_call(rt.run_optix, county_zip_join_reference, left=left_segments, right=right_segments)
-
-    cpu_pip_rows, cpu_pip_sec = time_call(rt.run_cpu, point_in_counties_reference, points=points, polygons=polygons)
-    embree_pip_rows, embree_pip_sec = time_call(rt.run_embree, point_in_counties_reference, points=points, polygons=polygons)
-    optix_pip_rows, optix_pip_sec = time_call(rt.run_optix, point_in_counties_reference, points=points, polygons=polygons)
-
     summary = {
         "load_sec": load_stats["load_sec"],
         "lsi": {
             "postgis": lsi_postgis,
             "postgis_sec": lsi_postgis_sec,
-            "cpu": backend_payload(cpu_lsi_rows, cpu_lsi_sec, lsi_postgis["sha256"], lsi_postgis["row_count"], "lsi"),
-            "embree": backend_payload(embree_lsi_rows, embree_lsi_sec, lsi_postgis["sha256"], lsi_postgis["row_count"], "lsi"),
-            "optix": backend_payload(optix_lsi_rows, optix_lsi_sec, lsi_postgis["sha256"], lsi_postgis["row_count"], "lsi"),
+            "cpu": run_backend_payload(
+                rt.run_cpu,
+                county_zip_join_reference,
+                kind="lsi",
+                postgis_digest=lsi_postgis["sha256"],
+                postgis_count=lsi_postgis["row_count"],
+                left=left_segments,
+                right=right_segments,
+            ),
+            "embree": run_backend_payload(
+                rt.run_embree,
+                county_zip_join_reference,
+                kind="lsi",
+                postgis_digest=lsi_postgis["sha256"],
+                postgis_count=lsi_postgis["row_count"],
+                left=left_segments,
+                right=right_segments,
+            ),
+            "optix": run_backend_payload(
+                rt.run_optix,
+                county_zip_join_reference,
+                kind="lsi",
+                postgis_digest=lsi_postgis["sha256"],
+                postgis_count=lsi_postgis["row_count"],
+                left=left_segments,
+                right=right_segments,
+            ),
         },
         "pip": {
             "postgis": pip_postgis,
             "postgis_sec": pip_postgis_sec,
-            "cpu": backend_payload(cpu_pip_rows, cpu_pip_sec, pip_postgis["sha256"], pip_postgis["row_count"], "pip"),
-            "embree": backend_payload(embree_pip_rows, embree_pip_sec, pip_postgis["sha256"], pip_postgis["row_count"], "pip"),
-            "optix": backend_payload(optix_pip_rows, optix_pip_sec, pip_postgis["sha256"], pip_postgis["row_count"], "pip"),
+            "cpu": run_backend_payload(
+                rt.run_cpu,
+                point_in_counties_reference,
+                kind="pip",
+                postgis_digest=pip_postgis["sha256"],
+                postgis_count=pip_postgis["row_count"],
+                points=points,
+                polygons=polygons,
+            ),
+            "embree": run_backend_payload(
+                rt.run_embree,
+                point_in_counties_reference,
+                kind="pip",
+                postgis_digest=pip_postgis["sha256"],
+                postgis_count=pip_postgis["row_count"],
+                points=points,
+                polygons=polygons,
+            ),
+            "optix": run_backend_payload(
+                rt.run_optix,
+                point_in_counties_reference,
+                kind="pip",
+                postgis_digest=pip_postgis["sha256"],
+                postgis_count=pip_postgis["row_count"],
+                points=points,
+                polygons=polygons,
+            ),
         },
     }
     return summary, {
