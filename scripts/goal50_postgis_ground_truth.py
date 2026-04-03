@@ -86,8 +86,9 @@ def polygon_wkt(vertices: tuple[tuple[float, float], ...]) -> str:
     return f"POLYGON(({body}))"
 
 
-def hash_tuples(rows: list[tuple[int, ...]]) -> dict[str, object]:
-    rows = sorted(rows)
+def hash_tuples(rows: list[tuple[int, ...]], *, presorted: bool = False) -> dict[str, object]:
+    if not presorted:
+        rows = sorted(rows)
     hasher = hashlib.sha256()
     for row in rows:
         hasher.update(("\t".join(str(value) for value in row) + "\n").encode("utf-8"))
@@ -335,9 +336,9 @@ def render_markdown(summary: dict[str, object]) -> str:
     return "\n".join(lines)
 
 
-def backend_payload(rows, sec: float, postgis_digest: str, postgis_count: int, kind: str) -> dict[str, object]:
+def backend_payload(rows, sec: float, postgis_digest: str, postgis_count: int, kind: str, *, presorted: bool = False) -> dict[str, object]:
     tuples = lsi_pairs(rows) if kind == "lsi" else pip_triplets(rows)
-    hashed = hash_tuples(tuples)
+    hashed = hash_tuples(tuples, presorted=presorted)
     return {
         "sec": sec,
         "row_count": hashed["row_count"],
@@ -346,9 +347,9 @@ def backend_payload(rows, sec: float, postgis_digest: str, postgis_count: int, k
     }
 
 
-def run_backend_payload(fn, kernel, *, kind: str, postgis_digest: str, postgis_count: int, **kwargs) -> dict[str, object]:
+def run_backend_payload(fn, kernel, *, kind: str, postgis_digest: str, postgis_count: int, presorted: bool = False, **kwargs) -> dict[str, object]:
     rows, sec = time_call(fn, kernel, **kwargs)
-    payload = backend_payload(rows, sec, postgis_digest, postgis_count, kind)
+    payload = backend_payload(rows, sec, postgis_digest, postgis_count, kind, presorted=presorted)
     del rows
     gc.collect()
     return payload
@@ -396,6 +397,7 @@ def run_case(
                 kind="lsi",
                 postgis_digest=lsi_postgis["sha256"],
                 postgis_count=lsi_postgis["row_count"],
+                presorted=True,
                 left=left_segments,
                 right=right_segments,
             )
@@ -405,6 +407,7 @@ def run_case(
                 kind="pip",
                 postgis_digest=pip_postgis["sha256"],
                 postgis_count=pip_postgis["row_count"],
+                presorted=True,
                 points=points,
                 polygons=polygons,
             )
