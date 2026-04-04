@@ -1,0 +1,1977 @@
+{
+  "db_name": "rtdl_postgis",
+  "host_label": "lx1",
+  "inventory": {
+    "mini_random_cases": 12,
+    "mini_random_seed": 7501,
+    "small_random_cases": 12,
+    "small_random_seed": 7511
+  },
+  "mini_python": {
+    "all_pass": true,
+    "lsi": {
+      "case_count": 15,
+      "cases": [
+        {
+          "label": "crossing_segments",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.004609702000379912,
+            "sha256": "91fd9ecac463cba700e16b2b686096bc829db5980b8eb616556eb927f30e4c42"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "91fd9ecac463cba700e16b2b686096bc829db5980b8eb616556eb927f30e4c42"
+          },
+          "postgis_sec": 0.0009369630006403895,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00011071399967477191,
+            "sha256": "91fd9ecac463cba700e16b2b686096bc829db5980b8eb616556eb927f30e4c42"
+          }
+        },
+        {
+          "label": "endpoint_touch",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.0001008059989544563,
+            "sha256": "91fd9ecac463cba700e16b2b686096bc829db5980b8eb616556eb927f30e4c42"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "91fd9ecac463cba700e16b2b686096bc829db5980b8eb616556eb927f30e4c42"
+          },
+          "postgis_sec": 0.00046556900088035036,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 8.290799996757414e-05,
+            "sha256": "91fd9ecac463cba700e16b2b686096bc829db5980b8eb616556eb927f30e4c42"
+          }
+        },
+        {
+          "label": "parallel_disjoint",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 7.774000005156267e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0007537669989687856,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 7.824800013622735e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_00",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.0001578069986862829,
+            "sha256": "c71d64d9915124d16cdf2d662776f43096108890c5873cdc9298f44152b4fff1"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "c71d64d9915124d16cdf2d662776f43096108890c5873cdc9298f44152b4fff1"
+          },
+          "postgis_sec": 0.0004973349987267284,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00010002400085795671,
+            "sha256": "c71d64d9915124d16cdf2d662776f43096108890c5873cdc9298f44152b4fff1"
+          }
+        },
+        {
+          "label": "mini_random_lsi_01",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 9.876399963104632e-05,
+            "sha256": "b610bd8f5a5f903360a64a5b9e8dfba88a992e696eb9ad51dc8ab5d188e809ab"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "b610bd8f5a5f903360a64a5b9e8dfba88a992e696eb9ad51dc8ab5d188e809ab"
+          },
+          "postgis_sec": 0.0006317749994195765,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00015112400069483556,
+            "sha256": "b610bd8f5a5f903360a64a5b9e8dfba88a992e696eb9ad51dc8ab5d188e809ab"
+          }
+        },
+        {
+          "label": "mini_random_lsi_02",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00010143699910258874,
+            "sha256": "62df9ce4a104f89026a49cbaa0ec0a4222271bd7835c02c2e389bb853d969a54"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "62df9ce4a104f89026a49cbaa0ec0a4222271bd7835c02c2e389bb853d969a54"
+          },
+          "postgis_sec": 0.00047095599984459113,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 9.788100032892544e-05,
+            "sha256": "62df9ce4a104f89026a49cbaa0ec0a4222271bd7835c02c2e389bb853d969a54"
+          }
+        },
+        {
+          "label": "mini_random_lsi_03",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.541400140733458e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005491550000442658,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.852700168266892e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_04",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 0.00013919400043960195,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005636240002786508,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.690200022305362e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_05",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 0.00017937600023287814,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005699350003851578,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.642599979997613e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_06",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 0.00013075700007902924,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005621160016744398,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.704900003271177e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_07",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.440500070923008e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005237839995970717,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.317500007455237e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_08",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.539500024402514e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.000577478000195697,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 0.00010817399925144855,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_09",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 0.0001744559995131567,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005635790002997965,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.572499948262703e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_10",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.430099999008235e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0006168290001369314,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 0,
+            "sec": 9.899699944071472e-05,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "mini_random_lsi_11",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00011173199891345575,
+            "sha256": "c71d64d9915124d16cdf2d662776f43096108890c5873cdc9298f44152b4fff1"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "c71d64d9915124d16cdf2d662776f43096108890c5873cdc9298f44152b4fff1"
+          },
+          "postgis_sec": 0.0006486990005214466,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00010026599920820445,
+            "sha256": "c71d64d9915124d16cdf2d662776f43096108890c5873cdc9298f44152b4fff1"
+          }
+        }
+      ],
+      "python_all_pass": true,
+      "python_pass_count": 15
+    },
+    "overlay": {
+      "case_count": 15,
+      "cases": [
+        {
+          "label": "crossing_rectangles",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00014885199925629422,
+            "sha256": "719aa70b2b0ca7b56f26ac39dd1b04db04b4d98238e8a951e30642382d3ab253"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "719aa70b2b0ca7b56f26ac39dd1b04db04b4d98238e8a951e30642382d3ab253"
+          },
+          "postgis_sec": 0.001162293998277164,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00012535899986687582,
+            "sha256": "719aa70b2b0ca7b56f26ac39dd1b04db04b4d98238e8a951e30642382d3ab253"
+          }
+        },
+        {
+          "label": "containment_seed",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00010070999996969476,
+            "sha256": "7e546b59a9bbe4c127bf699f1c3addde36381b377a4c595aabad8a6f1ee17b33"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "7e546b59a9bbe4c127bf699f1c3addde36381b377a4c595aabad8a6f1ee17b33"
+          },
+          "postgis_sec": 0.0009981549992517103,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00011774499944294803,
+            "sha256": "7e546b59a9bbe4c127bf699f1c3addde36381b377a4c595aabad8a6f1ee17b33"
+          }
+        },
+        {
+          "label": "disjoint",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 9.663499986345414e-05,
+            "sha256": "4c98f3bbc2b10a21514dcde78cac3fdff4803f6e7f3e9e26bffa81cc375f1295"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "4c98f3bbc2b10a21514dcde78cac3fdff4803f6e7f3e9e26bffa81cc375f1295"
+          },
+          "postgis_sec": 0.0008481510012643412,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.00012804899961338378,
+            "sha256": "4c98f3bbc2b10a21514dcde78cac3fdff4803f6e7f3e9e26bffa81cc375f1295"
+          }
+        },
+        {
+          "label": "mini_random_overlay_00",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00018378899949311744,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.0020645980002882425,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002696129995456431,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        },
+        {
+          "label": "mini_random_overlay_01",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0001408810003340477,
+            "sha256": "dd26bb33f735a86ef762dcaea5a536116a30ae76ffd41f46ffc7ac582f29c614"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "dd26bb33f735a86ef762dcaea5a536116a30ae76ffd41f46ffc7ac582f29c614"
+          },
+          "postgis_sec": 0.0011407570000301348,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.000277832999927341,
+            "sha256": "dd26bb33f735a86ef762dcaea5a536116a30ae76ffd41f46ffc7ac582f29c614"
+          }
+        },
+        {
+          "label": "mini_random_overlay_02",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00015907099987089168,
+            "sha256": "ab07cc189bd8456f3a402a871f8bc63b5ba238a888a946a56de98fdc039eef70"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "ab07cc189bd8456f3a402a871f8bc63b5ba238a888a946a56de98fdc039eef70"
+          },
+          "postgis_sec": 0.0011159969999425812,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00030402399897866417,
+            "sha256": "ab07cc189bd8456f3a402a871f8bc63b5ba238a888a946a56de98fdc039eef70"
+          }
+        },
+        {
+          "label": "mini_random_overlay_03",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00013907599895901512,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.0011124709999421611,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002745509991655126,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        },
+        {
+          "label": "mini_random_overlay_04",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00013793000107398257,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.0011162410010001622,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002666139989742078,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        },
+        {
+          "label": "mini_random_overlay_05",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0001461550000385614,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.0011889309989783214,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002858690004359232,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        },
+        {
+          "label": "mini_random_overlay_06",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00013866900007997174,
+            "sha256": "dd26bb33f735a86ef762dcaea5a536116a30ae76ffd41f46ffc7ac582f29c614"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "dd26bb33f735a86ef762dcaea5a536116a30ae76ffd41f46ffc7ac582f29c614"
+          },
+          "postgis_sec": 0.001147496999692521,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002700850000110222,
+            "sha256": "dd26bb33f735a86ef762dcaea5a536116a30ae76ffd41f46ffc7ac582f29c614"
+          }
+        },
+        {
+          "label": "mini_random_overlay_07",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00018352500046603382,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.001120197999625816,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00026768499992613215,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        },
+        {
+          "label": "mini_random_overlay_08",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0001404429985996103,
+            "sha256": "ae0168e02a606b715b4059d0086767485477350a411279ac09b2d2d7c91014c6"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "ae0168e02a606b715b4059d0086767485477350a411279ac09b2d2d7c91014c6"
+          },
+          "postgis_sec": 0.0010852359991986305,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002697609997994732,
+            "sha256": "ae0168e02a606b715b4059d0086767485477350a411279ac09b2d2d7c91014c6"
+          }
+        },
+        {
+          "label": "mini_random_overlay_09",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00014444800035562366,
+            "sha256": "34d4375b7f5613b62276e8c8216cc4382afd27325f7dc70b19f930f73c4e6c20"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "34d4375b7f5613b62276e8c8216cc4382afd27325f7dc70b19f930f73c4e6c20"
+          },
+          "postgis_sec": 0.0010937509996438166,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002713840003707446,
+            "sha256": "34d4375b7f5613b62276e8c8216cc4382afd27325f7dc70b19f930f73c4e6c20"
+          }
+        },
+        {
+          "label": "mini_random_overlay_10",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00013863700041838456,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.0010891540005104616,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.0002681119985936675,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        },
+        {
+          "label": "mini_random_overlay_11",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00013748400124313775,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis": {
+            "row_count": 9,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          },
+          "postgis_sec": 0.0010594329996820306,
+          "python": {
+            "parity_vs_postgis": true,
+            "row_count": 9,
+            "sec": 0.00026728800003184006,
+            "sha256": "9e13f3a4845c4d7cf08bc2370d48b603c12df8c3f67483f19501a7e87161349f"
+          }
+        }
+      ],
+      "python_all_pass": true,
+      "python_pass_count": 15
+    },
+    "pip": {
+      "case_count": 15,
+      "cases": [
+        {
+          "label": "inside_outside_boundary",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 2,
+              "row_count": 3,
+              "sha256": "c783017788f431dbf31de096a844f671bc3dfb6f6b2077f473b8c0edb1fe3536"
+            },
+            "full_sec": 0.00019715500093298033,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 2,
+              "sha256": "8f386862630484c4059f4255e6aa6d1f19c110c7f43c396857d0218ef237e870"
+            },
+            "positive_sec": 7.14249999873573e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 2,
+            "row_count": 3,
+            "sha256": "c783017788f431dbf31de096a844f671bc3dfb6f6b2077f473b8c0edb1fe3536"
+          },
+          "postgis_positive": {
+            "row_count": 2,
+            "sha256": "8f386862630484c4059f4255e6aa6d1f19c110c7f43c396857d0218ef237e870"
+          },
+          "postgis_sec": 0.0006840589994681068,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 2,
+              "row_count": 3,
+              "sha256": "c783017788f431dbf31de096a844f671bc3dfb6f6b2077f473b8c0edb1fe3536"
+            },
+            "full_sec": 0.00020324599972809665,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 2,
+              "sha256": "8f386862630484c4059f4255e6aa6d1f19c110c7f43c396857d0218ef237e870"
+            },
+            "positive_sec": 6.263099930947646e-05
+          }
+        },
+        {
+          "label": "repeated_closing_vertex_outside",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 1,
+              "sha256": "6aaec9815fb9b559dc561625c93f51703c5c0bb91122132b22a8d5c1e12cf05a"
+            },
+            "full_sec": 0.0001354710002487991,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 7.093899876053911e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 1,
+            "sha256": "6aaec9815fb9b559dc561625c93f51703c5c0bb91122132b22a8d5c1e12cf05a"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004091669998160796,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 1,
+              "sha256": "6aaec9815fb9b559dc561625c93f51703c5c0bb91122132b22a8d5c1e12cf05a"
+            },
+            "full_sec": 8.481300028506666e-05,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 3.9243999708560295e-05
+          }
+        },
+        {
+          "label": "near_collinear_short_edge",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 1,
+              "sha256": "6aaec9815fb9b559dc561625c93f51703c5c0bb91122132b22a8d5c1e12cf05a"
+            },
+            "full_sec": 9.262599996873178e-05,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 5.3915999160381034e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 1,
+            "sha256": "6aaec9815fb9b559dc561625c93f51703c5c0bb91122132b22a8d5c1e12cf05a"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.00036566699964168947,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 1,
+              "sha256": "6aaec9815fb9b559dc561625c93f51703c5c0bb91122132b22a8d5c1e12cf05a"
+            },
+            "full_sec": 8.725699990463909e-05,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 3.828200169664342e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_00",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00028446699980122503,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.815200089884456e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0007579630000691395,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.0001942609997058753,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 6.400100028258748e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_01",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00023475700072594918,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.580400026403368e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004366190005384851,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00018298200120625552,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 6.392399882315658e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_02",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00015408599938382395,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.61470016388921e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004236329987179488,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.0002227120003226446,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.123400039039552e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_03",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.0001499129994044779,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.611399971414357e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004216719989926787,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00018026699945039582,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.0001240130004589446
+          }
+        },
+        {
+          "label": "mini_random_pip_04",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00015247699957399163,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.607099880464375e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0006170689994178247,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.0002457290011079749,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 6.136800038802903e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_05",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.000147790000482928,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.340699969267007e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.00047643900143157225,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00018961800014949404,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 9.817499994824175e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_06",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00015467100092791952,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 9.062500066647772e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.00041468299968983047,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.0002277549992868444,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 6.533099985972513e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_07",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00018100099987350404,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.626700036984403e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0006989650009927573,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.0002321820011275122,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 6.228100028238259e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_08",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00014661400018667337,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.412399984081276e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004430839999258751,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.000183406998985447,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.04920000518905e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_09",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00014786800056754146,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.547600009478629e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.00044085999979870394,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00017977599964069668,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.362600055988878e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_10",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00015734199951111805,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.611399971414357e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.00045787799899699166,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00018295600057172123,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.376500045415014e-05
+          }
+        },
+        {
+          "label": "mini_random_pip_11",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00014483199993264861,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 8.301900015794672e-05
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 24,
+            "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004711920009867754,
+          "python": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 24,
+              "sha256": "2d9a3f7fe455dae34fea4f08be41094fa0e4a5aaa71b255bfbe16512aa22bdee"
+            },
+            "full_sec": 0.00018212100076198112,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00011387999984435737
+          }
+        }
+      ],
+      "python_all_pass": true,
+      "python_full_pass_count": 15,
+      "python_positive_pass_count": 15
+    }
+  },
+  "small_native": {
+    "all_pass": true,
+    "lsi": {
+      "case_count": 12,
+      "cases": [
+        {
+          "label": "small_random_lsi_00",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 4,
+            "sec": 0.0002985619994433364,
+            "sha256": "b9d513009b46a2d34d1d1e37650a863696f9094a670ae18cdb8804a3f7632e11"
+          },
+          "postgis": {
+            "row_count": 4,
+            "sha256": "b9d513009b46a2d34d1d1e37650a863696f9094a670ae18cdb8804a3f7632e11"
+          },
+          "postgis_sec": 0.0006430820012610639
+        },
+        {
+          "label": "small_random_lsi_01",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 4,
+            "sec": 0.00020865199985564686,
+            "sha256": "ab78ccfb97a0723e69f9c3df126e0478c38601f82f80ef5db9c231676a823c4f"
+          },
+          "postgis": {
+            "row_count": 4,
+            "sha256": "ab78ccfb97a0723e69f9c3df126e0478c38601f82f80ef5db9c231676a823c4f"
+          },
+          "postgis_sec": 0.0007130379999580327
+        },
+        {
+          "label": "small_random_lsi_02",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 5,
+            "sec": 0.00019840500135615002,
+            "sha256": "8191da8c9eac582895a0f0959ad2353aab9882bb74c2e1efbfb133f5a4d31561"
+          },
+          "postgis": {
+            "row_count": 5,
+            "sha256": "8191da8c9eac582895a0f0959ad2353aab9882bb74c2e1efbfb133f5a4d31561"
+          },
+          "postgis_sec": 0.0006804540007578908
+        },
+        {
+          "label": "small_random_lsi_03",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 3,
+            "sec": 0.00024281999867525883,
+            "sha256": "b7356dc09f7f403bf061051e011b9298b91b02f11f6c7681bc923c16e71e0e0f"
+          },
+          "postgis": {
+            "row_count": 3,
+            "sha256": "b7356dc09f7f403bf061051e011b9298b91b02f11f6c7681bc923c16e71e0e0f"
+          },
+          "postgis_sec": 0.0006434709994209697
+        },
+        {
+          "label": "small_random_lsi_04",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 4,
+            "sec": 0.00019556299957912415,
+            "sha256": "4f6c2bae7798949afa7a3f6890c05a4b2944f2f1b6763c8c9f9713942e62c20a"
+          },
+          "postgis": {
+            "row_count": 4,
+            "sha256": "4f6c2bae7798949afa7a3f6890c05a4b2944f2f1b6763c8c9f9713942e62c20a"
+          },
+          "postgis_sec": 0.0006807320005464135
+        },
+        {
+          "label": "small_random_lsi_05",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 5,
+            "sec": 0.00025678000019979663,
+            "sha256": "c273704969c81cf036ec840287ce22a591365e5ac7ca1908abfeb98532f33f2e"
+          },
+          "postgis": {
+            "row_count": 5,
+            "sha256": "c273704969c81cf036ec840287ce22a591365e5ac7ca1908abfeb98532f33f2e"
+          },
+          "postgis_sec": 0.0006403829993359977
+        },
+        {
+          "label": "small_random_lsi_06",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 3,
+            "sec": 0.0002446649996272754,
+            "sha256": "3589acb3f98b9b2bdc8f742abc4a3798c95fb4d93bf8f2695791930a9040a367"
+          },
+          "postgis": {
+            "row_count": 3,
+            "sha256": "3589acb3f98b9b2bdc8f742abc4a3798c95fb4d93bf8f2695791930a9040a367"
+          },
+          "postgis_sec": 0.0006622910004807636
+        },
+        {
+          "label": "small_random_lsi_07",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 2,
+            "sec": 0.0002453070010233205,
+            "sha256": "092521bf25b00a71a137e37a0add5de47f01a1fe2a1934ce0b035012781468cd"
+          },
+          "postgis": {
+            "row_count": 2,
+            "sha256": "092521bf25b00a71a137e37a0add5de47f01a1fe2a1934ce0b035012781468cd"
+          },
+          "postgis_sec": 0.0006574460003321292
+        },
+        {
+          "label": "small_random_lsi_08",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 1,
+            "sec": 0.0001924699990922818,
+            "sha256": "d4fbe05eb5d7b6b77eddc258d58987bf27f398e10f08d391a73cb57a45468b2d"
+          },
+          "postgis": {
+            "row_count": 1,
+            "sha256": "d4fbe05eb5d7b6b77eddc258d58987bf27f398e10f08d391a73cb57a45468b2d"
+          },
+          "postgis_sec": 0.0007256680000864435
+        },
+        {
+          "label": "small_random_lsi_09",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 3,
+            "sec": 0.0001893009994091699,
+            "sha256": "2699c35a16074b17748834f95153e79e4c9d19bbb3246de69176a880d7998b03"
+          },
+          "postgis": {
+            "row_count": 3,
+            "sha256": "2699c35a16074b17748834f95153e79e4c9d19bbb3246de69176a880d7998b03"
+          },
+          "postgis_sec": 0.0006121009992057225
+        },
+        {
+          "label": "small_random_lsi_10",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 6,
+            "sec": 0.00023523600066255312,
+            "sha256": "9321c43d480e542508878bb0e85b98b7f38566ce57ff4a5eebfd3a1c6d14cc5d"
+          },
+          "postgis": {
+            "row_count": 6,
+            "sha256": "9321c43d480e542508878bb0e85b98b7f38566ce57ff4a5eebfd3a1c6d14cc5d"
+          },
+          "postgis_sec": 0.0007375519999186508
+        },
+        {
+          "label": "small_random_lsi_11",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 6,
+            "sec": 0.0002599599993118318,
+            "sha256": "66df9d2e6b097bb1fb1a84b10fbb7ed77f865772fba94cdc0a9cd7bc389d85f4"
+          },
+          "postgis": {
+            "row_count": 6,
+            "sha256": "66df9d2e6b097bb1fb1a84b10fbb7ed77f865772fba94cdc0a9cd7bc389d85f4"
+          },
+          "postgis_sec": 0.0006478830000560265
+        }
+      ],
+      "native_all_pass": true,
+      "native_pass_count": 12
+    },
+    "overlay": {
+      "case_count": 12,
+      "cases": [
+        {
+          "label": "small_random_overlay_00",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.0003062070009036688,
+            "sha256": "9d10b913b6c636f0d2669f5061f159460b57f30ca7c25f2a965de62f50a2f65f"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "9d10b913b6c636f0d2669f5061f159460b57f30ca7c25f2a965de62f50a2f65f"
+          },
+          "postgis_sec": 0.004300147000321886
+        },
+        {
+          "label": "small_random_overlay_01",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.0002578780004114378,
+            "sha256": "f564a19a088304402346912ebb81a6d4cc2070589c49073539790255dfe5f2a7"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "f564a19a088304402346912ebb81a6d4cc2070589c49073539790255dfe5f2a7"
+          },
+          "postgis_sec": 0.0036560440003086114
+        },
+        {
+          "label": "small_random_overlay_02",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.0002626690002216492,
+            "sha256": "b3e06e0d59c1a74882ca9ffaefc0f628a2368a99d7d2b27bee929e8b97d04e73"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "b3e06e0d59c1a74882ca9ffaefc0f628a2368a99d7d2b27bee929e8b97d04e73"
+          },
+          "postgis_sec": 0.001228563998665777
+        },
+        {
+          "label": "small_random_overlay_03",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.0002672560003702529,
+            "sha256": "d72b05746a3cf82df7da3a816c52da2ad7cea4e4b88cfe5d82b3c7da6a4b76a6"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "d72b05746a3cf82df7da3a816c52da2ad7cea4e4b88cfe5d82b3c7da6a4b76a6"
+          },
+          "postgis_sec": 0.001206448001539684
+        },
+        {
+          "label": "small_random_overlay_04",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.00025772699882509187,
+            "sha256": "b445dcc18dbecafb1394bb28fe49360b3312cf440f77f9537ca81e7dbcad3183"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "b445dcc18dbecafb1394bb28fe49360b3312cf440f77f9537ca81e7dbcad3183"
+          },
+          "postgis_sec": 0.00120760999925551
+        },
+        {
+          "label": "small_random_overlay_05",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.00028592400121851824,
+            "sha256": "e2a408df2dbad5d4d6d445a6ee8fe9ae6d7c95f113c269322343eed7f2f29c23"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "e2a408df2dbad5d4d6d445a6ee8fe9ae6d7c95f113c269322343eed7f2f29c23"
+          },
+          "postgis_sec": 0.0012394790010148427
+        },
+        {
+          "label": "small_random_overlay_06",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.00027147000037075486,
+            "sha256": "9d10b913b6c636f0d2669f5061f159460b57f30ca7c25f2a965de62f50a2f65f"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "9d10b913b6c636f0d2669f5061f159460b57f30ca7c25f2a965de62f50a2f65f"
+          },
+          "postgis_sec": 0.0037373980012489483
+        },
+        {
+          "label": "small_random_overlay_07",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.00030384300043806434,
+            "sha256": "a25141ca5384ee70d621bb0d53d287ea22502cd0923158013b3d217e84457bc7"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "a25141ca5384ee70d621bb0d53d287ea22502cd0923158013b3d217e84457bc7"
+          },
+          "postgis_sec": 0.0012851249994128011
+        },
+        {
+          "label": "small_random_overlay_08",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.00026080399948114064,
+            "sha256": "0227055cb679b4c1be8478c4bc8eeffad38928c912bd2c6504df51ce4da56c76"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "0227055cb679b4c1be8478c4bc8eeffad38928c912bd2c6504df51ce4da56c76"
+          },
+          "postgis_sec": 0.001234800998645369
+        },
+        {
+          "label": "small_random_overlay_09",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.0002877569986594608,
+            "sha256": "043fd9a6f07183f743ff25a1eb58c1be0dba9ffe199bdea65b6ded9e5a94e3ab"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "043fd9a6f07183f743ff25a1eb58c1be0dba9ffe199bdea65b6ded9e5a94e3ab"
+          },
+          "postgis_sec": 0.0012042879989166977
+        },
+        {
+          "label": "small_random_overlay_10",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.00026087500009452924,
+            "sha256": "fc82298ce3e1fa77e0e1cf2a96031ebfd4e4e84bb236cb0db73b85eaaec80a98"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "fc82298ce3e1fa77e0e1cf2a96031ebfd4e4e84bb236cb0db73b85eaaec80a98"
+          },
+          "postgis_sec": 0.0012242459997651167
+        },
+        {
+          "label": "small_random_overlay_11",
+          "native": {
+            "parity_vs_postgis": true,
+            "row_count": 36,
+            "sec": 0.000331671000822098,
+            "sha256": "6d9623c27b93169a0b2190269e980c35e797e369ce3e86707ae0f923a91d7fba"
+          },
+          "postgis": {
+            "row_count": 36,
+            "sha256": "6d9623c27b93169a0b2190269e980c35e797e369ce3e86707ae0f923a91d7fba"
+          },
+          "postgis_sec": 0.0012241809999977704
+        }
+      ],
+      "native_all_pass": true,
+      "native_pass_count": 12
+    },
+    "pip": {
+      "case_count": 12,
+      "cases": [
+        {
+          "label": "small_random_pip_00",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 1,
+              "row_count": 192,
+              "sha256": "aa8477da85a4127303414d466e372341c66c16478d2c49dadad09732cdf88872"
+            },
+            "full_sec": 0.0005532459999813,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 1,
+              "sha256": "762650f722e1226db50f6a43f98ad5904e4afad288cec957a47bbf31891b047d"
+            },
+            "positive_sec": 0.0001694389993645018
+          },
+          "postgis_full": {
+            "positive_row_count": 1,
+            "row_count": 192,
+            "sha256": "aa8477da85a4127303414d466e372341c66c16478d2c49dadad09732cdf88872"
+          },
+          "postgis_positive": {
+            "row_count": 1,
+            "sha256": "762650f722e1226db50f6a43f98ad5904e4afad288cec957a47bbf31891b047d"
+          },
+          "postgis_sec": 0.0005841620004503056
+        },
+        {
+          "label": "small_random_pip_01",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.0004883239998889621,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00016210600006161258
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004643039992515696
+        },
+        {
+          "label": "small_random_pip_02",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.00047074400026758667,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00015876699944783468
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005254170009720838
+        },
+        {
+          "label": "small_random_pip_03",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 1,
+              "row_count": 192,
+              "sha256": "f3d24d78a5c6b7dce416156f0de95ba36ac11c2435ea27be8026afeb8114730f"
+            },
+            "full_sec": 0.0004706859999714652,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 1,
+              "sha256": "fd4b1b0af41c5a0e2f890ba61ed40968c5f5336fe579225b0afdbc52acb401fe"
+            },
+            "positive_sec": 0.00016625299940642435
+          },
+          "postgis_full": {
+            "positive_row_count": 1,
+            "row_count": 192,
+            "sha256": "f3d24d78a5c6b7dce416156f0de95ba36ac11c2435ea27be8026afeb8114730f"
+          },
+          "postgis_positive": {
+            "row_count": 1,
+            "sha256": "fd4b1b0af41c5a0e2f890ba61ed40968c5f5336fe579225b0afdbc52acb401fe"
+          },
+          "postgis_sec": 0.0004665479991672328
+        },
+        {
+          "label": "small_random_pip_04",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.0004805190001206938,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.0001602180000190856
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005594009999185801
+        },
+        {
+          "label": "small_random_pip_05",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 1,
+              "row_count": 192,
+              "sha256": "7a6dfe0474f215a284ac6d968fae1dd8884e46d9cd417d1cbc07425619ce89e0"
+            },
+            "full_sec": 0.0004785860000993125,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 1,
+              "sha256": "3d120cffaeea884e4fe8eb2b4c6bf84b69f2630ca6fab81ae750b49ce9360756"
+            },
+            "positive_sec": 0.0001623640000616433
+          },
+          "postgis_full": {
+            "positive_row_count": 1,
+            "row_count": 192,
+            "sha256": "7a6dfe0474f215a284ac6d968fae1dd8884e46d9cd417d1cbc07425619ce89e0"
+          },
+          "postgis_positive": {
+            "row_count": 1,
+            "sha256": "3d120cffaeea884e4fe8eb2b4c6bf84b69f2630ca6fab81ae750b49ce9360756"
+          },
+          "postgis_sec": 0.0004850709992751945
+        },
+        {
+          "label": "small_random_pip_06",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.0004546749987639487,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00015994299974408932
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.000470749000669457
+        },
+        {
+          "label": "small_random_pip_07",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.00042744699931063224,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00015681700097047724
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.00045156200030760374
+        },
+        {
+          "label": "small_random_pip_08",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 3,
+              "row_count": 192,
+              "sha256": "f04b9507b94b1c6ed040c7ce8df50fac295d0bfd27c28a878cc279c6809656dc"
+            },
+            "full_sec": 0.00048220900134765543,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 3,
+              "sha256": "785173c8fa651d3ba74b25792f749887b1b9cf3c71cecac3fd9a4146c924bf22"
+            },
+            "positive_sec": 0.00016519699966011103
+          },
+          "postgis_full": {
+            "positive_row_count": 3,
+            "row_count": 192,
+            "sha256": "f04b9507b94b1c6ed040c7ce8df50fac295d0bfd27c28a878cc279c6809656dc"
+          },
+          "postgis_positive": {
+            "row_count": 3,
+            "sha256": "785173c8fa651d3ba74b25792f749887b1b9cf3c71cecac3fd9a4146c924bf22"
+          },
+          "postgis_sec": 0.0004959489997418132
+        },
+        {
+          "label": "small_random_pip_09",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.00042613799996615853,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00019410099957895
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0017010570009006187
+        },
+        {
+          "label": "small_random_pip_10",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.00042760900032590143,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00015972300025168806
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0004983500002708752
+        },
+        {
+          "label": "small_random_pip_11",
+          "native": {
+            "full": {
+              "parity_vs_postgis": true,
+              "positive_row_count": 0,
+              "row_count": 192,
+              "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+            },
+            "full_sec": 0.00048753400005807634,
+            "positive": {
+              "parity_vs_postgis": true,
+              "row_count": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "positive_sec": 0.00016128099923662376
+          },
+          "postgis_full": {
+            "positive_row_count": 0,
+            "row_count": 192,
+            "sha256": "0ddaa03a33f71f7dd3a98a7b3e542b67a22a12a757b54bdf22edc3923c3fd56d"
+          },
+          "postgis_positive": {
+            "row_count": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "postgis_sec": 0.0005562290007219417
+        }
+      ],
+      "native_all_pass": true,
+      "native_full_pass_count": 12,
+      "native_positive_pass_count": 12
+    }
+  }
+}
