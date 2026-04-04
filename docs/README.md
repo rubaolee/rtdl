@@ -40,9 +40,10 @@ Use them when you need detailed historical or goal-specific context.
 
 Current live state to keep in mind while reading:
 
-- Embree is the strongest validated backend today
+- Embree is still the strongest CPU/backend baseline today
 - OptiX is real and validated on bounded accepted workloads on `192.168.1.20`
-- Vulkan is currently kept as provisional backend code
+- Vulkan is now parity-clean on the accepted bounded Linux surface, but is still
+  kept as provisional backend code because larger-package scaling remains open
 - PostGIS is now a closed external ground-truth checker on accepted bounded packages
 - the accepted bounded v0.1 package now includes:
   - `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`

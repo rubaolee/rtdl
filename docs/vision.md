@@ -55,7 +55,9 @@ Validated backends:
 
 - **Intel Embree**: high-precision CPU baseline
 - **NVIDIA OptiX**: high-performance CUDA-based GPU path
-- **Vulkan KHR**: provisional cross-vendor GPU path retained in the repo, but not yet validated to the same level as Embree/OptiX
+- **Vulkan KHR**: provisional cross-vendor GPU path retained in the repo; now
+  parity-clean on the accepted bounded Linux surface, but still not validated
+  to the same larger-scale level as Embree/OptiX
 
 Target workloads:
 

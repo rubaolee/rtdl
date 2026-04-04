@@ -21,6 +21,7 @@ Current v0.1 scope:
 - backends:
   - Embree on CPU
   - OptiX on NVIDIA GPU
+  - Vulkan on the accepted bounded Linux surface, still provisional for larger-scale use
 - external checker:
   - indexed PostGIS comparison on the Linux validation host
 
@@ -47,6 +48,7 @@ Current v0.1 scope:
   - native oracle
   - Embree
   - OptiX on validated bounded targets
+  - Vulkan on the accepted bounded Goal 65/66 Linux surface
 
 ### Embree path
 
@@ -91,25 +93,18 @@ Across:
 - native C oracle
 - Embree
 - OptiX
+- Vulkan on the accepted bounded Linux surface
 
-## What Is Still Missing
+## What Is Still Missing Beyond v0.1 Closure
 
-v0.1 is **not** finished just because both backends exist.
+v0.1 is now closed as a bounded package, but the following work is still open
+for later releases or post-v0.1 hardening:
 
-The remaining work is to finish a bounded, trustworthy RayJoin-style repetition
-package across the current backends.
-
-That mainly means:
-
-- broader exact-source family coverage
-- more apples-to-apples backend comparisons
-- expand the bounded PostGIS-backed matrix beyond the currently accepted packages
-- clearer final experiment matrix closure
-- final packaging of what is:
-  - exact-source and accepted
-  - bounded but accepted
-  - synthetic only
-  - still missing
+- larger-package Vulkan `lsi` scaling beyond the current output-capacity contract
+- lower-overhead Vulkan exact-finalization design
+- broader exact-source family coverage beyond the accepted bounded package
+- more apples-to-apples large-package backend comparisons
+- any paper-identical reproduction that depends on unavailable or unstable datasets
 
 ## Current Acceptance Standard
 
@@ -131,5 +126,5 @@ That means:
 
 - preserve the accepted bounded package as the current trust anchor
 - expand only when data staging is stable and repeatable
-- keep Vulkan explicitly provisional until it has materially stronger
-  validation evidence
+- keep Vulkan explicitly provisional until it has materially stronger scaling
+  and performance evidence beyond the accepted bounded surface

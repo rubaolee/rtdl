@@ -305,7 +305,7 @@ function addFooter(slide, page) {
   addPanel(slide, 4.05, 1.55, 3.0, 2.2, "Workloads",
     "lsi\npip\noverlay\nray_tri_hitcount\nsegment_polygon_hitcount\npoint_nearest_segment", COLORS.white);
   addPanel(slide, 7.3, 1.55, 2.55, 2.2, "Execution",
-    "Native C++ oracle\nEmbree runtime\nOptiX runtime\nVulkan (provisional)", COLORS.white);
+    "Native C++ oracle\nEmbree runtime\nOptiX runtime\nVulkan runtime", COLORS.white);
   addPanel(slide, 10.1, 1.55, 2.4, 2.2, "Codegen",
     "RayJoin lowering\nplan.json schema\nPostGIS comparison\nGPU backend plumbing", COLORS.white);
   addBullets(slide, [
@@ -313,7 +313,7 @@ function addFooter(slide, page) {
     "The Mac backend is real: current RTDL programs can return results through Embree.",
     "The OptiX path is a real controlled runtime on 192.168.1.20, with bounded accepted real-data validation.",
     "PostGIS is now a closed external checker on accepted bounded packages.",
-    "The Vulkan path is present in-repo but still provisional.",
+    "The Vulkan path is now parity-clean on the accepted bounded Linux surface, but still provisional for larger-scale use.",
     "Language docs, cookbook, and authored examples are in the repo and validated by tests.",
   ], { x: 0.95, y: 4.2, w: 11.7, h: 2.0, fontSize: 13.5, spaceAfter: 8 });
   addFooter(slide, 3);
@@ -361,7 +361,7 @@ def ray_triangle_hits():
   slide.addShape(pptx.ShapeType.chevron, {
     x: 8.95, y: 2.45, w: 0.6, h: 0.55, line: { color: COLORS.teal, transparency: 100 }, fill: { color: COLORS.teal }
   });
-  addPanel(slide, 9.65, 2.1, 2.95, 1.2, "Outputs", "Oracle runtime\nEmbree runtime\nOptiX runtime\nVulkan runtime (provisional)", COLORS.white);
+  addPanel(slide, 9.65, 2.1, 2.95, 1.2, "Outputs", "Oracle runtime\nEmbree runtime\nOptiX runtime\nVulkan runtime", COLORS.white);
   addPanel(slide, 0.8, 4.1, 3.8, 1.75, "Key modules",
     "api.py\nir.py\ntypes.py\nlowering.py\ncodegen.py\nruntime.py\nembree_runtime.py\nreference.py\ndatasets.py", COLORS.mint);
   addPanel(slide, 4.85, 4.1, 3.8, 1.75, "Execution contract",
@@ -454,12 +454,12 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 7.3, 1.55, 2.75, 2.15, "OptiX / RayJoin",
     "Purpose: NVIDIA GPU backend for the RayJoin-style target slice.\n\nStatus: implemented and validated on bounded accepted workloads.", COLORS.white);
   addPanel(slide, 10.3, 1.55, 2.2, 2.15, "Future Mac GPU",
-    "Vulkan KHR path is in-repo but provisional.\n\nApple/Metal work is still future.", COLORS.white);
+    "Vulkan KHR path is in-repo, parity-clean on the accepted bounded Linux surface, and still provisional beyond that.\n\nApple/Metal work is still future.", COLORS.white);
   addBullets(slide, [
     "RTDL is designed so backend specifics live under the IR and lowering boundary, not in user kernels.",
     "Embree is the strongest validated backend today.",
     "OptiX is real and correctness-checked on bounded real-data workloads.",
-    "Vulkan is retained as provisional backend code, not as an equally accepted backend.",
+    "Vulkan is now correctness-closed on the accepted bounded Linux surface, but it is not yet an equally mature large-scale backend.",
     "A broader future architecture can still support CPU, NVIDIA, Vulkan-class, and future Apple/mobile RT targets.",
   ], { x: 0.95, y: 4.2, w: 11.6, h: 2.0, fontSize: 13.4 });
   addFooter(slide, 9);
@@ -473,7 +473,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 0.8, 1.55, 5.75, 4.9, "Proven now",
     "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR and execute through the native oracle, Embree, and accepted bounded OptiX paths.\n\nBounded four-system checks now exist across PostGIS, the oracle, Embree, and OptiX on accepted real-data packages.\n\nThe review history is reproducible and archived.", COLORS.mint);
   addPanel(slide, 6.8, 1.55, 5.75, 4.9, "Not done yet",
-    "No exact / robust geometry implementation.\n\nNo final bounded full RayJoin-style reproduction package across all current targets yet.\n\nOverlay remains a seed analogue, not full polygon materialization.\n\nVulkan is not yet validated to the same level as Embree or OptiX.", COLORS.rose);
+    "No exact / robust geometry implementation.\n\nThe accepted package is still bounded rather than paper-identical or nationwide.\n\nOverlay remains a seed analogue, not full polygon materialization.\n\nVulkan still has larger-package scaling limits and is not yet at Embree/OptiX maturity.", COLORS.rose);
   addFooter(slide, 10);
 }
 
@@ -501,7 +501,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.plum);
   addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nEmbree and OptiX are real; Vulkan is provisional; bounded PostGIS closure is established on accepted packages.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nEmbree and OptiX are real; Vulkan is parity-clean on the accepted bounded Linux surface but still provisional; bounded PostGIS closure is established on accepted packages.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
     "Read docs/rtdl/*, run make test, validate kernels against the oracle, and compare them against Embree and OptiX on accepted targets.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
@@ -512,7 +512,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 - Native oracle + Embree + OptiX
 - Bounded accepted reproduction package across trusted systems
 - First bounded overlay-seed four-system closure
-- Vulkan retained as provisional backend code
+- Vulkan parity-clean on the accepted bounded Linux surface
 - 273 full-matrix tests
 - 59+ reviewed goal rounds
 - First-class raw + prepared raw runtime modes

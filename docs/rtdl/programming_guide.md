@@ -130,13 +130,16 @@ Current trusted GPU path:
 
 Use `rt.run_vulkan(...)` only when:
 
-- you are explicitly working on the provisional Vulkan backend
-- you understand that its current validation surface is weaker than Embree and OptiX
+- you are explicitly working on the current bounded Vulkan path
+- you understand that Vulkan is correctness-closed only on the accepted bounded
+  Linux surface and is still provisional beyond that
 
 Current boundary:
 
 - Vulkan remains in-repo and usable for directed work
-- it is not yet validated to the same acceptance level as Embree or the accepted OptiX path
+- it is now parity-clean on the accepted bounded Linux surface
+- it is still not validated to the same larger-scale acceptance level as Embree
+  or the accepted OptiX path
 
 ## 6. Validation Workflow
 
