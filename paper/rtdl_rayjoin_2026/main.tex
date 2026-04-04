@@ -1,6 +1,8 @@
 \documentclass[conference]{IEEEtran}
 
 \usepackage{cite}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -324,15 +326,15 @@ RTDL also closes a bounded lakes/parks analogue on Australia:
 \caption{Accepted bounded LKAU $\bowtie$ PKAU package on \texttt{sunshine\_tiny}.}
 \label{tab:lkau}
 \centering
-\small
+\scriptsize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{0.34\columnwidth}rrrr}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.28\columnwidth}rrrr}
 \toprule
 Workload & Rows & PostGIS (s) & Embree (s) & OptiX (s) \\
 \midrule
 LSI & 15 & 0.0623 & 2.1286 & 0.5072 \\
 PIP & 73920 (22 hits) & 0.0041 & 0.0571 & 0.3844 \\
-Overlay-seed analogue & 73920 & 0.2285 & 0.0850 & 0.5674 \\
+Overlay-seed seed & 73920 & 0.2285 & 0.0850 & 0.5674 \\
 \bottomrule
 \end{tabular}
 \end{table}
