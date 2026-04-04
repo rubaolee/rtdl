@@ -23,6 +23,16 @@ def _pkg_config_flags(package: str, option: str) -> list[str]:
     return result.stdout.split()
 
 
+def _geos_pkg_config_flags(option: str) -> list[str]:
+    flags = _pkg_config_flags("geos", option)
+    if flags:
+        return flags
+    flags = _pkg_config_flags("geos_c", option)
+    if flags:
+        return flags
+    return ["-lgeos_c"] if option == "--libs" else []
+
+
 class _RtdlSegment(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -515,8 +525,8 @@ def _ensure_oracle_library() -> Path:
     library_path = build_dir / f"librtdl_oracle{library_ext}"
     compiler = os.environ.get("CXX", "clang++" if system == "Darwin" else "g++")
     shared_flags = ["-dynamiclib", "-fPIC"] if system == "Darwin" else ["-shared", "-fPIC"]
-    geos_cflags = _pkg_config_flags("geos", "--cflags")
-    geos_libs = _pkg_config_flags("geos", "--libs")
+    geos_cflags = _geos_pkg_config_flags("--cflags")
+    geos_libs = _geos_pkg_config_flags("--libs")
     needs_build = not library_path.exists() or library_path.stat().st_mtime < source_path.stat().st_mtime
     if needs_build:
         subprocess.run(

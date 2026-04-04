@@ -644,8 +644,6 @@ std::vector<RtdlPipRow> oracle_pip(
   if (!positive_only) {
     rows.reserve(points.size() * polygons.size());
   }
-#if RTDL_ORACLE_HAS_GEOS
-  GeosPreparedPolygonSet geos(polygons);
   std::vector<Bounds2D> bounds;
   if (positive_only) {
     bounds.reserve(polygons.size());
@@ -653,6 +651,8 @@ std::vector<RtdlPipRow> oracle_pip(
       bounds.push_back(bounds_for_polygon(polygon));
     }
   }
+#if RTDL_ORACLE_HAS_GEOS
+  GeosPreparedPolygonSet geos(polygons);
   for (const Point2D& point : points) {
     for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
       if (positive_only) {
@@ -670,13 +670,6 @@ std::vector<RtdlPipRow> oracle_pip(
   }
   return rows;
 #endif
-  std::vector<Bounds2D> bounds;
-  if (positive_only) {
-    bounds.reserve(polygons.size());
-    for (const Polygon2D& polygon : polygons) {
-      bounds.push_back(bounds_for_polygon(polygon));
-    }
-  }
   for (const Point2D& point : points) {
     for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
       const Polygon2D& polygon = polygons[polygon_index];

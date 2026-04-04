@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import platform
 import subprocess
 import sys
 import time
@@ -16,6 +17,29 @@ sys.path.insert(0, str(ROOT))
 import rtdsl as rt
 from examples.rtdl_language_reference import county_zip_join_reference
 from examples.rtdl_language_reference import point_in_counties_reference
+
+
+def pkg_config_flags(package: str, option: str) -> list[str]:
+    try:
+        result = subprocess.run(
+            ["pkg-config", option, package],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return []
+    return result.stdout.split()
+
+
+def geos_pkg_config_flags(option: str) -> list[str]:
+    flags = pkg_config_flags("geos", option)
+    if flags:
+        return flags
+    flags = pkg_config_flags("geos_c", option)
+    if flags:
+        return flags
+    return ["-lgeos_c"] if option == "--libs" else []
 
 
 def write_segments_csv(path: Path, segments: tuple[rt.Segment, ...]) -> None:
@@ -48,11 +72,16 @@ def compile_native(exe_name: str, source_name: str) -> Path:
     output_path = build_dir / exe_name
     source_path = ROOT / "apps" / source_name
     native_path = ROOT / "src" / "native" / "rtdl_embree.cpp"
-    embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", "/opt/homebrew/opt/embree"))
+    system = platform.system()
+    default_prefix = "/opt/homebrew/opt/embree" if system == "Darwin" else "/usr"
+    embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", default_prefix))
+    geos_cflags = geos_pkg_config_flags("--cflags")
+    geos_libs = geos_pkg_config_flags("--libs")
     cmd = [
         "c++",
         "-std=c++17",
         "-O2",
+        *geos_cflags,
         "-I",
         str(embree_prefix / "include"),
         str(source_path),
@@ -61,6 +90,7 @@ def compile_native(exe_name: str, source_name: str) -> Path:
         str(embree_prefix / "lib"),
         "-Wl,-rpath," + str(embree_prefix / "lib"),
         "-lembree4",
+        *geos_libs,
         "-o",
         str(output_path),
     ]

@@ -28,6 +28,16 @@ def _pkg_config_flags(package: str, option: str) -> list[str]:
     return result.stdout.split()
 
 
+def _geos_pkg_config_flags(option: str) -> list[str]:
+    flags = _pkg_config_flags("geos", option)
+    if flags:
+        return flags
+    flags = _pkg_config_flags("geos_c", option)
+    if flags:
+        return flags
+    return ["-lgeos_c"] if option == "--libs" else []
+
+
 class _RtdlSegment(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -1137,8 +1147,8 @@ def _ensure_embree_library() -> Path:
         tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/usr"))
         compiler = os.environ.get("CXX", "g++")
         shared_flags = ["-shared", "-fPIC"]
-    geos_cflags = _pkg_config_flags("geos", "--cflags")
-    geos_libs = _pkg_config_flags("geos", "--libs")
+    geos_cflags = _geos_pkg_config_flags("--cflags")
+    geos_libs = _geos_pkg_config_flags("--libs")
 
     embree_include = embree_prefix / "include"
     if not embree_prefix.exists() or not embree_include.exists():

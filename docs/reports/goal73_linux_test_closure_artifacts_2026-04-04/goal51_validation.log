@@ -1,0 +1,150 @@
+Running lsi on authored_lsi_minimal...
+Running pip on authored_pip_minimal...
+Running overlay on authored_overlay_minimal...
+Running ray_tri_hitcount on authored_ray_tri_minimal...
+Running segment_polygon_hitcount on authored_segment_polygon_minimal...
+Running point_nearest_segment on authored_point_nearest_segment_minimal...
+Running lsi on derived/br_county_subset_segments_tiled_x8...
+Running pip on derived/br_county_subset_polygons_tiled_x8...
+
+Final Results saved to build/goal73_goal51_validation/summary.json
+{
+  "records": [
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.008863679999194574,
+      "dataset": "authored_lsi_minimal",
+      "kernel": "county_zip_join_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 0.0011450500005594222,
+      "vulkan_warm_sec": 0.5043233169999439,
+      "workload": "lsi"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.0003180959993187571,
+      "dataset": "authored_pip_minimal",
+      "kernel": "point_in_counties_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 2.9078000807203352e-05,
+      "vulkan_warm_sec": 0.3110766350000631,
+      "workload": "pip"
+    },
+    {
+      "cpu_count": 1,
+      "cpu_sec": 0.00010766900049929973,
+      "dataset": "authored_overlay_minimal",
+      "kernel": "county_soil_overlay_reference",
+      "parity": true,
+      "vulkan_count": 1,
+      "vulkan_jit_sec": 2.5658000595285557e-05,
+      "vulkan_warm_sec": 0.30323748500086367,
+      "workload": "overlay"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.00015064099898154382,
+      "dataset": "authored_ray_tri_minimal",
+      "kernel": "ray_triangle_hitcount_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 2.5436998839722946e-05,
+      "vulkan_warm_sec": 0.3026039199994557,
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.00021763899894722272,
+      "dataset": "authored_segment_polygon_minimal",
+      "kernel": "segment_polygon_hitcount_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 2.5827999706962146e-05,
+      "vulkan_warm_sec": 0.30651038399992103,
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 9.760900138644502e-05,
+      "dataset": "authored_point_nearest_segment_minimal",
+      "kernel": "point_nearest_segment_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 2.566399962233845e-05,
+      "vulkan_warm_sec": 0.07916748500065296,
+      "workload": "point_nearest_segment"
+    },
+    {
+      "cpu_count": 0,
+      "cpu_sec": 0.00019791300110227894,
+      "dataset": "derived/br_county_subset_segments_tiled_x8",
+      "kernel": "county_zip_join_reference",
+      "parity": true,
+      "vulkan_count": 0,
+      "vulkan_jit_sec": 2.4790000679786317e-05,
+      "vulkan_warm_sec": 0.005152605999683146,
+      "workload": "lsi"
+    },
+    {
+      "cpu_count": 384,
+      "cpu_sec": 0.0008636319998913677,
+      "dataset": "derived/br_county_subset_polygons_tiled_x8",
+      "kernel": "point_in_counties_reference",
+      "parity": true,
+      "vulkan_count": 384,
+      "vulkan_jit_sec": 2.8794000172638334e-05,
+      "vulkan_warm_sec": 0.006575620998773957,
+      "workload": "pip"
+    }
+  ],
+  "suite": "goal51_vulkan_validation",
+  "targets": [
+    {
+      "dataset": "authored_lsi_minimal",
+      "kernel": "county_zip_join_reference",
+      "workload": "lsi"
+    },
+    {
+      "dataset": "authored_pip_minimal",
+      "kernel": "point_in_counties_reference",
+      "workload": "pip"
+    },
+    {
+      "dataset": "authored_overlay_minimal",
+      "kernel": "county_soil_overlay_reference",
+      "workload": "overlay"
+    },
+    {
+      "dataset": "authored_ray_tri_minimal",
+      "kernel": "ray_triangle_hitcount_reference",
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "dataset": "authored_segment_polygon_minimal",
+      "kernel": "segment_polygon_hitcount_reference",
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "dataset": "authored_point_nearest_segment_minimal",
+      "kernel": "point_nearest_segment_reference",
+      "workload": "point_nearest_segment"
+    },
+    {
+      "dataset": "derived/br_county_subset_segments_tiled_x8",
+      "kernel": "county_zip_join_reference",
+      "workload": "lsi"
+    },
+    {
+      "dataset": "derived/br_county_subset_polygons_tiled_x8",
+      "kernel": "point_in_counties_reference",
+      "workload": "pip"
+    }
+  ],
+  "vulkan_version": [
+    0,
+    1,
+    0
+  ]
+}
