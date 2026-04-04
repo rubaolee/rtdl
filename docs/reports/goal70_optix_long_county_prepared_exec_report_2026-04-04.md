@@ -1,7 +1,7 @@
 # Goal 70 OptiX Long County Prepared-Execution Report
 
 Date: 2026-04-04
-Status: measured internal result only, do not publish
+Status: supporting artifact for the published Goal 70 package
 
 Objective:
 - beat PostGIS on an accepted long positive-hit `pip` package without weakening parity
@@ -47,4 +47,4 @@ Conclusion:
 - Goal 70 now has a real measured long-workload success for OptiX on Linux
 - the win is valid only for the execution-ready / prepacked timing boundary documented above
 - parity remained exact on both reruns
-- do not publish yet; this should go through final report and review first
+- this raw measured report is now retained as a supporting artifact for the published Goal 70 package

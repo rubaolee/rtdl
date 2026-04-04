@@ -4,8 +4,7 @@ Date: 2026-04-04
 
 Status:
 - complete
-- internal review package ready
-- do not publish yet
+- published
 
 ## Goal
 
