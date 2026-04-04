@@ -67,18 +67,18 @@ RayJoin's experiment scripts map those pairs to internal dataset names:
 
 This mapping is visible in the RayJoin experiment scripts under `expr/draw/ag.py` and `expr/draw/draw_speedup.py`.
 
-The current Embree-phase provenance policy for them is:
+The current bounded-closure provenance policy for them is:
 
 | Paper Pair | Source Family | Current RTDL Provenance Plan | Current Status | Notes |
 | --- | --- | --- | --- | --- |
-| County ⊲⊳ Zipcode | USCounty + Zipcode | `exact-input` preferred, `fixture-subset` currently available for county only | `planned` | Needs a reproducible zipcode acquisition path plus CDB conversion. |
-| Block ⊲⊳ Water | BlockGroup + WaterBodies | `exact-input` preferred | `planned` | No RTDL local subset yet. |
-| LKAF ⊲⊳ PKAF | Lakes + Parks / `lakes_parks_Africa` | `exact-input` preferred or `derived-input` from public SpatialHadoop sets | `planned` | Africa pair naming is resolved from the RayJoin scripts. |
-| LKAS ⊲⊳ PKAS | Lakes + Parks / `lakes_parks_Asia` | `exact-input` preferred or `derived-input` | `planned` | Asia pair naming is resolved from the RayJoin scripts. |
-| LKAU ⊲⊳ PKAU | Lakes + Parks / `lakes_parks_Australia` | `exact-input` preferred or `derived-input` | `planned` | Australia pair naming is resolved from the RayJoin scripts. |
-| LKEU ⊲⊳ PKEU | Lakes + Parks / `lakes_parks_Europe` | `exact-input` preferred or `derived-input` | `planned` | Europe pair naming is resolved from the RayJoin scripts. |
-| LKNA ⊲⊳ PKNA | Lakes + Parks / `lakes_parks_North_America` | `exact-input` preferred or `derived-input` | `planned` | North America pair naming is resolved from the RayJoin scripts. |
-| LKSA ⊲⊳ PKSA | Lakes + Parks / `lakes_parks_South_America` | `exact-input` preferred or `derived-input` | `planned` | South America pair naming is resolved from the RayJoin scripts. |
+| County ⊲⊳ Zipcode | USCounty + Zipcode | accepted bounded exact-source package on `top4_tx_ca_ny_pa` | `done-bounded` | Accepted four-system bounded package. |
+| Block ⊲⊳ Water | BlockGroup + WaterBodies | accepted bounded exact-source analogue on `county2300_s10` | `done-bounded` | The stable public family currently available in RTDL is `BlockGroup ⊲⊳ WaterBodies`; this is the accepted bounded analogue used for closure. |
+| LKAF ⊲⊳ PKAF | Lakes + Parks / `lakes_parks_Africa` | exact-input preferred or `derived-input` from public SpatialHadoop sets | `deferred-unavailable` | Africa pair naming is resolved, but the public acquisition path proved unstable. |
+| LKAS ⊲⊳ PKAS | Lakes + Parks / `lakes_parks_Asia` | exact-input preferred or `derived-input` | `deferred-unavailable` | Unstaged continent pair. |
+| LKAU ⊲⊳ PKAU | Lakes + Parks / `lakes_parks_Australia` | accepted bounded derived-input `sunshine_tiny` analogue | `done-bounded` | Accepted four-system bounded analogue. |
+| LKEU ⊲⊳ PKEU | Lakes + Parks / `lakes_parks_Europe` | exact-input preferred or `derived-input` | `deferred-unavailable` | Unstaged continent pair. |
+| LKNA ⊲⊳ PKNA | Lakes + Parks / `lakes_parks_North_America` | exact-input preferred or `derived-input` | `deferred-unavailable` | Unstaged continent pair. |
+| LKSA ⊲⊳ PKSA | Lakes + Parks / `lakes_parks_South_America` | exact-input preferred or `derived-input` | `deferred-unavailable` | Unstaged continent pair. |
 
 ## Current Checked-In Inputs
 
@@ -148,9 +148,12 @@ Therefore:
 
 ## Required Deliverables Before Goal 13 Closure
 
-Before Goal 13 can close, the dataset side must include:
+For bounded paper closure, the dataset side must include:
 
 1. a frozen provenance label for every case in the paper reproduction matrix
 2. explicit size notes for all scaling cases
 3. a clear statement for every substitution away from paper-original inputs
 4. 2-agent review agreement that the provenance is honest enough for the Embree phase
+
+Under the current closure rule, unstable or unavailable public acquisition paths
+may be recorded as `deferred-unavailable` rather than blocking bounded closure.

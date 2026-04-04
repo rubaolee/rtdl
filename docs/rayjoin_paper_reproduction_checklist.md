@@ -35,8 +35,10 @@ The key paper artifacts to mirror are:
 
 Current completion note:
 
-- Figure 13 and Figure 14 now have a scaled synthetic Embree analogue in the repository.
-- Table 3, Table 4, and Figure 15 remain the main open paper-target artifacts.
+- Figure 13 and Figure 14 now have accepted scaled bounded analogues in the repository.
+- Table 3 now has accepted bounded package closure for the currently stable and available families.
+- Table 4 and Figure 15 now have accepted bounded overlay-seed analogue closure.
+- Remaining continent-pair rows with unstable or unavailable public acquisition paths are explicitly deferred rather than silently counted as open.
 
 ## RTDL Mapping Status
 
@@ -101,9 +103,10 @@ Add explicit output generators for:
 
 Current status:
 
-- Figure 13 style LSI scalability plots: implemented as a scaled Embree synthetic analogue
-- Figure 14 style PIP scalability plots: implemented as a scaled Embree synthetic analogue
-- Table 3 / Table 4 / Figure 15: still pending
+- Figure 13 style LSI scalability plots: implemented as an accepted scaled bounded analogue
+- Figure 14 style PIP scalability plots: implemented as an accepted scaled bounded analogue
+- Table 3: closed as a bounded package for the currently stable and available families
+- Table 4 / Figure 15: closed as a bounded overlay-seed analogue package
 
 ### 5. Track reproduction fidelity
 
@@ -122,6 +125,10 @@ This goal is complete when:
 - RTDL generates the corresponding tables and figures,
 - the report clearly distinguishes exact reproduction from Embree baseline approximation,
 - and the full round is accepted by at least 2-agent consensus.
+
+Under the current bounded-closure rule, dataset families whose public
+acquisition path is unstable or unavailable may be marked explicitly deferred
+instead of blocking closure.
 
 ## Non-Goals For This Phase
 
