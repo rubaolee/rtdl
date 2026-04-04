@@ -1,0 +1,51 @@
+{
+  "best_run": {
+    "artifact_dir": "/home/lestat/work/rtdl_python_only/build/goal70_county_prepared_exec",
+    "optix_sec": 2.6420498459992814,
+    "parity_vs_postgis": true,
+    "postgis_sec": 3.3333704659999057,
+    "row_count": 39073,
+    "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+  },
+  "compared_backends": [
+    "optix"
+  ],
+  "date": "2026-04-04",
+  "db_name": "rtdl_postgis",
+  "host_label": "lestat-lx1",
+  "result": {
+    "beats_postgis_on_long_workload": true,
+    "parity_preserved": true
+  },
+  "runs": [
+    {
+      "artifact_dir": "/home/lestat/work/rtdl_python_only/build/goal70_county_prepared_exec",
+      "optix_sec": 2.6420498459992814,
+      "parity_vs_postgis": true,
+      "postgis_sec": 3.3333704659999057,
+      "row_count": 39073,
+      "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+    },
+    {
+      "artifact_dir": "/home/lestat/work/rtdl_python_only/build/goal70_county_prepared_exec_rerun",
+      "optix_sec": 2.6526213039996946,
+      "parity_vs_postgis": true,
+      "postgis_sec": 3.3130634219996864,
+      "row_count": 39073,
+      "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+    }
+  ],
+  "scope": "Goal 70 long workload only; county_zipcode; OptiX positive-hit pip; execution-ready/prepacked timing",
+  "selected_cases": [
+    "county_zipcode"
+  ],
+  "status": "measured internal result only, do not publish",
+  "worst_run": {
+    "artifact_dir": "/home/lestat/work/rtdl_python_only/build/goal70_county_prepared_exec_rerun",
+    "optix_sec": 2.6526213039996946,
+    "parity_vs_postgis": true,
+    "postgis_sec": 3.3130634219996864,
+    "row_count": 39073,
+    "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+  }
+}
