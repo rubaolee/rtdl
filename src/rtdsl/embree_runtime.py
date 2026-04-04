@@ -555,6 +555,9 @@ def _run_pip_embree(compiled: CompiledKernel, normalized_inputs, library) -> tup
     boundary_mode = compiled.refine_op.predicate.options.get("boundary_mode", "inclusive")
     if boundary_mode != "inclusive":
         raise ValueError("the current Embree PIP runtime supports only boundary_mode='inclusive'")
+    result_mode = compiled.refine_op.predicate.options.get("result_mode", "full_matrix")
+    if result_mode not in {"full_matrix", "positive_hits"}:
+        raise ValueError("the current Embree PIP runtime supports only result_mode='full_matrix' or 'positive_hits'")
 
     points_name = compiled.candidates.left.name
     polygons_name = compiled.candidates.right.name
@@ -576,6 +579,7 @@ def _run_pip_embree(compiled: CompiledKernel, normalized_inputs, library) -> tup
         len(polygons),
         vertex_array,
         len(vertex_array),
+        1 if result_mode == "positive_hits" else 0,
         ctypes.byref(rows_ptr),
         ctypes.byref(row_count),
         error,
@@ -607,6 +611,9 @@ def _call_pip_embree_packed(compiled: CompiledKernel, packed_inputs, library) ->
     boundary_mode = compiled.refine_op.predicate.options.get("boundary_mode", "inclusive")
     if boundary_mode != "inclusive":
         raise ValueError("the current prepared Embree PIP runtime supports only boundary_mode='inclusive'")
+    result_mode = compiled.refine_op.predicate.options.get("result_mode", "full_matrix")
+    if result_mode not in {"full_matrix", "positive_hits"}:
+        raise ValueError("the current prepared Embree PIP runtime supports only result_mode='full_matrix' or 'positive_hits'")
 
     points_name = compiled.candidates.left.name
     polygons_name = compiled.candidates.right.name
@@ -623,6 +630,7 @@ def _call_pip_embree_packed(compiled: CompiledKernel, packed_inputs, library) ->
         polygons.polygon_count,
         polygons.vertices_xy,
         polygons.vertex_xy_count,
+        1 if result_mode == "positive_hits" else 0,
         ctypes.byref(rows_ptr),
         ctypes.byref(row_count),
         error,
@@ -1046,6 +1054,7 @@ def _load_embree_library():
         ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double),
         ctypes.c_size_t,
+        ctypes.c_uint32,
         ctypes.POINTER(ctypes.POINTER(_RtdlPipRow)),
         ctypes.POINTER(ctypes.c_size_t),
         ctypes.c_char_p,

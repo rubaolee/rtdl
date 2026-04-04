@@ -262,6 +262,88 @@ class RtDslPythonTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "boundary_mode='inclusive'"):
             rt.lower_to_execution_plan(rt.compile_kernel(bad_pip))
 
+    def test_lower_accepts_positive_hit_pip_result_mode(self) -> None:
+        @rt.kernel(backend="rtdl", precision="float_approx")
+        def positive_hit_pip():
+            points = rt.input("points", rt.Points, role="probe")
+            polygons = rt.input("polygons", rt.Polygons, role="build")
+            candidates = rt.traverse(points, polygons, accel="bvh")
+            hits = rt.refine(
+                candidates,
+                predicate=rt.point_in_polygon(exact=False, result_mode="positive_hits"),
+            )
+            return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
+
+        plan = rt.lower_to_execution_plan(rt.compile_kernel(positive_hit_pip))
+        self.assertEqual(plan.workload_kind, "pip")
+
+    def test_cpu_runtime_positive_hit_pip_mode_returns_sparse_rows(self) -> None:
+        @rt.kernel(backend="rtdl", precision="float_approx")
+        def positive_hit_pip():
+            points = rt.input("points", rt.Points, role="probe")
+            polygons = rt.input("polygons", rt.Polygons, role="build")
+            candidates = rt.traverse(points, polygons, accel="bvh")
+            hits = rt.refine(
+                candidates,
+                predicate=rt.point_in_polygon(exact=False, result_mode="positive_hits"),
+            )
+            return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
+
+        rows = rt.run_cpu(
+            positive_hit_pip,
+            points=(
+                rt.Point(id=1, x=1.0, y=1.0),
+                rt.Point(id=2, x=4.0, y=1.0),
+            ),
+            polygons=(
+                rt.Polygon(id=10, vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))),
+                rt.Polygon(id=20, vertices=((3.0, 0.0), (5.0, 0.0), (5.0, 2.0), (3.0, 2.0))),
+            ),
+        )
+        self.assertEqual(
+            rows,
+            (
+                {"point_id": 1, "polygon_id": 10, "contains": 1},
+                {"point_id": 2, "polygon_id": 20, "contains": 1},
+            ),
+        )
+
+    def test_cpu_runtime_positive_hit_pip_matches_filtered_full_matrix(self) -> None:
+        @rt.kernel(backend="rtdl", precision="float_approx")
+        def pip_full():
+            points = rt.input("points", rt.Points, role="probe")
+            polygons = rt.input("polygons", rt.Polygons, role="build")
+            candidates = rt.traverse(points, polygons, accel="bvh")
+            hits = rt.refine(candidates, predicate=rt.point_in_polygon(exact=False))
+            return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
+
+        @rt.kernel(backend="rtdl", precision="float_approx")
+        def pip_positive():
+            points = rt.input("points", rt.Points, role="probe")
+            polygons = rt.input("polygons", rt.Polygons, role="build")
+            candidates = rt.traverse(points, polygons, accel="bvh")
+            hits = rt.refine(
+                candidates,
+                predicate=rt.point_in_polygon(exact=False, result_mode="positive_hits"),
+            )
+            return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
+
+        inputs = dict(
+            points=(
+                rt.Point(id=1, x=1.0, y=1.0),
+                rt.Point(id=2, x=4.0, y=1.0),
+                rt.Point(id=3, x=7.0, y=1.0),
+            ),
+            polygons=(
+                rt.Polygon(id=10, vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))),
+                rt.Polygon(id=20, vertices=((3.0, 0.0), (5.0, 0.0), (5.0, 2.0), (3.0, 2.0))),
+            ),
+        )
+        full_rows = rt.run_cpu(pip_full, **inputs)
+        positive_rows = rt.run_cpu(pip_positive, **inputs)
+        filtered_rows = tuple(row for row in full_rows if row["contains"] == 1)
+        self.assertEqual(positive_rows, filtered_rows)
+
     def test_lower_rejects_wrong_pip_geometry(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")
         def bad_pip():

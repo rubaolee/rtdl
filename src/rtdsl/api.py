@@ -111,10 +111,17 @@ def segment_intersection(*, exact: bool = False) -> Predicate:
     return Predicate(name="segment_intersection", options={"exact": exact})
 
 
-def point_in_polygon(*, exact: bool = False, boundary_mode: str = "inclusive") -> Predicate:
+def point_in_polygon(
+    *,
+    exact: bool = False,
+    boundary_mode: str = "inclusive",
+    result_mode: str = "full_matrix",
+) -> Predicate:
+    if result_mode not in {"full_matrix", "positive_hits"}:
+        raise ValueError("point_in_polygon result_mode must be 'full_matrix' or 'positive_hits'")
     return Predicate(
         name="point_in_polygon",
-        options={"exact": exact, "boundary_mode": boundary_mode},
+        options={"exact": exact, "boundary_mode": boundary_mode, "result_mode": result_mode},
     )
 
 
@@ -134,9 +141,14 @@ def point_nearest_segment(*, exact: bool = False) -> Predicate:
     return Predicate(name="point_nearest_segment", options={"exact": exact})
 
 
-def contains(*, exact: bool = False, boundary_mode: str = "inclusive") -> Predicate:
+def contains(
+    *,
+    exact: bool = False,
+    boundary_mode: str = "inclusive",
+    result_mode: str = "full_matrix",
+) -> Predicate:
     """Alias for point_in_polygon, for use in PIP kernels and demos."""
-    return point_in_polygon(exact=exact, boundary_mode=boundary_mode)
+    return point_in_polygon(exact=exact, boundary_mode=boundary_mode, result_mode=result_mode)
 
 
 def refine(candidates: CandidateSet, *, predicate: Predicate) -> RefineOp:

@@ -92,6 +92,7 @@ int  rtdl_vulkan_run_pip(
          const RtdlPoint*     points,     size_t point_count,
          const RtdlPolygonRef* polys,     size_t poly_count,
          const double* vertices_xy,       size_t vertex_xy_count,
+         uint32_t positive_only,
          RtdlPipRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_vulkan_run_overlay(
@@ -2040,8 +2041,41 @@ static void run_pip_vulkan(
         const RtdlPoint*     points,    size_t point_count,
         const RtdlPolygonRef* polys,    size_t poly_count,
         const double* vertices_xy,      size_t vertex_xy_count,
+        uint32_t positive_only,
         RtdlPipRow** rows_out, size_t* row_count_out)
 {
+    if (positive_only != 0u) {
+        std::vector<RtdlPipRow> rows;
+#if RTDL_VULKAN_HAS_GEOS
+        GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+        for (size_t pi = 0; pi < point_count; ++pi) {
+            for (size_t qi = 0; qi < poly_count; ++qi) {
+                if (!geos.covers(qi, points[pi].x, points[pi].y)) {
+                    continue;
+                }
+                rows.push_back({points[pi].id, polys[qi].id, 1u});
+            }
+        }
+#else
+        for (size_t pi = 0; pi < point_count; ++pi) {
+            for (size_t qi = 0; qi < poly_count; ++qi) {
+                if (!exact_point_in_polygon(points[pi].x, points[pi].y, polys[qi], vertices_xy)) {
+                    continue;
+                }
+                rows.push_back({points[pi].id, polys[qi].id, 1u});
+            }
+        }
+#endif
+        auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * rows.size()));
+        if (!out && !rows.empty()) throw std::bad_alloc();
+        for (size_t i = 0; i < rows.size(); ++i) {
+            out[i] = rows[i];
+        }
+        *rows_out = out;
+        *row_count_out = rows.size();
+        return;
+    }
+
     VkContext* ctx = get_context();
     std::call_once(g_pip_init, [ctx]() {
         g_pip_pipe = new RtPipeline(build_rt_pipeline(
@@ -2641,11 +2675,12 @@ int rtdl_vulkan_run_pip(
         const RtdlPoint* points, size_t point_count,
         const RtdlPolygonRef* polys, size_t poly_count,
         const double* vertices_xy, size_t vertex_xy_count,
+        uint32_t positive_only,
         RtdlPipRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size) {
     return handle_call([&] {
         run_pip_vulkan(points, point_count, polys, poly_count,
-                       vertices_xy, vertex_xy_count, rows_out, row_count_out);
+                       vertices_xy, vertex_xy_count, positive_only, rows_out, row_count_out);
     }, error_out, error_size);
 }
 

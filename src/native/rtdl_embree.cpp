@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <new>
 #include <stdexcept>
 #include <string>
@@ -117,6 +118,7 @@ int rtdl_embree_run_pip(
     size_t polygon_count,
     const double* vertices_xy,
     size_t vertex_xy_count,
+    uint32_t positive_only,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
     char* error_out,
@@ -983,6 +985,7 @@ extern "C" int rtdl_embree_run_pip(
     size_t polygon_count,
     const double* vertices_xy,
     size_t vertex_xy_count,
+    uint32_t positive_only,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
     char* error_out,
@@ -1002,21 +1005,64 @@ extern "C" int rtdl_embree_run_pip(
     std::vector<Polygon2D> polygon_values = decode_polygons(polygons, polygon_count, vertices_xy, vertex_xy_count);
 
     std::vector<RtdlPipRow> rows;
-    rows.reserve(point_values.size() * polygon_values.size());
+    if (positive_only != 0u) {
+      EmbreeDevice device;
+      PolygonSceneData data {&polygon_values};
+      SceneHolder holder(device.device);
+      holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+      rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(polygon_values.size()));
+      rtcSetGeometryUserData(holder.geometry, &data);
+      rtcSetGeometryBoundsFunction(holder.geometry, polygon_bounds, nullptr);
+      rtcSetGeometryIntersectFunction(holder.geometry, polygon_intersect);
+      rtcCommitGeometry(holder.geometry);
+      rtcAttachGeometry(holder.scene, holder.geometry);
+      rtcCommitScene(holder.scene);
+
+      for (const Point2D& point : point_values) {
+        std::unordered_set<uint32_t> contains_ids;
+        PipQueryState state {&point, &contains_ids};
+        g_query_kind = QueryKind::kPip;
+        g_query_state = &state;
+        RTCRayHit rayhit;
+        set_ray(&rayhit, point.p, {0.0, 1.0}, std::numeric_limits<float>::max());
+        RTCIntersectArguments args;
+        rtcInitIntersectArguments(&args);
+        rtcIntersect1(holder.scene, &rayhit, &args);
+        g_query_kind = QueryKind::kNone;
+        g_query_state = nullptr;
+        if (contains_ids.empty()) {
+          continue;
+        }
+        std::vector<uint32_t> hit_ids;
+        hit_ids.reserve(contains_ids.size());
+        for (uint32_t polygon_id : contains_ids) {
+          hit_ids.push_back(polygon_id);
+        }
+        std::sort(hit_ids.begin(), hit_ids.end());
+        for (uint32_t polygon_id : hit_ids) {
+          rows.push_back({point.id, polygon_id, 1u});
+        }
+      }
+    } else {
+      rows.reserve(point_values.size() * polygon_values.size());
 #if RTDL_EMBREE_HAS_GEOS
-    GeosPreparedPolygonSet geos(polygon_values);
-    for (const Point2D& point : point_values) {
-      for (size_t polygon_index = 0; polygon_index < polygon_values.size(); ++polygon_index) {
-        rows.push_back({point.id, polygon_values[polygon_index].id, geos.covers(polygon_index, point.p.x, point.p.y) ? 1u : 0u});
+      GeosPreparedPolygonSet geos(polygon_values);
+      for (const Point2D& point : point_values) {
+        for (size_t polygon_index = 0; polygon_index < polygon_values.size(); ++polygon_index) {
+          const bool contains = geos.covers(polygon_index, point.p.x, point.p.y);
+          rows.push_back({point.id, polygon_values[polygon_index].id, contains ? 1u : 0u});
+        }
       }
-    }
 #else
-    for (const Point2D& point : point_values) {
-      for (const Polygon2D& polygon : polygon_values) {
-        rows.push_back({point.id, polygon.id, point_in_polygon(point, polygon) ? 1u : 0u});
+      for (const Point2D& point : point_values) {
+        for (const Polygon2D& polygon : polygon_values) {
+          const bool contains = point_in_polygon(point, polygon);
+          rows.push_back({point.id, polygon.id, contains ? 1u : 0u});
+        }
       }
-    }
+      }
 #endif
+    }
 
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();

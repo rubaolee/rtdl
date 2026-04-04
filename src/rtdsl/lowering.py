@@ -150,6 +150,8 @@ def _lower_pip(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionP
         )
     if predicate.options.get("boundary_mode") != "inclusive":
         raise ValueError("the current PIP lowering supports only boundary_mode='inclusive'")
+    if predicate.options.get("result_mode", "full_matrix") not in {"full_matrix", "positive_hits"}:
+        raise ValueError("the current PIP lowering supports only result_mode='full_matrix' or 'positive_hits'")
 
     output_record = _build_output_record("PointInPolygonRecord", kernel.emit_op.fields)
     build_buffer_name = _input_buffer_name(build_input)

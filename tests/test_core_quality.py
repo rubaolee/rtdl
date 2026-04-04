@@ -38,6 +38,18 @@ def _pip_kernel():
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
+def _pip_positive_hits_kernel():
+    points = rt.input("points", rt.Points, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, role="build")
+    candidates = rt.traverse(points, polygons, accel="bvh")
+    hits = rt.refine(
+        candidates,
+        predicate=rt.point_in_polygon(exact=False, result_mode="positive_hits"),
+    )
+    return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
 def _overlay_kernel():
     left = rt.input("left", rt.Polygons, role="probe")
     right = rt.input("right", rt.Polygons, role="build")
@@ -229,11 +241,20 @@ class ApiTest(unittest.TestCase):
         p = rt.point_in_polygon(exact=False, boundary_mode="inclusive")
         self.assertEqual(p.name, "point_in_polygon")
         self.assertEqual(p.options["boundary_mode"], "inclusive")
+        self.assertEqual(p.options["result_mode"], "full_matrix")
+
+    def test_point_in_polygon_positive_hits_predicate_options(self) -> None:
+        p = rt.point_in_polygon(exact=False, boundary_mode="inclusive", result_mode="positive_hits")
+        self.assertEqual(p.options["result_mode"], "positive_hits")
+
+    def test_point_in_polygon_rejects_invalid_result_mode(self) -> None:
+        with self.assertRaisesRegex(ValueError, "result_mode"):
+            rt.point_in_polygon(exact=False, result_mode="bad")
 
     def test_contains_alias_matches_point_in_polygon(self) -> None:
         self.assertEqual(
-            rt.contains(exact=False, boundary_mode="inclusive"),
-            rt.point_in_polygon(exact=False, boundary_mode="inclusive"),
+            rt.contains(exact=False, boundary_mode="inclusive", result_mode="positive_hits"),
+            rt.point_in_polygon(exact=False, boundary_mode="inclusive", result_mode="positive_hits"),
         )
 
     def test_ray_triangle_hit_count_predicate_options(self) -> None:
@@ -543,6 +564,21 @@ class ReferenceGeometryTest(unittest.TestCase):
         self.assertEqual(mapping[(1, 20)], 0)
         self.assertEqual(mapping[(2, 10)], 0)
         self.assertEqual(mapping[(2, 20)], 1)
+
+    def test_pip_positive_hits_mode_returns_sparse_hit_rows(self) -> None:
+        pts = (rt.Point(id=1, x=1.0, y=1.0), rt.Point(id=2, x=4.0, y=1.0))
+        polys = (
+            rt.Polygon(id=10, vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))),
+            rt.Polygon(id=20, vertices=((3.0, 0.0), (5.0, 0.0), (5.0, 2.0), (3.0, 2.0))),
+        )
+        rows = rt.pip_cpu(pts, polys, result_mode="positive_hits")
+        self.assertEqual(
+            rows,
+            (
+                {"point_id": 1, "polygon_id": 10, "contains": 1},
+                {"point_id": 2, "polygon_id": 20, "contains": 1},
+            ),
+        )
 
     def test_pns_perpendicular_foot_distance(self) -> None:
         rows = rt.point_nearest_segment_cpu(

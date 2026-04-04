@@ -70,11 +70,27 @@ def pip_cpu(
     polygons: tuple[Polygon, ...],
     *,
     boundary_mode: str = "inclusive",
+    result_mode: str = "full_matrix",
 ) -> tuple[dict[str, int], ...]:
+    if result_mode not in {"full_matrix", "positive_hits"}:
+        raise ValueError("pip_cpu result_mode must be 'full_matrix' or 'positive_hits'")
     results = []
-    for point in points:
+    bounds = None
+    if result_mode == "positive_hits":
+        bounds = []
         for polygon in polygons:
+            xs = [vx for vx, _ in polygon.vertices]
+            ys = [vy for _, vy in polygon.vertices]
+            bounds.append((min(xs), min(ys), max(xs), max(ys)))
+    for point in points:
+        for polygon_index, polygon in enumerate(polygons):
+            if bounds is not None:
+                min_x, min_y, max_x, max_y = bounds[polygon_index]
+                if point.x < min_x or point.x > max_x or point.y < min_y or point.y > max_y:
+                    continue
             contains = 1 if _point_in_polygon(point.x, point.y, polygon.vertices, boundary_mode=boundary_mode) else 0
+            if result_mode == "positive_hits" and contains != 1:
+                continue
             results.append({"point_id": point.id, "polygon_id": polygon.id, "contains": contains})
     return tuple(results)
 

@@ -114,6 +114,7 @@ int rtdl_oracle_run_pip(
     size_t polygon_count,
     const double* vertices_xy,
     size_t vertex_xy_count,
+    uint32_t positive_only,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
     char* error_out,
@@ -224,6 +225,13 @@ struct Point2D {
 struct Polygon2D {
   uint32_t id;
   std::vector<Vec2> vertices;
+};
+
+struct Bounds2D {
+  double min_x;
+  double min_y;
+  double max_x;
+  double max_y;
 };
 
 struct Triangle2D {
@@ -612,23 +620,77 @@ std::vector<RtdlLsiRow> oracle_lsi(
   return rows;
 }
 
+Bounds2D bounds_for_polygon(const Polygon2D& polygon) {
+  Bounds2D bounds {
+      polygon.vertices[0].x,
+      polygon.vertices[0].y,
+      polygon.vertices[0].x,
+      polygon.vertices[0].y,
+  };
+  for (const Vec2& vertex : polygon.vertices) {
+    bounds.min_x = std::min(bounds.min_x, vertex.x);
+    bounds.min_y = std::min(bounds.min_y, vertex.y);
+    bounds.max_x = std::max(bounds.max_x, vertex.x);
+    bounds.max_y = std::max(bounds.max_y, vertex.y);
+  }
+  return bounds;
+}
+
 std::vector<RtdlPipRow> oracle_pip(
     const std::vector<Point2D>& points,
-    const std::vector<Polygon2D>& polygons) {
+    const std::vector<Polygon2D>& polygons,
+    bool positive_only) {
   std::vector<RtdlPipRow> rows;
-  rows.reserve(points.size() * polygons.size());
+  if (!positive_only) {
+    rows.reserve(points.size() * polygons.size());
+  }
 #if RTDL_ORACLE_HAS_GEOS
   GeosPreparedPolygonSet geos(polygons);
+  std::vector<Bounds2D> bounds;
+  if (positive_only) {
+    bounds.reserve(polygons.size());
+    for (const Polygon2D& polygon : polygons) {
+      bounds.push_back(bounds_for_polygon(polygon));
+    }
+  }
   for (const Point2D& point : points) {
     for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
-      rows.push_back({point.id, polygons[polygon_index].id, geos.covers(polygon_index, point.p.x, point.p.y) ? 1u : 0u});
+      if (positive_only) {
+        const Bounds2D& b = bounds[polygon_index];
+        if (point.p.x < b.min_x || point.p.x > b.max_x || point.p.y < b.min_y || point.p.y > b.max_y) {
+          continue;
+        }
+      }
+      const bool contains = geos.covers(polygon_index, point.p.x, point.p.y);
+      if (positive_only && !contains) {
+        continue;
+      }
+      rows.push_back({point.id, polygons[polygon_index].id, contains ? 1u : 0u});
     }
   }
   return rows;
 #endif
-  for (const Point2D& point : points) {
+  std::vector<Bounds2D> bounds;
+  if (positive_only) {
+    bounds.reserve(polygons.size());
     for (const Polygon2D& polygon : polygons) {
-      rows.push_back({point.id, polygon.id, point_in_polygon(point.p.x, point.p.y, polygon.vertices) ? 1u : 0u});
+      bounds.push_back(bounds_for_polygon(polygon));
+    }
+  }
+  for (const Point2D& point : points) {
+    for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
+      const Polygon2D& polygon = polygons[polygon_index];
+      if (positive_only) {
+        const Bounds2D& b = bounds[polygon_index];
+        if (point.p.x < b.min_x || point.p.x > b.max_x || point.p.y < b.min_y || point.p.y > b.max_y) {
+          continue;
+        }
+      }
+      const bool contains = point_in_polygon(point.p.x, point.p.y, polygon.vertices);
+      if (positive_only && !contains) {
+        continue;
+      }
+      rows.push_back({point.id, polygon.id, contains ? 1u : 0u});
     }
   }
   return rows;
@@ -748,6 +810,7 @@ extern "C" int rtdl_oracle_run_pip(
     size_t polygon_count,
     const double* vertices_xy,
     size_t vertex_xy_count,
+    uint32_t positive_only,
     RtdlPipRow** rows_out,
     size_t* row_count_out,
     char* error_out,
@@ -760,7 +823,8 @@ extern "C" int rtdl_oracle_run_pip(
     *row_count_out = 0;
     std::vector<RtdlPipRow> rows = oracle_pip(
         decode_points(points, point_count),
-        decode_polygons(polygons, polygon_count, vertices_xy, vertex_xy_count));
+        decode_polygons(polygons, polygon_count, vertices_xy, vertex_xy_count),
+        positive_only != 0u);
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);
@@ -805,8 +869,8 @@ extern "C" int rtdl_oracle_run_overlay(
       right_points.push_back({polygon.id, polygon.vertices[0]});
     }
 
-    std::vector<RtdlPipRow> left_in_right = oracle_pip(left_points, right_values);
-    std::vector<RtdlPipRow> right_in_left = oracle_pip(right_points, left_values);
+    std::vector<RtdlPipRow> left_in_right = oracle_pip(left_points, right_values, false);
+    std::vector<RtdlPipRow> right_in_left = oracle_pip(right_points, left_values, false);
 
     std::vector<RtdlOverlayRow> rows;
     rows.reserve(left_values.size() * right_values.size());

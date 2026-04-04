@@ -1,0 +1,119 @@
+{
+  "blockgroup_waterbodies": {
+    "blockgroup": {
+      "chain_count": 287,
+      "feature_count": 279
+    },
+    "compared_backends": [
+      "optix",
+      "embree"
+    ],
+    "derived_sizes": {
+      "points": 248,
+      "polygons": 287
+    },
+    "load_sec": 0.24486932599984357,
+    "pip": {
+      "embree": {
+        "parity_vs_postgis": true,
+        "row_count": 197,
+        "sec": 0.07098000999985743,
+        "sha256": "fe90826148ae35eefe5ecb5c9e66ad01076a847f71bbec89a5ae320e9924ca2e"
+      },
+      "optix": {
+        "parity_vs_postgis": true,
+        "row_count": 197,
+        "sec": 0.06938685400018585,
+        "sha256": "fe90826148ae35eefe5ecb5c9e66ad01076a847f71bbec89a5ae320e9924ca2e"
+      },
+      "plan": {
+        "execution_time_ms": 5.864,
+        "index_names": [
+          "blockgroup_waterbodies_polygons_geom_idx"
+        ],
+        "node_types": [
+          "Index Scan",
+          "Nested Loop",
+          "Seq Scan",
+          "Sort"
+        ],
+        "planning_time_ms": 0.739,
+        "uses_index": true
+      },
+      "postgis": {
+        "row_count": 197,
+        "sha256": "fe90826148ae35eefe5ecb5c9e66ad01076a847f71bbec89a5ae320e9924ca2e"
+      },
+      "postgis_sec": 0.007254267999996955
+    },
+    "postgis_mode": "indexed GiST-assisted positive-hit join with separate load/query timing",
+    "waterbodies": {
+      "chain_count": 248,
+      "feature_count": 172
+    }
+  },
+  "compared_backends": [
+    "optix",
+    "embree"
+  ],
+  "county_zipcode": {
+    "compared_backends": [
+      "optix",
+      "embree"
+    ],
+    "county": {
+      "chain_count": 12273,
+      "feature_count": 3144
+    },
+    "derived_sizes": {
+      "points": 49981,
+      "polygons": 12273
+    },
+    "load_sec": 39.63808364899978,
+    "pip": {
+      "embree": {
+        "parity_vs_postgis": true,
+        "row_count": 39073,
+        "sec": 12.668624839000131,
+        "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+      },
+      "optix": {
+        "parity_vs_postgis": true,
+        "row_count": 39073,
+        "sec": 15.652318004000335,
+        "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+      },
+      "plan": {
+        "execution_time_ms": 3051.43,
+        "index_names": [
+          "county_zipcode_points_geom_idx"
+        ],
+        "node_types": [
+          "Gather Merge",
+          "Index Scan",
+          "Nested Loop",
+          "Seq Scan",
+          "Sort"
+        ],
+        "planning_time_ms": 1.753,
+        "uses_index": true
+      },
+      "postgis": {
+        "row_count": 39073,
+        "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+      },
+      "postgis_sec": 3.2384774140000445
+    },
+    "postgis_mode": "indexed GiST-assisted positive-hit join with separate load/query timing",
+    "zipcode": {
+      "chain_count": 49981,
+      "feature_count": 32294
+    }
+  },
+  "db_name": "rtdl_postgis",
+  "host_label": "lestat-lx1",
+  "selected_cases": [
+    "county_zipcode",
+    "blockgroup_waterbodies"
+  ]
+}

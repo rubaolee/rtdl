@@ -87,6 +87,7 @@ def _run_cpu_python_reference_from_normalized(
             normalized_inputs[left_name],
             normalized_inputs[right_name],
             boundary_mode=compiled.refine_op.predicate.options.get("boundary_mode", "inclusive"),
+            result_mode=compiled.refine_op.predicate.options.get("result_mode", "full_matrix"),
         )
     elif predicate_name == "overlay_compose":
         rows = overlay_compose_cpu(normalized_inputs[left_name], normalized_inputs[right_name])

@@ -135,6 +135,7 @@ int  rtdl_optix_run_pip(
          const RtdlPoint* points,     size_t point_count,
          const RtdlPolygonRef* polys, size_t poly_count,
          const double* vertices_xy,   size_t vertex_xy_count,
+         uint32_t positive_only,
          RtdlPipRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_overlay(
@@ -850,7 +851,12 @@ struct PipParams {
     const GpuPolygonRef* polygons;
     const float* vertices_x;
     const float* vertices_y;
+    uint32_t* hit_words;
     PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t positive_only;
+    uint32_t hit_word_count;
     uint32_t polygon_count;
     uint32_t probe_count;
 };
@@ -928,10 +934,19 @@ extern "C" __global__ void __intersection__pip_isect() {
     optixReportIntersection(0.5f, 0u);
 }
 
-extern "C" __global__ void __anyhit__pip_anyhit() {
-    const uint32_t pidx = optixGetPayload_0();
-    const uint32_t prim = optixGetPayload_1();
-    // output slot: pidx * polygon_count + prim
+    extern "C" __global__ void __anyhit__pip_anyhit() {
+        const uint32_t pidx = optixGetPayload_0();
+        const uint32_t prim = optixGetPayload_1();
+        if (params.positive_only != 0u) {
+            const uint32_t slot = pidx * params.polygon_count + prim;
+            const uint32_t word = slot >> 5;
+            const uint32_t bit  = 1u << (slot & 31u);
+            if (word < params.hit_word_count) {
+                atomicOr(&params.hit_words[word], bit);
+            }
+            optixIgnoreIntersection();
+            return;
+        }
     const uint32_t slot = pidx * params.polygon_count + prim;
     params.output[slot].contains = 1u;
     optixIgnoreIntersection();
@@ -1763,7 +1778,12 @@ struct PipLaunchParams {
     const GpuPolygonRef* polygons;
     const float*     vertices_x;
     const float*     vertices_y;
+    uint32_t*        hit_words;
     GpuPipRecord*    output;
+    uint32_t*        output_count;
+    uint32_t         output_capacity;
+    uint32_t         positive_only;
+    uint32_t         hit_word_count;
     uint32_t         polygon_count;
     uint32_t         probe_count;
 };
@@ -1772,6 +1792,7 @@ static void run_pip_optix(
         const RtdlPoint* points,     size_t point_count,
         const RtdlPolygonRef* polys, size_t poly_count,
         const double* vertices_xy,   size_t vertex_xy_count,
+        uint32_t positive_only,
         RtdlPipRow** rows_out, size_t* row_count_out)
 {
     std::call_once(g_pip.init, [&]() {
@@ -1825,15 +1846,25 @@ static void run_pip_optix(
         aabbs[i] = aabb_for_polygon(vertices_xy, polys[i].vertex_offset, polys[i].vertex_count);
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
 
-    // Pre-allocated output: point_count * poly_count, initialized to 0
     size_t out_count = point_count * poly_count;
-    std::vector<GpuPipRecord> init_output(out_count);
-    for (size_t pi = 0; pi < point_count; ++pi)
-        for (size_t qi = 0; qi < poly_count; ++qi) {
-            init_output[pi * poly_count + qi] = {pt_ids[pi], gpu_polys[qi].id, 0u};
-        }
-    DevPtr d_output(sizeof(GpuPipRecord) * out_count);
-    upload(d_output.ptr, init_output.data(), out_count);
+    DevPtr d_count(sizeof(uint32_t));
+    uint32_t zero = 0;
+    upload<uint32_t>(d_count.ptr, &zero, 1);
+    std::unique_ptr<DevPtr> d_hit_words;
+    std::unique_ptr<DevPtr> d_output;
+    if (positive_only == 0u) {
+        d_output = std::make_unique<DevPtr>(sizeof(GpuPipRecord) * out_count);
+        std::vector<GpuPipRecord> init_output(out_count);
+        for (size_t pi = 0; pi < point_count; ++pi)
+            for (size_t qi = 0; qi < poly_count; ++qi) {
+                init_output[pi * poly_count + qi] = {pt_ids[pi], gpu_polys[qi].id, 0u};
+            }
+        upload(d_output->ptr, init_output.data(), out_count);
+    } else {
+        const size_t hit_word_count = (out_count + 31u) / 32u;
+        d_hit_words = std::make_unique<DevPtr>(sizeof(uint32_t) * hit_word_count);
+        CU_CHECK(cuMemsetD8(d_hit_words->ptr, 0, sizeof(uint32_t) * hit_word_count));
+    }
 
     PipLaunchParams lp;
     lp.traversable    = accel.handle;
@@ -1843,7 +1874,15 @@ static void run_pip_optix(
     lp.polygons       = reinterpret_cast<const GpuPolygonRef*>(d_polys.ptr);
     lp.vertices_x     = reinterpret_cast<const float*>(d_vx.ptr);
     lp.vertices_y     = reinterpret_cast<const float*>(d_vy.ptr);
-    lp.output         = reinterpret_cast<GpuPipRecord*>(d_output.ptr);
+    const uint32_t hit_word_count = positive_only == 0u
+        ? 0u
+        : static_cast<uint32_t>((out_count + 31u) / 32u);
+    lp.hit_words      = d_hit_words ? reinterpret_cast<uint32_t*>(d_hit_words->ptr) : nullptr;
+    lp.output         = d_output ? reinterpret_cast<GpuPipRecord*>(d_output->ptr) : nullptr;
+    lp.output_count   = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = d_output ? static_cast<uint32_t>(out_count) : 0u;
+    lp.positive_only  = positive_only;
+    lp.hit_word_count = hit_word_count;
     lp.polygon_count  = static_cast<uint32_t>(poly_count);
     lp.probe_count    = static_cast<uint32_t>(point_count);
 
@@ -1851,15 +1890,66 @@ static void run_pip_optix(
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(PipLaunchParams),
-                             &g_pip.pipe->sbt,
-                             static_cast<unsigned>(point_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(stream));
+    if (positive_only == 0u) {
+        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipLaunchParams),
+                                 &g_pip.pipe->sbt,
+                                 static_cast<unsigned>(point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+    }
 
     // Read back
+    if (positive_only != 0u) {
+        upload<uint32_t>(d_count.ptr, &zero, 1);
+        upload(d_params.ptr, &lp, 1);
+        OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
+                                 d_params.ptr, sizeof(PipLaunchParams),
+                                 &g_pip.pipe->sbt,
+                                 static_cast<unsigned>(point_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        std::vector<uint32_t> hit_words(hit_word_count);
+        if (hit_word_count > 0) {
+            download(hit_words.data(), d_hit_words->ptr, hit_word_count);
+        }
+        std::vector<RtdlPipRow> rows;
+        rows.reserve(out_count / 64u);
+#if RTDL_OPTIX_HAS_GEOS
+        GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+#endif
+        for (size_t pi = 0; pi < point_count; ++pi) {
+            for (size_t qi = 0; qi < poly_count; ++qi) {
+                const size_t slot = pi * poly_count + qi;
+                const uint32_t word = static_cast<uint32_t>(slot >> 5);
+                const uint32_t bit  = 1u << (slot & 31u);
+                if ((hit_words[word] & bit) == 0u) {
+                    continue;
+                }
+                const RtdlPoint& point = points[pi];
+                const RtdlPolygonRef& polygon = polys[qi];
+#if RTDL_OPTIX_HAS_GEOS
+                if (!geos.covers(qi, point.x, point.y)) {
+                    continue;
+                }
+#else
+                if (!exact_point_in_polygon(point.x, point.y, polygon, vertices_xy)) {
+                    continue;
+                }
+#endif
+                rows.push_back({point.id, polygon.id, 1u});
+            }
+        }
+        auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * rows.size()));
+        if (!out && !rows.empty()) throw std::bad_alloc();
+        for (size_t i = 0; i < rows.size(); ++i) {
+            out[i] = rows[i];
+        }
+        *rows_out = out;
+        *row_count_out = rows.size();
+        return;
+    }
+
     std::vector<GpuPipRecord> gpu_rows(out_count);
-    download(gpu_rows.data(), d_output.ptr, out_count);
+    download(gpu_rows.data(), d_output->ptr, out_count);
 
     auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * out_count));
     if (!out) throw std::bad_alloc();
@@ -2339,6 +2429,7 @@ extern "C" int rtdl_optix_run_pip(
         const RtdlPoint* points,     size_t point_count,
         const RtdlPolygonRef* polys, size_t poly_count,
         const double* vertices_xy,   size_t vertex_xy_count,
+        uint32_t positive_only,
         RtdlPipRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size)
 {
@@ -2348,7 +2439,7 @@ extern "C" int rtdl_optix_run_pip(
         *rows_out = nullptr; *row_count_out = 0;
         if (point_count == 0 || poly_count == 0) return;
         run_pip_optix(points, point_count, polys, poly_count,
-                      vertices_xy, vertex_xy_count, rows_out, row_count_out);
+                      vertices_xy, vertex_xy_count, positive_only, rows_out, row_count_out);
     }, error_out, error_size);
 }
 
