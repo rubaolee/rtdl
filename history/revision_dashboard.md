@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 59
-- Archived files: 704
-- External reports: 177
-- Project snapshots: 527
+- Revision rounds: 60
+- Archived files: 712
+- External reports: 180
+- Project snapshots: 532
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.1 | 2026-04-04 | complete-consensus | Goal 65 Vulkan OptiX Linux Comparison | approved | goal65-vulkan-optix-linux-comparison | Goal 65 accepted under Codex+Gemini consensus: Vulkan runs on Linux but remains provisional; OptiX stays the accepted GPU backend | `2e8bdaf` | `2026-04-04-goal-65-vulkan-optix-linux-comparison` |
 | v0.1 | 2026-04-04 | complete-consensus | Goal 64 Submission-Ready Paper Package | approved | goal64-submission-ready-paper-package | Goal 64 accepted under Codex+Gemini fallback because Claude was unavailable | `f54b4ed` | `2026-04-04-goal-64-submission-ready-paper-package` |
 | v0.1 | 2026-04-04 | complete-consensus | Goal 63 Audit-Flow Consensus Round | approved | goal63-audit-flow-consensus | Goal 63 accepted under Codex+Gemini fallback because Claude was unavailable | `d9bfbf4` | `2026-04-04-goal-63-audit-flow-consensus` |
 | v0.1 | 2026-04-04 | complete-backfilled | Goal 53 Bounded Multi-Backend Matrix Closure | approved (backfilled from goal artifacts) | goal53-backfilled-structured-archive | accepted goal artifacts backfilled into structured history | `c8af1c7` | `2026-04-04-goal-53-bounded-matrix-closure` |

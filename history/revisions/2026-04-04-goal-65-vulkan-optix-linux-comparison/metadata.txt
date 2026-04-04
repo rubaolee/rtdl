@@ -1,0 +1,11 @@
+slug: 2026-04-04-goal-65-vulkan-optix-linux-comparison
+title: Goal 65 Vulkan OptiX Linux Comparison
+version: v0.1
+status: complete-consensus
+started_on: 2026-04-04
+closed_on: 2026-04-04
+source_commit: 2e8bdaf
+gemini_review: approved
+codex_revision: goal65-vulkan-optix-linux-comparison
+final_result: Goal 65 accepted under Codex+Gemini consensus: Vulkan runs on Linux but remains provisional; OptiX stays the accepted GPU backend
+summary: Goal 65 Vulkan OptiX Linux Comparison
