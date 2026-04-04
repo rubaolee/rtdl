@@ -758,8 +758,14 @@ def _pack_for_geometry(geometry_name: str, payload):
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
+        cached = getattr(payload, "_rtdl_packed_points", None)
+        if isinstance(cached, PackedPoints):
+            return cached
         return payload if isinstance(payload, PackedPoints)    else pack_points(records=payload)
     if geometry_name == "polygons":
+        cached = getattr(payload, "_rtdl_packed_polygons", None)
+        if isinstance(cached, PackedPolygons):
+            return cached
         return payload if isinstance(payload, PackedPolygons)  else pack_polygons(records=payload)
     if geometry_name == "triangles":
         return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)

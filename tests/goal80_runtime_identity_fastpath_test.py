@@ -4,6 +4,7 @@ import unittest
 from unittest import mock
 
 import rtdsl as rt
+from rtdsl.datasets import parse_cdb_text
 from rtdsl import embree_runtime
 from rtdsl import optix_runtime
 from rtdsl.reference import Point
@@ -70,6 +71,47 @@ class Goal80RuntimeIdentityFastPathTest(unittest.TestCase):
             first = optix_runtime.run_optix(self.compiled, points=POINTS, polygons=POLYGONS)
             second = optix_runtime.run_optix(self.compiled, points=POINTS, polygons=POLYGONS)
         self.assertEqual(first, second)
+
+    def test_cdb_views_prime_packed_inputs_for_optix_bind(self) -> None:
+        county = parse_cdb_text(
+            "\n".join(
+                [
+                    "10 4 1 4 0 7",
+                    "0 0",
+                    "2 0",
+                    "2 2",
+                    "0 0",
+                ]
+            ),
+            name="county",
+        )
+        zipcode = parse_cdb_text(
+            "\n".join(
+                [
+                    "1 1 1 1 0 0",
+                    "0.5 0.5",
+                    "2 1 2 2 0 0",
+                    "5.0 5.0",
+                ]
+            ),
+            name="zipcode",
+        )
+        points = rt.chains_to_probe_points(zipcode)
+        polygons = rt.chains_to_polygons(county)
+        self.assertTrue(hasattr(points, "_rtdl_packed_points"))
+        self.assertTrue(hasattr(polygons, "_rtdl_packed_polygons"))
+
+        with mock.patch.object(optix_runtime, "prepare_optix", return_value=_FakePreparedKernel()), mock.patch.object(
+            optix_runtime,
+            "pack_points",
+            side_effect=AssertionError("OptiX pack_points should reuse primed packed points"),
+        ), mock.patch.object(
+            optix_runtime,
+            "pack_polygons",
+            side_effect=AssertionError("OptiX pack_polygons should reuse primed packed polygons"),
+        ):
+            rows = optix_runtime.run_optix(self.compiled, points=points, polygons=polygons)
+        self.assertEqual(rows, ({"ok": True},))
 
 
 if __name__ == "__main__":

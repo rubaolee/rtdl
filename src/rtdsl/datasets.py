@@ -11,6 +11,14 @@ from .reference import Point
 from .reference import Polygon
 
 
+class _CanonicalPointTuple(tuple):
+    pass
+
+
+class _CanonicalPolygonTuple(tuple):
+    pass
+
+
 RAYJOIN_SAMPLE_URLS = {
     "br_county": "https://raw.githubusercontent.com/pwrliang/RayJoin/main/test/dataset/br_county_clean_25_odyssey_final.txt",
     "br_soil": "https://raw.githubusercontent.com/pwrliang/RayJoin/main/test/dataset/br_soil_ascii_odyssey_final.txt",
@@ -637,7 +645,13 @@ def chains_to_polygons(dataset: CdbDataset, *, limit_chains: int | None = None) 
                 vertices=tuple((point.x, point.y) for point in chain.points),
             )
         )
-    return tuple(polygons)
+    payload = _CanonicalPolygonTuple(polygons)
+    if payload:
+        # Prime the shared packed polygon representation outside the hot query path.
+        from .embree_runtime import pack_polygons
+
+        payload._rtdl_packed_polygons = pack_polygons(records=payload)
+    return payload
 
 
 def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Point, ...]:
@@ -652,7 +666,12 @@ def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = No
                 y=point.y,
             )
         )
-    return tuple(records)
+    payload = _CanonicalPointTuple(records)
+    if payload:
+        from .embree_runtime import pack_points
+
+        payload._rtdl_packed_points = pack_points(records=payload)
+    return payload
 
 
 def chains_to_polygon_refs(dataset: CdbDataset) -> tuple[dict[str, int], ...]:
