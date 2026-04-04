@@ -44,8 +44,21 @@
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
+
+#if defined(__has_include)
+#  if __has_include(<geos_c.h>)
+#    include <geos_c.h>
+#    define RTDL_VULKAN_HAS_GEOS 1
+#  else
+#    define RTDL_VULKAN_HAS_GEOS 0
+#  endif
+#else
+#  define RTDL_VULKAN_HAS_GEOS 0
+#endif
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public C ABI  (identical layout to rtdl_optix.cpp — same Python binding can
@@ -763,6 +776,255 @@ struct GpuSegPolyRecord  { uint32_t segment_id, hit_count; };                   
 struct GpuPnsRecord      { uint32_t point_id, segment_id; float distance; };     // 12 bytes
 #pragma pack(pop)
 
+static bool exact_segment_intersection(
+        const RtdlSegment& left,
+        const RtdlSegment& right,
+        double* ix_out,
+        double* iy_out)
+{
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+
+    const double denom = rx * sy - ry * sx;
+    if (std::abs(denom) < 1.0e-7) {
+        return false;
+    }
+
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    if (!(0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0)) {
+        return false;
+    }
+
+    *ix_out = px + t * rx;
+    *iy_out = py + t * ry;
+    return true;
+}
+
+#if RTDL_VULKAN_HAS_GEOS
+class GeosPreparedPolygonRefs {
+  public:
+    GeosPreparedPolygonRefs(const RtdlPolygonRef* polys, size_t poly_count, const double* vertices_xy)
+        : context_(GEOS_init_r()) {
+        if (context_ == nullptr) {
+            throw std::runtime_error("failed to initialize GEOS context");
+        }
+        geometries_.reserve(poly_count);
+        prepared_.reserve(poly_count);
+        for (size_t i = 0; i < poly_count; ++i) {
+            GEOSGeometry* geometry = build_polygon_geometry(polys[i], vertices_xy);
+            if (geometry == nullptr) {
+                throw std::runtime_error("failed to build GEOS polygon geometry");
+            }
+            const GEOSPreparedGeometry* prepared = GEOSPrepare_r(context_, geometry);
+            if (prepared == nullptr) {
+                GEOSGeom_destroy_r(context_, geometry);
+                throw std::runtime_error("failed to prepare GEOS polygon geometry");
+            }
+            geometries_.push_back(geometry);
+            prepared_.push_back(prepared);
+        }
+    }
+
+    GeosPreparedPolygonRefs(const GeosPreparedPolygonRefs&) = delete;
+    GeosPreparedPolygonRefs& operator=(const GeosPreparedPolygonRefs&) = delete;
+
+    ~GeosPreparedPolygonRefs() {
+        if (context_ == nullptr) return;
+        for (const GEOSPreparedGeometry* prepared : prepared_) {
+            if (prepared != nullptr) {
+                GEOSPreparedGeom_destroy_r(context_, prepared);
+            }
+        }
+        for (GEOSGeometry* geometry : geometries_) {
+            if (geometry != nullptr) {
+                GEOSGeom_destroy_r(context_, geometry);
+            }
+        }
+        GEOS_finish_r(context_);
+    }
+
+    bool covers(size_t polygon_index, double x, double y) const {
+        GEOSGeometry* point = build_point_geometry(x, y);
+        if (point == nullptr) {
+            throw std::runtime_error("failed to build GEOS point geometry");
+        }
+        char covers_value = GEOSPreparedCovers_r(context_, prepared_.at(polygon_index), point);
+        GEOSGeom_destroy_r(context_, point);
+        if (covers_value == 2) {
+            throw std::runtime_error("GEOSPreparedCovers_r failed");
+        }
+        return covers_value == 1;
+    }
+
+  private:
+    GEOSGeometry* build_point_geometry(double x, double y) const {
+        GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, 1, 2);
+        if (sequence == nullptr) return nullptr;
+        if (!GEOSCoordSeq_setX_r(context_, sequence, 0, x) ||
+            !GEOSCoordSeq_setY_r(context_, sequence, 0, y)) {
+            GEOSCoordSeq_destroy_r(context_, sequence);
+            return nullptr;
+        }
+        return GEOSGeom_createPoint_r(context_, sequence);
+    }
+
+    GEOSGeometry* build_polygon_geometry(const RtdlPolygonRef& poly, const double* vertices_xy) const {
+        size_t ring_size = poly.vertex_count;
+        bool closed = ring_size > 0 &&
+                      vertices_xy[poly.vertex_offset * 2] == vertices_xy[(poly.vertex_offset + poly.vertex_count - 1) * 2] &&
+                      vertices_xy[poly.vertex_offset * 2 + 1] == vertices_xy[(poly.vertex_offset + poly.vertex_count - 1) * 2 + 1];
+        if (!closed) {
+            ring_size += 1;
+        }
+        GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, ring_size, 2);
+        if (sequence == nullptr) return nullptr;
+        for (size_t i = 0; i < poly.vertex_count; ++i) {
+            const size_t vertex_index = poly.vertex_offset + i;
+            if (!GEOSCoordSeq_setX_r(context_, sequence, i, vertices_xy[vertex_index * 2]) ||
+                !GEOSCoordSeq_setY_r(context_, sequence, i, vertices_xy[vertex_index * 2 + 1])) {
+                GEOSCoordSeq_destroy_r(context_, sequence);
+                return nullptr;
+            }
+        }
+        if (!closed) {
+            if (!GEOSCoordSeq_setX_r(context_, sequence, ring_size - 1, vertices_xy[poly.vertex_offset * 2]) ||
+                !GEOSCoordSeq_setY_r(context_, sequence, ring_size - 1, vertices_xy[poly.vertex_offset * 2 + 1])) {
+                GEOSCoordSeq_destroy_r(context_, sequence);
+                return nullptr;
+            }
+        }
+        GEOSGeometry* ring = GEOSGeom_createLinearRing_r(context_, sequence);
+        if (ring == nullptr) return nullptr;
+        GEOSGeometry* polygon = GEOSGeom_createPolygon_r(context_, ring, nullptr, 0);
+        if (polygon == nullptr) {
+            GEOSGeom_destroy_r(context_, ring);
+            return nullptr;
+        }
+        return polygon;
+    }
+
+    GEOSContextHandle_t context_;
+    std::vector<GEOSGeometry*> geometries_;
+    std::vector<const GEOSPreparedGeometry*> prepared_;
+};
+#endif
+
+static bool exact_point_on_segment(
+        double px,
+        double py,
+        double ax,
+        double ay,
+        double bx,
+        double by)
+{
+    const double point_eps = 1.0e-12;
+    const double len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
+    if (len2 <= point_eps * point_eps) {
+        return std::abs(px - ax) <= point_eps && std::abs(py - ay) <= point_eps;
+    }
+    const double len = std::sqrt(len2);
+    const double cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (std::abs(cross) > point_eps * len) {
+        return false;
+    }
+    const double dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
+    const double along_eps = point_eps * len;
+    if (dot < -along_eps) {
+        return false;
+    }
+    return dot <= len2 + along_eps;
+}
+
+static bool exact_point_in_polygon(
+        double x,
+        double y,
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1) % n;
+        const double ax = vertices_xy[(off + i) * 2];
+        const double ay = vertices_xy[(off + i) * 2 + 1];
+        const double bx = vertices_xy[(off + j) * 2];
+        const double by = vertices_xy[(off + j) * 2 + 1];
+        if (exact_point_on_segment(x, y, ax, ay, bx, by)) {
+            return true;
+        }
+    }
+
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const double xi = vertices_xy[(off + i) * 2];
+        const double yi = vertices_xy[(off + i) * 2 + 1];
+        const double xj = vertices_xy[(off + j) * 2];
+        const double yj = vertices_xy[(off + j) * 2 + 1];
+        if ((yi > y) != (yj > y)) {
+            const double denom = (yj - yi) != 0.0 ? (yj - yi) : 1.0e-20;
+            const double x_cross = (xj - xi) * (y - yi) / denom + xi;
+            if (x <= x_cross) {
+                inside = !inside;
+            }
+        }
+    }
+    return inside;
+}
+
+static std::vector<RtdlLsiRow> exact_lsi_rows(
+        const RtdlSegment* left,
+        size_t left_count,
+        const RtdlSegment* right,
+        size_t right_count)
+{
+    std::vector<RtdlLsiRow> rows;
+    rows.reserve(left_count);
+    for (size_t li = 0; li < left_count; ++li) {
+        for (size_t ri = 0; ri < right_count; ++ri) {
+            double ix = 0.0;
+            double iy = 0.0;
+            if (!exact_segment_intersection(left[li], right[ri], &ix, &iy)) {
+                continue;
+            }
+            rows.push_back(RtdlLsiRow{left[li].id, right[ri].id, ix, iy});
+        }
+    }
+    return rows;
+}
+
+static std::vector<RtdlSegment> polygon_edge_segments(
+        const RtdlPolygonRef* polys,
+        size_t poly_count,
+        const double* vertices_xy)
+{
+    std::vector<RtdlSegment> segments;
+    for (size_t pi = 0; pi < poly_count; ++pi) {
+        const RtdlPolygonRef& poly = polys[pi];
+        for (uint32_t i = 0; i < poly.vertex_count; ++i) {
+            const uint32_t j = (i + 1) % poly.vertex_count;
+            const uint32_t i0 = poly.vertex_offset + i;
+            const uint32_t i1 = poly.vertex_offset + j;
+            segments.push_back(RtdlSegment{
+                poly.id,
+                vertices_xy[i0 * 2],
+                vertices_xy[i0 * 2 + 1],
+                vertices_xy[i1 * 2],
+                vertices_xy[i1 * 2 + 1],
+            });
+        }
+    }
+    return segments;
+}
+
 // ── GLSL source strings ───────────────────────────────────────────────────────
 
 // ---------- LSI shaders -------------------------------------------------------
@@ -793,7 +1055,7 @@ void main() {
     probeIdx = idx;
     if (len < 1e-9) return;
     traceRayEXT(tlas, gl_RayFlagsNoneEXT, 0xFF, 0, 1, 0,
-                vec3(x0, y0, 0.0), 0.001, vec3(dx, dy, 0.0), 1.0, 0);
+                vec3(x0, y0, 0.0), 0.001, vec3(dx, dy, 0.0), 1.0001, 0);
 }
 )GLSL";
 
@@ -993,7 +1255,7 @@ void main() {
     float dx = ex1-ex0, dy = ey1-ey0;
     lpidx_payload = lpidx;
     traceRayEXT(tlas, gl_RayFlagsNoneEXT, 0xFF, 0, 1, 0,
-                vec3(ex0, ey0, 0.0), 0.001, vec3(dx, dy, 0.0), 1.0, 0);
+                vec3(ex0, ey0, 0.0), 0.001, vec3(dx, dy, 0.0), 1.0001, 0);
 }
 )GLSL";
 
@@ -1754,23 +2016,22 @@ static void run_lsi_vulkan(
         free_buf(ctx, d_sub);
     }
 
-    // Cleanup
+    // Cleanup GPU objects before host refine.
     vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
     free_buf(ctx, d_left); free_buf(ctx, d_right);
     free_buf(ctx, d_output); free_buf(ctx, d_counter); free_buf(ctx, d_params);
     destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
 
-    // Marshal output
-    auto* out = static_cast<RtdlLsiRow*>(std::malloc(sizeof(RtdlLsiRow) * gpu_count));
-    if (!out && gpu_count > 0) throw std::bad_alloc();
-    for (uint32_t i = 0; i < gpu_count; ++i) {
-        out[i].left_id              = gpu_rows[i].left_id;
-        out[i].right_id             = gpu_rows[i].right_id;
-        out[i].intersection_point_x = static_cast<double>(gpu_rows[i].ix);
-        out[i].intersection_point_y = static_cast<double>(gpu_rows[i].iy);
+    (void)gpu_rows;
+    std::vector<RtdlLsiRow> refined = exact_lsi_rows(left, left_count, right, right_count);
+
+    auto* out = static_cast<RtdlLsiRow*>(std::malloc(sizeof(RtdlLsiRow) * refined.size()));
+    if (!out && !refined.empty()) throw std::bad_alloc();
+    for (size_t i = 0; i < refined.size(); ++i) {
+        out[i] = refined[i];
     }
     *rows_out      = out;
-    *row_count_out = gpu_count;
+    *row_count_out = refined.size();
 }
 
 // ---------- PIP ---------------------------------------------------------------
@@ -1875,8 +2136,47 @@ static void run_pip_vulkan(
 
     auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * out_count));
     if (!out && out_count > 0) throw std::bad_alloc();
-    for (size_t i = 0; i < out_count; ++i)
+    for (size_t i = 0; i < out_count; ++i) {
         out[i] = { gpu_rows[i].point_id, gpu_rows[i].polygon_id, gpu_rows[i].contains };
+    }
+
+#if RTDL_VULKAN_HAS_GEOS
+    GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+    for (size_t pi = 0; pi < point_count; ++pi) {
+        for (size_t qi = 0; qi < poly_count; ++qi) {
+            const size_t out_index = pi * poly_count + qi;
+            out[out_index].point_id = points[pi].id;
+            out[out_index].polygon_id = polys[qi].id;
+            out[out_index].contains = geos.covers(qi, points[pi].x, points[pi].y) ? 1u : 0u;
+        }
+    }
+#else
+    std::unordered_map<uint32_t, const RtdlPoint*> point_by_id;
+    std::unordered_map<uint32_t, const RtdlPolygonRef*> poly_by_id;
+    point_by_id.reserve(point_count);
+    poly_by_id.reserve(poly_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        point_by_id.emplace(points[i].id, &points[i]);
+    }
+    for (size_t i = 0; i < poly_count; ++i) {
+        poly_by_id.emplace(polys[i].id, &polys[i]);
+    }
+    for (size_t i = 0; i < out_count; ++i) {
+        const auto point_it = point_by_id.find(out[i].point_id);
+        const auto poly_it = poly_by_id.find(out[i].polygon_id);
+        if (point_it == point_by_id.end() || poly_it == poly_by_id.end()) {
+            out[i].contains = 0;
+            continue;
+        }
+        out[i].contains = exact_point_in_polygon(
+            point_it->second->x,
+            point_it->second->y,
+            *poly_it->second,
+            vertices_xy)
+            ? 1u
+            : 0u;
+    }
+#endif
     *rows_out      = out;
     *row_count_out = out_count;
 }
@@ -1973,6 +2273,67 @@ static void run_overlay_vulkan(
     free_buf(ctx, d_rp); free_buf(ctx, d_rv);
     free_buf(ctx, d_output); free_buf(ctx, d_params); free_buf(ctx, d_dummy);
     destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
+
+    std::vector<RtdlSegment> left_segments = polygon_edge_segments(left_polys, left_count, left_verts_xy);
+    std::vector<RtdlSegment> right_segments = polygon_edge_segments(right_polys, right_count, right_verts_xy);
+    std::vector<RtdlLsiRow> exact_overlay_hits = exact_lsi_rows(
+        left_segments.data(),
+        left_segments.size(),
+        right_segments.data(),
+        right_segments.size());
+    std::unordered_set<uint64_t> exact_lsi_pairs;
+    exact_lsi_pairs.reserve(exact_overlay_hits.size() * 2 + 1);
+    for (const RtdlLsiRow& hit : exact_overlay_hits) {
+        const uint64_t pair_key =
+            (static_cast<uint64_t>(hit.left_id) << 32) |
+            static_cast<uint64_t>(hit.right_id);
+        exact_lsi_pairs.insert(pair_key);
+    }
+    for (size_t li = 0; li < left_count; ++li) {
+        for (size_t ri = 0; ri < right_count; ++ri) {
+            const size_t slot = li * right_count + ri;
+            const uint64_t pair_key =
+                (static_cast<uint64_t>(left_polys[li].id) << 32) |
+                static_cast<uint64_t>(right_polys[ri].id);
+            gpu_flags[slot].requires_lsi = exact_lsi_pairs.count(pair_key) ? 1u : 0u;
+        }
+    }
+
+    // CPU PIP supplement: match the oracle and accepted OptiX semantics.
+#if RTDL_VULKAN_HAS_GEOS
+    GeosPreparedPolygonRefs left_geos(left_polys, left_count, left_verts_xy);
+    GeosPreparedPolygonRefs right_geos(right_polys, right_count, right_verts_xy);
+#endif
+    for (size_t li = 0; li < left_count; ++li) {
+        for (size_t ri = 0; ri < right_count; ++ri) {
+            const size_t slot = li * right_count + ri;
+            if (gpu_flags[slot].requires_pip) continue;
+            bool found = false;
+            if (left_polys[li].vertex_count > 0) {
+                const double lxv = left_verts_xy[left_polys[li].vertex_offset * 2];
+                const double lyv = left_verts_xy[left_polys[li].vertex_offset * 2 + 1];
+#if RTDL_VULKAN_HAS_GEOS
+                if (right_geos.covers(ri, lxv, lyv))
+#else
+                if (exact_point_in_polygon(lxv, lyv, right_polys[ri], right_verts_xy))
+#endif
+                    found = true;
+            }
+            if (!found && right_polys[ri].vertex_count > 0) {
+                const double rxv = right_verts_xy[right_polys[ri].vertex_offset * 2];
+                const double ryv = right_verts_xy[right_polys[ri].vertex_offset * 2 + 1];
+#if RTDL_VULKAN_HAS_GEOS
+                if (left_geos.covers(li, rxv, ryv))
+#else
+                if (exact_point_in_polygon(rxv, ryv, left_polys[li], left_verts_xy))
+#endif
+                    found = true;
+            }
+            if (found) {
+                gpu_flags[slot].requires_pip = 1;
+            }
+        }
+    }
 
     auto* out = static_cast<RtdlOverlayRow*>(std::malloc(sizeof(RtdlOverlayRow) * out_count));
     if (!out && out_count > 0) throw std::bad_alloc();

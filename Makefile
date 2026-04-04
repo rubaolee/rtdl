@@ -80,9 +80,10 @@ CXX_VULKAN ?= g++
 VULKAN_CXXFLAGS := \
 	-std=c++17 -O3 -shared -fPIC \
 	-I$(VULKAN_INCLUDE) \
+	$(GEOS_CFLAGS) \
 	-DRTDL_VULKAN_INCLUDE_DIR=\"$(VULKAN_INCLUDE)\"
 
-VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK)
+VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK) $(GEOS_LIBS)
 
 .PHONY: build build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
