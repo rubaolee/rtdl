@@ -94,6 +94,10 @@ for file_path in "$@"; do
       archive_subdir="$external_dir"
       category="external_report"
       ;;
+    "$history_dir"/ad_hoc_reviews/*)
+      archive_subdir="$external_dir"
+      category="external_report"
+      ;;
     "$round_dir"/external_reports/*)
       archive_subdir="$external_dir"
       category="external_report"

@@ -1,0 +1,11 @@
+slug: 2026-04-02-goal-41-cross-host-oracle-correctness
+title: Goal 41 Cross-Host Oracle Correctness
+version: v0.1
+status: complete-backfilled
+started_on: 2026-04-02
+closed_on: 2026-04-02
+source_commit: a9a5d1f
+gemini_review: documented in accepted goal artifacts
+codex_revision: goal41-backfilled-structured-archive
+final_result: accepted goal artifacts backfilled into structured history
+summary: Goal 41 Cross-Host Oracle Correctness
