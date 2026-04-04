@@ -54,8 +54,8 @@ class Goal28CConversionTest(unittest.TestCase):
         )
         polygons = rt.chains_to_polygons(dataset)
         self.assertEqual(len(polygons), 1)
-        self.assertEqual(polygons[0]["id"], 1)
-        self.assertEqual(len(polygons[0]["vertices"]), 4)
+        self.assertEqual(polygons[0].id, 1)
+        self.assertEqual(len(polygons[0].vertices), 4)
 
     def test_arcgis_loader_can_ignore_invalid_tail_page(self) -> None:
         payload = {

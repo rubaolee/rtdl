@@ -58,7 +58,7 @@ def make_fixture_segment_polygon_case():
 
 def make_fixture_point_nearest_segment_case():
     county = rt.load_cdb("tests/fixtures/rayjoin/br_county_subset.cdb")
-    points = tuple(rt.Point(id=record["id"], x=record["x"], y=record["y"]) for record in rt.chains_to_probe_points(county))
+    points = rt.chains_to_probe_points(county)
     segments = tuple(rt.Segment(**{k: v for k, v in record.items() if k in {"id", "x0", "y0", "x1", "y1"}}) for record in rt.chains_to_segments(county)[:12])
     return {"points": points, "segments": segments}
 

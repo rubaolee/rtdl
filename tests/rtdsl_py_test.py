@@ -159,7 +159,11 @@ class RtDslPythonTest(unittest.TestCase):
         self.assertEqual(len(county.chains), 3)
         self.assertEqual(len(soil.chains), 2)
         self.assertEqual(len(rt.chains_to_segments(county, limit_chains=2)), 26)
-        self.assertEqual(len(rt.chains_to_probe_points(soil)), 2)
+        soil_points = rt.chains_to_probe_points(soil)
+        county_polygons = rt.chains_to_polygons(county)
+        self.assertEqual(len(soil_points), 2)
+        self.assertTrue(all(isinstance(point, rt.Point) for point in soil_points))
+        self.assertTrue(all(isinstance(polygon, rt.Polygon) for polygon in county_polygons))
         self.assertEqual(len(rt.chains_to_polygon_refs(county)), 2)
         self.assertEqual(len(rt.chains_to_polygon_refs(soil)), 4)
 

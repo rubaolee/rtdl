@@ -190,7 +190,10 @@ def copy_point_rows(cur, table: str, rows: tuple[dict[str, float | int], ...]) -
     payload = io.StringIO()
     writer = csv.writer(payload, delimiter="\t", lineterminator="\n")
     for row in rows:
-        writer.writerow([int(row["id"]), row["x"], row["y"]])
+        if isinstance(row, dict):
+            writer.writerow([int(row["id"]), row["x"], row["y"]])
+        else:
+            writer.writerow([int(row.id), row.x, row.y])
     payload.seek(0)
     cur.copy_expert(
         f"COPY goal50.{table}_raw (id, x, y) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",
@@ -217,7 +220,10 @@ def copy_polygon_rows(cur, table: str, rows: tuple[dict[str, object], ...]) -> N
     payload = io.StringIO()
     writer = csv.writer(payload, delimiter="\t", lineterminator="\n")
     for row in rows:
-        writer.writerow([int(row["id"]), polygon_wkt(tuple(row["vertices"]))])
+        if isinstance(row, dict):
+            writer.writerow([int(row["id"]), polygon_wkt(tuple(row["vertices"]))])
+        else:
+            writer.writerow([int(row.id), polygon_wkt(tuple(row.vertices))])
     payload.seek(0)
     cur.copy_expert(
         f"COPY goal50.{table}_raw (id, wkt) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",

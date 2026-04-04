@@ -7,6 +7,9 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
+from .reference import Point
+from .reference import Polygon
+
 
 RAYJOIN_SAMPLE_URLS = {
     "br_county": "https://raw.githubusercontent.com/pwrliang/RayJoin/main/test/dataset/br_county_clean_25_odyssey_final.txt",
@@ -622,34 +625,32 @@ def chains_to_segments(dataset: CdbDataset, *, limit_chains: int | None = None) 
     return tuple(records)
 
 
-def chains_to_polygons(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, object], ...]:
+def chains_to_polygons(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Polygon, ...]:
     chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
     polygons = []
     for chain in chains:
         if len(chain.points) < 3:
             continue
         polygons.append(
-            {
-                "id": chain.chain_id,
-                "vertices": tuple((point.x, point.y) for point in chain.points),
-                "source_chain_id": chain.chain_id,
-            }
+            Polygon(
+                id=chain.chain_id,
+                vertices=tuple((point.x, point.y) for point in chain.points),
+            )
         )
     return tuple(polygons)
 
 
-def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[dict[str, float | int], ...]:
+def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Point, ...]:
     chains = dataset.chains if limit_chains is None else dataset.chains[:limit_chains]
     records = []
     for chain in chains:
         point = chain.points[0]
         records.append(
-            {
-                "id": chain.chain_id,
-                "x": point.x,
-                "y": point.y,
-                "source_chain_id": chain.chain_id,
-            }
+            Point(
+                id=chain.chain_id,
+                x=point.x,
+                y=point.y,
+            )
         )
     return tuple(records)
 

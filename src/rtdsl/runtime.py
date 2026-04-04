@@ -20,6 +20,25 @@ from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 
 
+def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | None:
+    if not isinstance(payload, tuple):
+        return None
+
+    expected_type = {
+        "segments": Segment,
+        "points": Point,
+        "polygons": Polygon,
+        "triangles": Triangle,
+        "rays": Ray2D,
+    }.get(geometry_name)
+    if expected_type is None:
+        return None
+
+    if any(not isinstance(item, expected_type) for item in payload):
+        return None
+    return ("identity", geometry_name, id(payload), len(payload))
+
+
 def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     _validate_kernel_for_cpu(compiled)
