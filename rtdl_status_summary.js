@@ -267,12 +267,12 @@ function addFooter(slide, page) {
     4.7,
     2.55,
     "Project Thesis",
-    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: RayJoin-style workloads validated through a native oracle plus Embree and OptiX, with bounded PostGIS-backed ground truth and a first bounded overlay-seed closure.",
+    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: a bounded accepted reproduction package across native oracle, Embree, OptiX, and PostGIS-backed checks, plus a first bounded overlay-seed closure.",
     COLORS.sand
   );
   addMetric(slide, 0.8, 4.0, 1.7, "Workloads", "6", COLORS.white);
   addMetric(slide, 2.7, 4.0, 1.9, "Tests", "273", COLORS.white);
-  addMetric(slide, 4.8, 4.0, 2.1, "Review", "57+", COLORS.white);
+  addMetric(slide, 4.8, 4.0, 2.1, "Review", "59+", COLORS.white);
   addMetric(slide, 7.1, 4.0, 2.1, "Validated RT", "CPU + GPU", COLORS.white);
   addMetric(slide, 9.45, 4.0, 2.8, "Backends", "3 core", COLORS.white);
   addFooter(slide, 1);
@@ -438,7 +438,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-57",
     "Native oracle, Embree maturity, OptiX bring-up, three-backend checks, docs rewrite, full audit, PostGIS closure, first bounded overlay-seed four-system result, and the status/test refresh package.", COLORS.mist);
   addPanel(slide, 11.8, 2.55, 1.0, 3.55, "Stats",
-    "57+ goals\n2-3 AI review\nclean audited repo", COLORS.white, { bodySize: 10.2 });
+    "59+ goals\n2-3 AI review\nclean audited repo", COLORS.white, { bodySize: 10.2 });
   addFooter(slide, 8);
 }
 
@@ -510,11 +510,11 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 `Current repo snapshot:
 - Six supported workloads
 - Native oracle + Embree + OptiX
-- Bounded PostGIS ground-truth closure on accepted packages
+- Bounded accepted reproduction package across trusted systems
 - First bounded overlay-seed four-system closure
 - Vulkan retained as provisional backend code
 - 273 full-matrix tests
-- 57+ reviewed goal rounds
+- 59+ reviewed goal rounds
 - First-class raw + prepared raw runtime modes
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);

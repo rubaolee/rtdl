@@ -76,6 +76,22 @@ Current v0.1 scope:
 - bounded `overlay-seed analogue` closure now exists for:
   - bounded `LKAU ⊲⊳ PKAU`
 
+### Current bounded package
+
+The strongest currently accepted bounded v0.1 package is:
+
+- `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
+- `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
+- bounded `LKAU ⊲⊳ PKAU`
+- bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
+
+Across:
+
+- PostGIS
+- native C oracle
+- Embree
+- OptiX
+
 ## What Is Still Missing
 
 v0.1 is **not** finished just because both backends exist.
@@ -107,14 +123,13 @@ A v0.1 experiment/result only counts when:
 
 ## Immediate Priority
 
-The next v0.1 work should continue from the current clean audited state and aim
-at finishing the remaining bounded RayJoin-style experiment matrix across the
-currently trusted systems:
+The immediate priority after this bounded package is to extend matrix closure
+only on stable, already-stageable workload families and to avoid spending v0.1
+time on externally unstable acquisition paths.
 
-- PostGIS
-- native C oracle
-- Embree
-- OptiX
+That means:
 
-while keeping Vulkan explicitly provisional until it has materially stronger
-validation evidence.
+- preserve the accepted bounded package as the current trust anchor
+- expand only when data staging is stable and repeatable
+- keep Vulkan explicitly provisional until it has materially stronger
+  validation evidence

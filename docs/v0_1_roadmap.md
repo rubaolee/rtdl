@@ -8,7 +8,7 @@ This means v0.1 is:
 
 - an initial version of RayJoin through RTDL,
 - functionally capable across the RayJoin workload surface,
-- backend-driven through generated OptiX/CUDA and Vulkan KHR code, and
+- backend-driven through the current controlled native/oracle and GPU runtime paths, and
 - explicit about simplified precision limitations.
 
 ## What v0.1 Should Deliver
@@ -18,9 +18,9 @@ At the end of v0.1, the system should provide:
 - a Python-hosted DSL that can express every workload RayJoin supports,
 - a compiler IR that represents those workloads cleanly,
 - a RayJoin-oriented lowering path for each workload,
-- generated OptiX/CUDA backend code for each workload,
-- a cross-vendor Vulkan KHR backend implementation,
-- a runnable execution path for each workload, and
+- trusted runnable execution paths across the accepted current backends,
+- a cross-vendor Vulkan KHR backend kept honest about its current provisional boundary, and
+- a runnable execution path for each accepted workload slice, and
 - validation against reference outputs on representative datasets.
 
 ## v0.1 Precision Policy

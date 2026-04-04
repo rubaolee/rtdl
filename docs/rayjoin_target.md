@@ -49,7 +49,11 @@ Current validated RayJoin-style work includes:
 - native-oracle-backed correctness checks
 - first real-data OptiX validation on bounded RayJoin-family workloads
 - bounded PostGIS-backed four-system closures on accepted packages
-- first bounded `overlay-seed analogue` four-system closure on `LKAU ⊲⊳ PKAU`
+- bounded accepted package closure across:
+  - `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
+  - `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
+  - bounded `LKAU ⊲⊳ PKAU`
+  - bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
 
 So RayJoin is no longer only a future target in this repo. It is the active
 application slice that drives the current v0.1 validation work.

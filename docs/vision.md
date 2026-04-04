@@ -63,3 +63,4 @@ Target workloads:
 - exact-source real-data validation
 - performance characterization vs research baseline
 - external ground-truth comparison against indexed PostGIS queries on the Linux host
+- bounded accepted reproduction package across the current trusted systems

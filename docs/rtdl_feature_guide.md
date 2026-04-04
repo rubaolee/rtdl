@@ -45,6 +45,7 @@ The current repo can:
 - compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
 - support a RayJoin-oriented experiment/reporting workflow
+- preserve a bounded accepted v0.1 reproduction package as the current trust anchor
 
 ## What RTDL Cannot Yet Claim
 

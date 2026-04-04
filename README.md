@@ -31,7 +31,11 @@ Current v0.1 application slice:
 - exact-source and bounded reproduction work on Embree
 - first real-data OptiX validation on the Linux GPU host
 - bounded PostGIS ground-truth closure on accepted Linux packages
-- first bounded four-system `overlay-seed analogue` closure
+- bounded accepted reproduction package across:
+  - `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
+  - `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
+  - bounded `LKAU ⊲⊳ PKAU`
+  - bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
 - initial Vulkan KHR cross-vendor GPU backend kept as provisional code
 
 Important current boundaries:
