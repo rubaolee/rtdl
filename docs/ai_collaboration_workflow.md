@@ -56,3 +56,7 @@ The point is to reduce:
 
 This file is the live workflow summary, not the archive of every past review
 round. Historical details remain in `history/`.
+
+The stricter reviewer-accountability and audit-contract rules are documented in:
+
+- `docs/audit_flow.md`

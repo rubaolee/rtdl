@@ -103,6 +103,10 @@ It means:
 
 This document is the live process summary.
 
+The stricter audit contract for turning review into accepted repo state is in:
+
+- `docs/audit_flow.md`
+
 Detailed historical execution of that process lives in:
 
 - `history/`
