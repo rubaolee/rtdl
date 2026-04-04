@@ -30,7 +30,8 @@ Current v0.1 application slice:
 - RayJoin-style workloads
 - exact-source and bounded reproduction work on Embree
 - first real-data OptiX validation on the Linux GPU host
-- a PostGIS ground-truth comparison track in progress on the Linux host
+- bounded PostGIS ground-truth closure on accepted Linux packages
+- first bounded four-system `overlay-seed analogue` closure
 - initial Vulkan KHR cross-vendor GPU backend kept as provisional code
 
 Important current boundaries:
@@ -39,6 +40,7 @@ Important current boundaries:
 - RTDL does not claim robust/exact computational geometry yet
 - the generated OptiX/CUDA skeleton path is not the trusted runtime path
 - large-scale GPU scaling still needs further work
+- current `overlay` is still a seed-generation analogue, not full polygon overlay materialization
 - Vulkan backend is float32-only and still provisional pending stronger parity/scaling validation
 
 ## Project Goal

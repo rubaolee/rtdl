@@ -43,6 +43,7 @@ The current repo can:
 - run bounded validated workloads on OptiX
 - keep a provisional Vulkan KHR backend in the repo for continued validation
 - compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
+- close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
 - support a RayJoin-oriented experiment/reporting workflow
 
 ## What RTDL Cannot Yet Claim
@@ -53,4 +54,5 @@ RTDL does not yet claim:
 - a finished generalized multi-backend optimizer
 - paper-scale reproduction on GPU backends
 - high-precision support on Vulkan (currently float32)
-- that the PostGIS comparison track is fully closed
+- that PostGIS closure already exists for all intended packages
+- full polygon overlay materialization (`overlay` is still a seed analogue)

@@ -1,11 +1,13 @@
 import sys
 import unittest
 import os
+from unittest import mock
 
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
+import rtdsl.vulkan_runtime as vulkan_runtime
 from examples.rtdl_language_reference import county_soil_overlay_reference
 from examples.rtdl_language_reference import county_zip_join_reference
 from examples.rtdl_language_reference import point_in_counties_reference
@@ -21,6 +23,28 @@ def vulkan_available():
         return True
     except Exception:
         return False
+
+class RtDslVulkanLoaderTest(unittest.TestCase):
+    def tearDown(self) -> None:
+        vulkan_runtime._load_vulkan_library.cache_clear()
+
+    def test_run_vulkan_rejects_invalid_result_mode(self) -> None:
+        with self.assertRaises(ValueError):
+            rt.run_vulkan(county_zip_join_reference, result_mode="tuple", left=(), right=())
+
+    def test_find_vulkan_library_rejects_missing_env_path(self) -> None:
+        with mock.patch.dict(os.environ, {"RTDL_VULKAN_LIB": "/tmp/does-not-exist-vulkan.so"}, clear=False):
+            with self.assertRaises(FileNotFoundError):
+                vulkan_runtime._find_vulkan_library()
+
+    def test_find_vulkan_library_reports_missing_library(self) -> None:
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with mock.patch.object(vulkan_runtime.platform, "system", return_value="Linux"):
+                with mock.patch.object(vulkan_runtime.Path, "exists", return_value=False):
+                    with mock.patch.object(vulkan_runtime.ctypes.util, "find_library", return_value=None):
+                        with self.assertRaises(FileNotFoundError):
+                            vulkan_runtime._find_vulkan_library()
+
 
 class RtDslVulkanTest(unittest.TestCase):
     @classmethod
@@ -49,6 +73,46 @@ class RtDslVulkanTest(unittest.TestCase):
                 rt.run_vulkan(county_zip_join_reference, left=left, right=right)
             )
         )
+
+    def test_prepare_vulkan_bind_run_matches_cpu(self) -> None:
+        left = (
+            {"id": 1, "x0": 0.0, "y0": 0.0, "x1": 2.0, "y1": 2.0},
+        )
+        right = (
+            {"id": 10, "x0": 0.0, "y0": 2.0, "x1": 2.0, "y1": 0.0},
+        )
+        prepared = rt.prepare_vulkan(county_zip_join_reference)
+        bound = prepared.bind(left=left, right=right)
+        self.assertIsInstance(bound, rt.PreparedVulkanExecution)
+        self.assertTrue(
+            compare_baseline_rows(
+                "lsi",
+                rt.run_cpu(county_zip_join_reference, left=left, right=right),
+                bound.run(),
+            )
+        )
+
+    def test_run_vulkan_raw_mode_returns_row_view(self) -> None:
+        left = (
+            {"id": 1, "x0": 0.0, "y0": 0.0, "x1": 2.0, "y1": 2.0},
+        )
+        right = (
+            {"id": 10, "x0": 0.0, "y0": 2.0, "x1": 2.0, "y1": 0.0},
+        )
+        rows = rt.run_vulkan(
+            county_zip_join_reference,
+            result_mode="raw",
+            left=left,
+            right=right,
+        )
+        self.assertIsInstance(rows, rt.VulkanRowView)
+        self.assertGreaterEqual(len(rows), 1)
+        self.assertEqual(
+            rows.to_dict_rows(),
+            rt.run_vulkan(county_zip_join_reference, left=left, right=right),
+        )
+        rows.close()
+        self.assertTrue(rows._closed)
 
     def test_run_vulkan_pip_matches_cpu(self) -> None:
         points = (

@@ -42,4 +42,5 @@ Current live state to keep in mind while reading:
 - Embree is the strongest validated backend today
 - OptiX is real and validated on bounded accepted workloads on `192.168.1.20`
 - Vulkan is currently kept as provisional backend code
-- the PostGIS ground-truth comparison track is in progress and not yet a closed result
+- PostGIS is now a closed external ground-truth checker on accepted bounded packages
+- the first bounded four-system `overlay-seed analogue` is now closed for `LKAU ⊲⊳ PKAU`

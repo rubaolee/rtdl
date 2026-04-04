@@ -48,6 +48,8 @@ Current validated RayJoin-style work includes:
 - substantial Embree-side exact-source and bounded reproduction work
 - native-oracle-backed correctness checks
 - first real-data OptiX validation on bounded RayJoin-family workloads
+- bounded PostGIS-backed four-system closures on accepted packages
+- first bounded `overlay-seed analogue` four-system closure on `LKAU ⊲⊳ PKAU`
 
 So RayJoin is no longer only a future target in this repo. It is the active
 application slice that drives the current v0.1 validation work.

@@ -267,12 +267,12 @@ function addFooter(slide, page) {
     4.7,
     2.55,
     "Project Thesis",
-    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: RayJoin-style workloads validated through a native oracle plus Embree and OptiX, with PostGIS ground-truth comparison in progress.",
+    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: RayJoin-style workloads validated through a native oracle plus Embree and OptiX, with bounded PostGIS-backed ground truth and a first bounded overlay-seed closure.",
     COLORS.sand
   );
   addMetric(slide, 0.8, 4.0, 1.7, "Workloads", "6", COLORS.white);
-  addMetric(slide, 2.7, 4.0, 1.9, "Tests", "160", COLORS.white);
-  addMetric(slide, 4.8, 4.0, 2.1, "Review", "50+", COLORS.white);
+  addMetric(slide, 2.7, 4.0, 1.9, "Tests", "273", COLORS.white);
+  addMetric(slide, 4.8, 4.0, 2.1, "Review", "57+", COLORS.white);
   addMetric(slide, 7.1, 4.0, 2.1, "Validated RT", "CPU + GPU", COLORS.white);
   addMetric(slide, 9.45, 4.0, 2.8, "Backends", "3 core", COLORS.white);
   addFooter(slide, 1);
@@ -312,6 +312,7 @@ function addFooter(slide, page) {
     "Implemented precision mode is float_approx. Exact or robust geometry remains future work.",
     "The Mac backend is real: current RTDL programs can return results through Embree.",
     "The OptiX path is a real controlled runtime on 192.168.1.20, with bounded accepted real-data validation.",
+    "PostGIS is now a closed external checker on accepted bounded packages.",
     "The Vulkan path is present in-repo but still provisional.",
     "Language docs, cookbook, and authored examples are in the repo and validated by tests.",
   ], { x: 0.95, y: 4.2, w: 11.7, h: 2.0, fontSize: 13.5, spaceAfter: 8 });
@@ -434,10 +435,10 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
     "Multi-workload coverage and dataset pipeline.\n\nOutcome: lsi, pip, overlay, RayJoin-style fixtures.", COLORS.mist);
   addPanel(slide, 7.4, 2.55, 2.0, 3.55, "Goals 3-5",
     "Gemini re-review gate, formal language docs, and ray-triangle hit counts.", COLORS.white);
-  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-50",
-    "Native oracle, Embree maturity, OptiX bring-up, three-backend checks, docs rewrite, full audit, and PostGIS ground-truth work.", COLORS.mist);
+  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-57",
+    "Native oracle, Embree maturity, OptiX bring-up, three-backend checks, docs rewrite, full audit, PostGIS closure, first bounded overlay-seed four-system result, and the status/test refresh package.", COLORS.mist);
   addPanel(slide, 11.8, 2.55, 1.0, 3.55, "Stats",
-    "50+ goals\n2-3 AI review\nclean audited repo", COLORS.white, { bodySize: 10.2 });
+    "57+ goals\n2-3 AI review\nclean audited repo", COLORS.white, { bodySize: 10.2 });
   addFooter(slide, 8);
 }
 
@@ -470,9 +471,9 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.rust);
   addTitle(slide, "What Is Proven vs. What Is Not", "Keep the current system’s claims honest.");
   addPanel(slide, 0.8, 1.55, 5.75, 4.9, "Proven now",
-    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR and execute through the native oracle, Embree, and accepted bounded OptiX paths.\n\nThree-backend checks exist on the Linux host for accepted real-data packages.\n\nThe review history is reproducible and archived.", COLORS.mint);
+    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR and execute through the native oracle, Embree, and accepted bounded OptiX paths.\n\nBounded four-system checks now exist across PostGIS, the oracle, Embree, and OptiX on accepted real-data packages.\n\nThe review history is reproducible and archived.", COLORS.mint);
   addPanel(slide, 6.8, 1.55, 5.75, 4.9, "Not done yet",
-    "No exact / robust geometry implementation.\n\nNo closed PostGIS ground-truth comparison result yet.\n\nNo final bounded full RayJoin-style reproduction package across all current targets yet.\n\nVulkan is not yet validated to the same level as Embree or OptiX.", COLORS.rose);
+    "No exact / robust geometry implementation.\n\nNo final bounded full RayJoin-style reproduction package across all current targets yet.\n\nOverlay remains a seed analogue, not full polygon materialization.\n\nVulkan is not yet validated to the same level as Embree or OptiX.", COLORS.rose);
   addFooter(slide, 10);
 }
 
@@ -486,7 +487,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 3.95, 1.55, 2.85, 3.95, "Step 2\nWiden workload support",
     "Add more geometry/query forms beyond the current RayJoin-aligned six-workload surface.", COLORS.white);
   addPanel(slide, 7.1, 1.55, 2.85, 3.95, "Step 3\nClose external truth and matrix",
-    "Finish PostGIS ground-truth comparison and close the bounded RayJoin-style experiment matrix across the current accepted backends.", COLORS.white);
+    "Extend the PostGIS-backed bounded matrix and close more RayJoin-style families across the current accepted backends.", COLORS.white);
   addPanel(slide, 10.25, 1.55, 2.3, 3.95, "Step 4\nPrecision and performance",
     "Add robust arithmetic strategy, continue apples-to-apples backend comparisons, and refine backend specialization.", COLORS.white);
   addPanel(slide, 0.8, 5.8, 11.75, 0.62, "Key research transition",
@@ -500,7 +501,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.plum);
   addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nEmbree and OptiX are real; Vulkan is provisional; the PostGIS truth track is active.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nEmbree and OptiX are real; Vulkan is provisional; bounded PostGIS closure is established on accepted packages.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
     "Read docs/rtdl/*, run make test, validate kernels against the oracle, and compare them against Embree and OptiX on accepted targets.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
@@ -509,10 +510,11 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 `Current repo snapshot:
 - Six supported workloads
 - Native oracle + Embree + OptiX
-- PostGIS ground-truth track in progress
+- Bounded PostGIS ground-truth closure on accepted packages
+- First bounded overlay-seed four-system closure
 - Vulkan retained as provisional backend code
-- 160 passing tests
-- 50+ reviewed goal rounds
+- 273 full-matrix tests
+- 57+ reviewed goal rounds
 - First-class raw + prepared raw runtime modes
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);

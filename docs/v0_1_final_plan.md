@@ -68,8 +68,13 @@ Current v0.1 scope:
 ### External ground-truth path
 
 - PostGIS is installed on the Linux host
-- the project is moving toward indexed PostGIS-based ground-truth comparison for accepted bounded real-data packages
-- that PostGIS comparison track is in progress and is not yet a closed v0.1 result
+- indexed PostGIS-based ground-truth comparison is now closed for accepted bounded real-data packages
+- accepted bounded four-system closures now exist for:
+  - `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
+  - `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
+  - bounded `LKAU ⊲⊳ PKAU`
+- bounded `overlay-seed analogue` closure now exists for:
+  - bounded `LKAU ⊲⊳ PKAU`
 
 ## What Is Still Missing
 
@@ -82,7 +87,7 @@ That mainly means:
 
 - broader exact-source family coverage
 - more apples-to-apples backend comparisons
-- finish the PostGIS ground-truth comparison track on accepted bounded packages
+- expand the bounded PostGIS-backed matrix beyond the currently accepted packages
 - clearer final experiment matrix closure
 - final packaging of what is:
   - exact-source and accepted
@@ -103,8 +108,13 @@ A v0.1 experiment/result only counts when:
 ## Immediate Priority
 
 The next v0.1 work should continue from the current clean audited state and aim
-at finishing the remaining bounded RayJoin-style experiment matrix across
-Embree and OptiX.
+at finishing the remaining bounded RayJoin-style experiment matrix across the
+currently trusted systems:
 
-That is the right interpretation of “finishing v0.1” from the repo’s current
-position.
+- PostGIS
+- native C oracle
+- Embree
+- OptiX
+
+while keeping Vulkan explicitly provisional until it has materially stronger
+validation evidence.
