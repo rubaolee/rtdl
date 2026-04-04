@@ -134,6 +134,11 @@ def point_nearest_segment(*, exact: bool = False) -> Predicate:
     return Predicate(name="point_nearest_segment", options={"exact": exact})
 
 
+def contains(*, exact: bool = False, boundary_mode: str = "inclusive") -> Predicate:
+    """Alias for point_in_polygon, for use in PIP kernels and demos."""
+    return point_in_polygon(exact=exact, boundary_mode=boundary_mode)
+
+
 def refine(candidates: CandidateSet, *, predicate: Predicate) -> RefineOp:
     context = _current_context()
     node = RefineOp(candidates=candidates, predicate=predicate)

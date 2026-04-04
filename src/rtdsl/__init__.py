@@ -1,4 +1,5 @@
 from .api import compile_kernel
+from .api import contains
 from .api import emit
 from .api import input
 from .api import kernel
@@ -202,6 +203,7 @@ __all__ = [
     "BASELINE_WORKLOADS",
     "CandidateSet",
     "CompiledKernel",
+    "contains",
     "EmitOp",
     "GeometryInput",
     "GeometryType",
