@@ -50,12 +50,15 @@ So Goal 62 is accepted under:
 - Codex + Gemini consensus
 - explicit record that Claude final review is pending/unavailable
 
-## Important Boundary
+## PDF Build
 
-The manuscript is peer-review ready in content, structure, and evidence
-scoping under the current repo state.
+The manuscript now also compiles locally as:
 
-The package is not locally PDF-built in this round because the current shell
-does not have a LaTeX engine on `PATH`. The source package is complete, but
-final PDF generation still requires a LaTeX toolchain such as `pdflatex`,
-`latexmk`, or `tectonic`.
+- `paper/rtdl_rayjoin_2026/main.pdf`
+
+Build tool used:
+
+- `tectonic 0.15.0`
+
+The build succeeds end-to-end. Minor TeX box warnings remain, but the package
+is no longer source-only.

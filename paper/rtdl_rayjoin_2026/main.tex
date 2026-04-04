@@ -237,7 +237,7 @@ the same Linux validation workstation.
 \caption{Execution environment for the accepted bounded four-system package.}
 \label{tab:environment}
 \centering
-\begin{tabular}{p{0.27\columnwidth}p{0.65\columnwidth}}
+\begin{tabular}{p{0.25\columnwidth}p{0.61\columnwidth}}
 \toprule
 Item & Value \\
 \midrule
@@ -293,7 +293,9 @@ packages across PostGIS, the native oracle, Embree, and OptiX.
 \caption{Accepted bounded four-system results on the main real-data packages. Reported times are the accepted artifact timings carried forward from the final audited package reports; they are not averages across a new paper-only rerun. The Hits column is applicable only to PIP rows.}
 \label{tab:four-system-main}
 \centering
-\begin{tabular}{llrrr rrr}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.29\textwidth}lrrr rrr}
 \toprule
 Package & Workload & Rows & Hits & PostGIS (s) & Native Oracle (s) & Embree (s) & OptiX (s) \\
 \midrule
@@ -322,7 +324,9 @@ RTDL also closes a bounded lakes/parks analogue on Australia:
 \caption{Accepted bounded LKAU $\bowtie$ PKAU package on \texttt{sunshine\_tiny}.}
 \label{tab:lkau}
 \centering
-\begin{tabular}{lrrrr}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.34\columnwidth}rrrr}
 \toprule
 Workload & Rows & PostGIS (s) & Embree (s) & OptiX (s) \\
 \midrule

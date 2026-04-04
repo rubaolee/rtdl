@@ -9,19 +9,29 @@ RTDL.
 - `references.bib`
 - vendored IEEEtran template files under `IEEEtran/`
 
-## Current boundary
+## Current state
 
-This package is intended to be peer-review ready in content and structure, but
-the current local shell does not have a LaTeX engine on `PATH`.
+This package is intended to be peer-review ready in content and structure.
 
-That means:
+Built artifact:
 
-- the source is real IEEE-style LaTeX
-- the draft can be audited now for content, structure, and formatting choices
-- PDF compilation still requires a LaTeX engine such as `pdflatex`, `latexmk`,
-  or `tectonic` in the execution environment
+- `main.pdf`
+
+The PDF was built locally with `tectonic`.
+
+Important note:
+
+- the manuscript still has minor TeX box warnings
+- but the package now compiles successfully end-to-end into a PDF on this
+  machine
 
 ## Suggested build commands once LaTeX is available
+
+```bash
+tectonic main.tex
+```
+
+Alternative traditional toolchain:
 
 ```bash
 pdflatex main.tex
