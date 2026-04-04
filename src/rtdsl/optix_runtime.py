@@ -26,6 +26,7 @@ import ctypes.util
 import functools
 import os
 import platform
+from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -43,6 +44,10 @@ from .ir import CompiledKernel
 from .runtime import _normalize_records
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
+
+
+_PREPARED_CACHE_MAX_ENTRIES = 8
+_prepared_optix_execution_cache: OrderedDict[tuple[object, ...], "PreparedOptixExecution"] = OrderedDict()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -218,6 +223,10 @@ def prepare_optix(kernel_fn_or_compiled) -> PreparedOptixKernel:
     return PreparedOptixKernel(kernel_fn_or_compiled)
 
 
+def clear_optix_prepared_cache() -> None:
+    _prepared_optix_execution_cache.clear()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Public run_optix
 # ─────────────────────────────────────────────────────────────────────────────
@@ -248,8 +257,59 @@ def run_optix(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     if result_mode not in {"dict", "raw"}:
         raise ValueError("OptiX result_mode must be 'dict' or 'raw'")
 
-    prepared = prepare_optix(compiled).bind(**inputs)
+    prepared = _get_or_bind_prepared_optix_execution(compiled, expected_inputs, inputs)
     return prepared.run_raw() if result_mode == "raw" else prepared.run()
+
+
+def _get_or_bind_prepared_optix_execution(compiled: CompiledKernel, expected_inputs, inputs) -> PreparedOptixExecution:
+    cache_key = _prepared_execution_cache_key(compiled, expected_inputs, inputs)
+    if cache_key is None:
+        return prepare_optix(compiled).bind(**inputs)
+    cached = _prepared_optix_execution_cache.get(cache_key)
+    if cached is not None:
+        _prepared_optix_execution_cache.move_to_end(cache_key)
+        return cached
+    normalized_inputs = {
+        name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
+        for name, payload in inputs.items()
+    }
+    prepared = prepare_optix(compiled).bind(**normalized_inputs)
+    _prepared_optix_execution_cache[cache_key] = prepared
+    if len(_prepared_optix_execution_cache) > _PREPARED_CACHE_MAX_ENTRIES:
+        _prepared_optix_execution_cache.popitem(last=False)
+    return prepared
+
+
+def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inputs) -> tuple[object, ...] | None:
+    canonical_inputs = []
+    for name in sorted(expected_inputs):
+        geometry_name = expected_inputs[name].geometry.name
+        payload = inputs[name]
+        if _is_packed_for_geometry(geometry_name, payload):
+            return None
+        normalized = _normalize_records(name, geometry_name, payload)
+        canonical_inputs.append((name, normalized))
+    predicate = compiled.refine_op.predicate
+    predicate_options = tuple(sorted(predicate.options.items()))
+    input_signature = tuple(
+        (
+            item.name,
+            item.geometry.name,
+            item.layout.name,
+            item.role,
+        )
+        for item in compiled.inputs
+    )
+    return (
+        compiled.name,
+        compiled.backend,
+        compiled.precision,
+        predicate.name,
+        predicate_options,
+        input_signature,
+        tuple(compiled.emit_op.fields),
+        tuple(canonical_inputs),
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -669,4 +729,18 @@ def _pack_for_geometry(geometry_name: str, payload):
         return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)
     if geometry_name == "rays":
         return payload if isinstance(payload, PackedRays)      else pack_rays(records=payload)
+    raise ValueError(f"unsupported geometry type for OptiX backend: {geometry_name!r}")
+
+
+def _is_packed_for_geometry(geometry_name: str, payload) -> bool:
+    if geometry_name == "segments":
+        return isinstance(payload, PackedSegments)
+    if geometry_name == "points":
+        return isinstance(payload, PackedPoints)
+    if geometry_name == "polygons":
+        return isinstance(payload, PackedPolygons)
+    if geometry_name == "triangles":
+        return isinstance(payload, PackedTriangles)
+    if geometry_name == "rays":
+        return isinstance(payload, PackedRays)
     raise ValueError(f"unsupported geometry type for OptiX backend: {geometry_name!r}")

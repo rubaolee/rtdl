@@ -6,6 +6,7 @@ import functools
 import os
 import platform
 import subprocess
+from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -13,6 +14,10 @@ from .ir import CompiledKernel
 from .runtime import _normalize_records
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
+
+
+_PREPARED_CACHE_MAX_ENTRIES = 8
+_prepared_embree_execution_cache: OrderedDict[tuple[object, ...], "PreparedEmbreeExecution"] = OrderedDict()
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:
@@ -279,6 +284,10 @@ def prepare_embree(kernel_fn_or_compiled) -> PreparedEmbreeKernel:
     return PreparedEmbreeKernel(kernel_fn_or_compiled)
 
 
+def clear_embree_prepared_cache() -> None:
+    _prepared_embree_execution_cache.clear()
+
+
 def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None) -> PackedSegments:
     if records is not None:
         normalized = _normalize_records("segments", "segments", records)
@@ -443,37 +452,59 @@ def run_embree(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     if result_mode not in {"dict", "raw"}:
         raise ValueError("Embree result_mode must be one of: dict, raw")
 
-    predicate_name = compiled.refine_op.predicate.name
-    if all(
-        _is_packed_for_geometry(expected_inputs[name].geometry.name, payload)
-        for name, payload in inputs.items()
-    ):
-        prepared = prepare_embree(compiled).bind(**inputs)
-        return prepared.run_raw() if result_mode == "raw" else prepared.run()
+    prepared = _get_or_bind_prepared_embree_execution(compiled, expected_inputs, inputs)
+    return prepared.run_raw() if result_mode == "raw" else prepared.run()
 
-    if result_mode == "raw":
-        prepared = prepare_embree(compiled).bind(**inputs)
-        return prepared.run_raw()
 
+def _get_or_bind_prepared_embree_execution(compiled: CompiledKernel, expected_inputs, inputs) -> PreparedEmbreeExecution:
+    cache_key = _prepared_execution_cache_key(compiled, expected_inputs, inputs)
+    if cache_key is None:
+        return prepare_embree(compiled).bind(**inputs)
+    cached = _prepared_embree_execution_cache.get(cache_key)
+    if cached is not None:
+        _prepared_embree_execution_cache.move_to_end(cache_key)
+        return cached
     normalized_inputs = {
         name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
         for name, payload in inputs.items()
     }
+    prepared = prepare_embree(compiled).bind(**normalized_inputs)
+    _prepared_embree_execution_cache[cache_key] = prepared
+    if len(_prepared_embree_execution_cache) > _PREPARED_CACHE_MAX_ENTRIES:
+        _prepared_embree_execution_cache.popitem(last=False)
+    return prepared
 
-    library = _load_embree_library()
-    if predicate_name == "segment_intersection":
-        return _run_lsi_embree(compiled, normalized_inputs, library)
-    if predicate_name == "point_in_polygon":
-        return _run_pip_embree(compiled, normalized_inputs, library)
-    if predicate_name == "overlay_compose":
-        return _run_overlay_embree(compiled, normalized_inputs, library)
-    if predicate_name == "ray_triangle_hit_count":
-        return _run_ray_hitcount_embree(compiled, normalized_inputs, library)
-    if predicate_name == "segment_polygon_hitcount":
-        return _run_segment_polygon_hitcount_embree(compiled, normalized_inputs, library)
-    if predicate_name == "point_nearest_segment":
-        return _run_point_nearest_segment_embree(compiled, normalized_inputs, library)
-    raise ValueError(f"unsupported RTDL Embree predicate: {predicate_name}")
+
+def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inputs) -> tuple[object, ...] | None:
+    canonical_inputs = []
+    for name in sorted(expected_inputs):
+        geometry_name = expected_inputs[name].geometry.name
+        payload = inputs[name]
+        if _is_packed_for_geometry(geometry_name, payload):
+            return None
+        normalized = _normalize_records(name, geometry_name, payload)
+        canonical_inputs.append((name, normalized))
+    predicate = compiled.refine_op.predicate
+    predicate_options = tuple(sorted(predicate.options.items()))
+    input_signature = tuple(
+        (
+            item.name,
+            item.geometry.name,
+            item.layout.name,
+            item.role,
+        )
+        for item in compiled.inputs
+    )
+    return (
+        compiled.name,
+        compiled.backend,
+        compiled.precision,
+        predicate.name,
+        predicate_options,
+        input_signature,
+        tuple(compiled.emit_op.fields),
+        tuple(canonical_inputs),
+    )
 
 
 def embree_version() -> tuple[int, int, int]:
