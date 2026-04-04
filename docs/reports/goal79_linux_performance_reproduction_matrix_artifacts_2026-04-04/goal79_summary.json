@@ -1,0 +1,135 @@
+{
+  "date": "2026-04-04",
+  "host_label": "lestat-lx1",
+  "included_row_count": 6,
+  "rows": [
+    {
+      "artifact_sources": [
+        "docs/reports/goal69_final_measured_artifacts_2026-04-04/goal69_summary.json"
+      ],
+      "dataset_label": "top4_tx_ca_ny_pa",
+      "embree_sec": 12.668624839000131,
+      "optix_sec": 15.652318004000335,
+      "parity_embree": true,
+      "parity_optix": true,
+      "postgis_sec": 3.2384774140000445,
+      "row_count": 39073,
+      "surface": "county_zipcode",
+      "timing_boundary": "end_to_end",
+      "workload": "positive_hit_pip"
+    },
+    {
+      "artifact_sources": [
+        "docs/reports/goal69_final_measured_artifacts_2026-04-04/goal69_summary.json"
+      ],
+      "dataset_label": "county2300_s10",
+      "embree_sec": 0.07098000999985743,
+      "optix_sec": 0.06938685400018585,
+      "parity_embree": true,
+      "parity_optix": true,
+      "postgis_sec": 0.007254267999996955,
+      "row_count": 197,
+      "surface": "blockgroup_waterbodies",
+      "timing_boundary": "end_to_end",
+      "workload": "positive_hit_pip"
+    },
+    {
+      "artifact_sources": [
+        "docs/reports/goal70_optix_long_county_prepared_exec_artifacts_2026-04-04/goal70_summary.json"
+      ],
+      "backend": "optix",
+      "backend_sec_best": 2.6420498459992814,
+      "backend_sec_worst": 2.6526213039996946,
+      "beats_postgis_all_reruns": true,
+      "dataset_label": "top4_tx_ca_ny_pa",
+      "parity_all_reruns": true,
+      "postgis_sec_best": 3.3130634219996864,
+      "postgis_sec_worst": 3.3333704659999057,
+      "row_count": 39073,
+      "surface": "county_zipcode",
+      "timing_boundary": "prepared_execution",
+      "workload": "positive_hit_pip"
+    },
+    {
+      "artifact_sources": [
+        "docs/reports/goal71_embree_long_county_prepared_exec_artifacts_2026-04-04/summary.json"
+      ],
+      "backend": "embree",
+      "backend_sec_best": 1.026593470998705,
+      "backend_sec_worst": 1.347775829000966,
+      "beats_postgis_all_reruns": true,
+      "dataset_label": "top4_tx_ca_ny_pa",
+      "parity_all_reruns": true,
+      "postgis_sec_best": 3.148009729000478,
+      "postgis_sec_worst": 3.2032243159992504,
+      "row_count": 39073,
+      "surface": "county_zipcode",
+      "timing_boundary": "prepared_execution",
+      "workload": "positive_hit_pip"
+    },
+    {
+      "artifact_sources": [
+        "docs/reports/goal77_runtime_cache_measurement_artifacts_2026-04-04/optix/summary.json"
+      ],
+      "backend": "optix",
+      "backend_sec_best_repeated": 0.0008620410008006729,
+      "backend_sec_first": 0.4859476330020698,
+      "dataset_label": "goal28d_selected_cdb_slice",
+      "parity_all_reruns": true,
+      "postgis_sec_best_repeated": 0.00035057200148003176,
+      "postgis_sec_first": 0.0005271989975881297,
+      "row_count": 5,
+      "surface": "county_zipcode_selected_cdb",
+      "timing_boundary": "cached_repeated_call",
+      "workload": "positive_hit_pip"
+    },
+    {
+      "artifact_sources": [
+        "docs/reports/goal77_runtime_cache_measurement_artifacts_2026-04-04/embree/summary.json"
+      ],
+      "backend": "embree",
+      "backend_sec_best_repeated": 0.0007749169999442529,
+      "backend_sec_first": 2.4643832109977666,
+      "dataset_label": "goal28d_selected_cdb_slice",
+      "parity_all_reruns": true,
+      "postgis_sec_best_repeated": 0.0003253700015193317,
+      "postgis_sec_first": 0.0004976150012225844,
+      "row_count": 5,
+      "surface": "county_zipcode_selected_cdb",
+      "timing_boundary": "cached_repeated_call",
+      "workload": "positive_hit_pip"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "reason": "dataset acquisition unavailable or unstable in current project environment",
+      "surface": "lakes_parks_continent_families"
+    },
+    {
+      "reason": "explicitly out of scope for Goal 79; backend not performance-competitive",
+      "surface": "vulkan_performance_matrix"
+    },
+    {
+      "reason": "oracles are correctness references, not performance targets",
+      "surface": "oracle_backends_performance"
+    },
+    {
+      "reason": "current available comparison package is limited to positive-hit pip timing surfaces with explicit PostGIS contract",
+      "surface": "lsi_or_overlay_postgis_matrix"
+    }
+  ],
+  "winners": {
+    "embree": [
+      "county_zipcode:prepared_execution"
+    ],
+    "optix": [
+      "county_zipcode:prepared_execution"
+    ],
+    "postgis": [
+      "county_zipcode:end_to_end",
+      "blockgroup_waterbodies:end_to_end",
+      "county_zipcode_selected_cdb:cached_repeated_call",
+      "county_zipcode_selected_cdb:cached_repeated_call"
+    ]
+  }
+}
