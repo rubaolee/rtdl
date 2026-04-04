@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+
+TEST_GROUPS: dict[str, tuple[str, ...]] = {
+    "unit": (
+        "tests.baseline_contracts_test",
+        "tests.dsl_negative_test",
+        "tests.goal10_workloads_test",
+        "tests.goal15_compare_test",
+        "tests.goal17_prepared_runtime_test",
+        "tests.goal18_result_mode_test",
+        "tests.goal19_compare_test",
+        "tests.goal22_reproduction_test",
+        "tests.goal23_reproduction_test",
+        "tests.goal28b_staging_test",
+        "tests.goal28c_conversion_test",
+        "tests.goal28d_execution_test",
+        "tests.goal30_precision_abi_test",
+        "tests.goal31_lsi_gap_closure_test",
+        "tests.goal32_lsi_sort_sweep_test",
+        "tests.goal36_performance_test",
+        "tests.goal40_native_oracle_test",
+        "tests.paper_reproduction_test",
+        "tests.report_smoke_test",
+        "tests.rtdsl_language_test",
+        "tests.rtdsl_py_test",
+        "tests.rtdsl_ray_query_test",
+        "tests.rtdsl_simulator_test",
+        "tests.section_5_6_scalability_test",
+        "tests.test_core_quality",
+    ),
+    "integration": (
+        "tests.baseline_integration_test",
+        "tests.cpu_embree_parity_test",
+        "tests.evaluation_test",
+        "tests.goal44_optix_benchmark_test",
+        "tests.optix_embree_interop_test",
+        "tests.rtdsl_embree_test",
+        "tests.rtdsl_vulkan_test",
+    ),
+    "system": (
+        "tests.goal34_performance_test",
+        "tests.goal35_blockgroup_waterbodies_test",
+        "tests.goal37_lkau_pkau_test",
+        "tests.goal38_feasibility_test",
+        "tests.goal43_optix_validation_test",
+        "tests.goal45_optix_county_zipcode_test",
+        "tests.goal47_optix_goal41_large_checks_test",
+        "tests.goal50_postgis_ground_truth_test",
+        "tests.goal54_lkau_pkau_four_system_test",
+    ),
+}
+
+
+def build_env() -> dict[str, str]:
+    env = os.environ.copy()
+    entries = [str(ROOT / "src"), str(ROOT)]
+    existing = env.get("PYTHONPATH")
+    if existing:
+        entries.append(existing)
+    env["PYTHONPATH"] = os.pathsep.join(entries)
+    return env
+
+
+def group_modules(name: str) -> tuple[str, ...]:
+    if name == "full":
+        return TEST_GROUPS["unit"] + TEST_GROUPS["integration"] + TEST_GROUPS["system"]
+    return TEST_GROUPS[name]
+
+
+def run_group(name: str) -> dict[str, object]:
+    modules = group_modules(name)
+    cp = subprocess.run(
+        ["python3", "-m", "unittest", *modules],
+        cwd=str(ROOT),
+        env=build_env(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    output = cp.stdout
+    if cp.stderr:
+        output = (output + ("\n" if output else "") + cp.stderr).strip()
+    return {
+        "group": name,
+        "command": "python3 -m unittest " + " ".join(modules),
+        "module_count": len(modules),
+        "returncode": cp.returncode,
+        "ok": cp.returncode == 0,
+        "output": output,
+    }
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the RTDL test matrix by group.")
+    parser.add_argument(
+        "--group",
+        choices=("unit", "integration", "system", "full"),
+        default="full",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    payload = run_group(args.group)
+    print(json.dumps(payload, indent=2, sort_keys=True))
+    return 0 if payload["ok"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

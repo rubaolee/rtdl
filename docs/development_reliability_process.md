@@ -64,6 +64,31 @@ Depending on the goal, validation may include:
 - benchmark harnesses
 - generated reports
 
+## Canonical Test Matrix
+
+The live repo now distinguishes three test layers:
+
+- unit:
+  - language, lowering, reference behavior, regression checks, report smoke
+- integration:
+  - backend wiring, runtime interop, backend-specific acceptance slices that are
+    still narrower than full package closure
+- system:
+  - accepted bounded-package checks and larger end-to-end workflow slices
+
+The canonical runner is:
+
+- `python3 scripts/run_test_matrix.py --group unit`
+- `python3 scripts/run_test_matrix.py --group integration`
+- `python3 scripts/run_test_matrix.py --group system`
+- `python3 scripts/run_test_matrix.py --group full`
+
+The full discovery command remains useful:
+
+- `python3 -m unittest discover -s tests -p '*test.py'`
+
+But the test-matrix runner is the clearer release-style verification surface.
+
 ## What Consensus Means
 
 Consensus does not mean every reviewer must use identical wording.
