@@ -13,7 +13,8 @@ Current validated execution surface:
 
 - native C/C++ oracle via `rt.run_cpu(...)`
 - Intel Embree backend via `rt.run_embree(...)`
-- NVIDIA OptiX backend via `rt.run_optix(...)` on `192.168.1.20`
+- NVIDIA OptiX backend via `rt.run_optix(...)` on the Linux validation
+  workstation (`192.168.1.20`)
 - provisional Vulkan KHR Ray-Tracing backend via `rt.run_vulkan(...)`
 
 ## Current supported workloads:
