@@ -89,8 +89,8 @@ Figure 15 is the overlay speedup summary derived from the same workload family.
 
 | Paper Target | RTDL Workload | Embree Phase Status | Dataset Strategy | Notes |
 | --- | --- | --- | --- | --- |
-| Table 4 overlay cases | `overlay` | `planned` | same dataset pairs as Table 3 where available | Current RTDL overlay is compositional seed generation, not full materialization. |
-| Figure 15 speedup summary | `overlay` | `planned` | derived from Table 4 analogue outputs | Must be labeled as Embree baseline analogue. |
+| Table 4 overlay cases | `overlay` | `planned` | same dataset pairs as Table 3 where available | Current RTDL overlay is compositional seed generation, not full materialization. Goal 56 closes the first bounded four-system `overlay-seed analogue` for `LKAU ⊲⊳ PKAU` `sunshine_tiny`. |
+| Figure 15 speedup summary | `overlay` | `planned` | derived from Table 4 analogue outputs | Must be labeled as an `overlay-seed analogue`; Goal 56 provides the first accepted bounded four-system input row for that surface. |
 
 ## Current Execution Policy
 

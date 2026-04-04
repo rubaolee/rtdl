@@ -2027,19 +2027,10 @@ static void run_overlay_optix(
 
     // CPU PIP supplement: match the current RTDL oracle semantics exactly.
     // overlay_compose_cpu checks only the first vertex of each polygon.
-    auto pip_check = [&](float px, float py,
-                          const RtdlPolygonRef& poly, const double* vxy) -> bool {
-        uint32_t n = poly.vertex_count, off = poly.vertex_offset;
-        bool inside = false;
-        for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
-            double xi = vxy[(off + i) * 2],     yi = vxy[(off + i) * 2 + 1];
-            double xj = vxy[(off + j) * 2],     yj = vxy[(off + j) * 2 + 1];
-            if (((yi > py) != (yj > py)) &&
-                (px <= (float)((xj - xi) * (py - yi) / ((yj - yi) != 0.0 ? (yj - yi) : 1.0e-20) + xi)))
-                inside = !inside;
-        }
-        return inside;
-    };
+#if RTDL_OPTIX_HAS_GEOS
+    GeosPreparedPolygonRefs left_geos(left_polys, left_count, left_verts_xy);
+    GeosPreparedPolygonRefs right_geos(right_polys, right_count, right_verts_xy);
+#endif
 
     for (size_t li = 0; li < left_count; ++li) {
         for (size_t ri = 0; ri < right_count; ++ri) {
@@ -2047,15 +2038,23 @@ static void run_overlay_optix(
             if (gpu_flags[slot].requires_pip) continue; // already set by GPU
             bool found = false;
             if (left_polys[li].vertex_count > 0) {
-                float lxv = (float)left_verts_xy[left_polys[li].vertex_offset * 2];
-                float lyv = (float)left_verts_xy[left_polys[li].vertex_offset * 2 + 1];
-                if (pip_check(lxv, lyv, right_polys[ri], right_verts_xy))
+                double lxv = left_verts_xy[left_polys[li].vertex_offset * 2];
+                double lyv = left_verts_xy[left_polys[li].vertex_offset * 2 + 1];
+#if RTDL_OPTIX_HAS_GEOS
+                if (right_geos.covers(ri, lxv, lyv))
+#else
+                if (exact_point_in_polygon(lxv, lyv, right_polys[ri], right_verts_xy))
+#endif
                     found = true;
             }
             if (!found && right_polys[ri].vertex_count > 0) {
-                float rxv = (float)right_verts_xy[right_polys[ri].vertex_offset * 2];
-                float ryv = (float)right_verts_xy[right_polys[ri].vertex_offset * 2 + 1];
-                if (pip_check(rxv, ryv, left_polys[li], left_verts_xy))
+                double rxv = right_verts_xy[right_polys[ri].vertex_offset * 2];
+                double ryv = right_verts_xy[right_polys[ri].vertex_offset * 2 + 1];
+#if RTDL_OPTIX_HAS_GEOS
+                if (left_geos.covers(li, rxv, ryv))
+#else
+                if (exact_point_in_polygon(rxv, ryv, left_polys[li], left_verts_xy))
+#endif
                     found = true;
             }
             if (found)
