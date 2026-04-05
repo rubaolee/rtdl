@@ -7,14 +7,14 @@ import sys
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_goal97_ray_hit_sorting import expected_hit_counts
-from examples.rtdl_goal97_ray_hit_sorting import quicksort_reference
-from examples.rtdl_goal97_ray_hit_sorting import run_goal97_backend
-from examples.rtdl_goal97_ray_hit_sorting import stable_sort_reference
+from examples.rtdl_sorting import expected_hit_counts
+from examples.rtdl_sorting import quicksort_reference
+from examples.rtdl_sorting import run_sorting_backend
+from examples.rtdl_sorting import stable_sort_reference
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Goal 97 ray-hit sorting on one RTDL backend.")
+    parser = argparse.ArgumentParser(description="Run the RTDL sorting example on one backend.")
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"), default="cpu_python_reference")
     parser.add_argument("values", nargs="*", type=int, help="nonnegative integers to sort")
     return parser.parse_args()
@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     values = tuple(args.values)
-    result = run_goal97_backend(args.backend, values)
+    result = run_sorting_backend(args.backend, values)
     payload = {
         "backend": args.backend,
         "values": values,

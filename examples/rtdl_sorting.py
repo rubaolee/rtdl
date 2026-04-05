@@ -20,7 +20,7 @@ def ray_hit_sorting_reference():
 def make_ray_hit_sort_case(values: tuple[int, ...] | list[int], *, far_x: int | None = None) -> dict[str, tuple[rt.Segment, ...]]:
     normalized = tuple(int(value) for value in values)
     if any(value < 0 for value in normalized):
-        raise ValueError("Goal 97 currently supports only nonnegative integers")
+        raise ValueError("this example currently supports only nonnegative integers")
     max_value = max(normalized, default=0)
     final_x = max_value + 1 if far_x is None else int(far_x)
     if final_x <= max_value:
@@ -39,7 +39,7 @@ def make_ray_hit_sort_case(values: tuple[int, ...] | list[int], *, far_x: int | 
 def expected_hit_counts(values: tuple[int, ...] | list[int]) -> tuple[int, ...]:
     normalized = tuple(int(value) for value in values)
     if any(value < 0 for value in normalized):
-        raise ValueError("Goal 97 currently supports only nonnegative integers")
+        raise ValueError("this example currently supports only nonnegative integers")
     by_value = Counter(normalized)
     running = 0
     hit_map: dict[int, int] = {}
@@ -123,7 +123,7 @@ def derive_sorts_from_rows(
     }
 
 
-def run_goal97_backend(backend: str, values: tuple[int, ...] | list[int]) -> dict[str, object]:
+def run_sorting_backend(backend: str, values: tuple[int, ...] | list[int]) -> dict[str, object]:
     case = make_ray_hit_sort_case(values)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(ray_hit_sorting_reference, **case)

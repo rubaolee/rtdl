@@ -5,15 +5,15 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_goal97_ray_hit_sorting import derive_sorts_from_rows
-from examples.rtdl_goal97_ray_hit_sorting import expected_hit_counts
-from examples.rtdl_goal97_ray_hit_sorting import hit_counts_from_rows
-from examples.rtdl_goal97_ray_hit_sorting import make_ray_hit_sort_case
-from examples.rtdl_goal97_ray_hit_sorting import quicksort_reference
-from examples.rtdl_goal97_ray_hit_sorting import ray_hit_sorting_reference
-from examples.rtdl_goal97_ray_hit_sorting import run_goal97_backend
-from examples.rtdl_goal97_ray_hit_sorting import stable_sort_from_hit_counts
-from examples.rtdl_goal97_ray_hit_sorting import stable_sort_reference
+from examples.rtdl_sorting import derive_sorts_from_rows
+from examples.rtdl_sorting import expected_hit_counts
+from examples.rtdl_sorting import hit_counts_from_rows
+from examples.rtdl_sorting import make_ray_hit_sort_case
+from examples.rtdl_sorting import quicksort_reference
+from examples.rtdl_sorting import ray_hit_sorting_reference
+from examples.rtdl_sorting import run_sorting_backend
+from examples.rtdl_sorting import stable_sort_from_hit_counts
+from examples.rtdl_sorting import stable_sort_reference
 from tests._embree_support import embree_available
 from tests.rtdsl_vulkan_test import vulkan_available
 
@@ -34,8 +34,8 @@ def native_oracle_available() -> bool:
     return True
 
 
-class Goal97RayHitSortingTest(unittest.TestCase):
-    def test_goal97_lowering_uses_lsi(self) -> None:
+class RtDlSortingTest(unittest.TestCase):
+    def test_sorting_lowering_uses_lsi(self) -> None:
         plan = rt.lower_to_execution_plan(rt.compile_kernel(ray_hit_sorting_reference))
         self.assertEqual(plan.workload_kind, "lsi")
 
@@ -57,7 +57,7 @@ class Goal97RayHitSortingTest(unittest.TestCase):
 
     def test_cpu_python_reference_matches_formula_and_sorted_order(self) -> None:
         values = (3, 1, 4, 1, 5, 0, 2, 5)
-        result = run_goal97_backend("cpu_python_reference", values)
+        result = run_sorting_backend("cpu_python_reference", values)
         self.assertEqual(result["hit_counts"], expected_hit_counts(values))
         self.assertEqual(result["ascending"], stable_sort_reference(values))
         self.assertEqual(result["descending"], stable_sort_reference(values, descending=True))
@@ -67,8 +67,8 @@ class Goal97RayHitSortingTest(unittest.TestCase):
     @unittest.skipUnless(native_oracle_available(), "Native oracle is not available in the current environment")
     def test_cpu_native_matches_python_reference(self) -> None:
         values = (3, 1, 4, 1, 5, 0, 2, 5)
-        python_rows = run_goal97_backend("cpu_python_reference", values)["rows"]
-        native_rows = run_goal97_backend("cpu", values)["rows"]
+        python_rows = run_sorting_backend("cpu_python_reference", values)["rows"]
+        native_rows = run_sorting_backend("cpu", values)["rows"]
         self.assertEqual(hit_counts_from_rows(values, native_rows), hit_counts_from_rows(values, python_rows))
         self.assertEqual(derive_sorts_from_rows(values, native_rows), derive_sorts_from_rows(values, python_rows))
 
@@ -90,8 +90,8 @@ class Goal97RayHitSortingTest(unittest.TestCase):
     @unittest.skipUnless(embree_available(), "Embree is not installed in the current environment")
     def test_embree_small_case_matches_cpu_sort(self) -> None:
         values = (3, 1, 4, 1, 5, 0, 2, 5)
-        cpu_result = run_goal97_backend("cpu", values)
-        embree_result = run_goal97_backend("embree", values)
+        cpu_result = run_sorting_backend("cpu", values)
+        embree_result = run_sorting_backend("embree", values)
         self.assertEqual(embree_result["hit_counts"], cpu_result["hit_counts"])
         self.assertEqual(embree_result["ascending"], cpu_result["ascending"])
         self.assertEqual(embree_result["descending"], cpu_result["descending"])
@@ -99,8 +99,8 @@ class Goal97RayHitSortingTest(unittest.TestCase):
     @unittest.skipUnless(vulkan_available(), "Vulkan is not available or RTDL Vulkan library not found")
     def test_vulkan_small_case_matches_cpu_sort(self) -> None:
         values = (3, 1, 4, 1, 5, 0, 2, 5)
-        cpu_result = run_goal97_backend("cpu", values)
-        vulkan_result = run_goal97_backend("vulkan", values)
+        cpu_result = run_sorting_backend("cpu", values)
+        vulkan_result = run_sorting_backend("vulkan", values)
         self.assertEqual(vulkan_result["hit_counts"], cpu_result["hit_counts"])
         self.assertEqual(vulkan_result["ascending"], cpu_result["ascending"])
         self.assertEqual(vulkan_result["descending"], cpu_result["descending"])
@@ -108,8 +108,8 @@ class Goal97RayHitSortingTest(unittest.TestCase):
     @unittest.skipUnless(optix_available(), "OptiX is not available in the current environment")
     def test_optix_small_case_matches_cpu_sort(self) -> None:
         values = (3, 1, 4, 1, 5, 0, 2, 5)
-        cpu_result = run_goal97_backend("cpu", values)
-        optix_result = run_goal97_backend("optix", values)
+        cpu_result = run_sorting_backend("cpu", values)
+        optix_result = run_sorting_backend("optix", values)
         self.assertEqual(optix_result["hit_counts"], cpu_result["hit_counts"])
         self.assertEqual(optix_result["ascending"], cpu_result["ascending"])
         self.assertEqual(optix_result["descending"], cpu_result["descending"])

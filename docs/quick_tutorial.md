@@ -102,10 +102,10 @@ PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_pyt
 After this hello-world example, the best next files are:
 
 - `examples/rtdl_language_reference.py`
-- `examples/rtdl_goal97_human_single_file.py`
+- `examples/rtdl_sorting_single_file.py`
 - `docs/architecture_api_performance_overview.md`
 
-The Goal 97 sorting example is especially useful because it is a task readers
+The sorting example is especially useful because it is a task readers
 already understand. It shows that RTDL is not only for spatial joins: you can
 express an unusual computation in RTDL, run it across backends, and then verify
 the result against ordinary Python sorting.
