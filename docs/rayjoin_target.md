@@ -47,7 +47,11 @@ Current validated RayJoin-style work includes:
 
 - substantial Embree-side exact-source and bounded reproduction work
 - native-oracle-backed correctness checks
-- first real-data OptiX validation on bounded RayJoin-family workloads
+- long exact-source OptiX closure on the accepted `county_zipcode`
+  positive-hit `pip` surface
+- long exact-source Embree closure on that same surface
+- long exact-source Vulkan parity closure on that same surface, without a
+  competitive performance claim
 - bounded PostGIS-backed four-system closures on accepted packages
 - bounded accepted package closure across:
   - `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
@@ -57,3 +61,9 @@ Current validated RayJoin-style work includes:
 
 So RayJoin is no longer only a future target in this repo. It is the active
 application slice that drives the current v0.1 validation work.
+
+Important current boundary:
+
+- the bounded package remains the v0.1 trust anchor
+- the strongest performance claim surface is the long exact-source
+  `county_zipcode` positive-hit `pip` row

@@ -33,8 +33,9 @@ The current repository includes:
 - a native C/C++ oracle used as the main internal correctness reference
 - an Embree backend
 - an OptiX backend validated on the Linux GPU host `192.168.1.20`
-- a Vulkan ray-tracing backend that works on the accepted bounded validation
-  surface, but is still considered provisional for larger-scale use
+- a Vulkan ray-tracing backend that is hardware-validated and parity-clean on
+  the accepted long exact-source `county_zipcode` positive-hit `pip` surface,
+  but slower there than PostGIS, OptiX, and Embree
 - PostGIS-based external ground-truth checking for accepted bounded packages
 
 ## Current Validated Application Slice
@@ -54,6 +55,8 @@ The strongest accepted bounded package currently includes:
 - `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
 - bounded `LKAU ⊲⊳ PKAU`
 - bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
+  - this means RTDL currently closes the seed-generation stage for overlay
+    style work on that bounded package, not full polygon output materialization
 
 Across that accepted bounded surface, RTDL has validated comparisons across:
 
@@ -62,9 +65,12 @@ Across that accepted bounded surface, RTDL has validated comparisons across:
 - Embree
 - OptiX
 
-Vulkan is correctness-closed on the accepted bounded Linux validation surface,
-but it is not yet promoted to the same larger-scale maturity level as Embree
-or OptiX.
+In addition, the strongest current backend-performance closure is now the long
+exact-source `county_zipcode` positive-hit `pip` surface:
+
+- Embree and OptiX are parity-clean and faster than PostGIS on the accepted
+  prepared/repeated boundaries
+- Vulkan is parity-clean on that same surface, but slower
 
 ## What v0.1 Means
 
@@ -76,6 +82,8 @@ That means:
 - the core spatial workloads run end-to-end
 - the accepted bounded package has been checked carefully
 - the project has a submission-ready paper package
+- the repo now also includes a stronger long exact-source backend-performance
+  closure on `county_zipcode` positive-hit `pip`
 
 That does **not** mean:
 
@@ -92,8 +100,11 @@ Important current limits:
 - RTDL does not yet claim robust/exact computational geometry everywhere
 - the current `overlay` path is a seed-generation analogue, not full polygon
   overlay materialization
-- the generated OptiX/CUDA skeleton path is not the trusted runtime path
-- Vulkan still has larger-package scaling limits
+- the bounded package remains the v0.1 trust anchor even though the strongest
+  current performance evidence is now the long exact-source `county_zipcode`
+  row
+- Vulkan is supported and parity-clean on the accepted long exact-source
+  surface, but remains slower there
 
 ## Long-Term Direction
 
@@ -114,6 +125,8 @@ If you are new to the project, read these first:
 - [Docs Index](docs/README.md)
 - [Vision](docs/vision.md)
 - [v0.1 Plan](docs/v0_1_final_plan.md)
+- [v0.1 Release Notes](docs/v0_1_release_notes.md)
+- [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
 - [RayJoin Target](docs/rayjoin_target.md)
 - [RTDL Feature Guide](docs/rtdl_feature_guide.md)
 - [Paper Package](paper/rtdl_rayjoin_2026/README.md)

@@ -21,8 +21,9 @@ Today it includes:
 - a native C/C++ oracle
 - a controlled Embree backend
 - a controlled OptiX backend
-- a provisional cross-vendor Vulkan KHR backend that is now parity-clean on the
-  accepted bounded Linux surface
+- a Vulkan backend that is now hardware-validated and parity-clean on the
+  accepted long exact-source `county_zipcode` positive-hit `pip` surface, but
+  slower than PostGIS, OptiX, and Embree there
 
 Current supported workload families:
 
@@ -41,10 +42,11 @@ The current repo can:
 - compile and lower them
 - run them through the native oracle
 - run them on Embree
-- run bounded validated workloads on OptiX
-- run the accepted bounded Vulkan Linux surface with oracle parity
-- keep Vulkan provisional beyond that bounded surface while larger-package
-  scaling and output-capacity work remains open
+- run accepted long exact-source `county_zipcode` positive-hit `pip` workloads
+  on OptiX and Embree with exact parity and accepted performance wins against
+  PostGIS on the prepared/repeated boundaries
+- run the accepted long exact-source Vulkan surface with exact parity, while
+  keeping Vulkan as the slower portable backend
 - compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
 - support a RayJoin-oriented experiment/reporting workflow
@@ -56,8 +58,8 @@ RTDL does not yet claim:
 
 - exact computational geometry
 - a finished generalized multi-backend optimizer
-- paper-scale reproduction on GPU backends
+- full paper-identical reproduction of every RayJoin dataset family
 - high-precision native GPU geometry on Vulkan (the accepted bounded path still
   relies on float32 traversal plus exact host-side final truth)
-- that PostGIS closure already exists for all intended packages
+- that every backend/workload/boundary combination is equally mature
 - full polygon overlay materialization (`overlay` is still a seed analogue)

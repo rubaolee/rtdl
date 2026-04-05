@@ -1,0 +1,64 @@
+{
+  "goal": 93,
+  "date": "2026-04-05",
+  "status": "draft",
+  "release_surface": {
+    "trust_anchor": {
+      "package_type": "bounded_v0_1_package",
+      "datasets": [
+        "county_zipcode top4_tx_ca_ny_pa",
+        "blockgroup_waterbodies county2300_s10",
+        "LKAU_PKAU bounded",
+        "LKAU_PKAU overlay_seed_analogue bounded"
+      ]
+    },
+    "strongest_performance_surface": {
+      "workload": "county_zipcode",
+      "query_shape": "positive_hit_pip",
+      "dataset_kind": "long_exact_source",
+      "timing_boundaries": [
+        "prepared",
+        "repeated_raw_input"
+      ]
+    }
+  },
+  "backend_status": {
+    "optix": {
+      "prepared_exact_source": "accepted_warmed_win",
+      "repeated_raw_input_exact_source": "accepted_win",
+      "parity": true
+    },
+    "embree": {
+      "prepared_exact_source": "accepted_win",
+      "repeated_raw_input_exact_source": "accepted_win",
+      "parity": true
+    },
+    "vulkan": {
+      "prepared_exact_source": "accepted_slower",
+      "repeated_raw_input_exact_source": "accepted_slower",
+      "parity": true
+    },
+    "postgis": {
+      "role": "external_indexed_baseline"
+    },
+    "python_oracle": {
+      "role": "mini_envelope_trust_reference"
+    },
+    "native_c_oracle": {
+      "role": "small_envelope_trust_reference"
+    }
+  },
+  "non_claims": [
+    "not full paper identical rayjoin reproduction",
+    "not equal maturity across all backends and workload families",
+    "not full polygon overlay materialization",
+    "not a claim that vulkan is performance competitive on the long exact source surface"
+  ],
+  "primary_evidence_reports": [
+    "/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal79_linux_performance_reproduction_matrix_2026-04-04.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal84_exact_source_long_backend_summary_2026-04-04.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal89_backend_comparison_refresh_2026-04-05.md",
+    "/Users/rl2025/rtdl_python_only/docs/architecture_api_performance_overview.md"
+  ]
+}

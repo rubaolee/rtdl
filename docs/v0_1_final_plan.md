@@ -21,7 +21,9 @@ Current v0.1 scope:
 - backends:
   - Embree on CPU
   - OptiX on NVIDIA GPU
-  - Vulkan on the accepted bounded Linux surface, still provisional for larger-scale use
+  - Vulkan as the supported portable GPU backend, parity-clean on the accepted
+    long exact-source `county_zipcode` surface, but slower there than OptiX,
+    Embree, and PostGIS
 - external checker:
   - indexed PostGIS comparison on the Linux validation host
 
@@ -56,16 +58,28 @@ Current v0.1 scope:
 - real-data validation on Linux host
 - multiple RayJoin-style families exercised
 - larger bounded reproduction and performance work completed
+- accepted long exact-source `county_zipcode` positive-hit `pip` prepared and
+  repeated raw-input wins against PostGIS now exist
 
 ### OptiX path
 
 - real GPU bring-up completed
 - corrected controlled runtime is in the repo
 - bounded correctness ladders completed
-- first real-data family validation completed
+- bounded real-data family validation completed
 - larger Goal 41-style GPU checks completed for:
   - `County ⊲⊳ Zipcode`
   - `BlockGroup ⊲⊳ WaterBodies`
+- accepted long exact-source `county_zipcode` positive-hit `pip` prepared and
+  repeated raw-input wins against PostGIS now exist
+
+### Vulkan path
+
+- hardware-validated backend path exists
+- accepted bounded package support exists
+- accepted long exact-source `county_zipcode` positive-hit `pip` prepared and
+  repeated raw-input parity closure now exists
+- Vulkan remains slower than PostGIS, Embree, and OptiX on that surface
 
 ### External ground-truth path
 
@@ -75,8 +89,8 @@ Current v0.1 scope:
   - `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
   - `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
   - bounded `LKAU ⊲⊳ PKAU`
-- bounded `overlay-seed analogue` closure now exists for:
-  - bounded `LKAU ⊲⊳ PKAU`
+- accepted bounded `overlay-seed analogue` closure now exists for bounded
+  `LKAU ⊲⊳ PKAU`
 
 ### Current bounded package
 
@@ -86,6 +100,8 @@ The strongest currently accepted bounded v0.1 package is:
 - `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
 - bounded `LKAU ⊲⊳ PKAU`
 - bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
+  - this means seed-generation closure for overlay-style work, not full
+    polygon output materialization
 
 Across:
 
@@ -95,16 +111,33 @@ Across:
 - OptiX
 - Vulkan on the accepted bounded Linux surface
 
+### Strongest current performance surface
+
+The strongest current performance surface is:
+
+- long exact-source `county_zipcode`
+- positive-hit `pip`
+
+On that surface:
+
+- OptiX is parity-clean and faster than PostGIS on the accepted repeated
+  raw-input boundary, and has an accepted warmed prepared win
+- Embree is parity-clean and faster than PostGIS on the accepted prepared and
+  repeated raw-input boundaries
+- Vulkan is parity-clean on the accepted prepared and repeated raw-input
+  boundaries, but slower than PostGIS
+
 ## What Is Still Missing Beyond v0.1 Closure
 
-v0.1 is now closed as a bounded package, but the following work is still open
-for later releases or post-v0.1 hardening:
+The bounded package is still the main v0.1 trust anchor, but the following work
+is still open for later releases or post-v0.1 hardening:
 
 - larger-package Vulkan `lsi` scaling beyond the current output-capacity contract
 - lower-overhead Vulkan exact-finalization design
 - broader exact-source family coverage beyond the accepted bounded package
 - more apples-to-apples large-package backend comparisons
-- any paper-identical reproduction that depends on unavailable or unstable datasets
+- any paper-identical reproduction that depends on unstable or otherwise
+  unavailable datasets
 
 ## Current Acceptance Standard
 
@@ -118,13 +151,18 @@ A v0.1 experiment/result only counts when:
 
 ## Immediate Priority
 
-The immediate priority after this bounded package is to extend matrix closure
-only on stable, already-stageable workload families and to avoid spending v0.1
-time on externally unstable acquisition paths.
+The immediate priority is no longer backend-capability proof.
+
+The remaining v0.1 work is:
+
+- release-facing reproduction closure
+- release-head validation
+- release docs
+- final release audit
 
 That means:
 
 - preserve the accepted bounded package as the current trust anchor
-- expand only when data staging is stable and repeatable
-- keep Vulkan explicitly provisional until it has materially stronger scaling
-  and performance evidence beyond the accepted bounded surface
+- preserve the long exact-source backend closure as the strongest current
+  performance surface
+- avoid broadening claims beyond stable, already-stageable evidence
