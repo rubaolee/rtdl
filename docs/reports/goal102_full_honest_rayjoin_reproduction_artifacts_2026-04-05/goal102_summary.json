@@ -1,0 +1,144 @@
+{
+  "goal": 102,
+  "date": "2026-04-05",
+  "status": "draft",
+  "classification_rule": {
+    "exact": "paper-identical dataset coverage",
+    "bounded_analogue": "accepted but narrower than the paper dataset or reproduction boundary",
+    "unavailable": "considered explicitly but not stageable honestly",
+    "not_applicable": "paper surface does not exist in the current RTDL execution model"
+  },
+  "final_package_outcome": "full_honest_bounded_reproduction",
+  "primary_backends": [
+    "embree",
+    "optix"
+  ],
+  "baseline": "postgis",
+  "rows": [
+    {
+      "paper_surface": "table3_county_zipcode_lsi",
+      "classification": "bounded_analogue",
+      "status": "carry_forward_only"
+    },
+    {
+      "paper_surface": "table3_county_zipcode_pip",
+      "classification": "bounded_analogue",
+      "status": "flagship_row"
+    },
+    {
+      "paper_surface": "table3_block_water_lsi",
+      "classification": "bounded_analogue",
+      "status": "analogue_family"
+    },
+    {
+      "paper_surface": "table3_block_water_pip",
+      "classification": "bounded_analogue",
+      "status": "analogue_family"
+    },
+    {
+      "paper_surface": "table3_lkau_pkau_lsi_pip",
+      "classification": "bounded_analogue",
+      "status": "bounded_australia_analogue"
+    },
+    {
+      "paper_surface": "table3_lkaf_lkas_lkeu_lkna_lksa",
+      "classification": "unavailable",
+      "status": "explicit_non_result"
+    },
+    {
+      "paper_surface": "figure13_lsi_scalability",
+      "classification": "bounded_analogue",
+      "status": "accepted_synthetic_analogue"
+    },
+    {
+      "paper_surface": "figure14_pip_scalability",
+      "classification": "bounded_analogue",
+      "status": "accepted_synthetic_analogue"
+    },
+    {
+      "paper_surface": "table4_figure15_overlay_seed",
+      "classification": "bounded_analogue",
+      "status": "accepted_overlay_seed_analogue"
+    },
+    {
+      "paper_surface": "paper_full_polygon_overlay_materialization",
+      "classification": "not_applicable",
+      "status": "not_in_current_rtdl_execution_model"
+    }
+  ],
+  "flagship_county_zipcode_pip": {
+    "classification": "bounded_analogue",
+    "dataset_kind": "long_exact_source_path_but_not_paper_identical_dataset",
+    "prepared_exact_source": {
+      "optix_backend_sec": 2.5369022019876866,
+      "optix_postgis_sec": 3.39459279399307,
+      "embree_backend_sec": 1.7738651990002836,
+      "embree_postgis_sec": 3.40269520500442,
+      "parity": true
+    },
+    "repeated_raw_input_exact_source": {
+      "optix_first_sec": 4.49759002099745,
+      "optix_best_repeated_sec": 2.124993502991856,
+      "optix_best_postgis_compare_sec": 2.986209955997765,
+      "embree_first_sec": 1.959970190000604,
+      "embree_best_repeated_sec": 1.0921905469949706,
+      "embree_best_postgis_compare_sec": 3.1886126509998576,
+      "parity": true
+    }
+  },
+  "fresh_top4_support_reruns": {
+    "row_count": 7863,
+    "sha256": "fcb4304f40339a75c85a3065927caf73a897925af00a0c94048fb9bec1f15b79",
+    "prepared": {
+      "optix_backend_secs": [
+        0.18207618700398598,
+        0.1791208380018361
+      ],
+      "optix_postgis_secs": [
+        0.4167834419931751,
+        0.3849254340020707
+      ],
+      "embree_backend_secs": [
+        0.1821604330034461,
+        0.14840258299955167
+      ],
+      "embree_postgis_secs": [
+        0.37199256900930777,
+        0.36855210599605925
+      ],
+      "parity": true
+    },
+    "repeated_raw_input": {
+      "optix_first_sec": 1.0346060559968464,
+      "optix_best_repeated_sec": 0.17935199600469787,
+      "optix_postgis_secs": [
+        0.3768467629997758,
+        0.3768596890004119,
+        0.37553721899166703
+      ],
+      "embree_first_sec": 0.20209797599818558,
+      "embree_best_repeated_sec": 0.1451086979941465,
+      "embree_postgis_secs": [
+        0.3767647969943937,
+        0.37192401199718006,
+        0.3720017659943551
+      ],
+      "parity": true
+    }
+  },
+  "primary_evidence_reports": [
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal54_lkau_pkau_four_system_2026-04-03.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal56_overlay_four_system_closure_2026-04-03.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal79_linux_performance_reproduction_matrix_2026-04-04.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal84_exact_source_long_backend_summary_2026-04-04.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal89_backend_comparison_refresh_2026-04-05.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal93_rayjoin_reproduction_release_matrix_2026-04-05.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal99_optix_cold_prepared_run1_win_2026-04-05.md"
+  ],
+  "fresh_goal102_artifacts": [
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_artifacts_2026-04-05/optix_raw_top4/summary.json",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_artifacts_2026-04-05/embree_raw_top4/summary.json",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_artifacts_2026-04-05/optix_prepared_top4/summary.json",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_artifacts_2026-04-05/embree_prepared_top4/summary.json"
+  ]
+}

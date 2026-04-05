@@ -1,0 +1,54 @@
+{
+  "backend": "embree",
+  "date": "2026-04-04",
+  "db_name": "rtdl_postgis",
+  "host_label": "lx1",
+  "postgis": {
+    "plan": {
+      "execution_time_ms": 361.565,
+      "index_names": [
+        "county_zipcode_points_geom_idx"
+      ],
+      "node_types": [
+        "Index Scan",
+        "Nested Loop",
+        "Seq Scan",
+        "Sort"
+      ],
+      "planning_time_ms": 2.079,
+      "uses_index": true
+    },
+    "row_count": 7863,
+    "sha256": "fcb4304f40339a75c85a3065927caf73a897925af00a0c94048fb9bec1f15b79"
+  },
+  "result": {
+    "best_repeated_run_sec": 0.1451086979941465,
+    "first_run_sec": 0.20209797599818558,
+    "parity_preserved_all_reruns": true,
+    "repeated_run_improved": true
+  },
+  "runs": [
+    {
+      "backend_sec": 0.20209797599818558,
+      "parity_vs_postgis": true,
+      "postgis_sec": 0.3767647969943937,
+      "row_count": 7863,
+      "sha256": "fcb4304f40339a75c85a3065927caf73a897925af00a0c94048fb9bec1f15b79"
+    },
+    {
+      "backend_sec": 0.1481613270007074,
+      "parity_vs_postgis": true,
+      "postgis_sec": 0.37192401199718006,
+      "row_count": 7863,
+      "sha256": "fcb4304f40339a75c85a3065927caf73a897925af00a0c94048fb9bec1f15b79"
+    },
+    {
+      "backend_sec": 0.1451086979941465,
+      "parity_vs_postgis": true,
+      "postgis_sec": 0.3720017659943551,
+      "row_count": 7863,
+      "sha256": "fcb4304f40339a75c85a3065927caf73a897925af00a0c94048fb9bec1f15b79"
+    }
+  ],
+  "scope": "county_zipcode; positive-hit pip; repeated raw-input calls; runtime-owned cache measurement"
+}
