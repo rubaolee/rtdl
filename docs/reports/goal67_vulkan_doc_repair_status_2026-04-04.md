@@ -28,15 +28,15 @@ Result: approved locally by Codex and Gemini.
 
 Repaired files include:
 
-- [/Users/rl2025/rtdl_python_only/README.md](/Users/rl2025/rtdl_python_only/README.md)
-- [/Users/rl2025/rtdl_python_only/docs/README.md](/Users/rl2025/rtdl_python_only/docs/README.md)
-- [/Users/rl2025/rtdl_python_only/docs/rtdl/README.md](/Users/rl2025/rtdl_python_only/docs/rtdl/README.md)
-- [/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
-- [/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md](/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md)
-- [/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md](/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md)
-- [/Users/rl2025/rtdl_python_only/docs/v0_1_roadmap.md](/Users/rl2025/rtdl_python_only/docs/v0_1_roadmap.md)
-- [/Users/rl2025/rtdl_python_only/docs/vision.md](/Users/rl2025/rtdl_python_only/docs/vision.md)
-- [/Users/rl2025/rtdl_python_only/rtdl_status_summary.js](/Users/rl2025/rtdl_python_only/rtdl_status_summary.js)
+- [README.md](../../README.md)
+- [docs/README.md](../README.md)
+- [docs/rtdl/README.md](../rtdl/README.md)
+- [docs/rtdl/programming_guide.md](../rtdl/programming_guide.md)
+- [docs/rtdl_feature_guide.md](../rtdl_feature_guide.md)
+- [docs/v0_1_final_plan.md](../v0_1_final_plan.md)
+- [docs/v0_1_roadmap.md](../v0_1_roadmap.md)
+- [docs/vision.md](../vision.md)
+- [rtdl_status_summary.js](../../rtdl_status_summary.js)
 
 ## Validation
 

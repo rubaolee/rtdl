@@ -40,7 +40,7 @@ Observed failure:
 
 File repaired:
 
-- [rtdl_optix.cpp](/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp)
+- [rtdl_optix.cpp](../../src/native/rtdl_optix.cpp)
 
 What changed:
 
@@ -83,7 +83,7 @@ Observed result:
 
 Artifact:
 
-- [goal101_hello_world_all_backends.json](/Users/rl2025/rtdl_python_only/docs/reports/goal101_hello_world_validation_artifacts_2026-04-05/goal101_hello_world_all_backends.json)
+- [goal101_hello_world_all_backends.json](goal101_hello_world_validation_artifacts_2026-04-05/goal101_hello_world_all_backends.json)
 
 Backends run successfully on the clean Linux clone:
 
@@ -102,7 +102,7 @@ All five returned the same visible hit:
 
 Artifact:
 
-- [goal101_full_matrix.json](/Users/rl2025/rtdl_python_only/docs/reports/goal101_hello_world_validation_artifacts_2026-04-05/goal101_full_matrix.json)
+- [goal101_full_matrix.json](goal101_hello_world_validation_artifacts_2026-04-05/goal101_full_matrix.json)
 
 Command:
 

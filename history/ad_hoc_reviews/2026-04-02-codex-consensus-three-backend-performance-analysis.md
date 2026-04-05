@@ -2,7 +2,7 @@
 
 Reviewed document:
 
-- [/Users/rl2025/rtdl_python_only/docs/reports/three_backend_performance_analysis_2026-04-02.md](/Users/rl2025/rtdl_python_only/docs/reports/three_backend_performance_analysis_2026-04-02.md)
+- [/Users/rl2025/rtdl_python_only/docs/reports/three_backend_performance_analysis_2026-04-02.md](../../docs/reports/three_backend_performance_analysis_2026-04-02.md)
 
 Consensus state:
 

@@ -47,17 +47,17 @@ Case construction:
 
 New harness:
 
-- [goal75_oracle_trust_audit.py](/Users/rl2025/rtdl_python_only/scripts/goal75_oracle_trust_audit.py)
+- [goal75_oracle_trust_audit.py](../../scripts/goal75_oracle_trust_audit.py)
 
 New tests:
 
-- [goal75_oracle_trust_audit_test.py](/Users/rl2025/rtdl_python_only/tests/goal75_oracle_trust_audit_test.py)
+- [goal75_oracle_trust_audit_test.py](../../tests/goal75_oracle_trust_audit_test.py)
 
 Supporting Linux artifacts:
 
-- [goal75_summary.json](/Users/rl2025/rtdl_python_only/docs/reports/goal75_oracle_trust_audit_artifacts_2026-04-04/goal75_summary.json)
-- [goal75_summary.md](/Users/rl2025/rtdl_python_only/docs/reports/goal75_oracle_trust_audit_artifacts_2026-04-04/goal75_summary.md)
-- [goal75_run.log](/Users/rl2025/rtdl_python_only/docs/reports/goal75_oracle_trust_audit_artifacts_2026-04-04/goal75_run.log)
+- [goal75_summary.json](goal75_oracle_trust_audit_artifacts_2026-04-04/goal75_summary.json)
+- [goal75_summary.md](goal75_oracle_trust_audit_artifacts_2026-04-04/goal75_summary.md)
+- [goal75_run.log](goal75_oracle_trust_audit_artifacts_2026-04-04/goal75_run.log)
 
 ## Validation
 

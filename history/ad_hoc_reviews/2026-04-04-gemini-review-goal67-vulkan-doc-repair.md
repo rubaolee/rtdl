@@ -17,10 +17,10 @@ Model: `gemini-3.1-pro-preview`
 
 2. Remaining live-doc inconsistencies still existed in the first doc pass.
    Gemini explicitly called out:
-   - [/Users/rl2025/rtdl_python_only/docs/rtdl/README.md](/Users/rl2025/rtdl_python_only/docs/rtdl/README.md)
-   - [/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md](/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md)
-   - [/Users/rl2025/rtdl_python_only/docs/v0_1_roadmap.md](/Users/rl2025/rtdl_python_only/docs/v0_1_roadmap.md)
-   - [/Users/rl2025/rtdl_python_only/rtdl_status_summary.js](/Users/rl2025/rtdl_python_only/rtdl_status_summary.js)
+   - [/Users/rl2025/rtdl_python_only/docs/rtdl/README.md](../../docs/rtdl/README.md)
+   - [/Users/rl2025/rtdl_python_only/docs/rtdl/programming_guide.md](../../docs/rtdl/programming_guide.md)
+   - [/Users/rl2025/rtdl_python_only/docs/v0_1_roadmap.md](../../docs/v0_1_roadmap.md)
+   - [/Users/rl2025/rtdl_python_only/rtdl_status_summary.js](../../rtdl_status_summary.js)
 
 ## Gemini Direction
 

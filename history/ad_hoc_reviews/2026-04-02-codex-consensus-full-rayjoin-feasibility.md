@@ -2,7 +2,7 @@
 
 Document reviewed:
 
-- [/Users/rl2025/rtdl_python_only/docs/reports/full_rayjoin_repetition_feasibility_2026-04-02.md](/Users/rl2025/rtdl_python_only/docs/reports/full_rayjoin_repetition_feasibility_2026-04-02.md)
+- [/Users/rl2025/rtdl_python_only/docs/reports/full_rayjoin_repetition_feasibility_2026-04-02.md](../../docs/reports/full_rayjoin_repetition_feasibility_2026-04-02.md)
 
 Consensus state:
 
