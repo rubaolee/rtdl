@@ -68,6 +68,15 @@ What that does **not** mean:
 - full polygon overlay materialization
 - equal maturity across all backends and workloads
 
+## Release Reports
+
+The canonical v0.1 release-report package is here:
+
+- [RTDL v0.1 Release Reports](docs/release_reports/v0_1/README.md)
+
+That directory links the release statement, the work report, and the detailed
+audit report to the live supporting docs.
+
 ## Strongest Current Backend Story
 
 The strongest current performance surface is:

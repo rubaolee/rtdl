@@ -10,6 +10,7 @@ This directory contains the canonical release-report set for RTDL v0.1.
 1. [Release Statement](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/release_statement.md)
 2. [Work Report](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/work_report.md)
 3. [Audit Report](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/audit_report.md)
+4. [Final Readiness Check](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/final_readiness_check.md)
 
 ## Supporting live docs
 

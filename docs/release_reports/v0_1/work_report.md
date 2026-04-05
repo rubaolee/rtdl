@@ -124,6 +124,16 @@ The work behind RTDL v0.1 achieved:
 
 ## Canonical references
 
+Primary canonical release-report directory:
+
+- `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/README.md`
+- `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/release_statement.md`
+- `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/work_report.md`
+- `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/audit_report.md`
+- `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/final_readiness_check.md`
+
+Supporting live docs and detailed evidence:
+
 - `/Users/rl2025/rtdl_python_only/docs/v0_1_release_notes.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_2026-04-05.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_2026-04-05.md`
