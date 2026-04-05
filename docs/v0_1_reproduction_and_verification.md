@@ -1,7 +1,7 @@
 # RTDL v0.1 Reproduction And Verification
 
 Date: 2026-04-05
-Status: release candidate
+Status: released
 
 ## Purpose
 

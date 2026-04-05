@@ -9,7 +9,7 @@ Repo:
   report
 
 Project position:
-- RTDL v0.1 is in release-closure mode
+- RTDL v0.1 is released
 - the accepted bounded package remains the trust anchor
 - the strongest current backend story is the long exact-source
   `county_zipcode` positive-hit `pip` surface
@@ -19,7 +19,7 @@ Project position:
   slower than PostGIS and less complete than Embree/OptiX
 
 Current top priority:
-- keep the release-facing documentation and published claims internally
+- keep the released front-door documentation and published claims internally
   consistent without weakening the evidence boundaries
 
 Performance priority order:
