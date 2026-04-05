@@ -1248,6 +1248,17 @@ void main() {
 }
 )GLSL";
 
+static const char* kPipPosCountRahit = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(set=0, binding=2, std430) buffer CounterBuf { uint count; };
+layout(location=0) rayPayloadInEXT uint dummy;
+void main() {
+    atomicAdd(count, 1u);
+    ignoreIntersectionEXT;
+}
+)GLSL";
+
 // ---------- Overlay shaders ---------------------------------------------------
 // Build: right polygon bounding-box AABBs.
 // Probe: one ray per (left_polygon, edge) pair, encoding the edge.
@@ -1928,12 +1939,13 @@ static void dispatch_compute(VkContext* ctx, ComputePipeline& pipe,
 
 static RtPipeline*      g_lsi_pipe    = nullptr;
 static RtPipeline*      g_pip_pipe    = nullptr;
+static RtPipeline*      g_pip_pos_count_pipe = nullptr;
 static RtPipeline*      g_pip_pos_pipe= nullptr;
 static RtPipeline*      g_overlay_pipe= nullptr;
 static RtPipeline*      g_rhc_pipe    = nullptr;
 static RtPipeline*      g_sph_pipe    = nullptr;
 static ComputePipeline* g_pns_pipe    = nullptr;
-static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_init, g_overlay_init;
+static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_count_init, g_pip_pos_init, g_overlay_init;
 static std::once_flag   g_rhc_init, g_sph_init, g_pns_init;
 
 // ── Workload run functions ───────────────────────────────────────────────────
@@ -2081,6 +2093,11 @@ static void run_pip_vulkan(
         // generation followed by host exact-finalize on the candidate subset.
 
         VkContext* ctx = get_context();
+        std::call_once(g_pip_pos_count_init, [ctx]() {
+            g_pip_pos_count_pipe = new RtPipeline(build_rt_pipeline(
+                ctx, kPipRgen, kPipRmiss, kPipRint, kPipPosCountRahit,
+                "pip_pos_count.rgen", "pip_pos_count.rmiss", "pip_pos_count.rint", "pip_pos_count.rahit", 7));
+        });
         std::call_once(g_pip_pos_init, [ctx]() {
             // Reuse rgen/rmiss/rint from the dense PIP pipeline; only the
             // anyhit shader differs (sparse atomic candidate output).
@@ -2126,18 +2143,7 @@ static void run_pip_vulkan(
         AccelResult blas = build_aabb_blas(ctx, aabbs);
         AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
 
-        // Candidate output buffer: worst-case point_count × poly_count pairs.
-        // In practice much smaller because the GPU PIP filter is tight.
-        uint32_t capacity = checked_output_capacity_u32(
-            point_count, poly_count, sizeof(GpuPipCandidate), "Vulkan PIP positive-hit");
-        VkDeviceSize cand_sz = checked_output_bytes(
-            capacity, sizeof(GpuPipCandidate), "Vulkan PIP positive-hit");
-        BufMem d_cands = alloc_buffer(ctx, cand_sz,
-            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-        // Atomic counter buffer: zeroed before dispatch
+        // Atomic counter buffer: first pass counts the true sparse candidate set.
         BufMem d_counter = alloc_buffer(ctx, sizeof(uint32_t),
             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
             VK_BUFFER_USAGE_TRANSFER_DST_BIT   |
@@ -2145,63 +2151,84 @@ static void run_pip_vulkan(
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
         zero_buf(ctx, d_counter);
 
-        struct { uint32_t npoints, capacity; } params{
-            (uint32_t)point_count, capacity };
-        BufMem d_params = alloc_buffer(ctx, sizeof(params),
+        struct { uint32_t npoints, capacity; } count_params{
+            (uint32_t)point_count, 0u };
+        BufMem d_count_params = alloc_buffer(ctx, sizeof(count_params),
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
-        std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+        void* mp; vkMapMemory(ctx->device, d_count_params.memory, 0, sizeof(count_params), 0, &mp);
+        std::memcpy(mp, &count_params, sizeof(count_params)); vkUnmapMemory(ctx->device, d_count_params.memory);
 
-        DescriptorSet ds = alloc_descriptor_set(ctx, g_pip_pos_pipe->dset_layout, 7, true);
-        bind_tlas(ctx,         ds.set, tlas.handle,       0);
-        bind_ssbo(ctx->device, ds.set, d_cands.buffer,   cand_sz,          1);
-        bind_ssbo(ctx->device, ds.set, d_counter.buffer, sizeof(uint32_t), 2);
-        bind_ubo (ctx->device, ds.set, d_params.buffer,  sizeof(params),   3);
-        bind_ssbo(ctx->device, ds.set, d_pts.buffer,     pts_sz,           4);
-        bind_ssbo(ctx->device, ds.set, d_poly.buffer,    poly_sz,          5);
-        bind_ssbo(ctx->device, ds.set, d_vert.buffer,    vert_sz,          6);
+        BufMem d_dummy = alloc_buffer(ctx, 4,
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        dispatch_rt(ctx, *g_pip_pos_pipe, ds.set, (uint32_t)point_count);
+        DescriptorSet count_ds = alloc_descriptor_set(ctx, g_pip_pos_count_pipe->dset_layout, 7, true);
+        bind_tlas(ctx,         count_ds.set, tlas.handle,          0);
+        bind_ssbo(ctx->device, count_ds.set, d_dummy.buffer,       4,               1);
+        bind_ssbo(ctx->device, count_ds.set, d_counter.buffer,     sizeof(uint32_t),2);
+        bind_ubo (ctx->device, count_ds.set, d_count_params.buffer,sizeof(count_params),3);
+        bind_ssbo(ctx->device, count_ds.set, d_pts.buffer,         pts_sz,          4);
+        bind_ssbo(ctx->device, count_ds.set, d_poly.buffer,        poly_sz,         5);
+        bind_ssbo(ctx->device, count_ds.set, d_vert.buffer,        vert_sz,         6);
 
-        // Download candidate count (single uint)
+        dispatch_rt(ctx, *g_pip_pos_count_pipe, count_ds.set, (uint32_t)point_count);
+
         uint32_t n_cands = 0;
         download_from_buf(ctx, &n_cands, d_counter, sizeof(uint32_t));
-        if (n_cands > capacity) n_cands = capacity;
+        vkDestroyDescriptorPool(ctx->device, count_ds.pool, nullptr);
+        free_buf(ctx, d_count_params);
 
-        // Download only the valid candidate pairs (sub-copy pattern: avoid
-        // transferring the full worst-case buffer when hits are sparse)
         std::vector<GpuPipCandidate> candidates(n_cands);
         if (n_cands > 0) {
-            VkDeviceSize sub_sz = (VkDeviceSize)n_cands * sizeof(GpuPipCandidate);
-            BufMem d_sub = alloc_buffer(ctx, sub_sz,
+            zero_buf(ctx, d_counter);
+
+            VkDeviceSize cand_sz = checked_output_bytes(
+                n_cands, sizeof(GpuPipCandidate), "Vulkan PIP positive-hit");
+            BufMem d_cands = alloc_buffer(ctx, cand_sz,
                 VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT   |
                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            VkCommandBuffer cmd;
-            VkCommandBufferAllocateInfo ci{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
-            ci.commandPool = ctx->cmd_pool; ci.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-            ci.commandBufferCount = 1;
-            vkAllocateCommandBuffers(ctx->device, &ci, &cmd);
-            VkCommandBufferBeginInfo beg{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
-            beg.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-            vkBeginCommandBuffer(cmd, &beg);
-            VkBufferCopy copy{ 0, 0, sub_sz };
-            vkCmdCopyBuffer(cmd, d_cands.buffer, d_sub.buffer, 1, &copy);
-            vkEndCommandBuffer(cmd);
-            VkSubmitInfo sub{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
-            sub.commandBufferCount = 1; sub.pCommandBuffers = &cmd;
-            vkQueueSubmit(ctx->queue, 1, &sub, VK_NULL_HANDLE);
-            vkQueueWaitIdle(ctx->queue);
-            vkFreeCommandBuffers(ctx->device, ctx->cmd_pool, 1, &cmd);
-            download_from_buf(ctx, candidates.data(), d_sub, sub_sz);
-            free_buf(ctx, d_sub);
+
+            struct { uint32_t npoints, capacity; } params{
+                (uint32_t)point_count, n_cands };
+            BufMem d_params = alloc_buffer(ctx, sizeof(params),
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+            std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+            DescriptorSet ds = alloc_descriptor_set(ctx, g_pip_pos_pipe->dset_layout, 7, true);
+            bind_tlas(ctx,         ds.set, tlas.handle,       0);
+            bind_ssbo(ctx->device, ds.set, d_cands.buffer,    cand_sz,          1);
+            bind_ssbo(ctx->device, ds.set, d_counter.buffer,  sizeof(uint32_t), 2);
+            bind_ubo (ctx->device, ds.set, d_params.buffer,   sizeof(params),   3);
+            bind_ssbo(ctx->device, ds.set, d_pts.buffer,      pts_sz,           4);
+            bind_ssbo(ctx->device, ds.set, d_poly.buffer,     poly_sz,          5);
+            bind_ssbo(ctx->device, ds.set, d_vert.buffer,     vert_sz,          6);
+
+            dispatch_rt(ctx, *g_pip_pos_pipe, ds.set, (uint32_t)point_count);
+
+            uint32_t n_written = 0;
+            download_from_buf(ctx, &n_written, d_counter, sizeof(uint32_t));
+            if (n_written < n_cands) {
+                n_cands = n_written;
+                candidates.resize(n_cands);
+            }
+
+            if (n_cands > 0) {
+                download_from_buf(ctx, candidates.data(), d_cands,
+                    checked_output_bytes(n_cands, sizeof(GpuPipCandidate), "Vulkan PIP positive-hit"));
+            }
+
+            vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+            free_buf(ctx, d_cands);
+            free_buf(ctx, d_params);
         }
 
-        vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+        free_buf(ctx, d_dummy);
         free_buf(ctx, d_pts); free_buf(ctx, d_poly); free_buf(ctx, d_vert);
-        free_buf(ctx, d_cands); free_buf(ctx, d_counter); free_buf(ctx, d_params);
+        free_buf(ctx, d_counter);
         destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
 
         // Stage 2: host exact-finalize on candidates only
