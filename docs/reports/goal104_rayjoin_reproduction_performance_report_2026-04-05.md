@@ -463,14 +463,14 @@ The main conclusion is not just ``some backend is fast.'' It is:
 
 Main source reports:
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal103_full_honest_rayjoin_reproduction_vulkan_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal84_exact_source_long_backend_summary_2026-04-04.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal89_backend_comparison_refresh_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal99_optix_cold_prepared_run1_win_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal85_vulkan_hardware_validation_and_measurement_2026-04-04.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal87_vulkan_long_exact_source_unblocked_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal88_vulkan_long_exact_raw_input_measurement_2026-04-05.md`
+- [Goal 102 Full Honest RayJoin Reproduction](goal102_full_honest_rayjoin_reproduction_2026-04-05.md)
+- [Goal 103 Full Honest RayJoin Reproduction Vulkan](goal103_full_honest_rayjoin_reproduction_vulkan_2026-04-05.md)
+- [Goal 84 Exact Source Long Backend Summary](goal84_exact_source_long_backend_summary_2026-04-04.md)
+- [Goal 89 Backend Comparison Refresh](goal89_backend_comparison_refresh_2026-04-05.md)
+- [Goal 99 OptiX Cold Prepared Run-1 Win](goal99_optix_cold_prepared_run1_win_2026-04-05.md)
+- [Goal 85 Vulkan Hardware Validation And Measurement](goal85_vulkan_hardware_validation_and_measurement_2026-04-04.md)
+- [Goal 87 Vulkan Long Exact Source Unblocked](goal87_vulkan_long_exact_source_unblocked_2026-04-05.md)
+- [Goal 88 Vulkan Long Exact Raw Input Measurement](goal88_vulkan_long_exact_raw_input_measurement_2026-04-05.md)
 
 ## Conclusion
 

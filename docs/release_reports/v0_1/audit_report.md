@@ -201,9 +201,9 @@ That means:
 
 ## Canonical references
 
-- [/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/release_statement.md](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/release_statement.md)
-- [/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/work_report.md](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/work_report.md)
-- [/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/audit_report.md](/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/audit_report.md)
-- [/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_2026-04-05.md](/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_2026-04-05.md)
-- [/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-05-codex-consensus-goal100-final-package.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-05-codex-consensus-goal100-final-package.md)
-- [/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-05-codex-postpublish-consensus-goal75-final-package.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-05-codex-postpublish-consensus-goal75-final-package.md)
+- [Release Statement](release_statement.md)
+- [Work Report](work_report.md)
+- [Audit Report](audit_report.md)
+- [Goal 100 Release Validation Rerun](../../reports/goal100_release_validation_rerun_2026-04-05.md)
+- [Goal 100 Final Consensus](../../../history/ad_hoc_reviews/2026-04-05-codex-consensus-goal100-final-package.md)
+- [Goal 75 Postpublish Consensus](../../../history/ad_hoc_reviews/2026-04-05-codex-postpublish-consensus-goal75-final-package.md)

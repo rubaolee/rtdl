@@ -38,8 +38,8 @@ On that accepted surface:
 
 Primary evidence:
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal93_rayjoin_reproduction_release_matrix_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal89_backend_comparison_refresh_2026-04-05.md`
+- [Goal 93 RayJoin Reproduction Release Matrix](reports/goal93_rayjoin_reproduction_release_matrix_2026-04-05.md)
+- [Goal 89 Backend Comparison Refresh](reports/goal89_backend_comparison_refresh_2026-04-05.md)
 
 ## Trust anchor
 
@@ -101,10 +101,10 @@ RTDL v0.1 does not claim:
 
 Read these first:
 
-1. `/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md`
-2. `/Users/rl2025/rtdl_python_only/docs/architecture_api_performance_overview.md`
-3. `/Users/rl2025/rtdl_python_only/docs/current_milestone_qa.md`
-4. `/Users/rl2025/rtdl_python_only/docs/v0_1_reproduction_and_verification.md`
-5. `/Users/rl2025/rtdl_python_only/docs/v0_1_support_matrix.md`
-6. `/Users/rl2025/rtdl_python_only/docs/future_ray_tracing_directions.md`
-7. `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/README.md`
+1. [v0.1 Final Plan](v0_1_final_plan.md)
+2. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+3. [Current Milestone Q&A](current_milestone_qa.md)
+4. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
+5. [v0.1 Support Matrix](v0_1_support_matrix.md)
+6. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+7. [v0.1 Release Reports](release_reports/v0_1/README.md)

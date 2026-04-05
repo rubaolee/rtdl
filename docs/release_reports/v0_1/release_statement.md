@@ -41,12 +41,12 @@ RTDL v0.1 does not claim:
 
 ## Canonical release references
 
-- `/Users/rl2025/rtdl_python_only/docs/v0_1_release_notes.md`
-- `/Users/rl2025/rtdl_python_only/docs/v0_1_reproduction_and_verification.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal103_full_honest_rayjoin_reproduction_vulkan_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md`
+- [v0.1 Release Notes](../../v0_1_release_notes.md)
+- [v0.1 Reproduction And Verification](../../v0_1_reproduction_and_verification.md)
+- [Goal 100 Release Validation Rerun](../../reports/goal100_release_validation_rerun_2026-04-05.md)
+- [Goal 102 Full Honest RayJoin Reproduction](../../reports/goal102_full_honest_rayjoin_reproduction_2026-04-05.md)
+- [Goal 103 Full Honest RayJoin Reproduction Vulkan](../../reports/goal103_full_honest_rayjoin_reproduction_vulkan_2026-04-05.md)
+- [Goal 104 RayJoin Reproduction Performance Report](../../reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
 
 ## Release interpretation
 

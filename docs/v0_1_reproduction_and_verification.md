@@ -12,47 +12,47 @@ the RTDL v0.1 package.
 
 ### Release scope and architecture
 
-- `/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md`
-- `/Users/rl2025/rtdl_python_only/docs/architecture_api_performance_overview.md`
-- `/Users/rl2025/rtdl_python_only/docs/current_milestone_qa.md`
-- `/Users/rl2025/rtdl_python_only/docs/v0_1_release_notes.md`
-- `/Users/rl2025/rtdl_python_only/docs/future_ray_tracing_directions.md`
+- [v0.1 Final Plan](v0_1_final_plan.md)
+- [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+- [Current Milestone Q&A](current_milestone_qa.md)
+- [v0.1 Release Notes](v0_1_release_notes.md)
+- [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
 
 ### Current release validation
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_2026-04-05.md`
+- [Goal 100 Release Validation Rerun](reports/goal100_release_validation_rerun_2026-04-05.md)
 
 ### Core backend status
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal84_exact_source_long_backend_summary_2026-04-04.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal89_backend_comparison_refresh_2026-04-05.md`
+- [Goal 84 Exact Source Long Backend Summary](reports/goal84_exact_source_long_backend_summary_2026-04-04.md)
+- [Goal 89 Backend Comparison Refresh](reports/goal89_backend_comparison_refresh_2026-04-05.md)
 
 ### Oracle trust
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal75_oracle_trust_envelope_2026-04-04.md`
+- [Goal 75 Oracle Trust Envelope](reports/goal75_oracle_trust_envelope_2026-04-04.md)
 
 ### Milestone audit/tests/docs
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal90_code_review_and_process_audit_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal91_test_expansion_for_rayjoin_reproduction_2026-04-05.md`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal92_architecture_api_and_performance_docs_2026-04-05.md`
+- [Goal 90 Code Review And Process Audit](reports/goal90_code_review_and_process_audit_2026-04-05.md)
+- [Goal 91 Test Expansion For RayJoin Reproduction](reports/goal91_test_expansion_for_rayjoin_reproduction_2026-04-05.md)
+- [Goal 92 Architecture API And Performance Docs](reports/goal92_architecture_api_and_performance_docs_2026-04-05.md)
 
 ## Canonical artifact summaries
 
 ### OptiX
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal99_optix_cold_prepared_run1_win_artifacts_2026-04-05/summary.json`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_artifacts_2026-04-05/optix_raw/summary.json`
+- [Goal 99 OptiX Cold Prepared Run-1 Win Summary](reports/goal99_optix_cold_prepared_run1_win_artifacts_2026-04-05/summary.json)
+- [Goal 100 OptiX Raw Summary](reports/goal100_release_validation_rerun_artifacts_2026-04-05/optix_raw/summary.json)
 
 ### Embree
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal83_embree_long_exact_source_repair_artifacts_2026-04-04/prepared/summary.json`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal83_embree_long_exact_source_repair_artifacts_2026-04-04/raw/summary.json`
+- [Goal 83 Embree Prepared Summary](reports/goal83_embree_long_exact_source_repair_artifacts_2026-04-04/prepared/summary.json)
+- [Goal 83 Embree Raw Summary](reports/goal83_embree_long_exact_source_repair_artifacts_2026-04-04/raw/summary.json)
 
 ### Vulkan
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal87_vulkan_long_exact_source_artifacts_2026-04-05/summary.json`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal88_vulkan_long_exact_raw_input_artifacts_2026-04-05/summary.json`
+- [Goal 87 Vulkan Long Exact Source Summary](reports/goal87_vulkan_long_exact_source_artifacts_2026-04-05/summary.json)
+- [Goal 88 Vulkan Long Exact Raw Input Summary](reports/goal88_vulkan_long_exact_raw_input_artifacts_2026-04-05/summary.json)
 
 ## Recommended local verification
 
