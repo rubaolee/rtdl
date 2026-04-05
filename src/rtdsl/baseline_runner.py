@@ -348,9 +348,13 @@ def segments_from_records(records: tuple[dict[str, float | int], ...]) -> tuple[
     )
 
 
-def points_from_records(records: tuple[dict[str, float | int], ...]) -> tuple[Point, ...]:
+def points_from_records(records) -> tuple[Point, ...]:
     return tuple(
-        Point(
+        record
+        if isinstance(record, Point) or (
+            hasattr(record, "id") and hasattr(record, "x") and hasattr(record, "y")
+        )
+        else Point(
             id=int(record["id"]),
             x=float(record["x"]),
             y=float(record["y"]),

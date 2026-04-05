@@ -15,6 +15,7 @@ from examples.rtdl_goal10_reference import point_nearest_segment_reference
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 from rtdsl.baseline_contracts import compare_baseline_rows
+from scripts.goal69_pip_positive_hit_performance import point_in_counties_positive_hits
 
 def vulkan_available():
     """Simple check if Vulkan library can be loaded and a version queried."""
@@ -142,18 +143,8 @@ class RtDslVulkanTest(unittest.TestCase):
         polygons = (
             {"id": 200, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
         )
-        cpu_rows = rt.run_cpu(
-            point_in_counties_reference,
-            result_mode="positive_hits",
-            points=points,
-            polygons=polygons,
-        )
-        gpu_rows = rt.run_vulkan(
-            point_in_counties_reference,
-            result_mode="positive_hits",
-            points=points,
-            polygons=polygons,
-        )
+        cpu_rows = rt.run_cpu(point_in_counties_positive_hits, points=points, polygons=polygons)
+        gpu_rows = rt.run_vulkan(point_in_counties_positive_hits, points=points, polygons=polygons)
         self.assertTrue(compare_baseline_rows("pip", cpu_rows, gpu_rows))
 
     def test_run_vulkan_pip_positive_hits_only_contains_ones(self) -> None:
@@ -167,12 +158,7 @@ class RtDslVulkanTest(unittest.TestCase):
             {"id": 20, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
             {"id": 21, "vertices": ((4.0, 4.0), (6.0, 4.0), (6.0, 6.0), (4.0, 6.0))},
         )
-        rows = rt.run_vulkan(
-            point_in_counties_reference,
-            result_mode="positive_hits",
-            points=points,
-            polygons=polygons,
-        )
+        rows = rt.run_vulkan(point_in_counties_positive_hits, points=points, polygons=polygons)
         self.assertGreater(len(rows), 0, "expected at least one positive hit")
         for row in rows:
             self.assertEqual(row["contains"], 1,
@@ -184,12 +170,7 @@ class RtDslVulkanTest(unittest.TestCase):
         polygons = (
             {"id": 2, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
         )
-        rows = rt.run_vulkan(
-            point_in_counties_reference,
-            result_mode="positive_hits",
-            points=points,
-            polygons=polygons,
-        )
+        rows = rt.run_vulkan(point_in_counties_positive_hits, points=points, polygons=polygons)
         self.assertEqual(len(rows), 1)
         self.assertEqual(set(rows[0].keys()), {"point_id", "polygon_id", "contains"})
 
@@ -205,10 +186,8 @@ class RtDslVulkanTest(unittest.TestCase):
         self.assertTrue(
             compare_baseline_rows(
                 "pip",
-                rt.run_cpu(point_in_counties_reference,
-                           result_mode="full_matrix", points=points, polygons=polygons),
-                rt.run_vulkan(point_in_counties_reference,
-                              result_mode="full_matrix", points=points, polygons=polygons),
+                rt.run_cpu(point_in_counties_reference, points=points, polygons=polygons),
+                rt.run_vulkan(point_in_counties_reference, points=points, polygons=polygons),
             )
         )
 
@@ -222,12 +201,7 @@ class RtDslVulkanTest(unittest.TestCase):
         polygons = (
             {"id": 10, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
         )
-        rows = rt.run_vulkan(
-            point_in_counties_reference,
-            result_mode="positive_hits",
-            points=points,
-            polygons=polygons,
-        )
+        rows = rt.run_vulkan(point_in_counties_positive_hits, points=points, polygons=polygons)
         point_ids_returned = {r["point_id"] for r in rows}
         self.assertIn(1, point_ids_returned, "point 1 (inside) must be returned")
         self.assertNotIn(2, point_ids_returned, "point 2 (outside) must not be returned")
