@@ -19,8 +19,8 @@ Project position:
   slower than PostGIS and less complete than Embree/OptiX
 
 Current top priority:
-- finish release-facing documentation and packaging without weakening the
-  evidence boundaries
+- keep the release-facing documentation and published claims internally
+  consistent without weakening the evidence boundaries
 
 Performance priority order:
 1. OptiX
@@ -44,10 +44,10 @@ Current reproduction state:
 Do not do first:
 - do not silently widen claims beyond the accepted package boundaries
 - do not treat archived goal docs as the front-door project narrative
-- do not regress the reviewed parity/performance story in README, slides, or
-  the paper
+- do not regress the reviewed parity/performance story in README, docs, or
+  slides
 
 Do first:
-- keep the top-level paper, front-door docs, and slides aligned
+- keep the front-door docs and slides aligned
 - preserve exact wording around bounded versus exact reproduction
 - keep all published claims backed by linked artifacts and reviewed reports
