@@ -1,0 +1,115 @@
+{
+  "goal": 103,
+  "date": "2026-04-05",
+  "status": "draft",
+  "classification_rule": {
+    "exact": "paper-identical dataset coverage",
+    "bounded_analogue": "accepted but narrower than the paper dataset or reproduction boundary",
+    "unavailable": "considered explicitly but no acceptable Vulkan artifact exists",
+    "not_applicable": "paper surface does not exist in the current RTDL Vulkan execution model"
+  },
+  "final_package_outcome": "full_honest_bounded_vulkan_reproduction",
+  "primary_backend": "vulkan",
+  "baseline": "postgis",
+  "rows": [
+    {
+      "paper_surface": "table3_county_zipcode_lsi",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "table3_county_zipcode_pip",
+      "classification": "bounded_analogue",
+      "status": "flagship_row"
+    },
+    {
+      "paper_surface": "table3_block_water_lsi",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "table3_block_water_pip",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "table3_lkau_pkau_lsi_pip",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "table3_lkaf_lkas_lkeu_lkna_lksa",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "figure13_lsi_scalability",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "figure14_pip_scalability",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "table4_figure15_overlay_seed",
+      "classification": "unavailable"
+    },
+    {
+      "paper_surface": "paper_full_polygon_overlay_materialization",
+      "classification": "not_applicable"
+    }
+  ],
+  "flagship_county_zipcode_pip": {
+    "classification": "bounded_analogue",
+    "prepared_exact_source": {
+      "backend_secs": [
+        6.139390789991012,
+        6.164127523996285
+      ],
+      "postgis_secs": [
+        3.2591196079883957,
+        3.0466118039912544
+      ],
+      "parity": true
+    },
+    "repeated_raw_input_exact_source": {
+      "first_sec": 16.14024098799564,
+      "best_repeated_sec": 6.709643080001115,
+      "postgis_secs": [
+        3.125241542002186,
+        3.0880011199915316,
+        3.1242891079891706
+      ],
+      "parity": true
+    }
+  },
+  "bounded_support_row": {
+    "name": "top4_tx_ca_ny_pa county_zipcode prepared",
+    "row_count": 7863,
+    "sha256": "fcb4304f40339a75c85a3065927caf73a897925af00a0c94048fb9bec1f15b79",
+    "backend_secs": [
+      0.8581980200033286,
+      0.3335896480057272
+    ],
+    "postgis_secs": [
+      0.39323220199730713,
+      0.4003148310002871
+    ],
+    "parity": true
+  },
+  "hardware_validation": {
+    "goal51_targets_parity_clean": 8,
+    "goal51_targets_total": 8,
+    "focused_unittest_count": 20,
+    "focused_unittest_status": "OK"
+  },
+  "primary_evidence_reports": [
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal85_vulkan_hardware_validation_and_measurement_2026-04-04.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal87_vulkan_long_exact_source_unblocked_2026-04-05.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal88_vulkan_long_exact_raw_input_measurement_2026-04-05.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal89_backend_comparison_refresh_2026-04-05.md",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal102_full_honest_rayjoin_reproduction_2026-04-05.md"
+  ],
+  "primary_machine_readable_artifacts": [
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal85_vulkan_prepared_exact_source_artifacts_2026-04-04/summary.json",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal85_vulkan_smoke_artifacts_2026-04-04/goal51_summary.json",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal87_vulkan_long_exact_source_artifacts_2026-04-05/summary.json",
+    "/Users/rl2025/rtdl_python_only/docs/reports/goal88_vulkan_long_exact_raw_input_artifacts_2026-04-05/summary.json"
+  ]
+}
+
