@@ -250,7 +250,7 @@ function addFooter(slide, page) {
     color: COLORS.ink,
     margin: 0,
   });
-  slide.addText("Research status as of April 3, 2026", {
+  slide.addText("Research status as of April 5, 2026", {
     x: 0.75,
     y: 2.42,
     w: 4.5,
@@ -267,12 +267,12 @@ function addFooter(slide, page) {
     4.7,
     2.55,
     "Project Thesis",
-    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: a bounded accepted reproduction package across native oracle, Embree, OptiX, and PostGIS-backed checks, plus a first bounded overlay-seed closure.",
+    "Whole-project goal: a DSL for non-graphical, re-purposed RT-based applications across multiple backends and ecosystems.\n\nCurrent v0.1 slice: Goal 102 closes the full honest bounded RayJoin reproduction for Embree and OptiX, and Goal 103 closes the bounded Vulkan-only package.",
     COLORS.sand
   );
   addMetric(slide, 0.8, 4.0, 1.7, "Workloads", "6", COLORS.white);
-  addMetric(slide, 2.7, 4.0, 1.9, "Tests", "273", COLORS.white);
-  addMetric(slide, 4.8, 4.0, 2.1, "Review", "59+", COLORS.white);
+  addMetric(slide, 2.7, 4.0, 1.9, "Tests", "293", COLORS.white);
+  addMetric(slide, 4.8, 4.0, 2.1, "Goals", "103", COLORS.white);
   addMetric(slide, 7.1, 4.0, 2.1, "Validated RT", "CPU + GPU", COLORS.white);
   addMetric(slide, 9.45, 4.0, 2.8, "Backends", "3 core", COLORS.white);
   addFooter(slide, 1);
@@ -311,9 +311,9 @@ function addFooter(slide, page) {
   addBullets(slide, [
     "Implemented precision mode is float_approx. Exact or robust geometry remains future work.",
     "The Mac backend is real: current RTDL programs can return results through Embree.",
-    "The OptiX path is a real controlled runtime on 192.168.1.20, with bounded accepted real-data validation.",
-    "PostGIS is now a closed external checker on accepted bounded packages.",
-    "The Vulkan path is now parity-clean on the accepted bounded Linux surface, but still provisional for larger-scale use.",
+    "The OptiX path is parity-clean and faster than PostGIS on the strongest accepted long `county_zipcode` PIP surface.",
+    "PostGIS is the external indexed baseline on the accepted package surfaces.",
+    "The Vulkan path is hardware-validated, parity-clean on the long flagship row, and slower than PostGIS there.",
     "Language docs, cookbook, and authored examples are in the repo and validated by tests.",
   ], { x: 0.95, y: 4.2, w: 11.7, h: 2.0, fontSize: 13.5, spaceAfter: 8 });
   addFooter(slide, 3);
@@ -435,10 +435,10 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
     "Multi-workload coverage and dataset pipeline.\n\nOutcome: lsi, pip, overlay, RayJoin-style fixtures.", COLORS.mist);
   addPanel(slide, 7.4, 2.55, 2.0, 3.55, "Goals 3-5",
     "Gemini re-review gate, formal language docs, and ray-triangle hit counts.", COLORS.white);
-  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-57",
-    "Native oracle, Embree maturity, OptiX bring-up, three-backend checks, docs rewrite, full audit, PostGIS closure, first bounded overlay-seed four-system result, and the status/test refresh package.", COLORS.mist);
+  addPanel(slide, 9.6, 2.55, 2.0, 3.55, "Goals 6-103",
+    "Native oracle, Embree maturity, OptiX bring-up, Vulkan repair, release validation, hello-world/tutorial closure, and the honest RayJoin reproduction packages.", COLORS.mist);
   addPanel(slide, 11.8, 2.55, 1.0, 3.55, "Stats",
-    "59+ goals\n2-3 AI review\nclean audited repo", COLORS.white, { bodySize: 10.2 });
+    "103 goals\n2+ AI review\npublished closure", COLORS.white, { bodySize: 10.2 });
   addFooter(slide, 8);
 }
 
@@ -452,14 +452,14 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 4.05, 1.55, 3.0, 2.15, "Embree",
     "Purpose: controlled CPU backend for validated real-data work.\n\nStatus: implemented as rt.run_embree(...).", COLORS.white);
   addPanel(slide, 7.3, 1.55, 2.75, 2.15, "OptiX / RayJoin",
-    "Purpose: NVIDIA GPU backend for the RayJoin-style target slice.\n\nStatus: implemented and validated on bounded accepted workloads.", COLORS.white);
-  addPanel(slide, 10.3, 1.55, 2.2, 2.15, "Future Mac GPU",
-    "Vulkan KHR path is in-repo, parity-clean on the accepted bounded Linux surface, and still provisional beyond that.\n\nApple/Metal work is still future.", COLORS.white);
+    "Purpose: NVIDIA GPU backend for the RayJoin-style target slice.\n\nStatus: mature performance backend on the accepted long `county_zipcode` PIP surface.", COLORS.white);
+  addPanel(slide, 10.3, 1.55, 2.2, 2.15, "Vulkan",
+    "Portable GPU backend.\n\nStatus: hardware-validated, parity-clean on the flagship row, but slower than PostGIS.", COLORS.white);
   addBullets(slide, [
     "RTDL is designed so backend specifics live under the IR and lowering boundary, not in user kernels.",
-    "Embree is the strongest validated backend today.",
-    "OptiX is real and correctness-checked on bounded real-data workloads.",
-    "Vulkan is now correctness-closed on the accepted bounded Linux surface, but it is not yet an equally mature large-scale backend.",
+    "Embree is the strongest validated CPU backend today.",
+    "OptiX is a mature GPU backend on the accepted flagship row.",
+    "Vulkan is a supported but slower backend, not a provisional placeholder.",
     "A broader future architecture can still support CPU, NVIDIA, Vulkan-class, and future Apple/mobile RT targets.",
   ], { x: 0.95, y: 4.2, w: 11.6, h: 2.0, fontSize: 13.4 });
   addFooter(slide, 9);
@@ -471,9 +471,9 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addBackground(slide, COLORS.rust);
   addTitle(slide, "What Is Proven vs. What Is Not", "Keep the current system’s claims honest.");
   addPanel(slide, 0.8, 1.55, 5.75, 4.9, "Proven now",
-    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR and execute through the native oracle, Embree, and accepted bounded OptiX paths.\n\nBounded four-system checks now exist across PostGIS, the oracle, Embree, and OptiX on accepted real-data packages.\n\nThe review history is reproducible and archived.", COLORS.mint);
+    "RTDL is a real language surface for six workloads.\n\nThe same kernels can compile to IR and execute through the native oracle, Embree, OptiX, and Vulkan.\n\nGoal 102 closes the full honest bounded RayJoin reproduction package, and Goal 103 closes the matching bounded Vulkan-only package.\n\nThe review history is reproducible and archived.", COLORS.mint);
   addPanel(slide, 6.8, 1.55, 5.75, 4.9, "Not done yet",
-    "No exact / robust geometry implementation.\n\nThe accepted package is still bounded rather than paper-identical or nationwide.\n\nOverlay remains a seed analogue, not full polygon materialization.\n\nVulkan still has larger-package scaling limits and is not yet at Embree/OptiX maturity.", COLORS.rose);
+    "No exact / robust geometry implementation.\n\nThe accepted package is still bounded rather than paper-identical.\n\nOverlay remains a seed analogue, not full polygon materialization.\n\nMost RayJoin paper rows remain unavailable for Vulkan and several other backend-specific slices.", COLORS.rose);
   addFooter(slide, 10);
 }
 
@@ -481,17 +481,17 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.green);
-  addTitle(slide, "Roadmap to a Fully Functional DSL", "The next steps after the current multi-backend bring-up milestone.");
+  addTitle(slide, "Roadmap Beyond RayJoin", "The next steps after the current honest reproduction closure.");
   addPanel(slide, 0.8, 1.55, 2.85, 3.95, "Step 1\nStabilize current surface",
-    "Keep improving docs, examples, negative validation, and authored-program testing.", COLORS.white);
+    "Keep improving docs, examples, tutorials, and authored-program testing.", COLORS.white);
   addPanel(slide, 3.95, 1.55, 2.85, 3.95, "Step 2\nWiden workload support",
     "Add more geometry/query forms beyond the current RayJoin-aligned six-workload surface.", COLORS.white);
   addPanel(slide, 7.1, 1.55, 2.85, 3.95, "Step 3\nClose external truth and matrix",
-    "Extend the PostGIS-backed bounded matrix and close more RayJoin-style families across the current accepted backends.", COLORS.white);
+    "Close missing backend/workload cases only where they materially strengthen the system story.", COLORS.white);
   addPanel(slide, 10.25, 1.55, 2.3, 3.95, "Step 4\nPrecision and performance",
-    "Add robust arithmetic strategy, continue apples-to-apples backend comparisons, and refine backend specialization.", COLORS.white);
+    "Add robust arithmetic strategy, continue backend specialization, and widen non-RayJoin application examples.", COLORS.white);
   addPanel(slide, 0.8, 5.8, 11.75, 0.62, "Key research transition",
-    "The project has moved from a language sketch to an executable system. The next phase is backend maturity, not basic feasibility.", COLORS.mint);
+    "The project has moved from a language sketch to an executable and published multi-backend system. The next phase is broader applications, not first feasibility.", COLORS.mint);
   addFooter(slide, 11);
 }
 
@@ -499,22 +499,22 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
 {
   const slide = pptx.addSlide();
   addBackground(slide, COLORS.plum);
-  addTitle(slide, "Current Status", "RTDL is ready for the next development phase.");
+  addTitle(slide, "Current Status", "RTDL is ready for post-RayJoin applications.");
   addPanel(slide, 0.8, 1.6, 4.0, 2.15, "Repository status",
-    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nEmbree and OptiX are real; Vulkan is parity-clean on the accepted bounded Linux surface but still provisional; bounded PostGIS closure is established on accepted packages.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
+    "GitHub and local repo are in sync through the current audited multi-backend state.\n\nGoal 102 and Goal 103 are published. Embree and OptiX are the mature performance backends; Vulkan is the supported but slower backend.\n\nPrimary workspace: /Users/rl2025/rtdl_python_only", COLORS.white);
   addPanel(slide, 5.05, 1.6, 3.6, 2.15, "What a new contributor can do",
-    "Read docs/rtdl/*, run make test, validate kernels against the oracle, and compare them against Embree and OptiX on accepted targets.", COLORS.white);
+    "Read the quick tutorial, write RTDL programs, run tests, and validate kernels against the oracle and the supported backends.", COLORS.white);
   addPanel(slide, 8.9, 1.6, 3.6, 2.15, "What the GPU machine unlocks",
-    "Bounded real-data GPU validation, apples-to-apples backend comparison, and progress toward a bounded RayJoin-style reproduction package.", COLORS.white);
+    "Stable GPU execution, backend comparison, and a base for new non-RayJoin workloads.", COLORS.white);
   addCodeBox(slide, 0.82, 4.15, 11.7, 1.75,
 `Current repo snapshot:
 - Six supported workloads
-- Native oracle + Embree + OptiX
-- Bounded accepted reproduction package across trusted systems
-- First bounded overlay-seed four-system closure
-- Vulkan parity-clean on the accepted bounded Linux surface
-- 273 full-matrix tests
-- 59+ reviewed goal rounds
+- Native oracle + Embree + OptiX + Vulkan
+- Goal 102: full honest bounded RayJoin reproduction
+- Goal 103: full honest bounded Vulkan-only reproduction
+- Long flagship row: Embree and OptiX beat PostGIS; Vulkan is parity-clean but slower
+- 293 full-matrix tests
+- 103 reviewed goal rounds
 - First-class raw + prepared raw runtime modes
 - Language docs for human + LLM authoring`);
   addFooter(slide, 12);
@@ -570,7 +570,7 @@ PYTHONPATH=src:. python3 examples/rtdl_gemini_embree_program.py
   addPanel(slide, 6.8, 1.55, 5.75, 4.35, "Pure C++ + Embree path",
     "1. native input arrays\n2. direct native call\n3. native rows\n4. output serialization\n\nGoal 19 larger-profile result:\n- lsi raw/prepared-raw: about 0.98x / 0.89x of native\n- pip raw/prepared-raw: about 0.87x / 0.83x of native", COLORS.mist);
   addPanel(slide, 0.85, 6.1, 11.7, 0.68, "Design implication",
-    "Keep the Python-like DSL. Treat dict-return execution as a convenience mode, and treat raw / prepared-raw execution as the serious performance path. Python should remain the control plane, not the main data plane.", COLORS.sand);
+    "Keep the Python-like DSL. Treat Python dict-return execution as the convenience path, and treat lower-overhead native-return modes as the serious performance path. Python should remain the control plane, not the main data plane.", COLORS.sand);
   addFooter(slide, 15);
 }
 

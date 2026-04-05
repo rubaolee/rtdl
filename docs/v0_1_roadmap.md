@@ -19,8 +19,9 @@ Under the accepted bounded v0.1 rule, the system now provides:
 - a compiler IR that represents those workloads cleanly,
 - a RayJoin-oriented lowering path for each workload,
 - trusted runnable execution paths across the accepted current backends,
-- a cross-vendor Vulkan KHR backend that is correctness-closed on the accepted
-  bounded Linux surface and kept honest about its remaining provisional boundary,
+- a cross-vendor Vulkan KHR backend that is hardware-validated, parity-clean
+  on the accepted flagship surface, and kept honest about its slower current
+  performance,
 - a runnable execution path for each accepted workload slice,
 - validation against reference outputs on representative datasets.
 
@@ -48,4 +49,5 @@ The project makes this limitation explicit:
 - Paper-scale GPU reproduction (deferred to v0.2)
 - High-precision GPU extension (deferred to v0.2)
 - Multi-GPU/Distributed execution
-- large-package Vulkan promotion beyond the current provisional boundary
+- broader Vulkan workload closure beyond the current bounded flagship/support
+  package

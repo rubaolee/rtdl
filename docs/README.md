@@ -16,9 +16,10 @@ Project-level front door:
 3. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
 4. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
 5. [v0.1 Support Matrix](v0_1_support_matrix.md)
-6. [Current Milestone Q/A](current_milestone_qa.md)
-7. [RayJoin Target](rayjoin_target.md)
-8. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+6. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+7. [Current Milestone Q/A](current_milestone_qa.md)
+8. [RayJoin Target](rayjoin_target.md)
+9. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
 
 Broader background:
 
@@ -26,6 +27,7 @@ Broader background:
 2. [Vision](vision.md)
 3. [Dataset Summary](rayjoin_datasets.md)
 4. [Public Dataset Sources](rayjoin_public_dataset_sources.md)
+5. [Paper Package](/Users/rl2025/rtdl_python_only/rtdl_paper_README.md)
 
 Language-level:
 

@@ -109,7 +109,7 @@ Across:
 - native C oracle
 - Embree
 - OptiX
-- Vulkan on the accepted bounded Linux surface
+- Vulkan as the supported but slower backend on the accepted flagship surface
 
 ### Strongest current performance surface
 

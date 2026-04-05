@@ -161,8 +161,9 @@ If you are new to the project, start here:
 4. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
 5. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
 6. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
-7. [RayJoin Target](docs/rayjoin_target.md)
-8. [Paper Package](paper/rtdl_rayjoin_2026/README.md)
+7. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+8. [RayJoin Target](docs/rayjoin_target.md)
+9. [Paper Package](rtdl_paper_README.md)
 
 ## Project Status
 
