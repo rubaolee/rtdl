@@ -1,0 +1,52 @@
+[
+  {
+    "backend": "cpu_python_reference",
+    "returncode": 0,
+    "result": {
+      "backend": "cpu_python_reference",
+      "triangle_hit_count": 2,
+      "visible_hit_rect_id": 2,
+      "visible_hit_label": "hello, world"
+    }
+  },
+  {
+    "backend": "cpu",
+    "returncode": 0,
+    "result": {
+      "backend": "cpu",
+      "triangle_hit_count": 2,
+      "visible_hit_rect_id": 2,
+      "visible_hit_label": "hello, world"
+    }
+  },
+  {
+    "backend": "embree",
+    "returncode": 0,
+    "result": {
+      "backend": "embree",
+      "triangle_hit_count": 2,
+      "visible_hit_rect_id": 2,
+      "visible_hit_label": "hello, world"
+    }
+  },
+  {
+    "backend": "optix",
+    "returncode": 0,
+    "result": {
+      "backend": "optix",
+      "triangle_hit_count": 2,
+      "visible_hit_rect_id": 2,
+      "visible_hit_label": "hello, world"
+    }
+  },
+  {
+    "backend": "vulkan",
+    "returncode": 0,
+    "result": {
+      "backend": "vulkan",
+      "triangle_hit_count": 2,
+      "visible_hit_rect_id": 2,
+      "visible_hit_label": "hello, world"
+    }
+  }
+]
