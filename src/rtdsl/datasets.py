@@ -675,6 +675,15 @@ def chains_to_probe_points(dataset: CdbDataset, *, limit_chains: int | None = No
 
 
 def chains_to_polygon_refs(dataset: CdbDataset) -> tuple[dict[str, int], ...]:
+    """Return legacy face-reference metadata derived from a CDB chain set.
+
+    This helper does not reconstruct topological polygons. It only summarizes
+    how many chain references each non-zero face id receives in the input CDB.
+    The returned `vertex_offset` / `vertex_count` pair should therefore be read
+    as a cumulative reference span over face-boundary records, not as a
+    backend-ready polygon vertex layout.
+    """
+
     faces = {}
     for chain in dataset.chains:
         if chain.left_face_id != 0:
@@ -685,6 +694,9 @@ def chains_to_polygon_refs(dataset: CdbDataset) -> tuple[dict[str, int], ...]:
             faces[chain.right_face_id] += 1
 
     refs = []
-    for index, face_id in enumerate(sorted(faces), start=0):
-        refs.append({"id": face_id, "vertex_offset": index, "vertex_count": faces[face_id]})
+    offset = 0
+    for face_id in sorted(faces):
+        count = faces[face_id]
+        refs.append({"id": face_id, "vertex_offset": offset, "vertex_count": count})
+        offset += count
     return tuple(refs)

@@ -41,6 +41,7 @@ from .embree_runtime import PackedRays
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
 from .ir import CompiledKernel
+from .runtime import _identity_cache_token
 from .runtime import _normalize_records
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
@@ -268,11 +269,7 @@ def _get_or_bind_prepared_vulkan_execution(compiled: CompiledKernel, expected_in
     if cached is not None:
         _prepared_vulkan_execution_cache.move_to_end(cache_key)
         return cached
-    normalized_inputs = {
-        name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
-        for name, payload in inputs.items()
-    }
-    prepared = prepare_vulkan(compiled).bind(**normalized_inputs)
+    prepared = prepare_vulkan(compiled).bind(**inputs)
     _prepared_vulkan_execution_cache[cache_key] = prepared
     if len(_prepared_vulkan_execution_cache) > _PREPARED_CACHE_MAX_ENTRIES:
         _prepared_vulkan_execution_cache.popitem(last=False)
@@ -280,6 +277,40 @@ def _get_or_bind_prepared_vulkan_execution(compiled: CompiledKernel, expected_in
 
 
 def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inputs) -> tuple[object, ...] | None:
+    identity_tokens = []
+    for name in sorted(expected_inputs):
+        geometry_name = expected_inputs[name].geometry.name
+        payload = inputs[name]
+        if _is_packed_for_geometry(geometry_name, payload):
+            return None
+        token = _identity_cache_token(geometry_name, payload)
+        if token is None:
+            identity_tokens = []
+            break
+        identity_tokens.append((name, token))
+    if identity_tokens:
+        predicate = compiled.refine_op.predicate
+        predicate_options = tuple(sorted(predicate.options.items()))
+        input_signature = tuple(
+            (
+                item.name,
+                item.geometry.name,
+                item.layout.name,
+                item.role,
+            )
+            for item in compiled.inputs
+        )
+        return (
+            compiled.name,
+            compiled.backend,
+            compiled.precision,
+            predicate.name,
+            predicate_options,
+            input_signature,
+            tuple(compiled.emit_op.fields),
+            tuple(identity_tokens),
+        )
+
     canonical_inputs = []
     for name in sorted(expected_inputs):
         geometry_name = expected_inputs[name].geometry.name
@@ -612,8 +643,14 @@ def _pack_for_geometry(geometry_name: str, payload):
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
+        cached = getattr(payload, "_rtdl_packed_points", None)
+        if isinstance(cached, PackedPoints):
+            return cached
         return payload if isinstance(payload, PackedPoints)    else pack_points(records=payload)
     if geometry_name == "polygons":
+        cached = getattr(payload, "_rtdl_packed_polygons", None)
+        if isinstance(cached, PackedPolygons):
+            return cached
         return payload if isinstance(payload, PackedPolygons)  else pack_polygons(records=payload)
     if geometry_name == "triangles":
         return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)

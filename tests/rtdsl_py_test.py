@@ -164,8 +164,16 @@ class RtDslPythonTest(unittest.TestCase):
         self.assertEqual(len(soil_points), 2)
         self.assertTrue(all(isinstance(point, rt.Point) for point in soil_points))
         self.assertTrue(all(isinstance(polygon, rt.Polygon) for polygon in county_polygons))
-        self.assertEqual(len(rt.chains_to_polygon_refs(county)), 2)
-        self.assertEqual(len(rt.chains_to_polygon_refs(soil)), 4)
+        county_refs = rt.chains_to_polygon_refs(county)
+        soil_refs = rt.chains_to_polygon_refs(soil)
+        self.assertEqual(len(county_refs), 2)
+        self.assertEqual(len(soil_refs), 4)
+        self.assertEqual(county_refs[0]["vertex_offset"], 0)
+        self.assertEqual(county_refs[1]["vertex_offset"], county_refs[0]["vertex_count"])
+        self.assertEqual(
+            [ref["vertex_offset"] + ref["vertex_count"] for ref in soil_refs[:-1]],
+            [ref["vertex_offset"] for ref in soil_refs[1:]],
+        )
 
     def test_reference_lsi_pip_overlay(self) -> None:
         left_segments = (
