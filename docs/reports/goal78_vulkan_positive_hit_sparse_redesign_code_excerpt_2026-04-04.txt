@@ -1,0 +1,178 @@
+static void run_pip_vulkan(
+        const RtdlPoint*     points,    size_t point_count,
+        const RtdlPolygonRef* polys,    size_t poly_count,
+        const double* vertices_xy,      size_t vertex_xy_count,
+        uint32_t positive_only,
+        RtdlPipRow** rows_out, size_t* row_count_out)
+{
+    if (positive_only != 0u) {
+        std::vector<RtdlPipRow> rows;
+#if RTDL_VULKAN_HAS_GEOS
+        GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+        for (size_t pi = 0; pi < point_count; ++pi) {
+            for (size_t qi = 0; qi < poly_count; ++qi) {
+                if (!geos.covers(qi, points[pi].x, points[pi].y)) {
+                    continue;
+                }
+                rows.push_back({points[pi].id, polys[qi].id, 1u});
+            }
+        }
+#else
+        for (size_t pi = 0; pi < point_count; ++pi) {
+            for (size_t qi = 0; qi < poly_count; ++qi) {
+                if (!exact_point_in_polygon(points[pi].x, points[pi].y, polys[qi], vertices_xy)) {
+                    continue;
+                }
+                rows.push_back({points[pi].id, polys[qi].id, 1u});
+            }
+        }
+#endif
+        auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * rows.size()));
+        if (!out && !rows.empty()) throw std::bad_alloc();
+        for (size_t i = 0; i < rows.size(); ++i) {
+            out[i] = rows[i];
+        }
+        *rows_out = out;
+        *row_count_out = rows.size();
+        return;
+    }
+
+    VkContext* ctx = get_context();
+    std::call_once(g_pip_init, [ctx]() {
+        g_pip_pipe = new RtPipeline(build_rt_pipeline(
+            ctx, kPipRgen, kPipRmiss, kPipRint, kPipRahit,
+            "pip.rgen", "pip.rmiss", "pip.rint", "pip.rahit", 7));
+    });
+
+    std::vector<GpuPoint> gpu_pts(point_count);
+    for (size_t i = 0; i < point_count; ++i)
+        gpu_pts[i] = {(float)points[i].x, (float)points[i].y, points[i].id};
+
+    std::vector<GpuPolygonRef> gpu_polys(poly_count);
+    for (size_t i = 0; i < poly_count; ++i)
+        gpu_polys[i] = {polys[i].id, polys[i].vertex_offset, polys[i].vertex_count};
+
+    std::vector<float> gpu_verts(vertex_xy_count);
+    for (size_t i = 0; i < vertex_xy_count; ++i)
+        gpu_verts[i] = (float)vertices_xy[i];
+
+    VkDeviceSize pts_sz   = sizeof(GpuPoint)      * point_count;
+    VkDeviceSize poly_sz  = sizeof(GpuPolygonRef) * poly_count;
+    VkDeviceSize vert_sz  = sizeof(float)         * vertex_xy_count;
+
+    BufMem d_pts  = alloc_buffer(ctx, pts_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_poly = alloc_buffer(ctx, poly_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_vert = alloc_buffer(ctx, vert_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    upload_to_buf(ctx, d_pts,  gpu_pts.data(),   pts_sz);
+    upload_to_buf(ctx, d_poly, gpu_polys.data(), poly_sz);
+    upload_to_buf(ctx, d_vert, gpu_verts.data(), vert_sz);
+
+    // Build BLAS over polygon bounding boxes
+    uint32_t n_verts = (uint32_t)(vertex_xy_count / 2);
+    std::vector<GpuAabb> aabbs(poly_count);
+    for (size_t i = 0; i < poly_count; ++i) {
+        uint32_t off = polys[i].vertex_offset;
+        uint32_t cnt = polys[i].vertex_count;
+        aabbs[i] = aabb_for_polygon(gpu_verts.data(), off, cnt);
+    }
+    AccelResult blas = build_aabb_blas(ctx, aabbs);
+    AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
+
+    // Pre-allocate output: npoints × npoly GpuPipRecord, initialized to 0
+    size_t out_count = checked_mul_size_t(point_count, poly_count, "Vulkan PIP");
+    VkDeviceSize output_sz = checked_output_bytes(out_count, sizeof(GpuPipRecord), "Vulkan PIP");
+    BufMem d_output = alloc_buffer(ctx, output_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    zero_buf(ctx, d_output);
+
+    // Initialize output: fill point_id and polygon_id fields
+    std::vector<GpuPipRecord> init_rows(out_count);
+    for (size_t i = 0; i < point_count; ++i)
+        for (size_t j = 0; j < poly_count; ++j)
+            init_rows[i * poly_count + j] = { points[i].id, polys[j].id, 0u };
+    upload_to_buf(ctx, d_output, init_rows.data(), output_sz);
+
+    struct { uint32_t npoints, npolygons; } params{ (uint32_t)point_count, (uint32_t)poly_count };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_pip_pipe->dset_layout, 7, true);
+    bind_tlas(ctx,       ds.set, tlas.handle, 0);
+    bind_ssbo(ctx->device, ds.set, d_output.buffer, output_sz, 1);
+    // binding 2 unused for PIP (no counter) — bind a dummy 4-byte buffer
+    BufMem d_dummy = alloc_buffer(ctx, 4,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    bind_ssbo(ctx->device, ds.set, d_dummy.buffer, 4, 2);
+    bind_ubo (ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+    bind_ssbo(ctx->device, ds.set, d_pts.buffer,  pts_sz,  4);
+    bind_ssbo(ctx->device, ds.set, d_poly.buffer, poly_sz, 5);
+    bind_ssbo(ctx->device, ds.set, d_vert.buffer, vert_sz, 6);
+
+    dispatch_rt(ctx, *g_pip_pipe, ds.set, (uint32_t)point_count);
+
+    std::vector<GpuPipRecord> gpu_rows(out_count);
+    download_from_buf(ctx, gpu_rows.data(), d_output, output_sz);
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_pts); free_buf(ctx, d_poly); free_buf(ctx, d_vert);
+    free_buf(ctx, d_output); free_buf(ctx, d_params); free_buf(ctx, d_dummy);
+    destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
+
+    auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * out_count));
+    if (!out && out_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < out_count; ++i) {
+        out[i] = { gpu_rows[i].point_id, gpu_rows[i].polygon_id, gpu_rows[i].contains };
+    }
+
+#if RTDL_VULKAN_HAS_GEOS
+    GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
+    for (size_t pi = 0; pi < point_count; ++pi) {
+        for (size_t qi = 0; qi < poly_count; ++qi) {
+            const size_t out_index = pi * poly_count + qi;
+            out[out_index].point_id = points[pi].id;
+            out[out_index].polygon_id = polys[qi].id;
+            out[out_index].contains = geos.covers(qi, points[pi].x, points[pi].y) ? 1u : 0u;
+        }
+    }
+#else
+    std::unordered_map<uint32_t, const RtdlPoint*> point_by_id;
+    std::unordered_map<uint32_t, const RtdlPolygonRef*> poly_by_id;
+    point_by_id.reserve(point_count);
+    poly_by_id.reserve(poly_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        point_by_id.emplace(points[i].id, &points[i]);
+    }
+    for (size_t i = 0; i < poly_count; ++i) {
+        poly_by_id.emplace(polys[i].id, &polys[i]);
+    }
+    for (size_t i = 0; i < out_count; ++i) {
+        const auto point_it = point_by_id.find(out[i].point_id);
+        const auto poly_it = poly_by_id.find(out[i].polygon_id);
+        if (point_it == point_by_id.end() || poly_it == poly_by_id.end()) {
+            out[i].contains = 0;
+            continue;
+        }
+        out[i].contains = exact_point_in_polygon(
+            point_it->second->x,
+            point_it->second->y,
+            *poly_it->second,
+            vertices_xy)
+            ? 1u
+            : 0u;
+    }
+#endif
+    *rows_out      = out;
+    *row_count_out = out_count;
+}
+

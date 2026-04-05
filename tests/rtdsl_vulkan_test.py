@@ -130,6 +130,109 @@ class RtDslVulkanTest(unittest.TestCase):
             )
         )
 
+    # ── Goal 78: positive-hit sparse redesign tests ──────────────────────────
+
+    def test_run_vulkan_pip_positive_hits_parity(self) -> None:
+        """Positive-hit Vulkan PIP must match CPU positive-hit row-for-row."""
+        points = (
+            {"id": 100, "x": 0.5, "y": 0.5},   # inside polygon 200
+            {"id": 101, "x": 3.0, "y": 3.0},   # outside polygon 200
+            {"id": 102, "x": 1.0, "y": 1.0},   # inside polygon 200
+        )
+        polygons = (
+            {"id": 200, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+        )
+        cpu_rows = rt.run_cpu(
+            point_in_counties_reference,
+            result_mode="positive_hits",
+            points=points,
+            polygons=polygons,
+        )
+        gpu_rows = rt.run_vulkan(
+            point_in_counties_reference,
+            result_mode="positive_hits",
+            points=points,
+            polygons=polygons,
+        )
+        self.assertTrue(compare_baseline_rows("pip", cpu_rows, gpu_rows))
+
+    def test_run_vulkan_pip_positive_hits_only_contains_ones(self) -> None:
+        """All rows returned by positive-hit mode must have contains == 1."""
+        points = (
+            {"id": 10, "x": 0.5, "y": 0.5},
+            {"id": 11, "x": 5.0, "y": 5.0},
+            {"id": 12, "x": 1.5, "y": 1.5},
+        )
+        polygons = (
+            {"id": 20, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+            {"id": 21, "vertices": ((4.0, 4.0), (6.0, 4.0), (6.0, 6.0), (4.0, 6.0))},
+        )
+        rows = rt.run_vulkan(
+            point_in_counties_reference,
+            result_mode="positive_hits",
+            points=points,
+            polygons=polygons,
+        )
+        self.assertGreater(len(rows), 0, "expected at least one positive hit")
+        for row in rows:
+            self.assertEqual(row["contains"], 1,
+                             f"positive-hit row must have contains=1, got {row}")
+
+    def test_run_vulkan_pip_positive_hits_row_shape(self) -> None:
+        """Positive-hit rows must have exactly the fields point_id, polygon_id, contains."""
+        points = ({"id": 1, "x": 0.5, "y": 0.5},)
+        polygons = (
+            {"id": 2, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+        )
+        rows = rt.run_vulkan(
+            point_in_counties_reference,
+            result_mode="positive_hits",
+            points=points,
+            polygons=polygons,
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(set(rows[0].keys()), {"point_id", "polygon_id", "contains"})
+
+    def test_run_vulkan_pip_full_matrix_unchanged_after_redesign(self) -> None:
+        """Full-matrix PIP behavior must remain unchanged by the positive-hit redesign."""
+        points = (
+            {"id": 100, "x": 0.5, "y": 0.5},
+            {"id": 101, "x": 3.0, "y": 3.0},
+        )
+        polygons = (
+            {"id": 200, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+        )
+        self.assertTrue(
+            compare_baseline_rows(
+                "pip",
+                rt.run_cpu(point_in_counties_reference,
+                           result_mode="full_matrix", points=points, polygons=polygons),
+                rt.run_vulkan(point_in_counties_reference,
+                              result_mode="full_matrix", points=points, polygons=polygons),
+            )
+        )
+
+    def test_run_vulkan_pip_positive_hits_no_false_positives(self) -> None:
+        """Positive-hit output must not include pairs where the point is outside the polygon."""
+        points = (
+            {"id": 1, "x": 0.5, "y": 0.5},   # inside
+            {"id": 2, "x": 2.5, "y": 2.5},   # outside
+            {"id": 3, "x": 10.0, "y": 10.0}, # far outside
+        )
+        polygons = (
+            {"id": 10, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+        )
+        rows = rt.run_vulkan(
+            point_in_counties_reference,
+            result_mode="positive_hits",
+            points=points,
+            polygons=polygons,
+        )
+        point_ids_returned = {r["point_id"] for r in rows}
+        self.assertIn(1, point_ids_returned, "point 1 (inside) must be returned")
+        self.assertNotIn(2, point_ids_returned, "point 2 (outside) must not be returned")
+        self.assertNotIn(3, point_ids_returned, "point 3 (far outside) must not be returned")
+
     def test_run_vulkan_overlay_matches_cpu(self) -> None:
         left = (
             {"id": 300, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},

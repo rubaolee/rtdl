@@ -771,6 +771,7 @@ struct GpuRay        { float ox, oy, dx, dy, tmax; uint32_t id; };   // 24 bytes
 
 struct GpuLsiRecord      { uint32_t left_id, right_id; float ix, iy; };        // 16 bytes
 struct GpuPipRecord      { uint32_t point_id, polygon_id, contains; };          // 12 bytes
+struct GpuPipCandidate   { uint32_t point_index, poly_index; };                  //  8 bytes
 struct GpuOverlayFlags   { uint32_t requires_lsi, requires_pip; };              //  8 bytes
 struct GpuRayHitRecord   { uint32_t ray_id, hit_count; };                        //  8 bytes
 struct GpuSegPolyRecord  { uint32_t segment_id, hit_count; };                    //  8 bytes
@@ -1219,6 +1220,30 @@ void main() {
     output_buf.data[obase+0u] = floatBitsToUint(points.data[pbase+2u]);   // point_id (stored as float bits)
     output_buf.data[obase+1u] = polyrefs.data[rbase+0u];                  // polygon_id
     output_buf.data[obase+2u] = 1u;                                        // contains = true
+    ignoreIntersectionEXT;
+}
+)GLSL";
+
+// ---------- PIP positive-hit sparse shaders ----------------------------------
+// rgen/rmiss/rint are shared with the dense PIP pipeline (kPipRgen, kPipRmiss,
+// kPipRint).  Only the anyhit differs: instead of writing to a dense indexed
+// slot, it atomically appends a (point_index, poly_index) pair to a compact
+// candidate list.  The host then exact-finalizes only those candidates.
+
+static const char* kPipPosRahit = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(set=0, binding=1, std430) buffer CandBuf    { uvec2 data[]; } cand_buf;
+layout(set=0, binding=2, std430) buffer CounterBuf { uint count; };
+layout(set=0, binding=3, std140) uniform Params    { uint npoints; uint capacity; };
+layout(location=0) rayPayloadInEXT uint dummy;
+void main() {
+    uint point_index = gl_LaunchIDEXT.x;
+    uint poly_index  = gl_PrimitiveID;
+    uint slot = atomicAdd(count, 1u);
+    if (slot < capacity) {
+        cand_buf.data[slot] = uvec2(point_index, poly_index);
+    }
     ignoreIntersectionEXT;
 }
 )GLSL";
@@ -1903,11 +1928,12 @@ static void dispatch_compute(VkContext* ctx, ComputePipeline& pipe,
 
 static RtPipeline*      g_lsi_pipe    = nullptr;
 static RtPipeline*      g_pip_pipe    = nullptr;
+static RtPipeline*      g_pip_pos_pipe= nullptr;
 static RtPipeline*      g_overlay_pipe= nullptr;
 static RtPipeline*      g_rhc_pipe    = nullptr;
 static RtPipeline*      g_sph_pipe    = nullptr;
 static ComputePipeline* g_pns_pipe    = nullptr;
-static std::once_flag   g_lsi_init, g_pip_init, g_overlay_init;
+static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_init, g_overlay_init;
 static std::once_flag   g_rhc_init, g_sph_init, g_pns_init;
 
 // ── Workload run functions ───────────────────────────────────────────────────
@@ -2045,33 +2071,164 @@ static void run_pip_vulkan(
         RtdlPipRow** rows_out, size_t* row_count_out)
 {
     if (positive_only != 0u) {
+        // Two-stage sparse positive-hit path (Goal 78):
+        //   Stage 1 – GPU generates sparse candidate (point_index, poly_index)
+        //             pairs via ray tracing over polygon AABBs + exact GLSL PIP
+        //             in the intersection shader.
+        //   Stage 2 – host exact-finalizes only those candidates (GEOS or CPU
+        //             fallback), preserving full parity with the oracle path.
+        // The dense host full-scan (O(P×Q) on CPU) is replaced by GPU candidate
+        // generation followed by host exact-finalize on the candidate subset.
+
+        VkContext* ctx = get_context();
+        std::call_once(g_pip_pos_init, [ctx]() {
+            // Reuse rgen/rmiss/rint from the dense PIP pipeline; only the
+            // anyhit shader differs (sparse atomic candidate output).
+            g_pip_pos_pipe = new RtPipeline(build_rt_pipeline(
+                ctx, kPipRgen, kPipRmiss, kPipRint, kPipPosRahit,
+                "pip_pos.rgen", "pip_pos.rmiss", "pip_pos.rint", "pip_pos.rahit", 7));
+        });
+
+        std::vector<GpuPoint> gpu_pts(point_count);
+        for (size_t i = 0; i < point_count; ++i)
+            gpu_pts[i] = {(float)points[i].x, (float)points[i].y, points[i].id};
+
+        std::vector<GpuPolygonRef> gpu_polys(poly_count);
+        for (size_t i = 0; i < poly_count; ++i)
+            gpu_polys[i] = {polys[i].id, polys[i].vertex_offset, polys[i].vertex_count};
+
+        std::vector<float> gpu_verts(vertex_xy_count);
+        for (size_t i = 0; i < vertex_xy_count; ++i)
+            gpu_verts[i] = (float)vertices_xy[i];
+
+        VkDeviceSize pts_sz  = sizeof(GpuPoint)      * point_count;
+        VkDeviceSize poly_sz = sizeof(GpuPolygonRef) * poly_count;
+        VkDeviceSize vert_sz = sizeof(float)         * vertex_xy_count;
+
+        BufMem d_pts  = alloc_buffer(ctx, pts_sz,
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        BufMem d_poly = alloc_buffer(ctx, poly_sz,
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        BufMem d_vert = alloc_buffer(ctx, vert_sz,
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        upload_to_buf(ctx, d_pts,  gpu_pts.data(),   pts_sz);
+        upload_to_buf(ctx, d_poly, gpu_polys.data(), poly_sz);
+        upload_to_buf(ctx, d_vert, gpu_verts.data(), vert_sz);
+
+        // Build BLAS over polygon bounding boxes
+        std::vector<GpuAabb> aabbs(poly_count);
+        for (size_t i = 0; i < poly_count; ++i)
+            aabbs[i] = aabb_for_polygon(gpu_verts.data(),
+                                        polys[i].vertex_offset, polys[i].vertex_count);
+        AccelResult blas = build_aabb_blas(ctx, aabbs);
+        AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
+
+        // Candidate output buffer: worst-case point_count × poly_count pairs.
+        // In practice much smaller because the GPU PIP filter is tight.
+        uint32_t capacity = checked_output_capacity_u32(
+            point_count, poly_count, sizeof(GpuPipCandidate), "Vulkan PIP positive-hit");
+        VkDeviceSize cand_sz = checked_output_bytes(
+            capacity, sizeof(GpuPipCandidate), "Vulkan PIP positive-hit");
+        BufMem d_cands = alloc_buffer(ctx, cand_sz,
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+        // Atomic counter buffer: zeroed before dispatch
+        BufMem d_counter = alloc_buffer(ctx, sizeof(uint32_t),
+            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT   |
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        zero_buf(ctx, d_counter);
+
+        struct { uint32_t npoints, capacity; } params{
+            (uint32_t)point_count, capacity };
+        BufMem d_params = alloc_buffer(ctx, sizeof(params),
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+        std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+        DescriptorSet ds = alloc_descriptor_set(ctx, g_pip_pos_pipe->dset_layout, 7, true);
+        bind_tlas(ctx,         ds.set, tlas.handle,       0);
+        bind_ssbo(ctx->device, ds.set, d_cands.buffer,   cand_sz,          1);
+        bind_ssbo(ctx->device, ds.set, d_counter.buffer, sizeof(uint32_t), 2);
+        bind_ubo (ctx->device, ds.set, d_params.buffer,  sizeof(params),   3);
+        bind_ssbo(ctx->device, ds.set, d_pts.buffer,     pts_sz,           4);
+        bind_ssbo(ctx->device, ds.set, d_poly.buffer,    poly_sz,          5);
+        bind_ssbo(ctx->device, ds.set, d_vert.buffer,    vert_sz,          6);
+
+        dispatch_rt(ctx, *g_pip_pos_pipe, ds.set, (uint32_t)point_count);
+
+        // Download candidate count (single uint)
+        uint32_t n_cands = 0;
+        download_from_buf(ctx, &n_cands, d_counter, sizeof(uint32_t));
+        if (n_cands > capacity) n_cands = capacity;
+
+        // Download only the valid candidate pairs (sub-copy pattern: avoid
+        // transferring the full worst-case buffer when hits are sparse)
+        std::vector<GpuPipCandidate> candidates(n_cands);
+        if (n_cands > 0) {
+            VkDeviceSize sub_sz = (VkDeviceSize)n_cands * sizeof(GpuPipCandidate);
+            BufMem d_sub = alloc_buffer(ctx, sub_sz,
+                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT   |
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+            VkCommandBuffer cmd;
+            VkCommandBufferAllocateInfo ci{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+            ci.commandPool = ctx->cmd_pool; ci.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+            ci.commandBufferCount = 1;
+            vkAllocateCommandBuffers(ctx->device, &ci, &cmd);
+            VkCommandBufferBeginInfo beg{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+            beg.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+            vkBeginCommandBuffer(cmd, &beg);
+            VkBufferCopy copy{ 0, 0, sub_sz };
+            vkCmdCopyBuffer(cmd, d_cands.buffer, d_sub.buffer, 1, &copy);
+            vkEndCommandBuffer(cmd);
+            VkSubmitInfo sub{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
+            sub.commandBufferCount = 1; sub.pCommandBuffers = &cmd;
+            vkQueueSubmit(ctx->queue, 1, &sub, VK_NULL_HANDLE);
+            vkQueueWaitIdle(ctx->queue);
+            vkFreeCommandBuffers(ctx->device, ctx->cmd_pool, 1, &cmd);
+            download_from_buf(ctx, candidates.data(), d_sub, sub_sz);
+            free_buf(ctx, d_sub);
+        }
+
+        vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+        free_buf(ctx, d_pts); free_buf(ctx, d_poly); free_buf(ctx, d_vert);
+        free_buf(ctx, d_cands); free_buf(ctx, d_counter); free_buf(ctx, d_params);
+        destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
+
+        // Stage 2: host exact-finalize on candidates only
         std::vector<RtdlPipRow> rows;
+        rows.reserve(n_cands);
 #if RTDL_VULKAN_HAS_GEOS
         GeosPreparedPolygonRefs geos(polys, poly_count, vertices_xy);
-        for (size_t pi = 0; pi < point_count; ++pi) {
-            for (size_t qi = 0; qi < poly_count; ++qi) {
-                if (!geos.covers(qi, points[pi].x, points[pi].y)) {
-                    continue;
-                }
-                rows.push_back({points[pi].id, polys[qi].id, 1u});
-            }
+        for (uint32_t ci = 0; ci < n_cands; ++ci) {
+            size_t pi = candidates[ci].point_index;
+            size_t qi = candidates[ci].poly_index;
+            if (pi >= point_count || qi >= poly_count) continue;
+            if (!geos.covers(qi, points[pi].x, points[pi].y)) continue;
+            rows.push_back({points[pi].id, polys[qi].id, 1u});
         }
 #else
-        for (size_t pi = 0; pi < point_count; ++pi) {
-            for (size_t qi = 0; qi < poly_count; ++qi) {
-                if (!exact_point_in_polygon(points[pi].x, points[pi].y, polys[qi], vertices_xy)) {
-                    continue;
-                }
-                rows.push_back({points[pi].id, polys[qi].id, 1u});
-            }
+        for (uint32_t ci = 0; ci < n_cands; ++ci) {
+            size_t pi = candidates[ci].point_index;
+            size_t qi = candidates[ci].poly_index;
+            if (pi >= point_count || qi >= poly_count) continue;
+            if (!exact_point_in_polygon(points[pi].x, points[pi].y, polys[qi], vertices_xy)) continue;
+            rows.push_back({points[pi].id, polys[qi].id, 1u});
         }
 #endif
         auto* out = static_cast<RtdlPipRow*>(std::malloc(sizeof(RtdlPipRow) * rows.size()));
         if (!out && !rows.empty()) throw std::bad_alloc();
-        for (size_t i = 0; i < rows.size(); ++i) {
-            out[i] = rows[i];
-        }
-        *rows_out = out;
+        for (size_t i = 0; i < rows.size(); ++i) out[i] = rows[i];
+        *rows_out      = out;
         *row_count_out = rows.size();
         return;
     }
