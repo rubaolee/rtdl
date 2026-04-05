@@ -169,3 +169,6 @@ If you are new to the project, start here:
 This repository is maintained as a reviewed research/engineering workspace.
 Source code, reports, tests, and review artifacts are kept together so the
 current RTDL v0.1 package remains understandable and auditable.
+
+Copyright (c) Rubao Lee. RTDL and this repository are owned and maintained by
+Rubao Lee.
