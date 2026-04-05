@@ -3,137 +3,166 @@
 RTDL is a research system for writing and running **non-graphical ray-tracing
 programs**.
 
-In ordinary computer graphics, ray tracing is used to render images. RTDL uses
-the same hardware and software ideas for other kinds of problems, especially
-spatial data processing. Instead of asking “what color is this pixel?”, RTDL
-asks questions such as:
+In graphics, ray tracing answers questions like “what does this pixel see?”.
+RTDL uses the same traversal machinery for other questions, especially spatial
+data questions such as:
 
 - which line segments intersect
 - which points fall inside which polygons
-- which geometric objects overlap or need further checking
+- which objects overlap or need exact follow-up checking
 
-The goal is to let users write those queries once in a higher-level language,
-then run them across multiple backends without hand-writing backend-specific
-code for Embree, OptiX, or Vulkan.
+The point of RTDL is simple:
 
-## Why This Project Exists
+- write the workload once
+- keep the semantics visible
+- run it across multiple backends
+- avoid hand-writing backend-specific code for Embree, OptiX, and Vulkan
 
-Modern ray-tracing systems are fast at hierarchical geometric search. Research
-systems such as RayJoin showed that this can also help database-style spatial
-operations, not just graphics.
+## Why RTDL Exists
 
-RTDL is an attempt to make that idea easier to program, test, and reproduce.
+Ray tracing hardware and software are very good at hierarchical geometric
+search. That makes them interesting for database-style and spatial workloads,
+not only for image rendering.
+
+The motivating application target in this repository is **RayJoin**:
+
+- Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  *RayJoin: Fast and Precise Spatial Join*,
+  Proceedings of the 38th ACM International Conference on Supercomputing
+  (ICS 2024),
+  DOI: `10.1145/3650200.3656610`
+
+RayJoin showed that ray-tracing cores can be used for spatial join work. RTDL
+takes the next step: it asks whether those workloads can be expressed through a
+programmable language/runtime surface while staying correct across multiple
+backends.
 
 ## What RTDL Contains Today
 
 The current repository includes:
 
 - a Python-hosted DSL for authoring kernels
-- compiler and lowering code
-- a native C/C++ oracle used as the main internal correctness reference
+- compiler/lowering code
+- a native C/C++ oracle used as an internal correctness reference
 - an Embree backend
-- an OptiX backend validated on the Linux GPU host `192.168.1.20`
-- a Vulkan ray-tracing backend that is hardware-validated and parity-clean on
-  the accepted long exact-source `county_zipcode` positive-hit `pip` surface,
-  but slower there than PostGIS, OptiX, and Embree
-- PostGIS-based external ground-truth checking for accepted bounded packages
+- an OptiX backend
+- a Vulkan backend
+- PostGIS-based external checking on accepted workload packages
 
-## Current Validated Application Slice
+## Current v0.1 Position
 
-The current validated slice is based on **RayJoin-style spatial workloads**.
+RTDL v0.1 is a **bounded, reviewed research slice**.
 
-In simple terms, RTDL currently focuses on operations such as:
-
-- line-segment intersection
-- point-in-polygon testing
-- bounded overlap/overlay seed generation
-- several related geometric counting and nearest-query tasks
-
-The strongest accepted bounded package currently includes:
-
-- `County ⊲⊳ Zipcode` `top4_tx_ca_ny_pa`
-- `BlockGroup ⊲⊳ WaterBodies` `county2300_s10`
-- bounded `LKAU ⊲⊳ PKAU`
-- bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
-  - this means RTDL currently closes the seed-generation stage for overlay
-    style work on that bounded package, not full polygon output materialization
-
-Across that accepted bounded surface, RTDL has validated comparisons across:
-
-- PostGIS
-- native C oracle
-- Embree
-- OptiX
-
-In addition, the strongest current backend-performance closure is now the long
-exact-source `county_zipcode` positive-hit `pip` surface:
-
-- Embree and OptiX are parity-clean and faster than PostGIS on the accepted
-  prepared/repeated boundaries
-- Vulkan is parity-clean on that same surface, but slower
-
-## What v0.1 Means
-
-RTDL v0.1 is reached as a **bounded, audited research slice**.
-
-That means:
+What that means:
 
 - the main language/runtime path exists
-- the core spatial workloads run end-to-end
-- the accepted bounded package has been checked carefully
-- the project has a submission-ready paper package
-- the repo now also includes a stronger long exact-source backend-performance
-  closure on `county_zipcode` positive-hit `pip`
+- the core RayJoin-style workload family runs end-to-end
+- the bounded package has been checked carefully
+- the project now has strong long-workload backend evidence on an accepted
+  exact-source surface
 
-That does **not** mean:
+What that does **not** mean:
 
 - full paper-identical reproduction of every RayJoin dataset family
-- exact or robust computational geometry in the strongest formal sense
+- exact computational geometry everywhere
 - full polygon overlay materialization
-- large-scale Vulkan maturity
+- equal maturity across all backends and workloads
 
-## Current Boundaries
+## Strongest Current Backend Story
 
-Important current limits:
+The strongest current performance surface is:
+
+- long exact-source `county_zipcode`
+- positive-hit `pip`
+
+On that accepted surface:
+
+- **Embree** is parity-clean and faster than PostGIS on the published prepared
+  and repeated raw-input boundaries
+- **OptiX** is parity-clean and faster than PostGIS on the same published
+  boundaries
+- **Vulkan** is parity-clean and hardware-validated there, but slower
+
+The bounded package still remains the **v0.1 trust anchor** even though the
+strongest performance evidence is now the long exact-source `county_zipcode`
+row.
+
+## Backend Roles
+
+- **Embree**: primary CPU performance backend
+- **OptiX**: primary NVIDIA GPU performance backend
+- **Vulkan**: portable, correctness-preserving GPU backend
+- **Python oracle / native C oracle**: trust references, not release
+  performance backends
+- **PostGIS**: external indexed comparison baseline
+
+## Current Limits
 
 - GPU traversal still uses approximate floating-point geometry
-- RTDL does not yet claim robust/exact computational geometry everywhere
-- the current `overlay` path is a seed-generation analogue, not full polygon
-  overlay materialization
-- the bounded package remains the v0.1 trust anchor even though the strongest
-  current performance evidence is now the long exact-source `county_zipcode`
-  row
+- RTDL does not claim robust/exact computational geometry everywhere
+- current `overlay` is a seed-generation analogue, not full polygon output
+  materialization
 - Vulkan is supported and parity-clean on the accepted long exact-source
-  surface, but remains slower there
+  surface, but is not currently performance-competitive there
 
-## Long-Term Direction
+## Future Direction
 
-The long-term project vision is broader than the current RayJoin slice.
+RTDL is meant to be broader than the current RayJoin slice. The research
+direction is toward a larger family of non-graphical ray-tracing applications.
 
-RTDL is intended to support non-graphical ray-tracing applications across
-multiple backend families, including:
+Current future-direction references from the project’s ray-tracing line,
+listed in chronological order, are:
 
-- CPU ray-tracing libraries such as Intel Embree
-- NVIDIA OptiX/CUDA-based GPU backends
-- Vulkan ray-tracing-based GPU backends
-- AMD HIP RT-based backends
+- 2024. Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  *RayJoin: Fast and Precise Spatial Join*,
+  Proceedings of the 38th ACM International Conference on Supercomputing
+  (ICS 2024).
+  DOI: `10.1145/3650200.3656610`
+- 2024. Yangming Lv, Kai Zhang, Ziming Wang, Xiaodong Zhang, Rubao Lee,
+  Zhenying He, Yinan Jing, and X. Sean Wang,
+  *RTScan: Efficient Scan with Ray Tracing Cores*,
+  Proceedings of the VLDB Endowment 17(6), 1460--1472, 2024.
+  DOI: `10.14778/3648160.3648183`
+- 2025. Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  *LibRTS: A Spatial Indexing Library by Ray Tracing*,
+  Proceedings of the 30th ACM SIGPLAN Annual Symposium on Principles and
+  Practice of Parallel Programming (PPoPP 2025).
+  DOI: `10.1145/3710848.3710850`
+- 2025. Zhixiong Xiao, Mengbai Xiao, Yuan Yuan, Dongxiao Yu, Rubao Lee, and
+  Xiaodong Zhang,
+  *A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First
+  Search and Triangle Counting in Graphs*,
+  Proceedings of the ACM on Measurement and Analysis of Computing Systems,
+  9(2), 2025.
+  DOI: `10.1145/3727108`
+- 2025. Xuri Shi, Kai Zhang, X. Sean Wang, Xiaodong Zhang, and Rubao Lee,
+  *RayDB: Building Databases with Ray Tracing Cores*,
+  Proceedings of the VLDB Endowment 19(1), 43--55, 2025.
+  DOI: `10.14778/3772181.3772185`
+- 2026. Liang Geng, Zhehu Yuan, Rubao Lee, Fusheng Wang, and Xiaodong Zhang,
+  *X-HD: Fast Hausdorff Distance Computation with Ray Tracing*,
+  Proceedings of the 39th ACM International Conference on Supercomputing
+  (ICS 2026).
+
+Additional notes and context are collected here:
+
+- [Future Ray-Tracing Directions](docs/future_ray_tracing_directions.md)
 
 ## Where To Start
 
-If you are new to the project, read these first:
+If you are new to the project, start here:
 
-- [Docs Index](docs/README.md)
-- [Vision](docs/vision.md)
-- [v0.1 Plan](docs/v0_1_final_plan.md)
-- [v0.1 Release Notes](docs/v0_1_release_notes.md)
-- [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
-- [RayJoin Target](docs/rayjoin_target.md)
-- [RTDL Feature Guide](docs/rtdl_feature_guide.md)
-- [Paper Package](paper/rtdl_rayjoin_2026/README.md)
+1. [Docs Index](docs/README.md)
+2. [Quick Tutorial](docs/quick_tutorial.md)
+3. [v0.1 Release Notes](docs/v0_1_release_notes.md)
+4. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
+5. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
+6. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
+7. [RayJoin Target](docs/rayjoin_target.md)
+8. [Paper Package](paper/rtdl_rayjoin_2026/README.md)
 
 ## Project Status
 
-The repository is maintained as a reviewed research/engineering workspace.
-Source code, docs, reports, tests, history, and manuscript artifacts are kept
-together so the current bounded RTDL v0.1 package stays understandable and
-auditable.
+This repository is maintained as a reviewed research/engineering workspace.
+Source code, reports, tests, review artifacts, and manuscript files are kept
+together so the current RTDL v0.1 package remains understandable and auditable.
