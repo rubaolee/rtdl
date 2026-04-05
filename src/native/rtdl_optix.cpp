@@ -733,15 +733,14 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
 
 static const char* kLsiKernelSrc = R"CUDA(
 #include <optix_device.h>
-#include <stdint.h>
 
 struct GpuSegment {
     float x0, y0, x1, y1;
-    uint32_t id;
+    unsigned int id;
 };
 
 struct LsiRecord {
-    uint32_t left_id, right_id;
+    unsigned int left_id, right_id;
     float ix, iy;
 };
 
@@ -750,9 +749,9 @@ struct LsiParams {
     const GpuSegment* left_segs;
     const GpuSegment* right_segs;
     LsiRecord* output;
-    uint32_t* output_count;
-    uint32_t  output_capacity;
-    uint32_t  probe_count;
+    unsigned int* output_count;
+    unsigned int  output_capacity;
+    unsigned int  probe_count;
 };
 
 extern "C" {
@@ -783,7 +782,7 @@ static __forceinline__ __device__ bool seg_intersect(
 }
 
 extern "C" __global__ void __raygen__lsi_probe() {
-    const uint32_t idx = optixGetLaunchIndex().x;
+    const unsigned int idx = optixGetLaunchIndex().x;
     if (idx >= params.probe_count) return;
     const GpuSegment p = params.left_segs[idx];
     unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
@@ -800,7 +799,7 @@ extern "C" __global__ void __raygen__lsi_probe() {
 extern "C" __global__ void __miss__lsi_miss() {}
 
 extern "C" __global__ void __intersection__lsi_isect() {
-    const uint32_t prim = optixGetPrimitiveIndex();
+    const unsigned int prim = optixGetPrimitiveIndex();
     optixSetPayload_1(prim);
     optixSetPayload_2(0u);
     optixSetPayload_3(0u);
@@ -810,11 +809,11 @@ extern "C" __global__ void __intersection__lsi_isect() {
 }
 
 extern "C" __global__ void __anyhit__lsi_anyhit() {
-    const uint32_t pidx = optixGetPayload_0();
-    const uint32_t bidx = optixGetPayload_1();
+    const unsigned int pidx = optixGetPayload_0();
+    const unsigned int bidx = optixGetPayload_1();
     const float    ix   = __uint_as_float(optixGetPayload_2());
     const float    iy   = __uint_as_float(optixGetPayload_3());
-    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    const unsigned int slot = atomicAdd(params.output_count, 1u);
     if (slot < params.output_capacity) {
         LsiRecord r;
         r.left_id  = params.left_segs[pidx].id;
