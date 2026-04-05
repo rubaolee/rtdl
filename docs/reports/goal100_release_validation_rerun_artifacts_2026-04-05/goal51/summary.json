@@ -1,0 +1,140 @@
+{
+  "records": [
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.009967269012122415,
+      "dataset": "authored_lsi_minimal",
+      "kernel": "county_zip_join_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 0.0013073489972157404,
+      "vulkan_warm_sec": 0.6342856300034327,
+      "workload": "lsi"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.000254066995694302,
+      "dataset": "authored_pip_minimal",
+      "kernel": "point_in_counties_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 3.1370000215247273e-05,
+      "vulkan_warm_sec": 0.3921231279964559,
+      "workload": "pip"
+    },
+    {
+      "cpu_count": 1,
+      "cpu_sec": 0.00012287299614399672,
+      "dataset": "authored_overlay_minimal",
+      "kernel": "county_soil_overlay_reference",
+      "parity": true,
+      "vulkan_count": 1,
+      "vulkan_jit_sec": 2.8417998692020774e-05,
+      "vulkan_warm_sec": 0.37811107900051866,
+      "workload": "overlay"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.00016676199447829276,
+      "dataset": "authored_ray_tri_minimal",
+      "kernel": "ray_triangle_hitcount_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 3.748900780919939e-05,
+      "vulkan_warm_sec": 0.38707553000131156,
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.00021630000264849514,
+      "dataset": "authored_segment_polygon_minimal",
+      "kernel": "segment_polygon_hitcount_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 2.965300518553704e-05,
+      "vulkan_warm_sec": 0.3830173680034932,
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "cpu_count": 2,
+      "cpu_sec": 0.00010768999345600605,
+      "dataset": "authored_point_nearest_segment_minimal",
+      "kernel": "point_nearest_segment_reference",
+      "parity": true,
+      "vulkan_count": 2,
+      "vulkan_jit_sec": 2.849599695764482e-05,
+      "vulkan_warm_sec": 0.09871716899215244,
+      "workload": "point_nearest_segment"
+    },
+    {
+      "cpu_count": 0,
+      "cpu_sec": 0.00022465799702331424,
+      "dataset": "derived/br_county_subset_segments_tiled_x8",
+      "kernel": "county_zip_join_reference",
+      "parity": true,
+      "vulkan_count": 0,
+      "vulkan_jit_sec": 2.960900019388646e-05,
+      "vulkan_warm_sec": 0.005253916999208741,
+      "workload": "lsi"
+    },
+    {
+      "cpu_count": 384,
+      "cpu_sec": 0.0009305400017183274,
+      "dataset": "derived/br_county_subset_polygons_tiled_x8",
+      "kernel": "point_in_counties_reference",
+      "parity": true,
+      "vulkan_count": 384,
+      "vulkan_jit_sec": 3.924599150195718e-05,
+      "vulkan_warm_sec": 0.006973764990107156,
+      "workload": "pip"
+    }
+  ],
+  "suite": "goal51_vulkan_validation",
+  "targets": [
+    {
+      "dataset": "authored_lsi_minimal",
+      "kernel": "county_zip_join_reference",
+      "workload": "lsi"
+    },
+    {
+      "dataset": "authored_pip_minimal",
+      "kernel": "point_in_counties_reference",
+      "workload": "pip"
+    },
+    {
+      "dataset": "authored_overlay_minimal",
+      "kernel": "county_soil_overlay_reference",
+      "workload": "overlay"
+    },
+    {
+      "dataset": "authored_ray_tri_minimal",
+      "kernel": "ray_triangle_hitcount_reference",
+      "workload": "ray_tri_hitcount"
+    },
+    {
+      "dataset": "authored_segment_polygon_minimal",
+      "kernel": "segment_polygon_hitcount_reference",
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "dataset": "authored_point_nearest_segment_minimal",
+      "kernel": "point_nearest_segment_reference",
+      "workload": "point_nearest_segment"
+    },
+    {
+      "dataset": "derived/br_county_subset_segments_tiled_x8",
+      "kernel": "county_zip_join_reference",
+      "workload": "lsi"
+    },
+    {
+      "dataset": "derived/br_county_subset_polygons_tiled_x8",
+      "kernel": "point_in_counties_reference",
+      "workload": "pip"
+    }
+  ],
+  "vulkan_version": [
+    0,
+    1,
+    0
+  ]
+}

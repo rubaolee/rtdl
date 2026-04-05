@@ -1,0 +1,42 @@
+{
+  "goal": 100,
+  "date": "2026-04-05",
+  "validated_head": "e15ee77",
+  "fresh_linux_clone": "/home/lestat/work/rtdl_goal100_clean",
+  "local_preflight": {
+    "py_compile_ok": true,
+    "focused_tests": {
+      "count": 60,
+      "ok": true
+    }
+  },
+  "linux_release_gate": {
+    "full_matrix": {
+      "count": 293,
+      "ok": true,
+      "skipped": 1
+    },
+    "focused_milestone_slice": {
+      "count": 15,
+      "ok": true
+    },
+    "vulkan_slice": {
+      "count": 23,
+      "ok": true
+    },
+    "goal51_vulkan_summary": "/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_artifacts_2026-04-05/goal51/summary.json",
+    "optix_raw_summary": "/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_artifacts_2026-04-05/optix_raw/summary.json",
+    "embree_prepared_summary": "/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_artifacts_2026-04-05/embree_prepared/summary.json"
+  },
+  "same_head_carried_artifacts": {
+    "optix_prepared_run1": "/Users/rl2025/rtdl_python_only/docs/reports/goal99_optix_cold_prepared_run1_win_artifacts_2026-04-05/summary.json",
+    "optix_repair_prepared": "/Users/rl2025/rtdl_python_only/docs/reports/goal98_optix_release_regression_repair_artifacts_2026-04-05/prepared/summary.json",
+    "optix_repair_raw": "/Users/rl2025/rtdl_python_only/docs/reports/goal98_optix_release_regression_repair_artifacts_2026-04-05/raw/summary.json",
+    "embree_raw": "/Users/rl2025/rtdl_python_only/docs/reports/goal83_embree_long_exact_source_repair_artifacts_2026-04-04/raw/summary.json",
+    "vulkan_prepared": "/Users/rl2025/rtdl_python_only/docs/reports/goal87_vulkan_long_exact_source_artifacts_2026-04-05/summary.json",
+    "vulkan_raw": "/Users/rl2025/rtdl_python_only/docs/reports/goal88_vulkan_long_exact_raw_input_artifacts_2026-04-05/summary.json"
+  },
+  "result": {
+    "release_gate_passed": true
+  }
+}

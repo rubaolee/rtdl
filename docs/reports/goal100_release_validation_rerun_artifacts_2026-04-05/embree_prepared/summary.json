@@ -1,0 +1,50 @@
+{
+  "backend": "embree",
+  "bind_sec": 1.7907994333654642e-05,
+  "date": "2026-04-05",
+  "db_name": "rtdl_postgis",
+  "host_label": "lestat-lx1-goal100",
+  "pack_points_sec": 0.05121401799260639,
+  "pack_polygons_sec": 5.252885615002015,
+  "postgis": {
+    "plan": {
+      "execution_time_ms": 3050.723,
+      "index_names": [
+        "county_zipcode_points_geom_idx"
+      ],
+      "node_types": [
+        "Gather Merge",
+        "Index Scan",
+        "Nested Loop",
+        "Seq Scan",
+        "Sort"
+      ],
+      "planning_time_ms": 1.778,
+      "uses_index": true
+    },
+    "row_count": 39073,
+    "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+  },
+  "prepare_kernel_sec": 0.08686317299725488,
+  "result": {
+    "beats_postgis_all_reruns": true,
+    "parity_preserved_all_reruns": true
+  },
+  "runs": [
+    {
+      "backend_sec": 1.4399550010130042,
+      "parity_vs_postgis": true,
+      "postgis_sec": 3.1524988659948576,
+      "row_count": 39073,
+      "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+    },
+    {
+      "backend_sec": 1.0430747130012605,
+      "parity_vs_postgis": true,
+      "postgis_sec": 3.099748136999551,
+      "row_count": 39073,
+      "sha256": "0d12ece5d88b770ed8dcd6846cd8d83a70c0ce0c75b4cd762843632e037186ec"
+    }
+  ],
+  "scope": "county_zipcode; positive-hit pip; execution-ready/prepacked timing; backend=embree"
+}
