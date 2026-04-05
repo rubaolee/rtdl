@@ -17,10 +17,11 @@ Project-level front door:
 4. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
 5. [v0.1 Support Matrix](v0_1_support_matrix.md)
 6. [v0.1 Release Reports](release_reports/v0_1/README.md)
-7. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-8. [Current Milestone Q/A](current_milestone_qa.md)
-9. [RayJoin Target](rayjoin_target.md)
-10. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+7. [RTDL v0.1 Archive](archive/v0_1/README.md)
+8. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+9. [Current Milestone Q/A](current_milestone_qa.md)
+10. [RayJoin Target](rayjoin_target.md)
+11. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
 
 Broader background:
 

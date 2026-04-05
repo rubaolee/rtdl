@@ -74,8 +74,12 @@ The canonical v0.1 release-report package is here:
 
 - [RTDL v0.1 Release Reports](docs/release_reports/v0_1/README.md)
 
-That directory links the release statement, the work report, and the detailed
-audit report to the live supporting docs.
+The frozen archived v0.1 baseline is here:
+
+- [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
+
+That archive entry explains which tag and commit define the frozen v0.1
+baseline and points readers to the canonical v0.1 release-report package.
 
 ## Strongest Current Backend Story
 
@@ -171,8 +175,9 @@ If you are new to the project, start here:
 5. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
 6. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
 7. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
-8. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-9. [RayJoin Target](docs/rayjoin_target.md)
+8. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
+9. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+10. [RayJoin Target](docs/rayjoin_target.md)
 
 ## Project Status
 
