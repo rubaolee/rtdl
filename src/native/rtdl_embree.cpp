@@ -734,7 +734,7 @@ struct LsiQueryState {
 
 struct PipQueryState {
   const Point2D* point;
-  std::unordered_set<uint32_t>* contains_ids;
+  std::unordered_set<uint32_t>* candidate_polygon_indices;
 };
 
 struct OverlayPairFlags {
@@ -840,10 +840,23 @@ void polygon_intersect(const RTCIntersectFunctionNArguments* args) {
   auto* data = static_cast<PolygonSceneData*>(args->geometryUserPtr);
   const Polygon2D& polygon = (*data->polygons)[args->primID];
   if (g_query_kind == QueryKind::kPip) {
-    auto* state = static_cast<PipQueryState*>(g_query_state);
-    if (point_in_polygon(*state->point, polygon)) {
-      state->contains_ids->insert(polygon.id);
-    }
+    auto* rayhit = reinterpret_cast<RTCRayHit*>(args->rayhit);
+    rayhit->ray.tfar = 0.0f;
+    rayhit->hit.geomID = args->geomID;
+    rayhit->hit.primID = args->primID;
+    rayhit->hit.u = 0.0f;
+    rayhit->hit.v = 0.0f;
+    rayhit->hit.Ng_x = 0.0f;
+    rayhit->hit.Ng_y = 0.0f;
+    rayhit->hit.Ng_z = 1.0f;
+    RTCFilterFunctionNArguments filter_args;
+    filter_args.valid = args->valid;
+    filter_args.geometryUserPtr = args->geometryUserPtr;
+    filter_args.context = args->context;
+    filter_args.ray = reinterpret_cast<RTCRayN*>(&rayhit->ray);
+    filter_args.hit = reinterpret_cast<RTCHitN*>(&rayhit->hit);
+    filter_args.N = 1;
+    rtcInvokeIntersectFilterFromGeometry(args, &filter_args);
     return;
   }
   if (g_query_kind == QueryKind::kOverlay) {
@@ -867,6 +880,25 @@ void polygon_intersect(const RTCIntersectFunctionNArguments* args) {
       *state->hit_count += 1;
     }
   }
+}
+
+void polygon_intersect_filter(const RTCFilterFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kPip || g_query_state == nullptr) {
+    return;
+  }
+  auto* state = static_cast<PipQueryState*>(g_query_state);
+  const auto* hit = reinterpret_cast<const RTCHit*>(args->hit);
+  state->candidate_polygon_indices->insert(hit->primID);
+  args->valid[0] = 0;
+}
+
+bool polygon_point_query_collect(RTCPointQueryFunctionArguments* args) {
+  if (args == nullptr || args->userPtr == nullptr) {
+    return false;
+  }
+  auto* state = static_cast<PipQueryState*>(args->userPtr);
+  state->candidate_polygon_indices->insert(args->primID);
+  return false;
 }
 
 void triangle_intersect(const RTCIntersectFunctionNArguments* args) {
@@ -1014,33 +1046,45 @@ extern "C" int rtdl_embree_run_pip(
       rtcSetGeometryUserData(holder.geometry, &data);
       rtcSetGeometryBoundsFunction(holder.geometry, polygon_bounds, nullptr);
       rtcSetGeometryIntersectFunction(holder.geometry, polygon_intersect);
+      rtcSetGeometryIntersectFilterFunction(holder.geometry, polygon_intersect_filter);
       rtcCommitGeometry(holder.geometry);
       rtcAttachGeometry(holder.scene, holder.geometry);
       rtcCommitScene(holder.scene);
 
+#if RTDL_EMBREE_HAS_GEOS
+      GeosPreparedPolygonSet geos(polygon_values);
+#endif
       for (const Point2D& point : point_values) {
-        std::unordered_set<uint32_t> contains_ids;
-        PipQueryState state {&point, &contains_ids};
-        g_query_kind = QueryKind::kPip;
-        g_query_state = &state;
-        RTCRayHit rayhit;
-        set_ray(&rayhit, point.p, {0.0, 1.0}, std::numeric_limits<float>::max());
-        RTCIntersectArguments args;
-        rtcInitIntersectArguments(&args);
-        rtcIntersect1(holder.scene, &rayhit, &args);
-        g_query_kind = QueryKind::kNone;
-        g_query_state = nullptr;
-        if (contains_ids.empty()) {
+        std::unordered_set<uint32_t> candidate_polygon_indices;
+        PipQueryState state {&point, &candidate_polygon_indices};
+        RTCPointQuery query;
+        query.x = static_cast<float>(point.p.x);
+        query.y = static_cast<float>(point.p.y);
+        query.z = 0.0f;
+        query.time = 0.0f;
+        query.radius = 0.0f;
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        rtcPointQuery(holder.scene, &query, &context, polygon_point_query_collect, &state);
+        if (candidate_polygon_indices.empty()) {
           continue;
         }
-        std::vector<uint32_t> hit_ids;
-        hit_ids.reserve(contains_ids.size());
-        for (uint32_t polygon_id : contains_ids) {
-          hit_ids.push_back(polygon_id);
+        std::vector<uint32_t> candidate_indices;
+        candidate_indices.reserve(candidate_polygon_indices.size());
+        for (uint32_t polygon_index : candidate_polygon_indices) {
+          candidate_indices.push_back(polygon_index);
         }
-        std::sort(hit_ids.begin(), hit_ids.end());
-        for (uint32_t polygon_id : hit_ids) {
-          rows.push_back({point.id, polygon_id, 1u});
+        std::sort(candidate_indices.begin(), candidate_indices.end());
+        for (uint32_t polygon_index : candidate_indices) {
+#if RTDL_EMBREE_HAS_GEOS
+          const bool contains = geos.covers(polygon_index, point.p.x, point.p.y);
+#else
+          const bool contains = point_in_polygon(point, polygon_values[polygon_index]);
+#endif
+          if (!contains) {
+            continue;
+          }
+          rows.push_back({point.id, polygon_values[polygon_index].id, 1u});
         }
       }
     } else {
@@ -1059,7 +1103,6 @@ extern "C" int rtdl_embree_run_pip(
           const bool contains = point_in_polygon(point, polygon);
           rows.push_back({point.id, polygon.id, contains ? 1u : 0u});
         }
-      }
       }
 #endif
     }
