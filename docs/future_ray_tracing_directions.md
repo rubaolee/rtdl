@@ -17,13 +17,15 @@ already going.
 These are the main ray-tracing-related papers currently listed on Rubao Lee's
 homepage, ordered by time.
 
+Copyright belongs to the respective authors and publishers.
+
 ### 2024: RayJoin
 
 - Liang Geng, Rubao Lee, and Xiaodong Zhang,
-  *RayJoin: Fast and Precise Spatial Join*,
+  [*RayJoin: Fast and Precise Spatial Join*](https://dl.acm.org/doi/10.1145/3650200.3656610),
   Proceedings of the 38th ACM International Conference on Supercomputing
   (ICS 2024),
-  DOI: `10.1145/3650200.3656610`
+  DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
 
 Why it matters here:
 
@@ -33,9 +35,9 @@ Why it matters here:
 
 - Yangming Lv, Kai Zhang, Ziming Wang, Xiaodong Zhang, Rubao Lee, Zhenying He,
   Yinan Jing, and X. Sean Wang,
-  *RTScan: Efficient Scan with Ray Tracing Cores*,
+  [*RTScan: Efficient Scan with Ray Tracing Cores*](https://www.vldb.org/pvldb/vol17/p1460-lv.pdf),
   Proceedings of the VLDB Endowment 17(6), 1460--1472, 2024,
-  DOI: `10.14778/3648160.3648183`
+  DOI: [10.14778/3648160.3648183](https://doi.org/10.14778/3648160.3648183)
 
 Why it matters:
 
@@ -45,10 +47,10 @@ Why it matters:
 ### 2025: LibRTS
 
 - Liang Geng, Rubao Lee, and Xiaodong Zhang,
-  *LibRTS: A Spatial Indexing Library by Ray Tracing*,
+  [*LibRTS: A Spatial Indexing Library by Ray Tracing*](https://dl.acm.org/doi/10.1145/3710848.3710850),
   Proceedings of the 30th ACM SIGPLAN Annual Symposium on Principles and
   Practice of Parallel Programming (PPoPP 2025),
-  DOI: `10.1145/3710848.3710850`
+  DOI: [10.1145/3710848.3710850](https://dl.acm.org/doi/10.1145/3710848.3710850)
 
 Why it matters:
 
@@ -58,11 +60,11 @@ Why it matters:
 
 - Zhixiong Xiao, Mengbai Xiao, Yuan Yuan, Dongxiao Yu, Rubao Lee, and
   Xiaodong Zhang,
-  *A Case Study for Ray Tracing Cores: Performance Insights with
-  Breadth-First Search and Triangle Counting in Graphs*,
+  [*A Case Study for Ray Tracing Cores: Performance Insights with
+  Breadth-First Search and Triangle Counting in Graphs*](https://dl.acm.org/doi/10.1145/3727108),
   Proceedings of the ACM on Measurement and Analysis of Computing Systems,
   9(2), 2025,
-  DOI: `10.1145/3727108`
+  DOI: [10.1145/3727108](https://dl.acm.org/doi/10.1145/3727108)
 
 Why it matters:
 
@@ -71,9 +73,9 @@ Why it matters:
 ### 2025: RayDB
 
 - Xuri Shi, Kai Zhang, X. Sean Wang, Xiaodong Zhang, and Rubao Lee,
-  *RayDB: Building Databases with Ray Tracing Cores*,
+  [*RayDB: Building Databases with Ray Tracing Cores*](https://www.vldb.org/pvldb/vol19/p43-shi.pdf),
   Proceedings of the VLDB Endowment 19(1), 43--55, 2025,
-  DOI: `10.14778/3772181.3772185`
+  DOI: [10.14778/3772181.3772185](https://doi.org/10.14778/3772181.3772185)
 
 Why it matters:
 

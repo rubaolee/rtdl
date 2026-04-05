@@ -27,6 +27,13 @@ Claude identified one real improvement before publish:
 
 That improvement has been applied.
 
+The later focused rerun also identified two presentation/linking refinements:
+
+- use canonical `doi.org` targets for the PVLDB DOI links
+- make the DOI lines clickable in the deeper future-direction document
+
+Those refinements have also been applied before publish.
+
 Accepted conclusion:
 
 - the README now presents the future-direction paper line in a clearer,

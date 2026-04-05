@@ -30,7 +30,7 @@ The motivating application target in this repository is **RayJoin**:
   *RayJoin: Fast and Precise Spatial Join*,
   Proceedings of the 38th ACM International Conference on Supercomputing
   (ICS 2024),
-  DOI: `10.1145/3650200.3656610`
+  DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
 
 RayJoin showed that ray-tracing cores can be used for spatial join work. RTDL
 takes the next step: it asks whether those workloads can be expressed through a
@@ -110,39 +110,42 @@ row.
 RTDL is meant to be broader than the current RayJoin slice. The research
 direction is toward a larger family of non-graphical ray-tracing applications.
 
-Current future-direction references from the project’s ray-tracing line,
-listed in chronological order, are:
+The papers below are part of **Rubao Lee's ray-tracing research line with
+collaborators**. Copyright belongs to the respective authors and publishers.
 
-- 2024. Liang Geng, Rubao Lee, and Xiaodong Zhang,
-  *RayJoin: Fast and Precise Spatial Join*,
+Current future-direction references, listed in chronological order, are:
+
+- **2024.** Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  [*RayJoin: Fast and Precise Spatial Join*](https://dl.acm.org/doi/10.1145/3650200.3656610),
   Proceedings of the 38th ACM International Conference on Supercomputing
   (ICS 2024).
-  DOI: `10.1145/3650200.3656610`
-- 2024. Yangming Lv, Kai Zhang, Ziming Wang, Xiaodong Zhang, Rubao Lee,
+  DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
+- **2024.** Yangming Lv, Kai Zhang, Ziming Wang, Xiaodong Zhang, Rubao Lee,
   Zhenying He, Yinan Jing, and X. Sean Wang,
-  *RTScan: Efficient Scan with Ray Tracing Cores*,
+  [*RTScan: Efficient Scan with Ray Tracing Cores*](https://www.vldb.org/pvldb/vol17/p1460-lv.pdf),
   Proceedings of the VLDB Endowment 17(6), 1460--1472, 2024.
-  DOI: `10.14778/3648160.3648183`
-- 2025. Liang Geng, Rubao Lee, and Xiaodong Zhang,
-  *LibRTS: A Spatial Indexing Library by Ray Tracing*,
+  DOI: [10.14778/3648160.3648183](https://doi.org/10.14778/3648160.3648183)
+- **2025.** Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  [*LibRTS: A Spatial Indexing Library by Ray Tracing*](https://dl.acm.org/doi/10.1145/3710848.3710850),
   Proceedings of the 30th ACM SIGPLAN Annual Symposium on Principles and
   Practice of Parallel Programming (PPoPP 2025).
-  DOI: `10.1145/3710848.3710850`
-- 2025. Zhixiong Xiao, Mengbai Xiao, Yuan Yuan, Dongxiao Yu, Rubao Lee, and
-  Xiaodong Zhang,
-  *A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First
-  Search and Triangle Counting in Graphs*,
+  DOI: [10.1145/3710848.3710850](https://dl.acm.org/doi/10.1145/3710848.3710850)
+- **2025.** Zhixiong Xiao, Mengbai Xiao, Yuan Yuan, Dongxiao Yu, Rubao Lee,
+  and Xiaodong Zhang,
+  [*A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs*](https://dl.acm.org/doi/10.1145/3727108),
   Proceedings of the ACM on Measurement and Analysis of Computing Systems,
   9(2), 2025.
-  DOI: `10.1145/3727108`
-- 2025. Xuri Shi, Kai Zhang, X. Sean Wang, Xiaodong Zhang, and Rubao Lee,
-  *RayDB: Building Databases with Ray Tracing Cores*,
+  DOI: [10.1145/3727108](https://dl.acm.org/doi/10.1145/3727108)
+- **2025.** Xuri Shi, Kai Zhang, X. Sean Wang, Xiaodong Zhang, and Rubao Lee,
+  [*RayDB: Building Databases with Ray Tracing Cores*](https://www.vldb.org/pvldb/vol19/p43-shi.pdf),
   Proceedings of the VLDB Endowment 19(1), 43--55, 2025.
-  DOI: `10.14778/3772181.3772185`
-- 2026. Liang Geng, Zhehu Yuan, Rubao Lee, Fusheng Wang, and Xiaodong Zhang,
+  DOI: [10.14778/3772181.3772185](https://doi.org/10.14778/3772181.3772185)
+- **2026.** Liang Geng, Zhehu Yuan, Rubao Lee, Fusheng Wang, and Xiaodong
+  Zhang,
   *X-HD: Fast Hausdorff Distance Computation with Ray Tracing*,
   Proceedings of the 39th ACM International Conference on Supercomputing
   (ICS 2026).
+  DOI: not listed in the current public materials yet.
 
 Additional notes and context are collected here:
 
