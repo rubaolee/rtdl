@@ -16,9 +16,108 @@ Those goals are intentionally matrix-oriented. This report complements them by
 explaining the performance evidence in one place with more detail on:
 
 - experiment boundaries
+- machine and software environments
 - dataset packages
 - measured results
 - interpretation
+
+## Measurement Environments
+
+The performance numbers in Goals 102 and 103 come from Linux-host runs backed
+by the repository's accepted validation and reproduction path. The repo records
+the environments at different levels of detail; this section consolidates the
+machine and software facts that are explicitly documented.
+
+### Embree / staging CPU host facts recorded in the repo
+
+The Linux bring-up and exact-source staging work record the following machine
+details for host `192.168.1.20`:
+
+- OS:
+  - Ubuntu `24.04.4 LTS`
+- CPU:
+  - Intel Core `i7-7700HQ`
+- threads:
+  - `8`
+- memory:
+  - about `15 GiB`
+- compiler/runtime basics present:
+  - `gcc`
+  - `g++`
+  - `make`
+  - `python3`
+- Embree installation:
+  - header: `/usr/include/embree4/rtcore.h`
+  - library: `/usr/lib/x86_64-linux-gnu/libembree4.so`
+  - package source: Ubuntu `libembree-dev` / `embree-tools`
+
+These details come from the accepted Linux Embree enablement and exact-source
+staging goals and represent the CPU-side baseline used for the mature Embree
+path.
+
+### OptiX GPU host facts recorded in the repo
+
+The OptiX validation ladder records the following concrete GPU software stack
+for host `192.168.1.20`:
+
+- GPU:
+  - NVIDIA GeForce `GTX 1070`
+- driver:
+  - `580.126.09`
+- effective OptiX runtime:
+  - `9.0`
+- effective SDK headers:
+  - `v9.0.0`
+- trusted PTX compilation path:
+  - `RTDL_OPTIX_PTX_COMPILER=nvcc`
+  - `RTDL_NVCC=/usr/bin/nvcc`
+  - `CUDA_PREFIX=/usr`
+  - `OPTIX_PREFIX=/home/lestat/vendor/optix-dev`
+
+This is the strongest directly recorded OptiX machine/software description in
+the repo, and it is the accepted NVIDIA baseline for the RTDL OptiX package.
+
+### PostGIS baseline facts recorded in the repo
+
+The PostGIS comparison path for these goals uses:
+
+- local PostgreSQL/PostGIS on the Linux validation host
+- database:
+  - `rtdl_postgis`
+- installation path documented in the repo:
+  - `postgresql`
+  - `postgresql-contrib`
+  - `postgis`
+  - `postgresql-16-postgis-3`
+  - `postgresql-16-postgis-3-scripts`
+  - `python3-psycopg2`
+- query style:
+  - GiST-index-assisted joins and positive-hit queries
+  - `ST_Covers` for the accepted `pip` comparison boundary
+
+So the PostGIS numbers here are not ad hoc SQL timings. They come from a
+reviewed local PostgreSQL 16 / PostGIS 3 family setup on the same Linux-side
+validation track as the RTDL backend measurements.
+
+### Vulkan host facts recorded in the repo
+
+The Vulkan package is tied to the Linux GPU host:
+
+- host label:
+  - `lestat-lx1`
+- software requirements explicitly recorded:
+  - `libvulkan.so`
+  - `libshaderc.so`
+  - support for:
+    - `VK_KHR_ray_tracing_pipeline`
+    - `VK_KHR_acceleration_structure`
+
+The current repo records the Vulkan host name and validation results clearly,
+but it does not record the same full GPU SKU / driver block in the published
+Goal 85 / Goal 87 / Goal 88 reports that it records for the OptiX validation
+host. This report therefore states the Vulkan environment exactly at the level
+the repo currently documents it, without inventing a more detailed hardware
+claim.
 
 ## Experiment Boundaries
 
