@@ -190,17 +190,34 @@ class PreparedOptixKernel:
             name: _pack_for_geometry(self.expected_inputs[name].geometry.name, payload)
             for name, payload in inputs.items()
         }
-        return PreparedOptixExecution(self.compiled, self.library, packed)
+        execution = PreparedOptixExecution(self.compiled, self.library, packed)
+        predicate = self.compiled.refine_op.predicate
+        if (
+            predicate.name == "point_in_polygon"
+            and predicate.options.get("result_mode", "full_matrix") == "positive_hits"
+        ):
+            execution.warmup()
+        return execution
 
     def run(self, **inputs) -> tuple:
         return self.bind(**inputs).run()
 
 
-@dataclass(frozen=True)
+@dataclass
 class PreparedOptixExecution:
     compiled: CompiledKernel
     library: object
     packed_inputs: dict
+    _warmed: bool = False
+
+    def warmup(self) -> None:
+        if self._warmed:
+            return
+        rows = self.run_raw()
+        try:
+            rows.close()
+        finally:
+            self._warmed = True
 
     def run_raw(self) -> OptixRowView:
         pred = self.compiled.refine_op.predicate.name

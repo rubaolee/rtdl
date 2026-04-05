@@ -445,7 +445,12 @@ using HitRecord    = SbtRecord<EmptyData>;
 
 // ---------- AABB helpers ----------------------------------------------------
 
-constexpr float kAabbPad = 1.0e-5f;
+// OptiX positive-hit PIP uses GPU-side candidate generation followed by host
+// exact finalize. Candidate generation must therefore bias toward false
+// positives, not false negatives. The clean-clone release regression showed
+// that the earlier polygon AABB pad was too tight for the float32 broad phase
+// on the exact-source county/zipcode surface.
+constexpr float kAabbPad = 1.0e-3f;
 constexpr float kSegmentAabbPad = 1.0e-4f;
 constexpr float kLsiTraceTmaxPad = 1.0e-4f;
 
@@ -868,7 +873,12 @@ static __forceinline__ __device__ bool point_in_polygon(
         float px, float py,
         const GpuPolygonRef& poly)
 {
-    const float point_eps = 1.0e-7f;
+    // This helper is used only outside positive_only mode. In positive_only
+    // mode, candidate generation now bypasses this test entirely and reports
+    // all AABB candidates so host exact finalize sees every plausible hit. The
+    // wider epsilon here is still useful for the non-positive-only float32
+    // path, where false negatives are also undesirable.
+    const float point_eps = 1.0e-4f;
     uint32_t n = poly.vertex_count;
     uint32_t off = poly.vertex_offset;
     // Boundary check
@@ -925,6 +935,15 @@ extern "C" __global__ void __miss__pip_miss() {}
 extern "C" __global__ void __intersection__pip_isect() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t pidx = optixGetPayload_0();
+    if (params.positive_only != 0u) {
+        // In positive-hit mode, OptiX is only a conservative candidate
+        // generator. Final inclusive truth is decided on the host. Reporting
+        // every AABB candidate here avoids float32 false negatives in the GPU
+        // point-in-polygon path.
+        optixSetPayload_1(prim);
+        optixReportIntersection(0.5f, 0u);
+        return;
+    }
     const GpuPolygonRef poly = params.polygons[prim];
     float px = params.points_x[pidx];
     float py = params.points_y[pidx];
@@ -1899,8 +1918,9 @@ static void run_pip_optix(
 
     // Read back
     if (positive_only != 0u) {
+        // Single positive-only launch: reset the shared output counter just
+        // before launch. The launch params themselves are unchanged.
         upload<uint32_t>(d_count.ptr, &zero, 1);
-        upload(d_params.ptr, &lp, 1);
         OPTIX_CHECK(optixLaunch(g_pip.pipe->pipeline, stream,
                                  d_params.ptr, sizeof(PipLaunchParams),
                                  &g_pip.pipe->sbt,
