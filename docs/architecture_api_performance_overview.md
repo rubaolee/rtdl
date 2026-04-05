@@ -137,9 +137,9 @@ For the accepted long exact-source `county_zipcode` positive-hit `pip` surface:
 ### Prepared boundary
 
 - OptiX:
-  - warmed rerun about `1.147 s`
+  - about `2.13-2.54 s`
 - Embree:
-  - about `1.774 s`
+  - about `1.04-1.44 s`
 - Vulkan:
   - about `6.14 s`
 - PostGIS:
@@ -159,6 +159,8 @@ For the accepted long exact-source `county_zipcode` positive-hit `pip` surface:
 Current honest reading:
 
 - OptiX and Embree are high-performance backends on this accepted surface
+- OptiX now also has an accepted prepared run-1 win against PostGIS on this
+  surface
 - Vulkan is complete and correct on this accepted surface, but slower
 
 ## API shape

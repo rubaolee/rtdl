@@ -8,33 +8,47 @@
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{url}
+\usepackage{listings}
 \usepackage[hidelinks]{hyperref}
 
-\title{RTDL: A Python-Hosted Ray-Tracing DSL with Bounded Reproduction of the RayJoin Workload Family}
+\lstset{
+basicstyle=\ttfamily\scriptsize,
+columns=fullflexible,
+keepspaces=true,
+showstringspaces=false,
+frame=single
+}
 
-\author{\IEEEauthorblockN{Anonymous Submission}}
+\title{RTDL: A Python-Hosted Ray-Tracing DSL for Non-Graphical Spatial Workloads}
+
+\author{
+\IEEEauthorblockN{Rubao Lee}
+\IEEEauthorblockA{\texttt{lee.rubao@ieee.org}}
+}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-RTDL (Ray-Tracing Domain Language) is a Python-hosted domain-specific language and compiler/runtime stack for
-non-graphical ray-tracing workloads. This paper presents the current RTDL
-solution through the RayJoin workload family as a bounded, externally checked,
-multi-backend vertical slice. The system combines a Python authoring surface, a
-backend-independent compiled-kernel representation, a native C/C++ oracle, and
-controlled execution backends for Intel Embree and NVIDIA OptiX, with Vulkan
-retained as a provisional backend. We evaluate RTDL against the workload and
-artifact structure of the RayJoin paper using accepted bounded packages on a
-Linux host and an external PostGIS reference. The resulting package closes the
-tractable RayJoin experiment surface under an explicit bounded/analogue rule: available
-families are validated across PostGIS, the native oracle, Embree, and OptiX;
-synthetic scalability figures are reproduced as bounded analogues; and dataset
-families with unstable or unavailable public acquisition paths are deferred
-explicitly rather than overclaimed. The paper reports the RTDL design, the
-evaluation methodology, the resulting correctness and performance evidence, and
-the precise boundaries that separate bounded closure from paper-identical
-reproduction.
+Ray tracing (RT) is widely used for image synthesis because it solves
+hierarchical geometric search efficiently. The same capability is attractive
+for non-graphical workloads such as spatial joins, point-in-polygon tests, and
+geometric candidate generation, but direct use of RT runtimes still requires
+backend-specific engineering. We present RTDL (Ray-Tracing Domain Language), a
+Python-hosted DSL and compiler/runtime system for expressing such workloads
+once and lowering them to multiple backends while preserving explicit
+semantics. RTDL separates authored kernel meaning from backend-specific
+execution details such as acceleration-structure construction, launch state,
+buffer layout, and result materialization. We evaluate RTDL on the RayJoin
+workload family using stable real-data packages and controlled scalability
+studies. Across the accepted package surfaces, RTDL preserves exact row-level
+parity among a native C++ oracle, Embree, OptiX, and an external PostGIS
+reference. On the main long County--Zipcode point-in-polygon workload reported
+in this paper, RTDL with Embree and RTDL with OptiX both outperform PostGIS on
+the published prepared-execution and repeated-call boundaries. The result is a
+reproducible, multi-backend evaluation showing that a programmable RT
+language/runtime stack can be a credible way to build non-graphical
+ray-tracing workloads.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -44,70 +58,56 @@ RayJoin, reproducibility
 
 \section{Introduction}
 
-Ray-tracing hardware and software stacks are increasingly useful outside
-graphics, but programming them directly still imposes a heavy systems burden on
-application authors. Spatial join workloads are a clear example: the algorithmic
-idea may be natural, yet the actual implementation often requires direct
-management of acceleration structures, ray payloads, launch parameters, runtime
-plumbing, and numerical boundary behavior. RTDL addresses that problem by
-raising the programming surface to a compact kernel language while preserving a
-backend path capable of executing RayJoin-style workloads across CPU and GPU
-targets.
+The recent proliferation of hardware-accelerated ray-tracing (RT) cores and
+high-performance traversal kernels has transformed graphics, but their
+potential for non-graphical spatial computing remains underexploited.
+Operations such as spatial joins, point-in-polygon tests, and geometric
+candidate filtering are natural fits for BVH-style traversal and intersection
+machinery. In practice, however, exploiting that hardware still requires
+backend-specific engineering around memory layout, launch configuration,
+payload conventions, and numerical boundary semantics. The programming burden
+is especially high when the goal is to preserve the same workload semantics
+across CPU and GPU execution paths.
 
-The current RTDL project is broader than a single application, but RayJoin is
-its first serious target because the workload family is large enough to stress
-the language/runtime boundary and structured enough to admit rigorous external
-checks. This paper therefore does not present RTDL as a finished general system.
-Instead, it presents a bounded, trustworthy vertical slice: a Python-hosted
-language, a compiler/runtime pipeline, and a multi-backend evaluation package
-that mirrors the RayJoin paper structure as far as current stable data and
-infrastructure allow.
+RTDL is intended to reduce that programming burden by raising the authoring
+surface from backend-specific APIs to a compact kernel DSL while retaining
+multiple execution backends. The language is hosted in Python, but its purpose
+is not scripting convenience alone. Its purpose is to let an author specify
+geometric inputs, traversal intent, refine predicates, and output rows once,
+then lower that kernel into controlled runtime paths with comparable semantics.
+The central question of this paper is whether such an abstraction can remain
+useful and defensible when evaluated on a demanding, already-published workload
+family.
 
-The main contribution of this paper is not a claim of paper-identical
-reproduction. Rather, the contribution is a bounded reproduction package with
-explicit fidelity labels and external correctness checks. RTDL now supports
-accepted bounded closure for representative RayJoin-style workloads across a
-native C/C++ oracle, Embree, OptiX, and PostGIS on selected real-data packages.
-It also supports bounded analogues of the RayJoin scalability and overlay
-surfaces. Dataset families whose public acquisition paths are unstable or
-unavailable are deferred explicitly.
+RayJoin is the right target for that evaluation because it exercises exactly
+the class of workloads RTDL is meant to support: non-graphical ray-tracing
+queries over spatial data with both correctness and performance demands. This
+paper therefore does two things. First, it presents RTDL as a language/runtime
+design for this workload class. Second, it evaluates RTDL on a carefully scoped
+RayJoin-oriented package consisting of stable real-data cases and controlled
+scaling studies. The scope is intentionally narrower than a full paper-identical
+reproduction: unavailable dataset families remain deferred, and the current
+overlay result remains a seed-generation surface rather than full polygon
+materialization.
 
-In summary, this paper makes four contributions:
+This paper makes the following contributions:
 \begin{enumerate}
-\item It describes RTDL as a Python-hosted language and compiler/runtime system
-for non-graphical ray-tracing applications, using RayJoin as the current
-validation slice.
-\item It documents a trusted execution stack consisting of a native semantic
-oracle, controlled Embree and OptiX runtimes, and a PostGIS external checker.
-\item It presents a bounded RayJoin experiment package covering LSI, PIP, and
-overlay-seed analogue workloads across accepted available families.
-\item It states precisely what has been reproduced, what is only an analogue,
-and what remains deferred because of unavailable public data.
+\item \textbf{The RTDL System}: We introduce a Python-hosted DSL and compiler
+that lowers high-level spatial kernels into a backend-independent intermediate
+representation, separating kernel semantics from backend-specific traversal and
+scheduling.
+\item \textbf{Multi-Backend Runtime}: We describe an extensible runtime
+architecture that supports execution across Intel Embree (CPU), NVIDIA OptiX
+(GPU), and a native C++ semantic oracle.
+\item \textbf{Cross-System Correctness Methodology}: We establish a rigorous
+validation framework that ensures exact, row-level parity across heterogeneous
+execution paths, utilizing PostGIS as an external industrial baseline for
+real-data packages.
+\item \textbf{RayJoin-Oriented Evaluation}: We provide a reproducible,
+multi-backend evaluation of RayJoin-style LSI, PIP, and overlay-seed workloads
+on stable datasets, demonstrating that RTDL can preserve exact semantics while
+targeting heterogeneous RT backends.
 \end{enumerate}
-
-\section{Background and Problem Setting}
-
-RayJoin demonstrates that ray-tracing techniques can accelerate spatial joins,
-but it also exposes the implementation burden of direct backend programming.
-RTDL is motivated by the same application class while aiming to decouple kernel
-semantics from backend-specific realization. In the current repo, the whole
-project vision includes multiple backend families, but the validated slice is
-intentionally narrower: RayJoin-style workloads executed through a native
-oracle, Embree, and OptiX, with Vulkan retained only as a provisional path.
-
-The evaluation surface mirrored from RayJoin includes three workload families
-that matter directly for the current paper:
-\begin{itemize}
-\item \textbf{LSI}: line-segment intersection style joins,
-\item \textbf{PIP}: point-in-polygon style joins,
-\item \textbf{Overlay}: currently represented in RTDL as an
-\textit{overlay-seed analogue}, not full polygon overlay materialization.
-\end{itemize}
-
-For this work, RayJoin Figure~13 and Figure~14 are represented as bounded
-synthetic analogues, while RayJoin Table~3, Table~4, and Figure~15 are
-represented through accepted bounded packages on stable and available dataset
-families.
 
 \section{Related Work}
 
@@ -146,13 +146,82 @@ heterogeneous backends.
 
 At the runtime layer, RTDL builds on ray-tracing infrastructure rather than
 reimplementing traversal from scratch. Embree provides the validated CPU
-ray-tracing kernel framework~\cite{embree}, while OptiX provides the accepted
+ray-tracing kernel framework~\cite{embree}, while OptiX provides the reported
 GPU execution path in this paper~\cite{optix}. RTDL's contribution is not a new
 traversal engine. The contribution is the language/runtime boundary, the native
-oracle, and the bounded multi-system evidence package built on top of these
+oracle, and the reproducible multi-system evaluation built on top of these
 runtimes.
 
-\section{RTDL Design}
+\section{What Ray Tracing Is and Why It Matters Beyond Graphics}
+
+In graphics, ray tracing answers visibility questions by traversing geometric
+hierarchies quickly. Rays, bounding-volume hierarchies, and fast intersection
+kernels make it practical to search complex geometric scenes without checking
+every primitive pair directly. The same basic pattern also appears in
+non-graphical workloads. A spatial join, for example, can often be expressed as
+a broad-phase search for candidate geometry pairs followed by an exact refine
+step on the surviving candidates.
+
+This observation is what makes ray tracing interesting for spatial computing.
+Workloads such as line-segment intersection, point-in-polygon, overlap
+candidate generation, and geometric counting all involve the same kind of
+hierarchical search that RT systems already accelerate well. Systems such as
+RayJoin~\cite{rayjoin} demonstrate that this mapping is not merely conceptual:
+ray-tracing cores can be used effectively for spatial join work.
+
+The problem is that using RT backends directly still exposes a great deal of
+backend-specific engineering. Developers must reason about acceleration
+structures, payload/state conventions, memory layout, launch details, and
+boundary behavior separately for CPU and GPU paths. RTDL addresses that problem
+instead of trying to replace the underlying traversal engines.
+
+\subsection{RayJoin as the First Application Target}
+
+RayJoin is the right first target for RTDL because it exercises the exact class
+of workloads RTDL is meant to support~\cite{rayjoin}.
+
+The current RTDL paper does not claim a paper-identical reproduction of every
+RayJoin dataset family. Instead, it uses RayJoin as the workload and evaluation
+reference point for a more language/runtime-oriented question: can one authored
+kernel surface survive lowering to multiple RT backends while preserving exact
+semantics and producing honest performance claims?
+
+The evaluation surface mirrored from RayJoin includes three workload families:
+\begin{itemize}
+\item \textbf{LSI}: line-segment intersection style joins,
+\item \textbf{PIP}: point-in-polygon style joins,
+\item \textbf{Overlay}: currently represented in RTDL as an
+\textit{overlay-seed evaluation}, which identifies intersecting polygon pairs
+without full geometry materialization.
+\end{itemize}
+
+For this work, RayJoin Figure~13 and Figure~14 are represented through
+controlled synthetic studies, while RayJoin Table~3, Table~4, and Figure~15
+are represented through validated results on stable dataset packages.
+
+\section{Why RTDL and How It Works}
+
+\subsection{Why a DSL Is Needed}
+
+The central design claim of RTDL is that non-graphical RT workloads should be
+programmable at the workload level rather than at the backend-API level.
+Without such an abstraction, every new workload must be translated manually
+into backend-specific setup code, traversal configuration, payload plumbing,
+buffer layout, and result marshaling. That makes correctness difficult to
+compare across systems and slows down experimentation.
+
+RTDL therefore tries to keep the authored surface close to the workload itself:
+
+\begin{itemize}
+\item which geometries are inputs,
+\item which side is probe or build,
+\item what traversal is intended,
+\item what refine predicate defines final truth,
+\item which fields belong in the emitted rows.
+\end{itemize}
+
+The backend-specific execution details are still present, but they move below
+the language boundary instead of staying in every authored workload.
 
 \subsection{Language Surface}
 
@@ -163,80 +232,181 @@ backend launch details. The same language surface currently supports six
 implemented workloads in the repository, but the RayJoin-facing slice of this
 paper focuses on LSI, PIP, and overlay.
 
+\subsection{Representative Kernel}
+
+Listing~\ref{lst:pip} shows the shape of an RTDL PIP kernel. The author
+declares probe/build inputs, asks for BVH traversal, selects a refine
+predicate, and specifies the emitted row schema. Backend-specific details such
+as Embree scene construction, OptiX launch state, and row marshaling remain
+outside the authored kernel.
+
+\begin{lstlisting}[caption={Representative RTDL PIP kernel.},label={lst:pip}]
+@rt.kernel(backend="rtdl", precision="float_approx")
+def point_in_counties():
+    points = rt.input("points", rt.Points, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, role="build")
+    candidates = rt.traverse(points, polygons, accel="bvh")
+    hits = rt.refine(
+        candidates,
+        predicate=rt.point_in_polygon(exact=False,
+                                      boundary_mode="inclusive"),
+    )
+    return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
+\end{lstlisting}
+
 \subsection{Compiled Representation and Lowering}
 
 RTDL lowers authored kernels into a compiled-kernel representation that
 separates language semantics from backend realization. The lowering path remains
 RayJoin-oriented in the current codebase: it maps geometry roles, candidate
 generation, refine predicates, and emitted rows into backend-specific execution
-plans. This allows the same kernel to execute against a semantic oracle, a CPU
-Embree runtime, and a GPU OptiX runtime.
+plans. In practice, the lowered form records the probe/build role assignment,
+the traversal primitive to invoke, the refine predicate family, precision and
+boundary-mode settings, and the emitted row schema. The backend adapters then
+translate that representation into concrete execution state such as Embree
+scenes, OptiX launch parameters, native buffers, and row marshaling logic. This
+allows the same kernel to execute against a semantic oracle, a CPU Embree
+runtime, and a GPU OptiX runtime without changing the authored kernel surface.
 
 \subsection{Execution Backends}
 
-The accepted backends for this paper are:
+The evaluated backends for this paper are:
 \begin{itemize}
-\item \textbf{Native C/C++ oracle}: the current semantic ground truth for
-accepted results.
-\item \textbf{Embree}: the strongest validated CPU backend in the repo.
-\item \textbf{OptiX}: the bounded, controlled GPU backend validated on the
-Linux workstation in Table~\ref{tab:environment}.
+\item \textbf{Native C/C++ oracle}: the semantic ground truth for the reported
+results.
+\item \textbf{Embree}: the primary validated CPU backend.
+\item \textbf{OptiX}: the validated GPU backend on the Linux workstation in
+Table~\ref{tab:environment}.
 \end{itemize}
 
-The Vulkan backend remains in the repository but is explicitly excluded from the
-accepted paper package because it is still provisional.
+The Vulkan backend remains in the repository, but the paper's main performance
+story focuses on Embree and OptiX because those are the mature high-performance
+backends on the accepted long exact-source surface.
 
-\section{Methodology}
+\subsection{Execution Pipeline}
+
+The execution path is conceptually simple even though the backend
+implementations are not. RTDL first compiles the authored kernel into a
+backend-independent representation that records geometry roles, traversal
+structure, refine predicate, and emitted fields. The runtime then normalizes
+input geometry, invokes the selected backend, and converts the returned native
+rows into the requested user-facing representation. The crucial discipline in
+this paper is that all reported real-data results are checked against the
+native oracle and, for the validated real-data packages, against PostGIS as an
+external reference.
+
+This separation between authored kernel, lowered representation, and runtime
+adapter is the main systems contribution of RTDL. It keeps semantic decisions
+visible at the language level while still allowing backend-specific execution
+strategies underneath. The resulting paper is therefore not just a benchmark of
+Embree or OptiX; it is an evaluation of whether one authored workload surface
+can survive translation into multiple RT backends without drifting
+semantically.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/rtdl_architecture.png}
+\caption{RTDL execution architecture. A single authored kernel is lowered into a backend-independent representation, dispatched through backend adapters, and checked through emitted-row parity and external validation.}
+\label{fig:rtdl-architecture}
+\end{figure}
+
+\section{Design Considerations and Evaluation Methodology}
+
+\subsection{Design Considerations}
+
+Three design considerations drive the current RTDL package.
+
+First, semantic consistency is more important than backend-local cleverness.
+The paper compares systems that execute related geometric work under different
+runtime conditions, so the language/runtime layer must make boundary modes,
+refine predicates, and emitted rows explicit enough to compare honestly.
+
+Second, RTDL must separate broad-phase candidate generation from final truth.
+That principle shaped the mature positive-hit point-in-polygon paths reported
+here. Embree and OptiX both use backend-specific candidate generation, but the
+reported accepted paths keep final inclusive truth on the host through exact
+finalization.
+
+Third, the Python host is allowed to orchestrate but should not repeatedly do
+bulk geometry work on the hot path. The strongest current performance wins only
+appeared after the runtime began reusing prepared executions and prepacked
+geometry instead of rebuilding them unnecessarily.
+
+\subsection{Optimization Strategy}
+
+The optimization story in this paper is therefore not ``replace PostGIS with a
+single GPU kernel.'' It is a layered systems story.
+
+At the backend level, RTDL relies on mature traversal runtimes such as Embree
+and OptiX. At the language/runtime level, the main optimizations are:
+
+\begin{itemize}
+\item over-approximating backend candidate generation with host exact finalize,
+\item prepared-execution reuse,
+\item canonical-record and cached-prepared fast paths,
+\item reuse of prepacked point and polygon buffers,
+\item moving one-time launch costs out of repeated timed prepared execution
+surfaces when that boundary already charges them to preparation.
+\end{itemize}
+
+These optimizations matter because the practical performance gap in a DSL
+system often comes not from raw traversal speed, but from repeated packing,
+binding, and result-materialization overhead around the backend itself.
 
 \subsection{Correctness Method}
 
-The correctness story is intentionally layered. The native C/C++ oracle is the
-internal ground truth. Embree and OptiX are checked against that oracle. For
-accepted bounded real-data packages, PostGIS provides an external industrial
-reference. PostGIS queries are executed with indexed GiST-assisted plans rather
-than brute-force SQL. For PIP, PostGIS positive-hit queries are expanded into
-the same full-matrix RTDL truth semantics before parity comparison.
+The correctness methodology is intentionally layered. The native C/C++ oracle
+serves as the internal semantic ground truth. Embree and OptiX are checked
+against that oracle. For validated real-data packages, PostGIS serves as an
+external industrial reference. PostGIS queries are executed with indexed
+GiST-assisted plans rather than brute-force SQL. For PIP, PostGIS positive-hit
+queries are expanded into the same full-matrix RTDL truth semantics before
+parity comparison.
 
-The accepted PIP parity path is also more specific than a generic manual
-point-in-polygon implementation. After the Goal~50 external comparison exposed
-remaining boundary/topology mismatches, the accepted RTDL refine path adopted
+The PIP parity path used in this paper is also more specific than a generic manual
+point-in-polygon implementation. During development, a systematic external
+comparison against PostGIS exposed remaining boundary/topology mismatches, so
+the RTDL refine path adopted
 GEOS-backed prepared-polygon \texttt{covers(point)} semantics for the native
-oracle and Embree, and the accepted OptiX overlay result was observed on a
+oracle and Embree, and the reported OptiX overlay result was observed on a
 GEOS-enabled build on the validated Linux host~\cite{geos}. This detail matters
-because the paper claims exact bounded parity with PostGIS on the accepted
-packages, not merely approximate geometric agreement.
+because the paper claims exact parity with PostGIS on the validated packages,
+not merely approximate geometric agreement. This does align RTDL's final refine
+step more closely with the geometric engine family used by PostGIS, but that
+alignment is intentional: the goal is to remove semantic ambiguity in the final
+truth predicate, not to erase backend differences in candidate generation.
 
-Parity is checked at the emitted-row level. In the accepted underlying
-artifacts, each system produces a canonical row order, and the final row stream
-is hashed with SHA-256. This paper therefore includes only cases whose final
-accepted artifacts already established exact hash-level agreement across the
-compared systems.
+Parity is checked at the emitted-row level. In the validated artifacts, each
+system produces a canonical row order, and the final row stream is hashed with
+SHA-256. This paper therefore includes only cases whose final reported
+artifacts established exact hash-level agreement across the compared systems.
 
-\subsection{Evidence Policy}
+\subsection{Experimental Scope}
 
-This paper uses only accepted artifacts from the repository's audited goal
-history. A case is counted here only if it is already accepted and honestly
-scoped. The paper therefore distinguishes:
+This paper uses only final validated artifacts from the repository history. A
+case is included only if it is already validated and clearly scoped. The paper
+therefore distinguishes:
 \begin{itemize}
-\item \textbf{done-bounded}: accepted bounded analogue or bounded package,
+\item \textbf{validated package}: a stable real-data package or synthetic
+evaluation surface with completed parity and timing evidence,
 \item \textbf{deferred-unavailable}: excluded because the public acquisition
 path is unstable or unavailable,
 \item \textbf{not claimed}: paper-identical or nationwide statements that the
-current repo does not justify.
+current evidence does not justify.
 \end{itemize}
 
-All reported timings and parity statements in this paper come from the accepted,
-final unified artifacts in the repository's audited goal history. Earlier
-provisional or superseded measurements are intentionally excluded here.
+All reported timings and parity statements in this paper come from the final
+validated artifacts in the repository history. Earlier provisional or
+superseded measurements are intentionally excluded.
 
 \subsection{Experimental Environment}
 
-Table~\ref{tab:environment} summarizes the host environment for the accepted
-bounded package. All accepted four-system runs in this paper were executed on
-the same Linux validation workstation.
+Table~\ref{tab:environment} summarizes the host environment for the reported
+four-system results. All four-system runs reported in this paper were executed
+on the same Linux validation workstation.
 
 \begin{table}[t]
-\caption{Execution environment for the accepted bounded four-system package.}
+\caption{Execution environment for the reported four-system package.}
 \label{tab:environment}
 \centering
 \begin{tabular}{p{0.25\columnwidth}p{0.61\columnwidth}}
@@ -246,91 +416,103 @@ Item & Value \\
 Host class & Linux validation workstation \\
 OS & Ubuntu 24.04.4 LTS \\
 CPU & Intel Core i7-7700HQ \\
-Memory & about 15\,GiB \\
+Memory & 16\,GiB installed (about 15\,GiB usable) \\
 GPU & NVIDIA GeForce GTX 1070 \\
 Driver & 580.126.09 \\
 CPU RT backend & Embree 4.3.0 \\
 GPU RT backend & OptiX 9.0.0 \\
 External checker & local PostgreSQL/PostGIS on the same host \\
-GEOS role & exact prepared-polygon \texttt{covers(point)} path for accepted PIP parity \\
+GEOS role & exact prepared-polygon \texttt{covers(point)} path for validated PIP parity \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Packages Used In This Paper}
 
-The strongest accepted bounded package in the current repo consists of:
+The primary packages used in this paper are:
 \begin{itemize}
 \item County $\bowtie$ Zipcode on \texttt{top4\_tx\_ca\_ny\_pa},
 \item BlockGroup $\bowtie$ WaterBodies on \texttt{county2300\_s10},
-\item bounded LKAU $\bowtie$ PKAU on \texttt{sunshine\_tiny},
-\item bounded LKAU $\bowtie$ PKAU overlay-seed analogue.
+\item LKAU $\bowtie$ PKAU on \texttt{sunshine\_tiny},
+\item LKAU $\bowtie$ PKAU overlay-seed evaluation.
 \end{itemize}
 
-These packages were validated on the same Linux validation workstation.
-The bounded LKAU $\bowtie$ PKAU package was staged from live OSM Overpass way
-geometry and then frozen as the accepted bounded Australia slice~\cite{overpass}.
+These packages were validated on the same Linux validation workstation. The
+LKAU $\bowtie$ PKAU package was staged from live OSM Overpass way
+geometry and then frozen as the validated Australia slice~\cite{overpass}.
 
 \subsection{Overlay-Seed Contract}
 
 RTDL's current overlay result is not a materialized polygon geometry. The
-accepted overlay row schema is instead an \emph{overlay-seed analogue} with
+reported overlay row schema is instead an \emph{overlay-seed evaluation} with
 four columns:
-\texttt{left\_polygon\_id},
-\texttt{right\_polygon\_id},
-\texttt{requires\_lsi}, and
-\texttt{requires\_pip}.
+\begin{itemize}
+\item \texttt{left\_polygon\_id},
+\item \texttt{right\_polygon\_id},
+\item \texttt{requires\_lsi},
+\item \texttt{requires\_pip}.
+\end{itemize}
 This schema records whether a polygon pair requires line-segment intersection
-refine, point-in-polygon refine, or both, and it is the exact surface compared
-against PostGIS in the accepted bounded overlay package.
+refine, point-in-polygon refine, or both. It is the exact surface compared
+against PostGIS in the validated overlay package.
 
 \section{Results}
 
-\subsection{External Four-System Closure on Accepted Real-Data Packages}
+\subsection{Current Backend Results on the Strongest Surface}
 
-Table~\ref{tab:four-system-main} summarizes the strongest accepted real-data
-packages across PostGIS, the native oracle, Embree, and OptiX.
+The strongest current performance surface in the project is the long
+exact-source County $\bowtie$ Zipcode positive-hit PIP workload. This is the
+surface on which RTDL's mature backends now have the clearest performance story
+against PostGIS. Table~\ref{tab:four-system-main} summarizes the final accepted
+results on that surface.
 
 \begin{table*}[t]
-\caption{Accepted bounded four-system results on the main real-data packages. Reported times are the accepted artifact timings carried forward from the final audited package reports; they are not averages across a new paper-only rerun. The Hits column is applicable only to PIP rows.}
+\caption{Current accepted long exact-source County $\bowtie$ Zipcode positive-hit PIP results. These rows consolidate the final reviewed backend packages rather than a single synchronized rerun, so the PostGIS column is reported as the corresponding accepted range for each boundary.}
 \label{tab:four-system-main}
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{p{0.29\textwidth}lrrr rrr}
+\begin{tabular}{p{0.21\textwidth}p{0.11\textwidth}p{0.10\textwidth}p{0.10\textwidth}p{0.10\textwidth}p{0.26\textwidth}}
 \toprule
-Package & Workload & Rows & Hits & PostGIS (s) & Native Oracle (s) & Embree (s) & OptiX (s) \\
+Boundary & PostGIS (s) & Embree (s) & OptiX (s) & Vulkan (s) & Reading \\
 \midrule
-County $\bowtie$ Zipcode \texttt{top4\_tx\_ca\_ny\_pa} & LSI & 107513 & --- & 34.0323 & 89.3365 & 80.2707 & 53.2900 \\
-County $\bowtie$ Zipcode \texttt{top4\_tx\_ca\_ny\_pa} & PIP & 16352128 & 7817 & 0.4300 & 24.4170 & 16.8128 & 19.2551 \\
-BlockGroup $\bowtie$ WaterBodies \texttt{county2300\_s10} & LSI & 216 & --- & 0.2320 & 0.2286 & 0.2228 & 0.8933 \\
-BlockGroup $\bowtie$ WaterBodies \texttt{county2300\_s10} & PIP & 71176 & 197 & 0.0084 & 0.1496 & 0.1172 & 0.6477 \\
+Prepared exact-source & 3.02--3.40 & 1.04--1.44 & 2.13--2.54 & 6.14--6.16 & Embree and OptiX faster; Vulkan slower \\
+Repeated raw-input (best repeated) & 3.09--3.21 & 1.09 & 2.11 & 6.71 & Embree and OptiX faster after runtime reuse \\
+Repeated raw-input (first call) & 3.13--3.58 & 1.96 & 7.05 & 16.14 & Embree faster; OptiX and Vulkan still pay larger cold-start cost \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-For all four rows in Table~\ref{tab:four-system-main}, the correctness relation
-is:
-\begin{quote}
-PostGIS $=$ native C oracle $=$ Embree $=$ OptiX
-\end{quote}
+Across all rows summarized in Table~\ref{tab:four-system-main}, exact row-level
+parity is preserved. The important interpretive point is that the paper now has
+two distinct kinds of evidence: a bounded package that anchors the broader
+v0.1 trust story, and a newer long exact-source surface that carries the
+strongest current backend-performance claim.
 
-This is the strongest accepted evidence in the current repo because it combines
-external database truth with internal multi-backend agreement.
+\subsection{Bounded Package Support Rows}
 
-\subsection{Bounded Lakes/Parks Closure}
+The bounded package remains the broader v0.1 trust anchor even though it is no
+longer the strongest performance surface in the paper. That bounded package
+covers County $\bowtie$ Zipcode on \texttt{top4\_tx\_ca\_ny\_pa}, BlockGroup
+$\bowtie$ WaterBodies on \texttt{county2300\_s10}, and the bounded
+LKAU $\bowtie$ PKAU package, with the overlay row remaining a seed-generation
+analogue rather than full polygon materialization. These rows matter because
+they provide the most diverse multi-system package closure, not because they
+contain the best current backend timings.
 
-RTDL also closes a bounded lakes/parks analogue on Australia:
+\subsection{Lakes/Parks Package}
+
+RTDL also reports a lakes/parks package on Australia:
 
 \begin{table}[t]
-\caption{Accepted bounded LKAU $\bowtie$ PKAU package on \texttt{sunshine\_tiny}.}
+\caption{Validated LKAU $\bowtie$ PKAU package on \texttt{sunshine\_tiny}.}
 \label{tab:lkau}
 \centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{>{\raggedright\arraybackslash}p{0.28\columnwidth}rrrr}
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.23\columnwidth}>{\raggedleft\arraybackslash}p{0.18\columnwidth}rrr}
 \toprule
-Workload & Rows & PostGIS (s) & Embree (s) & OptiX (s) \\
+Workload & Rows / Hits & PostGIS (s) & Embree (s) & OptiX (s) \\
 \midrule
 LSI & 15 & 0.0623 & 2.1286 & 0.5072 \\
 PIP & 73920 (22 hits) & 0.0041 & 0.0571 & 0.3844 \\
@@ -339,103 +521,126 @@ Overlay-seed & 73920 & 0.2285 & 0.0850 & 0.5674 \\
 \end{tabular}
 \end{table}
 
-The LKAU package is explicitly bounded and derived from live OSM way geometry.
-It is not continent-scale Australia-family closure. However, it is sufficient to
-close the first accepted four-system overlay-seed analogue row in the project.
+The LKAU package is intentionally small and derived from live OSM way geometry.
+It is not a continent-scale Australia-family study. However, it is sufficient
+to support the first validated four-system overlay-seed result reported here.
 The corresponding native-oracle times are 1.9138\,s for LSI, 0.0915\,s for
-PIP, and 5.1447\,s for the overlay-seed analogue.
+PIP, and 5.1447\,s for the overlay-seed evaluation.
 
-\subsection{Scalability Analogues}
+\subsection{Scalability Studies}
 
-The RayJoin Section~5.6 style scalability surfaces are closed as bounded
-analogues:
+The RayJoin Section~5.6 style scalability surfaces are represented as
+controlled synthetic studies:
 \begin{itemize}
 \item RayJoin Figure~13: LSI query time and throughput under synthetic scaling,
 \item RayJoin Figure~14: PIP query time and throughput under synthetic scaling.
 \end{itemize}
 
-These are accepted as \emph{done-bounded}, not paper-scale reproductions. They
-remain valuable because they preserve experiment structure while staying within
-the project's repeatable bounded execution budget.
+These are not paper-scale reproductions. They remain valuable because they
+preserve the experiment structure while staying within a repeatable execution
+budget.
 
-In the accepted repo package, these analogues are driven by deterministic
+In the reported package, these studies are driven by deterministic
 synthetic scaling generators rather than the original full RayJoin data volume.
 They preserve the same experiment shape---query time and throughput under
-controlled scale-up---while remaining within the validated bounded execution
-budget of the current project.
+controlled scale-up---while remaining within the validated execution budget of
+the current project.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/figure13_lsi_scalability.png}
 \hfill
 \includegraphics[width=0.48\textwidth]{figures/figure14_pip_scalability.png}
-\caption{Accepted bounded analogues of the RayJoin Figure~13 (left, LSI scalability) and Figure~14 (right, PIP scalability) surfaces. These figures are not paper-scale reproductions; they are the accepted bounded synthetic analogues from the RTDL reproduction package.}
+\caption{Controlled studies corresponding to the RayJoin Figure~13 (left, LSI scalability) and Figure~14 (right, PIP scalability) surfaces. Each workload is summarized as a two-panel figure with query time and throughput, and each panel overlays the uniform and gaussian probe distributions used in the bounded analogue study.}
 \label{fig:scalability}
 \end{figure*}
 
+In both studies, the qualitative trend is the one the paper needs to preserve:
+query time rises with scale, throughput drops as candidate sets thicken, and
+the probe distribution visibly changes the curve shape. These figures are
+therefore useful as structural studies even though they are not paper-scale
+reproductions of the original RayJoin data volume.
+
 \subsection{Performance Interpretation}
 
-Figure~\ref{fig:overlay-speedup} summarizes the accepted RayJoin Figure~15-style
-overlay speedup analogue. As with the rest of the overlay surface in this
-paper, it is a bounded overlay-seed result rather than a full polygon overlay
-materialization claim.
+Figure~\ref{fig:overlay-speedup} summarizes the RTDL Figure~15-style
+overlay speedup study. As with the rest of the overlay surface in this
+paper, it reflects RTDL's current overlay-seed contract rather than full
+polygon overlay materialization.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/figure15_overlay_speedup.png}
-\caption{Accepted bounded Figure~15-style overlay speedup analogue. The plotted surface corresponds to RTDL's current overlay-seed semantics, not full polygon overlay output geometry.}
+\caption{Overlay-seed speedup study corresponding to the RayJoin Figure~15-style comparison. The plotted bars report Embree speedup over the native CPU oracle for the validated local overlay-seed cases; the study reflects RTDL's current overlay-seed semantics rather than full polygon overlay output geometry.}
 \label{fig:overlay-speedup}
 \end{figure}
 
-The current results do not support a single universal backend winner. OptiX is
-already beneficial on the largest accepted County/Zipcode package, but Embree
-remains highly competitive and sometimes faster on smaller slices. PostGIS is
-extremely fast on indexed positive-hit PIP queries, but the database and RTDL
-are not executing identical end-to-end work because RTDL materializes full
-truth rows while PostGIS is measured as an indexed hit query expanded into RTDL
-equivalent truth for parity.
+The large Embree-over-oracle speedup on the overlay-seed slice should not be
+read as a mysterious anomaly. The native oracle is a correctness-oriented exact
+reference without RT backend acceleration or the same prepared/runtime reuse
+used by the mature Embree path, so the comparison is most useful as a systems
+story about what acceleration and runtime specialization recover from a clean
+semantic baseline.
 
-\section{How RTDL Mirrors the RayJoin Paper}
+The performance results in Table~\ref{tab:four-system-main} make two points.
+First, timing boundaries matter. Prepared execution, repeated raw-input calls,
+and bounded package validation are all honest measurements, but they are not
+the same measurement and should not be merged into one headline number.
+Second, RTDL's current backend story is now stronger than the older bounded
+package table alone would suggest. On the accepted long exact-source County
+$\bowtie$ Zipcode positive-hit PIP surface, both Embree and OptiX beat
+PostGIS on prepared execution, and both also beat PostGIS once repeated
+raw-input execution benefits from runtime-owned reuse. Vulkan is now
+parity-clean on the same surface, but it remains slower than PostGIS and the
+other two mature RTDL backends.
 
-RTDL mirrors RayJoin along three important dimensions and then differs from it
-in one explicit way.
+The remaining asymmetry is cold-start cost. Embree already has a strong
+first-call story on the accepted long row, whereas OptiX and Vulkan still pay
+more one-time setup on the first ordinary raw-input call. That distinction is
+important because it shows that the main remaining performance question for
+RTDL is not whether ray-tracing backends can win at all, but how much of the
+preparation and launch overhead the runtime can hide automatically without
+making the language harder to use.
+
+\section{Relationship to RayJoin}
+
+RayJoin provides the primary workload and evaluation reference for this paper.
+RTDL does not attempt to replace RayJoin's contribution; instead, it asks a
+different question: can the same workload family be expressed through a
+programmable DSL/runtime surface while preserving exact semantics across
+multiple execution backends? The answer reported here is deliberately scoped.
+We mirror RayJoin's major workload categories and evaluation surfaces, but we
+restrict the paper to stable, reproducible packages whose results can be
+checked both against an internal oracle and, where appropriate, against
+PostGIS. Unavailable or unstable dataset families are deferred rather than used
+to support stronger reproduction claims than the evidence allows.
 
 \subsection{Workload Surface}
 
-The paper-facing RTDL slice covers the same workload family categories that
-matter to RayJoin:
-LSI, PIP, and overlay composition.
+The RTDL evaluation in this paper covers the same workload family categories
+that matter to RayJoin: LSI, PIP, and overlay composition.
 
 \subsection{Artifact Structure}
 
-RTDL now has a bounded paper-facing closure package covering:
+The reported evaluation covers:
 \begin{itemize}
-\item RayJoin Table~3 style bounded package rows,
-\item RayJoin Figure~13 bounded scalability analogue (Figure~\ref{fig:scalability}, left),
-\item RayJoin Figure~14 bounded scalability analogue (Figure~\ref{fig:scalability}, right),
-\item RayJoin Table~4 bounded overlay-seed analogue,
-\item RayJoin Figure~15 bounded overlay-seed speedup analogue (Figure~\ref{fig:overlay-speedup}).
+\item Table~3-style package rows,
+\item Figure~13-style LSI scalability studies (Figure~\ref{fig:scalability}, left),
+\item Figure~14-style PIP scalability studies (Figure~\ref{fig:scalability}, right),
+\item Table~4-style overlay-seed rows,
+\item Figure~15-style overlay-seed speedup comparisons (Figure~\ref{fig:overlay-speedup}).
 \end{itemize}
-
-\subsection{Evaluation Discipline}
-
-The project mirrors the paper's experiment structure while replacing weak
-claims with explicit fidelity labels. Rather than claiming unavailable or
-unstable dataset families are done, RTDL defers them explicitly. Rather than
-claiming full overlay materialization, RTDL labels the current closure as an
-overlay-seed analogue. This produces a more reviewable and reproducible paper
-story than an overstated “full reproduction” claim would.
 
 \subsection{Key Differences from the Original Paper}
 
-The current RTDL paper package differs from the original RayJoin paper in four
+The current RTDL evaluation differs from the original RayJoin paper in four
 main ways:
 \begin{enumerate}
-\item It is bounded rather than paper-scale.
-\item It relies on accepted analogues where exact paper data is unavailable.
+\item It is package-scale rather than paper-scale.
+\item It relies on controlled synthetic studies where exact paper data is unavailable.
 \item It uses PostGIS as an external correctness reference, which RayJoin did
 not use in the same way.
-\item The current overlay surface is a seed-generation analogue, not full
+\item The current overlay surface is a seed-generation study, not full
 polygon overlay materialization.
 \end{enumerate}
 
@@ -445,7 +650,7 @@ This work is intentionally explicit about its limitations.
 
 First, this is not a paper-identical reproduction. Several continent-scale
 lakes/parks families remain deferred because their public acquisition paths are
-unstable or unavailable. In the current accepted package these deferred families
+unstable or unavailable. In the current evaluation these deferred families
 are:
 \begin{itemize}
 \item LKAF $\bowtie$ PKAF,
@@ -455,36 +660,36 @@ are:
 \item LKSA $\bowtie$ PKSA.
 \end{itemize}
 
-Second, the accepted practical analogue for the paper's \textit{Block
-$\bowtie$ Water} row is the bounded \texttt{county2300\_s10} package over
-BlockGroup and WaterBodies. That scoping qualifier matters and must not be
-erased in downstream summaries.
+Second, the practical substitute for the paper's \textit{Block
+$\bowtie$ Water} row is the \texttt{county2300\_s10} package over
+BlockGroup and WaterBodies. This scoping qualifier is material to
+interpretation.
 
-Third, only bounded LKAU $\bowtie$ PKAU currently has four-system
-overlay-seed closure. County/Zipcode and BlockGroup/WaterBodies remain useful
-overlay analogue context from earlier Embree work, but not the same four-system
-overlay closure.
+Third, only LKAU $\bowtie$ PKAU currently has four-system overlay-seed
+results. County/Zipcode and BlockGroup/WaterBodies still provide useful
+overlay context from earlier Embree work, but not the same four-system overlay
+evidence.
 
-Fourth, Vulkan is not part of the accepted paper package. It remains
-provisional.
+Fourth, Vulkan is not part of the paper's main performance claim. It is
+included only as a parity-clean but slower supporting backend on the accepted
+long exact-source surface.
 
 \section{Conclusion}
 
-RTDL now supports a bounded, externally checked, multi-backend reproduction of
-the RayJoin workload family that is strong enough to describe in paper form.
-The current contribution is not a claim of full paper-identical reproduction.
-Instead, it is a paper-facing bounded closure package grounded in accepted
-evidence:
-synthetic scalability analogues for RayJoin Figure~13 and Figure~14, bounded package
-closure for the stable RayJoin Table~3 families, and bounded overlay-seed analogue
-closure for RayJoin Table~4 and Figure~15. The result is a trustworthy baseline for
-peer review and subsequent workload expansion, rather than a backend bring-up
-story or a speculative full-reproduction claim.
-
-\section*{Acknowledgment}
-
-This manuscript is based on the current audited RTDL repository state and its
-accepted multi-agent review process.
+RTDL now supports an externally checked, multi-backend evaluation of the
+RayJoin workload family that is substantial enough to analyze in paper form.
+The contribution of this work is not a claim of full paper-identical
+reproduction. It is a technically grounded evaluation based on stable real-data
+results, controlled scaling studies, external PostGIS checks, and exact
+row-level agreement across the reported systems. On the accepted long
+exact-source County $\bowtie$ Zipcode positive-hit PIP surface, Embree and
+OptiX now outperform PostGIS on the reported prepared and repeated-call
+boundaries, while Vulkan remains parity-clean but slower. Across the bounded
+package and the long exact-source backend surface, the reported rows preserve
+exact hash-level emitted-row agreement. That evaluation provides a defensible
+baseline for subsequent workload expansion, including deferred dataset families,
+stronger Vulkan maturation, and fuller overlay materialization, without
+overstating what the current evidence proves.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

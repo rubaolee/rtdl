@@ -1,7 +1,17 @@
 # RayJoin Target
 
-RayJoin is the first serious application target for RTDL because it shows the
-core project problem clearly:
+RayJoin is the first serious application target for RTDL because it makes the
+core project problem concrete.
+
+Full reference:
+
+- Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  *RayJoin: Fast and Precise Spatial Join*,
+  Proceedings of the 38th ACM International Conference on Supercomputing
+  (ICS 2024),
+  DOI `10.1145/3650200.3656610`
+
+Why RayJoin matters here:
 
 - the workload is not graphics
 - the implementation maps well to RT traversal and candidate generation
@@ -60,10 +70,22 @@ Current validated RayJoin-style work includes:
   - bounded `LKAU ⊲⊳ PKAU` `overlay-seed analogue`
 
 So RayJoin is no longer only a future target in this repo. It is the active
-application slice that drives the current v0.1 validation work.
+application slice that drives RTDL v0.1.
 
 Important current boundary:
 
 - the bounded package remains the v0.1 trust anchor
 - the strongest performance claim surface is the long exact-source
   `county_zipcode` positive-hit `pip` row
+
+## Why this is still only a first step
+
+RTDL v0.1 does not claim full paper-identical reproduction of every RayJoin
+dataset family.
+
+What it does claim is narrower and more useful:
+
+- RayJoin is a real application target for RTDL, not just an idea
+- the key workload family can be expressed in the language/runtime
+- the strongest backend rows are now parity-clean and performance-credible
+- the remaining deferred rows are documented instead of hidden

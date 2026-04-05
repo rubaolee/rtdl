@@ -5,14 +5,22 @@ Status: release candidate
 
 ## What RTDL v0.1 is
 
-RTDL v0.1 is the first bounded, reviewed release slice of the RTDL project.
+RTDL v0.1 is the first bounded, reviewed release slice of the project.
 
-It demonstrates that RTDL can:
+In plain terms, it shows that:
 
-- express RayJoin-style workloads in the DSL
-- preserve trusted correctness anchors
-- run the same workload family across multiple serious backends
-- support a reproducible experiment, validation, and review workflow
+- RTDL can express a real non-graphical ray-tracing workload family
+- the same workload can run across multiple serious backends
+- correctness can be checked against internal oracles and PostGIS
+- performance claims can be made with explicit, honest timing boundaries
+
+The motivating workload family is from:
+
+- Liang Geng, Rubao Lee, and Xiaodong Zhang,
+  *RayJoin: Fast and Precise Spatial Join*,
+  Proceedings of the 38th ACM International Conference on Supercomputing
+  (ICS 2024),
+  DOI `10.1145/3650200.3656610`
 
 ## Strongest current claims
 
@@ -23,9 +31,9 @@ The strongest current performance closure is:
 
 On that accepted surface:
 
-- RTDL + OptiX beats PostGIS on the accepted repeated raw-input boundary
-- RTDL + Embree beats PostGIS on the accepted prepared and repeated raw-input
+- RTDL + OptiX beats PostGIS on the published prepared and repeated raw-input
   boundaries
+- RTDL + Embree does too
 - RTDL + Vulkan is parity-clean on the same surface, but slower
 
 Primary evidence:
@@ -98,3 +106,4 @@ Read these first:
 3. `/Users/rl2025/rtdl_python_only/docs/current_milestone_qa.md`
 4. `/Users/rl2025/rtdl_python_only/docs/v0_1_reproduction_and_verification.md`
 5. `/Users/rl2025/rtdl_python_only/docs/v0_1_support_matrix.md`
+6. `/Users/rl2025/rtdl_python_only/docs/future_ray_tracing_directions.md`

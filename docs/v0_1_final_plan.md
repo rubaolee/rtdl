@@ -120,8 +120,8 @@ The strongest current performance surface is:
 
 On that surface:
 
-- OptiX is parity-clean and faster than PostGIS on the accepted repeated
-  raw-input boundary, and has an accepted warmed prepared win
+- OptiX is parity-clean and faster than PostGIS on the accepted prepared and
+  repeated raw-input boundaries
 - Embree is parity-clean and faster than PostGIS on the accepted prepared and
   repeated raw-input boundaries
 - Vulkan is parity-clean on the accepted prepared and repeated raw-input

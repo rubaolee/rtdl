@@ -15,6 +15,12 @@ the RTDL v0.1 package.
 - `/Users/rl2025/rtdl_python_only/docs/v0_1_final_plan.md`
 - `/Users/rl2025/rtdl_python_only/docs/architecture_api_performance_overview.md`
 - `/Users/rl2025/rtdl_python_only/docs/current_milestone_qa.md`
+- `/Users/rl2025/rtdl_python_only/docs/v0_1_release_notes.md`
+- `/Users/rl2025/rtdl_python_only/docs/future_ray_tracing_directions.md`
+
+### Current release validation
+
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_2026-04-05.md`
 
 ### Core backend status
 
@@ -35,8 +41,8 @@ the RTDL v0.1 package.
 
 ### OptiX
 
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal82_optix_pre_embree_audit_artifacts_2026-04-04/prepared/summary.json`
-- `/Users/rl2025/rtdl_python_only/docs/reports/goal81_optix_long_exact_raw_input_win_artifacts_2026-04-04/optix/summary.json`
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal99_optix_cold_prepared_run1_win_artifacts_2026-04-05/summary.json`
+- `/Users/rl2025/rtdl_python_only/docs/reports/goal100_release_validation_rerun_artifacts_2026-04-05/optix_raw/summary.json`
 
 ### Embree
 
@@ -65,22 +71,23 @@ PYTHONPATH=src:. python3 -m unittest \
 ## Recommended Linux verification
 
 ```bash
-cd /home/lestat/work/rtdl_goal94_clean
+cd /home/lestat/work/rtdl_goal100_clean
 PYTHONPATH=src:. python3 scripts/run_test_matrix.py --group full
 ```
 
 ```bash
-cd /home/lestat/work/rtdl_goal94_clean
+cd /home/lestat/work/rtdl_goal100_clean
 PYTHONPATH=src:. python3 -m unittest \
   tests.goal91_backend_boundary_support_test \
   tests.goal80_runtime_identity_fastpath_test \
   tests.goal89_backend_comparison_refresh_test \
   tests.goal76_runtime_prepared_cache_test \
-  tests.rtdsl_py_test.RtDslPythonTest.test_rayjoin_cdb_parser_and_views
+  tests.rtdsl_py_test.RtDslPythonTest.test_rayjoin_cdb_parser_and_views \
+  tests.goal99_optix_cold_prepared_run1_win_test
 ```
 
 ```bash
-cd /home/lestat/work/rtdl_goal94_clean
+cd /home/lestat/work/rtdl_goal100_clean
 make build-vulkan
 PYTHONPATH=src:. python3 -m unittest \
   tests.rtdsl_vulkan_test \
@@ -94,6 +101,11 @@ PYTHONPATH=src:. python3 -m unittest \
   - prepared
   - repeated raw-input
   - bounded validation
+- RayJoin should always be identified explicitly as:
+  - Liang Geng, Rubao Lee, and Xiaodong Zhang,
+    *RayJoin: Fast and Precise Spatial Join*,
+    ICS 2024,
+    DOI `10.1145/3650200.3656610`
 - the bounded package is the v0.1 trust anchor
 - the strongest current performance claim is the long exact-source
   `county_zipcode` positive-hit `pip` surface

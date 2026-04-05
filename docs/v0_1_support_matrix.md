@@ -27,7 +27,7 @@ Status wording used below:
 
 | Workload family | Boundary | PostGIS | Embree | OptiX | Vulkan | Claim status |
 | --- | --- | --- | --- | --- | --- | --- |
-| `county_zipcode` positive-hit `pip` exact-source | prepared | accepted | parity-clean, faster | parity-clean, warmed win | parity-clean, slower | strongest backend comparison surface |
+| `county_zipcode` positive-hit `pip` exact-source | prepared | accepted | parity-clean, faster | parity-clean, faster | parity-clean, slower | strongest backend comparison surface |
 | `county_zipcode` positive-hit `pip` exact-source | repeated raw-input | accepted | parity-clean, faster | parity-clean, faster | parity-clean, slower | strongest end-user performance surface |
 | `county_zipcode` positive-hit `pip` bounded package | bounded accepted package | accepted | accepted | accepted | bounded-only older surface | trust anchor support |
 | `blockgroup_waterbodies` positive-hit `pip` | bounded accepted package | accepted | accepted | accepted | not a promoted performance row | bounded package support |

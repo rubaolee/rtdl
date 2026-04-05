@@ -1,7 +1,6 @@
 # RTDL RayJoin Paper Package
 
-This directory contains the current IEEE-style anonymous manuscript draft for
-RTDL.
+This directory contains the current IEEE-style RTDL manuscript draft.
 
 ## Files
 
@@ -25,15 +24,20 @@ Important note:
 - the manuscript still has minor TeX box warnings
 - but the package now compiles successfully end-to-end into a PDF on this
   machine
-- the package is still anonymous and uses a generic review-style author block
-  rather than a venue-specific submission ID or metadata block
+- the current built PDF is 8 pages
+- the current draft names the author as:
+  - Rubao Lee
+  - `lee.rubao@ieee.org`
+- the current draft has repository review coverage from Gemini and Claude
+  section reviews plus an updated full-draft Gemini review:
+  - `/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-05-codex-consensus-paper-updated-draft.md`
 
 ## Submission boundary
 
 This package is intentionally honest about the current RTDL evidence boundary:
 
 - accepted bounded closure is included
-- unavailable dataset families remain deferred explicitly
+- unstable continent datasets remain deferred explicitly
 - overlay is labeled as an overlay-seed analogue rather than full polygon
   materialization
 
