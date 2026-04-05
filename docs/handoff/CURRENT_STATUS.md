@@ -5,8 +5,8 @@ Date: 2026-04-05
 Repo:
 - local workspace: `/Users/rl2025/rtdl_python_only`
 - last published head before this local doc/package work: `d88266e`
-- current local tree contains the flat paper package, updated status deck, and
-  Goal 104 performance report
+- current local tree contains the updated status deck and Goal 104 performance
+  report
 
 Project position:
 - RTDL v0.1 is in release-closure mode
@@ -31,9 +31,6 @@ Performance priority order:
 
 Current documentation state:
 - front-door docs have been updated to the current backend story
-- the paper package has been flattened to the repository top level:
-  - manuscript path: `/Users/rl2025/rtdl_python_only/rtdl_paper.tex`
-  - build artifact: `/Users/rl2025/rtdl_python_only/rtdl_paper.pdf`
 - the status deck has been updated to Goal 103 / Goal 104 state
 
 Current reproduction state:

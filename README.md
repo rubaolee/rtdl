@@ -163,7 +163,6 @@ If you are new to the project, start here:
 6. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
 7. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
 8. [RayJoin Target](docs/rayjoin_target.md)
-9. [Paper Package](rtdl_paper_README.md)
 
 ## Project Status
 

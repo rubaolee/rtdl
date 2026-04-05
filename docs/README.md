@@ -27,7 +27,6 @@ Broader background:
 2. [Vision](vision.md)
 3. [Dataset Summary](rayjoin_datasets.md)
 4. [Public Dataset Sources](rayjoin_public_dataset_sources.md)
-5. [Paper Package](/Users/rl2025/rtdl_python_only/rtdl_paper_README.md)
 
 Language-level:
 
