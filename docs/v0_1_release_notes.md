@@ -107,3 +107,4 @@ Read these first:
 4. `/Users/rl2025/rtdl_python_only/docs/v0_1_reproduction_and_verification.md`
 5. `/Users/rl2025/rtdl_python_only/docs/v0_1_support_matrix.md`
 6. `/Users/rl2025/rtdl_python_only/docs/future_ray_tracing_directions.md`
+7. `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_1/README.md`
