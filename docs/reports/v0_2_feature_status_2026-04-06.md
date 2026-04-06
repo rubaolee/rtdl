@@ -116,4 +116,21 @@ So the feature status is now sharper:
 
 - correctness/product surface: strong
 - CPU/Embree/Vulkan deterministic large-row performance: now strong
-- OptiX performance story for this family: still unresolved
+- OptiX performance story for this family: no longer the main blocker after the
+  candidate-index alignment step
+
+Update after Goal 123:
+
+- OptiX now defaults to the same host-indexed candidate-reduction strategy as
+  the other backends for this feature
+- correctness stayed clean through the large deterministic PostGIS rows
+- OptiX large deterministic Linux rows improved dramatically
+- OptiX now also beats PostGIS on the larger audited deterministic rows
+  (`x256` through `x1024`)
+
+So the current bottom line for `segment_polygon_hitcount` is:
+
+- strong correctness
+- strong user-facing product surface
+- strong Linux deterministic performance across all four primary execution
+  backends

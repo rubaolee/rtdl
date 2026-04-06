@@ -199,6 +199,18 @@ exact work” to “reduce candidate scanning work”:
 This goal counts as a real performance step only if the accepted Linux large
 deterministic rows materially improve.
 
+### Goal 123: OptiX candidate-index alignment
+
+If Goal 122 succeeds but leaves OptiX behind, align OptiX with the same
+candidate-reduction strategy:
+
+- make the host-indexed candidate path the default for this feature
+- keep the older native OptiX traversal path only as an explicit experimental
+  mode
+
+This goal counts as successful only if OptiX large deterministic Linux rows
+materially improve while parity stays clean.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

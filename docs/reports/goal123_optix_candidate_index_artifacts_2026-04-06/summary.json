@@ -1,0 +1,520 @@
+{
+  "copies": [
+    64,
+    256,
+    512,
+    1024
+  ],
+  "generated_at": "2026-04-06T18:08:19",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3"
+  },
+  "perf_iterations": 3,
+  "performance_rows": [
+    {
+      "backend": "cpu",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "max_sec": 0.002045216999249533,
+      "mean_sec": 0.0019521853343273203,
+      "median_sec": 0.0019336940022185445,
+      "min_sec": 0.0018776450015138835,
+      "row_count": 640,
+      "timings_sec": [
+        0.002045216999249533,
+        0.0019336940022185445,
+        0.0018776450015138835
+      ]
+    },
+    {
+      "backend": "embree",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "max_sec": 0.0018113010009983554,
+      "mean_sec": 0.000904360674515677,
+      "median_sec": 0.00045678901369683444,
+      "min_sec": 0.0004449920088518411,
+      "row_count": 640,
+      "timings_sec": [
+        0.0018113010009983554,
+        0.00045678901369683444,
+        0.0004449920088518411
+      ]
+    },
+    {
+      "backend": "optix",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "max_sec": 0.0018010079947998747,
+      "mean_sec": 0.0008775143311747039,
+      "median_sec": 0.0004243989969836548,
+      "min_sec": 0.0004071360017405823,
+      "row_count": 640,
+      "timings_sec": [
+        0.0018010079947998747,
+        0.0004243989969836548,
+        0.0004071360017405823
+      ]
+    },
+    {
+      "backend": "vulkan",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "max_sec": 0.001980515997274779,
+      "mean_sec": 0.0019276906629481043,
+      "median_sec": 0.0019232949998695403,
+      "min_sec": 0.0018792609916999936,
+      "row_count": 640,
+      "timings_sec": [
+        0.001980515997274779,
+        0.0019232949998695403,
+        0.0018792609916999936
+      ]
+    },
+    {
+      "backend": "embree",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "prepared_bind_and_run": {
+        "max_sec": 0.00040637300116941333,
+        "mean_sec": 0.0003898933355230838,
+        "median_sec": 0.0003822529979515821,
+        "min_sec": 0.000381054007448256,
+        "timings_sec": [
+          0.00040637300116941333,
+          0.000381054007448256,
+          0.0003822529979515821
+        ]
+      },
+      "prepared_reuse": {
+        "max_sec": 0.00046292900515254587,
+        "mean_sec": 0.00039619000259942066,
+        "median_sec": 0.0003795609954977408,
+        "min_sec": 0.00034608000714797527,
+        "timings_sec": [
+          0.00034608000714797527,
+          0.00046292900515254587,
+          0.0003795609954977408
+        ]
+      },
+      "row_count": 640
+    },
+    {
+      "backend": "optix",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "prepared_bind_and_run": {
+        "max_sec": 0.00036684000224340707,
+        "mean_sec": 0.00035318366523521644,
+        "median_sec": 0.00034653999318834394,
+        "min_sec": 0.00034617100027389824,
+        "timings_sec": [
+          0.00036684000224340707,
+          0.00034653999318834394,
+          0.00034617100027389824
+        ]
+      },
+      "prepared_reuse": {
+        "max_sec": 0.0003477850113995373,
+        "mean_sec": 0.0003348316774160291,
+        "median_sec": 0.00034304801374673843,
+        "min_sec": 0.00031366200710181147,
+        "timings_sec": [
+          0.00031366200710181147,
+          0.0003477850113995373,
+          0.00034304801374673843
+        ]
+      },
+      "row_count": 640
+    },
+    {
+      "backend": "cpu",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "max_sec": 0.007629489991813898,
+      "mean_sec": 0.007566043995514822,
+      "median_sec": 0.007570468995254487,
+      "min_sec": 0.007498172999476083,
+      "row_count": 2560,
+      "timings_sec": [
+        0.007629489991813898,
+        0.007570468995254487,
+        0.007498172999476083
+      ]
+    },
+    {
+      "backend": "embree",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "max_sec": 0.00707666999369394,
+      "mean_sec": 0.003535436995055837,
+      "median_sec": 0.0018209199915872887,
+      "min_sec": 0.0017087209998862818,
+      "row_count": 2560,
+      "timings_sec": [
+        0.00707666999369394,
+        0.0018209199915872887,
+        0.0017087209998862818
+      ]
+    },
+    {
+      "backend": "optix",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "max_sec": 0.00668225999106653,
+      "mean_sec": 0.003306722666214531,
+      "median_sec": 0.0016614400083199143,
+      "min_sec": 0.0015764679992571473,
+      "row_count": 2560,
+      "timings_sec": [
+        0.00668225999106653,
+        0.0016614400083199143,
+        0.0015764679992571473
+      ]
+    },
+    {
+      "backend": "vulkan",
+      "boundary": "current_run",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "max_sec": 0.007596683004521765,
+      "mean_sec": 0.00755999799973021,
+      "median_sec": 0.007573370006866753,
+      "min_sec": 0.007509940987802111,
+      "row_count": 2560,
+      "timings_sec": [
+        0.007596683004521765,
+        0.007573370006866753,
+        0.007509940987802111
+      ]
+    },
+    {
+      "backend": "embree",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "prepared_bind_and_run": {
+        "max_sec": 0.001558536008815281,
+        "mean_sec": 0.0015310680028051138,
+        "median_sec": 0.0015314600022975355,
+        "min_sec": 0.0015032079973025247,
+        "timings_sec": [
+          0.0015314600022975355,
+          0.001558536008815281,
+          0.0015032079973025247
+        ]
+      },
+      "prepared_reuse": {
+        "max_sec": 0.001530836001620628,
+        "mean_sec": 0.001472185002057813,
+        "median_sec": 0.0015002340078353882,
+        "min_sec": 0.0013854849967174232,
+        "timings_sec": [
+          0.0013854849967174232,
+          0.001530836001620628,
+          0.0015002340078353882
+        ]
+      },
+      "row_count": 2560
+    },
+    {
+      "backend": "optix",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "prepared_bind_and_run": {
+        "max_sec": 0.0014539830008288845,
+        "mean_sec": 0.0014352793368743733,
+        "median_sec": 0.0014471050089923665,
+        "min_sec": 0.0014047500008018687,
+        "timings_sec": [
+          0.0014471050089923665,
+          0.0014539830008288845,
+          0.0014047500008018687
+        ]
+      },
+      "prepared_reuse": {
+        "max_sec": 0.0014257849979912862,
+        "mean_sec": 0.0013711076656666894,
+        "median_sec": 0.001405247996444814,
+        "min_sec": 0.0012822900025639683,
+        "timings_sec": [
+          0.0012822900025639683,
+          0.0014257849979912862,
+          0.001405247996444814
+        ]
+      },
+      "row_count": 2560
+    }
+  ],
+  "postgis_rows": [
+    {
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+      "generated_at": "2026-04-06T18:08:17",
+      "host": {
+        "hostname": "lx1",
+        "machine": "x86_64",
+        "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+        "processor": "x86_64",
+        "python": "3.12.3"
+      },
+      "polygon_count": 128,
+      "postgis": {
+        "row_count": 640,
+        "sec": 0.009207488008541986,
+        "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+      },
+      "records": [
+        {
+          "backend": "cpu",
+          "hash": {
+            "row_count": 640,
+            "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 640,
+          "sec": 0.011098603004938923
+        },
+        {
+          "backend": "embree",
+          "hash": {
+            "row_count": 640,
+            "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 640,
+          "sec": 0.011683272998197936
+        },
+        {
+          "backend": "optix",
+          "hash": {
+            "row_count": 640,
+            "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 640,
+          "sec": 0.009804380999412388
+        },
+        {
+          "backend": "vulkan",
+          "hash": {
+            "row_count": 640,
+            "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 640,
+          "sec": 0.0023056420031934977
+        }
+      ],
+      "segment_count": 640,
+      "suite": "goal114_segment_polygon_postgis_validation"
+    },
+    {
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "generated_at": "2026-04-06T18:08:17",
+      "host": {
+        "hostname": "lx1",
+        "machine": "x86_64",
+        "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+        "processor": "x86_64",
+        "python": "3.12.3"
+      },
+      "polygon_count": 512,
+      "postgis": {
+        "row_count": 2560,
+        "sec": 0.051580426006694324,
+        "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+      },
+      "records": [
+        {
+          "backend": "cpu",
+          "hash": {
+            "row_count": 2560,
+            "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 2560,
+          "sec": 0.008737219002796337
+        },
+        {
+          "backend": "embree",
+          "hash": {
+            "row_count": 2560,
+            "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 2560,
+          "sec": 0.00735420300043188
+        },
+        {
+          "backend": "optix",
+          "hash": {
+            "row_count": 2560,
+            "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 2560,
+          "sec": 0.007160244000260718
+        },
+        {
+          "backend": "vulkan",
+          "hash": {
+            "row_count": 2560,
+            "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 2560,
+          "sec": 0.007777945007546805
+        }
+      ],
+      "segment_count": 2560,
+      "suite": "goal114_segment_polygon_postgis_validation"
+    },
+    {
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x512",
+      "generated_at": "2026-04-06T18:08:18",
+      "host": {
+        "hostname": "lx1",
+        "machine": "x86_64",
+        "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+        "processor": "x86_64",
+        "python": "3.12.3"
+      },
+      "polygon_count": 1024,
+      "postgis": {
+        "row_count": 5120,
+        "sec": 0.09862971899565309,
+        "sha256": "02af7f915d6d5ca84af5919a67dbc9422f57e56b0445120484a548d20df899d0"
+      },
+      "records": [
+        {
+          "backend": "cpu",
+          "hash": {
+            "row_count": 5120,
+            "sha256": "02af7f915d6d5ca84af5919a67dbc9422f57e56b0445120484a548d20df899d0"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 5120,
+          "sec": 0.021714816000894643
+        },
+        {
+          "backend": "embree",
+          "hash": {
+            "row_count": 5120,
+            "sha256": "02af7f915d6d5ca84af5919a67dbc9422f57e56b0445120484a548d20df899d0"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 5120,
+          "sec": 0.01416919199982658
+        },
+        {
+          "backend": "optix",
+          "hash": {
+            "row_count": 5120,
+            "sha256": "02af7f915d6d5ca84af5919a67dbc9422f57e56b0445120484a548d20df899d0"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 5120,
+          "sec": 0.013912986993091181
+        },
+        {
+          "backend": "vulkan",
+          "hash": {
+            "row_count": 5120,
+            "sha256": "02af7f915d6d5ca84af5919a67dbc9422f57e56b0445120484a548d20df899d0"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 5120,
+          "sec": 0.02100478400825523
+        }
+      ],
+      "segment_count": 5120,
+      "suite": "goal114_segment_polygon_postgis_validation"
+    },
+    {
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x1024",
+      "generated_at": "2026-04-06T18:08:19",
+      "host": {
+        "hostname": "lx1",
+        "machine": "x86_64",
+        "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+        "processor": "x86_64",
+        "python": "3.12.3"
+      },
+      "polygon_count": 2048,
+      "postgis": {
+        "row_count": 10240,
+        "sec": 0.3144532129954314,
+        "sha256": "4eccacb646271fce71617c45fc61f9688cbd2b8687be5db21106e98be5a7d741"
+      },
+      "records": [
+        {
+          "backend": "cpu",
+          "hash": {
+            "row_count": 10240,
+            "sha256": "4eccacb646271fce71617c45fc61f9688cbd2b8687be5db21106e98be5a7d741"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 10240,
+          "sec": 0.033020636008586735
+        },
+        {
+          "backend": "embree",
+          "hash": {
+            "row_count": 10240,
+            "sha256": "4eccacb646271fce71617c45fc61f9688cbd2b8687be5db21106e98be5a7d741"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 10240,
+          "sec": 0.028251005001948215
+        },
+        {
+          "backend": "optix",
+          "hash": {
+            "row_count": 10240,
+            "sha256": "4eccacb646271fce71617c45fc61f9688cbd2b8687be5db21106e98be5a7d741"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 10240,
+          "sec": 0.028281603998038918
+        },
+        {
+          "backend": "vulkan",
+          "hash": {
+            "row_count": 10240,
+            "sha256": "4eccacb646271fce71617c45fc61f9688cbd2b8687be5db21106e98be5a7d741"
+          },
+          "parity_vs_postgis": true,
+          "row_count": 10240,
+          "sec": 0.03875375600182451
+        }
+      ],
+      "segment_count": 10240,
+      "suite": "goal114_segment_polygon_postgis_validation"
+    }
+  ],
+  "prepared_copies": [
+    64,
+    256
+  ],
+  "suite": "goal118_segment_polygon_linux_large_perf",
+  "versions": {
+    "embree": [
+      4,
+      3,
+      0
+    ],
+    "optix": [
+      9,
+      0,
+      0
+    ],
+    "oracle": [
+      0,
+      1,
+      0
+    ],
+    "vulkan": [
+      0,
+      1,
+      0
+    ]
+  }
+}

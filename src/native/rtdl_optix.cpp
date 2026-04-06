@@ -4,8 +4,9 @@
 // SegmentPolygonHitcount, PointNearestSegment) through the OptiX backend.
 // The mature RT-traversal workloads use OptiX 7 custom-geometry BVH traversal.
 // Some families still follow a bounded local maturity story:
-// - SegmentPolygonHitcount now uses OptiX custom-AABB traversal, but it is not
-//   yet a strong performance win against PostGIS
+// - SegmentPolygonHitcount now defaults to a host-indexed candidate-reduction
+//   path; the older OptiX custom-AABB traversal path remains available as an
+//   explicit experimental mode
 // - PointNearestSegment uses CUDA-parallel brute-force
 //
 // Device kernels are embedded as CUDA source strings and compiled to PTX at
@@ -1532,6 +1533,10 @@ struct GpuSegPolyRecord { uint32_t segment_id, hit_count; };
 struct GpuPnsRecord     { uint32_t point_id, segment_id; float distance; };
 #pragma pack(pop)
 
+struct Bounds2D {
+    double min_x, min_y, max_x, max_y;
+};
+
 static bool exact_segment_intersection(
         const RtdlSegment& left,
         const RtdlSegment& right,
@@ -1763,6 +1768,139 @@ static bool exact_segment_hits_polygon(
         }
     }
     return false;
+}
+
+static Bounds2D bounds_for_segment(const RtdlSegment& segment)
+{
+    return {
+        std::min(segment.x0, segment.x1),
+        std::min(segment.y0, segment.y1),
+        std::max(segment.x0, segment.x1),
+        std::max(segment.y0, segment.y1),
+    };
+}
+
+static Bounds2D bounds_for_polygon(const RtdlPolygonRef& poly, const double* vertices_xy)
+{
+    Bounds2D bounds{
+        vertices_xy[poly.vertex_offset * 2],
+        vertices_xy[poly.vertex_offset * 2 + 1],
+        vertices_xy[poly.vertex_offset * 2],
+        vertices_xy[poly.vertex_offset * 2 + 1],
+    };
+    for (uint32_t i = 0; i < poly.vertex_count; ++i) {
+        const size_t base = static_cast<size_t>(poly.vertex_offset + i) * 2;
+        const double x = vertices_xy[base];
+        const double y = vertices_xy[base + 1];
+        bounds.min_x = std::min(bounds.min_x, x);
+        bounds.min_y = std::min(bounds.min_y, y);
+        bounds.max_x = std::max(bounds.max_x, x);
+        bounds.max_y = std::max(bounds.max_y, y);
+    }
+    return bounds;
+}
+
+static bool bounds_overlap(const Bounds2D& left, const Bounds2D& right)
+{
+    return !(left.max_x < right.min_x || right.max_x < left.min_x ||
+             left.max_y < right.min_y || right.max_y < left.min_y);
+}
+
+struct PolygonBucketIndex {
+    double origin_x;
+    double bucket_width;
+    std::vector<std::vector<size_t>> buckets;
+};
+
+static PolygonBucketIndex build_polygon_bucket_index(const std::vector<Bounds2D>& polygon_bounds)
+{
+    if (polygon_bounds.empty()) {
+        return {0.0, 1.0, {}};
+    }
+    double global_min = polygon_bounds.front().min_x;
+    double global_max = polygon_bounds.front().max_x;
+    for (const Bounds2D& bounds : polygon_bounds) {
+        global_min = std::min(global_min, bounds.min_x);
+        global_max = std::max(global_max, bounds.max_x);
+    }
+    const double span = std::max(global_max - global_min, 1.0e-9);
+    const size_t bucket_count = std::max<size_t>(16, std::min<size_t>(polygon_bounds.size() * 2, 8192));
+    const double bucket_width = span / static_cast<double>(bucket_count);
+    std::vector<std::vector<size_t>> buckets(bucket_count);
+    for (size_t polygon_index = 0; polygon_index < polygon_bounds.size(); ++polygon_index) {
+        const Bounds2D& bounds = polygon_bounds[polygon_index];
+        const auto first = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((bounds.min_x - global_min) / bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        const auto last = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((bounds.max_x - global_min) / bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        for (size_t bucket_id = first; bucket_id <= last; ++bucket_id) {
+            buckets[bucket_id].push_back(polygon_index);
+        }
+    }
+    return {global_min, bucket_width, std::move(buckets)};
+}
+
+static void run_seg_poly_hitcount_optix_host_indexed(
+        const RtdlSegment*    segments,  size_t segment_count,
+        const RtdlPolygonRef* polygons,  size_t polygon_count,
+        const double* vertices_xy,
+        RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out)
+{
+    std::vector<Bounds2D> polygon_bounds;
+    polygon_bounds.reserve(polygon_count);
+    for (size_t i = 0; i < polygon_count; ++i) {
+        polygon_bounds.push_back(bounds_for_polygon(polygons[i], vertices_xy));
+    }
+    const PolygonBucketIndex bucket_index = build_polygon_bucket_index(polygon_bounds);
+    std::vector<size_t> seen(polygon_count, 0);
+    size_t stamp = 1;
+
+    auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
+        std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
+    if (!out && segment_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < segment_count; ++i) {
+        const Bounds2D seg_bounds = bounds_for_segment(segments[i]);
+        const size_t bucket_count = bucket_index.buckets.size();
+        size_t first = 0;
+        size_t last = 0;
+        if (bucket_count > 0) {
+            first = static_cast<size_t>(std::clamp(
+                static_cast<long long>(std::floor((seg_bounds.min_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+                0LL,
+                static_cast<long long>(bucket_count - 1)));
+            last = static_cast<size_t>(std::clamp(
+                static_cast<long long>(std::floor((seg_bounds.max_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+                0LL,
+                static_cast<long long>(bucket_count - 1)));
+        }
+        uint32_t hit_count = 0;
+        for (size_t bucket_id = first; bucket_id <= last && bucket_count > 0; ++bucket_id) {
+            for (size_t polygon_index : bucket_index.buckets[bucket_id]) {
+                if (seen[polygon_index] == stamp) {
+                    continue;
+                }
+                seen[polygon_index] = stamp;
+                if (!bounds_overlap(seg_bounds, polygon_bounds[polygon_index])) {
+                    continue;
+                }
+                if (exact_segment_hits_polygon(segments[i], polygons[polygon_index], vertices_xy)) {
+                    hit_count += 1;
+                }
+            }
+        }
+        out[i] = {segments[i].id, hit_count};
+        stamp += 1;
+        if (stamp == 0) {
+            std::fill(seen.begin(), seen.end(), 0);
+            stamp = 1;
+        }
+    }
+    *rows_out = out;
+    *row_count_out = segment_count;
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -2406,6 +2544,13 @@ static void run_seg_poly_hitcount_optix(
         const double* vertices_xy,       size_t vertex_xy_count,
         RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out)
 {
+    if (const char* mode = std::getenv("RTDL_OPTIX_SEGPOLY_MODE");
+        mode == nullptr || std::string(mode) != "native") {
+        run_seg_poly_hitcount_optix_host_indexed(
+            segments, segment_count, polygons, polygon_count, vertices_xy, rows_out, row_count_out);
+        return;
+    }
+
     if (polygon_count == 0) {
         auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
             std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
