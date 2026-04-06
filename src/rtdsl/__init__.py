@@ -95,6 +95,9 @@ from .goal114_segment_polygon_postgis import write_goal114_artifacts
 from .goal116_segment_polygon_backend_audit import render_goal116_markdown
 from .goal116_segment_polygon_backend_audit import run_goal116_segment_polygon_backend_audit
 from .goal116_segment_polygon_backend_audit import write_goal116_artifacts
+from .goal118_segment_polygon_linux_large_perf import render_goal118_markdown
+from .goal118_segment_polygon_linux_large_perf import run_goal118_segment_polygon_linux_large_perf
+from .goal118_segment_polygon_linux_large_perf import write_goal118_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -290,6 +293,9 @@ __all__ = [
     "f32",
     "field",
     "generate_section_5_6_artifacts",
+    "render_goal118_markdown",
+    "run_goal118_segment_polygon_linux_large_perf",
+    "write_goal118_artifacts",
     "generate_synthetic_polygons",
     "generate_optix_project",
     "generate_goal23_artifacts",
