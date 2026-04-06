@@ -88,6 +88,10 @@ from .goal23_reproduction import run_goal23_reproduction
 from .goal112_segment_polygon_perf import render_goal112_markdown
 from .goal112_segment_polygon_perf import run_goal112_segment_polygon_perf
 from .goal112_segment_polygon_perf import write_goal112_artifacts
+from .goal114_segment_polygon_postgis import render_goal114_markdown
+from .goal114_segment_polygon_postgis import run_goal114_segment_polygon_postgis_validation
+from .goal114_segment_polygon_postgis import segment_polygon_large_dataset_name
+from .goal114_segment_polygon_postgis import write_goal114_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -288,7 +292,9 @@ __all__ = [
     "generate_goal23_artifacts",
     "generate_embree_evaluation_artifacts",
     "render_goal112_markdown",
+    "render_goal114_markdown",
     "run_goal112_segment_polygon_perf",
+    "run_goal114_segment_polygon_postgis_validation",
     "generate_handoff_bundle",
     "generate_python_program",
     "render_python_program",
@@ -341,6 +347,7 @@ __all__ = [
     "schema_path",
     "segment_intersection",
     "segment_polygon_hitcount",
+    "segment_polygon_large_dataset_name",
     "Segment",
     "segment_polygon_hitcount_cpu",
     "summarize_baseline_benchmark",
@@ -352,5 +359,6 @@ __all__ = [
     "validate_plan_dict",
     "write_baseline_benchmark_json",
     "write_goal112_artifacts",
+    "write_goal114_artifacts",
     "WorkloadContract",
 ]

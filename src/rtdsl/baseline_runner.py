@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -316,6 +317,26 @@ def _load_segment_polygon_case(dataset: str) -> DatasetCase:
                 "polygons": tile_polygons(polygons, copies=4, step_x=30.0, step_y=20.0),
             },
             note="Derived county segment/polygon case tiled four times with deterministic offsets.",
+        )
+    match = re.fullmatch(r"derived/br_county_subset_segment_polygon_tiled_x(\d+)", dataset)
+    if match:
+        copies = int(match.group(1))
+        if copies <= 0:
+            raise ValueError("segment_polygon_hitcount tiled copies must be positive")
+        case = make_fixture_segment_polygon_case()
+        segments = tuple(case["segments"])
+        polygons = tuple(case["polygons"])
+        return DatasetCase(
+            workload="segment_polygon_hitcount",
+            dataset=dataset,
+            inputs={
+                "segments": tile_segments(segments, copies=copies, step_x=30.0, step_y=20.0),
+                "polygons": tile_polygons(polygons, copies=copies, step_x=30.0, step_y=20.0),
+            },
+            note=(
+                "Derived county segment/polygon case tiled "
+                f"{copies} times with deterministic offsets."
+            ),
         )
     raise ValueError(f"unsupported segment_polygon_hitcount dataset `{dataset}`")
 
