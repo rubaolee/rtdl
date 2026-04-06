@@ -1,7 +1,7 @@
 # RTDL v0.2 Roadmap
 
 Date: 2026-04-05
-Status: proposed
+Status: accepted
 
 ## v0.2 goal
 
@@ -128,11 +128,9 @@ Recommended order:
 
 Produce a formal in-scope / experimental / out-of-scope table for RTDL v0.2.
 
-### Goal 109: generate-only mode MVP
+### Goal 109: archive v0.1 baseline
 
-Support a first end-to-end generate-only path for one accepted RTDL kernel
-family, but only as a constrained experiment with a clear success/failure
-decision.
+Freeze the v0.1 line as a stable archived baseline before broader v0.2 drift.
 
 ### Goal 110: new workload family closure
 

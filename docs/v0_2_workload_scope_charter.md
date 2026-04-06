@@ -1,7 +1,7 @@
 # RTDL v0.2 Workload Scope Charter
 
 Date: 2026-04-05
-Status: proposed
+Status: accepted
 
 ## Purpose
 
