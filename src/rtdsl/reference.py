@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 
 @dataclass(frozen=True)
@@ -147,11 +148,14 @@ def segment_polygon_hitcount_cpu(
     polygons: tuple[Polygon, ...],
 ) -> tuple[dict[str, int], ...]:
     polygon_bounds = tuple(_polygon_bounds(polygon) for polygon in polygons)
+    bucket_index = _build_polygon_bucket_index(polygon_bounds)
     rows = []
     for segment in segments:
         seg_bounds = _segment_bounds(segment)
         hit_count = 0
-        for polygon, poly_bounds in zip(polygons, polygon_bounds):
+        for polygon_index in _candidate_polygon_indexes(seg_bounds, polygon_bounds, bucket_index):
+            polygon = polygons[polygon_index]
+            poly_bounds = polygon_bounds[polygon_index]
             if not _bounds_overlap(seg_bounds, poly_bounds):
                 continue
             if _segment_hits_polygon(segment, polygon):
@@ -224,6 +228,53 @@ def _bounds_overlap(
         or left[3] < right[1]
         or right[3] < left[1]
     )
+
+
+def _build_polygon_bucket_index(
+    polygon_bounds: tuple[tuple[float, float, float, float], ...],
+) -> dict[str, object]:
+    if not polygon_bounds:
+        return {"origin_x": 0.0, "bucket_width": 1.0, "buckets": tuple()}
+    global_min = min(bounds[0] for bounds in polygon_bounds)
+    global_max = max(bounds[2] for bounds in polygon_bounds)
+    span = max(global_max - global_min, 1.0e-9)
+    bucket_count = max(16, min(len(polygon_bounds) * 2, 8192))
+    bucket_width = span / bucket_count
+    buckets: list[list[int]] = [[] for _ in range(bucket_count)]
+    for polygon_index, bounds in enumerate(polygon_bounds):
+        first = max(0, min(bucket_count - 1, int(math.floor((bounds[0] - global_min) / bucket_width))))
+        last = max(0, min(bucket_count - 1, int(math.floor((bounds[2] - global_min) / bucket_width))))
+        for bucket_id in range(first, last + 1):
+            buckets[bucket_id].append(polygon_index)
+    return {
+        "origin_x": global_min,
+        "bucket_width": bucket_width,
+        "buckets": tuple(tuple(bucket) for bucket in buckets),
+    }
+
+
+def _candidate_polygon_indexes(
+    seg_bounds: tuple[float, float, float, float],
+    polygon_bounds: tuple[tuple[float, float, float, float], ...],
+    bucket_index: dict[str, object],
+) -> tuple[int, ...]:
+    buckets = bucket_index["buckets"]
+    if not buckets:
+        return tuple()
+    origin_x = float(bucket_index["origin_x"])
+    bucket_width = float(bucket_index["bucket_width"])
+    bucket_count = len(buckets)
+    first = max(0, min(bucket_count - 1, int(math.floor((seg_bounds[0] - origin_x) / bucket_width))))
+    last = max(0, min(bucket_count - 1, int(math.floor((seg_bounds[2] - origin_x) / bucket_width))))
+    seen: set[int] = set()
+    candidates: list[int] = []
+    for bucket_id in range(first, last + 1):
+        for polygon_index in buckets[bucket_id]:
+            if polygon_index in seen:
+                continue
+            seen.add(polygon_index)
+            candidates.append(polygon_index)
+    return tuple(candidates)
 
 
 def _segment_intersection(left: Segment, right: Segment) -> tuple[float, float] | None:

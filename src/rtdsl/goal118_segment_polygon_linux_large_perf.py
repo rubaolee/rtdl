@@ -206,8 +206,8 @@ def render_goal118_markdown(payload: dict[str, object]) -> str:
             "## Interpretation",
             "",
             "- all listed PostGIS-backed rows are parity-clean",
-            "- OptiX is the fastest current RTDL backend on the audited large rows",
-            "- Embree tracks the native CPU oracle closely on this family",
+            "- the fastest RTDL backend now depends on the specific redesign state and dataset; consult the table above",
+            "- CPU and Embree may track closely when they share the same host-side exact counting strategy",
             "- the current Vulkan numbers reflect the accepted correctness-first runtime boundary for this family",
             "  rather than a native optimized traversal implementation",
         ]

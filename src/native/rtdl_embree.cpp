@@ -380,6 +380,43 @@ bool bounds_overlap(const Bounds2D& left, const Bounds2D& right) {
            left.max_y < right.min_y || right.max_y < left.min_y);
 }
 
+struct PolygonBucketIndex {
+  double origin_x;
+  double bucket_width;
+  std::vector<std::vector<size_t>> buckets;
+};
+
+PolygonBucketIndex build_polygon_bucket_index(const std::vector<Bounds2D>& polygon_bounds) {
+  if (polygon_bounds.empty()) {
+    return {0.0, 1.0, {}};
+  }
+  double global_min = polygon_bounds.front().min_x;
+  double global_max = polygon_bounds.front().max_x;
+  for (const Bounds2D& bounds : polygon_bounds) {
+    global_min = std::min(global_min, bounds.min_x);
+    global_max = std::max(global_max, bounds.max_x);
+  }
+  const double span = std::max(global_max - global_min, 1.0e-9);
+  const size_t bucket_count = std::max<size_t>(16, std::min<size_t>(polygon_bounds.size() * 2, 8192));
+  const double bucket_width = span / static_cast<double>(bucket_count);
+  std::vector<std::vector<size_t>> buckets(bucket_count);
+  for (size_t polygon_index = 0; polygon_index < polygon_bounds.size(); ++polygon_index) {
+    const Bounds2D& bounds = polygon_bounds[polygon_index];
+    const auto first = static_cast<size_t>(std::clamp(
+        static_cast<long long>(std::floor((bounds.min_x - global_min) / bucket_width)),
+        0LL,
+        static_cast<long long>(bucket_count - 1)));
+    const auto last = static_cast<size_t>(std::clamp(
+        static_cast<long long>(std::floor((bounds.max_x - global_min) / bucket_width)),
+        0LL,
+        static_cast<long long>(bucket_count - 1)));
+    for (size_t bucket_id = first; bucket_id <= last; ++bucket_id) {
+      buckets[bucket_id].push_back(polygon_index);
+    }
+  }
+  return {global_min, bucket_width, std::move(buckets)};
+}
+
 double cross(const Vec2& a, const Vec2& b) {
   return a.x * b.y - a.y * b.x;
 }
@@ -1273,22 +1310,49 @@ extern "C" int rtdl_embree_run_segment_polygon_hitcount(
     for (const Polygon2D& polygon : polygon_values) {
       polygon_bounds.push_back(bounds_for_polygon(polygon));
     }
+    const PolygonBucketIndex bucket_index = build_polygon_bucket_index(polygon_bounds);
+    std::vector<size_t> seen(polygon_values.size(), 0);
+    size_t stamp = 1;
 
     std::vector<RtdlSegmentPolygonHitCountRow> rows;
     rows.reserve(segment_values.size());
     for (const Segment2D& segment : segment_values) {
       const Bounds2D seg_bounds = bounds_for_segment(segment);
+      const size_t bucket_count = bucket_index.buckets.size();
+      size_t first = 0;
+      size_t last = 0;
+      if (bucket_count > 0) {
+        first = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((seg_bounds.min_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        last = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((seg_bounds.max_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+      }
       uint32_t hit_count = 0;
-      for (size_t polygon_index = 0; polygon_index < polygon_values.size(); ++polygon_index) {
-        if (!bounds_overlap(seg_bounds, polygon_bounds[polygon_index])) {
-          continue;
-        }
-        const Polygon2D& polygon = polygon_values[polygon_index];
-        if (segment_hits_polygon(segment, polygon)) {
-          hit_count += 1;
+      for (size_t bucket_id = first; bucket_id <= last && bucket_count > 0; ++bucket_id) {
+        for (size_t polygon_index : bucket_index.buckets[bucket_id]) {
+          if (seen[polygon_index] == stamp) {
+            continue;
+          }
+          seen[polygon_index] = stamp;
+          if (!bounds_overlap(seg_bounds, polygon_bounds[polygon_index])) {
+            continue;
+          }
+          const Polygon2D& polygon = polygon_values[polygon_index];
+          if (segment_hits_polygon(segment, polygon)) {
+            hit_count += 1;
+          }
         }
       }
       rows.push_back({segment.id, hit_count});
+      stamp += 1;
+      if (stamp == 0) {
+        std::fill(seen.begin(), seen.end(), 0);
+        stamp = 1;
+      }
     }
 
     *rows_out = copy_rows_out(rows);

@@ -98,4 +98,22 @@ Update after Goal 121:
 So the current bottom line remains:
 
 - the feature is strong as a correctness/product surface
-- it is still not a performance flagship
+- it is still not a broad all-backend performance flagship
+
+Update after Goal 122:
+
+- a candidate-index redesign is now in the Python reference, native CPU oracle,
+  Embree, and Vulkan exact counting paths
+- correctness stayed clean through the large deterministic PostGIS rows
+- CPU, Embree, and Vulkan large deterministic Linux rows now improved
+  materially
+- on the larger accepted deterministic rows (`x256` through `x1024`), those
+  three paths now beat PostGIS
+- OptiX remained effectively unchanged because it does not use this candidate
+  index
+
+So the feature status is now sharper:
+
+- correctness/product surface: strong
+- CPU/Embree/Vulkan deterministic large-row performance: now strong
+- OptiX performance story for this family: still unresolved

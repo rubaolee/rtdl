@@ -187,6 +187,18 @@ Keep this goal honest:
 - it does not count as a performance breakthrough unless the large-row Linux
   results actually move
 
+### Goal 122: candidate-index redesign
+
+If Goal 121 shows that local bbox rejection is not enough, move from “reject
+exact work” to “reduce candidate scanning work”:
+
+- build a simple polygon candidate index over bbox x-ranges
+- visit only nearby polygons per segment
+- keep exact refine unchanged
+
+This goal counts as a real performance step only if the accepted Linux large
+deterministic rows materially improve.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:
