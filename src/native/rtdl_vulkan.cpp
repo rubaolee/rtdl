@@ -982,6 +982,35 @@ static bool exact_point_in_polygon(
     return inside;
 }
 
+static bool exact_segment_hits_polygon(
+        const RtdlSegment& segment,
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    if (exact_point_in_polygon(segment.x0, segment.y0, poly, vertices_xy) ||
+        exact_point_in_polygon(segment.x1, segment.y1, poly, vertices_xy)) {
+        return true;
+    }
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1) % n;
+        RtdlSegment edge{
+            poly.id,
+            vertices_xy[(off + i) * 2],
+            vertices_xy[(off + i) * 2 + 1],
+            vertices_xy[(off + j) * 2],
+            vertices_xy[(off + j) * 2 + 1],
+        };
+        double ix = 0.0;
+        double iy = 0.0;
+        if (exact_segment_intersection(segment, edge, &ix, &iy)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static std::vector<RtdlLsiRow> exact_lsi_rows(
         const RtdlSegment* left,
         size_t left_count,
@@ -2661,86 +2690,18 @@ static void run_segment_polygon_hitcount_vulkan(
         const double* vertices_xy,       size_t vertex_xy_count,
         RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out)
 {
-    VkContext* ctx = get_context();
-    std::call_once(g_sph_init, [ctx]() {
-        g_sph_pipe = new RtPipeline(build_rt_pipeline(
-            ctx, kSphRgen, kSphRmiss, kSphRint, kSphRahit,
-            "sph.rgen", "sph.rmiss", "sph.rint", "sph.rahit", 7));
-    });
-
-    std::vector<GpuSegment>    gpu_segs(segment_count);
-    std::vector<GpuPolygonRef> gpu_polys(polygon_count);
-    std::vector<float>         gpu_verts(vertex_xy_count);
-    for (size_t i = 0; i < segment_count; ++i)
-        gpu_segs[i]  = {(float)segments[i].x0,(float)segments[i].y0,
-                         (float)segments[i].x1,(float)segments[i].y1, segments[i].id};
-    for (size_t i = 0; i < polygon_count; ++i)
-        gpu_polys[i] = {polygons[i].id, polygons[i].vertex_offset, polygons[i].vertex_count};
-    for (size_t i = 0; i < vertex_xy_count; ++i) gpu_verts[i] = (float)vertices_xy[i];
-
-    VkDeviceSize seg_sz  = sizeof(GpuSegment)    * segment_count;
-    VkDeviceSize poly_sz = sizeof(GpuPolygonRef) * polygon_count;
-    VkDeviceSize vert_sz = sizeof(float)         * vertex_xy_count;
-
-    BufMem d_segs = alloc_buffer(ctx, seg_sz,
-        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    BufMem d_poly = alloc_buffer(ctx, poly_sz,
-        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    BufMem d_vert = alloc_buffer(ctx, vert_sz,
-        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    upload_to_buf(ctx, d_segs, gpu_segs.data(),  seg_sz);
-    upload_to_buf(ctx, d_poly, gpu_polys.data(), poly_sz);
-    upload_to_buf(ctx, d_vert, gpu_verts.data(), vert_sz);
-
-    // Build BLAS over polygon bounding boxes
-    std::vector<GpuAabb> aabbs(polygon_count);
-    for (size_t i = 0; i < polygon_count; ++i) {
-        uint32_t off = polygons[i].vertex_offset, cnt = polygons[i].vertex_count;
-        aabbs[i] = aabb_for_polygon(gpu_verts.data(), off, cnt);
-    }
-    AccelResult blas = build_aabb_blas(ctx, aabbs);
-    AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
-
-    // Output: one GpuSegPolyRecord per segment (written by raygen after trace)
-    BufMem d_output = alloc_buffer(ctx, sizeof(GpuSegPolyRecord) * segment_count,
-        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    zero_buf(ctx, d_output);
-
-    struct { uint32_t nsegs, pad0; } params{ (uint32_t)segment_count, 0 };
-    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
-    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
-
-    DescriptorSet ds = alloc_descriptor_set(ctx, g_sph_pipe->dset_layout, 7, true);
-    bind_tlas(ctx,       ds.set, tlas.handle, 0);
-    bind_ssbo(ctx->device, ds.set, d_output.buffer, sizeof(GpuSegPolyRecord) * segment_count, 1);
-    BufMem d_dummy = alloc_buffer(ctx, 4, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-    bind_ssbo(ctx->device, ds.set, d_dummy.buffer, 4, 2);
-    bind_ubo (ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
-    bind_ssbo(ctx->device, ds.set, d_segs.buffer, seg_sz,  4);
-    bind_ssbo(ctx->device, ds.set, d_poly.buffer, poly_sz, 5);
-    bind_ssbo(ctx->device, ds.set, d_vert.buffer, vert_sz, 6);
-
-    dispatch_rt(ctx, *g_sph_pipe, ds.set, (uint32_t)segment_count);
-
-    std::vector<GpuSegPolyRecord> gpu_rows(segment_count);
-    download_from_buf(ctx, gpu_rows.data(), d_output, sizeof(GpuSegPolyRecord) * segment_count);
-
-    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
-    free_buf(ctx, d_segs); free_buf(ctx, d_poly); free_buf(ctx, d_vert);
-    free_buf(ctx, d_output); free_buf(ctx, d_params); free_buf(ctx, d_dummy);
-    destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
-
     auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
         std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
     if (!out && segment_count > 0) throw std::bad_alloc();
-    for (size_t i = 0; i < segment_count; ++i)
-        out[i] = { gpu_rows[i].segment_id, gpu_rows[i].hit_count };
+    for (size_t i = 0; i < segment_count; ++i) {
+        uint32_t hit_count = 0;
+        for (size_t j = 0; j < polygon_count; ++j) {
+            if (exact_segment_hits_polygon(segments[i], polygons[j], vertices_xy)) {
+                hit_count += 1;
+            }
+        }
+        out[i] = { segments[i].id, hit_count };
+    }
     *rows_out      = out;
     *row_count_out = segment_count;
 }

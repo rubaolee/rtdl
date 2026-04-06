@@ -257,6 +257,21 @@ def run_vulkan(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     if result_mode not in {"dict", "raw"}:
         raise ValueError("Vulkan result_mode must be 'dict' or 'raw'")
 
+    # Current accepted honesty boundary:
+    # segment_polygon_hitcount is a closed workload family, but not yet an
+    # accepted Vulkan-native traversal path. The direct Vulkan implementation
+    # is not relied on for release-grade correctness on county-derived cases, so
+    # the public run path falls back to the native CPU oracle here.
+    if compiled.refine_op.predicate.name == "segment_polygon_hitcount":
+        if result_mode == "raw":
+            raise ValueError(
+                "Vulkan raw mode is not supported for segment_polygon_hitcount "
+                "while the backend uses the native CPU oracle fallback"
+            )
+        from .runtime import run_cpu
+
+        return run_cpu(compiled, **inputs)
+
     prepared = _get_or_bind_prepared_vulkan_execution(compiled, expected_inputs, inputs)
     return prepared.run_raw() if result_mode == "raw" else prepared.run()
 

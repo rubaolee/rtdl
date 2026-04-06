@@ -92,6 +92,9 @@ from .goal114_segment_polygon_postgis import render_goal114_markdown
 from .goal114_segment_polygon_postgis import run_goal114_segment_polygon_postgis_validation
 from .goal114_segment_polygon_postgis import segment_polygon_large_dataset_name
 from .goal114_segment_polygon_postgis import write_goal114_artifacts
+from .goal116_segment_polygon_backend_audit import render_goal116_markdown
+from .goal116_segment_polygon_backend_audit import run_goal116_segment_polygon_backend_audit
+from .goal116_segment_polygon_backend_audit import write_goal116_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -293,8 +296,10 @@ __all__ = [
     "generate_embree_evaluation_artifacts",
     "render_goal112_markdown",
     "render_goal114_markdown",
+    "render_goal116_markdown",
     "run_goal112_segment_polygon_perf",
     "run_goal114_segment_polygon_postgis_validation",
+    "run_goal116_segment_polygon_backend_audit",
     "generate_handoff_bundle",
     "generate_python_program",
     "render_python_program",
@@ -360,5 +365,6 @@ __all__ = [
     "write_baseline_benchmark_json",
     "write_goal112_artifacts",
     "write_goal114_artifacts",
+    "write_goal116_artifacts",
     "WorkloadContract",
 ]

@@ -15,6 +15,7 @@ from examples.rtdl_goal10_reference import point_nearest_segment_reference
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 from rtdsl.baseline_contracts import compare_baseline_rows
+from rtdsl.baseline_runner import load_representative_case
 from scripts.goal69_pip_positive_hit_performance import point_in_counties_positive_hits
 
 def vulkan_available():
@@ -254,6 +255,19 @@ class RtDslVulkanTest(unittest.TestCase):
                 "segment_polygon_hitcount",
                 rt.run_cpu(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
                 rt.run_vulkan(segment_polygon_hitcount_reference, segments=segments, polygons=polygons),
+            )
+        )
+
+    def test_run_vulkan_segment_polygon_hitcount_fixture_matches_cpu(self) -> None:
+        case = load_representative_case(
+            "segment_polygon_hitcount",
+            "tests/fixtures/rayjoin/br_county_subset.cdb",
+        )
+        self.assertTrue(
+            compare_baseline_rows(
+                "segment_polygon_hitcount",
+                rt.run_cpu(segment_polygon_hitcount_reference, **case.inputs),
+                rt.run_vulkan(segment_polygon_hitcount_reference, **case.inputs),
             )
         )
 

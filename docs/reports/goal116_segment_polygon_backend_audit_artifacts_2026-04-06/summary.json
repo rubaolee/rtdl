@@ -1,0 +1,656 @@
+{
+  "generated_at": "2026-04-06T00:24:15",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3"
+  },
+  "oracle_datasets": [
+    "authored_segment_polygon_minimal",
+    "tests/fixtures/rayjoin/br_county_subset.cdb",
+    "derived/br_county_subset_segment_polygon_tiled_x4",
+    "derived/br_county_subset_segment_polygon_tiled_x16"
+  ],
+  "oracle_records": [
+    {
+      "dataset": "authored_segment_polygon_minimal",
+      "oracle_backend": "cpu_python_reference",
+      "oracle_row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "cpu",
+      "dataset": "authored_segment_polygon_minimal",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "dataset": "authored_segment_polygon_minimal",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "dataset": "authored_segment_polygon_minimal",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "dataset": "authored_segment_polygon_minimal",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 2
+    },
+    {
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "oracle_backend": "cpu_python_reference",
+      "oracle_row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "cpu",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 10
+    },
+    {
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "oracle_backend": "cpu_python_reference",
+      "oracle_row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "cpu",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 40
+    },
+    {
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x16",
+      "oracle_backend": "cpu_python_reference",
+      "oracle_row_count": 160
+    },
+    {
+      "available": true,
+      "backend": "cpu",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x16",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 160
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x16",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 160
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x16",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 160
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x16",
+      "parity_vs_cpu_python_reference": true,
+      "row_count": 160
+    }
+  ],
+  "performance_iterations": 3,
+  "performance_records": [
+    {
+      "available": true,
+      "backend": "cpu",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 5.530300040845759e-05,
+        "mean_sec": 4.968733355781296e-05,
+        "median_sec": 4.8023000090324786e-05,
+        "min_sec": 4.573600017465651e-05,
+        "timings_sec": [
+          5.530300040845759e-05,
+          4.8023000090324786e-05,
+          4.573600017465651e-05
+        ]
+      },
+      "dataset": "authored_segment_polygon_minimal",
+      "parity": true,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 4.9246999878960196e-05,
+        "mean_sec": 4.291533332434483e-05,
+        "median_sec": 4.1895999856933486e-05,
+        "min_sec": 3.7603000237140805e-05,
+        "timings_sec": [
+          4.9246999878960196e-05,
+          4.1895999856933486e-05,
+          3.7603000237140805e-05
+        ]
+      },
+      "dataset": "authored_segment_polygon_minimal",
+      "parity": true,
+      "prepared_bind_and_run": {
+        "boundary": "prepared_bind_and_run",
+        "max_sec": 2.0620999748643953e-05,
+        "mean_sec": 1.611699978335916e-05,
+        "median_sec": 1.4766999811399728e-05,
+        "min_sec": 1.2962999790033791e-05,
+        "timings_sec": [
+          2.0620999748643953e-05,
+          1.4766999811399728e-05,
+          1.2962999790033791e-05
+        ]
+      },
+      "prepared_reuse": {
+        "boundary": "prepared_reuse",
+        "max_sec": 1.0824000128195621e-05,
+        "mean_sec": 9.744000029362118e-06,
+        "median_sec": 9.602999853086658e-06,
+        "min_sec": 8.805000106804073e-06,
+        "timings_sec": [
+          1.0824000128195621e-05,
+          9.602999853086658e-06,
+          8.805000106804073e-06
+        ]
+      },
+      "prepared_reuse_parity": true,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 4.5259999751579016e-05,
+        "mean_sec": 4.0049999976569474e-05,
+        "median_sec": 3.879099949699594e-05,
+        "min_sec": 3.6099000681133475e-05,
+        "timings_sec": [
+          4.5259999751579016e-05,
+          3.879099949699594e-05,
+          3.6099000681133475e-05
+        ]
+      },
+      "dataset": "authored_segment_polygon_minimal",
+      "parity": true,
+      "prepared_bind_and_run": {
+        "boundary": "prepared_bind_and_run",
+        "max_sec": 1.907699970615795e-05,
+        "mean_sec": 1.4581999797276998e-05,
+        "median_sec": 1.290399995923508e-05,
+        "min_sec": 1.1764999726437964e-05,
+        "timings_sec": [
+          1.907699970615795e-05,
+          1.290399995923508e-05,
+          1.1764999726437964e-05
+        ]
+      },
+      "prepared_reuse": {
+        "boundary": "prepared_reuse",
+        "max_sec": 1.0618000487738755e-05,
+        "mean_sec": 9.393666914547794e-06,
+        "median_sec": 9.11799997993512e-06,
+        "min_sec": 8.445000275969505e-06,
+        "timings_sec": [
+          1.0618000487738755e-05,
+          9.11799997993512e-06,
+          8.445000275969505e-06
+        ]
+      },
+      "prepared_reuse_parity": true,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 6.961399958527181e-05,
+        "mean_sec": 6.089700006365698e-05,
+        "median_sec": 5.943399992247578e-05,
+        "min_sec": 5.364300068322336e-05,
+        "timings_sec": [
+          5.364300068322336e-05,
+          6.961399958527181e-05,
+          5.943399992247578e-05
+        ]
+      },
+      "dataset": "authored_segment_polygon_minimal",
+      "implementation_note": "Correctness currently uses the accepted Vulkan runtime fallback to the native CPU oracle for this workload family.",
+      "parity": true,
+      "prepared_bind_and_run": null,
+      "prepared_reuse": null,
+      "prepared_reuse_parity": null,
+      "row_count": 2
+    },
+    {
+      "available": true,
+      "backend": "cpu",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 0.00010440099958941573,
+        "mean_sec": 8.096633306801475e-05,
+        "median_sec": 7.062300028337631e-05,
+        "min_sec": 6.787499933125218e-05,
+        "timings_sec": [
+          0.00010440099958941573,
+          7.062300028337631e-05,
+          6.787499933125218e-05
+        ]
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity": true,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 5.75419999222504e-05,
+        "mean_sec": 5.1171999984944705e-05,
+        "median_sec": 5.031599994254066e-05,
+        "min_sec": 4.565800009004306e-05,
+        "timings_sec": [
+          5.75419999222504e-05,
+          5.031599994254066e-05,
+          4.565800009004306e-05
+        ]
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity": true,
+      "prepared_bind_and_run": {
+        "boundary": "prepared_bind_and_run",
+        "max_sec": 2.827299977070652e-05,
+        "mean_sec": 2.3731666563738447e-05,
+        "median_sec": 2.2870000066177454e-05,
+        "min_sec": 2.005199985433137e-05,
+        "timings_sec": [
+          2.827299977070652e-05,
+          2.2870000066177454e-05,
+          2.005199985433137e-05
+        ]
+      },
+      "prepared_reuse": {
+        "boundary": "prepared_reuse",
+        "max_sec": 1.873499968496617e-05,
+        "mean_sec": 1.7124666555901058e-05,
+        "median_sec": 1.681200046732556e-05,
+        "min_sec": 1.5826999515411444e-05,
+        "timings_sec": [
+          1.873499968496617e-05,
+          1.681200046732556e-05,
+          1.5826999515411444e-05
+        ]
+      },
+      "prepared_reuse_parity": true,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 6.644200038863346e-05,
+        "mean_sec": 5.658799970357601e-05,
+        "median_sec": 5.522099945665104e-05,
+        "min_sec": 4.8100999265443534e-05,
+        "timings_sec": [
+          5.522099945665104e-05,
+          6.644200038863346e-05,
+          4.8100999265443534e-05
+        ]
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "parity": true,
+      "prepared_bind_and_run": {
+        "boundary": "prepared_bind_and_run",
+        "max_sec": 2.709499949560268e-05,
+        "mean_sec": 2.2046000291690387e-05,
+        "median_sec": 2.0578000658133533e-05,
+        "min_sec": 1.8465000721334945e-05,
+        "timings_sec": [
+          2.709499949560268e-05,
+          2.0578000658133533e-05,
+          1.8465000721334945e-05
+        ]
+      },
+      "prepared_reuse": {
+        "boundary": "prepared_reuse",
+        "max_sec": 1.751000036165351e-05,
+        "mean_sec": 1.5894000171101652e-05,
+        "median_sec": 1.553899983264273e-05,
+        "min_sec": 1.4633000319008715e-05,
+        "timings_sec": [
+          1.751000036165351e-05,
+          1.553899983264273e-05,
+          1.4633000319008715e-05
+        ]
+      },
+      "prepared_reuse_parity": true,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 8.388900005229516e-05,
+        "mean_sec": 7.960766652104212e-05,
+        "median_sec": 7.94769994172384e-05,
+        "min_sec": 7.54570000935928e-05,
+        "timings_sec": [
+          8.388900005229516e-05,
+          7.94769994172384e-05,
+          7.54570000935928e-05
+        ]
+      },
+      "dataset": "tests/fixtures/rayjoin/br_county_subset.cdb",
+      "implementation_note": "Correctness currently uses the accepted Vulkan runtime fallback to the native CPU oracle for this workload family.",
+      "parity": true,
+      "prepared_bind_and_run": null,
+      "prepared_reuse": null,
+      "prepared_reuse_parity": null,
+      "row_count": 10
+    },
+    {
+      "available": true,
+      "backend": "cpu",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 0.0003098939996561967,
+        "mean_sec": 0.0002933396666170059,
+        "median_sec": 0.0002875119998861919,
+        "min_sec": 0.0002826130003086291,
+        "timings_sec": [
+          0.0003098939996561967,
+          0.0002875119998861919,
+          0.0002826130003086291
+        ]
+      },
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity": true,
+      "row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "embree",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 0.00023299699932977092,
+        "mean_sec": 0.00021614466641040053,
+        "median_sec": 0.00022265999996307073,
+        "min_sec": 0.00019277699993835995,
+        "timings_sec": [
+          0.00022265999996307073,
+          0.00023299699932977092,
+          0.00019277699993835995
+        ]
+      },
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity": true,
+      "prepared_bind_and_run": {
+        "boundary": "prepared_bind_and_run",
+        "max_sec": 0.00018235200059280032,
+        "mean_sec": 0.0001743040002111229,
+        "median_sec": 0.00017545100035931682,
+        "min_sec": 0.0001651089996812516,
+        "timings_sec": [
+          0.00017545100035931682,
+          0.00018235200059280032,
+          0.0001651089996812516
+        ]
+      },
+      "prepared_reuse": {
+        "boundary": "prepared_reuse",
+        "max_sec": 0.0002626449995659641,
+        "mean_sec": 0.00020864599991909927,
+        "median_sec": 0.00019565399998100474,
+        "min_sec": 0.00016763900021032896,
+        "timings_sec": [
+          0.0002626449995659641,
+          0.00019565399998100474,
+          0.00016763900021032896
+        ]
+      },
+      "prepared_reuse_parity": true,
+      "row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "optix",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 0.00016832399978738977,
+        "mean_sec": 0.00015786366657266626,
+        "median_sec": 0.0001543729995319154,
+        "min_sec": 0.0001508940003986936,
+        "timings_sec": [
+          0.00016832399978738977,
+          0.0001543729995319154,
+          0.0001508940003986936
+        ]
+      },
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "parity": true,
+      "prepared_bind_and_run": {
+        "boundary": "prepared_bind_and_run",
+        "max_sec": 0.0001319940001849318,
+        "mean_sec": 0.00012423233329172945,
+        "median_sec": 0.00012157099990872666,
+        "min_sec": 0.00011913199978152988,
+        "timings_sec": [
+          0.0001319940001849318,
+          0.00012157099990872666,
+          0.00011913199978152988
+        ]
+      },
+      "prepared_reuse": {
+        "boundary": "prepared_reuse",
+        "max_sec": 0.0001317650003329618,
+        "mean_sec": 0.00012586266681561634,
+        "median_sec": 0.00012837200029025553,
+        "min_sec": 0.00011745099982363172,
+        "timings_sec": [
+          0.00012837200029025553,
+          0.00011745099982363172,
+          0.0001317650003329618
+        ]
+      },
+      "prepared_reuse_parity": true,
+      "row_count": 40
+    },
+    {
+      "available": true,
+      "backend": "vulkan",
+      "current": {
+        "boundary": "current_run",
+        "max_sec": 0.00030182699993019924,
+        "mean_sec": 0.00029552600002110313,
+        "median_sec": 0.00029600600009871414,
+        "min_sec": 0.00028874500003439607,
+        "timings_sec": [
+          0.00030182699993019924,
+          0.00029600600009871414,
+          0.00028874500003439607
+        ]
+      },
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4",
+      "implementation_note": "Correctness currently uses the accepted Vulkan runtime fallback to the native CPU oracle for this workload family.",
+      "parity": true,
+      "prepared_bind_and_run": null,
+      "prepared_reuse": null,
+      "prepared_reuse_parity": null,
+      "row_count": 40
+    }
+  ],
+  "postgis_large_validation": {
+    "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+    "generated_at": "2026-04-06T00:24:15",
+    "host": {
+      "hostname": "lx1",
+      "machine": "x86_64",
+      "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "python": "3.12.3"
+    },
+    "polygon_count": 512,
+    "postgis": {
+      "row_count": 2560,
+      "sec": 0.055276492000302824,
+      "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+    },
+    "records": [
+      {
+        "backend": "cpu",
+        "hash": {
+          "row_count": 2560,
+          "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 2560,
+        "sec": 0.6320436699998027
+      },
+      {
+        "backend": "embree",
+        "hash": {
+          "row_count": 2560,
+          "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 2560,
+        "sec": 0.6336318329995265
+      },
+      {
+        "backend": "optix",
+        "hash": {
+          "row_count": 2560,
+          "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 2560,
+        "sec": 0.4284183939998911
+      }
+    ],
+    "segment_count": 2560,
+    "suite": "goal114_segment_polygon_postgis_validation"
+  },
+  "postgis_validation": {
+    "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+    "generated_at": "2026-04-06T00:24:13",
+    "host": {
+      "hostname": "lx1",
+      "machine": "x86_64",
+      "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+      "processor": "x86_64",
+      "python": "3.12.3"
+    },
+    "polygon_count": 128,
+    "postgis": {
+      "row_count": 640,
+      "sec": 0.00902215700079978,
+      "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+    },
+    "records": [
+      {
+        "backend": "cpu",
+        "hash": {
+          "row_count": 640,
+          "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 640,
+        "sec": 0.04215076699983911
+      },
+      {
+        "backend": "embree",
+        "hash": {
+          "row_count": 640,
+          "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 640,
+        "sec": 0.04143058200043015
+      },
+      {
+        "backend": "optix",
+        "hash": {
+          "row_count": 640,
+          "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 640,
+        "sec": 0.02785367500018765
+      },
+      {
+        "backend": "vulkan",
+        "hash": {
+          "row_count": 640,
+          "sha256": "bdfe3c868dbae0278436b1451dd5760564f57359096986e0bf95951dc57f507b"
+        },
+        "parity_vs_postgis": true,
+        "row_count": 640,
+        "sec": 0.04108945300049527
+      }
+    ],
+    "segment_count": 640,
+    "suite": "goal114_segment_polygon_postgis_validation"
+  },
+  "suite": "goal116_segment_polygon_backend_audit"
+}
