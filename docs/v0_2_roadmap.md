@@ -173,6 +173,20 @@ If Goal 119 finds a credible path, try one backend-first native redesign for
 `segment_polygon_hitcount`, starting with OptiX candidate traversal and keeping
 exact refine and aggregation semantics explicit.
 
+### Goal 121: bbox prefilter attempt
+
+After Goal 120, try one bounded algorithmic improvement that does not rely on
+RT-core wins:
+
+- reject segment/polygon pairs with disjoint bounding boxes before exact hit
+  testing
+
+Keep this goal honest:
+
+- it counts as implementation improvement if correctness stays clean
+- it does not count as a performance breakthrough unless the large-row Linux
+  results actually move
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

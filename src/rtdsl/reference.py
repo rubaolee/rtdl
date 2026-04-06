@@ -146,10 +146,14 @@ def segment_polygon_hitcount_cpu(
     segments: tuple[Segment, ...],
     polygons: tuple[Polygon, ...],
 ) -> tuple[dict[str, int], ...]:
+    polygon_bounds = tuple(_polygon_bounds(polygon) for polygon in polygons)
     rows = []
     for segment in segments:
+        seg_bounds = _segment_bounds(segment)
         hit_count = 0
-        for polygon in polygons:
+        for polygon, poly_bounds in zip(polygons, polygon_bounds):
+            if not _bounds_overlap(seg_bounds, poly_bounds):
+                continue
             if _segment_hits_polygon(segment, polygon):
                 hit_count += 1
         rows.append({"segment_id": segment.id, "hit_count": hit_count})
@@ -193,6 +197,33 @@ def _segments_from_polygons(polygons: tuple[Polygon, ...]) -> tuple[Segment, ...
         for start, end in zip(wrapped, wrapped[1:]):
             segments.append(Segment(id=polygon.id, x0=start[0], y0=start[1], x1=end[0], y1=end[1]))
     return tuple(segments)
+
+
+def _segment_bounds(segment: Segment) -> tuple[float, float, float, float]:
+    return (
+        min(segment.x0, segment.x1),
+        min(segment.y0, segment.y1),
+        max(segment.x0, segment.x1),
+        max(segment.y0, segment.y1),
+    )
+
+
+def _polygon_bounds(polygon: Polygon) -> tuple[float, float, float, float]:
+    xs = [vx for vx, _ in polygon.vertices]
+    ys = [vy for _, vy in polygon.vertices]
+    return (min(xs), min(ys), max(xs), max(ys))
+
+
+def _bounds_overlap(
+    left: tuple[float, float, float, float],
+    right: tuple[float, float, float, float],
+) -> bool:
+    return not (
+        left[2] < right[0]
+        or right[2] < left[0]
+        or left[3] < right[1]
+        or right[3] < left[1]
+    )
 
 
 def _segment_intersection(left: Segment, right: Segment) -> tuple[float, float] | None:

@@ -375,6 +375,11 @@ Bounds2D bounds_for_polygon(const Polygon2D& polygon) {
   return bounds;
 }
 
+bool bounds_overlap(const Bounds2D& left, const Bounds2D& right) {
+  return !(left.max_x < right.min_x || right.max_x < left.min_x ||
+           left.max_y < right.min_y || right.max_y < left.min_y);
+}
+
 double cross(const Vec2& a, const Vec2& b) {
   return a.x * b.y - a.y * b.x;
 }
@@ -1263,12 +1268,22 @@ extern "C" int rtdl_embree_run_segment_polygon_hitcount(
       segment_values.push_back({segments[i].id, {segments[i].x0, segments[i].y0}, {segments[i].x1, segments[i].y1}});
     }
     std::vector<Polygon2D> polygon_values = decode_polygons(polygons, polygon_count, vertices_xy, vertex_xy_count);
+    std::vector<Bounds2D> polygon_bounds;
+    polygon_bounds.reserve(polygon_values.size());
+    for (const Polygon2D& polygon : polygon_values) {
+      polygon_bounds.push_back(bounds_for_polygon(polygon));
+    }
 
     std::vector<RtdlSegmentPolygonHitCountRow> rows;
     rows.reserve(segment_values.size());
     for (const Segment2D& segment : segment_values) {
+      const Bounds2D seg_bounds = bounds_for_segment(segment);
       uint32_t hit_count = 0;
-      for (const Polygon2D& polygon : polygon_values) {
+      for (size_t polygon_index = 0; polygon_index < polygon_values.size(); ++polygon_index) {
+        if (!bounds_overlap(seg_bounds, polygon_bounds[polygon_index])) {
+          continue;
+        }
+        const Polygon2D& polygon = polygon_values[polygon_index];
         if (segment_hits_polygon(segment, polygon)) {
           hit_count += 1;
         }

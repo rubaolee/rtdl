@@ -86,3 +86,16 @@ So the remaining gap is now even clearer:
 - not “use native traversal somehow”
 - but “find a redesign that materially improves candidate selectivity and total
   work”
+
+Update after Goal 121:
+
+- a cheap bbox prefilter is now in the Python reference, native CPU oracle,
+  Embree, and Vulkan exact counting paths
+- correctness stayed clean, including the large deterministic PostGIS rows
+- the small audited row improved
+- but the main large-row performance story did not materially change
+
+So the current bottom line remains:
+
+- the feature is strong as a correctness/product surface
+- it is still not a performance flagship

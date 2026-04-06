@@ -138,6 +138,10 @@ static void set_error(const std::string& msg, T* buf, size_t sz) {
     buf[n] = '\0';
 }
 
+struct Bounds2D {
+    double min_x, min_y, max_x, max_y;
+};
+
 #define VK_CHECK(call)                                                         \
     do {                                                                       \
         VkResult _r = (call);                                                  \
@@ -980,6 +984,44 @@ static bool exact_point_in_polygon(
         }
     }
     return inside;
+}
+
+static Bounds2D bounds_for_segment(const RtdlSegment& segment)
+{
+    return {
+        std::min(segment.x0, segment.x1),
+        std::min(segment.y0, segment.y1),
+        std::max(segment.x0, segment.x1),
+        std::max(segment.y0, segment.y1),
+    };
+}
+
+static Bounds2D bounds_for_polygon(
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    Bounds2D bounds {
+        vertices_xy[poly.vertex_offset * 2],
+        vertices_xy[poly.vertex_offset * 2 + 1],
+        vertices_xy[poly.vertex_offset * 2],
+        vertices_xy[poly.vertex_offset * 2 + 1],
+    };
+    for (uint32_t i = 0; i < poly.vertex_count; ++i) {
+        const size_t base = static_cast<size_t>(poly.vertex_offset + i) * 2;
+        const double x = vertices_xy[base];
+        const double y = vertices_xy[base + 1];
+        bounds.min_x = std::min(bounds.min_x, x);
+        bounds.min_y = std::min(bounds.min_y, y);
+        bounds.max_x = std::max(bounds.max_x, x);
+        bounds.max_y = std::max(bounds.max_y, y);
+    }
+    return bounds;
+}
+
+static bool bounds_overlap(const Bounds2D& left, const Bounds2D& right)
+{
+    return !(left.max_x < right.min_x || right.max_x < left.min_x ||
+             left.max_y < right.min_y || right.max_y < left.min_y);
 }
 
 static bool exact_segment_hits_polygon(
@@ -2693,9 +2735,18 @@ static void run_segment_polygon_hitcount_vulkan(
     auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
         std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
     if (!out && segment_count > 0) throw std::bad_alloc();
+    std::vector<Bounds2D> polygon_bounds;
+    polygon_bounds.reserve(polygon_count);
+    for (size_t j = 0; j < polygon_count; ++j) {
+        polygon_bounds.push_back(bounds_for_polygon(polygons[j], vertices_xy));
+    }
     for (size_t i = 0; i < segment_count; ++i) {
+        const Bounds2D seg_bounds = bounds_for_segment(segments[i]);
         uint32_t hit_count = 0;
         for (size_t j = 0; j < polygon_count; ++j) {
+            if (!bounds_overlap(seg_bounds, polygon_bounds[j])) {
+                continue;
+            }
             if (exact_segment_hits_polygon(segments[i], polygons[j], vertices_xy)) {
                 hit_count += 1;
             }
