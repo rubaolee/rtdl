@@ -47,6 +47,14 @@ Current workload-maturity note:
 - this family must still be described honestly under the current audited local
   `native_loop` boundary rather than as proof of BVH- or RT-core-matured
   traversal
+- the family now also has:
+  - prepared-path performance characterization
+  - large deterministic PostGIS-backed correctness validation on:
+    - `cpu`
+    - `embree`
+    - `optix`
+  through the accepted `derived/br_county_subset_segment_polygon_tiled_x256`
+  case
 
 ## What RTDL Can Currently Do
 

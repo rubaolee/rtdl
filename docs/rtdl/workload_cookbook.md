@@ -107,6 +107,22 @@ def road_polygon_touch_counts():
     return rt.emit(hits, fields=["segment_id", "hit_count"])
 ```
 
+Quick run:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+Notes:
+
+- the current example supports:
+  - authored
+  - fixture-backed
+  - generic deterministic tiled county-derived cases via `--copies`
+- the family also has a dedicated PostGIS validation driver:
+  - `scripts/goal114_segment_polygon_postgis_validation.py`
+
 ## Point/Nearest Segment
 
 ```python

@@ -347,6 +347,15 @@ Allowed emit fields:
 - `segment_id`
 - `hit_count`
 
+Current practical note:
+
+- user-facing example:
+  - `examples/rtdl_segment_polygon_hitcount.py`
+- scalable deterministic county-derived cases are available through:
+  - `--copies N`
+- stronger external correctness evidence is currently documented in:
+  - `docs/reports/goal114_segment_polygon_postgis_large_scale_validation_2026-04-05.md`
+
 ### `point_nearest_segment`
 
 Required shape:

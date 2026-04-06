@@ -45,15 +45,25 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--dataset",
-        choices=(
-            "authored_segment_polygon_minimal",
-            "tests/fixtures/rayjoin/br_county_subset.cdb",
-            "derived/br_county_subset_segment_polygon_tiled_x4",
-        ),
         default="authored_segment_polygon_minimal",
+        help=(
+            "Representative dataset name. Supports authored, fixture, and "
+            "derived/br_county_subset_segment_polygon_tiled_xN forms."
+        ),
+    )
+    parser.add_argument(
+        "--copies",
+        type=int,
+        default=None,
+        help="Shortcut for derived/br_county_subset_segment_polygon_tiled_xN.",
     )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, args.dataset), indent=2, sort_keys=True))
+    dataset = (
+        rt.segment_polygon_large_dataset_name(copies=args.copies)
+        if args.copies is not None
+        else args.dataset
+    )
+    print(json.dumps(run_case(args.backend, dataset), indent=2, sort_keys=True))
     return 0
 
 
