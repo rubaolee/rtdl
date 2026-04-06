@@ -80,6 +80,7 @@ from .embree_runtime import run_embree
 from .evaluation_matrix import evaluation_entries
 from .evaluation_matrix import EMBREE_EVALUATION_MATRIX
 from .generate_only import generate_python_program
+from .generate_only import generate_handoff_bundle
 from .generate_only import GenerateOnlyRequest
 from .generate_only import render_python_program
 from .goal23_reproduction import generate_goal23_artifacts
@@ -283,6 +284,7 @@ __all__ = [
     "generate_optix_project",
     "generate_goal23_artifacts",
     "generate_embree_evaluation_artifacts",
+    "generate_handoff_bundle",
     "generate_python_program",
     "render_python_program",
     "input",

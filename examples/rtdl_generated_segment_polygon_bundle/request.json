@@ -1,0 +1,8 @@
+{
+  "artifact_shape": "handoff_bundle",
+  "backend": "cpu_python_reference",
+  "dataset": "authored_segment_polygon_minimal",
+  "output_mode": "summary",
+  "verify": true,
+  "workload": "segment_polygon_hitcount"
+}

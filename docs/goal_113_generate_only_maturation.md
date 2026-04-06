@@ -1,7 +1,7 @@
 # Goal 113: Generate-Only Maturation
 
 Date: 2026-04-05
-Status: proposed
+Status: accepted
 
 ## Goal
 
@@ -103,3 +103,34 @@ Goal 113 should be cut back or paused if:
 - one validation package
 - one critique/rebuttal pass focused on whether the improvement is real
 - one final keep/pause judgment for the strengthened feature
+
+## Final accepted result
+
+Goal 113 closes with one concrete improvement target:
+
+- `handoff_bundle` artifact shape
+
+The accepted strengthened feature now supports two artifact shapes for the same
+seed family:
+
+- `single_file`
+- `handoff_bundle`
+
+The accepted bundle shape includes:
+
+- one runnable generated RTDL Python program
+- one request manifest
+- one README with handoff-oriented run instructions
+
+This is accepted as a real improvement over Goal 111 because it serves one
+clearer user scenario:
+
+- generating a reviewable handoff package for a collaborator or downstream user
+
+The package remains deliberately narrow:
+
+- still one workload family
+- still Python RTDL only
+- still no broad project scaffolding claim
+- still pause-worthy if later expansion degenerates into low-signal template
+  multiplication

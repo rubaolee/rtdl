@@ -30,6 +30,7 @@ def parse_args() -> argparse.Namespace:
         default="cpu",
     )
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument("--artifact-shape", choices=("single_file", "handoff_bundle"), default="single_file")
     parser.add_argument("--no-verify", action="store_true", help="omit the generated verification block invocation")
     parser.add_argument("--output", required=True, help="where to write the generated Python file")
     return parser.parse_args()
@@ -37,16 +38,18 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    payload = rt.generate_python_program(
-        rt.GenerateOnlyRequest(
-            workload=args.workload,
-            dataset=args.dataset,
-            backend=args.backend,
-            verify=not args.no_verify,
-            output_mode=args.output_mode,
-        ),
-        args.output,
+    request = rt.GenerateOnlyRequest(
+        workload=args.workload,
+        dataset=args.dataset,
+        backend=args.backend,
+        verify=not args.no_verify,
+        output_mode=args.output_mode,
+        artifact_shape=args.artifact_shape,
     )
+    if args.artifact_shape == "single_file":
+        payload = rt.generate_python_program(request, args.output)
+    else:
+        payload = rt.generate_handoff_bundle(request, args.output)
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
