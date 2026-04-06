@@ -1,7 +1,7 @@
 # Goal 124 Report: v0.2 Review Backfill And Status
 
 Date: 2026-04-06
-Status: blocked on external Gemini/Claude review
+Status: partially superseded by later Claude completion
 
 ## Summary
 
@@ -9,7 +9,7 @@ This report audits the review trail for RTDL v0.2 goals so far and separates:
 
 - goals with existing internal 2+ review/consensus coverage
 - goals that still lack recent strict review coverage
-- goals that still lack literal Gemini/Claude artifacts
+- goals that still lacked literal Gemini/Claude artifacts at the time of audit
 
 The result is straightforward:
 
@@ -36,8 +36,8 @@ The result is straightforward:
 | 119 | native-maturity redesign | no saved 2+ review artifact set found in `history/ad_hoc_reviews/` | No | process gap |
 | 120 | OptiX native promotion | no saved 2+ review artifact set found in `history/ad_hoc_reviews/` | No | process gap |
 | 121 | bbox prefilter attempt | no saved 2+ review artifact set found in `history/ad_hoc_reviews/` | No | process gap |
-| 122 | candidate-index redesign | internal review happened in-thread, but no saved 2+ artifact set and no Gemini/Claude | No | process gap |
-| 123 | OptiX candidate-index alignment | internal review happened in-thread, but no saved 2+ artifact set and no Gemini/Claude | No | process gap |
+| 122 | candidate-index redesign | internal review happened in-thread, but no saved 2+ artifact set and no Gemini/Claude at audit time | No at audit time | process gap at audit time |
+| 123 | OptiX candidate-index alignment | internal review happened in-thread, but no saved 2+ artifact set and no Gemini/Claude at audit time | No at audit time | process gap at audit time |
 
 ## What is already strong
 
@@ -66,6 +66,14 @@ If you want the strict requested bar, the clean backlog is:
 2. at minimum, backfill saved review artifacts for Goals 116 through 123
 3. then publish one final v0.2 review-completion note
 
+## Later update
+
+After this audit was published, external Claude review was completed in:
+
+- [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)
+
+So the remaining external-review gap is now Gemini-only.
+
 ## Final conclusion
 
 The audit is complete, and the review-process status is clear.
@@ -74,6 +82,6 @@ What is blocked here is the external-review requirement, not the ability to
 enumerate the current v0.2 review trail:
 
 - Gemini pending
-- Claude pending
+- Claude was pending at audit time and is now complete
 
 That is the real remaining manual boundary.

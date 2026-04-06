@@ -16,6 +16,14 @@ What it does **not** do is fake the missing external reviews.
 
 Those still require a real external run.
 
+## Later update
+
+External Claude review was later completed in:
+
+- [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)
+
+So the remaining external gap is now Gemini-only.
+
 ## Internal backfill result
 
 Saved internal backfill now exists for Goals `116` through `123`:
@@ -59,7 +67,7 @@ That packet contains:
 The following is still pending:
 
 - literal Gemini review execution
-- literal Claude review execution
+- literal Claude review execution was pending at write time and is now complete
 - publication of those returned artifacts into
   `history/ad_hoc_reviews/`
 
@@ -68,7 +76,7 @@ The following is still pending:
 After Goal 125, the process state is much cleaner:
 
 - internal review density is no longer the blocker
-- external review execution is now the only remaining gap if the bar is
+- external Gemini execution is now the only remaining gap if the bar is
   specifically “Gemini plus Claude artifacts”
 
 That is the exact manual boundary now.

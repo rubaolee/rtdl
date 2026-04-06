@@ -1,7 +1,7 @@
 # Goal 122 Report: Segment-Polygon Candidate-Index Redesign
 
 Date: 2026-04-06
-Status: pending external Claude review
+Status: accepted
 
 ## Summary
 
@@ -120,6 +120,16 @@ It proves something narrower and still important:
 
 - the main bottleneck was candidate scanning
 - reducing that scanning cost makes the non-OptiX backends much stronger
+
+## External review follow-up
+
+External Claude review was later completed in:
+
+- [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)
+
+That review accepted the Goal 122 implementation as a genuine, material
+algorithmic improvement while explicitly noting that it is a host-side spatial
+index win rather than a native RT-core maturity win.
 
 ## Final conclusion
 

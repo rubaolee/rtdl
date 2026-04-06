@@ -1,7 +1,7 @@
 # Goal 123 Report: OptiX Candidate-Index Alignment
 
 Date: 2026-04-06
-Status: pending external Claude review
+Status: accepted
 
 ## Summary
 
@@ -110,6 +110,16 @@ not as:
 
 - a proof that the native custom-primitive OptiX traversal path is now the best
   implementation
+
+## External review follow-up
+
+External Claude review was later completed in:
+
+- [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)
+
+That review accepted the Goal 123 implementation as a genuine performance
+alignment win while explicitly confirming that the gain comes from the
+host-indexed candidate strategy rather than native RT-core maturity.
 
 ## Final conclusion
 

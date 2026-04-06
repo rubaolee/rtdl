@@ -1,7 +1,7 @@
 # Goal 122: Segment-Polygon Candidate-Index Redesign
 
 Date: 2026-04-06
-Status: pending external Claude review
+Status: accepted
 
 ## Goal
 
@@ -66,7 +66,6 @@ Goal 122 closes as a real algorithmic win for this feature family:
 - CPU/Embree/Vulkan now have a materially stronger performance story
 - OptiX remains the clear remaining redesign target
 
-Because the user requested Claude as part of the consensus flow and that review
-is not available in this tool environment, the package is marked:
+External Claude review was completed afterward in:
 
-- pending external Claude review
+- [goal107_123_package_review_claude_2026-04-06.md](reports/goal107_123_package_review_claude_2026-04-06.md)

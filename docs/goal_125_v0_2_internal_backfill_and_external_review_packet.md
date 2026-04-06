@@ -1,7 +1,7 @@
 # Goal 125: v0.2 Internal Backfill And External Review Packet
 
 Date: 2026-04-06
-Status: accepted
+Status: accepted, later partially completed externally
 
 ## Goal
 
@@ -29,4 +29,4 @@ Goal 125 closes as:
 
 - internal saved review backfill complete for Goals `116` through `123`
 - external review packet complete for Goals `107` through `123`
-- literal external Gemini/Claude execution still pending
+- literal external Gemini/Claude execution was still pending at write time

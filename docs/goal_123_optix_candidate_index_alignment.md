@@ -1,7 +1,7 @@
 # Goal 123: OptiX Candidate-Index Alignment
 
 Date: 2026-04-06
-Status: pending external Claude review
+Status: accepted
 
 ## Goal
 
@@ -47,7 +47,6 @@ The remaining honesty boundary is explicit:
 - this is a strong performance win for the feature
 - but not a new native RT-core maturity claim
 
-Because the user requested Claude as part of the consensus flow and that review
-is not available in this tool environment, the package is marked:
+External Claude review was completed afterward in:
 
-- pending external Claude review
+- [goal107_123_package_review_claude_2026-04-06.md](reports/goal107_123_package_review_claude_2026-04-06.md)

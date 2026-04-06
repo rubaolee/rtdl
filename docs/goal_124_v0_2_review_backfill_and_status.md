@@ -1,7 +1,7 @@
 # Goal 124: v0.2 Review Backfill And Status Report
 
 Date: 2026-04-06
-Status: blocked on external Gemini/Claude review
+Status: partial external review completion recorded
 
 ## Goal
 
@@ -27,8 +27,8 @@ Inside the current environment, this goal can:
 
 ## Hard boundary
 
-This environment does **not** provide literal Gemini or Claude review
-execution.
+This environment did **not** provide literal Gemini or Claude review
+execution at the time this goal was written.
 
 So this goal cannot honestly close the requested external-review requirement by
 itself.
@@ -44,4 +44,4 @@ Goal 124 closes as:
 
 - review-gap audit complete
 - v0.2-so-far report complete
-- external Gemini/Claude backfill still pending
+- external Gemini/Claude backfill identified as pending at write time

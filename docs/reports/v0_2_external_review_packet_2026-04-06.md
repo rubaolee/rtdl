@@ -1,12 +1,12 @@
 # RTDL v0.2 External Review Packet
 
 Date: 2026-04-06
-Status: ready for external Gemini/Claude review
+Status: Gemini pending, Claude complete
 
 ## Purpose
 
-This packet is the shortest clean handoff for obtaining literal Gemini and
-Claude review artifacts for the current RTDL v0.2 line.
+This packet is the shortest clean handoff for obtaining the remaining literal
+Gemini review artifact for the current RTDL v0.2 line.
 
 It is intentionally limited to:
 
@@ -76,6 +76,12 @@ Important honesty boundary:
 - [docs/reports/v0_2_feature_status_2026-04-06.md](v0_2_feature_status_2026-04-06.md)
 - [docs/reports/v0_2_so_far_report_2026-04-06.md](v0_2_so_far_report_2026-04-06.md)
 
+## External review state
+
+- Claude: complete
+  - [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)
+- Gemini: pending
+
 ## Gemini prompt
 
 Use this exact prompt for Gemini:
@@ -100,6 +106,9 @@ Output requirements:
 ```
 
 ## Claude prompt
+
+Claude review is already complete, but the prompt is kept here for traceability
+and possible reruns.
 
 Use this exact prompt for Claude:
 
