@@ -47,6 +47,7 @@ now has:
   - Embree
   - OptiX
   - Vulkan
+- reproducible clean-Linux large-scale performance reporting
 
 ## Important Honesty Note
 
@@ -60,3 +61,16 @@ The clearest current example is Vulkan:
 - accepted for correctness on this feature
 - not accepted yet as a native optimized/parallel traversal story for this
   workload family
+
+## Next Technical Step
+
+The remaining technical gap is now narrow:
+
+- native backend maturity for `segment_polygon_hitcount`
+
+The current recommended next move is:
+
+- an OptiX-first polygon-AABB candidate redesign
+
+That is the clearest path from today’s productized feature toward a genuine
+RT-backed workload story.

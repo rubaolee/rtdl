@@ -161,6 +161,18 @@ Push broader workload performance on real accepted surfaces, especially:
 If Goal 111 survives, strengthen it carefully without letting it expand into
 shallow template sprawl.
 
+### Goal 119: native-maturity redesign
+
+After the first workload family is fully productized, turn its remaining
+backend-maturity gap into one explicit redesign target instead of treating it as
+vague future optimization.
+
+### Goal 120: OptiX-first native promotion attempt
+
+If Goal 119 finds a credible path, try one backend-first native redesign for
+`segment_polygon_hitcount`, starting with OptiX candidate traversal and keeping
+exact refine and aggregation semantics explicit.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:
