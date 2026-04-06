@@ -1,7 +1,7 @@
 # Goal 110: v0.2 Segment-Polygon-Hitcount Closure
 
 Date: 2026-04-05
-Status: proposed
+Status: accepted
 
 ## Goal
 
@@ -47,7 +47,7 @@ Those may still matter later, but they do not define the first v0.2 closure.
 - one backend closure plan
 - one critique/rebuttal pass on whether this is really the right flagship
 
-## Proposed acceptance boundary
+## Acceptance boundary
 
 Goal 110 is accepted only if all of the following become true:
 
@@ -125,7 +125,7 @@ closure, not as proof of RT-backed maturity.
 
 ## Datasets and evidence shape
 
-The first accepted cases should be:
+The accepted cases are:
 
 - `authored_segment_polygon_minimal`
 - one deterministic fixture-backed county-derived case
@@ -134,3 +134,17 @@ The first accepted cases should be:
 The goal is not a paper-scale benchmark at first.
 The goal is to close one additional workload family honestly and with stronger
 evidence than a smoke package.
+
+## Accepted closure note
+
+Goal 110 closes as:
+
+- workload-family closure
+- semantic/backend closure
+
+It does **not** close as a proof of RT-backed maturity for this family.
+
+The current accepted package is explicit that `segment_polygon_hitcount`
+remains under the audited local `native_loop` honesty boundary for this phase,
+even though the family is now parity-clean and prepared-path clean across the
+accepted backends and datasets.

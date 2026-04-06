@@ -1,9 +1,11 @@
 // rtdl_optix.cpp — NVIDIA OptiX 7 backend for rtdl
 //
 // Implements all six workloads (LSI, PIP, Overlay, RayHitCount,
-// SegmentPolygonHitcount, PointNearestSegment) using OptiX 7 custom-geometry
-// BVH traversal plus CUDA-parallel brute-force where BVH traversal does not
-// map cleanly (PointNearestSegment).
+// SegmentPolygonHitcount, PointNearestSegment) through the OptiX backend.
+// The mature RT-traversal workloads use OptiX 7 custom-geometry BVH traversal.
+// Some families still follow the current audited local fallback boundary:
+// - SegmentPolygonHitcount currently uses exact host-side counting
+// - PointNearestSegment uses CUDA-parallel brute-force
 //
 // Device kernels are embedded as CUDA source strings and compiled to PTX at
 // runtime via NVRTC.  Compiled pipelines are cached across calls in static
@@ -1291,35 +1293,91 @@ extern "C" {
 __constant__ SegPolyParams params;
 }
 
+static __forceinline__ __device__ float segpoly_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool point_on_segment_dev(
+        float px, float py,
+        float ax, float ay,
+        float bx, float by)
+{
+    const float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (segpoly_absf(cross) > 1.0e-5f) return false;
+    const float min_x = ax < bx ? ax : bx;
+    const float max_x = ax > bx ? ax : bx;
+    const float min_y = ay < by ? ay : by;
+    const float max_y = ay > by ? ay : by;
+    return px >= min_x - 1.0e-5f && px <= max_x + 1.0e-5f &&
+           py >= min_y - 1.0e-5f && py <= max_y + 1.0e-5f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_inclusive_dev(
+        float px, float py,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (point_on_segment_dev(px, py, xi, yi, xj, yj)) {
+            return true;
+        }
+    }
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi)) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+static __forceinline__ __device__ bool seg_edge_hit_dev(
+        float sx0, float sy0, float sx1, float sy1,
+        float ax, float ay, float bx, float by)
+{
+    const float rx = sx1 - sx0;
+    const float ry = sy1 - sy0;
+    const float ex = bx - ax;
+    const float ey = by - ay;
+    const float denom = rx * ey - ry * ex;
+    if (segpoly_absf(denom) < 1.0e-7f) {
+        return point_on_segment_dev(sx0, sy0, ax, ay, bx, by) ||
+               point_on_segment_dev(sx1, sy1, ax, ay, bx, by) ||
+               point_on_segment_dev(ax, ay, sx0, sy0, sx1, sy1) ||
+               point_on_segment_dev(bx, by, sx0, sy0, sx1, sy1);
+    }
+    const float qpx = ax - sx0;
+    const float qpy = ay - sy0;
+    const float t = (qpx * ey - qpy * ex) / denom;
+    const float u = (qpx * ry - qpy * rx) / denom;
+    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+}
+
 static __forceinline__ __device__ bool seg_hits_polygon(
         float sx0, float sy0, float sx1, float sy1,
         const GpuPolygonRef& poly)
 {
-    uint32_t n = poly.vertex_count;
-    uint32_t off = poly.vertex_offset;
-    float rx = sx1 - sx0, ry = sy1 - sy0;
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    if (point_in_polygon_inclusive_dev(sx0, sy0, poly) ||
+        point_in_polygon_inclusive_dev(sx1, sy1, poly)) {
+        return true;
+    }
     for (uint32_t i = 0; i < n; ++i) {
-        float ax = params.vertices_x[off + i],     ay = params.vertices_y[off + i];
-        float bx = params.vertices_x[off + (i+1)%n], by = params.vertices_y[off + (i+1)%n];
-        float sx = bx - ax, sy = by - ay;
-        float denom = rx * sy - ry * sx;
-        if (fabsf(denom) < 1.0e-7f) continue;
-        float qpx = ax - sx0, qpy = ay - sy0;
-        float t = (qpx * sy - qpy * sx) / denom;
-        float u = (qpx * ry - qpy * rx) / denom;
-        if (t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f) return true;
+        const float ax = params.vertices_x[off + i], ay = params.vertices_y[off + i];
+        const float bx = params.vertices_x[off + (i + 1) % n], by = params.vertices_y[off + (i + 1) % n];
+        if (seg_edge_hit_dev(sx0, sy0, sx1, sy1, ax, ay, bx, by)) {
+            return true;
+        }
     }
-    // Check if segment midpoint is inside polygon
-    float mx = (sx0 + sx1) * 0.5f, my = (sy0 + sy1) * 0.5f;
-    bool inside = false;
-    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
-        float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
-        float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
-        if (((yi > my) != (yj > my)) &&
-            (mx <= (xj - xi) * (my - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi))
-            inside = !inside;
-    }
-    return inside;
+    return false;
 }
 
 extern "C" __global__ void __raygen__segpoly_probe() {
@@ -1675,6 +1733,35 @@ static bool exact_point_in_polygon(
         }
     }
     return inside;
+}
+
+static bool exact_segment_hits_polygon(
+        const RtdlSegment& segment,
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    if (exact_point_in_polygon(segment.x0, segment.y0, poly, vertices_xy) ||
+        exact_point_in_polygon(segment.x1, segment.y1, poly, vertices_xy)) {
+        return true;
+    }
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1) % n;
+        RtdlSegment edge{
+            poly.id,
+            vertices_xy[(off + i) * 2],
+            vertices_xy[(off + i) * 2 + 1],
+            vertices_xy[(off + j) * 2],
+            vertices_xy[(off + j) * 2 + 1],
+        };
+        double ix = 0.0;
+        double iy = 0.0;
+        if (exact_segment_intersection(segment, edge, &ix, &iy)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -2318,76 +2405,18 @@ static void run_seg_poly_hitcount_optix(
         const double* vertices_xy,       size_t vertex_xy_count,
         RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out)
 {
-    std::call_once(g_segpoly.init, [&]() {
-        std::string ptx = compile_to_ptx(kSegPolyHitcountKernelSrc, "segpoly_kernel.cu");
-        g_segpoly.pipe = build_pipeline(
-            get_optix_context(), ptx,
-            "__raygen__segpoly_probe",
-            "__miss__segpoly_miss",
-            "__intersection__segpoly_isect",
-            "__anyhit__segpoly_anyhit",
-            nullptr, 4).release();
-    });
-
-    size_t vert_count = vertex_xy_count / 2;
-    std::vector<GpuSegment>    gpu_segs(segment_count);
-    std::vector<GpuPolygonRef> gpu_polys(polygon_count);
-    std::vector<float> vx(vert_count), vy(vert_count);
-
-    for (size_t i = 0; i < segment_count; ++i)
-        gpu_segs[i] = {(float)segments[i].x0, (float)segments[i].y0,
-                       (float)segments[i].x1, (float)segments[i].y1, segments[i].id};
-    for (size_t i = 0; i < polygon_count; ++i)
-        gpu_polys[i] = {polygons[i].id, polygons[i].vertex_offset, polygons[i].vertex_count};
-    for (size_t i = 0; i < vert_count; ++i) {
-        vx[i] = static_cast<float>(vertices_xy[i * 2]);
-        vy[i] = static_cast<float>(vertices_xy[i * 2 + 1]);
-    }
-
-    DevPtr d_segs (sizeof(GpuSegment)    * segment_count);
-    DevPtr d_polys(sizeof(GpuPolygonRef) * polygon_count);
-    DevPtr d_vx   (sizeof(float) * vert_count);
-    DevPtr d_vy   (sizeof(float) * vert_count);
-    upload(d_segs.ptr,  gpu_segs.data(),  segment_count);
-    upload(d_polys.ptr, gpu_polys.data(), polygon_count);
-    upload(d_vx.ptr,    vx.data(),        vert_count);
-    upload(d_vy.ptr,    vy.data(),        vert_count);
-
-    std::vector<OptixAabb> aabbs(polygon_count);
-    for (size_t i = 0; i < polygon_count; ++i)
-        aabbs[i] = aabb_for_polygon(vertices_xy, polygons[i].vertex_offset, polygons[i].vertex_count);
-    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
-
-    DevPtr d_output(sizeof(GpuSegPolyRecord) * segment_count);
-
-    SegPolyLaunchParams lp;
-    lp.traversable     = accel.handle;
-    lp.segments        = reinterpret_cast<const GpuSegment*>(d_segs.ptr);
-    lp.polygons        = reinterpret_cast<const GpuPolygonRef*>(d_polys.ptr);
-    lp.vertices_x      = reinterpret_cast<const float*>(d_vx.ptr);
-    lp.vertices_y      = reinterpret_cast<const float*>(d_vy.ptr);
-    lp.output          = reinterpret_cast<GpuSegPolyRecord*>(d_output.ptr);
-    lp.segment_count   = static_cast<uint32_t>(segment_count);
-
-    DevPtr d_params(sizeof(SegPolyLaunchParams));
-    upload(d_params.ptr, &lp, 1);
-
-    CUstream stream = 0;
-    OPTIX_CHECK(optixLaunch(g_segpoly.pipe->pipeline, stream,
-                             d_params.ptr, sizeof(SegPolyLaunchParams),
-                             &g_segpoly.pipe->sbt,
-                             static_cast<unsigned>(segment_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(stream));
-
-    std::vector<GpuSegPolyRecord> gpu_rows(segment_count);
-    download(gpu_rows.data(), d_output.ptr, segment_count);
-
     auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
         std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
     if (!out && segment_count > 0) throw std::bad_alloc();
     for (size_t i = 0; i < segment_count; ++i) {
-        out[i].segment_id = gpu_rows[i].segment_id;
-        out[i].hit_count  = gpu_rows[i].hit_count;
+        uint32_t hit_count = 0;
+        for (size_t j = 0; j < polygon_count; ++j) {
+            if (exact_segment_hits_polygon(segments[i], polygons[j], vertices_xy)) {
+                hit_count += 1;
+            }
+        }
+        out[i].segment_id = segments[i].id;
+        out[i].hit_count  = hit_count;
     }
     *rows_out      = out;
     *row_count_out = segment_count;

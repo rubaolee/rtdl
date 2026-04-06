@@ -34,6 +34,20 @@ Current supported workload families:
 - `segment_polygon_hitcount`
 - `point_nearest_segment`
 
+Current workload-maturity note:
+
+- `segment_polygon_hitcount` is the first v0.2 workload-family expansion now
+  closed beyond the v0.1 RayJoin-heavy slice
+- its current accepted closure target is semantic/backend closure across:
+  - `cpu_python_reference`
+  - `cpu`
+  - `embree`
+  - `optix`
+  on deterministic authored / fixture / derived cases
+- this family must still be described honestly under the current audited local
+  `native_loop` boundary rather than as proof of BVH- or RT-core-matured
+  traversal
+
 ## What RTDL Can Currently Do
 
 The current repo can:

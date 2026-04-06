@@ -8,6 +8,7 @@ import rtdsl as rt
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from rtdsl.baseline_runner import load_representative_case
 from tests._embree_support import embree_available
+from tests.rtdl_sorting_test import native_oracle_available
 from tests.rtdl_sorting_test import optix_available
 
 
@@ -55,6 +56,17 @@ class Goal110EmbreeClosureTest(unittest.TestCase):
                     raw_rows.close()
                 self.assertEqual(current_rows, prepared_rows)
                 self.assertEqual(current_rows, raw_dict_rows)
+
+
+@unittest.skipUnless(native_oracle_available(), "Native oracle is not available in the current environment")
+class Goal110CpuClosureTest(unittest.TestCase):
+    def test_cpu_matches_python_reference_on_goal110_datasets(self) -> None:
+        for dataset in DATASETS:
+            with self.subTest(dataset=dataset):
+                case = load_representative_case("segment_polygon_hitcount", dataset)
+                expected = rt.run_cpu_python_reference(segment_polygon_hitcount_reference, **case.inputs)
+                actual = rt.run_cpu(segment_polygon_hitcount_reference, **case.inputs)
+                self.assertTrue(rt.compare_baseline_rows("segment_polygon_hitcount", expected, actual))
 
 
 @unittest.skipUnless(optix_available(), "OptiX is not available in the current environment")
