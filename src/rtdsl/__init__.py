@@ -85,6 +85,9 @@ from .generate_only import GenerateOnlyRequest
 from .generate_only import render_python_program
 from .goal23_reproduction import generate_goal23_artifacts
 from .goal23_reproduction import run_goal23_reproduction
+from .goal112_segment_polygon_perf import render_goal112_markdown
+from .goal112_segment_polygon_perf import run_goal112_segment_polygon_perf
+from .goal112_segment_polygon_perf import write_goal112_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -284,6 +287,8 @@ __all__ = [
     "generate_optix_project",
     "generate_goal23_artifacts",
     "generate_embree_evaluation_artifacts",
+    "render_goal112_markdown",
+    "run_goal112_segment_polygon_perf",
     "generate_handoff_bundle",
     "generate_python_program",
     "render_python_program",
@@ -346,5 +351,6 @@ __all__ = [
     "validate_compiled_kernel_against_baseline",
     "validate_plan_dict",
     "write_baseline_benchmark_json",
+    "write_goal112_artifacts",
     "WorkloadContract",
 ]
