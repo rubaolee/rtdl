@@ -122,6 +122,22 @@ Notes:
   - generic deterministic tiled county-derived cases via `--copies`
 - the family also has a dedicated PostGIS validation driver:
   - `scripts/goal114_segment_polygon_postgis_validation.py`
+- an app-style example now exists here:
+  - [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+
+App-style run:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+python3 examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+```
+
+That example treats the workload as a screening primitive:
+
+- roads are probe segments
+- hazard regions are build polygons
+- output is one row per road segment with a polygon-hit count
+- the example also highlights `priority_segments` with hit count `>= 2`
 
 ## Point/Nearest Segment
 
