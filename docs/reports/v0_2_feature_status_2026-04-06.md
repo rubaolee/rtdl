@@ -74,3 +74,15 @@ The current recommended next move is:
 
 That is the clearest path from today’s productized feature toward a genuine
 RT-backed workload story.
+
+Update after Goal 120:
+
+- the OptiX-first native promotion attempt is now implemented
+- parity remained clean
+- but the measured large-row timings did not materially improve
+
+So the remaining gap is now even clearer:
+
+- not “use native traversal somehow”
+- but “find a redesign that materially improves candidate selectivity and total
+  work”

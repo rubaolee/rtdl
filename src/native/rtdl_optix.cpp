@@ -3,8 +3,9 @@
 // Implements all six workloads (LSI, PIP, Overlay, RayHitCount,
 // SegmentPolygonHitcount, PointNearestSegment) through the OptiX backend.
 // The mature RT-traversal workloads use OptiX 7 custom-geometry BVH traversal.
-// Some families still follow the current audited local fallback boundary:
-// - SegmentPolygonHitcount currently uses exact host-side counting
+// Some families still follow a bounded local maturity story:
+// - SegmentPolygonHitcount now uses OptiX custom-AABB traversal, but it is not
+//   yet a strong performance win against PostGIS
 // - PointNearestSegment uses CUDA-parallel brute-force
 //
 // Device kernels are embedded as CUDA source strings and compiled to PTX at
@@ -2405,20 +2406,99 @@ static void run_seg_poly_hitcount_optix(
         const double* vertices_xy,       size_t vertex_xy_count,
         RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out)
 {
+    if (polygon_count == 0) {
+        auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
+            std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
+        if (!out && segment_count > 0) throw std::bad_alloc();
+        for (size_t i = 0; i < segment_count; ++i) {
+            out[i].segment_id = segments[i].id;
+            out[i].hit_count = 0u;
+        }
+        *rows_out = out;
+        *row_count_out = segment_count;
+        return;
+    }
+
+    std::call_once(g_segpoly.init, [&]() {
+        std::string ptx = compile_to_ptx(kSegPolyHitcountKernelSrc, "segpoly_kernel.cu");
+        g_segpoly.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__segpoly_probe",
+            "__miss__segpoly_miss",
+            "__intersection__segpoly_isect",
+            "__anyhit__segpoly_anyhit",
+            nullptr,
+            4).release();
+    });
+
+    const size_t vert_count = vertex_xy_count / 2;
+    std::vector<GpuSegment> gpu_segments(segment_count);
+    std::vector<GpuPolygonRef> gpu_polygons(polygon_count);
+    std::vector<float> vx(vert_count), vy(vert_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+        gpu_segments[i] = {
+            static_cast<float>(segments[i].x0),
+            static_cast<float>(segments[i].y0),
+            static_cast<float>(segments[i].x1),
+            static_cast<float>(segments[i].y1),
+            segments[i].id,
+        };
+    }
+    for (size_t i = 0; i < polygon_count; ++i) {
+        gpu_polygons[i] = {polygons[i].id, polygons[i].vertex_offset, polygons[i].vertex_count};
+    }
+    for (size_t i = 0; i < vert_count; ++i) {
+        vx[i] = static_cast<float>(vertices_xy[i * 2]);
+        vy[i] = static_cast<float>(vertices_xy[i * 2 + 1]);
+    }
+
+    DevPtr d_segments(sizeof(GpuSegment) * segment_count);
+    DevPtr d_polygons(sizeof(GpuPolygonRef) * polygon_count);
+    DevPtr d_vx(sizeof(float) * vert_count);
+    DevPtr d_vy(sizeof(float) * vert_count);
+    upload(d_segments.ptr, gpu_segments.data(), segment_count);
+    upload(d_polygons.ptr, gpu_polygons.data(), polygon_count);
+    upload(d_vx.ptr, vx.data(), vert_count);
+    upload(d_vy.ptr, vy.data(), vert_count);
+
+    std::vector<OptixAabb> aabbs(polygon_count);
+    for (size_t i = 0; i < polygon_count; ++i) {
+        aabbs[i] = aabb_for_polygon(vertices_xy, polygons[i].vertex_offset, polygons[i].vertex_count);
+    }
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    DevPtr d_output(sizeof(GpuSegPolyRecord) * segment_count);
+
+    SegPolyLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.segments = reinterpret_cast<const GpuSegment*>(d_segments.ptr);
+    lp.polygons = reinterpret_cast<const GpuPolygonRef*>(d_polygons.ptr);
+    lp.vertices_x = reinterpret_cast<const float*>(d_vx.ptr);
+    lp.vertices_y = reinterpret_cast<const float*>(d_vy.ptr);
+    lp.output = reinterpret_cast<GpuSegPolyRecord*>(d_output.ptr);
+    lp.segment_count = static_cast<uint32_t>(segment_count);
+
+    DevPtr d_params(sizeof(SegPolyLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_segpoly.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(SegPolyLaunchParams),
+                             &g_segpoly.pipe->sbt,
+                             static_cast<unsigned>(segment_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<GpuSegPolyRecord> gpu_rows(segment_count);
+    download(gpu_rows.data(), d_output.ptr, segment_count);
+
     auto* out = static_cast<RtdlSegmentPolygonHitCountRow*>(
         std::malloc(sizeof(RtdlSegmentPolygonHitCountRow) * segment_count));
     if (!out && segment_count > 0) throw std::bad_alloc();
     for (size_t i = 0; i < segment_count; ++i) {
-        uint32_t hit_count = 0;
-        for (size_t j = 0; j < polygon_count; ++j) {
-            if (exact_segment_hits_polygon(segments[i], polygons[j], vertices_xy)) {
-                hit_count += 1;
-            }
-        }
-        out[i].segment_id = segments[i].id;
-        out[i].hit_count  = hit_count;
+        out[i].segment_id = gpu_rows[i].segment_id;
+        out[i].hit_count = gpu_rows[i].hit_count;
     }
-    *rows_out      = out;
+    *rows_out = out;
     *row_count_out = segment_count;
 }
 
