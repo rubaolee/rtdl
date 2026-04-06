@@ -167,6 +167,16 @@ EMBREE_EVALUATION_MATRIX: tuple[EvaluationEntry, ...] = (
         description="Fixture-based segment/polygon hit-count benchmark on county-derived inputs.",
     ),
     EvaluationEntry(
+        case_id="segment_polygon_county_tiled_x4",
+        workload="segment_polygon_hitcount",
+        dataset="derived/br_county_subset_segment_polygon_tiled_x4",
+        title="Segment/Polygon county tiled x4",
+        category="derived",
+        provenance="Derived by tiling the deterministic county segment/polygon fixture four times with fixed offsets.",
+        scale_hint=48,
+        description="Larger deterministic segment/polygon hit-count case derived from the county fixture.",
+    ),
+    EvaluationEntry(
         case_id="point_nearest_authored_minimal",
         workload="point_nearest_segment",
         dataset="authored_point_nearest_segment_minimal",

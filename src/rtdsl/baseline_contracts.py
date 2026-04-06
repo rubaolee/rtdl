@@ -200,6 +200,7 @@ BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
         representative_datasets=(
             "authored_segment_polygon_minimal",
             "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "derived/br_county_subset_segment_polygon_tiled_x4",
         ),
         notes="Current local backend lowers this workload to native_loop even though the DSL traverse stays bvh-shaped.",
     ),

@@ -14,12 +14,14 @@ from .datasets import chains_to_probe_points
 from .datasets import chains_to_segments
 from .datasets import load_cdb
 from .embree_runtime import run_embree
+from .optix_runtime import run_optix
 from .reference import Point
 from .reference import Polygon
 from .reference import Ray2D
 from .reference import Segment
 from .reference import Triangle
 from .runtime import run_cpu
+from .runtime import run_cpu_python_reference
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -71,8 +73,8 @@ def load_representative_case(workload: str, dataset: str) -> DatasetCase:
 
 
 def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both") -> dict[str, object]:
-    if backend not in {"cpu", "embree", "both"}:
-        raise ValueError("baseline backend must be one of: cpu, embree, both")
+    if backend not in {"cpu_python_reference", "cpu", "embree", "optix", "both"}:
+        raise ValueError("baseline backend must be one of: cpu_python_reference, cpu, embree, optix, both")
     compiled = (
         kernel_fn_or_compiled
         if hasattr(kernel_fn_or_compiled, "refine_op")
@@ -87,10 +89,14 @@ def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both"
         "dataset": dataset,
         "note": case.note,
     }
+    if backend == "cpu_python_reference":
+        payload["cpu_python_reference_rows"] = run_cpu_python_reference(compiled, **bound_inputs)
     if backend in {"cpu", "both"}:
         payload["cpu_rows"] = run_cpu(compiled, **bound_inputs)
     if backend in {"embree", "both"}:
         payload["embree_rows"] = run_embree(compiled, **bound_inputs)
+    if backend == "optix":
+        payload["optix_rows"] = run_optix(compiled, **bound_inputs)
     if backend == "both":
         payload["parity"] = compare_baseline_rows(
             workload,
@@ -298,6 +304,19 @@ def _load_segment_polygon_case(dataset: str) -> DatasetCase:
             inputs=case,
             note="County-derived segment/polygon case using deterministic fixture slices.",
         )
+    if dataset == "derived/br_county_subset_segment_polygon_tiled_x4":
+        case = make_fixture_segment_polygon_case()
+        segments = tuple(case["segments"])
+        polygons = tuple(case["polygons"])
+        return DatasetCase(
+            workload="segment_polygon_hitcount",
+            dataset=dataset,
+            inputs={
+                "segments": tile_segments(segments, copies=4, step_x=30.0, step_y=20.0),
+                "polygons": tile_polygons(polygons, copies=4, step_x=30.0, step_y=20.0),
+            },
+            note="Derived county segment/polygon case tiled four times with deterministic offsets.",
+        )
     raise ValueError(f"unsupported segment_polygon_hitcount dataset `{dataset}`")
 
 
@@ -476,7 +495,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run RTDL Embree baseline workloads.")
     parser.add_argument("workload", choices=BASELINE_WORKLOADS.keys())
     parser.add_argument("--dataset", default=None)
-    parser.add_argument("--backend", choices=("cpu", "embree", "both"), default="both")
+    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix", "both"), default="both")
     args = parser.parse_args(argv)
 
     dataset = args.dataset or representative_dataset_names(args.workload)[0]
