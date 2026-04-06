@@ -79,6 +79,9 @@ from .embree_runtime import PreparedEmbreeKernel
 from .embree_runtime import run_embree
 from .evaluation_matrix import evaluation_entries
 from .evaluation_matrix import EMBREE_EVALUATION_MATRIX
+from .generate_only import generate_python_program
+from .generate_only import GenerateOnlyRequest
+from .generate_only import render_python_program
 from .goal23_reproduction import generate_goal23_artifacts
 from .goal23_reproduction import run_goal23_reproduction
 from .ir import CandidateSet
@@ -207,6 +210,7 @@ __all__ = [
     "EmitOp",
     "GeometryInput",
     "GeometryType",
+    "GenerateOnlyRequest",
     "InputContract",
     "LaunchParam",
     "Layout",
@@ -279,6 +283,8 @@ __all__ = [
     "generate_optix_project",
     "generate_goal23_artifacts",
     "generate_embree_evaluation_artifacts",
+    "generate_python_program",
+    "render_python_program",
     "input",
     "kernel",
     "layout",
