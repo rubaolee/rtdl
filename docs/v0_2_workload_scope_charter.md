@@ -187,6 +187,6 @@ gates.
 This charter implies:
 
 - Goal 110 should target the single in-scope family above
-- Goal 109 remains a separate experimental product-mode effort until it proves
+- Goal 111 remains a separate experimental product-mode effort until it proves
   real value
 - performance work should support the chosen in-scope family, not roam freely
