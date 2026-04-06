@@ -124,6 +124,10 @@ struct RtdlSegmentPolygonHitCountRow {
     uint32_t segment_id, hit_count;
 };
 
+struct RtdlSegmentPolygonAnyHitRow {
+    uint32_t segment_id, polygon_id;
+};
+
 struct RtdlPointNearestSegmentRow {
     uint32_t point_id, segment_id;
     double distance;
@@ -159,6 +163,12 @@ int  rtdl_optix_run_segment_polygon_hitcount(
          const RtdlPolygonRef* polygons, size_t polygon_count,
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_segment_polygon_anyhit_rows(
+         const RtdlSegment*   segments,  size_t segment_count,
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         RtdlSegmentPolygonAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_point_nearest_segment(
          const RtdlPoint*   points,   size_t point_count,
@@ -1903,6 +1913,69 @@ static void run_seg_poly_hitcount_optix_host_indexed(
     *row_count_out = segment_count;
 }
 
+static void run_seg_poly_anyhit_rows_optix_host_indexed(
+        const RtdlSegment* segments, size_t segment_count,
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy,
+        RtdlSegmentPolygonAnyHitRow** rows_out, size_t* row_count_out)
+{
+    std::vector<Bounds2D> polygon_bounds;
+    polygon_bounds.reserve(polygon_count);
+    for (size_t i = 0; i < polygon_count; ++i) {
+        polygon_bounds.push_back(bounds_for_polygon(polygons[i], vertices_xy));
+    }
+    const PolygonBucketIndex bucket_index = build_polygon_bucket_index(polygon_bounds);
+    std::vector<size_t> seen(polygon_count, 0);
+    size_t stamp = 1;
+    std::vector<RtdlSegmentPolygonAnyHitRow> out_rows;
+    out_rows.reserve(segment_count);
+
+    for (size_t i = 0; i < segment_count; ++i) {
+        const Bounds2D seg_bounds = bounds_for_segment(segments[i]);
+        const size_t bucket_count = bucket_index.buckets.size();
+        size_t first = 0;
+        size_t last = 0;
+        if (bucket_count > 0) {
+            first = static_cast<size_t>(std::clamp(
+                static_cast<long long>(std::floor((seg_bounds.min_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+                0LL,
+                static_cast<long long>(bucket_count - 1)));
+            last = static_cast<size_t>(std::clamp(
+                static_cast<long long>(std::floor((seg_bounds.max_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+                0LL,
+                static_cast<long long>(bucket_count - 1)));
+        }
+        for (size_t bucket_id = first; bucket_id <= last && bucket_count > 0; ++bucket_id) {
+            for (size_t polygon_index : bucket_index.buckets[bucket_id]) {
+                if (seen[polygon_index] == stamp) {
+                    continue;
+                }
+                seen[polygon_index] = stamp;
+                if (!bounds_overlap(seg_bounds, polygon_bounds[polygon_index])) {
+                    continue;
+                }
+                if (exact_segment_hits_polygon(segments[i], polygons[polygon_index], vertices_xy)) {
+                    out_rows.push_back({segments[i].id, polygons[polygon_index].id});
+                }
+            }
+        }
+        stamp += 1;
+        if (stamp == 0) {
+            std::fill(seen.begin(), seen.end(), 0);
+            stamp = 1;
+        }
+    }
+
+    auto* out = static_cast<RtdlSegmentPolygonAnyHitRow*>(
+        std::malloc(sizeof(RtdlSegmentPolygonAnyHitRow) * out_rows.size()));
+    if (!out && !out_rows.empty()) throw std::bad_alloc();
+    if (!out_rows.empty()) {
+        std::memcpy(out, out_rows.data(), sizeof(RtdlSegmentPolygonAnyHitRow) * out_rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = out_rows.size();
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Workload implementations
 // ──────────────────────────────────────────────────────────────────────────────
@@ -2801,6 +2874,24 @@ extern "C" int rtdl_optix_run_segment_polygon_hitcount(
                                     polygons, polygon_count,
                                     vertices_xy, vertex_xy_count,
                                     rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows(
+        const RtdlSegment* segments, size_t segment_count,
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        RtdlSegmentPolygonAnyHitRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (segment_count == 0 || polygon_count == 0) return;
+        (void)vertex_xy_count;
+        run_seg_poly_anyhit_rows_optix_host_indexed(
+            segments, segment_count, polygons, polygon_count, vertices_xy, rows_out, row_count_out);
     }, error_out, error_size);
 }
 

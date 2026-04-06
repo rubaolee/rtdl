@@ -102,6 +102,13 @@ class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlSegmentPolygonAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
+    ]
+
+
 class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id",   ctypes.c_uint32),
@@ -163,6 +170,7 @@ class PreparedOptixKernel:
         "overlay_compose",
         "ray_triangle_hit_count",
         "segment_polygon_hitcount",
+        "segment_polygon_anyhit_rows",
         "point_nearest_segment",
     }
 
@@ -227,6 +235,7 @@ class PreparedOptixExecution:
             "overlay_compose":        _call_overlay_optix_packed,
             "ray_triangle_hit_count": _call_ray_hitcount_optix_packed,
             "segment_polygon_hitcount": _call_segment_polygon_hitcount_optix_packed,
+            "segment_polygon_anyhit_rows": _call_segment_polygon_anyhit_rows_optix_packed,
             "point_nearest_segment":  _call_point_nearest_segment_optix_packed,
         }
         fn = dispatch.get(pred)
@@ -600,6 +609,25 @@ def _call_segment_polygon_hitcount_optix_packed(compiled: CompiledKernel, packed
         field_names=("segment_id", "hit_count"))
 
 
+def _call_segment_polygon_anyhit_rows_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
+    segments = packed[compiled.candidates.left.name]
+    polygons = packed[compiled.candidates.right.name]
+    rows_ptr  = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error     = ctypes.create_string_buffer(4096)
+    status = lib.rtdl_optix_run_segment_polygon_anyhit_rows(
+        segments.records, segments.count,
+        polygons.refs, polygons.polygon_count,
+        polygons.vertices_xy, polygons.vertex_xy_count,
+        ctypes.byref(rows_ptr), ctypes.byref(row_count),
+        error, len(error))
+    _check_status(status, error)
+    return OptixRowView(
+        library=lib, rows_ptr=rows_ptr,
+        row_count=row_count.value, row_type=_RtdlSegmentPolygonAnyHitRow,
+        field_names=("segment_id", "polygon_id"))
+
+
 def _call_point_nearest_segment_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     points   = packed[compiled.candidates.left.name]
     segments = packed[compiled.candidates.right.name]
@@ -719,6 +747,16 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_optix_run_segment_polygon_hitcount.restype = ctypes.c_int
+
+    lib.rtdl_optix_run_segment_polygon_anyhit_rows.argtypes = [
+        ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p, ctypes.c_size_t,
+    ]
+    lib.rtdl_optix_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
 
     lib.rtdl_optix_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),   ctypes.c_size_t,

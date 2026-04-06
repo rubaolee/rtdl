@@ -95,6 +95,11 @@ struct RtdlSegmentPolygonHitCountRow {
   uint32_t hit_count;
 };
 
+struct RtdlSegmentPolygonAnyHitRow {
+  uint32_t segment_id;
+  uint32_t polygon_id;
+};
+
 struct RtdlPointNearestSegmentRow {
   uint32_t point_id;
   uint32_t segment_id;
@@ -153,6 +158,17 @@ int rtdl_embree_run_segment_polygon_hitcount(
     const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlSegmentPolygonHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_segment_polygon_anyhit_rows(
+    const RtdlSegment* segments,
+    size_t segment_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count,
+    RtdlSegmentPolygonAnyHitRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -1348,6 +1364,81 @@ extern "C" int rtdl_embree_run_segment_polygon_hitcount(
         }
       }
       rows.push_back({segment.id, hit_count});
+      stamp += 1;
+      if (stamp == 0) {
+        std::fill(seen.begin(), seen.end(), 0);
+        stamp = 1;
+      }
+    }
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+extern "C" int rtdl_embree_run_segment_polygon_anyhit_rows(
+    const RtdlSegment* segments,
+    size_t segment_count,
+    const RtdlPolygonRef* polygons,
+    size_t polygon_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count,
+    RtdlSegmentPolygonAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Segment2D> segment_values;
+    segment_values.reserve(segment_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+      segment_values.push_back({segments[i].id, {segments[i].x0, segments[i].y0}, {segments[i].x1, segments[i].y1}});
+    }
+    std::vector<Polygon2D> polygon_values = decode_polygons(polygons, polygon_count, vertices_xy, vertex_xy_count);
+    std::vector<Bounds2D> polygon_bounds;
+    polygon_bounds.reserve(polygon_values.size());
+    for (const Polygon2D& polygon : polygon_values) {
+      polygon_bounds.push_back(bounds_for_polygon(polygon));
+    }
+    const PolygonBucketIndex bucket_index = build_polygon_bucket_index(polygon_bounds);
+    std::vector<size_t> seen(polygon_values.size(), 0);
+    size_t stamp = 1;
+    std::vector<RtdlSegmentPolygonAnyHitRow> rows;
+    for (const Segment2D& segment : segment_values) {
+      const Bounds2D seg_bounds = bounds_for_segment(segment);
+      const size_t bucket_count = bucket_index.buckets.size();
+      size_t first = 0;
+      size_t last = 0;
+      if (bucket_count > 0) {
+        first = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((seg_bounds.min_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        last = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((seg_bounds.max_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+      }
+      for (size_t bucket_id = first; bucket_id <= last && bucket_count > 0; ++bucket_id) {
+        for (size_t polygon_index : bucket_index.buckets[bucket_id]) {
+          if (seen[polygon_index] == stamp) {
+            continue;
+          }
+          seen[polygon_index] = stamp;
+          if (!bounds_overlap(seg_bounds, polygon_bounds[polygon_index])) {
+            continue;
+          }
+          const Polygon2D& polygon = polygon_values[polygon_index];
+          if (segment_hits_polygon(segment, polygon)) {
+            rows.push_back({segment.id, polygon.id});
+          }
+        }
+      }
       stamp += 1;
       if (stamp == 0) {
         std::fill(seen.begin(), seen.end(), 0);

@@ -103,6 +103,9 @@ def _kernel_for_workload(workload: str):
     if workload == "segment_polygon_hitcount":
         from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
         return kernel
+    if workload == "segment_polygon_anyhit_rows":
+        from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
+        return kernel
     if workload == "point_nearest_segment":
         from examples.rtdl_goal10_reference import point_nearest_segment_reference as kernel
         return kernel

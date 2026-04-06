@@ -13,6 +13,15 @@ def segment_polygon_hitcount_reference():
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
+def segment_polygon_anyhit_rows_reference():
+    segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(segments, polygons, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_anyhit_rows(exact=False))
+    return rt.emit(hits, fields=["segment_id", "polygon_id"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
 def point_nearest_segment_reference():
     points = rt.input("points", rt.Points, layout=rt.Point2DLayout, role="probe")
     segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="build")
@@ -65,5 +74,6 @@ def make_fixture_point_nearest_segment_case():
 
 GOAL10_KERNELS = (
     segment_polygon_hitcount_reference,
+    segment_polygon_anyhit_rows_reference,
     point_nearest_segment_reference,
 )

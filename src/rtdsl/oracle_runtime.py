@@ -122,6 +122,13 @@ class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlSegmentPolygonAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
+    ]
+
+
 class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id", ctypes.c_uint32),
@@ -152,6 +159,8 @@ def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, o
         return _run_ray_hitcount_oracle(compiled, normalized_inputs, library)
     if predicate_name == "segment_polygon_hitcount":
         return _run_segment_polygon_hitcount_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "segment_polygon_anyhit_rows":
+        return _run_segment_polygon_anyhit_rows_oracle(compiled, normalized_inputs, library)
     if predicate_name == "point_nearest_segment":
         return _run_point_nearest_segment_oracle(compiled, normalized_inputs, library)
     raise ValueError(f"unsupported RTDL native oracle predicate: {predicate_name}")
@@ -355,6 +364,43 @@ def _run_segment_polygon_hitcount_oracle(compiled: CompiledKernel, normalized_in
         library.rtdl_oracle_free_rows(rows_ptr)
 
 
+def _run_segment_polygon_anyhit_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    segments_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    segments = normalized_inputs[segments_name]
+    polygons = normalized_inputs[polygons_name]
+    segment_array = (_RtdlSegment * len(segments))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in segments
+    ])
+    polygon_refs, vertex_array = _encode_polygons(polygons)
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_segment_polygon_anyhit_rows(
+        segment_array,
+        len(segments),
+        polygon_refs,
+        len(polygons),
+        vertex_array,
+        len(vertex_array),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "segment_id": rows_ptr[index].segment_id,
+                "polygon_id": rows_ptr[index].polygon_id,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
 def _run_point_nearest_segment_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     points_name = compiled.candidates.left.name
     segments_name = compiled.candidates.right.name
@@ -500,6 +546,20 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_segment_polygon_hitcount.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_segment_polygon_anyhit_rows.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
 
     library.rtdl_oracle_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),

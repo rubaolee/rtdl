@@ -8,6 +8,7 @@ import rtdsl as rt
 from examples.rtdl_language_reference import county_soil_overlay_reference
 from examples.rtdl_language_reference import county_zip_join_reference
 from examples.rtdl_language_reference import point_in_counties_reference
+from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
 from examples.rtdl_goal10_reference import point_nearest_segment_reference
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
@@ -17,7 +18,7 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
     def test_workload_order_is_frozen(self) -> None:
         self.assertEqual(
             rt.BASELINE_WORKLOAD_ORDER,
-            ("lsi", "pip", "overlay", "ray_tri_hitcount", "segment_polygon_hitcount", "point_nearest_segment"),
+            ("lsi", "pip", "overlay", "ray_tri_hitcount", "segment_polygon_hitcount", "segment_polygon_anyhit_rows", "point_nearest_segment"),
         )
 
     def test_reference_kernels_match_frozen_contracts(self) -> None:
@@ -40,6 +41,10 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
         rt.validate_compiled_kernel_against_baseline(
             rt.compile_kernel(segment_polygon_hitcount_reference),
             "segment_polygon_hitcount",
+        )
+        rt.validate_compiled_kernel_against_baseline(
+            rt.compile_kernel(segment_polygon_anyhit_rows_reference),
+            "segment_polygon_anyhit_rows",
         )
         rt.validate_compiled_kernel_against_baseline(
             rt.compile_kernel(point_nearest_segment_reference),

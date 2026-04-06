@@ -164,6 +164,25 @@ def segment_polygon_hitcount_cpu(
     return tuple(rows)
 
 
+def segment_polygon_anyhit_rows_cpu(
+    segments: tuple[Segment, ...],
+    polygons: tuple[Polygon, ...],
+) -> tuple[dict[str, int], ...]:
+    polygon_bounds = tuple(_polygon_bounds(polygon) for polygon in polygons)
+    bucket_index = _build_polygon_bucket_index(polygon_bounds)
+    rows = []
+    for segment in segments:
+        seg_bounds = _segment_bounds(segment)
+        for polygon_index in _candidate_polygon_indexes(seg_bounds, polygon_bounds, bucket_index):
+            polygon = polygons[polygon_index]
+            poly_bounds = polygon_bounds[polygon_index]
+            if not _bounds_overlap(seg_bounds, poly_bounds):
+                continue
+            if _segment_hits_polygon(segment, polygon):
+                rows.append({"segment_id": segment.id, "polygon_id": polygon.id})
+    return tuple(rows)
+
+
 def point_nearest_segment_cpu(
     points: tuple[Point, ...],
     segments: tuple[Segment, ...],

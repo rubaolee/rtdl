@@ -28,6 +28,7 @@ This reference only describes the RTDL features that are implemented today:
   - `overlay`
   - `ray_tri_hitcount`
   - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
   - `point_nearest_segment`
 
 Anything outside this surface is not part of the current language.
@@ -247,6 +248,16 @@ Required option:
 
 - `exact=False`
 
+### `rt.segment_polygon_anyhit_rows(exact=False)`
+
+Meaning:
+
+- segment vs polygon row materialization under the current float-based implementation
+
+Required option:
+
+- `exact=False`
+
 ### `rt.point_nearest_segment(exact=False)`
 
 Meaning:
@@ -355,6 +366,27 @@ Current practical note:
   - `--copies N`
 - stronger external correctness evidence is currently documented in:
   - `docs/reports/goal114_segment_polygon_postgis_large_scale_validation_2026-04-05.md`
+
+### `segment_polygon_anyhit_rows`
+
+Required shape:
+
+- build input: `polygons`
+- probe input: `segments`
+- predicate: `segment_polygon_anyhit_rows(exact=False)`
+
+Allowed emit fields:
+
+- `segment_id`
+- `polygon_id`
+
+Current practical note:
+
+- user-facing example:
+  - `examples/rtdl_segment_polygon_anyhit_rows.py`
+- this family shares the same segment/polygon hit semantics as hitcount
+- the emitted surface is a join-style row stream rather than one aggregated row
+  per segment
 
 ### `point_nearest_segment`
 

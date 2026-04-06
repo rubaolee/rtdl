@@ -79,6 +79,7 @@ Current built-in predicate families:
 - `rt.overlay_compose()`
 - `rt.ray_triangle_hit_count(exact=False)`
 - `rt.segment_polygon_hitcount(exact=False)`
+- `rt.segment_polygon_anyhit_rows(exact=False)`
 - `rt.point_nearest_segment(exact=False)`
 
 Important boundaries:

@@ -9,6 +9,7 @@ from .api import point_in_polygon
 from .api import ray_triangle_hit_count
 from .api import refine
 from .api import segment_intersection
+from .api import segment_polygon_anyhit_rows
 from .api import segment_polygon_hitcount
 from .api import traverse
 from .baseline_contracts import BASELINE_FLOAT_ABS_TOL
@@ -129,6 +130,7 @@ from .reference import Polygon
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
+from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 from .section_5_6_scalability import generate_section_5_6_artifacts
@@ -357,10 +359,12 @@ __all__ = [
     "ScalabilityConfig",
     "schema_path",
     "segment_intersection",
+    "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "segment_polygon_large_dataset_name",
     "Segment",
     "segment_polygon_hitcount_cpu",
+    "segment_polygon_anyhit_rows_cpu",
     "summarize_baseline_benchmark",
     "slice_cdb_dataset",
     "traverse",

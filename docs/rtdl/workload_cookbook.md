@@ -139,6 +139,38 @@ That example treats the workload as a screening primitive:
 - output is one row per road segment with a polygon-hit count
 - the example also highlights `priority_segments` with hit count `>= 2`
 
+## Segment/Polygon Any-Hit Rows
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def road_polygon_hits():
+    roads = rt.input("roads", rt.Segments, role="probe")
+    parcels = rt.input("parcels", rt.Polygons, role="build")
+    candidates = rt.traverse(roads, parcels, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_anyhit_rows(exact=False))
+    return rt.emit(hits, fields=["segment_id", "polygon_id"])
+```
+
+Quick run:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+```
+
+Notes:
+
+- this family shares the same geometric hit semantics as `segment_polygon_hitcount`
+- the difference is emitted shape:
+  - one `(segment_id, polygon_id)` row per true hit
+  - no per-segment aggregation
+- this is useful when downstream code wants:
+  - exact touched polygon ids
+  - its own aggregation
+  - join-style auditing
+
 ## Point/Nearest Segment
 
 ```python

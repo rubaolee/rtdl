@@ -48,6 +48,7 @@ def infer_workload(kernel_fn_or_compiled) -> str:
         "overlay_compose": "overlay",
         "ray_triangle_hit_count": "ray_tri_hitcount",
         "segment_polygon_hitcount": "segment_polygon_hitcount",
+        "segment_polygon_anyhit_rows": "segment_polygon_anyhit_rows",
         "point_nearest_segment": "point_nearest_segment",
     }
     return mapping[predicate]
@@ -68,6 +69,8 @@ def load_representative_case(workload: str, dataset: str) -> DatasetCase:
         return _load_ray_case(dataset)
     if workload == "segment_polygon_hitcount":
         return _load_segment_polygon_case(dataset)
+    if workload == "segment_polygon_anyhit_rows":
+        return _load_segment_polygon_case(dataset, workload="segment_polygon_anyhit_rows")
     if workload == "point_nearest_segment":
         return _load_point_nearest_segment_case(dataset)
     raise ValueError(f"unknown baseline workload `{workload}`")
@@ -285,22 +288,22 @@ def _load_ray_case(dataset: str) -> DatasetCase:
     raise ValueError(f"unsupported ray_tri_hitcount dataset `{dataset}`")
 
 
-def _load_segment_polygon_case(dataset: str) -> DatasetCase:
+def _load_segment_polygon_case(dataset: str, workload: str = "segment_polygon_hitcount") -> DatasetCase:
     from examples.rtdl_goal10_reference import make_fixture_segment_polygon_case
     from examples.rtdl_goal10_reference import make_segment_polygon_authored_case
 
     if dataset == "authored_segment_polygon_minimal":
         case = make_segment_polygon_authored_case()
         return DatasetCase(
-            workload="segment_polygon_hitcount",
+            workload=workload,
             dataset=dataset,
             inputs=case,
-            note="Small authored segment/polygon hit-count example.",
+            note="Small authored segment/polygon example over the shared hit core.",
         )
     if dataset == "tests/fixtures/rayjoin/br_county_subset.cdb":
         case = make_fixture_segment_polygon_case()
         return DatasetCase(
-            workload="segment_polygon_hitcount",
+            workload=workload,
             dataset=dataset,
             inputs=case,
             note="County-derived segment/polygon case using deterministic fixture slices.",
@@ -310,7 +313,7 @@ def _load_segment_polygon_case(dataset: str) -> DatasetCase:
         segments = tuple(case["segments"])
         polygons = tuple(case["polygons"])
         return DatasetCase(
-            workload="segment_polygon_hitcount",
+            workload=workload,
             dataset=dataset,
             inputs={
                 "segments": tile_segments(segments, copies=4, step_x=30.0, step_y=20.0),
@@ -322,12 +325,12 @@ def _load_segment_polygon_case(dataset: str) -> DatasetCase:
     if match:
         copies = int(match.group(1))
         if copies <= 0:
-            raise ValueError("segment_polygon_hitcount tiled copies must be positive")
+            raise ValueError(f"{workload} tiled copies must be positive")
         case = make_fixture_segment_polygon_case()
         segments = tuple(case["segments"])
         polygons = tuple(case["polygons"])
         return DatasetCase(
-            workload="segment_polygon_hitcount",
+            workload=workload,
             dataset=dataset,
             inputs={
                 "segments": tile_segments(segments, copies=copies, step_x=30.0, step_y=20.0),
@@ -338,7 +341,7 @@ def _load_segment_polygon_case(dataset: str) -> DatasetCase:
                 f"{copies} times with deterministic offsets."
             ),
         )
-    raise ValueError(f"unsupported segment_polygon_hitcount dataset `{dataset}`")
+    raise ValueError(f"unsupported {workload} dataset `{dataset}`")
 
 
 def _load_point_nearest_segment_case(dataset: str) -> DatasetCase:
@@ -531,6 +534,8 @@ def main(argv: list[str] | None = None) -> int:
         from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference as kernel
     elif args.workload == "segment_polygon_hitcount":
         from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
+    elif args.workload == "segment_polygon_anyhit_rows":
+        from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
     else:
         from examples.rtdl_goal10_reference import point_nearest_segment_reference as kernel
 

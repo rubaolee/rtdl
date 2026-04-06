@@ -267,6 +267,11 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(p.name, "segment_polygon_hitcount")
         self.assertIs(p.options["exact"], False)
 
+    def test_segment_polygon_anyhit_rows_predicate_options(self) -> None:
+        p = rt.segment_polygon_anyhit_rows(exact=False)
+        self.assertEqual(p.name, "segment_polygon_anyhit_rows")
+        self.assertIs(p.options["exact"], False)
+
     def test_point_nearest_segment_predicate_options(self) -> None:
         p = rt.point_nearest_segment(exact=False)
         self.assertEqual(p.name, "point_nearest_segment")

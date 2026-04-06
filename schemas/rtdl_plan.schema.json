@@ -36,7 +36,7 @@
     "kernel_name": { "type": "string" },
     "workload_kind": {
       "type": "string",
-      "enum": ["lsi", "pip", "overlay", "ray_tri_hitcount", "segment_polygon_hitcount", "point_nearest_segment"]
+      "enum": ["lsi", "pip", "overlay", "ray_tri_hitcount", "segment_polygon_hitcount", "segment_polygon_anyhit_rows", "point_nearest_segment"]
     },
     "backend": { "type": "string", "const": "rtdl" },
     "precision": { "type": "string", "const": "float_approx" },
@@ -45,7 +45,7 @@
     "accel_kind": { "type": "string", "enum": ["bvh", "native_loop"] },
     "predicate": {
       "type": "string",
-      "enum": ["segment_intersection", "point_in_polygon", "overlay_compose", "ray_triangle_hit_count", "segment_polygon_hitcount", "point_nearest_segment"]
+      "enum": ["segment_intersection", "point_in_polygon", "overlay_compose", "ray_triangle_hit_count", "segment_polygon_hitcount", "segment_polygon_anyhit_rows", "point_nearest_segment"]
     },
     "exact_refine_mode": { "type": "string" },
     "emit_fields": {

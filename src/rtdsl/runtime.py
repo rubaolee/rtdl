@@ -16,6 +16,7 @@ from .reference import Polygon
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
+from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 
@@ -114,6 +115,8 @@ def _run_cpu_python_reference_from_normalized(
         rows = ray_triangle_hit_count_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "segment_polygon_hitcount":
         rows = segment_polygon_hitcount_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
+    elif predicate_name == "segment_polygon_anyhit_rows":
+        rows = segment_polygon_anyhit_rows_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "point_nearest_segment":
         rows = point_nearest_segment_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     else:

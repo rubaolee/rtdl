@@ -61,6 +61,8 @@ def lower_to_execution_plan(kernel: CompiledKernel) -> RTExecutionPlan:
         return _lower_ray_triangle_hitcount(kernel, build_input, probe_input)
     if predicate.name == "segment_polygon_hitcount":
         return _lower_segment_polygon_hitcount(kernel, build_input, probe_input)
+    if predicate.name == "segment_polygon_anyhit_rows":
+        return _lower_segment_polygon_anyhit_rows(kernel, build_input, probe_input)
     if predicate.name == "point_nearest_segment":
         return _lower_point_nearest_segment(kernel, build_input, probe_input)
 
@@ -477,6 +479,69 @@ def _lower_ray_triangle_hitcount(kernel: CompiledKernel, build_input, probe_inpu
             tmin="0.0f",
             tmax="probe.tmax",
             description="Trace each finite 2D ray against the build-side triangle BVH and count triangle hits.",
+        ),
+        bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
+    )
+
+
+def _lower_segment_polygon_anyhit_rows(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionPlan:
+    if build_input.geometry.name != "polygons" or probe_input.geometry.name != "segments":
+        raise ValueError("segment_polygon_anyhit_rows lowering requires polygon build input and segment probe input")
+
+    output_record = _build_output_record("SegmentPolygonAnyHitRowRecord", kernel.emit_op.fields)
+    build_buffer_name = _input_buffer_name(build_input)
+    probe_buffer_name = _input_buffer_name(probe_input)
+
+    return RTExecutionPlan(
+        kernel_name=kernel.name,
+        workload_kind="segment_polygon_anyhit_rows",
+        backend="rtdl",
+        precision=kernel.precision,
+        build_input=build_input,
+        probe_input=probe_input,
+        accel_kind="native_loop",
+        predicate="segment_polygon_anyhit_rows",
+        exact_refine_mode="analytic_float_segment_polygon_anyhit_rows",
+        emit_fields=kernel.emit_op.fields,
+        payload_registers=(
+            PayloadRegister(index=0, name="segment_index", encoding="u32"),
+            PayloadRegister(index=1, name="polygon_index", encoding="u32"),
+            PayloadRegister(index=2, name="hit_kind", encoding="u32"),
+        ),
+        launch_params=(
+            LaunchParam(name="traversable", c_type="OptixTraversableHandle", role="rt_accel"),
+            LaunchParam(name=build_buffer_name, c_type=f"const {build_input.layout.name}*", role="device_input_build"),
+            LaunchParam(name=probe_buffer_name, c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
+            LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
+            LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
+            LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
+        ),
+        host_steps=(
+            f"Upload `{build_input.name}` polygons and `{probe_input.name}` segments.",
+            "Current local backend uses a native exact any-hit row materialization path.",
+            "Emit one `(segment_id, polygon_id)` row per exact segment/polygon hit.",
+        ),
+        device_programs=(
+            "__raygen__rtdl_segment_polygon_probe",
+            "__miss__rtdl_miss",
+            "__closesthit__rtdl_segment_polygon_refine",
+            "__intersection__rtdl_polygon_refs",
+        ),
+        buffers=(
+            BufferSpec(name=build_buffer_name, element=build_input.layout.name, role="device_input_build"),
+            BufferSpec(name=probe_buffer_name, element=probe_input.layout.name, role="device_input_probe"),
+            BufferSpec(name="output_records", element=output_record.name, role="device_output"),
+            BufferSpec(name="output_count", element="uint32_t", role="device_counter"),
+            BufferSpec(name="output_capacity", element="uint32_t", role="device_limit"),
+        ),
+        output_record=output_record,
+        ray_spec=RaySpec(
+            origin=("probe.x0", "probe.y0", "0.0f"),
+            direction=("probe.x1 - probe.x0", "probe.y1 - probe.y0", "0.0f"),
+            tmin="0.0f",
+            tmax="1.0f",
+            description="Finite 2D segment against polygon set with one emitted row per true segment/polygon hit.",
         ),
         bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
     )

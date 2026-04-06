@@ -225,6 +225,19 @@ This should count only if the resulting next implementation goal closes a real
 distinct emitted workload family rather than just a renamed variant of
 hitcount.
 
+### Goal 127: second workload family closure
+
+Close `segment_polygon_anyhit_rows` as a real local RTDL workload family with:
+
+- predicate and lowering support
+- oracle/native/runtime bindings
+- authored deterministic tests
+- one user-facing example
+- baseline/language surface integration
+
+This counts only if the family is actually runnable and visible on the RTDL
+surface rather than merely listed as a future direction.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

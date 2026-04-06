@@ -138,6 +138,13 @@ class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlSegmentPolygonAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
+    ]
+
+
 class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id", ctypes.c_uint32),
@@ -231,6 +238,7 @@ class PreparedEmbreeKernel:
             "overlay_compose",
             "ray_triangle_hit_count",
             "segment_polygon_hitcount",
+            "segment_polygon_anyhit_rows",
             "point_nearest_segment",
         }:
             raise ValueError(
@@ -274,6 +282,8 @@ class PreparedEmbreeExecution:
             return _call_ray_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "segment_polygon_hitcount":
             return _call_segment_polygon_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "segment_polygon_anyhit_rows":
+            return _call_segment_polygon_anyhit_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "point_nearest_segment":
             return _call_point_nearest_segment_embree_packed(self.compiled, self.packed_inputs, self.library)
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
@@ -959,6 +969,37 @@ def _call_segment_polygon_hitcount_embree_packed(compiled: CompiledKernel, packe
     )
 
 
+def _call_segment_polygon_anyhit_rows_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    segments_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    segments = packed_inputs[segments_name]
+    polygons = packed_inputs[polygons_name]
+
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_segment_polygon_anyhit_rows(
+        segments.records,
+        segments.count,
+        polygons.refs,
+        polygons.polygon_count,
+        polygons.vertices_xy,
+        polygons.vertex_xy_count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlSegmentPolygonAnyHitRow,
+        field_names=("segment_id", "polygon_id"),
+    )
+
+
 def _run_point_nearest_segment_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     points_name = compiled.candidates.left.name
     segments_name = compiled.candidates.right.name
@@ -1186,6 +1227,20 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_run_segment_polygon_hitcount.restype = ctypes.c_int
+
+    library.rtdl_embree_run_segment_polygon_anyhit_rows.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
 
     library.rtdl_embree_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),

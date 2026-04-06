@@ -11,6 +11,7 @@ BASELINE_WORKLOAD_ORDER = (
     "overlay",
     "ray_tri_hitcount",
     "segment_polygon_hitcount",
+    "segment_polygon_anyhit_rows",
     "point_nearest_segment",
 )
 BASELINE_PRECISION_MODE = "float_approx"
@@ -203,6 +204,39 @@ BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
             "derived/br_county_subset_segment_polygon_tiled_x4",
         ),
         notes="Current local backend lowers this workload to native_loop even though the DSL traverse stays bvh-shaped.",
+    ),
+    "segment_polygon_anyhit_rows": WorkloadContract(
+        workload="segment_polygon_anyhit_rows",
+        backend="rtdl",
+        precision=BASELINE_PRECISION_MODE,
+        predicate="segment_polygon_anyhit_rows",
+        accel="bvh",
+        inputs=(
+            InputContract(
+                name="segments",
+                geometry="segments",
+                role="probe",
+                layout_name="Segment2D",
+                layout_fields=("x0", "y0", "x1", "y1", "id"),
+                logical_record_fields=("id", "x0", "y0", "x1", "y1"),
+            ),
+            InputContract(
+                name="polygons",
+                geometry="polygons",
+                role="build",
+                layout_name="Polygon2DRef",
+                layout_fields=("vertex_offset", "vertex_count", "id"),
+                logical_record_fields=("id", "vertices"),
+            ),
+        ),
+        emit_fields=("segment_id", "polygon_id"),
+        comparison_mode="exact",
+        representative_datasets=(
+            "authored_segment_polygon_minimal",
+            "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "derived/br_county_subset_segment_polygon_tiled_x4",
+        ),
+        notes="Row-materializing segment/polygon any-hit join over the same segment/polygon geometric core as hitcount.",
     ),
     "point_nearest_segment": WorkloadContract(
         workload="point_nearest_segment",

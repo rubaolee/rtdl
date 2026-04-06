@@ -47,6 +47,7 @@ class RtDslLanguageTest(unittest.TestCase):
             "county_soil_overlay_reference": "overlay",
             "ray_triangle_hitcount_reference": "ray_tri_hitcount",
             "segment_polygon_hitcount_reference": "segment_polygon_hitcount",
+            "segment_polygon_anyhit_rows_reference": "segment_polygon_anyhit_rows",
             "point_nearest_segment_reference": "point_nearest_segment",
         }
 
