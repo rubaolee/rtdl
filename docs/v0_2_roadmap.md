@@ -145,9 +145,10 @@ with:
 
 This is the release-defining proof and should not be subordinated to codegen.
 
-### Goal 111: codegen quality and verification
+### Goal 111: narrow generate-only MVP
 
-Verify that generated code is readable, runnable, and not merely speculative.
+Close one narrow generate-only product test and decide whether it is worth
+keeping.
 
 ### Goal 112: OptiX/Embree performance maturation
 
@@ -156,6 +157,11 @@ Push broader workload performance on real accepted surfaces, especially:
 - cold-start behavior
 - less manual fast-path dependence
 - broader workload competitiveness
+
+### Goal 113: generate-only maturation
+
+If Goal 111 survives, strengthen it carefully without letting it expand into
+shallow template sprawl.
 
 ## Recommended execution choice
 
