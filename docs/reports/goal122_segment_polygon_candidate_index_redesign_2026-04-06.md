@@ -150,10 +150,7 @@ The remaining main performance problem is now isolated:
 
 ## Review status
 
-Available reviewers have been asked to audit this result inside the current tool
-environment.
+Available reviewers audited this result inside the current tool environment, and
+external Claude review was later completed in:
 
-The user also required Claude as part of the consensus flow. A literal Claude
-review is not available in this environment, so the package remains marked:
-
-- pending external Claude review
+- [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)

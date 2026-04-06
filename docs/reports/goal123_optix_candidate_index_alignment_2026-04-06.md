@@ -146,7 +146,6 @@ Those audits found only wording/attribution issues:
 
 Those issues were corrected before publish.
 
-The user also required Claude as part of the consensus flow. A literal Claude
-review is not available in this environment, so the package remains marked:
+External Claude review was later completed in:
 
-- pending external Claude review
+- [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)

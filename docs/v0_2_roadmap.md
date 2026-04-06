@@ -211,6 +211,20 @@ candidate-reduction strategy:
 This goal counts as successful only if OptiX large deterministic Linux rows
 materially improve while parity stays clean.
 
+### Goal 126: second workload family selection
+
+Choose the second major workload-family target after
+`segment_polygon_hitcount`, keeping v0.2 workload-first and resisting scope
+drift.
+
+Current recommendation:
+
+- `segment_polygon_anyhit_rows`
+
+This should count only if the resulting next implementation goal closes a real
+distinct emitted workload family rather than just a renamed variant of
+hitcount.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

@@ -1,7 +1,7 @@
 # Goal 124 Report: v0.2 Review Backfill And Status
 
 Date: 2026-04-06
-Status: partially superseded by later Claude completion
+Status: superseded by later Claude and Gemini completion
 
 ## Summary
 
@@ -72,7 +72,12 @@ After this audit was published, external Claude review was completed in:
 
 - [goal107_123_package_review_claude_2026-04-06.md](goal107_123_package_review_claude_2026-04-06.md)
 
-So the remaining external-review gap is now Gemini-only.
+After this audit was published, external Gemini review was also completed in:
+
+- [goal107_123_package_review_gemini_2026-04-06.md](goal107_123_package_review_gemini_2026-04-06.md)
+
+So the external-review gap that existed at audit time is now closed for the
+current Goals `107` through `123` package.
 
 ## Final conclusion
 
@@ -81,7 +86,7 @@ The audit is complete, and the review-process status is clear.
 What is blocked here is the external-review requirement, not the ability to
 enumerate the current v0.2 review trail:
 
-- Gemini pending
+- Gemini was pending at audit time and is now complete
 - Claude was pending at audit time and is now complete
 
 That is the real remaining manual boundary.
