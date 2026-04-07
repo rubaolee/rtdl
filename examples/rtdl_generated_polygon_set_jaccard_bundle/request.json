@@ -1,0 +1,8 @@
+{
+  "artifact_shape": "handoff_bundle",
+  "backend": "cpu_python_reference",
+  "dataset": "authored_polygon_set_jaccard_minimal",
+  "output_mode": "rows",
+  "verify": true,
+  "workload": "polygon_set_jaccard"
+}

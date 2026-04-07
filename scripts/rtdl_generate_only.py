@@ -16,13 +16,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate one runnable RTDL program without executing the workload locally.")
     parser.add_argument(
         "--workload",
-        choices=("segment_polygon_hitcount", "segment_polygon_anyhit_rows"),
+        choices=("segment_polygon_hitcount", "segment_polygon_anyhit_rows", "polygon_set_jaccard"),
         required=True,
     )
     parser.add_argument(
         "--dataset",
         choices=(
             "authored_segment_polygon_minimal",
+            "authored_polygon_set_jaccard_minimal",
             "tests/fixtures/rayjoin/br_county_subset.cdb",
             "derived/br_county_subset_segment_polygon_tiled_x4",
         ),

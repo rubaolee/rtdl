@@ -9,6 +9,9 @@ The current real v0.2 surface adds:
 - two closed segment/polygon workload families:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
+- a narrow pathology-style Jaccard line:
+  - `polygon_pair_overlap_area_rows`
+  - `polygon_set_jaccard`
 - a narrow generate-only workflow that now covers both families
 - stronger Linux/PostGIS-backed correctness and performance evidence for those
   families
@@ -76,6 +79,42 @@ def road_polygon_hits():
     return rt.emit(hits, fields=["segment_id", "polygon_id"])
 ```
 
+### `polygon_set_jaccard`
+
+Meaning:
+
+- probe side: left polygon set
+- build side: right polygon set
+- output: one aggregate row with:
+  - `intersection_area`
+  - `left_area`
+  - `right_area`
+  - `union_area`
+  - `jaccard_similarity`
+
+Important boundary:
+
+- this is currently a narrow pathology-style workload
+- polygons must fit the orthogonal integer-grid unit-cell contract
+- this is not generic continuous polygon-set Jaccard
+
+Example:
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_set_similarity():
+    left = rt.input("left", rt.Polygons, role="probe")
+    right = rt.input("right", rt.Polygons, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.polygon_set_jaccard(exact=False))
+    return rt.emit(
+        rows,
+        fields=["intersection_area", "left_area", "right_area", "union_area", "jaccard_similarity"],
+    )
+```
+
 ## Generate-Only
 
 RTDL v0.2 keeps a narrow generate-only mode.
@@ -89,6 +128,8 @@ That mode is useful when you want:
 The current generate-only line is intentionally small:
 
 - it supports the two current v0.2 segment/polygon families
+- it also supports one narrow Jaccard entry:
+  - authored `polygon_set_jaccard`
 - it emits accepted runnable Python artifacts
 - it does not claim broad general code generation
 
@@ -166,11 +207,18 @@ cd /Users/rl2025/rtdl_python_only
 python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
+Run the narrow Jaccard example:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+```
+
 Generate a runnable handoff artifact:
 
 ```bash
 cd /Users/rl2025/rtdl_python_only
-python3 scripts/rtdl_generate_only.py
+python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 For app-style usage, start here:
@@ -192,3 +240,4 @@ The strongest current v0.2 claim is narrower and more honest:
 - two segment/polygon workload families are real
 - they are validated strongly on Linux/PostGIS
 - they have a narrow generate-only product line
+- the Jaccard line is now real, but only on the explicitly narrow pathology/unit-cell contract

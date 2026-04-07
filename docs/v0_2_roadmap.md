@@ -315,6 +315,18 @@ source on Linux:
 - run Python/native CPU vs PostGIS
 - report the scale boundary honestly if larger public-data rows become impractical
 
+### Goal 142: Jaccard docs and generate-only expansion
+
+After the first public-data-derived audit, make the Jaccard line easier to use
+and easier to hand off:
+
+- update the user-facing docs
+- add one narrow generate-only path for `polygon_set_jaccard`
+- publish one worked generated handoff bundle
+
+This counts only if the generate-only surface stays narrow and does not pretend
+to cover raw public-data Jaccard cases.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

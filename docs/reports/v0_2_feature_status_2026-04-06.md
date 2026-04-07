@@ -189,3 +189,13 @@ Update after Goal 141:
   - real public-source data
   - but converted into the narrow unit-cell contract
   - with a derived shifted comparison pair rather than paired raw annotations
+
+Update after Goal 142:
+
+- the Jaccard line now also has:
+  - updated user-facing docs
+  - one narrow generate-only path for `polygon_set_jaccard`
+  - one checked-in worked handoff bundle
+- the package remains explicit that generate-only covers only:
+  - the authored `polygon_set_jaccard` case
+  - not the broader public-data-derived audit surface

@@ -171,6 +171,37 @@ Notes:
   - its own aggregation
   - join-style auditing
 
+## Polygon-Set Jaccard
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_set_similarity():
+    left = rt.input("left", rt.Polygons, role="probe")
+    right = rt.input("right", rt.Polygons, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.polygon_set_jaccard(exact=False))
+    return rt.emit(
+        rows,
+        fields=["intersection_area", "left_area", "right_area", "union_area", "jaccard_similarity"],
+    )
+```
+
+Quick run:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+```
+
+Notes:
+
+- this is a narrow pathology-style aggregate workload
+- it uses orthogonal integer-grid polygons with unit-cell area semantics
+- it is not generic continuous polygon-set Jaccard
+- its first public-data audit is based on real MoNuSeg XML converted into this narrower unit-cell contract
+
 ## Point/Nearest Segment
 
 ```python
