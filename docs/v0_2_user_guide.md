@@ -23,6 +23,7 @@ The current real v0.2 surface adds:
 
 Canonical workload-by-workload homes:
 
+- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
 The important boundary is that v0.2 is broader and stronger than v0.1, but it
@@ -245,6 +246,7 @@ For app-style usage, start here:
 
 For per-feature usage guidance, best practices, and limitations, use:
 
+- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
 ## Current Limits

@@ -101,19 +101,17 @@ PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_pyt
 
 After this hello-world example, the best next files are:
 
-- `examples/rtdl_language_reference.py`
-- `examples/rtdl_sorting_single_file.py`
+- `docs/release_facing_examples.md`
+- `examples/rtdl_segment_polygon_hitcount.py`
+- `examples/rtdl_segment_polygon_anyhit_rows.py`
+- `examples/rtdl_polygon_set_jaccard.py`
 - `docs/features/README.md`
 - `docs/architecture_api_performance_overview.md`
 
-The sorting example is especially useful because it is a task readers
-already understand. It shows that RTDL is not only for spatial joins: you can
-express an unusual computation in RTDL, run it across backends, and then verify
-the result against ordinary Python sorting.
-
-That path moves from a tiny ray-query example, to a familiar sorting task
-written in RTDL, and then to the broader architecture/performance story.
+That path moves from a tiny ray-query example to the current release-facing
+spatial workloads and then to the broader architecture/performance story.
 
 If you already know which workload family you want, jump straight to:
 
+- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)

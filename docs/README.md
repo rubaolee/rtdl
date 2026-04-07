@@ -14,16 +14,17 @@ Project-level front door:
 1. [RTDL v0.2 User Guide](v0_2_user_guide.md)
 2. [v0.1 Release Notes](v0_1_release_notes.md)
 3. [Quick Tutorial](quick_tutorial.md)
-4. [Feature Homes](features/README.md)
-5. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
-6. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
-7. [v0.1 Support Matrix](v0_1_support_matrix.md)
-8. [v0.1 Release Reports](release_reports/v0_1/README.md)
-9. [RTDL v0.1 Archive](archive/v0_1/README.md)
-10. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-11. [Current Milestone Q/A](current_milestone_qa.md)
-12. [RayJoin Target](rayjoin_target.md)
-13. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+4. [Release-Facing Examples](release_facing_examples.md)
+5. [Feature Homes](features/README.md)
+6. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+7. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
+8. [v0.1 Support Matrix](v0_1_support_matrix.md)
+9. [v0.1 Release Reports](release_reports/v0_1/README.md)
+10. [RTDL v0.1 Archive](archive/v0_1/README.md)
+11. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+12. [Current Milestone Q/A](current_milestone_qa.md)
+13. [RayJoin Target](rayjoin_target.md)
+14. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
 
 Broader background:
 
@@ -37,7 +38,8 @@ Language-level:
 1. [RTDL Language Docs Index](rtdl/README.md)
 2. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
 3. [Feature Guide](rtdl_feature_guide.md)
-4. [Feature Homes](features/README.md)
+4. [Release-Facing Examples](release_facing_examples.md)
+5. [Feature Homes](features/README.md)
 
 Process-level:
 

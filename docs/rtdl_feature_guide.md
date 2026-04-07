@@ -66,6 +66,7 @@ Current workload-maturity note:
 
 Canonical workload homes:
 
+- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
 ## What RTDL Can Currently Do
