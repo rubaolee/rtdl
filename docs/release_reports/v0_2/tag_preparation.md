@@ -1,14 +1,14 @@
 # RTDL v0.2 Tag Preparation
 
 Date: 2026-04-07
-Status: ready for preparation
+Status: complete for `v0.2.0`
 
 ## Purpose
 
-This note records the final bounded interpretation of what should happen before
-an actual v0.2 tag is created.
+This note records the final bounded interpretation that was used before the
+`v0.2.0` tag was created.
 
-## Ready Now
+## Ready Before Tagging
 
 - frozen v0.2 scope is explicitly documented
 - release-facing examples are aligned with the frozen scope
@@ -19,7 +19,7 @@ an actual v0.2 tag is created.
 - Linux OptiX SDK-path robustness was improved so `make build-optix` discovers
   the accepted host SDK path automatically
 
-## Tag Preparation Checklist
+## Tag Preparation Checklist Used
 
 - confirm the desired tag name and release branch policy
 - confirm no new feature work is entering before the tag
@@ -37,8 +37,7 @@ an actual v0.2 tag is created.
 
 ## Honest Interpretation
 
-Tag preparation is acceptable now because the release-shaping package is
-coherent and audited.
+Tag preparation was acceptable because the release package was coherent,
+audited, and supported by fresh-clone acceptance evidence.
 
-The actual tag action should still be treated as a separate explicit release
-step, not implied by this note alone.
+The actual release step has now been taken as tag `v0.2.0`.

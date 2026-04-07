@@ -5,5 +5,5 @@
 - [Audit Report](audit_report.md)
 - [Tag Preparation](tag_preparation.md)
 
-These documents are the canonical release-facing summary for frozen v0.2 on
-current `main`, after Goal 156 review closure.
+These documents are the canonical release-facing summary for the tagged
+`v0.2.0` release, after Goal 157 fresh-clone acceptance closure.

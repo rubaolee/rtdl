@@ -1,12 +1,12 @@
 # RTDL v0.2 Release Statement
 
 Date: 2026-04-07
-Status: ready for tag preparation
+Status: released as `v0.2.0`
 
 ## Statement
 
-RTDL v0.2 is now a frozen release-shaping package for non-graphical
-ray-tracing workloads.
+RTDL v0.2 is now a released bounded package for non-graphical ray-tracing
+workloads.
 
 This version expands RTDL beyond the archived v0.1 trust anchor while keeping
 explicit platform and backend honesty boundaries.
@@ -49,7 +49,6 @@ The strongest current v0.2 evidence chain is:
 
 RTDL v0.2 does not claim:
 
-- final tagged release closure yet
 - equal maturity across every backend/workload combination
 - full polygon overlay materialization
 - generic continuous polygon Jaccard
@@ -69,4 +68,4 @@ An Antigravity external test report is preserved as supplementary evidence:
 - [Antigravity intake note](../../reports/antigravity_external_review_intake_2026-04-07.md)
 
 It should be read as additional CPU/Embree/PostGIS-oriented evidence, not as
-the canonical definition of the frozen v0.2 release surface.
+the canonical definition of the released v0.2 surface.

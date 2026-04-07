@@ -1,13 +1,13 @@
 # RTDL v0.2 Support Matrix
 
 Date: 2026-04-07
-Status: ready for tag preparation
+Status: released as `v0.2.0`
 
 ## Reading Guide
 
 Status wording used below:
 
-- `accepted`: part of the current frozen v0.2 release-shaping claim surface
+- `accepted`: part of the released bounded v0.2 claim surface
 - `accepted, bounded`: supported under an explicit narrower contract or
   fallback boundary
 - `limited local`: usable on this Mac only as a local support path, not as the
@@ -56,6 +56,6 @@ Status wording used below:
 - the segment/polygon line is the strongest current mature live v0.2 surface
 - the Jaccard line is real and accepted, but under a narrower workload and
   backend-maturity boundary
-- Linux is the canonical place to validate the frozen v0.2 package
+- Linux is the canonical place to validate the released v0.2 package
 - this Mac remains a useful local platform, but not the primary final release
   validation host
