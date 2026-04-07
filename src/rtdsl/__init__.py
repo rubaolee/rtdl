@@ -110,6 +110,16 @@ from .goal138_polygon_overlap_postgis import render_goal138_markdown
 from .goal138_polygon_overlap_postgis import run_goal138_polygon_overlap_postgis_validation
 from .goal138_polygon_overlap_postgis import run_postgis_polygon_pair_overlap_area_rows
 from .goal138_polygon_overlap_postgis import write_goal138_artifacts
+from .goal139_pathology_data import describe_download_boundary
+from .goal139_pathology_data import direct_download_allowed
+from .goal139_pathology_data import download_nuinsseg_zip
+from .goal139_pathology_data import load_monuseg_xml_annotations
+from .goal139_pathology_data import monuseg_drive_file_id
+from .goal139_pathology_data import parse_monuseg_xml_annotations
+from .goal139_pathology_data import public_pathology_datasets
+from .goal139_pathology_data import render_goal139_markdown
+from .goal139_pathology_data import write_goal139_artifacts
+from .goal139_pathology_data import write_public_pathology_manifest
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -312,6 +322,7 @@ __all__ = [
     "render_goal128_linux_markdown",
     "render_goal128_postgis_markdown",
     "render_goal138_markdown",
+    "render_goal139_markdown",
     "run_goal118_segment_polygon_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_postgis_validation",
@@ -321,6 +332,8 @@ __all__ = [
     "write_goal128_linux_artifacts",
     "write_goal128_postgis_artifacts",
     "write_goal138_artifacts",
+    "write_goal139_artifacts",
+    "write_public_pathology_manifest",
     "generate_synthetic_polygons",
     "generate_optix_project",
     "generate_goal23_artifacts",
@@ -365,6 +378,7 @@ __all__ = [
     "prepare_embree",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
+    "public_pathology_datasets",
     "ray_triangle_hit_count",
     "ray_triangle_hit_count_cpu",
     "RAYJOIN_PAPER_TARGETS",
@@ -389,6 +403,12 @@ __all__ = [
     "Segment",
     "segment_polygon_hitcount_cpu",
     "segment_polygon_anyhit_rows_cpu",
+    "parse_monuseg_xml_annotations",
+    "load_monuseg_xml_annotations",
+    "download_nuinsseg_zip",
+    "direct_download_allowed",
+    "describe_download_boundary",
+    "monuseg_drive_file_id",
     "summarize_baseline_benchmark",
     "slice_cdb_dataset",
     "traverse",

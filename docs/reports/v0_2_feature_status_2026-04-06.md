@@ -159,3 +159,13 @@ Update after Goal 138:
 - authored Linux/PostGIS parity is clean
 - the line is still intentionally narrow and should not yet be described as
   general polygon overlay or full public-data Jaccard support
+
+Update after Goal 139:
+
+- the public-data path is now concrete
+- NuInsSeg is recorded as the preferred later public mask source for the
+  unit-cell Jaccard direction
+- MoNuSeg XML parsing is the first public pathology annotation converter landed
+  in code
+- the package remains explicit that public pathology data is not yet fully
+  closed for the Goal 138 primitive

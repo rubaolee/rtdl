@@ -1,0 +1,26 @@
+{
+  "datasets": [
+    {
+      "access_kind": "direct_http",
+      "annotation_format": "labeled_png_masks_and_imagej_roi_zip",
+      "asset_kind": "full_dataset_zip",
+      "key": "nuinsseg",
+      "notes": "Public Zenodo distribution with raw patches, masks, and ROI files. Best semantic fit for the current unit-cell Jaccard line, but practical conversion needs a mask-image decoder that is not yet part of the repo.",
+      "size_bytes": 1627427342,
+      "source_url": "https://zenodo.org/api/records/10518968/files/NuInsSeg.zip/content",
+      "title": "NuInsSeg",
+      "use_for_jaccard": "preferred_later_public_mask_source"
+    },
+    {
+      "access_kind": "public_google_drive",
+      "annotation_format": "xml_polygon_annotations",
+      "asset_kind": "challenge_training_zip",
+      "key": "monuseg",
+      "notes": "Public challenge data page exposes training/testing downloads. XML polygon annotations are easier to integrate immediately without adding image dependencies.",
+      "size_bytes": null,
+      "source_url": "https://drive.google.com/file/d/1ZgqFJomqQGNnsx7w7QBzQQMVA16lbVCA/view?usp=sharing",
+      "title": "MoNuSeg 2018 Training Data",
+      "use_for_jaccard": "parser_landed_now_for_public_polygon_annotations"
+    }
+  ]
+}

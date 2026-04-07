@@ -1,0 +1,22 @@
+<Annotations>
+  <Annotation Id="1">
+    <Regions>
+      <Region Id="101">
+        <Vertices>
+          <Vertex X="10.0" Y="10.0" />
+          <Vertex X="14.0" Y="10.0" />
+          <Vertex X="14.0" Y="14.0" />
+          <Vertex X="10.0" Y="14.0" />
+        </Vertices>
+      </Region>
+      <Region Id="102">
+        <Vertices>
+          <Vertex X="20.0" Y="22.0" />
+          <Vertex X="24.0" Y="22.0" />
+          <Vertex X="24.0" Y="26.0" />
+          <Vertex X="20.0" Y="26.0" />
+        </Vertices>
+      </Region>
+    </Regions>
+  </Annotation>
+</Annotations>

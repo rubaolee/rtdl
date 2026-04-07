@@ -281,6 +281,18 @@ This counts only if the package stays explicit that the semantics are limited
 to orthogonal integer-grid polygons and do not yet imply general polygon
 overlay support.
 
+### Goal 139: public pathology data acquisition and conversion
+
+Make the public-data path concrete without pretending Jaccard is already
+public-data-closed:
+
+- record the public datasets that matter
+- choose the preferred later source
+- land one real public annotation conversion path in code
+- keep the boundary explicit between:
+  - public discovery/conversion
+  - full public-data primitive closure
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:
