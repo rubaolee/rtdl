@@ -58,6 +58,26 @@ PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
 This is the best short example of how the segment/polygon line looks in a more
 user-facing workflow.
 
+## RTDL Plus Python App Demo
+
+- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+
+This is a small user-authored RTDL-plus-Python application. RTDL handles the
+ray/triangle hit relationships. Python handles the visible-span recovery,
+brightness calculation, ASCII preview, and `.pgm` image output.
+
+Run:
+
+```bash
+cd /path/to/rtdl_python_only
+PYTHONPATH=src:. python3 examples/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
+```
+
+Important boundary:
+
+- this is a user-level RTDL-plus-Python application demo
+- it is not a claim that RTDL v0.2.0 is a full rendering system
+
 ## Generate-only entry point
 
 - script:

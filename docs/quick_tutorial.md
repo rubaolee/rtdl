@@ -105,6 +105,7 @@ After this hello-world example, the best next files are:
 - `examples/rtdl_segment_polygon_hitcount.py`
 - `examples/rtdl_segment_polygon_anyhit_rows.py`
 - `examples/rtdl_polygon_set_jaccard.py`
+- `examples/rtdl_lit_ball_demo.py`
 - `docs/features/README.md`
 - `docs/architecture_api_performance_overview.md`
 
@@ -115,3 +116,24 @@ If you already know which workload family you want, jump straight to:
 
 - [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+
+## RTDL Plus Python
+
+RTDL is not only a fixed menu of named workloads. The current public surface is
+still bounded, but users can already combine RTDL kernels with Python
+application logic.
+
+That is often the most practical way to use the system:
+
+- RTDL handles the geometric query core
+- Python handles grouping, summaries, reporting, or visual output
+
+The clearest small example is:
+
+- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+
+That demo uses RTDL only for ray/triangle hit relationships, then uses Python
+to reconstruct the visible span, compute brightness, print ASCII, and write a
+real `.pgm` image. It is not a claim that RTDL v0.2.0 is a full rendering
+system. It is a concrete example of RTDL working well as the geometric core of
+a Python application.

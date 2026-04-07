@@ -52,12 +52,17 @@ Process-level:
 Keep these current facts in mind while reading:
 
 - the accepted bounded package remains the current v0.1 trust anchor
-- current `main` is now the frozen v0.2 release-shaping branch state
+- current `main` is now the released v0.2.0 branch state
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
+- RTDL should not be read only as a fixed workload list:
+  - users can also write RTDL-plus-Python applications where RTDL provides the
+    geometry-query core and Python handles surrounding logic
+- the current small demonstration of that model is:
+  - [examples/rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
 - current `main` also carries narrow generate-only support for the accepted
   v0.2 surface
 - there are now two important performance stories:

@@ -18,6 +18,13 @@ The point of RTDL is simple:
 - run it across multiple backends
 - avoid hand-writing backend-specific code for Embree, OptiX, and Vulkan
 
+RTDL also already works well with Python for user applications. A user does not
+need to stay inside a fixed list of named workloads. RTDL can provide the
+geometry-query core while Python handles surrounding application logic,
+aggregation, reporting, or visual output. A small example of that model is:
+
+- [examples/rtdl_lit_ball_demo.py](examples/rtdl_lit_ball_demo.py)
+
 ## Why RTDL Exists
 
 Ray tracing hardware and software are very good at hierarchical geometric
@@ -54,12 +61,12 @@ The current repository includes:
 The repository now has two important status layers:
 
 - the archived **v0.1 trust anchor**
-- the live **frozen v0.2 release-shaping state on `main`**
+- the live **released v0.2.0 state on `main`**
 
 The v0.1 anchor remains the bounded, reviewed RayJoin-heavy research slice.
 
-Current `main` is broader than that archived slice, but feature growth is now
-frozen for v0.2 release shaping. The accepted v0.2 surface is exactly:
+Current `main` is broader than that archived slice. The accepted v0.2.0 surface
+is exactly:
 
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
@@ -98,7 +105,7 @@ Current `main` still does **not** mean:
 - exact computational geometry everywhere
 - full polygon overlay materialization
 - native Embree/OptiX/Vulkan Jaccard kernels
-- a frozen release promise like the archived `v0.1.0` tag
+- that every possible future workload/application shape is already first-class
 
 ## Release Reports
 

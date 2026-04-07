@@ -3,8 +3,7 @@
 ## What Is New
 
 RTDL v0.2 expands the system beyond the archived v0.1 RayJoin-heavy slice.
-That feature growth is now frozen for release shaping.
-This is the frozen v0.2 user-facing scope.
+This is the released v0.2.0 user-facing scope.
 
 The accepted real v0.2 surface is exactly:
 
@@ -39,9 +38,8 @@ Canonical workload-by-workload homes:
 - [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
-The important boundary is that v0.2 is broader and stronger than v0.1, but it
-is still not claiming that every backend/workload path is equally mature or
-that release packaging is already complete.
+The important boundary is that v0.2.0 is broader and stronger than v0.1, but it
+is still not claiming that every backend/workload path is equally mature.
 
 ## Workloads
 
@@ -257,6 +255,26 @@ python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset a
 For app-style usage, start here:
 
 - [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+
+## RTDL Plus Python Applications
+
+RTDL should not be understood only as a fixed list of named workloads. The
+current built-in workload surfaces are important, but users can also build
+their own applications by combining RTDL kernels with ordinary Python logic.
+
+That model already works well in the repo today:
+
+- RTDL handles the geometry-query core
+- Python handles grouping, filtering, summaries, reports, and visual output
+
+The clearest small example is:
+
+- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+
+That demo uses RTDL to compute ray/triangle hit relationships and then uses
+Python to compute brightness and write a real `.pgm` image. This is an example
+of RTDL working well as part of a Python application, not a claim that v0.2.0
+is a full graphics/rendering system.
 
 For per-feature usage guidance, best practices, and limitations, use:
 

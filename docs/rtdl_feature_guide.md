@@ -13,8 +13,7 @@ This guide is intentionally lighter than the documents in `docs/rtdl/`.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-For v0.2, feature growth is now frozen and the project is in release-shaping
-mode.
+The current live branch state is the released `v0.2.0` package.
 
 Today it includes:
 
@@ -53,6 +52,15 @@ Plus:
 - Linux-backed evidence
 - Linux-primary / Mac-limited platform split
 - explicit fallback-vs-native backend boundaries
+
+Current user-programming note:
+
+- RTDL should not be understood only as a fixed workload catalog
+- users can already combine RTDL kernels with Python application logic
+- the current small demo of that pattern is:
+  - [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+- RTDL provides the geometry-query core there, while Python handles brightness
+  reconstruction and image output
 
 Current workload-maturity note:
 
@@ -103,6 +111,8 @@ The current repo can:
   and `vulkan` surfaces on Linux under documented native CPU/oracle fallback
 - run the accepted long exact-source Vulkan surface with exact parity, while
   keeping Vulkan as the slower portable backend
+- support user-authored RTDL-plus-Python applications where RTDL handles the
+  geometry-query core and Python handles surrounding application logic
 - compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
 - support a RayJoin-oriented experiment/reporting workflow
