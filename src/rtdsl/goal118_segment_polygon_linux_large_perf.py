@@ -32,6 +32,12 @@ def _mean_summary(timings: list[float]) -> dict[str, object]:
     }
 
 
+def _format_optional_mean(value: object | None) -> str:
+    if value is None:
+        return "n/a"
+    return f"{float(value):.6f}"
+
+
 def _measure_current(backend: str, dataset: str, *, iterations: int) -> dict[str, object]:
     import rtdsl as rt
 
@@ -194,10 +200,11 @@ def render_goal118_markdown(payload: dict[str, object]) -> str:
     for dataset in [f"derived/br_county_subset_segment_polygon_tiled_x{n}" for n in payload["prepared_copies"]]:
         for backend in ("cpu", "embree", "optix", "vulkan"):
             row = grouped.get((dataset, backend), {"mean_sec": 0.0})
-            bind_mean = row.get("prepared_bind_and_run", {}).get("mean_sec", 0.0)
-            reuse_mean = row.get("prepared_reuse", {}).get("mean_sec", 0.0)
+            bind_mean = row.get("prepared_bind_and_run", {}).get("mean_sec")
+            reuse_mean = row.get("prepared_reuse", {}).get("mean_sec")
             lines.append(
-                f"| `{dataset}` | `{backend}` | {row['mean_sec']:.6f} | {bind_mean:.6f} | {reuse_mean:.6f} |"
+                f"| `{dataset}` | `{backend}` | {row['mean_sec']:.6f} | "
+                f"{_format_optional_mean(bind_mean)} | {_format_optional_mean(reuse_mean)} |"
             )
 
     lines.extend(

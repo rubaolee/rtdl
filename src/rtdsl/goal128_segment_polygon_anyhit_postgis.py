@@ -27,6 +27,12 @@ def _kernel():
     return segment_polygon_anyhit_rows_reference
 
 
+def _format_optional_mean(value: object | None) -> str:
+    if value is None:
+        return "n/a"
+    return f"{float(value):.6f}"
+
+
 def _hash_rows(rows: tuple[dict[str, int], ...]) -> dict[str, object]:
     normalized = tuple(sorted((int(row["segment_id"]), int(row["polygon_id"])) for row in rows))
     hasher = hashlib.sha256()
@@ -390,10 +396,11 @@ def render_goal128_linux_markdown(payload: dict[str, object]) -> str:
     for dataset in [segment_polygon_large_dataset_name(copies=n) for n in payload["prepared_copies"]]:
         for backend in ("cpu", "embree", "optix", "vulkan"):
             row = grouped.get((dataset, backend), {"mean_sec": 0.0})
-            bind_mean = row.get("prepared_bind_and_run", {}).get("mean_sec", 0.0)
-            reuse_mean = row.get("prepared_reuse", {}).get("mean_sec", 0.0)
+            bind_mean = row.get("prepared_bind_and_run", {}).get("mean_sec")
+            reuse_mean = row.get("prepared_reuse", {}).get("mean_sec")
             lines.append(
-                f"| `{dataset}` | `{backend}` | {row['mean_sec']:.6f} | {bind_mean:.6f} | {reuse_mean:.6f} |"
+                f"| `{dataset}` | `{backend}` | {row['mean_sec']:.6f} | "
+                f"{_format_optional_mean(bind_mean)} | {_format_optional_mean(reuse_mean)} |"
             )
 
     return "\n".join(lines).rstrip() + "\n"

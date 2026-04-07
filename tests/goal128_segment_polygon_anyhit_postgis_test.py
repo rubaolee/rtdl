@@ -71,7 +71,20 @@ class Goal128SegmentPolygonAnyhitPostgisTest(unittest.TestCase):
             "prepared_copies": (64,),
             "perf_iterations": 3,
             "postgis_rows": [],
-            "performance_rows": [],
+            "performance_rows": [
+                {
+                    "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+                    "backend": "cpu",
+                    "mean_sec": 0.2,
+                },
+                {
+                    "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+                    "backend": "embree",
+                    "mean_sec": 0.3,
+                    "prepared_bind_and_run": {"mean_sec": 0.28},
+                    "prepared_reuse": {"mean_sec": 0.15},
+                },
+            ],
         }
         (ROOT / "build").mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
@@ -84,6 +97,10 @@ class Goal128SegmentPolygonAnyhitPostgisTest(unittest.TestCase):
             )
             self.assertIn(
                 "Goal 128 Segment/Polygon Any-Hit Rows Linux Large-Scale Performance",
+                artifacts["markdown"].read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "| `derived/br_county_subset_segment_polygon_tiled_x64` | `cpu` | 0.200000 | n/a | n/a |",
                 artifacts["markdown"].read_text(encoding="utf-8"),
             )
 

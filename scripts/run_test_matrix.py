@@ -61,6 +61,20 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
         "tests.goal50_postgis_ground_truth_test",
         "tests.goal54_lkau_pkau_four_system_test",
     ),
+    "v0_2_local": (
+        "tests.goal110_baseline_runner_backend_test",
+        "tests.goal110_segment_polygon_hitcount_semantics_test",
+        "tests.goal111_generate_only_mvp_test",
+        "tests.goal113_generate_only_maturation_test",
+        "tests.goal116_segment_polygon_backend_audit_test",
+        "tests.goal118_segment_polygon_linux_large_perf_test",
+        "tests.goal128_segment_polygon_anyhit_postgis_test",
+        "tests.goal129_generate_only_second_workload_test",
+    ),
+    "v0_2_linux": (
+        "tests.goal110_segment_polygon_hitcount_closure_test",
+        "tests.goal114_segment_polygon_postgis_test",
+    ),
 }
 
 
@@ -77,6 +91,8 @@ def build_env() -> dict[str, str]:
 def group_modules(name: str) -> tuple[str, ...]:
     if name == "full":
         return TEST_GROUPS["unit"] + TEST_GROUPS["integration"] + TEST_GROUPS["system"]
+    if name == "v0_2_full":
+        return TEST_GROUPS["v0_2_local"] + TEST_GROUPS["v0_2_linux"]
     return TEST_GROUPS[name]
 
 
@@ -107,7 +123,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the RTDL test matrix by group.")
     parser.add_argument(
         "--group",
-        choices=("unit", "integration", "system", "full"),
+        choices=("unit", "integration", "system", "full", "v0_2_local", "v0_2_linux", "v0_2_full"),
         default="full",
     )
     return parser.parse_args()

@@ -70,6 +70,8 @@ class Goal118SegmentPolygonLinuxLargePerfTest(unittest.TestCase):
         self.assertIn("PostGIS-Backed Large-Scale Results", markdown)
         self.assertIn("accepted correctness-first runtime boundary", markdown)
         self.assertIn("derived/br_county_subset_segment_polygon_tiled_x64", markdown)
+        self.assertIn("| `derived/br_county_subset_segment_polygon_tiled_x64` | `cpu` | 0.200000 | n/a | n/a |", markdown)
+        self.assertIn("| `derived/br_county_subset_segment_polygon_tiled_x64` | `vulkan` | 0.250000 | n/a | n/a |", markdown)
 
     def test_write_goal118_artifacts_writes_json_and_markdown(self) -> None:
         payload = {

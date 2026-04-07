@@ -40,6 +40,10 @@ class TestMatrixRunnerTest(unittest.TestCase):
         )
         self.assertEqual(MODULE.group_modules("full"), expected)
 
+    def test_v0_2_full_group_is_union_of_v0_2_groups(self) -> None:
+        expected = MODULE.TEST_GROUPS["v0_2_local"] + MODULE.TEST_GROUPS["v0_2_linux"]
+        self.assertEqual(MODULE.group_modules("v0_2_full"), expected)
+
     def test_run_group_reports_command(self) -> None:
         payload = MODULE.run_group("unit")
         self.assertEqual(payload["group"], "unit")
@@ -55,9 +59,23 @@ class TestMatrixRunnerTest(unittest.TestCase):
             capture_output=True,
             check=False,
         )
-        self.assertEqual(cp.returncode, 0, cp.stdout + "\n" + cp.stderr)
         payload = json.loads(cp.stdout)
         self.assertEqual(payload["group"], "unit")
+        self.assertIn("python3 -m unittest", payload["command"])
+        self.assertEqual(payload["module_count"], len(MODULE.TEST_GROUPS["unit"]))
+        self.assertIn("output", payload)
+
+    def test_cli_v0_2_local_group_runs(self) -> None:
+        cp = subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), "--group", "v0_2_local"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(cp.returncode, 0, cp.stdout + "\n" + cp.stderr)
+        payload = json.loads(cp.stdout)
+        self.assertEqual(payload["group"], "v0_2_local")
         self.assertTrue(payload["ok"])
 
 
