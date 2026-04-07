@@ -148,8 +148,9 @@ Artifacts are saved under:
 
 Key rows:
 
-These figures are the current-run timings from the PostGIS-backed validation
-scripts, not isolated micro-benchmark means.
+These figures are the single-shot current-run timings from the PostGIS-backed
+validation scripts, not the isolated multi-iteration means from the standalone
+perf renderers.
 
 - `x64`
   - PostGIS `0.008281 s`
@@ -177,8 +178,9 @@ scripts, not isolated micro-benchmark means.
 
 Key rows:
 
-These figures are the current-run timings from the PostGIS-backed validation
-scripts, not isolated micro-benchmark means.
+These figures are the single-shot current-run timings from the PostGIS-backed
+validation scripts, not the isolated multi-iteration means from the standalone
+perf renderers.
 
 - `x64`
   - PostGIS `0.003299 s`
