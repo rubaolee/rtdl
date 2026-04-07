@@ -5,9 +5,14 @@ Public API mirrors embree_runtime.py:
   prepare_optix(kernel_fn_or_compiled)              → PreparedOptixKernel
   optix_version()                                   → tuple[int, int, int]
 
-All six workloads are supported:
+Current OptiX-native workload surface:
   segment_intersection, point_in_polygon, overlay_compose,
-  ray_triangle_hit_count, segment_polygon_hitcount, point_nearest_segment
+  ray_triangle_hit_count, segment_polygon_hitcount,
+  segment_polygon_anyhit_rows, point_nearest_segment
+
+Additional accepted public OptiX surface:
+  polygon_pair_overlap_area_rows, polygon_set_jaccard
+  via documented native CPU/oracle fallback, not OptiX-native kernels
 
 Data marshaling: inputs are double-precision on the Python/CPU side (matching
 the Embree backend); the C++/CUDA layer converts to float32 before uploading to
@@ -672,6 +677,7 @@ def _call_point_nearest_segment_optix_packed(compiled: CompiledKernel, packed, l
 def _load_optix_library():
     lib_path = _find_optix_library()
     lib = ctypes.CDLL(str(lib_path))
+    lib._rtdl_library_path = str(lib_path)
     _register_argtypes(lib)
     return lib
 
@@ -706,17 +712,17 @@ def _find_optix_library() -> Path:
 
 
 def _register_argtypes(lib) -> None:
-    lib.rtdl_optix_get_version.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_get_version").argtypes = [
         ctypes.POINTER(ctypes.c_int),
         ctypes.POINTER(ctypes.c_int),
         ctypes.POINTER(ctypes.c_int),
     ]
     lib.rtdl_optix_get_version.restype = ctypes.c_int
 
-    lib.rtdl_optix_free_rows.argtypes = [ctypes.c_void_p]
+    _require_backend_symbol(lib, "rtdl_optix_free_rows").argtypes = [ctypes.c_void_p]
     lib.rtdl_optix_free_rows.restype  = None
 
-    lib.rtdl_optix_run_lsi.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_lsi").argtypes = [
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
@@ -725,7 +731,7 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_lsi.restype = ctypes.c_int
 
-    lib.rtdl_optix_run_pip.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_pip").argtypes = [
         ctypes.POINTER(_RtdlPoint),      ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -736,7 +742,7 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_pip.restype = ctypes.c_int
 
-    lib.rtdl_optix_run_overlay.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_overlay").argtypes = [
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
@@ -747,7 +753,7 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_overlay.restype = ctypes.c_int
 
-    lib.rtdl_optix_run_ray_hitcount.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_ray_hitcount").argtypes = [
         ctypes.POINTER(_RtdlRay2D),      ctypes.c_size_t,
         ctypes.POINTER(_RtdlTriangle),   ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
@@ -756,7 +762,7 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_ray_hitcount.restype = ctypes.c_int
 
-    lib.rtdl_optix_run_segment_polygon_hitcount.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -766,7 +772,7 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_segment_polygon_hitcount.restype = ctypes.c_int
 
-    lib.rtdl_optix_run_segment_polygon_anyhit_rows.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_anyhit_rows").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
@@ -776,7 +782,7 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
 
-    lib.rtdl_optix_run_point_nearest_segment.argtypes = [
+    _require_backend_symbol(lib, "rtdl_optix_run_point_nearest_segment").argtypes = [
         ctypes.POINTER(_RtdlPoint),   ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
         ctypes.POINTER(ctypes.POINTER(_RtdlPointNearestSegmentRow)),
@@ -784,6 +790,18 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_optix_run_point_nearest_segment.restype = ctypes.c_int
+
+
+def _require_backend_symbol(lib, symbol_name: str):
+    try:
+        return getattr(lib, symbol_name)
+    except AttributeError as exc:
+        path = getattr(lib, "_rtdl_library_path", "<unknown>")
+        raise RuntimeError(
+            f"Loaded OptiX library {path!r} is missing required export {symbol_name!r}. "
+            "This usually means the shared library is stale or was built from an older RTDL checkout. "
+            "Rebuild it with 'make build-optix' or point RTDL_OPTIX_LIB at a rebuilt library."
+        ) from exc
 
 
 # ─────────────────────────────────────────────────────────────────────────────

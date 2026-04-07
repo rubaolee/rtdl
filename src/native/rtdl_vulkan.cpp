@@ -1,9 +1,14 @@
 // rtdl_vulkan.cpp — Vulkan KHR ray-tracing backend for rtdl
 //
-// Implements all six workloads (LSI, PIP, Overlay, RayHitCount,
-// SegmentPolygonHitcount, PointNearestSegment) using Vulkan KHR ray-tracing
-// extensions plus a Vulkan compute shader for PointNearestSegment (which
-// does not map cleanly to ray traversal).
+// Implements the current Vulkan-native workload surface:
+//   LSI, PIP, Overlay, RayHitCount, SegmentPolygonHitcount,
+//   SegmentPolygonAnyHitRows, PointNearestSegment
+// using Vulkan KHR ray-tracing extensions plus a Vulkan compute shader for
+// PointNearestSegment (which does not map cleanly to ray traversal).
+//
+// The narrow Jaccard workloads are accepted on the public Vulkan run surface
+// only through documented native CPU/oracle fallback in the Python runtime;
+// they do not currently have Vulkan-native kernels or C ABI exports here.
 //
 // Device kernels are embedded as GLSL source strings and compiled to SPIR-V
 // at runtime via shaderc.  Compiled pipelines are cached in static singletons

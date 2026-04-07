@@ -12,6 +12,7 @@ from examples.rtdl_language_reference import county_soil_overlay_reference
 from examples.rtdl_language_reference import county_zip_join_reference
 from examples.rtdl_language_reference import point_in_counties_reference
 from examples.rtdl_goal10_reference import point_nearest_segment_reference
+from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 from rtdsl.baseline_contracts import compare_baseline_rows
@@ -268,6 +269,23 @@ class RtDslVulkanTest(unittest.TestCase):
                 "segment_polygon_hitcount",
                 rt.run_cpu(segment_polygon_hitcount_reference, **case.inputs),
                 rt.run_vulkan(segment_polygon_hitcount_reference, **case.inputs),
+            )
+        )
+
+    def test_run_vulkan_segment_polygon_anyhit_rows_matches_cpu(self) -> None:
+        segments = (
+            {"id": 1, "x0": -1.0, "y0": 1.0, "x1": 3.0, "y1": 1.0},
+            {"id": 2, "x0": 5.0, "y0": 5.0, "x1": 6.0, "y1": 6.0},
+        )
+        polygons = (
+            {"id": 10, "vertices": ((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))},
+            {"id": 11, "vertices": ((4.0, 4.0), (7.0, 4.0), (7.0, 7.0), (4.0, 7.0))},
+        )
+        self.assertTrue(
+            compare_baseline_rows(
+                "segment_polygon_anyhit_rows",
+                rt.run_cpu(segment_polygon_anyhit_rows_reference, segments=segments, polygons=polygons),
+                rt.run_vulkan(segment_polygon_anyhit_rows_reference, segments=segments, polygons=polygons),
             )
         )
 
