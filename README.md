@@ -90,12 +90,17 @@ baseline and points readers to the canonical v0.1 release-report package.
 
 ## Strongest Current Backend Story
 
-The strongest current performance surface is:
+There are now two important performance stories on current `main`:
 
-- long exact-source `county_zipcode`
-- positive-hit `pip`
+- the archived **v0.1 trust-anchor** performance surface:
+  - long exact-source `county_zipcode`
+  - positive-hit `pip`
+- the live **v0.2 large-row** performance surface:
+  - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
+  - Linux/PostGIS-backed through `x4096`
 
-On that accepted surface:
+On the v0.1 trust-anchor surface:
 
 - **Embree** is parity-clean and faster than PostGIS on the published prepared
   and repeated raw-input boundaries
@@ -103,9 +108,15 @@ On that accepted surface:
   boundaries
 - **Vulkan** is parity-clean and hardware-validated there, but slower
 
-The bounded package still remains the **v0.1 trust anchor** even though the
-strongest performance evidence is now the long exact-source `county_zipcode`
-row.
+On the live v0.2 large-row surface:
+
+- all four RTDL backends are parity-clean against PostGIS on the accepted
+  deterministic segment/polygon rows
+- at `x4096`, RTDL backends remain faster than PostGIS on both current
+  segment/polygon families
+
+The bounded v0.1 package remains the **trust anchor**, while the v0.2
+segment/polygon line is the strongest current large-row live-branch story.
 
 ## Backend Roles
 

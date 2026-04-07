@@ -108,6 +108,9 @@ After this goal:
 - `docs/README.md` now surfaces:
   - `docs/v0_2_user_guide.md`
   - the live presence of the two closed segment/polygon families
+  - the fact that current `main` now has both:
+    - the archived v0.1 trust-anchor performance story
+    - the live v0.2 large-row segment/polygon performance story
 
 ## Honest boundary
 

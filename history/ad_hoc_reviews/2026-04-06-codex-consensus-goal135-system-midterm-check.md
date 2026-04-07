@@ -30,8 +30,17 @@ Keep.
 ## Review status
 
 - Gemini review: completed and saved
-- Claude review: handoff prepared, but no usable artifact was returned through
-  the current non-interactive subprocess path
+- Claude review: completed and saved
+
+## Post-review correction
+
+Claude correctly noted that the front-door docs still undersold the live v0.2
+large-row performance story by emphasizing only the archived v0.1
+`county_zipcode` positive-hit `pip` surface. That omission was corrected after
+review in:
+
+- [README.md](/Users/rl2025/rtdl_python_only/README.md)
+- [docs/README.md](/Users/rl2025/rtdl_python_only/docs/README.md)
 
 ## Summary
 

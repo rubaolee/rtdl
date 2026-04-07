@@ -50,8 +50,11 @@ Keep these current facts in mind while reading:
 - the accepted bounded package remains the current v0.1 trust anchor
 - current `main` also carries two closed v0.2 segment/polygon workload families
   and their narrow generate-only support
-- the strongest current performance closure is the long exact-source
-  `county_zipcode` positive-hit `pip` surface
+- there are now two important performance stories:
+  - the v0.1 long exact-source `county_zipcode` positive-hit `pip` trust-anchor
+    surface
+  - the v0.2 Linux/PostGIS-backed segment/polygon large-row surface through
+    `x4096`
 - Embree and OptiX are the mature high-performance backends on that surface
 - Vulkan is supported and parity-clean there, but slower
 - PostGIS remains the external indexed comparison baseline
