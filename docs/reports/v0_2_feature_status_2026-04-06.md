@@ -178,3 +178,14 @@ Update after Goal 140:
 - authored Linux/PostGIS parity is clean
 - the line is still intentionally narrow and should not yet be described as
   generic continuous polygon-set Jaccard or full public-data closure
+
+Update after Goal 141:
+
+- the Jaccard line now has one real public-data-derived Linux audit using
+  `MoNuSeg 2018 Training Data`
+- Python and native CPU stayed parity-clean vs PostGIS on the accepted public
+  audit scales
+- the package remains explicit that this is:
+  - real public-source data
+  - but converted into the narrow unit-cell contract
+  - with a derived shifted comparison pair rather than paired raw annotations

@@ -1,0 +1,59 @@
+{
+  "dataset": {
+    "base_left_polygon_count": 8556,
+    "base_right_polygon_count": 8556,
+    "kind": "public_real_data_derived_pair",
+    "pair_derivation": "right set is the same real-data-derived unit-cell polygon set shifted by +1 cell in x",
+    "raw_polygon_count": 424,
+    "selected_polygon_count": 16,
+    "source": "MoNuSeg 2018 Training Data",
+    "xml_name": "MoNuSeg 2018 Training Data/Annotations/TCGA-38-6178-01Z-00-DX1.xml"
+  },
+  "generated_at": "2026-04-07T00:04:18",
+  "host": {
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "rows": [
+    {
+      "copies": 1,
+      "cpu_parity_vs_postgis": true,
+      "cpu_sec": 0.061195011003292166,
+      "left_polygon_count": 8556,
+      "postgis_rows": [
+        {
+          "intersection_area": 8190,
+          "jaccard_similarity": 0.917955615332885,
+          "left_area": 8556,
+          "right_area": 8556,
+          "union_area": 8922
+        }
+      ],
+      "postgis_sec": 4.362636202000431,
+      "python_parity_vs_postgis": true,
+      "python_sec": 0.13521349600341637,
+      "right_polygon_count": 8556
+    },
+    {
+      "copies": 4,
+      "cpu_parity_vs_postgis": true,
+      "cpu_sec": 0.2110404850100167,
+      "left_polygon_count": 34224,
+      "postgis_rows": [
+        {
+          "intersection_area": 32760,
+          "jaccard_similarity": 0.917955615332885,
+          "left_area": 34224,
+          "right_area": 34224,
+          "union_area": 35688
+        }
+      ],
+      "postgis_sec": 54.82750327199756,
+      "python_parity_vs_postgis": true,
+      "python_sec": 0.4971318239986431,
+      "right_polygon_count": 34224
+    }
+  ],
+  "suite": "goal141_public_jaccard_audit"
+}

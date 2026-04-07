@@ -305,6 +305,16 @@ Build the first aggregate workload on top of Goal 138:
 This counts only if the package stays explicit that it is a narrow pathology
 aggregate workload, not generic continuous polygon-set Jaccard.
 
+### Goal 141: Linux/public-data Jaccard audit
+
+After the authored closure, push the Jaccard line onto one real public pathology
+source on Linux:
+
+- use a real public pathology annotation source
+- convert it honestly into the accepted unit-cell contract
+- run Python/native CPU vs PostGIS
+- report the scale boundary honestly if larger public-data rows become impractical
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

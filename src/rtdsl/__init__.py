@@ -125,6 +125,17 @@ from .goal140_polygon_set_jaccard_postgis import render_goal140_markdown
 from .goal140_polygon_set_jaccard_postgis import run_goal140_polygon_set_jaccard_postgis_validation
 from .goal140_polygon_set_jaccard_postgis import run_postgis_polygon_set_jaccard
 from .goal140_polygon_set_jaccard_postgis import write_goal140_artifacts
+from .goal141_public_jaccard_audit import build_goal141_public_case
+from .goal141_public_jaccard_audit import download_monuseg_training_zip
+from .goal141_public_jaccard_audit import list_monuseg_training_xml_names
+from .goal141_public_jaccard_audit import load_monuseg_training_xml_annotations
+from .goal141_public_jaccard_audit import monuseg_polygons_to_unit_square_polygons
+from .goal141_public_jaccard_audit import MONUSEG_DEFAULT_XML
+from .goal141_public_jaccard_audit import render_goal141_markdown
+from .goal141_public_jaccard_audit import run_goal141_public_jaccard_audit
+from .goal141_public_jaccard_audit import run_postgis_polygon_set_jaccard_for_case
+from .goal141_public_jaccard_audit import tile_polygon_set
+from .goal141_public_jaccard_audit import write_goal141_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -331,19 +342,23 @@ __all__ = [
     "render_goal138_markdown",
     "render_goal139_markdown",
     "render_goal140_markdown",
+    "render_goal141_markdown",
     "run_goal118_segment_polygon_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_postgis_validation",
     "run_goal138_polygon_overlap_postgis_validation",
     "run_goal140_polygon_set_jaccard_postgis_validation",
+    "run_goal141_public_jaccard_audit",
     "run_postgis_polygon_pair_overlap_area_rows",
     "run_postgis_polygon_set_jaccard",
+    "run_postgis_polygon_set_jaccard_for_case",
     "write_goal118_artifacts",
     "write_goal128_linux_artifacts",
     "write_goal128_postgis_artifacts",
     "write_goal138_artifacts",
     "write_goal139_artifacts",
     "write_goal140_artifacts",
+    "write_goal141_artifacts",
     "write_public_pathology_manifest",
     "generate_synthetic_polygons",
     "generate_optix_project",
@@ -387,6 +402,12 @@ __all__ = [
     "polygon_pair_overlap_area_rows_cpu",
     "polygon_set_jaccard_cpu",
     "polygons_to_segments",
+    "MONUSEG_DEFAULT_XML",
+    "monuseg_polygons_to_unit_square_polygons",
+    "list_monuseg_training_xml_names",
+    "load_monuseg_training_xml_annotations",
+    "download_monuseg_training_zip",
+    "build_goal141_public_case",
     "prepare_embree",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
@@ -421,6 +442,7 @@ __all__ = [
     "direct_download_allowed",
     "describe_download_boundary",
     "monuseg_drive_file_id",
+    "tile_polygon_set",
     "summarize_baseline_benchmark",
     "slice_cdb_dataset",
     "traverse",
