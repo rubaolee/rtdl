@@ -1,0 +1,65 @@
+{
+  "artifacts": {
+    "json": "build/goal128_postgis_x64/goal128_segment_polygon_anyhit_postgis_validation.json",
+    "markdown": "build/goal128_postgis_x64/goal128_segment_polygon_anyhit_postgis_validation.md"
+  },
+  "dataset": "derived/br_county_subset_segment_polygon_tiled_x64",
+  "generated_at": "2026-04-06T20:51:17",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3"
+  },
+  "polygon_count": 128,
+  "postgis": {
+    "row_count": 704,
+    "sec": 0.003240903010009788,
+    "sha256": "e97b0f49c4a5f024bdda672737ddd83c88a05f054ce0486919af3b9a6edf6210"
+  },
+  "records": [
+    {
+      "backend": "cpu",
+      "hash": {
+        "row_count": 704,
+        "sha256": "e97b0f49c4a5f024bdda672737ddd83c88a05f054ce0486919af3b9a6edf6210"
+      },
+      "parity_vs_postgis": true,
+      "row_count": 704,
+      "sec": 0.010849358994164504
+    },
+    {
+      "backend": "embree",
+      "hash": {
+        "row_count": 704,
+        "sha256": "e97b0f49c4a5f024bdda672737ddd83c88a05f054ce0486919af3b9a6edf6210"
+      },
+      "parity_vs_postgis": true,
+      "row_count": 704,
+      "sec": 0.009999998001148924
+    },
+    {
+      "backend": "optix",
+      "hash": {
+        "row_count": 704,
+        "sha256": "e97b0f49c4a5f024bdda672737ddd83c88a05f054ce0486919af3b9a6edf6210"
+      },
+      "parity_vs_postgis": true,
+      "row_count": 704,
+      "sec": 0.006233520995010622
+    },
+    {
+      "backend": "vulkan",
+      "hash": {
+        "row_count": 704,
+        "sha256": "e97b0f49c4a5f024bdda672737ddd83c88a05f054ce0486919af3b9a6edf6210"
+      },
+      "parity_vs_postgis": true,
+      "row_count": 704,
+      "sec": 0.0032133399945450947
+    }
+  ],
+  "segment_count": 640,
+  "suite": "goal128_segment_polygon_anyhit_postgis_validation"
+}

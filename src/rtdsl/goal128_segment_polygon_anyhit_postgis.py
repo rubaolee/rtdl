@@ -13,8 +13,6 @@ from pathlib import Path
 
 from .baseline_contracts import compare_baseline_rows
 from .baseline_runner import load_representative_case
-from .goal114_segment_polygon_postgis import _copy_polygons
-from .goal114_segment_polygon_postgis import _copy_segments
 from .goal114_segment_polygon_postgis import connect_postgis
 from .goal114_segment_polygon_postgis import segment_polygon_large_dataset_name
 
@@ -37,6 +35,63 @@ def _hash_rows(rows: tuple[dict[str, int], ...]) -> dict[str, object]:
     return {"row_count": len(normalized), "sha256": hasher.hexdigest()}
 
 
+def _polygon_wkt(vertices: tuple[tuple[float, float], ...]) -> str:
+    ring = vertices if vertices and vertices[0] == vertices[-1] else vertices + (vertices[0],)
+    body = ",".join(f"{x} {y}" for x, y in ring)
+    return f"POLYGON(({body}))"
+
+
+def _copy_segments(cur, schema: str, table: str, rows) -> None:
+    cur.execute(
+        f"CREATE TABLE {schema}.{table}_raw (id BIGINT, x0 DOUBLE PRECISION, y0 DOUBLE PRECISION, x1 DOUBLE PRECISION, y1 DOUBLE PRECISION)"
+    )
+    payload = io.StringIO()
+    writer = csv.writer(payload, delimiter='\t', lineterminator='\n')
+    for row in rows:
+        writer.writerow([int(row.id), row.x0, row.y0, row.x1, row.y1])
+    payload.seek(0)
+    cur.copy_expert(
+        f"COPY {schema}.{table}_raw (id, x0, y0, x1, y1) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",
+        payload,
+    )
+    cur.execute(
+        f"""
+        CREATE TABLE {schema}.{table} AS
+        SELECT
+            id,
+            ST_GeomFromText(
+                'LINESTRING(' || x0 || ' ' || y0 || ',' || x1 || ' ' || y1 || ')',
+                4326
+            )::geometry(LINESTRING, 4326) AS geom
+        FROM {schema}.{table}_raw
+        """
+    )
+    cur.execute(f"CREATE INDEX {table}_geom_idx ON {schema}.{table} USING GIST (geom)")
+    cur.execute(f"ANALYZE {schema}.{table}")
+
+
+def _copy_polygons(cur, schema: str, table: str, rows) -> None:
+    cur.execute(f"CREATE TABLE {schema}.{table}_raw (id BIGINT, wkt TEXT)")
+    payload = io.StringIO()
+    writer = csv.writer(payload, delimiter='\t', lineterminator='\n')
+    for row in rows:
+        writer.writerow([int(row.id), _polygon_wkt(tuple(row.vertices))])
+    payload.seek(0)
+    cur.copy_expert(
+        f"COPY {schema}.{table}_raw (id, wkt) FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t')",
+        payload,
+    )
+    cur.execute(
+        f"""
+        CREATE TABLE {schema}.{table} AS
+        SELECT id, ST_GeomFromText(wkt, 4326)::geometry(POLYGON, 4326) AS geom
+        FROM {schema}.{table}_raw
+        """
+    )
+    cur.execute(f"CREATE INDEX {table}_geom_idx ON {schema}.{table} USING GIST (geom)")
+    cur.execute(f"ANALYZE {schema}.{table}")
+
+
 def run_postgis_segment_polygon_anyhit_rows(
     *,
     db_name: str,
@@ -49,8 +104,8 @@ def run_postgis_segment_polygon_anyhit_rows(
         with conn.cursor() as cur:
             cur.execute("DROP SCHEMA IF EXISTS goal128 CASCADE")
             cur.execute("CREATE SCHEMA goal128")
-            _copy_segments(cur, "segments", tuple(case.inputs["segments"]))
-            _copy_polygons(cur, "polygons", tuple(case.inputs["polygons"]))
+            _copy_segments(cur, "goal128", "segments", tuple(case.inputs["segments"]))
+            _copy_polygons(cur, "goal128", "polygons", tuple(case.inputs["polygons"]))
             start = time.perf_counter()
             cur.execute(
                 """
