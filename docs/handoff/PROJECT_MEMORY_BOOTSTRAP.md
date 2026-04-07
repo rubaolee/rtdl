@@ -30,7 +30,7 @@ There are two status layers and both matter:
 
 ### Live branch
 
-- current `main` is the frozen v0.2 release-shaping line
+- current `main` is the released `v0.2.0` line
 - accepted frozen v0.2 workload surface:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`

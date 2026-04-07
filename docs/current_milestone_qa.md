@@ -1,15 +1,19 @@
 # Current Milestone Q/A
 
-Date: 2026-04-05
+Date: 2026-04-07
 
 ## What is the current strongest RTDL result?
 
-The strongest current result is the long exact-source `county_zipcode`
-positive-hit `pip` surface:
+The strongest current live-branch result is the released v0.2 segment/polygon
+surface on Linux:
 
-- OptiX is parity-clean and faster than PostGIS on the accepted prepared and
-  repeated raw-input boundaries
-- Embree is parity-clean and faster than PostGIS on the same boundaries
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- parity-clean against PostGIS through accepted large deterministic rows
+- RTDL remains ahead of PostGIS on the accepted `x4096` rows
+
+The archived v0.1 `county_zipcode` positive-hit `pip` line remains the trust
+anchor and strongest older prepared/repeated raw-input performance story.
 
 ## Is Vulkan a failure?
 
@@ -34,9 +38,19 @@ Python owns:
 - dataset ingestion
 - cache management
 - public API boundaries
+- user application logic around RTDL kernels when needed
 
 Recent performance work explicitly reduced Python hot-path cost by reusing
 prepared and prepacked geometry automatically.
+
+RTDL also already works well with Python user applications where:
+
+- RTDL provides the geometry-query core
+- Python provides grouping, summaries, reports, or visual output
+
+Small example:
+
+- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
 
 ## Does the CPU still matter when using OptiX or Vulkan?
 
@@ -65,10 +79,10 @@ They matter for:
 
 No.
 
-The current milestone performance closure is strongest for:
+The current strongest mature surfaces are:
 
-- long exact-source `county_zipcode`
-- positive-hit `pip`
+- released v0.2 segment/polygon workloads on Linux
+- archived v0.1 positive-hit `pip` trust-anchor performance
 
 Other workloads exist and work, but they are not all documented with the same
 depth of performance closure yet.
@@ -88,8 +102,12 @@ Mixing these would make the performance claims misleading.
 
 Yes, with explicit boundaries.
 
-Safe current claim:
+Safe current claims:
 
-- RTDL + OptiX and RTDL + Embree beat PostGIS on the accepted long exact-source
-  `county_zipcode` positive-hit `pip` surface under the published prepared and
-  repeated raw-input boundaries
+- RTDL backends beat PostGIS on the accepted Linux `x4096` segment/polygon
+  rows for:
+  - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
+- RTDL + OptiX and RTDL + Embree also beat PostGIS on the archived long
+  exact-source `county_zipcode` positive-hit `pip` surface under the published
+  prepared and repeated raw-input boundaries

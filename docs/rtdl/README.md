@@ -3,6 +3,10 @@
 This directory is the canonical language-facing documentation for the **current
 public RTDL surface**.
 
+That surface should not be read only as a closed workload catalog. RTDL also
+supports user-authored programs where RTDL provides the geometry-query core and
+Python provides surrounding application logic.
+
 The documents here have different roles and should not overlap heavily.
 
 ## Read In This Order
@@ -26,6 +30,9 @@ The documents here have different roles and should not overlap heavily.
 5. [LLM Authoring Guide](llm_authoring_guide.md)
    - agent-facing guidance for generating RTDL code
 
+6. [Release-Facing Examples](../release_facing_examples.md)
+   - includes small RTDL-plus-Python application demos
+
 ## Current Runtime Surface
 
 The language docs describe a public surface that can currently be used through:
@@ -38,3 +45,11 @@ The language docs describe a public surface that can currently be used through:
 
 The language surface is still intentionally narrow, but it is no longer only a
 planning or code-generation surface.
+
+Current user-programming note:
+
+- RTDL can already work well as the geometry-query layer inside Python
+  applications
+- a concrete small example is:
+  - [rtdl_lit_ball_demo.py](../../examples/rtdl_lit_ball_demo.py)
+- that demo is not a claim that RTDL is a rendering system
