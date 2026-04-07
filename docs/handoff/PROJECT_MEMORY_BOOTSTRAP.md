@@ -16,7 +16,7 @@ Current local repo:
 Current live branch position when this bootstrap was written:
 
 - `main`
-- published through Goal 146
+- published through Goal 150
 
 ## 2. Current Trust Model
 
@@ -30,9 +30,14 @@ There are two status layers and both matter:
 
 ### Live branch
 
-- current `main` is the live v0.2 development line
+- current `main` is the frozen v0.2 release-shaping line
+- accepted frozen v0.2 workload surface:
+  - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
+  - `polygon_pair_overlap_area_rows`
+  - `polygon_set_jaccard`
 - it is broader than v0.1 and strongly tested on the accepted Linux platform
-- it is not a frozen release promise in the same way as the archived v0.1 tag
+- it is not yet the final tagged v0.2 release
 
 ## 3. Platform Reality
 
@@ -243,6 +248,7 @@ Current honest reading:
 - Linux whole-system matrix is green on the accepted primary platform
 - local Mac is not broad whole-system green because of `geos_c` linkage gaps
 - this is a platform limitation, not a new Linux regression
+- the best current release-readiness checkpoint is Goal 150, not just Goal 135
 
 ## 8. Documentation Surface To Trust First
 

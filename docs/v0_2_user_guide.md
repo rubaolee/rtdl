@@ -3,15 +3,28 @@
 ## What Is New
 
 RTDL v0.2 expands the system beyond the archived v0.1 RayJoin-heavy slice.
+That feature growth is now frozen for release shaping.
+This is the frozen v0.2 user-facing scope.
 
-The current real v0.2 surface adds:
+The accepted real v0.2 surface is exactly:
 
-- two closed segment/polygon workload families:
-  - `segment_polygon_hitcount`
-  - `segment_polygon_anyhit_rows`
-- a narrow pathology-style Jaccard line:
-  - `polygon_pair_overlap_area_rows`
-  - `polygon_set_jaccard`
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
+
+Plus:
+
+- the current narrow generate-only workflow
+- the feature-home documentation layer
+- Linux-backed correctness/performance evidence
+- the Linux-primary / Mac-limited platform split
+- explicit fallback-vs-native backend honesty boundaries
+
+Within that frozen surface:
+
+- the first two items are the closed segment/polygon families
+- the last two items are the narrow pathology-style Jaccard line
 - public Linux wrapper-surface access to that Jaccard line through:
   - `embree`
   - `optix`
@@ -27,7 +40,8 @@ Canonical workload-by-workload homes:
 - [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
 The important boundary is that v0.2 is broader and stronger than v0.1, but it
-is still not claiming that every backend/workload path is equally mature.
+is still not claiming that every backend/workload path is equally mature or
+that release packaging is already complete.
 
 ## Workloads
 
@@ -215,28 +229,28 @@ It is not the main validation platform for:
 Run the v0.2 hitcount example:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 Run the v0.2 any-hit example:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 Run the narrow Jaccard example:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 ```
 
 Generate a runnable handoff artifact:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 

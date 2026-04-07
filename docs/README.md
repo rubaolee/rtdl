@@ -52,8 +52,14 @@ Process-level:
 Keep these current facts in mind while reading:
 
 - the accepted bounded package remains the current v0.1 trust anchor
-- current `main` also carries two closed v0.2 segment/polygon workload families
-  plus a narrow Jaccard line and generate-only support
+- current `main` is now the frozen v0.2 release-shaping branch state
+- the accepted v0.2 workload surface is exactly:
+  - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
+  - `polygon_pair_overlap_area_rows`
+  - `polygon_set_jaccard`
+- current `main` also carries narrow generate-only support for the accepted
+  v0.2 surface
 - there are now two important performance stories:
   - the v0.1 long exact-source `county_zipcode` positive-hit `pip` trust-anchor
     surface
@@ -66,6 +72,8 @@ Keep these current facts in mind while reading:
 - Vulkan is supported and parity-clean there, but slower
 - the Jaccard line now also has Linux wrapper-surface consistency on Embree,
   OptiX, and Vulkan through documented native CPU/oracle fallback
+- Linux is the primary validation platform
+- this Mac is only a limited local platform
 - PostGIS remains the external indexed comparison baseline
 - the motivating application target is RayJoin:
   - Liang Geng, Rubao Lee, and Xiaodong Zhang,

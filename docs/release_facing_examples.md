@@ -14,7 +14,7 @@ live workload/package story.
 - run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
@@ -25,7 +25,7 @@ python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference
 - run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
@@ -36,7 +36,7 @@ python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_refere
 - run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 ```
 
@@ -47,7 +47,7 @@ PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 - run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
 ```
 
@@ -66,7 +66,7 @@ user-facing workflow.
 Current accepted narrow generate-only example:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd /path/to/rtdl_python_only
 python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 

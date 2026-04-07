@@ -13,6 +13,8 @@ This guide is intentionally lighter than the documents in `docs/rtdl/`.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
+For v0.2, feature growth is now frozen and the project is in release-shaping
+mode.
 
 Today it includes:
 
@@ -36,6 +38,21 @@ Current supported workload families:
 - `segment_polygon_anyhit_rows`
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
+
+Accepted frozen v0.2 release-shaping surface:
+
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
+
+Plus:
+
+- narrow generate-only
+- feature-home docs
+- Linux-backed evidence
+- Linux-primary / Mac-limited platform split
+- explicit fallback-vs-native backend boundaries
 
 Current workload-maturity note:
 

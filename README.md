@@ -54,32 +54,50 @@ The current repository includes:
 The repository now has two important status layers:
 
 - the archived **v0.1 trust anchor**
-- the live **v0.2 midterm branch state on `main`**
+- the live **frozen v0.2 release-shaping state on `main`**
 
 The v0.1 anchor remains the bounded, reviewed RayJoin-heavy research slice.
 
-Current `main` is broader than that archived slice:
+Current `main` is broader than that archived slice, but feature growth is now
+frozen for v0.2 release shaping. The accepted v0.2 surface is exactly:
 
-- it keeps the accepted v0.1 surface
-- it adds two closed segment/polygon workload families:
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
+
+Plus:
+
+- the current narrow generate-only surface
+- the feature-home documentation layer
+- Linux-backed correctness/performance evidence
+- explicit fallback-vs-native backend honesty boundaries
+
+Current `main` therefore:
+
+- keeps the accepted v0.1 surface
+- adds two closed segment/polygon workload families:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
-- it adds a narrow Jaccard line:
+- adds a narrow Jaccard line:
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
 - for that Jaccard line, the public `embree`, `optix`, and `vulkan` run
   surfaces now accept the workloads through documented native CPU/oracle
   fallback on Linux
-- it adds a narrow generate-only product line covering the segment/polygon
+- adds a narrow generate-only product line covering the segment/polygon
   families plus one authored Jaccard entry
-- it has Linux/PostGIS-backed correctness and performance evidence for those
+- has Linux/PostGIS-backed correctness and performance evidence for those
   families
+- keeps Linux as the primary validation platform
+- keeps this Mac as a limited local platform
 
 Current `main` still does **not** mean:
 
 - every backend/workload path is equally mature
 - exact computational geometry everywhere
 - full polygon overlay materialization
+- native Embree/OptiX/Vulkan Jaccard kernels
 - a frozen release promise like the archived `v0.1.0` tag
 
 ## Release Reports
@@ -218,7 +236,8 @@ If you are new to the project, start here:
 
 This repository is maintained as a reviewed research/engineering workspace.
 Source code, reports, tests, and review artifacts are kept together so the
-current RTDL v0.1 package remains understandable and auditable.
+current RTDL v0.1 trust anchor and frozen v0.2 release-shaping package remain
+understandable and auditable.
 
 Copyright (c) 2026 Rubao Lee. All rights reserved. RTDL and this repository
 are owned and maintained by Rubao Lee.
