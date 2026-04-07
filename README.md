@@ -64,7 +64,11 @@ Current `main` is broader than that archived slice:
 - it adds two closed segment/polygon workload families:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
-- it adds a narrow generate-only product line covering those families
+- it adds a narrow Jaccard line:
+  - `polygon_pair_overlap_area_rows`
+  - `polygon_set_jaccard`
+- it adds a narrow generate-only product line covering the segment/polygon
+  families plus one authored Jaccard entry
 - it has Linux/PostGIS-backed correctness and performance evidence for those
   families
 
@@ -188,15 +192,16 @@ If you are new to the project, start here:
 
 1. [Docs Index](docs/README.md)
 2. [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
-3. [Quick Tutorial](docs/quick_tutorial.md)
-4. [v0.1 Release Notes](docs/v0_1_release_notes.md)
-5. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
-6. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
-7. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
-8. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
-9. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
-10. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-11. [RayJoin Target](docs/rayjoin_target.md)
+3. [Feature Homes](docs/features/README.md)
+4. [Quick Tutorial](docs/quick_tutorial.md)
+5. [v0.1 Release Notes](docs/v0_1_release_notes.md)
+6. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
+7. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
+8. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
+9. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
+10. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
+11. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+12. [RayJoin Target](docs/rayjoin_target.md)
 
 ## Project Status
 

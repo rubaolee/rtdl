@@ -29,6 +29,8 @@ This reference only describes the RTDL features that are implemented today:
   - `ray_tri_hitcount`
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
+  - `polygon_pair_overlap_area_rows`
+  - `polygon_set_jaccard`
   - `point_nearest_segment`
 
 Anything outside this surface is not part of the current language.
@@ -253,6 +255,28 @@ Required option:
 Meaning:
 
 - segment vs polygon row materialization under the current float-based implementation
+
+Required option:
+
+- `exact=False`
+
+### `rt.polygon_pair_overlap_area_rows(exact=False)`
+
+Meaning:
+
+- narrow polygon-pair overlap-area row materialization under the current
+  orthogonal integer-grid unit-cell contract
+
+Required option:
+
+- `exact=False`
+
+### `rt.polygon_set_jaccard(exact=False)`
+
+Meaning:
+
+- narrow polygon-set Jaccard aggregate under the current orthogonal integer-grid
+  unit-cell contract
 
 Required option:
 

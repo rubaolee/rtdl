@@ -16,6 +16,10 @@ The current real v0.2 surface adds:
 - stronger Linux/PostGIS-backed correctness and performance evidence for those
   families
 
+Canonical workload-by-workload homes:
+
+- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+
 The important boundary is that v0.2 is broader and stronger than v0.1, but it
 is still not claiming that every backend/workload path is equally mature.
 
@@ -224,6 +228,10 @@ python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset a
 For app-style usage, start here:
 
 - [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+
+For per-feature usage guidance, best practices, and limitations, use:
+
+- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
 ## Current Limits
 

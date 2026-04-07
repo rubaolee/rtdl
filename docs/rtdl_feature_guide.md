@@ -31,8 +31,11 @@ Current supported workload families:
 - `pip`
 - `overlay`
 - `ray_tri_hitcount`
-- `segment_polygon_hitcount`
 - `point_nearest_segment`
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
 
 Current workload-maturity note:
 
@@ -55,6 +58,15 @@ Current workload-maturity note:
     - `optix`
   through the accepted `derived/br_county_subset_segment_polygon_tiled_x256`
   case
+- `segment_polygon_anyhit_rows` is the second closed v0.2 segment/polygon family
+- the Jaccard line is now real, but only under the narrow pathology/unit-cell
+  contract:
+  - `polygon_pair_overlap_area_rows`
+  - `polygon_set_jaccard`
+
+Canonical workload homes:
+
+- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
 
 ## What RTDL Can Currently Do
 
@@ -67,6 +79,8 @@ The current repo can:
 - run accepted long exact-source `county_zipcode` positive-hit `pip` workloads
   on OptiX and Embree with exact parity and accepted performance wins against
   PostGIS on the prepared/repeated boundaries
+- run the current narrow Jaccard line on Python/native CPU with PostGIS-backed
+  checking on accepted packages
 - run the accepted long exact-source Vulkan surface with exact parity, while
   keeping Vulkan as the slower portable backend
 - compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
@@ -85,3 +99,4 @@ RTDL does not yet claim:
   relies on float32 traversal plus exact host-side final truth)
 - that every backend/workload/boundary combination is equally mature
 - full polygon overlay materialization (`overlay` is still a seed analogue)
+- generic continuous polygon Jaccard or generic continuous overlap-area closure

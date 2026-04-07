@@ -13,6 +13,10 @@ Scope of this file:
 This file is intentionally example-first. It should not duplicate the full
 semantic explanations from the programming guide.
 
+For feature-by-feature usage guidance, see:
+
+- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+
 ## LSI
 
 ```python

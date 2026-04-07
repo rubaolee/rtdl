@@ -19,7 +19,11 @@ The documents here have different roles and should not overlap heavily.
    - copyable workload patterns
    - concrete examples by workload family
 
-4. [LLM Authoring Guide](llm_authoring_guide.md)
+4. [Feature Homes](../features/README.md)
+   - workload-by-workload usage homes
+   - best practices, examples, and limitations per feature
+
+5. [LLM Authoring Guide](llm_authoring_guide.md)
    - agent-facing guidance for generating RTDL code
 
 ## Current Runtime Surface

@@ -103,6 +103,7 @@ After this hello-world example, the best next files are:
 
 - `examples/rtdl_language_reference.py`
 - `examples/rtdl_sorting_single_file.py`
+- `docs/features/README.md`
 - `docs/architecture_api_performance_overview.md`
 
 The sorting example is especially useful because it is a task readers
@@ -112,3 +113,7 @@ the result against ordinary Python sorting.
 
 That path moves from a tiny ray-query example, to a familiar sorting task
 written in RTDL, and then to the broader architecture/performance story.
+
+If you already know which workload family you want, jump straight to:
+
+- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)

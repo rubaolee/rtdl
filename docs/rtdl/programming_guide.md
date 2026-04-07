@@ -80,6 +80,8 @@ Current built-in predicate families:
 - `rt.ray_triangle_hit_count(exact=False)`
 - `rt.segment_polygon_hitcount(exact=False)`
 - `rt.segment_polygon_anyhit_rows(exact=False)`
+- `rt.polygon_pair_overlap_area_rows(exact=False)`
+- `rt.polygon_set_jaccard(exact=False)`
 - `rt.point_nearest_segment(exact=False)`
 
 Important boundaries:
@@ -195,4 +197,5 @@ Avoid:
 
 - for exact contracts: [DSL Reference](dsl_reference.md)
 - for workload snippets: [Workload Cookbook](workload_cookbook.md)
+- for workload-by-workload usage: [Feature Homes](../features/README.md)
 - for project-level context: [Feature Guide](../rtdl_feature_guide.md)
