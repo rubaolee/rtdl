@@ -109,7 +109,11 @@ Current `main` still does **not** mean:
 
 ## Release Reports
 
-The canonical v0.1 release-report package is here:
+The canonical released v0.2.0 package is here:
+
+- [RTDL v0.2 Release Reports](docs/release_reports/v0_2/README.md)
+
+The archived v0.1 trust-anchor package is here:
 
 - [RTDL v0.1 Release Reports](docs/release_reports/v0_1/README.md)
 
@@ -230,20 +234,23 @@ If you are new to the project, start here:
 3. [Release-Facing Examples](docs/release_facing_examples.md)
 4. [Feature Homes](docs/features/README.md)
 5. [Quick Tutorial](docs/quick_tutorial.md)
-6. [v0.1 Release Notes](docs/v0_1_release_notes.md)
-7. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
-8. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
-9. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
-10. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
-11. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
-12. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-13. [RayJoin Target](docs/rayjoin_target.md)
+6. [RTDL v0.2 Release Reports](docs/release_reports/v0_2/README.md)
+7. [RTDL v0.2 Release Statement](docs/release_reports/v0_2/release_statement.md)
+8. [RTDL v0.2 Support Matrix](docs/release_reports/v0_2/support_matrix.md)
+9. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
+10. [v0.1 Release Notes](docs/v0_1_release_notes.md)
+11. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
+12. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
+13. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
+14. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
+15. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+16. [RayJoin Target](docs/rayjoin_target.md)
 
 ## Project Status
 
 This repository is maintained as a reviewed research/engineering workspace.
 Source code, reports, tests, and review artifacts are kept together so the
-current RTDL v0.1 trust anchor and frozen v0.2 release-shaping package remain
+current RTDL v0.1 trust anchor and released v0.2.0 package remain
 understandable and auditable.
 
 Copyright (c) 2026 Rubao Lee. All rights reserved. RTDL and this repository
