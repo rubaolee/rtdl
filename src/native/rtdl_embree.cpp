@@ -56,6 +56,20 @@ struct RtdlTriangle {
   double y2;
 };
 
+#pragma pack(push, 1)
+struct RtdlTriangle3D {
+  uint32_t id;
+  double x0;
+  double y0;
+  double z0;
+  double x1;
+  double y1;
+  double z1;
+  double x2;
+  double y2;
+  double z2;
+};
+
 struct RtdlRay2D {
   uint32_t id;
   double ox;
@@ -64,6 +78,18 @@ struct RtdlRay2D {
   double dy;
   double tmax;
 };
+
+struct RtdlRay3D {
+  uint32_t id;
+  double ox;
+  double oy;
+  double oz;
+  double dx;
+  double dy;
+  double dz;
+  double tmax;
+};
+#pragma pack(pop)
 
 struct RtdlLsiRow {
   uint32_t left_id;
@@ -150,6 +176,15 @@ int rtdl_embree_run_ray_hitcount(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_embree_run_ray_hitcount_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
 int rtdl_embree_run_segment_polygon_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
@@ -205,6 +240,12 @@ struct Vec2 {
   double y;
 };
 
+struct Vec3 {
+  double x;
+  double y;
+  double z;
+};
+
 struct Segment2D {
   uint32_t id;
   Vec2 a;
@@ -228,10 +269,24 @@ struct Triangle2D {
   Vec2 c;
 };
 
+struct Triangle3D {
+  uint32_t id;
+  Vec3 a;
+  Vec3 b;
+  Vec3 c;
+};
+
 struct RayQuery2D {
   uint32_t id;
   Vec2 o;
   Vec2 d;
+  double tmax;
+};
+
+struct RayQuery3D {
+  uint32_t id;
+  Vec3 o;
+  Vec3 d;
   double tmax;
 };
 
@@ -357,6 +412,15 @@ struct Bounds2D {
   double max_y;
 };
 
+struct Bounds3D {
+  double min_x;
+  double min_y;
+  double min_z;
+  double max_x;
+  double max_y;
+  double max_z;
+};
+
 Bounds2D bounds_for_segment(const Segment2D& segment) {
   return {
       std::min(segment.a.x, segment.b.x),
@@ -372,6 +436,17 @@ Bounds2D bounds_for_triangle(const Triangle2D& triangle) {
       std::min({triangle.a.y, triangle.b.y, triangle.c.y}),
       std::max({triangle.a.x, triangle.b.x, triangle.c.x}),
       std::max({triangle.a.y, triangle.b.y, triangle.c.y}),
+  };
+}
+
+Bounds3D bounds_for_triangle_3d(const Triangle3D& triangle) {
+  return {
+      std::min({triangle.a.x, triangle.b.x, triangle.c.x}),
+      std::min({triangle.a.y, triangle.b.y, triangle.c.y}),
+      std::min({triangle.a.z, triangle.b.z, triangle.c.z}),
+      std::max({triangle.a.x, triangle.b.x, triangle.c.x}),
+      std::max({triangle.a.y, triangle.b.y, triangle.c.y}),
+      std::max({triangle.a.z, triangle.b.z, triangle.c.z}),
   };
 }
 
@@ -656,6 +731,49 @@ bool finite_ray_hits_triangle(const RayQuery2D& ray, const Triangle2D& triangle)
   return false;
 }
 
+bool finite_ray_hits_triangle_3d(const RayQuery3D& ray, const Triangle3D& triangle) {
+  Vec3 edge1 {
+      triangle.b.x - triangle.a.x,
+      triangle.b.y - triangle.a.y,
+      triangle.b.z - triangle.a.z,
+  };
+  Vec3 edge2 {
+      triangle.c.x - triangle.a.x,
+      triangle.c.y - triangle.a.y,
+      triangle.c.z - triangle.a.z,
+  };
+  Vec3 pvec {
+      ray.d.y * edge2.z - ray.d.z * edge2.y,
+      ray.d.z * edge2.x - ray.d.x * edge2.z,
+      ray.d.x * edge2.y - ray.d.y * edge2.x,
+  };
+  double det = edge1.x * pvec.x + edge1.y * pvec.y + edge1.z * pvec.z;
+  if (std::fabs(det) <= 1.0e-8) {
+    return false;
+  }
+  double inv_det = 1.0 / det;
+  Vec3 tvec {
+      ray.o.x - triangle.a.x,
+      ray.o.y - triangle.a.y,
+      ray.o.z - triangle.a.z,
+  };
+  double u = (tvec.x * pvec.x + tvec.y * pvec.y + tvec.z * pvec.z) * inv_det;
+  if (u < 0.0 || u > 1.0) {
+    return false;
+  }
+  Vec3 qvec {
+      tvec.y * edge1.z - tvec.z * edge1.y,
+      tvec.z * edge1.x - tvec.x * edge1.z,
+      tvec.x * edge1.y - tvec.y * edge1.x,
+  };
+  double v = (ray.d.x * qvec.x + ray.d.y * qvec.y + ray.d.z * qvec.z) * inv_det;
+  if (v < 0.0 || (u + v) > 1.0) {
+    return false;
+  }
+  double t = (edge2.x * qvec.x + edge2.y * qvec.y + edge2.z * qvec.z) * inv_det;
+  return t >= 0.0 && t <= ray.tmax;
+}
+
 bool polygon_pair_flags(const Polygon2D& left, const Polygon2D& right, bool* requires_lsi, bool* requires_pip) {
   bool lsi = false;
   bool pip = false;
@@ -785,6 +903,10 @@ struct TriangleSceneData {
   const std::vector<Triangle2D>* triangles;
 };
 
+struct TriangleSceneData3D {
+  const std::vector<Triangle3D>* triangles;
+};
+
 struct LsiQueryState {
   const Segment2D* probe;
   std::vector<RtdlLsiRow>* rows;
@@ -811,6 +933,12 @@ struct RayHitCountState {
   std::unordered_set<uint32_t>* seen_triangle_ids;
 };
 
+struct RayHitCountState3D {
+  const RayQuery3D* ray;
+  uint32_t* hit_count;
+  std::unordered_set<uint32_t>* seen_triangle_ids;
+};
+
 struct SegmentPolygonHitCountState {
   const Segment2D* segment;
   uint32_t* hit_count;
@@ -828,6 +956,27 @@ void set_ray(RTCRayHit* rayhit, const Vec2& origin, const Vec2& direction, float
   rayhit->ray.dir_x = direction.x;
   rayhit->ray.dir_y = direction.y;
   rayhit->ray.dir_z = 0.0f;
+  rayhit->ray.time = 0.0f;
+  rayhit->ray.tfar = tmax;
+  rayhit->ray.mask = 0xffffffffu;
+  rayhit->ray.id = 0;
+  rayhit->ray.flags = 0;
+  rayhit->hit.geomID = RTC_INVALID_GEOMETRY_ID;
+  rayhit->hit.primID = RTC_INVALID_GEOMETRY_ID;
+  for (unsigned i = 0; i < RTC_MAX_INSTANCE_LEVEL_COUNT; ++i) {
+    rayhit->hit.instID[i] = RTC_INVALID_GEOMETRY_ID;
+  }
+}
+
+void set_ray_3d(RTCRayHit* rayhit, const Vec3& origin, const Vec3& direction, float tmax) {
+  std::memset(rayhit, 0, sizeof(RTCRayHit));
+  rayhit->ray.org_x = origin.x;
+  rayhit->ray.org_y = origin.y;
+  rayhit->ray.org_z = origin.z;
+  rayhit->ray.tnear = 0.0f;
+  rayhit->ray.dir_x = direction.x;
+  rayhit->ray.dir_y = direction.y;
+  rayhit->ray.dir_z = direction.z;
   rayhit->ray.time = 0.0f;
   rayhit->ray.tfar = tmax;
   rayhit->ray.mask = 0xffffffffu;
@@ -874,6 +1023,18 @@ void triangle_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_x = b.max_x;
   args->bounds_o->upper_y = b.max_y;
   args->bounds_o->upper_z = kEps;
+}
+
+void triangle_bounds_3d(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<TriangleSceneData3D*>(args->geometryUserPtr);
+  const Triangle3D& triangle = (*data->triangles)[args->primID];
+  Bounds3D b = bounds_for_triangle_3d(triangle);
+  args->bounds_o->lower_x = b.min_x;
+  args->bounds_o->lower_y = b.min_y;
+  args->bounds_o->lower_z = b.min_z;
+  args->bounds_o->upper_x = b.max_x;
+  args->bounds_o->upper_y = b.max_y;
+  args->bounds_o->upper_z = b.max_z;
 }
 
 void segment_intersect(const RTCIntersectFunctionNArguments* args) {
@@ -970,6 +1131,22 @@ void triangle_intersect(const RTCIntersectFunctionNArguments* args) {
     return;
   }
   if (finite_ray_hits_triangle(*state->ray, triangle)) {
+    state->seen_triangle_ids->insert(triangle.id);
+    *state->hit_count += 1;
+  }
+}
+
+void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kRayHitCount || g_query_state == nullptr) {
+    return;
+  }
+  auto* data = static_cast<TriangleSceneData3D*>(args->geometryUserPtr);
+  auto* state = static_cast<RayHitCountState3D*>(g_query_state);
+  const Triangle3D& triangle = (*data->triangles)[args->primID];
+  if (state->seen_triangle_ids->find(triangle.id) != state->seen_triangle_ids->end()) {
+    return;
+  }
+  if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
     state->seen_triangle_ids->insert(triangle.id);
     *state->hit_count += 1;
   }
@@ -1284,6 +1461,73 @@ extern "C" int rtdl_embree_run_ray_hitcount(
       g_query_state = &state;
       RTCRayHit rayhit;
       set_ray(&rayhit, ray.o, ray.d, ray.tmax);
+      RTCIntersectArguments args;
+      rtcInitIntersectArguments(&args);
+      rtcIntersect1(holder.scene, &rayhit, &args);
+      rows.push_back({ray.id, hit_count});
+    }
+    g_query_kind = QueryKind::kNone;
+    g_query_state = nullptr;
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+extern "C" int rtdl_embree_run_ray_hitcount_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RayQuery3D> ray_values;
+    std::vector<Triangle3D> triangle_values;
+    ray_values.reserve(ray_count);
+    triangle_values.reserve(triangle_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+      ray_values.push_back({rays[i].id, {rays[i].ox, rays[i].oy, rays[i].oz}, {rays[i].dx, rays[i].dy, rays[i].dz}, rays[i].tmax});
+    }
+    for (size_t i = 0; i < triangle_count; ++i) {
+      triangle_values.push_back({
+          triangles[i].id,
+          {triangles[i].x0, triangles[i].y0, triangles[i].z0},
+          {triangles[i].x1, triangles[i].y1, triangles[i].z1},
+          {triangles[i].x2, triangles[i].y2, triangles[i].z2},
+      });
+    }
+
+    EmbreeDevice device;
+    TriangleSceneData3D data {&triangle_values};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(triangle_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, triangle_bounds_3d, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, triangle_intersect_3d);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<RtdlRayHitCountRow> rows;
+    rows.reserve(ray_values.size());
+    for (const RayQuery3D& ray : ray_values) {
+      uint32_t hit_count = 0;
+      std::unordered_set<uint32_t> seen_triangle_ids;
+      RayHitCountState3D state {&ray, &hit_count, &seen_triangle_ids};
+      g_query_kind = QueryKind::kRayHitCount;
+      g_query_state = &state;
+      RTCRayHit rayhit;
+      set_ray_3d(&rayhit, ray.o, ray.d, ray.tmax);
       RTCIntersectArguments args;
       rtcInitIntersectArguments(&args);
       rtcIntersect1(holder.scene, &rayhit, &args);

@@ -19,7 +19,9 @@ from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Polygon as _CanonicalPolygon
 from .reference import Triangle as _CanonicalTriangle
+from .reference import Triangle3D as _CanonicalTriangle3D
 from .reference import Ray2D as _CanonicalRay2D
+from .reference import Ray3D as _CanonicalRay3D
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
@@ -87,6 +89,22 @@ class _RtdlTriangle(ctypes.Structure):
     ]
 
 
+class _RtdlTriangle3D(ctypes.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("z0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("z1", ctypes.c_double),
+        ("x2", ctypes.c_double),
+        ("y2", ctypes.c_double),
+        ("z2", ctypes.c_double),
+    ]
+
+
 class _RtdlRay2D(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -94,6 +112,20 @@ class _RtdlRay2D(ctypes.Structure):
         ("oy", ctypes.c_double),
         ("dx", ctypes.c_double),
         ("dy", ctypes.c_double),
+        ("tmax", ctypes.c_double),
+    ]
+
+
+class _RtdlRay3D(ctypes.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("ox", ctypes.c_double),
+        ("oy", ctypes.c_double),
+        ("oz", ctypes.c_double),
+        ("dx", ctypes.c_double),
+        ("dy", ctypes.c_double),
+        ("dz", ctypes.c_double),
         ("tmax", ctypes.c_double),
     ]
 
@@ -177,12 +209,14 @@ class PackedPolygons:
 class PackedTriangles:
     records: object
     count: int
+    dimension: int = 2
 
 
 @dataclass(frozen=True)
 class PackedRays:
     records: object
     count: int
+    dimension: int = 2
 
 
 @dataclass
@@ -255,7 +289,7 @@ class PreparedEmbreeKernel:
             raise ValueError(f"unexpected RTDL Embree inputs: {', '.join(sorted(unexpected))}")
 
         packed_inputs = {
-            name: _pack_for_geometry(self.expected_inputs[name].geometry.name, payload)
+            name: _pack_for_geometry(self.expected_inputs[name], payload)
             for name, payload in inputs.items()
         }
         return PreparedEmbreeExecution(self.compiled, self.library, packed_inputs)
@@ -392,14 +426,50 @@ def pack_polygons(
     )
 
 
-def pack_triangles(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None, x2=None, y2=None) -> PackedTriangles:
+def pack_triangles(
+    records=None,
+    *,
+    ids=None,
+    x0=None,
+    y0=None,
+    x1=None,
+    y1=None,
+    x2=None,
+    y2=None,
+    dimension: int | None = None,
+) -> PackedTriangles:
     if records is not None:
-        normalized = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalTriangle) for item in records) else _normalize_records("triangles", "triangles", records)
+        normalized = (
+            records
+            if isinstance(records, tuple)
+            and all(isinstance(item, (_CanonicalTriangle, _CanonicalTriangle3D)) for item in records)
+            else _normalize_records("triangles", "triangles", records)
+        )
+        if dimension not in {None, 2, 3}:
+            raise ValueError("triangles dimension must be one of: 2, 3")
+        inferred_dimension = dimension
+        if inferred_dimension is None:
+            inferred_dimension = 3 if normalized and all(isinstance(item, _CanonicalTriangle3D) for item in normalized) else 2
+        if inferred_dimension == 3:
+            if any(not isinstance(item, _CanonicalTriangle3D) for item in normalized):
+                if normalized:
+                    raise ValueError("triangles packed for a 3D layout must provide 3D triangle records")
+            array = (_RtdlTriangle3D * len(normalized))(*[
+                _RtdlTriangle3D(item.id, item.x0, item.y0, item.z0, item.x1, item.y1, item.z1, item.x2, item.y2, item.z2)
+                for item in normalized
+            ])
+            return PackedTriangles(records=array, count=len(normalized), dimension=3)
+        if any(isinstance(item, _CanonicalTriangle3D) for item in normalized):
+            if normalized:
+                raise ValueError("triangles packed for a 2D layout must provide 2D triangle records")
         array = (_RtdlTriangle * len(normalized))(*[
             _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
             for item in normalized
         ])
-        return PackedTriangles(records=array, count=len(normalized))
+        return PackedTriangles(records=array, count=len(normalized), dimension=2)
+
+    if dimension == 3:
+        raise ValueError("triangles packed from explicit coordinate columns currently support only 2D records")
 
     ids_list = _coerce_list("ids", ids)
     x0_list = _coerce_list("x0", x0)
@@ -421,16 +491,51 @@ def pack_triangles(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None
         )
         for i in range(count)
     ])
-    return PackedTriangles(records=array, count=count)
+    return PackedTriangles(records=array, count=count, dimension=2)
 
 
-def pack_rays(records=None, *, ids=None, ox=None, oy=None, dx=None, dy=None, tmax=None) -> PackedRays:
+def pack_rays(
+    records=None,
+    *,
+    ids=None,
+    ox=None,
+    oy=None,
+    dx=None,
+    dy=None,
+    tmax=None,
+    dimension: int | None = None,
+) -> PackedRays:
     if records is not None:
-        normalized = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalRay2D) for item in records) else _normalize_records("rays", "rays", records)
+        normalized = (
+            records
+            if isinstance(records, tuple)
+            and all(isinstance(item, (_CanonicalRay2D, _CanonicalRay3D)) for item in records)
+            else _normalize_records("rays", "rays", records)
+        )
+        if dimension not in {None, 2, 3}:
+            raise ValueError("rays dimension must be one of: 2, 3")
+        inferred_dimension = dimension
+        if inferred_dimension is None:
+            inferred_dimension = 3 if normalized and all(isinstance(item, _CanonicalRay3D) for item in normalized) else 2
+        if inferred_dimension == 3:
+            if any(not isinstance(item, _CanonicalRay3D) for item in normalized):
+                if normalized:
+                    raise ValueError("rays packed for a 3D layout must provide 3D ray records")
+            array = (_RtdlRay3D * len(normalized))(*[
+                _RtdlRay3D(item.id, item.ox, item.oy, item.oz, item.dx, item.dy, item.dz, item.tmax)
+                for item in normalized
+            ])
+            return PackedRays(records=array, count=len(normalized), dimension=3)
+        if any(isinstance(item, _CanonicalRay3D) for item in normalized):
+            if normalized:
+                raise ValueError("rays packed for a 2D layout must provide 2D ray records")
         array = (_RtdlRay2D * len(normalized))(*[
             _RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in normalized
         ])
-        return PackedRays(records=array, count=len(normalized))
+        return PackedRays(records=array, count=len(normalized), dimension=2)
+
+    if dimension == 3:
+        raise ValueError("rays packed from explicit coordinate columns currently support only 2D records")
 
     ids_list = _coerce_list("ids", ids)
     ox_list = _coerce_list("ox", ox)
@@ -450,7 +555,7 @@ def pack_rays(records=None, *, ids=None, ox=None, oy=None, dx=None, dy=None, tma
         )
         for i in range(count)
     ])
-    return PackedRays(records=array, count=count)
+    return PackedRays(records=array, count=count, dimension=2)
 
 
 def run_embree(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
@@ -838,27 +943,48 @@ def _run_ray_hitcount_embree(compiled: CompiledKernel, normalized_inputs, librar
     rays = normalized_inputs[rays_name]
     triangles = normalized_inputs[triangles_name]
 
-    ray_array = (_RtdlRay2D * len(rays))(*[
-        _RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in rays
-    ])
-    triangle_array = (_RtdlTriangle * len(triangles))(*[
-        _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
-        for item in triangles
-    ])
-
     rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_ray_hitcount(
-        ray_array,
-        len(rays),
-        triangle_array,
-        len(triangles),
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    if rays and isinstance(rays[0], _CanonicalRay3D):
+        ray_array = (_RtdlRay3D * len(rays))(*[
+            _RtdlRay3D(item.id, item.ox, item.oy, item.oz, item.dx, item.dy, item.dz, item.tmax) for item in rays
+        ])
+        triangle_array = (_RtdlTriangle3D * len(triangles))(*[
+            _RtdlTriangle3D(item.id, item.x0, item.y0, item.z0, item.x1, item.y1, item.z1, item.x2, item.y2, item.z2)
+            for item in triangles
+        ])
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_hitcount_3d")
+        if call is None:
+            raise RuntimeError("loaded Embree backend library does not export rtdl_embree_run_ray_hitcount_3d; rebuild the Embree backend from current main")
+        status = call(
+            ray_array,
+            len(rays),
+            triangle_array,
+            len(triangles),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        ray_array = (_RtdlRay2D * len(rays))(*[
+            _RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in rays
+        ])
+        triangle_array = (_RtdlTriangle * len(triangles))(*[
+            _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
+            for item in triangles
+        ])
+        status = library.rtdl_embree_run_ray_hitcount(
+            ray_array,
+            len(rays),
+            triangle_array,
+            len(triangles),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     try:
         return tuple(
@@ -889,16 +1015,31 @@ def _call_ray_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, li
     rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_ray_hitcount(
-        rays.records,
-        rays.count,
-        triangles.records,
-        triangles.count,
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    if rays.dimension != triangles.dimension:
+        raise ValueError("Embree ray_triangle_hit_count requires rays and triangles to have the same dimension")
+    if rays.dimension == 3:
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_hitcount_3d")
+        status = call(
+            rays.records,
+            rays.count,
+            triangles.records,
+            triangles.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        status = library.rtdl_embree_run_ray_hitcount(
+            rays.records,
+            rays.count,
+            triangles.records,
+            triangles.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     return EmbreeRowView(
         library=library,
@@ -1122,7 +1263,17 @@ def _validate_equal_lengths(label: str, *columns) -> int:
     return lengths.pop()
 
 
-def _pack_for_geometry(geometry_name: str, payload):
+def _geometry_layout_dimension(geometry_input) -> int:
+    layout = geometry_input.layout
+    field_names = set(layout.field_names())
+    if layout.name.endswith("3D") or any(name in field_names for name in ("z0", "z1", "z2", "oz", "dz")):
+        return 3
+    return 2
+
+
+def _pack_for_geometry(geometry_input, payload):
+    geometry_name = geometry_input.geometry.name
+    expected_dimension = _geometry_layout_dimension(geometry_input)
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments) else pack_segments(records=payload)
     if geometry_name == "points":
@@ -1136,9 +1287,21 @@ def _pack_for_geometry(geometry_name: str, payload):
             return cached
         return payload if isinstance(payload, PackedPolygons) else pack_polygons(records=payload)
     if geometry_name == "triangles":
-        return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)
+        if isinstance(payload, PackedTriangles):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed triangles payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_triangles(records=payload, dimension=expected_dimension)
     if geometry_name == "rays":
-        return payload if isinstance(payload, PackedRays) else pack_rays(records=payload)
+        if isinstance(payload, PackedRays):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed rays payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_rays(records=payload, dimension=expected_dimension)
     raise ValueError(f"the current prepared Embree path does not support geometry `{geometry_name}`")
 
 
@@ -1232,6 +1395,20 @@ def _load_embree_library():
     ]
     library.rtdl_embree_run_ray_hitcount.restype = ctypes.c_int
 
+    optional_ray3d = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_hitcount_3d")
+    if optional_ray3d is not None:
+        optional_ray3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray3d.restype = ctypes.c_int
+
     library.rtdl_embree_run_segment_polygon_hitcount.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
@@ -1273,6 +1450,13 @@ def _load_embree_library():
     library.rtdl_embree_run_point_nearest_segment.restype = ctypes.c_int
 
     return library
+
+
+def _require_optional_embree_symbol(library, symbol_name: str):
+    try:
+        return getattr(library, symbol_name)
+    except AttributeError:
+        return None
 
 
 def _ensure_embree_library() -> Path:

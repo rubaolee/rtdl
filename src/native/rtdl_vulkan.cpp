@@ -76,7 +76,11 @@ struct RtdlSegment    { uint32_t id; double x0, y0, x1, y1; };
 struct RtdlPoint      { uint32_t id; double x, y; };
 struct RtdlPolygonRef { uint32_t id, vertex_offset, vertex_count; };
 struct RtdlTriangle   { uint32_t id; double x0, y0, x1, y1, x2, y2; };
+#pragma pack(push, 1)
+struct RtdlTriangle3D { uint32_t id; double x0, y0, z0, x1, y1, z1, x2, y2, z2; };
 struct RtdlRay2D      { uint32_t id; double ox, oy, dx, dy, tmax; };
+struct RtdlRay3D      { uint32_t id; double ox, oy, oz, dx, dy, dz, tmax; };
+#pragma pack(pop)
 
 struct RtdlLsiRow               { uint32_t left_id, right_id;
                                    double intersection_point_x, intersection_point_y; };
@@ -111,6 +115,11 @@ int  rtdl_vulkan_run_overlay(
 int  rtdl_vulkan_run_ray_hitcount(
          const RtdlRay2D*    rays,      size_t ray_count,
          const RtdlTriangle* triangles, size_t triangle_count,
+         RtdlRayHitCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_run_ray_hitcount_3d(
+         const RtdlRay3D*    rays,      size_t ray_count,
+         const RtdlTriangle3D* triangles, size_t triangle_count,
          RtdlRayHitCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_vulkan_run_segment_polygon_hitcount(
@@ -825,6 +834,46 @@ static bool exact_segment_intersection(
     *ix_out = px + t * rx;
     *iy_out = py + t * ry;
     return true;
+}
+
+static bool exact_ray_hits_triangle_3d(
+        const RtdlRay3D& ray,
+        const RtdlTriangle3D& triangle)
+{
+    const double edge1x = triangle.x1 - triangle.x0;
+    const double edge1y = triangle.y1 - triangle.y0;
+    const double edge1z = triangle.z1 - triangle.z0;
+    const double edge2x = triangle.x2 - triangle.x0;
+    const double edge2y = triangle.y2 - triangle.y0;
+    const double edge2z = triangle.z2 - triangle.z0;
+
+    const double pvx = ray.dy * edge2z - ray.dz * edge2y;
+    const double pvy = ray.dz * edge2x - ray.dx * edge2z;
+    const double pvz = ray.dx * edge2y - ray.dy * edge2x;
+    const double det = edge1x * pvx + edge1y * pvy + edge1z * pvz;
+    if (std::abs(det) <= 1.0e-8) {
+        return false;
+    }
+
+    const double inv_det = 1.0 / det;
+    const double tvx = ray.ox - triangle.x0;
+    const double tvy = ray.oy - triangle.y0;
+    const double tvz = ray.oz - triangle.z0;
+    const double u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det;
+    if (u < 0.0 || u > 1.0) {
+        return false;
+    }
+
+    const double qvx = tvy * edge1z - tvz * edge1y;
+    const double qvy = tvz * edge1x - tvx * edge1z;
+    const double qvz = tvx * edge1y - tvy * edge1x;
+    const double v = (ray.dx * qvx + ray.dy * qvy + ray.dz * qvz) * inv_det;
+    if (v < 0.0 || (u + v) > 1.0) {
+        return false;
+    }
+
+    const double t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det;
+    return t >= 0.0 && t <= ray.tmax;
 }
 
 #if RTDL_VULKAN_HAS_GEOS
@@ -3041,6 +3090,30 @@ int rtdl_vulkan_run_ray_hitcount(
     return handle_call([&] {
         run_ray_hitcount_vulkan(rays, ray_count, triangles, triangle_count,
                                 rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+int rtdl_vulkan_run_ray_hitcount_3d(
+        const RtdlRay3D* rays, size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayHitCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size) {
+    return handle_call([&] {
+        auto* out = static_cast<RtdlRayHitCountRow*>(std::malloc(sizeof(RtdlRayHitCountRow) * ray_count));
+        if (!out && ray_count > 0) {
+            throw std::bad_alloc();
+        }
+        for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+            uint32_t count = 0u;
+            for (size_t triangle_index = 0; triangle_index < triangle_count; ++triangle_index) {
+                if (exact_ray_hits_triangle_3d(rays[ray_index], triangles[triangle_index])) {
+                    count += 1u;
+                }
+            }
+            out[ray_index] = {rays[ray_index].id, count};
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
     }, error_out, error_size);
 }
 

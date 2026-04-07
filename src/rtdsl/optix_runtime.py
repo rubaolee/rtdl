@@ -39,7 +39,9 @@ from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
 from .embree_runtime import _RtdlPolygonRef
 from .embree_runtime import _RtdlTriangle
+from .embree_runtime import _RtdlTriangle3D
 from .embree_runtime import _RtdlRay2D
+from .embree_runtime import _RtdlRay3D
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
@@ -54,7 +56,9 @@ from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Polygon as _CanonicalPolygon
 from .reference import Triangle as _CanonicalTriangle
+from .reference import Triangle3D as _CanonicalTriangle3D
 from .reference import Ray2D as _CanonicalRay2D
+from .reference import Ray3D as _CanonicalRay3D
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
@@ -200,7 +204,7 @@ class PreparedOptixKernel:
         if unexpected:
             raise ValueError(f"unexpected RTDL OptiX inputs: {', '.join(sorted(unexpected))}")
         packed = {
-            name: _pack_for_geometry(self.expected_inputs[name].geometry.name, payload)
+            name: _pack_for_geometry(self.expected_inputs[name], payload)
             for name, payload in inputs.items()
         }
         execution = PreparedOptixExecution(self.compiled, self.library, packed)
@@ -482,14 +486,42 @@ def pack_polygons(records=None, *, ids=None, vertex_offsets=None,
                           vertices_xy=vert_arr, vertex_xy_count=len(vxy_l))
 
 
-def pack_triangles(records=None, *, ids=None, x0=None, y0=None,
-                   x1=None, y1=None, x2=None, y2=None) -> PackedTriangles:
+def pack_triangles(
+    records=None,
+    *,
+    ids=None,
+    x0=None,
+    y0=None,
+    x1=None,
+    y1=None,
+    x2=None,
+    y2=None,
+    dimension: int | None = None,
+) -> PackedTriangles:
     if records is not None:
-        norm = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalTriangle) for item in records) else _normalize_records("triangles", "triangles", records)
-        arr  = (_RtdlTriangle * len(norm))(*[
+        norm = records if isinstance(records, tuple) and all(isinstance(item, (_CanonicalTriangle, _CanonicalTriangle3D)) for item in records) else _normalize_records("triangles", "triangles", records)
+        if dimension not in {None, 2, 3}:
+            raise ValueError("triangles dimension must be one of: 2, 3")
+        inferred_dimension = dimension
+        if inferred_dimension is None:
+            inferred_dimension = 3 if norm and all(isinstance(item, _CanonicalTriangle3D) for item in norm) else 2
+        if inferred_dimension == 3:
+            if any(not isinstance(item, _CanonicalTriangle3D) for item in norm):
+                if norm:
+                    raise ValueError("triangles packed for a 3D layout must provide 3D triangle records")
+            arr = (_RtdlTriangle3D * len(norm))(*[
+                _RtdlTriangle3D(r.id, r.x0, r.y0, r.z0, r.x1, r.y1, r.z1, r.x2, r.y2, r.z2) for r in norm
+            ])
+            return PackedTriangles(records=arr, count=len(norm), dimension=3)
+        if any(isinstance(item, _CanonicalTriangle3D) for item in norm):
+            if norm:
+                raise ValueError("triangles packed for a 2D layout must provide 2D triangle records")
+        arr = (_RtdlTriangle * len(norm))(*[
             _RtdlTriangle(r.id, r.x0, r.y0, r.x1, r.y1, r.x2, r.y2) for r in norm
         ])
-        return PackedTriangles(records=arr, count=len(norm))
+        return PackedTriangles(records=arr, count=len(norm), dimension=2)
+    if dimension == 3:
+        raise ValueError("triangles packed from explicit coordinate columns currently support only 2D records")
     ids_l = _coerce_list("ids", ids)
     x0_l  = _coerce_list("x0",  x0);  y0_l  = _coerce_list("y0",  y0)
     x1_l  = _coerce_list("x1",  x1);  y1_l  = _coerce_list("y1",  y1)
@@ -501,17 +533,44 @@ def pack_triangles(records=None, *, ids=None, x0=None, y0=None,
                       float(x2_l[i]), float(y2_l[i]))
         for i in range(n)
     ])
-    return PackedTriangles(records=arr, count=n)
+    return PackedTriangles(records=arr, count=n, dimension=2)
 
 
-def pack_rays(records=None, *, ids=None, ox=None, oy=None,
-              dx=None, dy=None, tmax=None) -> PackedRays:
+def pack_rays(
+    records=None,
+    *,
+    ids=None,
+    ox=None,
+    oy=None,
+    dx=None,
+    dy=None,
+    tmax=None,
+    dimension: int | None = None,
+) -> PackedRays:
     if records is not None:
-        norm = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalRay2D) for item in records) else _normalize_records("rays", "rays", records)
+        norm = records if isinstance(records, tuple) and all(isinstance(item, (_CanonicalRay2D, _CanonicalRay3D)) for item in records) else _normalize_records("rays", "rays", records)
+        if dimension not in {None, 2, 3}:
+            raise ValueError("rays dimension must be one of: 2, 3")
+        inferred_dimension = dimension
+        if inferred_dimension is None:
+            inferred_dimension = 3 if norm and all(isinstance(item, _CanonicalRay3D) for item in norm) else 2
+        if inferred_dimension == 3:
+            if any(not isinstance(item, _CanonicalRay3D) for item in norm):
+                if norm:
+                    raise ValueError("rays packed for a 3D layout must provide 3D ray records")
+            arr = (_RtdlRay3D * len(norm))(*[
+                _RtdlRay3D(r.id, r.ox, r.oy, r.oz, r.dx, r.dy, r.dz, r.tmax) for r in norm
+            ])
+            return PackedRays(records=arr, count=len(norm), dimension=3)
+        if any(isinstance(item, _CanonicalRay3D) for item in norm):
+            if norm:
+                raise ValueError("rays packed for a 2D layout must provide 2D ray records")
         arr  = (_RtdlRay2D * len(norm))(*[
             _RtdlRay2D(r.id, r.ox, r.oy, r.dx, r.dy, r.tmax) for r in norm
         ])
-        return PackedRays(records=arr, count=len(norm))
+        return PackedRays(records=arr, count=len(norm), dimension=2)
+    if dimension == 3:
+        raise ValueError("rays packed from explicit coordinate columns currently support only 2D records")
     ids_l  = _coerce_list("ids",  ids)
     ox_l   = _coerce_list("ox",   ox);   oy_l   = _coerce_list("oy",   oy)
     dx_l   = _coerce_list("dx",   dx);   dy_l   = _coerce_list("dy",   dy)
@@ -522,7 +581,7 @@ def pack_rays(records=None, *, ids=None, ox=None, oy=None,
                    float(dx_l[i]), float(dy_l[i]), float(tmax_l[i]))
         for i in range(n)
     ])
-    return PackedRays(records=arr, count=n)
+    return PackedRays(records=arr, count=n, dimension=2)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -601,11 +660,26 @@ def _call_ray_hitcount_optix_packed(compiled: CompiledKernel, packed, lib) -> Op
     rows_ptr  = ctypes.POINTER(_RtdlRayHitCountRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_optix_run_ray_hitcount(
-        rays.records, rays.count,
-        triangles.records, triangles.count,
-        ctypes.byref(rows_ptr), ctypes.byref(row_count),
-        error, len(error))
+    if rays.dimension != triangles.dimension:
+        raise ValueError("OptiX ray_triangle_hit_count requires rays and triangles to have the same dimension")
+    if rays.dimension == 3:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_hitcount_3d")
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_run_ray_hitcount_3d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        status = symbol(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    else:
+        status = lib.rtdl_optix_run_ray_hitcount(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
     _check_status(status, error)
     return OptixRowView(
         library=lib, rows_ptr=rows_ptr,
@@ -761,6 +835,16 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_optix_run_ray_hitcount.restype = ctypes.c_int
+    optional_ray3d = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_hitcount_3d")
+    if optional_ray3d is not None:
+        optional_ray3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_ray3d.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
@@ -804,6 +888,13 @@ def _require_backend_symbol(lib, symbol_name: str):
         ) from exc
 
 
+def _find_optional_backend_symbol(lib, symbol_name: str):
+    try:
+        return getattr(lib, symbol_name)
+    except AttributeError:
+        return None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Small internal utilities
 # ─────────────────────────────────────────────────────────────────────────────
@@ -845,7 +936,17 @@ def _encode_polygons(polygons):
     return ref_arr, vert_arr
 
 
-def _pack_for_geometry(geometry_name: str, payload):
+def _geometry_layout_dimension(geometry_input) -> int:
+    layout = geometry_input.layout
+    field_names = set(layout.field_names())
+    if layout.name.endswith("3D") or any(name in field_names for name in ("z0", "z1", "z2", "oz", "dz")):
+        return 3
+    return 2
+
+
+def _pack_for_geometry(geometry_input, payload):
+    geometry_name = geometry_input.geometry.name
+    expected_dimension = _geometry_layout_dimension(geometry_input)
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
@@ -859,9 +960,21 @@ def _pack_for_geometry(geometry_name: str, payload):
             return cached
         return payload if isinstance(payload, PackedPolygons)  else pack_polygons(records=payload)
     if geometry_name == "triangles":
-        return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)
+        if isinstance(payload, PackedTriangles):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed triangles payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_triangles(records=payload, dimension=expected_dimension)
     if geometry_name == "rays":
-        return payload if isinstance(payload, PackedRays)      else pack_rays(records=payload)
+        if isinstance(payload, PackedRays):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed rays payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_rays(records=payload, dimension=expected_dimension)
     raise ValueError(f"unsupported geometry type for OptiX backend: {geometry_name!r}")
 
 

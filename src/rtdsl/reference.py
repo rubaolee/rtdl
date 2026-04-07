@@ -38,12 +38,38 @@ class Triangle:
 
 
 @dataclass(frozen=True)
+class Triangle3D:
+    id: int
+    x0: float
+    y0: float
+    z0: float
+    x1: float
+    y1: float
+    z1: float
+    x2: float
+    y2: float
+    z2: float
+
+
+@dataclass(frozen=True)
 class Ray2D:
     id: int
     ox: float
     oy: float
     dx: float
     dy: float
+    tmax: float
+
+
+@dataclass(frozen=True)
+class Ray3D:
+    id: int
+    ox: float
+    oy: float
+    oz: float
+    dx: float
+    dy: float
+    dz: float
     tmax: float
 
 
@@ -130,8 +156,8 @@ def overlay_compose_cpu(
 
 
 def ray_triangle_hit_count_cpu(
-    rays: tuple[Ray2D, ...],
-    triangles: tuple[Triangle, ...],
+    rays: tuple[Ray2D | Ray3D, ...],
+    triangles: tuple[Triangle | Triangle3D, ...],
 ) -> tuple[dict[str, int], ...]:
     results = []
     for ray in rays:
@@ -477,7 +503,15 @@ def _point_on_segment(
     return True
 
 
-def _finite_ray_hits_triangle(ray: Ray2D, triangle: Triangle) -> bool:
+def _finite_ray_hits_triangle(ray: Ray2D | Ray3D, triangle: Triangle | Triangle3D) -> bool:
+    if isinstance(ray, Ray3D) or isinstance(triangle, Triangle3D):
+        if not isinstance(ray, Ray3D) or not isinstance(triangle, Triangle3D):
+            raise ValueError("ray_triangle_hit_count_cpu requires rays and triangles to both be 2D or both be 3D")
+        return _finite_ray_hits_triangle_3d(ray, triangle)
+    return _finite_ray_hits_triangle_2d(ray, triangle)
+
+
+def _finite_ray_hits_triangle_2d(ray: Ray2D, triangle: Triangle) -> bool:
     triangle_vertices = (
         (triangle.x0, triangle.y0),
         (triangle.x1, triangle.y1),
@@ -498,6 +532,43 @@ def _finite_ray_hits_triangle(ray: Ray2D, triangle: Triangle) -> bool:
         Segment(id=triangle.id, x0=triangle.x2, y0=triangle.y2, x1=triangle.x0, y1=triangle.y0),
     )
     return any(_segment_intersection(ray_segment, edge) is not None for edge in triangle_edges)
+
+
+def _finite_ray_hits_triangle_3d(ray: Ray3D, triangle: Triangle3D) -> bool:
+    edge1x = triangle.x1 - triangle.x0
+    edge1y = triangle.y1 - triangle.y0
+    edge1z = triangle.z1 - triangle.z0
+    edge2x = triangle.x2 - triangle.x0
+    edge2y = triangle.y2 - triangle.y0
+    edge2z = triangle.z2 - triangle.z0
+
+    pvx = ray.dy * edge2z - ray.dz * edge2y
+    pvy = ray.dz * edge2x - ray.dx * edge2z
+    pvz = ray.dx * edge2y - ray.dy * edge2x
+
+    det = edge1x * pvx + edge1y * pvy + edge1z * pvz
+    if abs(det) <= 1.0e-8:
+        return False
+
+    inv_det = 1.0 / det
+    tvx = ray.ox - triangle.x0
+    tvy = ray.oy - triangle.y0
+    tvz = ray.oz - triangle.z0
+
+    u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det
+    if u < 0.0 or u > 1.0:
+        return False
+
+    qvx = tvy * edge1z - tvz * edge1y
+    qvy = tvz * edge1x - tvx * edge1z
+    qvz = tvx * edge1y - tvy * edge1x
+
+    v = (ray.dx * qvx + ray.dy * qvy + ray.dz * qvz) * inv_det
+    if v < 0.0 or (u + v) > 1.0:
+        return False
+
+    t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det
+    return t >= 0.0 and t <= ray.tmax
 
 
 def _segment_hits_polygon(segment: Segment, polygon: Polygon) -> bool:

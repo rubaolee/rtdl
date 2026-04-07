@@ -16,11 +16,13 @@ from .reference import Polygon
 from .reference import polygon_pair_overlap_area_rows_cpu
 from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
+from .reference import Ray3D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
 from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
+from .reference import Triangle3D
 
 
 def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | None:
@@ -31,8 +33,8 @@ def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | N
         "segments": Segment,
         "points": Point,
         "polygons": Polygon,
-        "triangles": Triangle,
-        "rays": Ray2D,
+        "triangles": (Triangle, Triangle3D),
+        "rays": (Ray2D, Ray3D),
     }.get(geometry_name)
     if expected_type is None:
         return None
@@ -58,6 +60,7 @@ def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
         name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
         for name, payload in inputs.items()
     }
+    _validate_oracle_supported_inputs(normalized_inputs)
 
     return _project_rows(compiled, run_oracle(compiled, normalized_inputs))
 
@@ -193,8 +196,24 @@ def _coerce_point(input_name: str, record) -> Point:
 
 
 def _coerce_triangle(input_name: str, record) -> Triangle:
+    if isinstance(record, Triangle3D):
+        return record
     if isinstance(record, Triangle):
         return record
+    if _record_has_fields(record, ("id", "x0", "y0", "z0", "x1", "y1", "z1", "x2", "y2", "z2")):
+        data = _extract_record_fields(input_name, record, ("id", "x0", "y0", "z0", "x1", "y1", "z1", "x2", "y2", "z2"))
+        return Triangle3D(
+            id=int(data["id"]),
+            x0=float(data["x0"]),
+            y0=float(data["y0"]),
+            z0=float(data["z0"]),
+            x1=float(data["x1"]),
+            y1=float(data["y1"]),
+            z1=float(data["z1"]),
+            x2=float(data["x2"]),
+            y2=float(data["y2"]),
+            z2=float(data["z2"]),
+        )
     data = _extract_record_fields(input_name, record, ("id", "x0", "y0", "x1", "y1", "x2", "y2"))
     return Triangle(
         id=int(data["id"]),
@@ -208,8 +227,22 @@ def _coerce_triangle(input_name: str, record) -> Triangle:
 
 
 def _coerce_ray(input_name: str, record) -> Ray2D:
+    if isinstance(record, Ray3D):
+        return record
     if isinstance(record, Ray2D):
         return record
+    if _record_has_fields(record, ("id", "ox", "oy", "oz", "dx", "dy", "dz", "tmax")):
+        data = _extract_record_fields(input_name, record, ("id", "ox", "oy", "oz", "dx", "dy", "dz", "tmax"))
+        return Ray3D(
+            id=int(data["id"]),
+            ox=float(data["ox"]),
+            oy=float(data["oy"]),
+            oz=float(data["oz"]),
+            dx=float(data["dx"]),
+            dy=float(data["dy"]),
+            dz=float(data["dz"]),
+            tmax=float(data["tmax"]),
+        )
     data = _extract_record_fields(input_name, record, ("id", "ox", "oy", "dx", "dy", "tmax"))
     return Ray2D(
         id=int(data["id"]),
@@ -273,3 +306,21 @@ def _extract_record_fields(
     if hint is not None:
         message = f"{message}. {hint}"
     raise ValueError(message)
+
+
+def _record_has_fields(record, field_names: tuple[str, ...]) -> bool:
+    if isinstance(record, Mapping):
+        return all(name in record for name in field_names)
+    if is_dataclass(record) or all(hasattr(record, name) for name in field_names):
+        return True
+    return False
+
+
+def _validate_oracle_supported_inputs(normalized_inputs: Mapping[str, tuple[object, ...]]) -> None:
+    for payload in normalized_inputs.values():
+        for item in payload:
+            if isinstance(item, (Triangle3D, Ray3D)):
+                raise ValueError(
+                    "run_cpu currently supports only 2D ray/triangle records; "
+                    "use run_cpu_python_reference for the experimental 3D ray-triangle path"
+                )

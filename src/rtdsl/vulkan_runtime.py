@@ -39,7 +39,9 @@ from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
 from .embree_runtime import _RtdlPolygonRef
 from .embree_runtime import _RtdlTriangle
+from .embree_runtime import _RtdlTriangle3D
 from .embree_runtime import _RtdlRay2D
+from .embree_runtime import _RtdlRay3D
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
@@ -194,7 +196,7 @@ class PreparedVulkanKernel:
         if unexpected:
             raise ValueError(f"unexpected RTDL Vulkan inputs: {', '.join(sorted(unexpected))}")
         packed = {
-            name: _pack_for_geometry(self.expected_inputs[name].geometry.name, payload)
+            name: _pack_for_geometry(self.expected_inputs[name], payload)
             for name, payload in inputs.items()
         }
         return PreparedVulkanExecution(self.compiled, self.library, packed)
@@ -480,11 +482,26 @@ def _call_ray_hitcount_vulkan_packed(compiled: CompiledKernel, packed, lib) -> V
     rows_ptr  = ctypes.POINTER(_RtdlRayHitCountRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_ray_hitcount(
-        rays.records, rays.count,
-        triangles.records, triangles.count,
-        ctypes.byref(rows_ptr), ctypes.byref(row_count),
-        error, len(error))
+    if rays.dimension != triangles.dimension:
+        raise ValueError("Vulkan ray_triangle_hit_count requires rays and triangles to have the same dimension")
+    if rays.dimension == 3:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_hitcount_3d")
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded Vulkan backend library does not export rtdl_vulkan_run_ray_hitcount_3d. "
+                "Rebuild it with 'make build-vulkan' from current main."
+            )
+        status = symbol(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    else:
+        status = lib.rtdl_vulkan_run_ray_hitcount(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
     _check_status(status, error)
     return VulkanRowView(
         library=lib, rows_ptr=rows_ptr,
@@ -640,6 +657,16 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_vulkan_run_ray_hitcount.restype = ctypes.c_int
+    optional_ray3d = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_hitcount_3d")
+    if optional_ray3d is not None:
+        optional_ray3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_ray3d.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_vulkan_run_segment_polygon_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
@@ -683,6 +710,13 @@ def _require_backend_symbol(lib, symbol_name: str):
         ) from exc
 
 
+def _find_optional_backend_symbol(lib, symbol_name: str):
+    try:
+        return getattr(lib, symbol_name)
+    except AttributeError:
+        return None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Small internal utilities
 # ─────────────────────────────────────────────────────────────────────────────
@@ -724,11 +758,21 @@ def _encode_polygons(polygons):
     return ref_arr, vert_arr
 
 
-def _pack_for_geometry(geometry_name: str, payload):
+def _geometry_layout_dimension(geometry_input) -> int:
+    layout = geometry_input.layout
+    field_names = set(layout.field_names())
+    if layout.name.endswith("3D") or any(name in field_names for name in ("z0", "z1", "z2", "oz", "dz")):
+        return 3
+    return 2
+
+
+def _pack_for_geometry(geometry_input, payload):
     from .embree_runtime import (
         pack_segments, pack_points, pack_polygons,
         pack_triangles, pack_rays,
     )
+    geometry_name = geometry_input.geometry.name
+    expected_dimension = _geometry_layout_dimension(geometry_input)
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
@@ -742,9 +786,21 @@ def _pack_for_geometry(geometry_name: str, payload):
             return cached
         return payload if isinstance(payload, PackedPolygons)  else pack_polygons(records=payload)
     if geometry_name == "triangles":
-        return payload if isinstance(payload, PackedTriangles) else pack_triangles(records=payload)
+        if isinstance(payload, PackedTriangles):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed triangles payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_triangles(records=payload, dimension=expected_dimension)
     if geometry_name == "rays":
-        return payload if isinstance(payload, PackedRays)      else pack_rays(records=payload)
+        if isinstance(payload, PackedRays):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed rays payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_rays(records=payload, dimension=expected_dimension)
     raise ValueError(f"unsupported geometry type for Vulkan backend: {geometry_name!r}")
 
 

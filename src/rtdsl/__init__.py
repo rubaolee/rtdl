@@ -170,11 +170,13 @@ from .reference import Polygon
 from .reference import polygon_pair_overlap_area_rows_cpu
 from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
+from .reference import Ray3D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
 from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
+from .reference import Triangle3D
 from .section_5_6_scalability import generate_section_5_6_artifacts
 from .section_5_6_scalability import generate_synthetic_polygons
 from .section_5_6_scalability import polygon_probe_points
@@ -194,10 +196,14 @@ from .types import Polygons
 from .types import Polygon2DLayout
 from .types import Rays
 from .types import Ray2DLayout
+from .types import Ray3DLayout
+from .types import Rays3D
 from .types import Segment2DLayout
 from .types import Segments
 from .types import Triangle2DLayout
 from .types import Triangles
+from .types import Triangle3DLayout
+from .types import Triangles3D
 from .types import u32
 
 
@@ -295,6 +301,9 @@ __all__ = [
     "Rays",
     "Ray2D",
     "Ray2DLayout",
+    "Ray3D",
+    "Ray3DLayout",
+    "Rays3D",
     "RayJoinPlan",
     "RTExecutionPlan",
     "RayJoinBoundedPlan",
@@ -306,6 +315,9 @@ __all__ = [
     "Triangles",
     "Triangle",
     "Triangle2DLayout",
+    "Triangle3D",
+    "Triangle3DLayout",
+    "Triangles3D",
     "compile_kernel",
     "dataset_families",
     "compare_baseline_rows",
