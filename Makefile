@@ -9,7 +9,18 @@ OPTIX_LIB_NAME   := librtdl_optix.so
 VULKAN_LIB_NAME  := librtdl_vulkan.so
 endif
 
-OPTIX_PREFIX ?= /opt/optix
+OPTIX_CANDIDATES := \
+	/opt/optix \
+	/usr/local/optix \
+	/usr/local/NVIDIA-OptiX-SDK \
+	/usr/local/NVIDIA-OptiX-SDK-9.0.0-linux64-x86_64 \
+	$(HOME)/vendor/optix-dev \
+	$(HOME)/vendor/optix \
+	$(HOME)/NVIDIA-OptiX-SDK \
+	$(HOME)/NVIDIA-OptiX-SDK-9.0.0-linux64-x86_64 \
+	$(HOME)/Downloads/NVIDIA-OptiX-SDK \
+	$(HOME)/Downloads/NVIDIA-OptiX-SDK-9.0.0-linux64-x86_64
+OPTIX_PREFIX ?= $(or $(firstword $(wildcard $(OPTIX_CANDIDATES))),/opt/optix)
 ifneq ("$(wildcard /usr/local/cuda)","")
 CUDA_PREFIX ?= /usr/local/cuda
 else ifneq ("$(wildcard /usr/lib/cuda)","")
@@ -96,6 +107,12 @@ build-vulkan:
 
 build-optix:
 	mkdir -p $(BUILD_DIR)
+	@if [ ! -f "$(OPTIX_INCLUDE)/optix.h" ]; then \
+		echo "RTDL OptiX SDK header not found at $(OPTIX_INCLUDE)/optix.h"; \
+		echo "Set OPTIX_PREFIX to the OptiX SDK root, for example:"; \
+		echo "  make build-optix OPTIX_PREFIX=\$$HOME/vendor/optix-dev"; \
+		exit 1; \
+	fi
 	$(CXX_OPTIX) $(OPTIX_CXXFLAGS) \
 		src/native/rtdl_optix.cpp \
 		$(OPTIX_LDFLAGS) \
