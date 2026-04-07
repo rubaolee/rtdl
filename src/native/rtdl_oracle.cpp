@@ -96,6 +96,15 @@ struct RtdlSegmentPolygonAnyHitRow {
   uint32_t polygon_id;
 };
 
+struct RtdlPolygonPairOverlapAreaRow {
+  uint32_t left_polygon_id;
+  uint32_t right_polygon_id;
+  uint32_t intersection_area;
+  uint32_t left_area;
+  uint32_t right_area;
+  uint32_t union_area;
+};
+
 struct RtdlPointNearestSegmentRow {
   uint32_t point_id;
   uint32_t segment_id;
@@ -165,6 +174,19 @@ int rtdl_oracle_run_segment_polygon_anyhit_rows(
     const double* vertices_xy,
     size_t vertex_xy_count,
     RtdlSegmentPolygonAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_polygon_pair_overlap_area_rows(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlPolygonPairOverlapAreaRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -666,6 +688,81 @@ bool bounds_overlap(const Bounds2D& left, const Bounds2D& right) {
            left.max_y < right.min_y || right.max_y < left.min_y);
 }
 
+Bounds2D bounds_for_polygon(const Polygon2D& polygon);
+
+bool is_close_to_integer(double value) {
+  return std::fabs(value - std::round(value)) <= 1.0e-9;
+}
+
+void require_pathology_grid_polygon(const Polygon2D& polygon) {
+  if (polygon.vertices.size() < 3) {
+    throw std::runtime_error("polygon_pair_overlap_area_rows requires polygons with at least 3 vertices");
+  }
+  for (const Vec2& vertex : polygon.vertices) {
+    if (!is_close_to_integer(vertex.x) || !is_close_to_integer(vertex.y)) {
+      throw std::runtime_error(
+          "polygon_pair_overlap_area_rows currently requires integer-grid polygon vertices");
+    }
+  }
+  for (size_t i = 0; i < polygon.vertices.size(); ++i) {
+    const Vec2& start = polygon.vertices[i];
+    const Vec2& end = polygon.vertices[(i + 1) % polygon.vertices.size()];
+    const double dx = end.x - start.x;
+    const double dy = end.y - start.y;
+    if (std::fabs(dx) <= kPointEps && std::fabs(dy) <= kPointEps) {
+      throw std::runtime_error("polygon_pair_overlap_area_rows does not accept zero-length polygon edges");
+    }
+    if (std::fabs(dx) > kPointEps && std::fabs(dy) > kPointEps) {
+      throw std::runtime_error(
+          "polygon_pair_overlap_area_rows currently requires orthogonal integer-grid polygons");
+    }
+  }
+}
+
+uint64_t encode_cell_key(int32_t x, int32_t y) {
+  return (static_cast<uint64_t>(static_cast<uint32_t>(x)) << 32) |
+         static_cast<uint64_t>(static_cast<uint32_t>(y));
+}
+
+std::vector<uint64_t> polygon_unit_cells(const Polygon2D& polygon) {
+  require_pathology_grid_polygon(polygon);
+  const Bounds2D bounds = bounds_for_polygon(polygon);
+  const int min_x = static_cast<int>(std::floor(bounds.min_x));
+  const int max_x = static_cast<int>(std::ceil(bounds.max_x));
+  const int min_y = static_cast<int>(std::floor(bounds.min_y));
+  const int max_y = static_cast<int>(std::ceil(bounds.max_y));
+  std::vector<uint64_t> cells;
+  cells.reserve(static_cast<size_t>(std::max(0, max_x - min_x) * std::max(0, max_y - min_y)));
+  for (int iy = min_y; iy < max_y; ++iy) {
+    for (int ix = min_x; ix < max_x; ++ix) {
+      if (point_in_polygon(static_cast<double>(ix) + 0.5, static_cast<double>(iy) + 0.5, polygon.vertices)) {
+        cells.push_back(encode_cell_key(ix, iy));
+      }
+    }
+  }
+  std::sort(cells.begin(), cells.end());
+  cells.erase(std::unique(cells.begin(), cells.end()), cells.end());
+  return cells;
+}
+
+uint32_t intersect_cell_sets(const std::vector<uint64_t>& left, const std::vector<uint64_t>& right) {
+  size_t left_index = 0;
+  size_t right_index = 0;
+  uint32_t count = 0;
+  while (left_index < left.size() && right_index < right.size()) {
+    if (left[left_index] == right[right_index]) {
+      count += 1;
+      left_index += 1;
+      right_index += 1;
+    } else if (left[left_index] < right[right_index]) {
+      left_index += 1;
+    } else {
+      right_index += 1;
+    }
+  }
+  return count;
+}
+
 struct PolygonBucketIndex {
   double origin_x;
   double bucket_width;
@@ -1135,6 +1232,102 @@ extern "C" int rtdl_oracle_run_segment_polygon_anyhit_rows(
           if (segment_hits_polygon(segment, polygon)) {
             rows.push_back({segment.id, polygon.id});
           }
+        }
+      }
+      stamp += 1;
+      if (stamp == 0) {
+        std::fill(seen.begin(), seen.end(), 0);
+        stamp = 1;
+      }
+    }
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+extern "C" int rtdl_oracle_run_polygon_pair_overlap_area_rows(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlPolygonPairOverlapAreaRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Polygon2D> left_values =
+        decode_polygons(left_polygons, left_count, left_vertices_xy, left_vertex_xy_count);
+    std::vector<Polygon2D> right_values =
+        decode_polygons(right_polygons, right_count, right_vertices_xy, right_vertex_xy_count);
+    std::vector<Bounds2D> left_bounds;
+    std::vector<Bounds2D> right_bounds;
+    std::vector<std::vector<uint64_t>> left_cells;
+    std::vector<std::vector<uint64_t>> right_cells;
+    left_bounds.reserve(left_values.size());
+    right_bounds.reserve(right_values.size());
+    left_cells.reserve(left_values.size());
+    right_cells.reserve(right_values.size());
+    for (const Polygon2D& polygon : left_values) {
+      left_bounds.push_back(bounds_for_polygon(polygon));
+      left_cells.push_back(polygon_unit_cells(polygon));
+    }
+    for (const Polygon2D& polygon : right_values) {
+      right_bounds.push_back(bounds_for_polygon(polygon));
+      right_cells.push_back(polygon_unit_cells(polygon));
+    }
+    const PolygonBucketIndex bucket_index = build_polygon_bucket_index(right_bounds);
+    std::vector<size_t> seen(right_values.size(), 0);
+    size_t stamp = 1;
+    std::vector<RtdlPolygonPairOverlapAreaRow> rows;
+    for (size_t left_index = 0; left_index < left_values.size(); ++left_index) {
+      const Bounds2D& left_bound = left_bounds[left_index];
+      const size_t bucket_count = bucket_index.buckets.size();
+      size_t first = 0;
+      size_t last = 0;
+      if (bucket_count > 0) {
+        first = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((left_bound.min_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        last = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((left_bound.max_x - bucket_index.origin_x) / bucket_index.bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+      }
+      for (size_t bucket_id = first; bucket_id <= last && bucket_count > 0; ++bucket_id) {
+        for (size_t right_index : bucket_index.buckets[bucket_id]) {
+          if (seen[right_index] == stamp) {
+            continue;
+          }
+          seen[right_index] = stamp;
+          if (!bounds_overlap(left_bound, right_bounds[right_index])) {
+            continue;
+          }
+          const uint32_t intersection_area = intersect_cell_sets(left_cells[left_index], right_cells[right_index]);
+          if (intersection_area == 0) {
+            continue;
+          }
+          const uint32_t left_area = static_cast<uint32_t>(left_cells[left_index].size());
+          const uint32_t right_area = static_cast<uint32_t>(right_cells[right_index].size());
+          rows.push_back({
+              left_values[left_index].id,
+              right_values[right_index].id,
+              intersection_area,
+              left_area,
+              right_area,
+              static_cast<uint32_t>(left_area + right_area - intersection_area),
+          });
         }
       }
       stamp += 1;

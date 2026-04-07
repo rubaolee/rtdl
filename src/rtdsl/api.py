@@ -141,6 +141,10 @@ def segment_polygon_anyhit_rows(*, exact: bool = False) -> Predicate:
     return Predicate(name="segment_polygon_anyhit_rows", options={"exact": exact})
 
 
+def polygon_pair_overlap_area_rows(*, exact: bool = False) -> Predicate:
+    return Predicate(name="polygon_pair_overlap_area_rows", options={"exact": exact})
+
+
 def point_nearest_segment(*, exact: bool = False) -> Predicate:
     return Predicate(name="point_nearest_segment", options={"exact": exact})
 

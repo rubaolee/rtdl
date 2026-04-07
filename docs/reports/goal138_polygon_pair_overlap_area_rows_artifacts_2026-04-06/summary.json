@@ -1,0 +1,67 @@
+{
+  "cpu_parity_vs_postgis": true,
+  "cpu_rows": [
+    {
+      "intersection_area": 4,
+      "left_area": 9,
+      "left_polygon_id": 1,
+      "right_area": 9,
+      "right_polygon_id": 10,
+      "union_area": 14
+    },
+    {
+      "intersection_area": 1,
+      "left_area": 4,
+      "left_polygon_id": 2,
+      "right_area": 2,
+      "right_polygon_id": 11,
+      "union_area": 5
+    }
+  ],
+  "generated_at": "2026-04-06T23:29:18",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "postgis_rows": [
+    {
+      "intersection_area": 4,
+      "left_area": 9,
+      "left_polygon_id": 1,
+      "right_area": 9,
+      "right_polygon_id": 10,
+      "union_area": 14
+    },
+    {
+      "intersection_area": 1,
+      "left_area": 4,
+      "left_polygon_id": 2,
+      "right_area": 2,
+      "right_polygon_id": 11,
+      "union_area": 5
+    }
+  ],
+  "postgis_sec": 0.004517353998380713,
+  "python_parity_vs_postgis": true,
+  "python_rows": [
+    {
+      "intersection_area": 4,
+      "left_area": 9,
+      "left_polygon_id": 1,
+      "right_area": 9,
+      "right_polygon_id": 10,
+      "union_area": 14
+    },
+    {
+      "intersection_area": 1,
+      "left_area": 4,
+      "left_polygon_id": 2,
+      "right_area": 2,
+      "right_polygon_id": 11,
+      "union_area": 5
+    }
+  ],
+  "suite": "goal138_polygon_overlap_postgis_validation"
+}

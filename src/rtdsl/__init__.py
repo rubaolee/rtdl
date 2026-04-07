@@ -6,6 +6,7 @@ from .api import kernel
 from .api import overlay_compose
 from .api import point_nearest_segment
 from .api import point_in_polygon
+from .api import polygon_pair_overlap_area_rows
 from .api import ray_triangle_hit_count
 from .api import refine
 from .api import segment_intersection
@@ -105,6 +106,10 @@ from .goal128_segment_polygon_anyhit_postgis import run_goal128_segment_polygon_
 from .goal128_segment_polygon_anyhit_postgis import run_goal128_segment_polygon_anyhit_postgis_validation
 from .goal128_segment_polygon_anyhit_postgis import write_goal128_linux_artifacts
 from .goal128_segment_polygon_anyhit_postgis import write_goal128_postgis_artifacts
+from .goal138_polygon_overlap_postgis import render_goal138_markdown
+from .goal138_polygon_overlap_postgis import run_goal138_polygon_overlap_postgis_validation
+from .goal138_polygon_overlap_postgis import run_postgis_polygon_pair_overlap_area_rows
+from .goal138_polygon_overlap_postgis import write_goal138_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -133,6 +138,7 @@ from .reference import point_nearest_segment_cpu
 from .reference import pip_cpu
 from .reference import Point
 from .reference import Polygon
+from .reference import polygon_pair_overlap_area_rows_cpu
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
@@ -239,6 +245,7 @@ __all__ = [
     "overlay_compose",
     "oracle_version",
     "point_nearest_segment",
+    "polygon_pair_overlap_area_rows",
     "OutputRecord",
     "OverpassElementStats",
     "PaperTarget",
@@ -304,12 +311,16 @@ __all__ = [
     "render_goal118_markdown",
     "render_goal128_linux_markdown",
     "render_goal128_postgis_markdown",
+    "render_goal138_markdown",
     "run_goal118_segment_polygon_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_postgis_validation",
+    "run_goal138_polygon_overlap_postgis_validation",
+    "run_postgis_polygon_pair_overlap_area_rows",
     "write_goal118_artifacts",
     "write_goal128_linux_artifacts",
     "write_goal128_postgis_artifacts",
+    "write_goal138_artifacts",
     "generate_synthetic_polygons",
     "generate_optix_project",
     "generate_goal23_artifacts",
@@ -349,6 +360,7 @@ __all__ = [
     "point_nearest_segment_cpu",
     "polygon_probe_points",
     "Polygon",
+    "polygon_pair_overlap_area_rows_cpu",
     "polygons_to_segments",
     "prepare_embree",
     "PreparedEmbreeExecution",

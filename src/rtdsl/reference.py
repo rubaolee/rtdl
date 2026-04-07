@@ -183,6 +183,43 @@ def segment_polygon_anyhit_rows_cpu(
     return tuple(rows)
 
 
+def polygon_pair_overlap_area_rows_cpu(
+    left_polygons: tuple[Polygon, ...],
+    right_polygons: tuple[Polygon, ...],
+) -> tuple[dict[str, int], ...]:
+    left_bounds = tuple(_polygon_bounds(polygon) for polygon in left_polygons)
+    right_bounds = tuple(_polygon_bounds(polygon) for polygon in right_polygons)
+    right_bucket_index = _build_polygon_bucket_index(right_bounds)
+    right_cell_sets = tuple(_polygon_unit_cells(polygon) for polygon in right_polygons)
+    right_areas = tuple(len(cells) for cells in right_cell_sets)
+
+    rows = []
+    for left_index, left_polygon in enumerate(left_polygons):
+        left_cells = _polygon_unit_cells(left_polygon)
+        left_area = len(left_cells)
+        left_bounds_row = left_bounds[left_index]
+        left_cell_lookup = set(left_cells)
+        for right_index in _candidate_polygon_indexes(left_bounds_row, right_bounds, right_bucket_index):
+            if not _bounds_overlap(left_bounds_row, right_bounds[right_index]):
+                continue
+            intersection_area = sum(1 for cell in right_cell_sets[right_index] if cell in left_cell_lookup)
+            if intersection_area <= 0:
+                continue
+            right_polygon = right_polygons[right_index]
+            right_area = right_areas[right_index]
+            rows.append(
+                {
+                    "left_polygon_id": left_polygon.id,
+                    "right_polygon_id": right_polygon.id,
+                    "intersection_area": intersection_area,
+                    "left_area": left_area,
+                    "right_area": right_area,
+                    "union_area": left_area + right_area - intersection_area,
+                }
+            )
+    return tuple(rows)
+
+
 def point_nearest_segment_cpu(
     points: tuple[Point, ...],
     segments: tuple[Segment, ...],
@@ -270,6 +307,42 @@ def _build_polygon_bucket_index(
         "bucket_width": bucket_width,
         "buckets": tuple(tuple(bucket) for bucket in buckets),
     }
+
+
+def _polygon_unit_cells(polygon: Polygon) -> tuple[tuple[int, int], ...]:
+    _require_pathology_grid_polygon(polygon)
+    min_x, min_y, max_x, max_y = _polygon_bounds(polygon)
+    cells: list[tuple[int, int]] = []
+    for iy in range(int(math.floor(min_y)), int(math.ceil(max_y))):
+        for ix in range(int(math.floor(min_x)), int(math.ceil(max_x))):
+            if _point_in_polygon(ix + 0.5, iy + 0.5, polygon.vertices):
+                cells.append((ix, iy))
+    return tuple(cells)
+
+
+def _require_pathology_grid_polygon(polygon: Polygon) -> None:
+    if len(polygon.vertices) < 3:
+        raise ValueError("polygon_pair_overlap_area_rows requires polygons with at least 3 vertices")
+    vertices = polygon.vertices
+    for x, y in vertices:
+        if not _is_close_to_integer(x) or not _is_close_to_integer(y):
+            raise ValueError(
+                "polygon_pair_overlap_area_rows currently requires integer-grid polygon vertices"
+            )
+    wrapped = vertices + (vertices[0],)
+    for start, end in zip(wrapped, wrapped[1:]):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        if abs(dx) <= 1.0e-12 and abs(dy) <= 1.0e-12:
+            raise ValueError("polygon_pair_overlap_area_rows does not accept zero-length polygon edges")
+        if abs(dx) > 1.0e-12 and abs(dy) > 1.0e-12:
+            raise ValueError(
+                "polygon_pair_overlap_area_rows currently requires orthogonal integer-grid polygons"
+            )
+
+
+def _is_close_to_integer(value: float) -> bool:
+    return abs(value - round(value)) <= 1.0e-9
 
 
 def _candidate_polygon_indexes(

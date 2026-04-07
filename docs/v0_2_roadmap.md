@@ -258,6 +258,29 @@ generate-only line to that family too:
 - keep verification explicit
 - publish one worked generated handoff bundle
 
+### Goal 137: pathology Jaccard charter
+
+Define the first accepted boundary for the Jaccard line:
+
+- pathology polygon-set Jaccard only
+- primitive first:
+  - `polygon_pair_overlap_area_rows`
+- not generic set similarity
+- not generic continuous polygon overlay
+
+### Goal 138: overlap-area primitive closure
+
+Close the first primitive on an honest narrow surface:
+
+- Python reference
+- native CPU/oracle
+- authored example and tests
+- authored Linux/PostGIS parity
+
+This counts only if the package stays explicit that the semantics are limited
+to orthogonal integer-grid polygons and do not yet imply general polygon
+overlay support.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

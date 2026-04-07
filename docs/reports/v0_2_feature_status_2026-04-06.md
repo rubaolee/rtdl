@@ -134,3 +134,28 @@ So the current bottom line for `segment_polygon_hitcount` is:
 - strong user-facing product surface
 - strong Linux deterministic performance across all four primary execution
   backends
+
+## Jaccard Line Update
+
+Update after Goal 136:
+
+- RTDL may pursue pathology polygon-set Jaccard
+- but only through a narrow primitive-first path
+- the required first primitive was identified as:
+  - `polygon_pair_overlap_area_rows`
+
+Update after Goal 137:
+
+- the accepted first boundary is now explicit:
+  - orthogonal integer-grid polygons
+  - unit-cell overlap area
+  - no generic continuous overlay claim
+
+Update after Goal 138:
+
+- `polygon_pair_overlap_area_rows` is now real on:
+  - Python reference
+  - native CPU/oracle
+- authored Linux/PostGIS parity is clean
+- the line is still intentionally narrow and should not yet be described as
+  general polygon overlay or full public-data Jaccard support
