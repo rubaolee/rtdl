@@ -14,7 +14,11 @@ import rtdsl as rt
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate one runnable RTDL program without executing the workload locally.")
-    parser.add_argument("--workload", choices=("segment_polygon_hitcount",), required=True)
+    parser.add_argument(
+        "--workload",
+        choices=("segment_polygon_hitcount", "segment_polygon_anyhit_rows"),
+        required=True,
+    )
     parser.add_argument(
         "--dataset",
         choices=(

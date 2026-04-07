@@ -238,6 +238,26 @@ Close `segment_polygon_anyhit_rows` as a real local RTDL workload family with:
 This counts only if the family is actually runnable and visible on the RTDL
 surface rather than merely listed as a future direction.
 
+### Goal 128: second workload family external evidence
+
+Take `segment_polygon_anyhit_rows` through the same external-evidence path used
+for `segment_polygon_hitcount`:
+
+- PostGIS correctness validation
+- Linux large-row backend performance reporting
+
+This goal counts only if the resulting package has real Linux/PostGIS artifacts,
+not merely local harness code.
+
+### Goal 129: generate-only second workload expansion
+
+After the second workload family is externally closed, extend the kept narrow
+generate-only line to that family too:
+
+- keep the product surface small
+- keep verification explicit
+- publish one worked generated handoff bundle
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

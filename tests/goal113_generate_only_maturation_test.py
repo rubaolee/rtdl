@@ -38,6 +38,8 @@ class Goal113GenerateOnlyMaturationTest(unittest.TestCase):
             self.assertEqual(json.loads(manifest.read_text(encoding="utf-8"))["artifact_shape"], "handoff_bundle")
             self.assertIn("RTDL Generate-Only Handoff Bundle", readme.read_text(encoding="utf-8"))
             self.assertIn(program.name, readme.read_text(encoding="utf-8"))
+            self.assertNotIn("/Users/rl2025/", readme.read_text(encoding="utf-8"))
+            self.assertNotIn("Goal 113", readme.read_text(encoding="utf-8"))
 
     def test_generated_handoff_bundle_program_runs(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
