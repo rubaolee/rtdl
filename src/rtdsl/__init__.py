@@ -136,6 +136,9 @@ from .goal141_public_jaccard_audit import run_goal141_public_jaccard_audit
 from .goal141_public_jaccard_audit import run_postgis_polygon_set_jaccard_for_case
 from .goal141_public_jaccard_audit import tile_polygon_set
 from .goal141_public_jaccard_audit import write_goal141_artifacts
+from .goal146_jaccard_linux_stress import render_goal146_markdown
+from .goal146_jaccard_linux_stress import run_goal146_jaccard_linux_stress
+from .goal146_jaccard_linux_stress import write_goal146_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp

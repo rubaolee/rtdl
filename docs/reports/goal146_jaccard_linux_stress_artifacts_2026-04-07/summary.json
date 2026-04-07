@@ -1,0 +1,82 @@
+{
+  "boundary": {
+    "accepted_claim": "Embree, OptiX, and Vulkan participate through the public run surfaces with documented native CPU/oracle fallback for this workload.",
+    "goal": "wrapper-level Linux stress and consistency for polygon_set_jaccard",
+    "not_claimed": "No native Embree/OptiX/Vulkan Jaccard implementation, prepared-path story, or RT-core maturity is claimed here."
+  },
+  "dataset": {
+    "base_left_polygon_count": 8556,
+    "base_right_polygon_count": 8556,
+    "kind": "public_real_data_derived_pair",
+    "pair_derivation": "right set is the same real-data-derived unit-cell polygon set shifted by +1 cell in x",
+    "raw_polygon_count": 424,
+    "selected_polygon_count": 16,
+    "source": "MoNuSeg 2018 Training Data",
+    "xml_name": "MoNuSeg 2018 Training Data/Annotations/TCGA-38-6178-01Z-00-DX1.xml"
+  },
+  "generated_at": "2026-04-07T07:17:33",
+  "host": {
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "rows": [
+    {
+      "backend_seconds": {
+        "cpu": 3.9785964130132925,
+        "cpu_python_reference": 8.27935820199491,
+        "embree": 3.699989911998273,
+        "optix": 3.6709489909990225,
+        "vulkan": 3.6362806079996517
+      },
+      "consistency_vs_python": {
+        "cpu": true,
+        "cpu_python_reference": true,
+        "embree": true,
+        "optix": true,
+        "vulkan": true
+      },
+      "copies": 64,
+      "left_polygon_count": 547584,
+      "result_rows": [
+        {
+          "intersection_area": 524160,
+          "jaccard_similarity": 0.917955615332885,
+          "left_area": 547584,
+          "right_area": 547584,
+          "union_area": 571008
+        }
+      ],
+      "right_polygon_count": 547584
+    },
+    {
+      "backend_seconds": {
+        "cpu": 7.6731235179904616,
+        "cpu_python_reference": 16.52616026700707,
+        "embree": 7.421700421007699,
+        "optix": 7.435529987997143,
+        "vulkan": 7.4008393620024435
+      },
+      "consistency_vs_python": {
+        "cpu": true,
+        "cpu_python_reference": true,
+        "embree": true,
+        "optix": true,
+        "vulkan": true
+      },
+      "copies": 128,
+      "left_polygon_count": 1095168,
+      "result_rows": [
+        {
+          "intersection_area": 1048320,
+          "jaccard_similarity": 0.917955615332885,
+          "left_area": 1095168,
+          "right_area": 1095168,
+          "union_area": 1142016
+        }
+      ],
+      "right_polygon_count": 1095168
+    }
+  ],
+  "suite": "goal146_jaccard_linux_stress"
+}

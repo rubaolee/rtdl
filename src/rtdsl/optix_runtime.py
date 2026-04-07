@@ -289,6 +289,24 @@ def run_optix(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     if result_mode not in {"dict", "raw"}:
         raise ValueError("OptiX result_mode must be 'dict' or 'raw'")
 
+    # Current accepted honesty boundary:
+    # the Jaccard workloads are closed on Python/native CPU today, but not as
+    # OptiX-native kernels. The public OptiX run surface accepts them through
+    # the native CPU/oracle implementation so they can participate in Linux
+    # consistency and scale audits without overclaiming backend maturity.
+    if compiled.refine_op.predicate.name in {
+        "polygon_pair_overlap_area_rows",
+        "polygon_set_jaccard",
+    }:
+        if result_mode == "raw":
+            raise ValueError(
+                "OptiX raw mode is not supported for the Jaccard workloads "
+                "while the backend uses the native CPU oracle fallback"
+            )
+        from .runtime import run_cpu
+
+        return run_cpu(compiled, **inputs)
+
     prepared = _get_or_bind_prepared_optix_execution(compiled, expected_inputs, inputs)
     return prepared.run_raw() if result_mode == "raw" else prepared.run()
 
