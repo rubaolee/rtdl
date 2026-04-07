@@ -1,0 +1,54 @@
+# Goal 166 Current Progress Note
+
+- Scope:
+  - RTDL v0.3 Earth-like visual demo line
+  - primary target is Windows Embree, not Linux OptiX
+- Current scene:
+  - static dark-blue hero ball
+  - no visible sun ball
+  - broad moving bright/dark sweep across the ball
+  - moving ground-light cue
+- Active demo file:
+  - `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- Current strongest completed artifact:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_final_1024`
+  - settings:
+    - `1024x1024`
+    - `24` frames
+    - `96x192` bands
+    - `jobs=12`
+  - wall-clock from summary:
+    - `141.72581150010228`
+- Fair comparison preview:
+  - Windows Embree:
+    - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_preview_256_v2/summary.json`
+    - wall-clock:
+      - `12.165992899797857`
+  - Linux OptiX:
+    - `/Users/rl2025/rtdl_python_only/build/linux_optix_earthlike_preview_256/summary.json`
+    - wall-clock:
+      - `148.5952258160105`
+- Current decision:
+  - Windows Embree is the clear primary path for this demo line
+  - Linux OptiX is secondary and not the delivery path
+- Current long-running task:
+  - Windows Embree `10` second movie render
+  - target:
+    - `240` frames
+    - `1024x1024`
+    - `96x192` bands
+    - `jobs=12`
+  - direct Windows output dir:
+    - `C:\Users\Lestat\rtdl_python_only_win\build\win_embree_earthlike_10s_1024`
+- Current honesty boundary:
+  - this is a user-facing RTDL demo, not a claim that RTDL is a general rendering engine
+  - RTDL owns the heavy geometric-query work
+  - Python still owns scene logic, shading, and media packaging
+- Recent review/fix:
+  - Claude review found:
+    - `spin_speed` bug in the older spinning demo
+    - brittle shadow-ray ID scheme in the orbit demo
+  - both were fixed locally
+  - focused test:
+    - `python3 -m unittest tests.goal164_spinning_ball_3d_demo_test`
+    - `OK`

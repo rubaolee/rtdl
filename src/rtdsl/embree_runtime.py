@@ -42,6 +42,8 @@ def _pkg_config_flags(package: str, option: str) -> list[str]:
 
 
 def _geos_pkg_config_flags(option: str) -> list[str]:
+    if platform.system() == "Windows":
+        return []
     flags = _pkg_config_flags("geos", option)
     if flags:
         return flags
@@ -1327,9 +1329,33 @@ def _check_status(status: int, error=None) -> None:
     raise RuntimeError(message)
 
 
+def _default_embree_prefix(system: str) -> Path:
+    if system == "Darwin":
+        return Path("/opt/homebrew/opt/embree")
+    if system == "Windows":
+        if "RTDL_EMBREE_PREFIX" in os.environ:
+            return Path(os.environ["RTDL_EMBREE_PREFIX"])
+        home = Path.home()
+        for candidate in (
+            home / "vendor",
+            home / "vendor" / "embree",
+            home / "vendor" / "embree-4.4.0",
+            home / "vendor" / "embree-4.4.0.x64.windows",
+        ):
+            if (candidate / "include" / "embree4").exists():
+                return candidate
+        return home / "vendor"
+    return Path("/usr")
+
+
 @functools.lru_cache(maxsize=1)
 def _load_embree_library():
     library_path = _ensure_embree_library()
+    if platform.system() == "Windows" and hasattr(os, "add_dll_directory"):
+        embree_prefix = _default_embree_prefix("Windows")
+        for candidate in (library_path.parent, embree_prefix / "bin", embree_prefix / "lib"):
+            if candidate.exists():
+                os.add_dll_directory(str(candidate))
     library = ctypes.CDLL(str(library_path))
     library.rtdl_embree_get_version.argtypes = [
         ctypes.POINTER(ctypes.c_int),
@@ -1465,15 +1491,25 @@ def _ensure_embree_library() -> Path:
     build_dir.mkdir(exist_ok=True)
     source_path = repo_root / "src" / "native" / "rtdl_embree.cpp"
     system = platform.system()
-    library_ext = ".dylib" if system == "Darwin" else ".so"
+    if system == "Darwin":
+        library_ext = ".dylib"
+    elif system == "Windows":
+        library_ext = ".dll"
+    else:
+        library_ext = ".so"
     library_path = build_dir / f"librtdl_embree{library_ext}"
     if system == "Darwin":
-        embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", "/opt/homebrew/opt/embree"))
+        embree_prefix = _default_embree_prefix(system)
         tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/opt/homebrew/opt/tbb"))
         compiler = os.environ.get("CXX", "clang++")
         shared_flags = ["-dynamiclib", "-fPIC"]
+    elif system == "Windows":
+        embree_prefix = _default_embree_prefix(system)
+        tbb_prefix = embree_prefix
+        compiler = os.environ.get("CXX", r"C:\Program Files\LLVM\bin\clang++.exe")
+        shared_flags = ["-shared"]
     else:
-        embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", "/usr"))
+        embree_prefix = _default_embree_prefix(system)
         tbb_prefix = Path(os.environ.get("RTDL_TBB_PREFIX", "/usr"))
         compiler = os.environ.get("CXX", "g++")
         shared_flags = ["-shared", "-fPIC"]
@@ -1499,24 +1535,48 @@ def _ensure_embree_library() -> Path:
             "-o",
             str(library_path),
             f"-I{embree_include}",
-            "-lembree4",
-            *geos_libs,
         ]
         embree_lib = embree_prefix / "lib"
         if embree_lib.exists():
-            command.extend([
-                f"-L{embree_lib}",
-                f"-Wl,-rpath,{embree_lib}",
-            ])
+            if system == "Windows":
+                command.extend([
+                    str(embree_lib / "embree4.lib"),
+                    str(embree_lib / "tbb12.lib"),
+                ])
+            else:
+                command.extend([
+                    f"-L{embree_lib}",
+                    "-lembree4",
+                ])
+                command.append(f"-Wl,-rpath,{embree_lib}")
         elif system == "Darwin":
             raise RuntimeError(
                 "Embree library directory was not found under the configured prefix. "
                 "Set RTDL_EMBREE_PREFIX to the Homebrew embree prefix."
             )
-        if tbb_prefix.exists() and (tbb_prefix / "lib").exists():
-            command.extend([
-                f"-L{tbb_prefix / 'lib'}",
-                f"-Wl,-rpath,{tbb_prefix / 'lib'}",
-            ])
-        subprocess.run(command, check=True, cwd=repo_root)
+        elif system != "Windows":
+            command.append("-lembree4")
+        if system != "Windows" and tbb_prefix.exists() and (tbb_prefix / "lib").exists():
+            command.append(f"-L{tbb_prefix / 'lib'}")
+            command.append(f"-Wl,-rpath,{tbb_prefix / 'lib'}")
+        command.extend(geos_libs)
+        if system == "Windows":
+            vcvars = Path(
+                os.environ.get(
+                    "RTDL_VCVARS64",
+                    r"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+                )
+            )
+            if not vcvars.exists():
+                raise RuntimeError(
+                    "Windows Embree build requires vcvars64.bat. Set RTDL_VCVARS64 to the Visual Studio Build Tools vcvars64.bat path."
+                )
+            quoted = " ".join(f'\"{part}\"' if " " in part else part for part in command)
+            subprocess.run(
+                ["cmd", "/c", f'call "{vcvars}" >nul 2>&1 && {quoted}'],
+                check=True,
+                cwd=repo_root,
+            )
+        else:
+            subprocess.run(command, check=True, cwd=repo_root)
     return library_path

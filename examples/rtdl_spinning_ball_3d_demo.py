@@ -4,7 +4,14 @@ import argparse
 import json
 import math
 from pathlib import Path
+import sys
 import time
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SRC_ROOT = REPO_ROOT / "src"
+for candidate in (str(REPO_ROOT), str(SRC_ROOT)):
+    if candidate not in sys.path:
+        sys.path.insert(0, candidate)
 
 import rtdsl as rt
 
@@ -261,19 +268,18 @@ def _frame_lights(phase: float) -> tuple[dict[str, object], ...]:
     )
 
 
-def _surface_color(normal: tuple[float, float, float], spin_phase: float) -> tuple[float, float, float]:
+def _surface_color(normal: tuple[float, float, float]) -> tuple[float, float, float]:
     nx, ny, nz = normal
-    longitude = math.atan2(nz, nx) + spin_phase * math.tau
     latitude = math.asin(max(-1.0, min(1.0, ny)))
-    pearl = 0.5 + 0.5 * math.sin(longitude * 2.4 + latitude * 1.6)
-    drift = 0.5 + 0.5 * math.sin(longitude * 0.9 - latitude * 3.2 + spin_phase * math.tau * 0.35)
+    crown = _clamp01((ny + 0.65) / 1.65)
+    side = _clamp01((nz + 1.0) * 0.5)
 
-    deep = (0.08, 0.15, 0.30)
-    warm = (0.92, 0.38, 0.55)
-    cool = (0.22, 0.82, 0.98)
+    midnight = (0.04, 0.07, 0.18)
+    deep_blue = (0.08, 0.14, 0.34)
+    steel = (0.12, 0.18, 0.42)
 
-    base = tuple(_mix(deep[index], warm[index], pearl) for index in range(3))
-    return tuple(_clamp01(_mix(base[index], cool[index], 0.24 * drift)) for index in range(3))
+    base = tuple(_mix(midnight[index], deep_blue[index], 0.35 + 0.30 * crown) for index in range(3))
+    return tuple(_clamp01(_mix(base[index], steel[index], 0.10 * side)) for index in range(3))
 
 
 def _shade_hit(
@@ -283,38 +289,46 @@ def _shade_hit(
     center: tuple[float, float, float],
     radius: float,
     lights: tuple[dict[str, object], ...],
-    spin_phase: float,
+    shadow_factors: tuple[float, ...] | None = None,
 ) -> tuple[int, int, int]:
     nx, ny, nz = _normalize3(
         hit_point[0] - center[0],
         hit_point[1] - center[1],
         hit_point[2] - center[2],
     )
-    base = _surface_color((nx, ny, nz), spin_phase)
+    base = _surface_color((nx, ny, nz))
     view = _normalize3(-ray.dx, -ray.dy, -ray.dz)
-    rim = (1.0 - max(0.0, _dot3(nx, ny, nz, view[0], view[1], view[2]))) ** 2.0
+    fresnel = (1.0 - max(0.0, _dot3(nx, ny, nz, view[0], view[1], view[2]))) ** 2.6
+    upper_glow = _clamp01((ny + 0.55) / 1.55)
+    lower_cool = _clamp01((0.15 - ny) / 1.15)
 
-    light_rgb = [0.13, 0.14, 0.18]
+    light_rgb = [0.11, 0.12, 0.16]
     specular = 0.0
-    for light in lights:
+    for light_index, light in enumerate(lights):
         lx, ly, lz = light["position"]  # type: ignore[index]
         ldx, ldy, ldz = _normalize3(lx - hit_point[0], ly - hit_point[1], lz - hit_point[2])
         lambert = max(0.0, _dot3(nx, ny, nz, ldx, ldy, ldz))
         if lambert <= 0.0:
             continue
+        visibility = shadow_factors[light_index] if shadow_factors is not None else 1.0
+        if visibility <= 0.0:
+            continue
         lr, lg, lb = light["color"]  # type: ignore[index]
-        light_rgb[0] += lambert * float(lr) * 0.95
-        light_rgb[1] += lambert * float(lg) * 0.95
-        light_rgb[2] += lambert * float(lb) * 0.95
+        intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
+        light_rgb[0] += lambert * visibility * float(lr) * 1.05 * intensity
+        light_rgb[1] += lambert * visibility * float(lg) * 1.05 * intensity
+        light_rgb[2] += lambert * visibility * float(lb) * 1.05 * intensity
 
         hx, hy, hz = _normalize3(ldx + view[0], ldy + view[1], ldz + view[2])
-        specular += max(0.0, _dot3(nx, ny, nz, hx, hy, hz)) ** 34.0
+        specular += visibility * intensity * (max(0.0, _dot3(nx, ny, nz, hx, hy, hz)) ** 52.0)
 
     final = []
     for index in range(3):
         channel = base[index] * light_rgb[index]
-        channel += rim * (0.12 if index != 1 else 0.18)
-        channel += specular * (0.18 + 0.08 * index)
+        channel += fresnel * (0.14 if index == 2 else 0.10)
+        channel += upper_glow * (0.03 if index == 0 else 0.05 if index == 1 else 0.08)
+        channel += lower_cool * (0.00 if index == 0 else 0.01 if index == 1 else 0.05)
+        channel += specular * (0.14 + 0.07 * index)
         final.append(int(round(_clamp01(channel) * 255.0)))
     return final[0], final[1], final[2]
 
@@ -322,11 +336,14 @@ def _shade_hit(
 def _background_pixel(px: int, py: int, width: int, height: int) -> tuple[int, int, int]:
     u = px / max(1, width - 1)
     v = py / max(1, height - 1)
-    horizon = _mix(0.18, 0.82, v)
-    vignette = 1.0 - min(1.0, math.sqrt((u - 0.5) ** 2 + (v - 0.48) ** 2) * 1.45)
-    r = (0.02 + 0.08 * horizon) * (0.62 + 0.38 * vignette)
-    g = (0.03 + 0.10 * horizon) * (0.62 + 0.38 * vignette)
-    b = (0.07 + 0.28 * horizon) * (0.68 + 0.32 * vignette)
+    horizon = _mix(0.0, 1.0, v)
+    vignette = 1.0 - min(1.0, math.sqrt((u - 0.5) ** 2 + (v - 0.46) ** 2) * 1.32)
+    nebula = math.exp(-(((u - 0.34) ** 2) / 0.025 + ((v - 0.22) ** 2) / 0.008))
+    bloom = math.exp(-(((u - 0.70) ** 2) / 0.040 + ((v - 0.30) ** 2) / 0.018))
+    floor = math.exp(-(((v - 0.84) ** 2) / 0.010))
+    r = 0.015 + 0.025 * horizon + 0.060 * vignette + 0.090 * nebula + 0.035 * floor
+    g = 0.020 + 0.030 * horizon + 0.080 * vignette + 0.030 * nebula + 0.050 * bloom + 0.045 * floor
+    b = 0.060 + 0.120 * horizon + 0.160 * vignette + 0.060 * bloom + 0.055 * floor
     return int(round(_clamp01(r) * 255.0)), int(round(_clamp01(g) * 255.0)), int(round(_clamp01(b) * 255.0))
 
 
@@ -369,12 +386,14 @@ def _overlay_lights(
     height: int,
     fov_y_degrees: float,
 ) -> None:
+    ground_plane_y = -1.75
     for light_index in range(2):
-        for step in range(8, 0, -1):
-            trail_phase = (phase - step / 70.0) % 1.0
+        for step in range(14, 0, -1):
+            trail_phase = (phase - step / 84.0) % 1.0
             trail_light = _frame_lights(trail_phase)[light_index]
+            trail_position = trail_light["position"]  # type: ignore[index]
             projected = _project_world_to_screen(
-                trail_light["position"],  # type: ignore[arg-type]
+                trail_position,  # type: ignore[arg-type]
                 eye=eye,
                 target=target,
                 up_hint=up_hint,
@@ -385,11 +404,37 @@ def _overlay_lights(
             if projected is None:
                 continue
             color = tuple(int(round(_clamp01(channel) * 255.0)) for channel in trail_light["color"])  # type: ignore[arg-type]
-            _paint_disc(image, projected[0], projected[1], 3.8 - step * 0.22, color, 0.18 * (1.0 - step / 9.0))
+            ground_projected = _project_world_to_screen(
+                (trail_position[0] * 0.96, ground_plane_y, trail_position[2] * 0.96),  # type: ignore[index]
+                eye=eye,
+                target=target,
+                up_hint=up_hint,
+                width=width,
+                height=height,
+                fov_y_degrees=fov_y_degrees,
+            )
+            if ground_projected is not None:
+                _paint_disc(
+                    image,
+                    ground_projected[0],
+                    ground_projected[1],
+                    max(width, height) * 0.050,
+                    color,
+                    0.028 * (1.0 - step / 15.0),
+                )
+            _paint_disc(
+                image,
+                projected[0],
+                projected[1],
+                max(1.2, 6.4 - step * 0.22),
+                color,
+                0.19 * (1.0 - step / 15.0),
+            )
 
     for light in _frame_lights(phase):
+        light_position = light["position"]  # type: ignore[index]
         projected = _project_world_to_screen(
-            light["position"],  # type: ignore[arg-type]
+            light_position,  # type: ignore[arg-type]
             eye=eye,
             target=target,
             up_hint=up_hint,
@@ -400,9 +445,106 @@ def _overlay_lights(
         if projected is None:
             continue
         color = tuple(int(round(_clamp01(channel) * 255.0)) for channel in light["color"])  # type: ignore[arg-type]
-        _paint_disc(image, projected[0], projected[1], 8.5, color, 0.22)
-        _paint_disc(image, projected[0], projected[1], 4.6, color, 0.45)
-        _paint_disc(image, projected[0], projected[1], 2.0, (255, 255, 255), 0.90)
+        ground_projected = _project_world_to_screen(
+            (light_position[0] * 0.96, ground_plane_y, light_position[2] * 0.96),  # type: ignore[index]
+            eye=eye,
+            target=target,
+            up_hint=up_hint,
+            width=width,
+            height=height,
+            fov_y_degrees=fov_y_degrees,
+        )
+        if ground_projected is not None:
+            _paint_ellipse(
+                image,
+                ground_projected[0],
+                ground_projected[1],
+                width * 0.075,
+                height * 0.030,
+                color,
+                0.16,
+            )
+            _paint_ellipse(
+                image,
+                ground_projected[0],
+                ground_projected[1],
+                width * 0.040,
+                height * 0.016,
+                (255, 244, 220),
+                0.12,
+            )
+        _paint_disc(image, projected[0], projected[1], 14.0, color, 0.18)
+        _paint_disc(image, projected[0], projected[1], 7.4, color, 0.46)
+        _paint_disc(image, projected[0], projected[1], 3.0, (255, 255, 255), 0.97)
+
+
+def _paint_ground_shadow(
+    image: list[list[tuple[int, int, int]]],
+    *,
+    center_x: float,
+    center_y: float,
+    radius_x: float,
+    radius_y: float,
+    alpha: float,
+) -> None:
+    height = len(image)
+    width = len(image[0]) if height else 0
+    min_x = max(0, int(math.floor(center_x - radius_x - 2.0)))
+    max_x = min(width - 1, int(math.ceil(center_x + radius_x + 2.0)))
+    min_y = max(0, int(math.floor(center_y - radius_y - 2.0)))
+    max_y = min(height - 1, int(math.ceil(center_y + radius_y + 2.0)))
+    if min_x > max_x or min_y > max_y:
+        return
+    for py in range(min_y, max_y + 1):
+        for px in range(min_x, max_x + 1):
+            nx = ((px + 0.5) - center_x) / max(1.0e-6, radius_x)
+            ny = ((py + 0.5) - center_y) / max(1.0e-6, radius_y)
+            dist = nx * nx + ny * ny
+            if dist > 1.0:
+                continue
+            strength = math.exp(-dist * 2.2) * alpha
+            image[py][px] = _blend_rgb(image[py][px], (6, 8, 16), strength)
+
+
+def _paint_halo(
+    image: list[list[tuple[int, int, int]]],
+    *,
+    center_x: float,
+    center_y: float,
+    radius: float,
+    color: tuple[int, int, int],
+    alpha: float,
+) -> None:
+    _paint_disc(image, center_x, center_y, radius * 1.45, color, alpha * 0.12)
+    _paint_disc(image, center_x, center_y, radius * 1.12, color, alpha * 0.18)
+
+
+def _paint_ellipse(
+    image: list[list[tuple[int, int, int]]],
+    cx: float,
+    cy: float,
+    radius_x: float,
+    radius_y: float,
+    color: tuple[int, int, int],
+    alpha: float,
+) -> None:
+    height = len(image)
+    width = len(image[0]) if height else 0
+    min_x = max(0, int(math.floor(cx - radius_x - 2.0)))
+    max_x = min(width - 1, int(math.ceil(cx + radius_x + 2.0)))
+    min_y = max(0, int(math.floor(cy - radius_y - 2.0)))
+    max_y = min(height - 1, int(math.ceil(cy + radius_y + 2.0)))
+    if min_x > max_x or min_y > max_y:
+        return
+    for py in range(min_y, max_y + 1):
+        for px in range(min_x, max_x + 1):
+            nx = ((px + 0.5) - cx) / max(1.0e-6, radius_x)
+            ny = ((py + 0.5) - cy) / max(1.0e-6, radius_y)
+            dist = nx * nx + ny * ny
+            if dist > 1.0:
+                continue
+            falloff = math.exp(-dist * 2.0)
+            image[py][px] = _blend_rgb(image[py][px], color, alpha * falloff)
 
 
 def _paint_disc(
@@ -443,6 +585,48 @@ def _write_ppm(path: Path, image: list[list[tuple[int, int, int]]]) -> None:
                 handle.write(bytes(pixel))
 
 
+def _make_shadow_rays(
+    *,
+    ray: rt.Ray3D,
+    hit_point: tuple[float, float, float],
+    center: tuple[float, float, float],
+    radius: float,
+    lights: tuple[dict[str, object], ...],
+    base_id: int,
+) -> tuple[rt.Ray3D, ...]:
+    nx, ny, nz = _normalize3(
+        hit_point[0] - center[0],
+        hit_point[1] - center[1],
+        hit_point[2] - center[2],
+    )
+    origin = (
+        hit_point[0] + nx * 1.0e-3,
+        hit_point[1] + ny * 1.0e-3,
+        hit_point[2] + nz * 1.0e-3,
+    )
+    rays: list[rt.Ray3D] = []
+    for light_index, light in enumerate(lights):
+        lx, ly, lz = light["position"]  # type: ignore[index]
+        dx = lx - origin[0]
+        dy = ly - origin[1]
+        dz = lz - origin[2]
+        distance = math.sqrt(max(1.0e-12, dx * dx + dy * dy + dz * dz))
+        dir_x, dir_y, dir_z = dx / distance, dy / distance, dz / distance
+        rays.append(
+            rt.Ray3D(
+                id=base_id + light_index,
+                ox=origin[0],
+                oy=origin[1],
+                oz=origin[2],
+                dx=dir_x,
+                dy=dir_y,
+                dz=dir_z,
+                tmax=max(0.0, distance - 2.0e-3),
+            )
+        )
+    return tuple(rays)
+
+
 def render_spinning_ball_3d_frames(
     *,
     backend: str,
@@ -452,15 +636,16 @@ def render_spinning_ball_3d_frames(
     latitude_bands: int,
     longitude_bands: int,
     frame_count: int,
+    spin_speed: float,
     output_dir: Path,
 ) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    eye = (0.0, 0.0, 5.4)
-    target = (0.0, 0.0, 0.0)
+    eye = (0.55, 0.30, 5.7)
+    target = (0.0, 0.10, 0.0)
     up_hint = (0.0, 1.0, 0.0)
-    radius = 1.35
-    center = (0.0, 0.0, 0.0)
-    fov_y = 34.0
+    radius = 1.38
+    center = (0.0, 0.08, 0.0)
+    fov_y = 31.0
     triangles = make_uv_sphere_mesh(
         latitude_bands=latitude_bands,
         longitude_bands=longitude_bands,
@@ -471,11 +656,12 @@ def render_spinning_ball_3d_frames(
 
     summary_frames = []
     total_query_seconds = 0.0
+    total_shadow_query_seconds = 0.0
     total_shading_seconds = 0.0
     for frame_index in range(frame_count):
         phase = frame_index / max(1, frame_count)
-        spin_phase = phase * 1.1
-        lights = _frame_lights(phase)
+        spin_phase = phase * spin_speed
+        lights = _frame_lights(spin_phase)
 
         query_started = time.perf_counter()
         rows = _run_backend_rows(backend, rays=rays, triangles=triangles)
@@ -494,6 +680,7 @@ def render_spinning_ball_3d_frames(
         shading_started = time.perf_counter()
         image: list[list[tuple[int, int, int]]] = []
         hit_pixels = 0
+        pending_hits: list[tuple[int, int, rt.Ray3D, tuple[float, float, float]]] = []
         for py in range(height):
             row_pixels: list[tuple[int, int, int]] = []
             for px in range(width):
@@ -507,18 +694,72 @@ def render_spinning_ball_3d_frames(
                     row_pixels.append(background)
                     continue
                 _, hit_point = intersection
-                row_pixels.append(
-                    _shade_hit(
-                        ray,
-                        hit_point,
-                        center=center,
-                        radius=radius,
-                        lights=lights,
-                        spin_phase=spin_phase,
-                    )
-                )
+                pending_hits.append((py, px, ray, hit_point))
+                row_pixels.append(background)
                 hit_pixels += 1
             image.append(row_pixels)
+
+        shadow_rays: list[rt.Ray3D] = []
+        for _, _, ray, hit_point in pending_hits:
+            shadow_rays.extend(
+                _make_shadow_rays(
+                    ray=ray,
+                    hit_point=hit_point,
+                    center=center,
+                    radius=radius,
+                    lights=lights,
+                    base_id=ray.id * len(lights),
+                )
+            )
+        shadow_ray_total = len(shadow_rays)
+        shadow_query_seconds = 0.0
+        shadow_lookup: dict[int, int] = {}
+        if shadow_rays:
+            shadow_started = time.perf_counter()
+            shadow_rows = _run_backend_rows(backend, rays=tuple(shadow_rays), triangles=triangles)
+            shadow_query_seconds = time.perf_counter() - shadow_started
+            shadow_lookup = {int(row["ray_id"]): int(row["hit_count"]) for row in shadow_rows}
+
+        for py, px, ray, hit_point in pending_hits:
+            shadow_factors = tuple(
+                0.0 if shadow_lookup.get(ray.id * len(lights) + light_index, 0) > 0 else 1.0
+                for light_index in range(len(lights))
+            )
+            image[py][px] = _shade_hit(
+                ray,
+                hit_point,
+                center=center,
+                radius=radius,
+                lights=lights,
+                shadow_factors=shadow_factors,
+            )
+
+        projected_center = _project_world_to_screen(
+            center,
+            eye=eye,
+            target=target,
+            up_hint=up_hint,
+            width=width,
+            height=height,
+            fov_y_degrees=fov_y,
+        )
+        if projected_center is not None:
+            _paint_ground_shadow(
+                image,
+                center_x=projected_center[0],
+                center_y=min(height - 1.0, projected_center[1] + height * 0.23),
+                radius_x=width * 0.16,
+                radius_y=height * 0.055,
+                alpha=0.36,
+            )
+            _paint_halo(
+                image,
+                center_x=projected_center[0],
+                center_y=projected_center[1],
+                radius=min(width, height) * 0.18,
+                color=(88, 138, 255),
+                alpha=0.18,
+            )
 
         _overlay_lights(
             image,
@@ -530,6 +771,7 @@ def render_spinning_ball_3d_frames(
             height=height,
             fov_y_degrees=fov_y,
         )
+        total_shadow_query_seconds += shadow_query_seconds
         shading_seconds = time.perf_counter() - shading_started
         total_shading_seconds += shading_seconds
 
@@ -540,8 +782,10 @@ def render_spinning_ball_3d_frames(
                 "frame_index": frame_index,
                 "frame_path": str(frame_path),
                 "query_seconds": query_seconds,
+                "shadow_query_seconds": shadow_query_seconds,
                 "shading_seconds": shading_seconds,
                 "rt_rows": len(rows),
+                "shadow_rays": shadow_ray_total,
                 "hit_pixels": hit_pixels,
                 "compare_backend": compare_summary,
             }
@@ -555,9 +799,12 @@ def render_spinning_ball_3d_frames(
         "triangle_count": len(triangles),
         "latitude_bands": latitude_bands,
         "longitude_bands": longitude_bands,
+        "spin_speed": spin_speed,
         "total_query_seconds": total_query_seconds,
+        "total_shadow_query_seconds": total_shadow_query_seconds,
         "total_shading_seconds": total_shading_seconds,
-        "query_share": total_query_seconds / max(1.0e-9, total_query_seconds + total_shading_seconds),
+        "query_share": (total_query_seconds + total_shadow_query_seconds)
+        / max(1.0e-9, total_query_seconds + total_shadow_query_seconds + total_shading_seconds),
         "frames": summary_frames,
     }
     summary_path = output_dir / "summary.json"
@@ -586,6 +833,7 @@ def main() -> None:
     parser.add_argument("--latitude-bands", type=int, default=32)
     parser.add_argument("--longitude-bands", type=int, default=64)
     parser.add_argument("--frames", type=int, default=12)
+    parser.add_argument("--spin-speed", type=float, default=1.1)
     parser.add_argument("--output-dir", type=Path, default=Path("build/rtdl_spinning_ball_3d_demo"))
     args = parser.parse_args()
 
@@ -597,6 +845,7 @@ def main() -> None:
         latitude_bands=args.latitude_bands,
         longitude_bands=args.longitude_bands,
         frame_count=args.frames,
+        spin_speed=args.spin_speed,
         output_dir=args.output_dir,
     )
     print(json.dumps(summary, indent=2, sort_keys=True))

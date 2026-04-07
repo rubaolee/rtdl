@@ -227,12 +227,14 @@ class Goal164SpinningBall3DDemoTest(unittest.TestCase):
             latitude_bands=10,
             longitude_bands=20,
             frame_count=3,
+            spin_speed=1.1,
             output_dir=output_dir,
         )
 
         self.assertEqual(summary["frame_count"], 3)
         self.assertEqual(summary["image_width"], 40)
         self.assertEqual(summary["image_height"], 40)
+        self.assertEqual(summary["spin_speed"], 1.1)
         self.assertGreater(summary["triangle_count"], 0)
         self.assertGreater(summary["total_query_seconds"], 0.0)
         self.assertGreater(summary["total_shading_seconds"], 0.0)
@@ -259,6 +261,37 @@ class Goal164SpinningBall3DDemoTest(unittest.TestCase):
         persisted = json.loads(summary_path.read_text(encoding="utf-8"))
         self.assertEqual(persisted["frame_count"], 3)
         self.assertEqual(len(persisted["frames"]), 3)
+
+    def test_spin_speed_changes_rendered_frames(self) -> None:
+        base_dir = Path("build/goal164_spinning_ball_3d_demo_spin_speed_test")
+        slow_dir = base_dir / "slow"
+        fast_dir = base_dir / "fast"
+        slow_summary = render_spinning_ball_3d_frames(
+            backend="cpu_python_reference",
+            compare_backend=None,
+            width=20,
+            height=20,
+            latitude_bands=8,
+            longitude_bands=16,
+            frame_count=2,
+            spin_speed=0.5,
+            output_dir=slow_dir,
+        )
+        fast_summary = render_spinning_ball_3d_frames(
+            backend="cpu_python_reference",
+            compare_backend=None,
+            width=20,
+            height=20,
+            latitude_bands=8,
+            longitude_bands=16,
+            frame_count=2,
+            spin_speed=1.5,
+            output_dir=fast_dir,
+        )
+
+        slow_second = Path(slow_summary["frames"][1]["frame_path"]).read_bytes()
+        fast_second = Path(fast_summary["frames"][1]["frame_path"]).read_bytes()
+        self.assertNotEqual(slow_second, fast_second)
 
 
 if __name__ == "__main__":

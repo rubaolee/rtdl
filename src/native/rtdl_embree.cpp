@@ -1202,7 +1202,13 @@ int handle_native_call(Fn&& fn, char* error_out, size_t error_size) {
 
 }  // namespace
 
-extern "C" int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out) {
+#if defined(_WIN32)
+#  define RTDL_EMBREE_EXPORT extern "C" __declspec(dllexport)
+#else
+#  define RTDL_EMBREE_EXPORT extern "C"
+#endif
+
+RTDL_EMBREE_EXPORT int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out) {
   if (major_out == nullptr || minor_out == nullptr || patch_out == nullptr) {
     return 1;
   }
@@ -1212,7 +1218,7 @@ extern "C" int rtdl_embree_get_version(int* major_out, int* minor_out, int* patc
   return 0;
 }
 
-extern "C" int rtdl_embree_run_lsi(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
@@ -1245,7 +1251,7 @@ extern "C" int rtdl_embree_run_lsi(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_pip(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_pip(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -1347,7 +1353,7 @@ extern "C" int rtdl_embree_run_pip(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_overlay(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_overlay(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -1412,7 +1418,7 @@ extern "C" int rtdl_embree_run_overlay(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_ray_hitcount(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_hitcount(
     const RtdlRay2D* rays,
     size_t ray_count,
     const RtdlTriangle* triangles,
@@ -1474,7 +1480,7 @@ extern "C" int rtdl_embree_run_ray_hitcount(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_ray_hitcount_3d(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_hitcount_3d(
     const RtdlRay3D* rays,
     size_t ray_count,
     const RtdlTriangle3D* triangles,
@@ -1541,7 +1547,7 @@ extern "C" int rtdl_embree_run_ray_hitcount_3d(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_segment_polygon_hitcount(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -1620,7 +1626,7 @@ extern "C" int rtdl_embree_run_segment_polygon_hitcount(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_segment_polygon_anyhit_rows(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -1695,7 +1701,7 @@ extern "C" int rtdl_embree_run_segment_polygon_anyhit_rows(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_embree_run_point_nearest_segment(
+RTDL_EMBREE_EXPORT int rtdl_embree_run_point_nearest_segment(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlSegment* segments,
@@ -1747,6 +1753,6 @@ extern "C" int rtdl_embree_run_point_nearest_segment(
   }, error_out, error_size);
 }
 
-extern "C" void rtdl_embree_free_rows(void* rows) {
+RTDL_EMBREE_EXPORT void rtdl_embree_free_rows(void* rows) {
   std::free(rows);
 }
