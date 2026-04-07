@@ -14,6 +14,8 @@ under the current orthogonal integer-grid unit-cell contract.
   - [rtdl_polygon_pair_overlap_area_rows.py](/Users/rl2025/rtdl_python_only/examples/rtdl_polygon_pair_overlap_area_rows.py)
 - PostGIS parity helper:
   - [goal138_polygon_overlap_postgis.py](/Users/rl2025/rtdl_python_only/src/rtdsl/goal138_polygon_overlap_postgis.py)
+- saved PostGIS SQL:
+  - [v0_2_jaccard_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_jaccard_postgis_workloads.sql)
 - closure report:
   - [goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md)
 

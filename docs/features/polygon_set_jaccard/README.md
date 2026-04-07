@@ -14,6 +14,8 @@ the orthogonal integer-grid unit-cell contract.
   - [rtdl_polygon_set_jaccard.py](/Users/rl2025/rtdl_python_only/examples/rtdl_polygon_set_jaccard.py)
 - generated handoff bundle:
   - [generated_polygon_set_jaccard_bundle](/Users/rl2025/rtdl_python_only/examples/rtdl_generated_polygon_set_jaccard_bundle/README.md)
+- saved PostGIS SQL:
+  - [v0_2_jaccard_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_jaccard_postgis_workloads.sql)
 - public-data audit:
   - [goal141_public_jaccard_linux_audit_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal141_public_jaccard_linux_audit_2026-04-06.md)
 
