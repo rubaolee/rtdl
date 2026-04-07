@@ -1197,10 +1197,29 @@ static __forceinline__ __device__ bool ray_hits_triangle(
         float x1, float y1,
         float x2, float y2)
 {
-    // Check if a 2D ray segment intersects a 2D triangle
-    // ray end point
     float ex = ox + dx * tmax, ey = oy + dy * tmax;
-    // Test ray vs each triangle edge
+
+    auto point_in_triangle = [&](float px, float py) -> bool {
+        const float v0x = x2 - x0;
+        const float v0y = y2 - y0;
+        const float v1x = x1 - x0;
+        const float v1y = y1 - y0;
+        const float v2x = px - x0;
+        const float v2y = py - y0;
+
+        const float dot00 = v0x * v0x + v0y * v0y;
+        const float dot01 = v0x * v1x + v0y * v1y;
+        const float dot02 = v0x * v2x + v0y * v2y;
+        const float dot11 = v1x * v1x + v1y * v1y;
+        const float dot12 = v1x * v2x + v1y * v2y;
+        const float denom = dot00 * dot11 - dot01 * dot01;
+        if (rt_absf(denom) < 1.0e-7f) return false;
+        const float inv = 1.0f / denom;
+        const float u = (dot11 * dot02 - dot01 * dot12) * inv;
+        const float v = (dot00 * dot12 - dot01 * dot02) * inv;
+        return u >= 0.0f && v >= 0.0f && (u + v) <= 1.0f;
+    };
+
     auto seg_hit = [&](float ax, float ay, float bx, float by) -> bool {
         float rx = ex - ox, ry = ey - oy;
         float sx = bx - ax, sy = by - ay;
@@ -1211,21 +1230,16 @@ static __forceinline__ __device__ bool ray_hits_triangle(
         float u = (qpx * ry - qpy * rx) / denom;
         return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
     };
-    // Edge intersection
+
+    if (point_in_triangle(ox, oy) || point_in_triangle(ex, ey)) {
+        return true;
+    }
+
     if (seg_hit(x0, y0, x1, y1) ||
         seg_hit(x1, y1, x2, y2) ||
         seg_hit(x2, y2, x0, y0))
         return true;
-    // Ray origin inside triangle (barycentric test)
-    auto sign = [](float a, float b, float c, float d, float e, float f) {
-        return (a - f) * (d - f) - (c - f) * (b - f);
-    };
-    float d1 = sign(ox, oy, x0, y0, x1, y1);
-    float d2 = sign(ox, oy, x1, y1, x2, y2);
-    float d3 = sign(ox, oy, x2, y2, x0, y0);
-    bool has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-    bool has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-    return !(has_neg && has_pos);
+    return false;
 }
 
 extern "C" __global__ void __raygen__rayhit_probe() {
@@ -1578,6 +1592,62 @@ static bool exact_segment_intersection(
     *ix_out = px + t * rx;
     *iy_out = py + t * ry;
     return true;
+}
+
+static bool exact_point_in_triangle(
+        double x,
+        double y,
+        const RtdlTriangle& triangle)
+{
+    const double v0x = triangle.x2 - triangle.x0;
+    const double v0y = triangle.y2 - triangle.y0;
+    const double v1x = triangle.x1 - triangle.x0;
+    const double v1y = triangle.y1 - triangle.y0;
+    const double v2x = x - triangle.x0;
+    const double v2y = y - triangle.y0;
+
+    const double dot00 = v0x * v0x + v0y * v0y;
+    const double dot01 = v0x * v1x + v0y * v1y;
+    const double dot02 = v0x * v2x + v0y * v2y;
+    const double dot11 = v1x * v1x + v1y * v1y;
+    const double dot12 = v1x * v2x + v1y * v2y;
+    const double denom = dot00 * dot11 - dot01 * dot01;
+    if (std::abs(denom) < 1.0e-7) {
+        return false;
+    }
+
+    const double inv = 1.0 / denom;
+    const double u = (dot11 * dot02 - dot01 * dot12) * inv;
+    const double v = (dot00 * dot12 - dot01 * dot02) * inv;
+    return u >= 0.0 && v >= 0.0 && (u + v) <= 1.0;
+}
+
+static bool exact_ray_hits_triangle(
+        const RtdlRay2D& ray,
+        const RtdlTriangle& triangle)
+{
+    const double ex = ray.ox + ray.dx * ray.tmax;
+    const double ey = ray.oy + ray.dy * ray.tmax;
+    const RtdlSegment ray_segment{ray.id, ray.ox, ray.oy, ex, ey};
+
+    if (exact_point_in_triangle(ray.ox, ray.oy, triangle) ||
+        exact_point_in_triangle(ex, ey, triangle)) {
+        return true;
+    }
+
+    const RtdlSegment edges[3] = {
+        {triangle.id, triangle.x0, triangle.y0, triangle.x1, triangle.y1},
+        {triangle.id, triangle.x1, triangle.y1, triangle.x2, triangle.y2},
+        {triangle.id, triangle.x2, triangle.y2, triangle.x0, triangle.y0},
+    };
+    for (const auto& edge : edges) {
+        double ix = 0.0;
+        double iy = 0.0;
+        if (exact_segment_intersection(ray_segment, edge, &ix, &iy)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 #if RTDL_OPTIX_HAS_GEOS
@@ -2588,12 +2658,23 @@ static void run_ray_hitcount_optix(
     std::vector<GpuRayHitRecord> gpu_rows(ray_count);
     download(gpu_rows.data(), d_output.ptr, ray_count);
 
+    std::vector<uint32_t> exact_counts(ray_count, 0u);
+    for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+        uint32_t count = 0u;
+        for (size_t triangle_index = 0; triangle_index < triangle_count; ++triangle_index) {
+            if (exact_ray_hits_triangle(rays[ray_index], triangles[triangle_index])) {
+                count += 1u;
+            }
+        }
+        exact_counts[ray_index] = count;
+    }
+
     auto* out = static_cast<RtdlRayHitCountRow*>(
         std::malloc(sizeof(RtdlRayHitCountRow) * ray_count));
     if (!out && ray_count > 0) throw std::bad_alloc();
     for (size_t i = 0; i < ray_count; ++i) {
         out[i].ray_id    = gpu_rows[i].ray_id;
-        out[i].hit_count = gpu_rows[i].hit_count;
+        out[i].hit_count = exact_counts[i];
     }
     *rows_out      = out;
     *row_count_out = ray_count;
