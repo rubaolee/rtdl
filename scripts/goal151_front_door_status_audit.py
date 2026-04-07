@@ -21,21 +21,18 @@ REQUIRED_WORKLOADS = (
     "polygon_set_jaccard",
 )
 
-REQUIRED_PHRASES = (
-    "frozen v0.2",
-    "Linux",
-    "Mac",
-)
-
 JACCARD_BOUNDARY_PHRASE = "native CPU/oracle fallback"
 
 
 def audit_doc(path: Path) -> dict[str, object]:
     text = path.read_text(encoding="utf-8")
+    has_scope_phrase = ("released v0.2.0" in text) or ("frozen v0.2" in text)
+    has_linux = "Linux" in text
+    has_mac = ("Mac" in text) or ("macOS" in text)
     return {
         "path": str(path),
         "all_workloads_present": all(workload in text for workload in REQUIRED_WORKLOADS),
-        "all_required_phrases_present": all(phrase in text for phrase in REQUIRED_PHRASES),
+        "all_required_phrases_present": has_scope_phrase and has_linux and has_mac,
         "jaccard_boundary_present": JACCARD_BOUNDARY_PHRASE in text,
     }
 

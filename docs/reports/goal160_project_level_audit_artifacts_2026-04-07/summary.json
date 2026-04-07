@@ -1,0 +1,24 @@
+{
+  "artifacts": {
+    "code_csv": "/Users/rl2025/rtdl_python_only/docs/reports/goal160_project_level_audit_artifacts_2026-04-07/code_audit.csv",
+    "docs_csv": "/Users/rl2025/rtdl_python_only/docs/reports/goal160_project_level_audit_artifacts_2026-04-07/docs_audit.csv",
+    "goals_csv": "/Users/rl2025/rtdl_python_only/docs/reports/goal160_project_level_audit_artifacts_2026-04-07/goals_audit.csv"
+  },
+  "code": {
+    "count": 198,
+    "fail_count": 0,
+    "pass_count": 198,
+    "required_test_count": 39
+  },
+  "docs": {
+    "count": 561,
+    "fail_count": 0,
+    "machine_local_link_total": 380,
+    "pass_count": 561
+  },
+  "goals": {
+    "count": 143,
+    "fail_count": 0,
+    "pass_count": 143
+  }
+}
