@@ -169,3 +169,12 @@ Update after Goal 139:
   in code
 - the package remains explicit that public pathology data is not yet fully
   closed for the Goal 138 primitive
+
+Update after Goal 140:
+
+- `polygon_set_jaccard` is now real on:
+  - Python reference
+  - native CPU/oracle
+- authored Linux/PostGIS parity is clean
+- the line is still intentionally narrow and should not yet be described as
+  generic continuous polygon-set Jaccard or full public-data closure

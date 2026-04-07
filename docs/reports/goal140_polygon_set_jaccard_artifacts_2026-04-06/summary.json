@@ -1,0 +1,40 @@
+{
+  "cpu_parity_vs_postgis": true,
+  "cpu_rows": [
+    {
+      "intersection_area": 5,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 13,
+      "right_area": 11,
+      "union_area": 19
+    }
+  ],
+  "generated_at": "2026-04-06T23:47:40",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "postgis_rows": [
+    {
+      "intersection_area": 5,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 13,
+      "right_area": 11,
+      "union_area": 19
+    }
+  ],
+  "postgis_sec": 0.66610230000515,
+  "python_parity_vs_postgis": true,
+  "python_rows": [
+    {
+      "intersection_area": 5,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 13,
+      "right_area": 11,
+      "union_area": 19
+    }
+  ],
+  "suite": "goal140_polygon_set_jaccard_postgis_validation"
+}

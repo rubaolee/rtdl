@@ -1,0 +1,11 @@
+## Verdict
+APPROVE-WITH-NOTES
+
+## Findings
+- The package is repo-accurate on its main claim. The files in [api.py](/Users/rl2025/rtdl_python_only/src/rtdsl/api.py), [runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/runtime.py), [lowering.py](/Users/rl2025/rtdl_python_only/src/rtdsl/lowering.py), [reference.py](/Users/rl2025/rtdl_python_only/src/rtdsl/reference.py), [oracle_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/oracle_runtime.py), [rtdl_oracle.cpp](/Users/rl2025/rtdl_python_only/src/native/rtdl_oracle.cpp), and [__init__.py](/Users/rl2025/rtdl_python_only/src/rtdsl/__init__.py) do expose a real `polygon_set_jaccard` workload on Python/native CPU only, and the authored PostGIS artifact in [summary.json](/Users/rl2025/rtdl_python_only/docs/reports/goal140_polygon_set_jaccard_artifacts_2026-04-06/summary.json) matches the report’s stated row exactly.
+- The technical honesty is good overall. [goal140_polygon_set_jaccard_closure_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal140_polygon_set_jaccard_closure_2026-04-06.md) keeps the right narrow boundary: orthogonal integer-grid polygons, unit-cell area, one aggregate row, Python/native CPU only, authored PostGIS parity only, and no claim of generic continuous polygon-set Jaccard or broad backend maturity.
+- The PostGIS contract is defensible. [goal140_polygon_set_jaccard_postgis.py](/Users/rl2025/rtdl_python_only/src/rtdsl/goal140_polygon_set_jaccard_postgis.py) computes coverage by enumerating unit cells via point-center `ST_Covers`, which is consistent with the stated unit-cell semantics rather than pretending to validate a continuous-area workload.
+- Minor note: [lowering.py](/Users/rl2025/rtdl_python_only/src/rtdsl/lowering.py) included a host-step comment saying the first closure assumed polygons within each set were non-overlapping, but the reference/oracle implementations actually compute set coverage by cell union. This was a wording inconsistency, not a blocker, and it has been corrected before final close.
+
+## Summary
+This is a disciplined and technically honest narrow closure. Goal 140 adds a real aggregate workload above Goal 138, validates it against a matching PostGIS unit-cell contract, and does not overclaim generic polygon Jaccard or broad RTDL backend maturity.

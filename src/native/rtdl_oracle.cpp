@@ -105,6 +105,14 @@ struct RtdlPolygonPairOverlapAreaRow {
   uint32_t union_area;
 };
 
+struct RtdlPolygonSetJaccardRow {
+  uint32_t intersection_area;
+  uint32_t left_area;
+  uint32_t right_area;
+  uint32_t union_area;
+  double jaccard_similarity;
+};
+
 struct RtdlPointNearestSegmentRow {
   uint32_t point_id;
   uint32_t segment_id;
@@ -187,6 +195,19 @@ int rtdl_oracle_run_polygon_pair_overlap_area_rows(
     const double* right_vertices_xy,
     size_t right_vertex_xy_count,
     RtdlPolygonPairOverlapAreaRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_polygon_set_jaccard(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlPolygonSetJaccardRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -763,6 +784,17 @@ uint32_t intersect_cell_sets(const std::vector<uint64_t>& left, const std::vecto
   return count;
 }
 
+std::vector<uint64_t> polygon_set_unit_cells(const std::vector<Polygon2D>& polygons) {
+  std::vector<uint64_t> cells;
+  for (const Polygon2D& polygon : polygons) {
+    std::vector<uint64_t> polygon_cells = polygon_unit_cells(polygon);
+    cells.insert(cells.end(), polygon_cells.begin(), polygon_cells.end());
+  }
+  std::sort(cells.begin(), cells.end());
+  cells.erase(std::unique(cells.begin(), cells.end()), cells.end());
+  return cells;
+}
+
 struct PolygonBucketIndex {
   double origin_x;
   double bucket_width;
@@ -1337,6 +1369,46 @@ extern "C" int rtdl_oracle_run_polygon_pair_overlap_area_rows(
       }
     }
 
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+extern "C" int rtdl_oracle_run_polygon_set_jaccard(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    RtdlPolygonSetJaccardRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Polygon2D> left_values =
+        decode_polygons(left_polygons, left_count, left_vertices_xy, left_vertex_xy_count);
+    std::vector<Polygon2D> right_values =
+        decode_polygons(right_polygons, right_count, right_vertices_xy, right_vertex_xy_count);
+    const std::vector<uint64_t> left_cells = polygon_set_unit_cells(left_values);
+    const std::vector<uint64_t> right_cells = polygon_set_unit_cells(right_values);
+    const uint32_t intersection_area = intersect_cell_sets(left_cells, right_cells);
+    const uint32_t left_area = static_cast<uint32_t>(left_cells.size());
+    const uint32_t right_area = static_cast<uint32_t>(right_cells.size());
+    const uint32_t union_area = static_cast<uint32_t>(left_area + right_area - intersection_area);
+    const double jaccard_similarity =
+        union_area == 0 ? 0.0 : static_cast<double>(intersection_area) / static_cast<double>(union_area);
+
+    std::vector<RtdlPolygonSetJaccardRow> rows;
+    rows.push_back({intersection_area, left_area, right_area, union_area, jaccard_similarity});
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);

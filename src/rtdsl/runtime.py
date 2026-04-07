@@ -14,6 +14,7 @@ from .reference import Point
 from .reference import point_nearest_segment_cpu
 from .reference import Polygon
 from .reference import polygon_pair_overlap_area_rows_cpu
+from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
@@ -120,6 +121,11 @@ def _run_cpu_python_reference_from_normalized(
         rows = segment_polygon_anyhit_rows_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "polygon_pair_overlap_area_rows":
         rows = polygon_pair_overlap_area_rows_cpu(
+            normalized_inputs[left_name],
+            normalized_inputs[right_name],
+        )
+    elif predicate_name == "polygon_set_jaccard":
+        rows = polygon_set_jaccard_cpu(
             normalized_inputs[left_name],
             normalized_inputs[right_name],
         )

@@ -140,6 +140,16 @@ class _RtdlPolygonPairOverlapAreaRow(ctypes.Structure):
     ]
 
 
+class _RtdlPolygonSetJaccardRow(ctypes.Structure):
+    _fields_ = [
+        ("intersection_area", ctypes.c_uint32),
+        ("left_area", ctypes.c_uint32),
+        ("right_area", ctypes.c_uint32),
+        ("union_area", ctypes.c_uint32),
+        ("jaccard_similarity", ctypes.c_double),
+    ]
+
+
 class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id", ctypes.c_uint32),
@@ -174,6 +184,8 @@ def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, o
         return _run_segment_polygon_anyhit_rows_oracle(compiled, normalized_inputs, library)
     if predicate_name == "polygon_pair_overlap_area_rows":
         return _run_polygon_pair_overlap_area_rows_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "polygon_set_jaccard":
+        return _run_polygon_set_jaccard_oracle(compiled, normalized_inputs, library)
     if predicate_name == "point_nearest_segment":
         return _run_point_nearest_segment_oracle(compiled, normalized_inputs, library)
     raise ValueError(f"unsupported RTDL native oracle predicate: {predicate_name}")
@@ -455,6 +467,46 @@ def _run_polygon_pair_overlap_area_rows_oracle(compiled: CompiledKernel, normali
         library.rtdl_oracle_free_rows(rows_ptr)
 
 
+def _run_polygon_set_jaccard_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left_polygons = normalized_inputs[left_name]
+    right_polygons = normalized_inputs[right_name]
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    rows_ptr = ctypes.POINTER(_RtdlPolygonSetJaccardRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_polygon_set_jaccard(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "intersection_area": rows_ptr[index].intersection_area,
+                "left_area": rows_ptr[index].left_area,
+                "right_area": rows_ptr[index].right_area,
+                "union_area": rows_ptr[index].union_area,
+                "jaccard_similarity": rows_ptr[index].jaccard_similarity,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
 def _run_point_nearest_segment_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     points_name = compiled.candidates.left.name
     segments_name = compiled.candidates.right.name
@@ -630,6 +682,22 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_polygon_pair_overlap_area_rows.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_polygon_set_jaccard.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPolygonSetJaccardRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_polygon_set_jaccard.restype = ctypes.c_int
 
     library.rtdl_oracle_run_point_nearest_segment.argtypes = [
         ctypes.POINTER(_RtdlPoint),

@@ -220,6 +220,28 @@ def polygon_pair_overlap_area_rows_cpu(
     return tuple(rows)
 
 
+def polygon_set_jaccard_cpu(
+    left_polygons: tuple[Polygon, ...],
+    right_polygons: tuple[Polygon, ...],
+) -> tuple[dict[str, float | int], ...]:
+    left_cells = _polygon_set_unit_cells(left_polygons)
+    right_cells = _polygon_set_unit_cells(right_polygons)
+    intersection_area = len(left_cells & right_cells)
+    left_area = len(left_cells)
+    right_area = len(right_cells)
+    union_area = len(left_cells | right_cells)
+    jaccard_similarity = 0.0 if union_area == 0 else intersection_area / union_area
+    return (
+        {
+            "intersection_area": intersection_area,
+            "left_area": left_area,
+            "right_area": right_area,
+            "union_area": union_area,
+            "jaccard_similarity": jaccard_similarity,
+        },
+    )
+
+
 def point_nearest_segment_cpu(
     points: tuple[Point, ...],
     segments: tuple[Segment, ...],
@@ -318,6 +340,14 @@ def _polygon_unit_cells(polygon: Polygon) -> tuple[tuple[int, int], ...]:
             if _point_in_polygon(ix + 0.5, iy + 0.5, polygon.vertices):
                 cells.append((ix, iy))
     return tuple(cells)
+
+
+def _polygon_set_unit_cells(polygons: tuple[Polygon, ...]) -> set[tuple[int, int]]:
+    cells: set[tuple[int, int]] = set()
+    for polygon in polygons:
+        for cell in _polygon_unit_cells(polygon):
+            cells.add(cell)
+    return cells
 
 
 def _require_pathology_grid_polygon(polygon: Polygon) -> None:

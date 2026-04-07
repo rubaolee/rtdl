@@ -7,6 +7,7 @@ from .api import overlay_compose
 from .api import point_nearest_segment
 from .api import point_in_polygon
 from .api import polygon_pair_overlap_area_rows
+from .api import polygon_set_jaccard
 from .api import ray_triangle_hit_count
 from .api import refine
 from .api import segment_intersection
@@ -120,6 +121,10 @@ from .goal139_pathology_data import public_pathology_datasets
 from .goal139_pathology_data import render_goal139_markdown
 from .goal139_pathology_data import write_goal139_artifacts
 from .goal139_pathology_data import write_public_pathology_manifest
+from .goal140_polygon_set_jaccard_postgis import render_goal140_markdown
+from .goal140_polygon_set_jaccard_postgis import run_goal140_polygon_set_jaccard_postgis_validation
+from .goal140_polygon_set_jaccard_postgis import run_postgis_polygon_set_jaccard
+from .goal140_polygon_set_jaccard_postgis import write_goal140_artifacts
 from .ir import CandidateSet
 from .ir import CompiledKernel
 from .ir import EmitOp
@@ -149,6 +154,7 @@ from .reference import pip_cpu
 from .reference import Point
 from .reference import Polygon
 from .reference import polygon_pair_overlap_area_rows_cpu
+from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import Segment
@@ -256,6 +262,7 @@ __all__ = [
     "oracle_version",
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
     "OutputRecord",
     "OverpassElementStats",
     "PaperTarget",
@@ -323,16 +330,20 @@ __all__ = [
     "render_goal128_postgis_markdown",
     "render_goal138_markdown",
     "render_goal139_markdown",
+    "render_goal140_markdown",
     "run_goal118_segment_polygon_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_linux_large_perf",
     "run_goal128_segment_polygon_anyhit_postgis_validation",
     "run_goal138_polygon_overlap_postgis_validation",
+    "run_goal140_polygon_set_jaccard_postgis_validation",
     "run_postgis_polygon_pair_overlap_area_rows",
+    "run_postgis_polygon_set_jaccard",
     "write_goal118_artifacts",
     "write_goal128_linux_artifacts",
     "write_goal128_postgis_artifacts",
     "write_goal138_artifacts",
     "write_goal139_artifacts",
+    "write_goal140_artifacts",
     "write_public_pathology_manifest",
     "generate_synthetic_polygons",
     "generate_optix_project",
@@ -374,6 +385,7 @@ __all__ = [
     "polygon_probe_points",
     "Polygon",
     "polygon_pair_overlap_area_rows_cpu",
+    "polygon_set_jaccard_cpu",
     "polygons_to_segments",
     "prepare_embree",
     "PreparedEmbreeExecution",

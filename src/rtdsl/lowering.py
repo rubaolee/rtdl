@@ -26,6 +26,7 @@ _EMIT_FIELD_TYPES = {
     "left_area": "uint32_t",
     "right_area": "uint32_t",
     "union_area": "uint32_t",
+    "jaccard_similarity": "float",
     "ray_id": "uint32_t",
     "hit_count": "uint32_t",
     "segment_id": "uint32_t",
@@ -69,6 +70,8 @@ def lower_to_execution_plan(kernel: CompiledKernel) -> RTExecutionPlan:
         return _lower_segment_polygon_anyhit_rows(kernel, build_input, probe_input)
     if predicate.name == "polygon_pair_overlap_area_rows":
         return _lower_polygon_pair_overlap_area_rows(kernel, build_input, probe_input)
+    if predicate.name == "polygon_set_jaccard":
+        return _lower_polygon_set_jaccard(kernel, build_input, probe_input)
     if predicate.name == "point_nearest_segment":
         return _lower_point_nearest_segment(kernel, build_input, probe_input)
 
@@ -620,6 +623,75 @@ def _lower_polygon_pair_overlap_area_rows(kernel: CompiledKernel, build_input, p
             description="Current primitive is a CPU/oracle-first overlap-area materialization path for orthogonal integer-grid polygons.",
         ),
         bvh_policy="current local backend uses native_loop for this primitive; BVH-backed polygon overlap traversal is not implemented",
+    )
+
+
+def _lower_polygon_set_jaccard(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionPlan:
+    predicate = kernel.refine_op.predicate
+    if build_input.geometry.name != "polygons" or probe_input.geometry.name != "polygons":
+        raise ValueError("polygon_set_jaccard lowering requires polygon-vs-polygon workloads")
+    if predicate.options.get("exact") is not False:
+        raise ValueError(
+            "polygon_set_jaccard currently supports only exact=False under the integer-grid pathology contract"
+        )
+
+    output_record = _build_output_record("PolygonSetJaccardRecord", kernel.emit_op.fields)
+    build_buffer_name = _input_buffer_name(build_input)
+    probe_buffer_name = _input_buffer_name(probe_input)
+
+    return RTExecutionPlan(
+        kernel_name=kernel.name,
+        workload_kind="polygon_set_jaccard",
+        backend="rtdl",
+        precision=kernel.precision,
+        build_input=build_input,
+        probe_input=probe_input,
+        accel_kind="native_loop",
+        predicate="polygon_set_jaccard",
+        exact_refine_mode="integer_grid_polygon_set_jaccard",
+        emit_fields=kernel.emit_op.fields,
+        payload_registers=(
+            PayloadRegister(index=0, name="left_area", encoding="u32"),
+            PayloadRegister(index=1, name="right_area", encoding="u32"),
+            PayloadRegister(index=2, name="intersection_area", encoding="u32"),
+            PayloadRegister(index=3, name="union_area", encoding="u32"),
+        ),
+        launch_params=(
+            LaunchParam(name="traversable", c_type="OptixTraversableHandle", role="rt_accel"),
+            LaunchParam(name=build_buffer_name, c_type=f"const {build_input.layout.name}*", role="device_input_build"),
+            LaunchParam(name=probe_buffer_name, c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
+            LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
+            LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
+            LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
+        ),
+        host_steps=(
+            f"Upload `{build_input.name}` and `{probe_input.name}` pathology-style polygon sets.",
+            "Validate the same narrow contract used by polygon_pair_overlap_area_rows: orthogonal integer-grid polygons and unit-cell area.",
+            "Current local backend computes one aggregate Jaccard row for the entire left set against the entire right set.",
+            "This first closure computes aggregate set coverage by unit-cell union across each polygon set.",
+        ),
+        device_programs=(
+            "__raygen__rtdl_polygon_set_jaccard",
+            "__miss__rtdl_miss",
+            "__closesthit__rtdl_polygon_set_jaccard_refine",
+        ),
+        buffers=(
+            BufferSpec(name=build_buffer_name, element=build_input.layout.name, role="device_input_build"),
+            BufferSpec(name=probe_buffer_name, element=probe_input.layout.name, role="device_input_probe"),
+            BufferSpec(name="output_records", element=output_record.name, role="device_output"),
+            BufferSpec(name="output_count", element="uint32_t", role="device_counter"),
+            BufferSpec(name="output_capacity", element="uint32_t", role="device_limit"),
+        ),
+        output_record=output_record,
+        ray_spec=RaySpec(
+            origin=("0.0f", "0.0f", "0.0f"),
+            direction=("0.0f", "0.0f", "1.0f"),
+            tmin="0.0f",
+            tmax="1.0f",
+            description="Current aggregate Jaccard path is CPU/oracle-first and not a BVH-backed traversal story.",
+        ),
+        bvh_policy="current local backend uses native_loop for this aggregate primitive; BVH-backed set Jaccard traversal is not implemented",
     )
 
 

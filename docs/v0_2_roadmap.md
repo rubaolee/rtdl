@@ -293,6 +293,18 @@ public-data-closed:
   - public discovery/conversion
   - full public-data primitive closure
 
+### Goal 140: polygon-set Jaccard closure
+
+Build the first aggregate workload on top of Goal 138:
+
+- `polygon_set_jaccard`
+- keep the same orthogonal integer-grid unit-cell semantics
+- close Python/native CPU execution
+- check authored Linux/PostGIS parity
+
+This counts only if the package stays explicit that it is a narrow pathology
+aggregate workload, not generic continuous polygon-set Jaccard.
+
 ## Recommended execution choice
 
 If v0.2 has to choose one aggressive bet, it should choose:

@@ -145,6 +145,10 @@ def polygon_pair_overlap_area_rows(*, exact: bool = False) -> Predicate:
     return Predicate(name="polygon_pair_overlap_area_rows", options={"exact": exact})
 
 
+def polygon_set_jaccard(*, exact: bool = False) -> Predicate:
+    return Predicate(name="polygon_set_jaccard", options={"exact": exact})
+
+
 def point_nearest_segment(*, exact: bool = False) -> Predicate:
     return Predicate(name="point_nearest_segment", options={"exact": exact})
 
