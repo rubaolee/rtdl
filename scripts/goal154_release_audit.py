@@ -25,6 +25,7 @@ def main() -> int:
         "docs/reports/goal151_final_front_door_status_freeze_2026-04-07.md",
         "docs/reports/goal152_v0_2_release_statement_and_support_matrix_2026-04-07.md",
         "docs/reports/goal153_backend_loader_robustness_2026-04-07.md",
+        "docs/reports/goal155_optix_linux_sdk_path_robustness_2026-04-07.md",
     ]
     required_external_reviews = [
         "docs/reports/goal148_scope_decision_claude_2026-04-07.md",
@@ -34,6 +35,7 @@ def main() -> int:
         "docs/reports/goal151_external_review_claude_2026-04-07.md",
         "docs/reports/goal152_external_review_claude_2026-04-07.md",
         "docs/reports/goal153_external_review_claude_2026-04-07.md",
+        "docs/reports/goal155_external_review_claude_2026-04-07.md",
     ]
     required_consensus = [
         "history/ad_hoc_reviews/2026-04-07-codex-consensus-goal148-v0_2-scope-decision.md",
@@ -42,6 +44,7 @@ def main() -> int:
         "history/ad_hoc_reviews/2026-04-07-codex-consensus-goal151-front-door-status-freeze.md",
         "history/ad_hoc_reviews/2026-04-07-codex-consensus-goal152-release-statement-and-support-matrix.md",
         "history/ad_hoc_reviews/2026-04-07-codex-consensus-goal153-backend-loader-robustness.md",
+        "history/ad_hoc_reviews/2026-04-07-codex-consensus-goal155-optix-linux-sdk-path-robustness.md",
     ]
 
     groups = [

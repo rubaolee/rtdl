@@ -14,6 +14,7 @@ after the release-shaping sequence:
 - Goal 151 front-door status freeze
 - Goal 152 release statement and support matrix
 - Goal 153 backend loader robustness repair
+- Goal 155 OptiX Linux SDK-path robustness repair
 
 ## Executive Conclusion
 
@@ -33,7 +34,7 @@ The final audit conclusion is:
 
 This audit reviewed:
 
-1. the frozen-scope and release-shaping goals from 148 through 153
+1. the frozen-scope and release-shaping goals from 148 through 155
 2. the canonical release-facing documents under `docs/release_reports/v0_2/`
 3. the front-door and feature-home doc layers
 4. the final local release audits and frozen local test group
@@ -74,9 +75,9 @@ The release-facing docs now say one consistent thing:
 
 The release-shaping goals have the required review coverage:
 
-- every release-shaping goal from 148 through 153 has at least `2+` review
+- every release-shaping goal from 148 through 155 has at least `2+` review
   coverage
-- every release-shaping goal from 148 through 153 has at least one Claude or
+- every release-shaping goal from 148 through 155 has at least one Claude or
   Gemini review before online
 - the final release-facing package no longer relies on unreviewed release
   wording
@@ -90,6 +91,7 @@ That is the honest interpretation because:
 
 - it adds CPU/Embree/PostGIS-oriented evidence
 - it exposed a real robustness problem around stale backend shared libraries
+- it also exposed an OptiX Linux-path usability problem that is now repaired
 - but it does not supersede the frozen v0.2 release surface or the canonical
   release-shaping gates
 
@@ -126,4 +128,6 @@ That means:
 - [Goal 150 Release Readiness](../../reports/goal150_v0_2_release_readiness_and_stability_2026-04-07.md)
 - [Goal 152 Release Statement And Support Matrix](../../reports/goal152_v0_2_release_statement_and_support_matrix_2026-04-07.md)
 - [Goal 153 Backend Loader Robustness](../../reports/goal153_backend_loader_robustness_2026-04-07.md)
+- [Goal 155 OptiX Linux SDK Path Robustness](../../reports/goal155_optix_linux_sdk_path_robustness_2026-04-07.md)
+- [Goal 155 Claude Review](../../reports/goal155_external_review_claude_2026-04-07.md)
 - [Antigravity Intake Note](../../reports/antigravity_external_review_intake_2026-04-07.md)

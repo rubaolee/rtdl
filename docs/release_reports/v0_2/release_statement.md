@@ -40,6 +40,8 @@ The strongest current v0.2 evidence chain is:
   - `optix`
   - `vulkan`
   under documented native CPU/oracle fallback
+- repaired Linux OptiX SDK-path robustness so `make build-optix` now discovers
+  the real accepted host SDK location automatically
 - release-facing examples, feature-home docs, and generate-only support for the
   accepted frozen surface
 

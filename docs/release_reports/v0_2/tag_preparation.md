@@ -16,6 +16,8 @@ an actual v0.2 tag is created.
 - release statement and support matrix exist
 - final audit report exists
 - backend loader robustness was improved after a real external report
+- Linux OptiX SDK-path robustness was improved so `make build-optix` discovers
+  the accepted host SDK path automatically
 
 ## Tag Preparation Checklist
 
