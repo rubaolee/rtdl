@@ -2,7 +2,8 @@
   "boundary": {
     "accepted_claim": "Embree, OptiX, and Vulkan participate through the public run surfaces with documented native CPU/oracle fallback for this workload.",
     "goal": "wrapper-level Linux stress and consistency for polygon_set_jaccard",
-    "not_claimed": "No native Embree/OptiX/Vulkan Jaccard implementation, prepared-path story, or RT-core maturity is claimed here."
+    "not_claimed": "No native Embree/OptiX/Vulkan Jaccard implementation, prepared-path story, or RT-core maturity is claimed here.",
+    "timing_interpretation": "The reported Embree, OptiX, and Vulkan times are wrapper end-to-end execution times under the same native CPU/oracle fallback. Small timing differences versus the CPU row should be treated as measurement noise or wrapper-surface overhead variation, not as backend-specific Jaccard speedup."
   },
   "dataset": {
     "base_left_polygon_count": 8556,

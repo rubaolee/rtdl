@@ -99,6 +99,12 @@ def run_goal146_jaccard_linux_stress(
                 "Embree, OptiX, and Vulkan participate through the public run surfaces "
                 "with documented native CPU/oracle fallback for this workload."
             ),
+            "timing_interpretation": (
+                "The reported Embree, OptiX, and Vulkan times are wrapper end-to-end "
+                "execution times under the same native CPU/oracle fallback. Small timing "
+                "differences versus the CPU row should be treated as measurement noise or "
+                "wrapper-surface overhead variation, not as backend-specific Jaccard speedup."
+            ),
             "not_claimed": (
                 "No native Embree/OptiX/Vulkan Jaccard implementation, prepared-path story, "
                 "or RT-core maturity is claimed here."
@@ -132,6 +138,7 @@ def render_goal146_markdown(payload: dict[str, object]) -> str:
         f"- base_left_polygon_count: `{dataset['base_left_polygon_count']}`",
         f"- base_right_polygon_count: `{dataset['base_right_polygon_count']}`",
         f"- accepted_claim: `{boundary['accepted_claim']}`",
+        f"- timing_interpretation: `{boundary['timing_interpretation']}`",
         f"- not_claimed: `{boundary['not_claimed']}`",
         "",
         "| copies | left_polygon_count | right_polygon_count | python_sec | cpu_sec | embree_sec | optix_sec | vulkan_sec | cpu_ok | embree_ok | optix_ok | vulkan_ok | jaccard_similarity |",
@@ -149,6 +156,8 @@ def render_goal146_markdown(payload: dict[str, object]) -> str:
             f"`{consistency['embree']}` | `{consistency['optix']}` | `{consistency['vulkan']}` | "
             f"`{result['jaccard_similarity']:.6f}` |"
         )
+    lines.append("")
+    lines.append("Timing note: the Embree, OptiX, and Vulkan rows above are wrapper-surface timings under the same native CPU/oracle fallback path used for this workload. Small differences versus the CPU row should be read as measurement noise or wrapper-overhead variation, not as backend-specific Jaccard acceleration.")
     lines.append("")
     return "\n".join(lines)
 

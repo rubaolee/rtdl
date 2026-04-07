@@ -25,6 +25,24 @@ class Goal146JaccardBackendSurfaceTest(unittest.TestCase):
             rt.run_optix(polygon_set_jaccard_reference, result_mode="raw", **make_authored_polygon_set_jaccard_case())
         with self.assertRaisesRegex(ValueError, "Jaccard workloads"):
             rt.run_vulkan(polygon_set_jaccard_reference, result_mode="raw", **make_authored_polygon_set_jaccard_case())
+        with self.assertRaisesRegex(ValueError, "Jaccard workloads"):
+            rt.run_embree(
+                polygon_pair_overlap_area_rows_reference,
+                result_mode="raw",
+                **make_authored_polygon_pair_overlap_case(),
+            )
+        with self.assertRaisesRegex(ValueError, "Jaccard workloads"):
+            rt.run_optix(
+                polygon_pair_overlap_area_rows_reference,
+                result_mode="raw",
+                **make_authored_polygon_pair_overlap_case(),
+            )
+        with self.assertRaisesRegex(ValueError, "Jaccard workloads"):
+            rt.run_vulkan(
+                polygon_pair_overlap_area_rows_reference,
+                result_mode="raw",
+                **make_authored_polygon_pair_overlap_case(),
+            )
 
     def test_polygon_set_jaccard_matches_cpu_when_oracle_available(self) -> None:
         try:
@@ -65,6 +83,7 @@ class Goal146JaccardBackendSurfaceTest(unittest.TestCase):
             "host": {"platform": "linux-test"},
             "boundary": {
                 "accepted_claim": "wrapper fallback",
+                "timing_interpretation": "measurement noise note",
                 "not_claimed": "native backend maturity",
             },
             "dataset": {

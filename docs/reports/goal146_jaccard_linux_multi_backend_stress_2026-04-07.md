@@ -44,6 +44,13 @@ Not claimed:
 - prepared-path support
 - backend-performance competition for native Jaccard execution
 
+Timing interpretation:
+
+- the Embree, OptiX, and Vulkan times below are wrapper end-to-end timings under
+  the same native CPU/oracle fallback path
+- the small differences versus the CPU row should be read as measurement noise
+  or wrapper-overhead variation, not as backend-specific Jaccard speedup
+
 ## Validation
 
 Local Mac:
