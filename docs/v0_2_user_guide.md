@@ -1,0 +1,194 @@
+# RTDL v0.2 User Guide
+
+## What Is New
+
+RTDL v0.2 expands the system beyond the archived v0.1 RayJoin-heavy slice.
+
+The current real v0.2 surface adds:
+
+- two closed segment/polygon workload families:
+  - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
+- a narrow generate-only workflow that now covers both families
+- stronger Linux/PostGIS-backed correctness and performance evidence for those
+  families
+
+The important boundary is that v0.2 is broader and stronger than v0.1, but it
+is still not claiming that every backend/workload path is equally mature.
+
+## Workloads
+
+The two main v0.2 workload families are:
+
+### `segment_polygon_hitcount`
+
+Meaning:
+
+- probe side: segments
+- build side: polygons
+- output: one row per segment with `hit_count`
+
+This is useful when downstream code wants:
+
+- screening
+- ranking
+- compact per-segment summaries
+
+Example:
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def road_hazard_counts():
+    roads = rt.input("roads", rt.Segments, role="probe")
+    hazards = rt.input("hazards", rt.Polygons, role="build")
+    candidates = rt.traverse(roads, hazards, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_hitcount(exact=False))
+    return rt.emit(hits, fields=["segment_id", "hit_count"])
+```
+
+### `segment_polygon_anyhit_rows`
+
+Meaning:
+
+- probe side: segments
+- build side: polygons
+- output: one `(segment_id, polygon_id)` row per true hit
+
+This is useful when downstream code wants:
+
+- exact touched polygon ids
+- join-style auditing
+- custom aggregation outside RTDL
+
+Example:
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def road_polygon_hits():
+    roads = rt.input("roads", rt.Segments, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, role="build")
+    candidates = rt.traverse(roads, polygons, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_anyhit_rows(exact=False))
+    return rt.emit(hits, fields=["segment_id", "polygon_id"])
+```
+
+## Generate-Only
+
+RTDL v0.2 keeps a narrow generate-only mode.
+
+That mode is useful when you want:
+
+- a runnable RTDL Python artifact
+- a handoff bundle for another developer or reviewer
+- explicit verification scaffolding
+
+The current generate-only line is intentionally small:
+
+- it supports the two current v0.2 segment/polygon families
+- it emits accepted runnable Python artifacts
+- it does not claim broad general code generation
+
+## Platforms
+
+Platform status is intentionally explicit.
+
+### Primary platform
+
+Linux is the primary v0.2 development and validation platform for:
+
+- PostGIS-backed correctness
+- large deterministic performance runs
+- OptiX
+- Vulkan
+
+### Local support platform
+
+This Mac is a limited local platform for:
+
+- Python reference
+- C/oracle
+- Embree
+
+It is not the main validation platform for:
+
+- OptiX
+- Vulkan
+- Linux/PostGIS large-row evidence
+
+## Backend Notes
+
+### CPU
+
+- trusted practical fallback
+- strong on the current large deterministic segment/polygon rows after the
+  candidate-index redesign
+
+### Embree
+
+- strong CPU baseline
+- prepared reuse is supported on the current segment/polygon families
+- performs well on the accepted Linux large rows
+
+### OptiX
+
+- strong Linux backend on the current segment/polygon families
+- current wins come from the accepted candidate-reduction design and backend
+  alignment work
+- this is not the same as claiming universal RT-core-native maturity for every
+  future workload
+
+### Vulkan
+
+- correctness/portability backend
+- must work
+- must not be very slow
+- currently competitive on the accepted Linux large rows for the two
+  segment/polygon families
+- not treated as the fully optimized flagship backend
+
+## Quick Start
+
+Run the v0.2 hitcount example:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+Run the v0.2 any-hit example:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+```
+
+Generate a runnable handoff artifact:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+python3 scripts/rtdl_generate_only.py
+```
+
+For app-style usage, start here:
+
+- [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+
+## Current Limits
+
+RTDL v0.2 does not currently claim:
+
+- exact computational geometry
+- full overlay materialization
+- universal backend maturity across every workload
+- broad general-purpose code generation
+- native AMD/Intel GPU backend maturity without hardware-backed validation
+
+The strongest current v0.2 claim is narrower and more honest:
+
+- two segment/polygon workload families are real
+- they are validated strongly on Linux/PostGIS
+- they have a narrow generate-only product line

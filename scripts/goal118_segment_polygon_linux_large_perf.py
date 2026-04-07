@@ -6,6 +6,15 @@ import json
 from pathlib import Path
 
 import rtdsl as rt
+from rtdsl.goal118_segment_polygon_linux_large_perf import LARGE_COPIES
+from rtdsl.goal118_segment_polygon_linux_large_perf import PREPARED_COPIES
+
+
+def _parse_int_list(raw: str | None) -> tuple[int, ...] | None:
+    if raw is None:
+        return None
+    values = tuple(int(part.strip()) for part in raw.split(",") if part.strip())
+    return values or None
 
 
 def parse_args() -> argparse.Namespace:
@@ -16,12 +25,26 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--db-user", default=None)
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--perf-iterations", type=int, default=3)
+    parser.add_argument(
+        "--copies",
+        default=None,
+        help="Comma-separated dataset copy counts to validate, e.g. 64,256,1024,2048",
+    )
+    parser.add_argument(
+        "--prepared-copies",
+        default=None,
+        help="Comma-separated dataset copy counts to measure prepared reuse on.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    copies = _parse_int_list(args.copies)
+    prepared_copies = _parse_int_list(args.prepared_copies)
     payload = rt.run_goal118_segment_polygon_linux_large_perf(
+        copies=copies if copies is not None else LARGE_COPIES,
+        prepared_copies=prepared_copies if prepared_copies is not None else PREPARED_COPIES,
         perf_iterations=args.perf_iterations,
         db_name=args.db_name,
         db_user=args.db_user,
