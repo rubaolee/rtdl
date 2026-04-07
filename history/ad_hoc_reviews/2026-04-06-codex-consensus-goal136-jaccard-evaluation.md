@@ -32,5 +32,4 @@ backend or product claims.
 ## External review status
 
 - Claude external review: completed and saved
-- Gemini external review: attempted but not completed in the current
-  non-interactive session window
+- Gemini external review: completed and saved

@@ -11,6 +11,7 @@ This package now has the following saved review coverage:
   - [2026-04-06-nash-review-goal136-jaccard-evaluation.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-06-nash-review-goal136-jaccard-evaluation.md)
 - external review:
   - [goal136_external_review_claude_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal136_external_review_claude_2026-04-06.md)
+  - [2026-04-06-gemini-review-goal136-jaccard-evaluation.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-06-gemini-review-goal136-jaccard-evaluation.md)
 - Codex consensus:
   - [2026-04-06-codex-consensus-goal136-jaccard-evaluation.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-06-codex-consensus-goal136-jaccard-evaluation.md)
 
