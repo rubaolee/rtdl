@@ -16,7 +16,7 @@ Current local repo:
 Current live branch position when this bootstrap was written:
 
 - `main`
-- published through Goal 150
+- published through released `v0.2.0` plus post-release doc/demo cleanup
 
 ## 2. Current Trust Model
 
@@ -37,7 +37,7 @@ There are two status layers and both matter:
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
 - it is broader than v0.1 and strongly tested on the accepted Linux platform
-- it is not yet the final tagged v0.2 release
+- it is the released and tagged `v0.2.0` line
 
 ## 3. Platform Reality
 
