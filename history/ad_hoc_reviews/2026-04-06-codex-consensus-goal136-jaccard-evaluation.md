@@ -28,3 +28,9 @@ Goal 136 should stand as a decision-and-scope report, not as an implementation
 claim. RTDL may pursue pathology polygon-set Jaccard, but only through a narrow
 primitive-first path with explicit CPU/Python/PostGIS closure before any broad
 backend or product claims.
+
+## External review status
+
+- Claude external review: completed and saved
+- Gemini external review: attempted but not completed in the current
+  non-interactive session window

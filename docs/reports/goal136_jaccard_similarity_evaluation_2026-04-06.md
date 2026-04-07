@@ -3,6 +3,19 @@
 Date: 2026-04-06
 Status: accepted-with-notes
 
+## Review closure
+
+This package now has the following saved review coverage:
+
+- internal review:
+  - [2026-04-06-nash-review-goal136-jaccard-evaluation.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-06-nash-review-goal136-jaccard-evaluation.md)
+- external review:
+  - [goal136_external_review_claude_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal136_external_review_claude_2026-04-06.md)
+- Codex consensus:
+  - [2026-04-06-codex-consensus-goal136-jaccard-evaluation.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-06-codex-consensus-goal136-jaccard-evaluation.md)
+
+That satisfies the required `2+` coverage for this evaluation package.
+
 ## Executive decision
 
 RTDL may reasonably take on Jaccard similarity from the old pathology paper,
