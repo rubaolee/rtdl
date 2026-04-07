@@ -1,7 +1,7 @@
 # RTDL v0.2 Support Matrix
 
 Date: 2026-04-07
-Status: release shaping
+Status: ready for tag preparation
 
 ## Reading Guide
 
