@@ -49,24 +49,31 @@ The current repository includes:
 - a Vulkan backend
 - PostGIS-based external checking on accepted workload packages
 
-## Current v0.1 Position
+## Current Main Position
 
-RTDL v0.1 is a **bounded, reviewed research slice**.
+The repository now has two important status layers:
 
-What that means:
+- the archived **v0.1 trust anchor**
+- the live **v0.2 midterm branch state on `main`**
 
-- the main language/runtime path exists
-- the core RayJoin-style workload family runs end-to-end
-- the bounded package has been checked carefully
-- the project now has strong long-workload backend evidence on an accepted
-  exact-source surface
+The v0.1 anchor remains the bounded, reviewed RayJoin-heavy research slice.
 
-What that does **not** mean:
+Current `main` is broader than that archived slice:
 
-- full paper-identical reproduction of every RayJoin dataset family
+- it keeps the accepted v0.1 surface
+- it adds two closed segment/polygon workload families:
+  - `segment_polygon_hitcount`
+  - `segment_polygon_anyhit_rows`
+- it adds a narrow generate-only product line covering those families
+- it has Linux/PostGIS-backed correctness and performance evidence for those
+  families
+
+Current `main` still does **not** mean:
+
+- every backend/workload path is equally mature
 - exact computational geometry everywhere
 - full polygon overlay materialization
-- equal maturity across all backends and workloads
+- a frozen release promise like the archived `v0.1.0` tag
 
 ## Release Reports
 
@@ -169,15 +176,16 @@ Additional notes and context are collected here:
 If you are new to the project, start here:
 
 1. [Docs Index](docs/README.md)
-2. [Quick Tutorial](docs/quick_tutorial.md)
-3. [v0.1 Release Notes](docs/v0_1_release_notes.md)
-4. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
-5. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
-6. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
-7. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
-8. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
-9. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-10. [RayJoin Target](docs/rayjoin_target.md)
+2. [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
+3. [Quick Tutorial](docs/quick_tutorial.md)
+4. [v0.1 Release Notes](docs/v0_1_release_notes.md)
+5. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
+6. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
+7. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
+8. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
+9. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
+10. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+11. [RayJoin Target](docs/rayjoin_target.md)
 
 ## Project Status
 

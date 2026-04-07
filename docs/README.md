@@ -11,17 +11,18 @@ If you are new to RTDL, read the live docs first.
 
 Project-level front door:
 
-1. [v0.1 Release Notes](v0_1_release_notes.md)
-2. [Quick Tutorial](quick_tutorial.md)
-3. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
-4. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
-5. [v0.1 Support Matrix](v0_1_support_matrix.md)
-6. [v0.1 Release Reports](release_reports/v0_1/README.md)
-7. [RTDL v0.1 Archive](archive/v0_1/README.md)
-8. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-9. [Current Milestone Q/A](current_milestone_qa.md)
-10. [RayJoin Target](rayjoin_target.md)
-11. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+1. [RTDL v0.2 User Guide](v0_2_user_guide.md)
+2. [v0.1 Release Notes](v0_1_release_notes.md)
+3. [Quick Tutorial](quick_tutorial.md)
+4. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+5. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
+6. [v0.1 Support Matrix](v0_1_support_matrix.md)
+7. [v0.1 Release Reports](release_reports/v0_1/README.md)
+8. [RTDL v0.1 Archive](archive/v0_1/README.md)
+9. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+10. [Current Milestone Q/A](current_milestone_qa.md)
+11. [RayJoin Target](rayjoin_target.md)
+12. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
 
 Broader background:
 
@@ -47,6 +48,8 @@ Process-level:
 Keep these current facts in mind while reading:
 
 - the accepted bounded package remains the current v0.1 trust anchor
+- current `main` also carries two closed v0.2 segment/polygon workload families
+  and their narrow generate-only support
 - the strongest current performance closure is the long exact-source
   `county_zipcode` positive-hit `pip` surface
 - Embree and OptiX are the mature high-performance backends on that surface

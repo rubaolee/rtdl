@@ -10,6 +10,7 @@ import rtdsl as rt
 from examples.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
 from examples.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
 from examples.rtdl_goal10_reference import point_nearest_segment_reference
+from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
 from examples.rtdl_language_reference import county_soil_overlay_reference
 from examples.rtdl_language_reference import county_zip_join_reference
@@ -31,6 +32,7 @@ class EmbreeBaselineIntegrationTest(unittest.TestCase):
             "overlay": county_soil_overlay_reference,
             "ray_tri_hitcount": ray_triangle_hitcount_reference,
             "segment_polygon_hitcount": segment_polygon_hitcount_reference,
+            "segment_polygon_anyhit_rows": segment_polygon_anyhit_rows_reference,
             "point_nearest_segment": point_nearest_segment_reference,
         }
         for workload in rt.BASELINE_WORKLOAD_ORDER:
@@ -57,12 +59,18 @@ class EmbreeBaselineIntegrationTest(unittest.TestCase):
             backend="both",
         )
         result_b = rt.run_baseline_case(
+            segment_polygon_anyhit_rows_reference,
+            "authored_segment_polygon_minimal",
+            backend="both",
+        )
+        result_c = rt.run_baseline_case(
             point_nearest_segment_reference,
             "authored_point_nearest_segment_minimal",
             backend="both",
         )
         self.assertTrue(result_a["parity"])
         self.assertTrue(result_b["parity"])
+        self.assertTrue(result_c["parity"])
 
     def test_benchmark_json_and_summary(self) -> None:
         payload = rt.run_baseline_benchmark(
