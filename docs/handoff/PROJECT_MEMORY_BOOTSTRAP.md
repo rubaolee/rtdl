@@ -16,7 +16,7 @@ Current local repo:
 Current live branch position when this bootstrap was written:
 
 - `main`
-- published through Goal 143
+- published through Goal 146
 
 ## 2. Current Trust Model
 
@@ -148,6 +148,8 @@ Representative accepted `x4096` numbers from Goal 131:
 - `polygon_set_jaccard` is closed in narrow form
 - public-data-derived Linux/PostGIS audit exists using MoNuSeg conversion
 - strongest implementation/validation story is Python + native CPU + PostGIS
+- public `embree`, `optix`, and `vulkan` run surfaces are now accepted on
+  Linux through documented native CPU/oracle fallback
 
 Representative accepted public-data-derived Goal 141 row:
 
@@ -162,6 +164,23 @@ Representative accepted public-data-derived Goal 141 row:
   - CPU `0.061195 s`
   - PostGIS `4.362636 s`
   - parity clean
+
+Representative accepted Goal 146 Linux stress rows:
+
+- `copies=64`
+  - Python `8.279358 s`
+  - CPU `3.978596 s`
+  - Embree `3.699990 s`
+  - OptiX `3.670949 s`
+  - Vulkan `3.636281 s`
+  - all consistency vs Python: `true`
+- `copies=128`
+  - Python `16.526160 s`
+  - CPU `7.673124 s`
+  - Embree `7.421700 s`
+  - OptiX `7.435530 s`
+  - Vulkan `7.400839 s`
+  - all consistency vs Python: `true`
 
 ## 6. Most Important Completed Goal Lines
 
@@ -198,7 +217,7 @@ Representative accepted public-data-derived Goal 141 row:
 
 ### Jaccard line
 
-- Goals `136`, `137`, `138`, `139`, `140`, `141`, `142`
+- Goals `136`, `137`, `138`, `139`, `140`, `141`, `142`, `146`
   - evaluate feasibility from old paper direction
   - narrow contract charter
   - overlap-area primitive
@@ -206,6 +225,7 @@ Representative accepted public-data-derived Goal 141 row:
   - narrow `polygon_set_jaccard`
   - public-data-derived Linux/PostGIS audit
   - docs and generate-only
+  - Linux wrapper-surface stress and consistency audit
 
 ### feature-home docs
 
@@ -324,6 +344,8 @@ Do not describe it as broad general code generation.
 - do not overclaim RT-core maturity from the current segment/polygon speed wins
 - do not describe `overlay` as full polygon overlay
 - do not describe Jaccard as generic continuous polygon Jaccard
+- do not describe the Goal 146 Jaccard stress numbers as native
+  Embree/OptiX/Vulkan performance results
 - do not treat this Mac as the primary validation platform
 - do not regress feature continuity on current `main`
 - do not use old stale handoff docs as the current project state

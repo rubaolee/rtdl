@@ -61,6 +61,9 @@ python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset a
 - describe the current public-data story honestly as public-data-derived after conversion
 - use PostGIS-backed Linux validation when you need external correctness evidence
 - use the primitive `polygon_pair_overlap_area_rows` when you need pairwise overlap detail, not only the final aggregate
+- if you discuss `embree`, `optix`, or `vulkan` for this line, say explicitly
+  that the current public run surfaces are accepted through documented native
+  CPU/oracle fallback
 
 ## Try
 
@@ -79,3 +82,6 @@ python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset a
 - narrow pathology/unit-cell contract only
 - not generic continuous polygon-set Jaccard
 - current strongest implementation/validation story is Python and native CPU plus Linux/PostGIS checking
+- the public `embree`, `optix`, and `vulkan` run surfaces exist for this line,
+  but through documented native CPU/oracle fallback rather than native Jaccard
+  backend kernels

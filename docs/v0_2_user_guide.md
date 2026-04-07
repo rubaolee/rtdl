@@ -12,6 +12,11 @@ The current real v0.2 surface adds:
 - a narrow pathology-style Jaccard line:
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
+- public Linux wrapper-surface access to that Jaccard line through:
+  - `embree`
+  - `optix`
+  - `vulkan`
+  under documented native CPU/oracle fallback
 - a narrow generate-only workflow that now covers both families
 - stronger Linux/PostGIS-backed correctness and performance evidence for those
   families
@@ -177,6 +182,9 @@ It is not the main validation platform for:
 - strong CPU baseline
 - prepared reuse is supported on the current segment/polygon families
 - performs well on the accepted Linux large rows
+- for the narrow Jaccard line, the public `run_embree(...)` surface is accepted
+  through documented native CPU/oracle fallback, not an Embree-native Jaccard
+  kernel
 
 ### OptiX
 
@@ -185,6 +193,9 @@ It is not the main validation platform for:
   alignment work
 - this is not the same as claiming universal RT-core-native maturity for every
   future workload
+- for the narrow Jaccard line, the public `run_optix(...)` surface is accepted
+  through documented native CPU/oracle fallback, not an OptiX-native Jaccard
+  kernel
 
 ### Vulkan
 
@@ -194,6 +205,9 @@ It is not the main validation platform for:
 - currently competitive on the accepted Linux large rows for the two
   segment/polygon families
 - not treated as the fully optimized flagship backend
+- for the narrow Jaccard line, the public `run_vulkan(...)` surface is accepted
+  through documented native CPU/oracle fallback, not a Vulkan-native Jaccard
+  kernel
 
 ## Quick Start
 
@@ -249,3 +263,5 @@ The strongest current v0.2 claim is narrower and more honest:
 - they are validated strongly on Linux/PostGIS
 - they have a narrow generate-only product line
 - the Jaccard line is now real, but only on the explicitly narrow pathology/unit-cell contract
+- the Jaccard line also has public Linux wrapper-surface consistency on
+  `embree`, `optix`, and `vulkan`, but that is not native backend maturity

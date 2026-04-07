@@ -67,6 +67,9 @@ Current `main` is broader than that archived slice:
 - it adds a narrow Jaccard line:
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
+- for that Jaccard line, the public `embree`, `optix`, and `vulkan` run
+  surfaces now accept the workloads through documented native CPU/oracle
+  fallback on Linux
 - it adds a narrow generate-only product line covering the segment/polygon
   families plus one authored Jaccard entry
 - it has Linux/PostGIS-backed correctness and performance evidence for those
@@ -103,6 +106,9 @@ There are now two important performance stories on current `main`:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
   - Linux/PostGIS-backed through `x4096`
+- the narrow **Jaccard Linux stress** surface:
+  - public wrapper-surface consistency through `embree`, `optix`, and `vulkan`
+    under documented native CPU/oracle fallback
 
 On the v0.1 trust-anchor surface:
 
@@ -121,6 +127,8 @@ On the live v0.2 large-row surface:
 
 The bounded v0.1 package remains the **trust anchor**, while the v0.2
 segment/polygon line is the strongest current large-row live-branch story.
+The Jaccard line is real, but still under a narrower workload and backend
+maturity boundary.
 
 ## Backend Roles
 
@@ -139,6 +147,8 @@ segment/polygon line is the strongest current large-row live-branch story.
   materialization
 - Vulkan is supported and parity-clean on the accepted long exact-source
   surface, but is not currently performance-competitive there
+- the Jaccard line is public on `embree`, `optix`, and `vulkan` only through
+  documented native CPU/oracle fallback, not native backend-specific kernels
 
 ## Future Direction
 

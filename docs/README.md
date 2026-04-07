@@ -59,8 +59,11 @@ Keep these current facts in mind while reading:
     `x4096`
 - the Jaccard line is supported, but under a narrower pathology/unit-cell
   contract than the segment/polygon families
-- Embree and OptiX are the mature high-performance backends on that surface
+- Embree and OptiX are the mature high-performance backends on the accepted
+  v0.1 and segment/polygon performance surfaces
 - Vulkan is supported and parity-clean there, but slower
+- the Jaccard line now also has Linux wrapper-surface consistency on Embree,
+  OptiX, and Vulkan through documented native CPU/oracle fallback
 - PostGIS remains the external indexed comparison baseline
 - the motivating application target is RayJoin:
   - Liang Geng, Rubao Lee, and Xiaodong Zhang,

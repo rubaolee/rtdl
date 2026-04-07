@@ -60,6 +60,8 @@ PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
 - use only orthogonal integer-grid polygons that fit the unit-cell contract
 - explain area as covered unit cells, not generic continuous polygon area
 - use this primitive when you need pairwise overlap rows before an aggregate like Jaccard
+- if you run it through `embree`, `optix`, or `vulkan`, describe those public
+  surfaces honestly as documented native CPU/oracle fallback today
 
 ## Try
 
@@ -78,3 +80,6 @@ PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
 - narrow contract only: orthogonal integer-grid unit-cell polygons
 - not full polygon overlay
 - current backend maturity is intentionally narrower than the segment/polygon line
+- the public `embree`, `optix`, and `vulkan` surfaces are available for this
+  line, but through documented native CPU/oracle fallback rather than
+  backend-specific Jaccard kernels

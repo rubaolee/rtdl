@@ -81,6 +81,8 @@ The current repo can:
   PostGIS on the prepared/repeated boundaries
 - run the current narrow Jaccard line on Python/native CPU with PostGIS-backed
   checking on accepted packages
+- run the current narrow Jaccard line through the public `embree`, `optix`,
+  and `vulkan` surfaces on Linux under documented native CPU/oracle fallback
 - run the accepted long exact-source Vulkan surface with exact parity, while
   keeping Vulkan as the slower portable backend
 - compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
@@ -100,3 +102,4 @@ RTDL does not yet claim:
 - that every backend/workload/boundary combination is equally mature
 - full polygon overlay materialization (`overlay` is still a seed analogue)
 - generic continuous polygon Jaccard or generic continuous overlap-area closure
+- native Embree/OptiX/Vulkan Jaccard maturity

@@ -14,6 +14,7 @@ For guided usage, read:
 
 - [Programming Guide](programming_guide.md)
 - [Workload Cookbook](workload_cookbook.md)
+- [Feature Homes](../features/README.md)
 
 ## Scope
 
