@@ -11,6 +11,8 @@ sys.path.insert(0, ".")
 import rtdsl as rt
 import examples.rtdl_orbiting_star_ball_demo as orbit_demo
 from examples.rtdl_orbiting_star_ball_demo import _frame_light
+from examples.rtdl_orbiting_star_ball_demo import _blend_ppm_payloads
+from examples.rtdl_orbiting_star_ball_demo import _apply_temporal_blend
 from examples.rtdl_orbiting_star_ball_demo import _light_visibility_to_camera
 from examples.rtdl_orbiting_star_ball_demo import _make_shadow_rays
 from examples.rtdl_orbiting_star_ball_demo import _orbit_phase_samples
@@ -25,6 +27,30 @@ from examples.rtdl_spinning_ball_3d_demo import make_uv_sphere_mesh
 
 
 class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
+    def test_blend_ppm_payloads_zero_alpha_keeps_current(self) -> None:
+        previous = bytes([10, 20, 30, 40, 50, 60])
+        current = bytes([60, 50, 40, 30, 20, 10])
+        self.assertEqual(_blend_ppm_payloads(previous, current, 0.0), current)
+
+    def test_blend_ppm_payloads_half_alpha_blends_evenly(self) -> None:
+        previous = bytes([0, 0, 0, 200, 200, 200])
+        current = bytes([100, 100, 100, 0, 0, 0])
+        self.assertEqual(
+            _blend_ppm_payloads(previous, current, 0.5),
+            bytes([50, 50, 50, 100, 100, 100]),
+        )
+
+    def test_apply_temporal_blend_leaves_first_frame_and_changes_second(self) -> None:
+        output_dir = Path("build/goal166_orbiting_star_ball_demo_test/temporal_blend_files")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        frame0 = output_dir / "frame_000.ppm"
+        frame1 = output_dir / "frame_001.ppm"
+        frame0.write_bytes(b"P6\n1 1\n255\n" + bytes([0, 0, 0]))
+        frame1.write_bytes(b"P6\n1 1\n255\n" + bytes([200, 100, 0]))
+        _apply_temporal_blend([frame0, frame1], 0.25)
+        self.assertEqual(frame0.read_bytes(), b"P6\n1 1\n255\n" + bytes([0, 0, 0]))
+        self.assertEqual(frame1.read_bytes(), b"P6\n1 1\n255\n" + bytes([150, 75, 0]))
+
     def test_orbit_phase_samples_single_frame_returns_zero(self) -> None:
         phases = _orbit_phase_samples(1)
         self.assertEqual(phases, (0.0,))
@@ -147,6 +173,23 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
                 self.assertEqual(summary["show_light_source"], show_light_source)
                 persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
                 self.assertEqual(persisted["show_light_source"], show_light_source)
+
+    def test_temporal_blend_round_trips_in_summary(self) -> None:
+        output_dir = Path("build/goal166_orbiting_star_ball_demo_test/temporal_blend_summary")
+        summary = render_orbiting_star_ball_frames(
+            backend="cpu_python_reference",
+            compare_backend=None,
+            width=20,
+            height=20,
+            latitude_bands=6,
+            longitude_bands=12,
+            frame_count=2,
+            output_dir=output_dir,
+            temporal_blend_alpha=0.2,
+        )
+        self.assertAlmostEqual(summary["temporal_blend_alpha"], 0.2)
+        persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+        self.assertAlmostEqual(persisted["temporal_blend_alpha"], 0.2)
 
     def test_multi_frame_render_produces_distinct_frames(self) -> None:
         output_dir = Path("build/goal166_orbiting_star_ball_demo_test/multi")

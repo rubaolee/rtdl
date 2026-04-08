@@ -5,6 +5,7 @@ from concurrent.futures import ProcessPoolExecutor
 import json
 import math
 from pathlib import Path
+import re
 import sys
 import time
 from typing import Any
@@ -42,6 +43,7 @@ _ORBIT_WORKER_STATE: dict[str, object] = {}
 _ORBIT_MIDNIGHT = (0.03, 0.08, 0.24)
 _ORBIT_DEEP_BLUE = (0.06, 0.19, 0.54)
 _ORBIT_STEEL = (0.10, 0.24, 0.60)
+_PPM_DIMENSIONS_RE = re.compile(rb"^(\d+)\s+(\d+)$")
 
 
 def _orbit_phase_samples(frame_count: int) -> tuple[float, ...]:
@@ -271,6 +273,67 @@ def _make_background_image_numpy(width: int, height: int) -> Any:
     blue = 0.060 + 0.120 * horizon + 0.160 * vignette + 0.060 * bloom + 0.055 * floor
     image = np.stack((red, green, blue), axis=-1)
     return np.clip(np.rint(image * 255.0), 0.0, 255.0).astype(np.uint8)
+
+
+def _read_ppm_bytes(path: Path) -> tuple[int, int, bytes]:
+    with path.open("rb") as handle:
+        magic = handle.readline().strip()
+        if magic != b"P6":
+            raise ValueError(f"unsupported PPM magic in {path}: {magic!r}")
+        dims_line = handle.readline().strip()
+        match = _PPM_DIMENSIONS_RE.match(dims_line)
+        if match is None:
+            raise ValueError(f"invalid PPM dimensions in {path}: {dims_line!r}")
+        width = int(match.group(1))
+        height = int(match.group(2))
+        max_value = handle.readline().strip()
+        if max_value != b"255":
+            raise ValueError(f"unsupported PPM max value in {path}: {max_value!r}")
+        payload = handle.read()
+    expected = width * height * 3
+    if len(payload) != expected:
+        raise ValueError(f"invalid PPM payload size in {path}: {len(payload)} != {expected}")
+    return width, height, payload
+
+
+def _blend_ppm_payloads(previous: bytes, current: bytes, alpha: float) -> bytes:
+    if len(previous) != len(current):
+        raise ValueError("PPM payloads must have equal length for temporal blending")
+    if alpha <= 0.0:
+        return current
+    if alpha >= 1.0:
+        return previous
+    if np is not None:
+        prev_arr = np.frombuffer(previous, dtype=np.uint8).astype(np.float32)
+        curr_arr = np.frombuffer(current, dtype=np.uint8).astype(np.float32)
+        blended = np.rint(curr_arr * (1.0 - alpha) + prev_arr * alpha)
+        return np.clip(blended, 0.0, 255.0).astype(np.uint8).tobytes()
+    blended = bytearray(len(current))
+    keep = 1.0 - alpha
+    for index, (prev_value, curr_value) in enumerate(zip(previous, current)):
+        blended[index] = int(round(curr_value * keep + prev_value * alpha))
+    return bytes(blended)
+
+
+def _write_ppm_payload(path: Path, *, width: int, height: int, payload: bytes) -> None:
+    with path.open("wb") as handle:
+        handle.write(b"P6\n")
+        handle.write(f"{width} {height}\n".encode("ascii"))
+        handle.write(b"255\n")
+        handle.write(payload)
+
+
+def _apply_temporal_blend(frame_paths: list[Path], alpha: float) -> None:
+    if alpha <= 0.0 or len(frame_paths) <= 1:
+        return
+    previous_width, previous_height, previous_payload = _read_ppm_bytes(frame_paths[0])
+    for path in frame_paths[1:]:
+        width, height, payload = _read_ppm_bytes(path)
+        if width != previous_width or height != previous_height:
+            raise ValueError("all temporally blended frames must have the same dimensions")
+        blended = _blend_ppm_payloads(previous_payload, payload, alpha)
+        _write_ppm_payload(path, width=width, height=height, payload=blended)
+        previous_payload = blended
 
 
 def _orbit_surface_color(normal: tuple[float, float, float]) -> tuple[float, float, float]:
@@ -559,6 +622,7 @@ def render_orbiting_star_ball_frames(
     output_dir: Path,
     jobs: int = 1,
     show_light_source: bool = False,
+    temporal_blend_alpha: float = 0.0,
 ) -> dict[str, object]:
     wall_started = time.perf_counter()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -651,6 +715,8 @@ def render_orbiting_star_ball_frames(
         with ProcessPoolExecutor(max_workers=jobs, initializer=_init_orbit_worker, initargs=(worker_state,)) as executor:
             summary_frames = list(executor.map(_render_orbit_frame, tasks))
     summary_frames.sort(key=lambda row: int(row["frame_index"]))
+    frame_paths = [Path(str(row["frame_path"])) for row in summary_frames]
+    _apply_temporal_blend(frame_paths, temporal_blend_alpha)
     total_query_seconds = query_seconds
     total_shadow_query_seconds = sum(float(row["shadow_query_seconds"]) for row in summary_frames)
     total_shading_seconds = sum(float(row["shading_seconds"]) for row in summary_frames)
@@ -663,6 +729,7 @@ def render_orbiting_star_ball_frames(
         "jobs": jobs,
         "numpy_fast_path": np is not None,
         "show_light_source": show_light_source,
+        "temporal_blend_alpha": temporal_blend_alpha,
         "triangle_count": len(triangles),
         "latitude_bands": latitude_bands,
         "longitude_bands": longitude_bands,
@@ -690,6 +757,7 @@ def render_orbiting_star_ball_vulkan_frames(
     frame_count: int = 120,
     jobs: int = 1,
     show_light_source: bool = False,
+    temporal_blend_alpha: float = 0.0,
 ) -> dict[str, object]:
     return render_orbiting_star_ball_frames(
         backend="vulkan",
@@ -702,6 +770,7 @@ def render_orbiting_star_ball_vulkan_frames(
         output_dir=output_dir,
         jobs=jobs,
         show_light_source=show_light_source,
+        temporal_blend_alpha=temporal_blend_alpha,
     )
 
 
@@ -716,6 +785,7 @@ def render_orbiting_star_ball_optix_4k(
     frame_count: int = 320,
     jobs: int = 1,
     show_light_source: bool = False,
+    temporal_blend_alpha: float = 0.0,
 ) -> dict[str, object]:
     return render_orbiting_star_ball_frames(
         backend="optix",
@@ -728,6 +798,7 @@ def render_orbiting_star_ball_optix_4k(
         output_dir=output_dir,
         jobs=jobs,
         show_light_source=show_light_source,
+        temporal_blend_alpha=temporal_blend_alpha,
     )
 
 
@@ -742,6 +813,7 @@ def main() -> None:
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--show-light-source", action="store_true")
+    parser.add_argument("--temporal-blend-alpha", type=float, default=0.0)
     parser.add_argument("--output-dir", type=Path, default=Path("build/rtdl_orbiting_star_ball_demo"))
     args = parser.parse_args()
 
@@ -756,6 +828,7 @@ def main() -> None:
         output_dir=args.output_dir,
         jobs=args.jobs,
         show_light_source=args.show_light_source,
+        temporal_blend_alpha=args.temporal_blend_alpha,
     )
     print(json.dumps(summary, indent=2, sort_keys=True))
 

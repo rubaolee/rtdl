@@ -1,0 +1,92 @@
+{
+  "backend": "cpu_python_reference",
+  "frame_count": 6,
+  "frames": [
+    {
+      "compare_backend": null,
+      "frame_index": 0,
+      "frame_path": "build/goal172_temporal_blend_preview/frame_000.ppm",
+      "hit_pixels": 7002,
+      "phase": 0.0,
+      "query_seconds": 3.7650705830019433,
+      "rt_rows": 9216,
+      "shading_seconds": 2.8115356249909382,
+      "shadow_query_seconds": 2.775977082987083,
+      "shadow_rays": 7002
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 1,
+      "frame_path": "build/goal172_temporal_blend_preview/frame_001.ppm",
+      "hit_pixels": 7002,
+      "phase": 0.165283203125,
+      "query_seconds": 0.0,
+      "rt_rows": 9216,
+      "shading_seconds": 2.676138833980076,
+      "shadow_query_seconds": 2.6388473749975674,
+      "shadow_rays": 7002
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 2,
+      "frame_path": "build/goal172_temporal_blend_preview/frame_002.ppm",
+      "hit_pixels": 7002,
+      "phase": 0.242431640625,
+      "query_seconds": 0.0,
+      "rt_rows": 9216,
+      "shading_seconds": 2.5409491249884013,
+      "shadow_query_seconds": 2.508602082991274,
+      "shadow_rays": 7002
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 3,
+      "frame_path": "build/goal172_temporal_blend_preview/frame_003.ppm",
+      "hit_pixels": 7002,
+      "phase": 0.313720703125,
+      "query_seconds": 0.0,
+      "rt_rows": 9216,
+      "shading_seconds": 2.4996435409993865,
+      "shadow_query_seconds": 2.4679666250012815,
+      "shadow_rays": 7002
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 4,
+      "frame_path": "build/goal172_temporal_blend_preview/frame_004.ppm",
+      "hit_pixels": 7002,
+      "phase": 0.39697265625,
+      "query_seconds": 0.0,
+      "rt_rows": 9216,
+      "shading_seconds": 2.48970845900476,
+      "shadow_query_seconds": 2.457536750007421,
+      "shadow_rays": 7002
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 5,
+      "frame_path": "build/goal172_temporal_blend_preview/frame_005.ppm",
+      "hit_pixels": 7002,
+      "phase": 0.999755859375,
+      "query_seconds": 0.0,
+      "rt_rows": 9216,
+      "shading_seconds": 2.682773458014708,
+      "shadow_query_seconds": 2.6435642919968814,
+      "shadow_rays": 7002
+    }
+  ],
+  "image_height": 96,
+  "image_width": 96,
+  "jobs": 1,
+  "latitude_bands": 16,
+  "longitude_bands": 32,
+  "numpy_fast_path": false,
+  "query_share": 0.550872244096217,
+  "show_light_source": false,
+  "temporal_blend_alpha": 0.2,
+  "total_query_seconds": 3.7650705830019433,
+  "total_shading_seconds": 15.70074904197827,
+  "total_shadow_query_seconds": 15.492494207981508,
+  "triangle_count": 960,
+  "wall_clock_seconds": 19.51724658400053
+}
