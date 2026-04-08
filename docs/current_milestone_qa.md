@@ -1,16 +1,32 @@
 # Current Milestone Q/A
 
-Date: 2026-04-07
+Date: 2026-04-08
 
 ## What is the current strongest RTDL result?
 
-The strongest current live-branch result is the released v0.2 segment/polygon
-surface on Linux:
+There are now two different “strongest” answers, and both matter.
+
+For the released workload/performance story, the strongest live-branch result
+is still the released v0.2 Linux segment/polygon surface:
 
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
 - parity-clean against PostGIS through accepted large deterministic rows
 - RTDL remains ahead of PostGIS on the accepted `x4096` rows
+
+For the new application-story proof, the strongest current v0.3 result is:
+
+- a real 3D RTDL-plus-Python visual demo line
+- bounded Linux 3D backend closure across:
+  - `embree`
+  - `optix`
+  - `vulkan`
+- a polished public Windows Embree movie artifact with the recommended current
+  public demo now being:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4`
+- plus saved small Linux supporting artifacts for:
+  - OptiX
+  - Vulkan
 
 The archived v0.1 `county_zipcode` positive-hit `pip` line remains the trust
 anchor and strongest older prepared/repeated raw-input performance story.
@@ -52,6 +68,10 @@ Small example:
 
 - [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
 
+Stronger current application-style example:
+
+- [rtdl_orbiting_star_ball_demo.py](../examples/rtdl_orbiting_star_ball_demo.py)
+
 ## Does the CPU still matter when using OptiX or Vulkan?
 
 Yes.
@@ -86,6 +106,15 @@ The current strongest mature surfaces are:
 
 Other workloads exist and work, but they are not all documented with the same
 depth of performance closure yet.
+
+The same applies to the v0.3 demo line:
+
+- the bounded 3D ray/triangle backend surface is closed
+- the preferred polished public artifact is currently the Windows Embree movie
+- Linux OptiX and Vulkan now also have saved small compare-clean supporting
+  GIF artifacts
+- but the movie itself should not be read as equally optimized across all
+  backends
 
 ## Why do the reports distinguish prepared and repeated raw-input timing?
 
