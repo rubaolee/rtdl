@@ -686,6 +686,103 @@ static AccelResult build_aabb_blas(VkContext* ctx,
     return result;
 }
 
+// Build a BLAS from native 3D triangle geometry (VK_GEOMETRY_TYPE_TRIANGLES_KHR).
+// vertices: flat float3 array, 9 floats per triangle (3 verts × xyz).
+static AccelResult build_triangle_blas_3d(VkContext* ctx, const std::vector<float>& vertices) {
+    size_t vert_sz     = sizeof(float) * vertices.size();
+    uint32_t tri_count = static_cast<uint32_t>(vertices.size() / 9u);
+    uint32_t max_vert  = tri_count * 3u;
+
+    BufMem vert_buf = alloc_buffer(ctx, vert_sz == 0 ? 4 : vert_sz,
+        VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR |
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    if (vert_sz > 0) upload_to_buf(ctx, vert_buf, vertices.data(), vert_sz);
+
+    VkAccelerationStructureGeometryTrianglesDataKHR tris_data{
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR };
+    tris_data.vertexFormat             = VK_FORMAT_R32G32B32_SFLOAT;
+    tris_data.vertexData.deviceAddress = buf_addr(ctx, vert_buf.buffer);
+    tris_data.vertexStride             = sizeof(float) * 3u;
+    tris_data.maxVertex                = (max_vert > 0u) ? max_vert - 1u : 0u;
+    tris_data.indexType                = VK_INDEX_TYPE_NONE_KHR;
+
+    VkAccelerationStructureGeometryKHR geom{
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR };
+    geom.geometryType     = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
+    geom.geometry.triangles = tris_data;
+    geom.flags            = 0; // non-opaque → any-hit shader invoked
+
+    VkAccelerationStructureBuildGeometryInfoKHR build_info{
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR };
+    build_info.type          = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+    build_info.flags         = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+    build_info.mode          = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+    build_info.geometryCount = 1;
+    build_info.pGeometries   = &geom;
+
+    VkAccelerationStructureBuildSizesInfoKHR sizes{
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR };
+    ctx->fns.vkGetAccelerationStructureBuildSizesKHR(
+        ctx->device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+        &build_info, &tri_count, &sizes);
+
+    AccelResult result;
+    result.as_buf = alloc_buffer(ctx, sizes.accelerationStructureSize,
+        VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR |
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    VkAccelerationStructureCreateInfoKHR as_ci{
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR };
+    as_ci.buffer = result.as_buf.buffer;
+    as_ci.size   = sizes.accelerationStructureSize;
+    as_ci.type   = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+    VK_CHECK(ctx->fns.vkCreateAccelerationStructureKHR(ctx->device, &as_ci, nullptr,
+                                                        &result.handle));
+
+    BufMem scratch = alloc_buffer(ctx, sizes.buildScratchSize,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    build_info.dstAccelerationStructure  = result.handle;
+    build_info.scratchData.deviceAddress = buf_addr(ctx, scratch.buffer);
+
+    VkAccelerationStructureBuildRangeInfoKHR range{ tri_count, 0, 0, 0 };
+    const VkAccelerationStructureBuildRangeInfoKHR* p_range = &range;
+
+    VkCommandBuffer cmd;
+    VkCommandBufferAllocateInfo alloc_ci{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+    alloc_ci.commandPool = ctx->cmd_pool; alloc_ci.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_ci.commandBufferCount = 1;
+    VK_CHECK(vkAllocateCommandBuffers(ctx->device, &alloc_ci, &cmd));
+    VkCommandBufferBeginInfo begin{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+    begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    vkBeginCommandBuffer(cmd, &begin);
+    ctx->fns.vkCmdBuildAccelerationStructuresKHR(cmd, 1, &build_info, &p_range);
+    VkMemoryBarrier barrier{ VK_STRUCTURE_TYPE_MEMORY_BARRIER };
+    barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+    barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+    vkCmdPipelineBarrier(cmd,
+        VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+        VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+        0, 1, &barrier, 0, nullptr, 0, nullptr);
+    vkEndCommandBuffer(cmd);
+    VkSubmitInfo sub{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
+    sub.commandBufferCount = 1; sub.pCommandBuffers = &cmd;
+    vkQueueSubmit(ctx->queue, 1, &sub, VK_NULL_HANDLE);
+    vkQueueWaitIdle(ctx->queue);
+    vkFreeCommandBuffers(ctx->device, ctx->cmd_pool, 1, &cmd);
+    free_buf(ctx, scratch);
+    free_buf(ctx, vert_buf);
+
+    VkAccelerationStructureDeviceAddressInfoKHR addr_info{
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR };
+    addr_info.accelerationStructure = result.handle;
+    result.device_addr = ctx->fns.vkGetAccelerationStructureDeviceAddressKHR(ctx->device, &addr_info);
+    return result;
+}
+
 static AccelResult build_tlas(VkContext* ctx, VkAccelerationStructureKHR blas,
                                 VkDeviceAddress blas_addr) {
     VkAccelerationStructureInstanceKHR instance{};
@@ -793,6 +890,7 @@ struct GpuPoint      { float x, y;            uint32_t id; };        // 12 bytes
 struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };  // 12 bytes
 struct GpuTriangle   { float x0, y0, x1, y1, x2, y2; uint32_t id; };// 28 bytes
 struct GpuRay        { float ox, oy, dx, dy, tmax; uint32_t id; };   // 24 bytes
+struct GpuRay3D      { float ox, oy, oz, dx, dy, dz, tmax; uint32_t id; }; // 32 bytes
 
 struct GpuLsiRecord      { uint32_t left_id, right_id; float ix, iy; };        // 16 bytes
 struct GpuPipRecord      { uint32_t point_id, polygon_id, contains; };          // 12 bytes
@@ -1641,6 +1739,54 @@ void main() {
 }
 )GLSL";
 
+// ---------- RayHitCount3D shaders (native Vulkan triangle geometry) -----------
+// Build: BLAS from VK_GEOMETRY_TYPE_TRIANGLES_KHR — hardware handles intersection.
+// No intersection shader needed. Any-hit counts all hits; ignoreIntersectionEXT
+// forces continued traversal so every triangle is reported.
+
+static const char* kRhc3dRgen = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(set=0, binding=0) uniform accelerationStructureEXT tlas;
+layout(set=0, binding=3, std140) uniform Params { uint nrays; uint pad0; };
+layout(set=0, binding=4, std430) readonly buffer RayBuf { float data[]; } rays;
+// GpuRay3D layout: ox,oy,oz,dx,dy,dz,tmax,id  (8 floats / 32 bytes per ray)
+layout(set=0, binding=1, std430) buffer OutBuf { uint data[]; } output_buf;
+layout(location=0) rayPayloadEXT uint hitCount;
+void main() {
+    uint idx = gl_LaunchIDEXT.x;
+    if (idx >= nrays) return;
+    uint base = idx * 8u;
+    float ox = rays.data[base+0u], oy = rays.data[base+1u], oz = rays.data[base+2u];
+    float dx = rays.data[base+3u], dy = rays.data[base+4u], dz = rays.data[base+5u];
+    float tmax  = rays.data[base+6u];
+    uint ray_id = floatBitsToUint(rays.data[base+7u]);
+    hitCount = 0u;
+    traceRayEXT(tlas, gl_RayFlagsNoneEXT, 0xFF, 0, 1, 0,
+                vec3(ox, oy, oz), 0.0, vec3(dx, dy, dz), tmax, 0);
+    uint obase = idx * 2u;
+    output_buf.data[obase+0u] = ray_id;
+    output_buf.data[obase+1u] = hitCount;
+}
+)GLSL";
+
+static const char* kRhc3dRmiss = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(location=0) rayPayloadInEXT uint hitCount;
+void main() {}
+)GLSL";
+
+static const char* kRhc3dRahit = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(location=0) rayPayloadInEXT uint hitCount;
+void main() {
+    hitCount += 1u;
+    ignoreIntersectionEXT;
+}
+)GLSL";
+
 // ---------- SegmentPolygonHitcount shaders ------------------------------------
 // Build: polygon bounding-box AABBs.
 // Probe: one ray per segment (encoded like LSI probe).
@@ -1946,6 +2092,111 @@ static RtPipeline build_rt_pipeline(
     return pipe;
 }
 
+// Build a ray-tracing pipeline for native triangle geometry.
+// Uses VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR (no intersection shader).
+// Binding layout matches build_rt_pipeline: TLAS at 0, UBO at 3, SSBOs elsewhere.
+static RtPipeline build_rt_pipeline_triangle(
+        VkContext* ctx,
+        const char* rgen_glsl, const char* rmiss_glsl, const char* rahit_glsl,
+        const char* rgen_name, const char* rmiss_name, const char* rahit_name,
+        uint32_t binding_count)
+{
+    auto rgen_spv = compile_glsl(rgen_glsl, shaderc_raygen_shader,  rgen_name);
+    auto rmiss_spv= compile_glsl(rmiss_glsl, shaderc_miss_shader,   rmiss_name);
+    auto rahit_spv= compile_glsl(rahit_glsl, shaderc_anyhit_shader, rahit_name);
+
+    VkShaderModule sm_rgen  = make_shader(ctx->device, rgen_spv);
+    VkShaderModule sm_rmiss = make_shader(ctx->device, rmiss_spv);
+    VkShaderModule sm_rahit = make_shader(ctx->device, rahit_spv);
+
+    std::vector<VkDescriptorSetLayoutBinding> bindings(binding_count);
+    for (uint32_t i = 0; i < binding_count; ++i) {
+        bindings[i].binding         = i;
+        bindings[i].stageFlags      = VK_SHADER_STAGE_ALL;
+        bindings[i].descriptorCount = 1;
+        bindings[i].descriptorType  =
+            (i == 0) ? VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
+                     : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    }
+    if (binding_count > 3) bindings[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+    RtPipeline pipe;
+    VkDescriptorSetLayoutCreateInfo dsl_ci{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+    dsl_ci.bindingCount = binding_count; dsl_ci.pBindings = bindings.data();
+    VK_CHECK(vkCreateDescriptorSetLayout(ctx->device, &dsl_ci, nullptr, &pipe.dset_layout));
+
+    VkPipelineLayoutCreateInfo pl_ci{ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
+    pl_ci.setLayoutCount = 1; pl_ci.pSetLayouts = &pipe.dset_layout;
+    VK_CHECK(vkCreatePipelineLayout(ctx->device, &pl_ci, nullptr, &pipe.layout));
+
+    // Three shader stages: rgen, rmiss, rahit
+    VkPipelineShaderStageCreateInfo stages[3]{};
+    stages[0] = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0,
+                  VK_SHADER_STAGE_RAYGEN_BIT_KHR, sm_rgen,  "main", nullptr };
+    stages[1] = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0,
+                  VK_SHADER_STAGE_MISS_BIT_KHR,   sm_rmiss, "main", nullptr };
+    stages[2] = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0,
+                  VK_SHADER_STAGE_ANY_HIT_BIT_KHR, sm_rahit, "main", nullptr };
+
+    VkRayTracingShaderGroupCreateInfoKHR groups[3]{};
+    groups[0] = { VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR };
+    groups[0].type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+    groups[0].generalShader = 0; groups[0].closestHitShader = VK_SHADER_UNUSED_KHR;
+    groups[0].anyHitShader  = VK_SHADER_UNUSED_KHR; groups[0].intersectionShader = VK_SHADER_UNUSED_KHR;
+    groups[1] = { VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR };
+    groups[1].type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+    groups[1].generalShader = 1; groups[1].closestHitShader = VK_SHADER_UNUSED_KHR;
+    groups[1].anyHitShader  = VK_SHADER_UNUSED_KHR; groups[1].intersectionShader = VK_SHADER_UNUSED_KHR;
+    // Triangle hit group: hardware handles intersection, any-hit counts hits
+    groups[2] = { VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR };
+    groups[2].type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+    groups[2].generalShader      = VK_SHADER_UNUSED_KHR;
+    groups[2].closestHitShader   = VK_SHADER_UNUSED_KHR;
+    groups[2].anyHitShader       = 2; // rahit stage
+    groups[2].intersectionShader = VK_SHADER_UNUSED_KHR;
+
+    VkRayTracingPipelineCreateInfoKHR pipe_ci{
+        VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR };
+    pipe_ci.stageCount = 3; pipe_ci.pStages  = stages;
+    pipe_ci.groupCount = 3; pipe_ci.pGroups  = groups;
+    pipe_ci.maxPipelineRayRecursionDepth = 1;
+    pipe_ci.layout = pipe.layout;
+    VK_CHECK(ctx->fns.vkCreateRayTracingPipelinesKHR(
+        ctx->device, VK_NULL_HANDLE, VK_NULL_HANDLE, 1, &pipe_ci, nullptr, &pipe.pipeline));
+
+    vkDestroyShaderModule(ctx->device, sm_rgen,  nullptr);
+    vkDestroyShaderModule(ctx->device, sm_rmiss, nullptr);
+    vkDestroyShaderModule(ctx->device, sm_rahit, nullptr);
+
+    // SBT: 3 entries (rgen, miss, hitgroup) — same layout as build_rt_pipeline
+    uint32_t h = ctx->handle_size, a = ctx->handle_align;
+    uint32_t entry_sz = (h + (a - 1)) & ~(a - 1);
+    uint32_t sbt_sz   = 3u * entry_sz;
+    std::vector<uint8_t> handles(3u * h);
+    VK_CHECK(ctx->fns.vkGetRayTracingShaderGroupHandlesKHR(
+        ctx->device, pipe.pipeline, 0, 3, 3u * h, handles.data()));
+    std::vector<uint8_t> sbt_data(sbt_sz, 0);
+    std::memcpy(sbt_data.data() + 0 * entry_sz, handles.data() + 0 * h, h);
+    std::memcpy(sbt_data.data() + 1 * entry_sz, handles.data() + 1 * h, h);
+    std::memcpy(sbt_data.data() + 2 * entry_sz, handles.data() + 2 * h, h);
+
+    uint32_t base_align = ctx->rt_props.shaderGroupBaseAlignment;
+    uint32_t sbt_buf_sz = ((sbt_sz + base_align - 1) / base_align) * base_align;
+    pipe.sbt_buf = alloc_buffer(ctx, sbt_buf_sz,
+        VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR |
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    upload_to_buf(ctx, pipe.sbt_buf, sbt_data.data(), sbt_sz);
+
+    VkDeviceAddress sbt_addr = buf_addr(ctx, pipe.sbt_buf.buffer);
+    pipe.rgen_region = { sbt_addr + 0u * entry_sz, entry_sz, entry_sz };
+    pipe.miss_region = { sbt_addr + 1u * entry_sz, entry_sz, entry_sz };
+    pipe.hit_region  = { sbt_addr + 2u * entry_sz, entry_sz, entry_sz };
+    pipe.call_region = { 0, 0, 0 };
+    return pipe;
+}
+
 static ComputePipeline build_compute_pipeline(
         VkContext* ctx, const char* glsl_src, const char* name,
         uint32_t binding_count) {
@@ -2118,6 +2369,8 @@ static RtPipeline*      g_sph_pipe    = nullptr;
 static ComputePipeline* g_pns_pipe    = nullptr;
 static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_count_init, g_pip_pos_init, g_overlay_init;
 static std::once_flag   g_rhc_init, g_sph_init, g_pns_init;
+static RtPipeline*      g_rhc3d_pipe = nullptr;
+static std::once_flag   g_rhc3d_init;
 
 // ── Workload run functions ───────────────────────────────────────────────────
 
@@ -3012,6 +3265,94 @@ static void run_point_nearest_segment_vulkan(
     *row_count_out = point_count;
 }
 
+// ---------- RayHitCount3D (Vulkan GPU — native triangle geometry) -------------
+
+static void run_ray_hitcount_3d_vulkan(
+        const RtdlRay3D* rays, size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayHitCountRow** rows_out, size_t* row_count_out)
+{
+    // Edge case: no rays → empty result.
+    if (ray_count == 0) {
+        *rows_out = nullptr; *row_count_out = 0; return;
+    }
+
+    VkContext* ctx = get_context();
+    std::call_once(g_rhc3d_init, [ctx]() {
+        g_rhc3d_pipe = new RtPipeline(build_rt_pipeline_triangle(
+            ctx, kRhc3dRgen, kRhc3dRmiss, kRhc3dRahit,
+            "rhc3d.rgen", "rhc3d.rmiss", "rhc3d.rahit", 5));
+    });
+
+    // Pack 3D rays as GpuRay3D
+    std::vector<GpuRay3D> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        gpu_rays[i] = { (float)rays[i].ox, (float)rays[i].oy, (float)rays[i].oz,
+                        (float)rays[i].dx, (float)rays[i].dy, (float)rays[i].dz,
+                        (float)rays[i].tmax, rays[i].id };
+    }
+
+    // Pack triangle vertices as flat float3 (9 floats per triangle)
+    std::vector<float> vert_data(triangle_count * 9u);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        float* v = &vert_data[i * 9u];
+        v[0]=(float)triangles[i].x0; v[1]=(float)triangles[i].y0; v[2]=(float)triangles[i].z0;
+        v[3]=(float)triangles[i].x1; v[4]=(float)triangles[i].y1; v[5]=(float)triangles[i].z1;
+        v[6]=(float)triangles[i].x2; v[7]=(float)triangles[i].y2; v[8]=(float)triangles[i].z2;
+    }
+
+    VkDeviceSize ray_sz = sizeof(GpuRay3D) * ray_count;
+    BufMem d_rays = alloc_buffer(ctx, ray_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    upload_to_buf(ctx, d_rays, gpu_rays.data(), ray_sz);
+
+    // Build BLAS from native 3D triangle geometry + TLAS over it
+    AccelResult blas = build_triangle_blas_3d(ctx, vert_data);
+    AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
+
+    // One GpuRayHitRecord per ray (ray_id + hit_count)
+    VkDeviceSize out_sz = sizeof(GpuRayHitRecord) * ray_count;
+    BufMem d_output = alloc_buffer(ctx, out_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    zero_buf(ctx, d_output);
+
+    struct { uint32_t nrays, pad0; } params{ (uint32_t)ray_count, 0u };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+    // Binding 2 is unused in the raygen shader but required by the descriptor layout
+    BufMem d_dummy = alloc_buffer(ctx, 4u, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_rhc3d_pipe->dset_layout, 5, true);
+    bind_tlas  (ctx,         ds.set, tlas.handle,     0);
+    bind_ssbo  (ctx->device, ds.set, d_output.buffer, out_sz,       1);
+    bind_ssbo  (ctx->device, ds.set, d_dummy.buffer,  4u,           2);
+    bind_ubo   (ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+    bind_ssbo  (ctx->device, ds.set, d_rays.buffer,   ray_sz,       4);
+
+    dispatch_rt(ctx, *g_rhc3d_pipe, ds.set, (uint32_t)ray_count);
+
+    std::vector<GpuRayHitRecord> gpu_rows(ray_count);
+    download_from_buf(ctx, gpu_rows.data(), d_output, out_sz);
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_rays); free_buf(ctx, d_output);
+    free_buf(ctx, d_params); free_buf(ctx, d_dummy);
+    destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
+
+    auto* out = static_cast<RtdlRayHitCountRow*>(std::malloc(sizeof(RtdlRayHitCountRow) * ray_count));
+    if (!out) throw std::bad_alloc();
+    for (size_t i = 0; i < ray_count; ++i)
+        out[i] = { gpu_rows[i].ray_id, gpu_rows[i].hit_count };
+    *rows_out      = out;
+    *row_count_out = ray_count;
+}
+
 // ── Error wrapper ─────────────────────────────────────────────────────────────
 
 template <typename Fn>
@@ -3099,21 +3440,8 @@ int rtdl_vulkan_run_ray_hitcount_3d(
         RtdlRayHitCountRow** rows_out, size_t* row_count_out,
         char* error_out, size_t error_size) {
     return handle_call([&] {
-        auto* out = static_cast<RtdlRayHitCountRow*>(std::malloc(sizeof(RtdlRayHitCountRow) * ray_count));
-        if (!out && ray_count > 0) {
-            throw std::bad_alloc();
-        }
-        for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
-            uint32_t count = 0u;
-            for (size_t triangle_index = 0; triangle_index < triangle_count; ++triangle_index) {
-                if (exact_ray_hits_triangle_3d(rays[ray_index], triangles[triangle_index])) {
-                    count += 1u;
-                }
-            }
-            out[ray_index] = {rays[ray_index].id, count};
-        }
-        *rows_out = out;
-        *row_count_out = ray_count;
+        run_ray_hitcount_3d_vulkan(rays, ray_count, triangles, triangle_count,
+                                   rows_out, row_count_out);
     }, error_out, error_size);
 }
 

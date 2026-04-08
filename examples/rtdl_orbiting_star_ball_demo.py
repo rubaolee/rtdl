@@ -23,6 +23,9 @@ except ImportError:  # pragma: no cover - optional fast path
     np = None  # type: ignore[assignment]
 
 from examples.rtdl_spinning_ball_3d_demo import _background_pixel
+from examples.rtdl_spinning_ball_3d_demo import _clamp01
+from examples.rtdl_spinning_ball_3d_demo import _dot3
+from examples.rtdl_spinning_ball_3d_demo import _normalize3
 from examples.rtdl_spinning_ball_3d_demo import _paint_disc
 from examples.rtdl_spinning_ball_3d_demo import _paint_ellipse
 from examples.rtdl_spinning_ball_3d_demo import _paint_ground_shadow
@@ -30,13 +33,15 @@ from examples.rtdl_spinning_ball_3d_demo import _paint_halo
 from examples.rtdl_spinning_ball_3d_demo import _project_world_to_screen
 from examples.rtdl_spinning_ball_3d_demo import _ray_sphere_intersection
 from examples.rtdl_spinning_ball_3d_demo import _run_backend_rows
-from examples.rtdl_spinning_ball_3d_demo import _shade_hit
 from examples.rtdl_spinning_ball_3d_demo import _write_ppm
 from examples.rtdl_spinning_ball_3d_demo import make_camera_rays
 from examples.rtdl_spinning_ball_3d_demo import make_uv_sphere_mesh
 
 
 _ORBIT_WORKER_STATE: dict[str, object] = {}
+_ORBIT_MIDNIGHT = (0.03, 0.08, 0.24)
+_ORBIT_DEEP_BLUE = (0.06, 0.19, 0.54)
+_ORBIT_STEEL = (0.10, 0.24, 0.60)
 
 
 def _orbit_phase_samples(frame_count: int) -> tuple[float, ...]:
@@ -83,10 +88,17 @@ def _frame_light(phase: float) -> dict[str, object]:
             4.0 + diag * 10.5,
             math.sin(angle) * 36.0,
         ),
-        "color": (1.0, 0.96, 0.84),
-        "intensity": 2.2,
-        "display_color": (255, 240, 205),
+        "color": (1.0, 0.86, 0.30),
+        "intensity": 2.42,
+        "display_color": (255, 212, 92),
     }
+
+
+def _smoothstep(edge0: float, edge1: float, value: float) -> float:
+    if edge1 <= edge0:
+        return 1.0 if value >= edge1 else 0.0
+    t = max(0.0, min(1.0, (value - edge0) / (edge1 - edge0)))
+    return t * t * (3.0 - 2.0 * t)
 
 
 def _make_shadow_rays(
@@ -135,21 +147,22 @@ def _light_visibility_to_camera(
     dx = light_position[0] - eye[0]
     dy = light_position[1] - eye[1]
     dz = light_position[2] - eye[2]
-    distance = math.sqrt(max(1.0e-12, dx * dx + dy * dy + dz * dz))
-    probe = rt.Ray3D(
-        id=0,
-        ox=eye[0],
-        oy=eye[1],
-        oz=eye[2],
-        dx=dx / distance,
-        dy=dy / distance,
-        dz=dz / distance,
-        tmax=max(0.0, distance - 4.0e-3),
+    segment_len_sq = max(1.0e-12, dx * dx + dy * dy + dz * dz)
+    cx = center[0] - eye[0]
+    cy = center[1] - eye[1]
+    cz = center[2] - eye[2]
+    t = max(0.0, min(1.0, (cx * dx + cy * dy + cz * dz) / segment_len_sq))
+    closest_x = eye[0] + dx * t
+    closest_y = eye[1] + dy * t
+    closest_z = eye[2] + dz * t
+    clearance_x = closest_x - center[0]
+    clearance_y = closest_y - center[1]
+    clearance_z = closest_z - center[2]
+    closest_distance = math.sqrt(
+        max(1.0e-12, clearance_x * clearance_x + clearance_y * clearance_y + clearance_z * clearance_z)
     )
-    hit = _ray_sphere_intersection(probe, center=center, radius=radius)
-    if hit is not None:
-        return 0.0
-    return 1.0
+    soft_band = max(0.12, radius * 0.16)
+    return _smoothstep(radius - soft_band, radius + soft_band, closest_distance)
 
 
 def _overlay_star_and_ground(
@@ -167,7 +180,7 @@ def _overlay_star_and_ground(
     show_light_source: bool,
 ) -> None:
     light_position = light["position"]  # type: ignore[index]
-    color = tuple(light.get("display_color", (255, 240, 205)))  # type: ignore[arg-type]
+    color = tuple(light.get("display_color", (255, 212, 92)))  # type: ignore[arg-type]
     visibility = _light_visibility_to_camera(
         light_position=light_position,  # type: ignore[arg-type]
         eye=eye,
@@ -211,7 +224,7 @@ def _overlay_star_and_ground(
         fov_y_degrees=fov_y_degrees,
     )
     if ground_projected is not None:
-        warm_core = (255, 246, 222)
+        warm_core = (255, 224, 128)
         outer_alpha = 0.14 + 0.24 * visibility
         inner_alpha = 0.12 + 0.28 * visibility
         _paint_ellipse(
@@ -260,6 +273,65 @@ def _make_background_image_numpy(width: int, height: int) -> Any:
     return np.clip(np.rint(image * 255.0), 0.0, 255.0).astype(np.uint8)
 
 
+def _orbit_surface_color(normal: tuple[float, float, float]) -> tuple[float, float, float]:
+    _, ny, nz = normal
+    crown = _clamp01((ny + 0.65) / 1.65)
+    side = _clamp01((nz + 1.0) * 0.5)
+    base = tuple(
+        _ORBIT_MIDNIGHT[index] + (_ORBIT_DEEP_BLUE[index] - _ORBIT_MIDNIGHT[index]) * (0.35 + 0.30 * crown)
+        for index in range(3)
+    )
+    return tuple(
+        _clamp01(base[index] + (_ORBIT_STEEL[index] - base[index]) * (0.10 * side))
+        for index in range(3)
+    )
+
+
+def _shade_orbit_hit(
+    ray: rt.Ray3D,
+    hit_point: tuple[float, float, float],
+    *,
+    center: tuple[float, float, float],
+    light: dict[str, object],
+    shadow_factor: float,
+) -> tuple[int, int, int]:
+    nx, ny, nz = _normalize3(
+        hit_point[0] - center[0],
+        hit_point[1] - center[1],
+        hit_point[2] - center[2],
+    )
+    base = _orbit_surface_color((nx, ny, nz))
+    view = _normalize3(-ray.dx, -ray.dy, -ray.dz)
+    fresnel = (1.0 - max(0.0, _dot3(nx, ny, nz, view[0], view[1], view[2]))) ** 2.6
+    upper_glow = _clamp01((ny + 0.55) / 1.55)
+    lower_cool = _clamp01((0.15 - ny) / 1.15)
+
+    lx, ly, lz = light["position"]  # type: ignore[index]
+    ldx, ldy, ldz = _normalize3(lx - hit_point[0], ly - hit_point[1], lz - hit_point[2])
+    lambert = max(0.0, _dot3(nx, ny, nz, ldx, ldy, ldz)) * shadow_factor
+    lr, lg, lb = light["color"]  # type: ignore[index]
+    intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
+
+    light_rgb = [
+        0.11 + lambert * float(lr) * 1.05 * intensity,
+        0.12 + lambert * float(lg) * 1.05 * intensity,
+        0.16 + lambert * float(lb) * 1.05 * intensity,
+    ]
+
+    half_x, half_y, half_z = _normalize3(ldx + view[0], ldy + view[1], ldz + view[2])
+    specular = shadow_factor * intensity * (max(0.0, _dot3(nx, ny, nz, half_x, half_y, half_z)) ** 52.0)
+
+    final = []
+    for index in range(3):
+        channel = base[index] * light_rgb[index]
+        channel += fresnel * (0.14 if index == 2 else 0.10)
+        channel += upper_glow * (0.03 if index == 0 else 0.05 if index == 1 else 0.08)
+        channel += lower_cool * (0.00 if index == 0 else 0.01 if index == 1 else 0.05)
+        channel += specular * (0.14 + 0.07 * index)
+        final.append(int(round(_clamp01(channel) * 255.0)))
+    return final[0], final[1], final[2]
+
+
 def _shade_pending_hits_numpy(
     image: Any,
     *,
@@ -304,9 +376,9 @@ def _shade_pending_hits_numpy(
 
     crown = np.clip((ny + 0.65) / 1.65, 0.0, 1.0)
     side = np.clip((nz + 1.0) * 0.5, 0.0, 1.0)
-    midnight = np.asarray((0.04, 0.07, 0.18), dtype=np.float32)
-    deep_blue = np.asarray((0.08, 0.14, 0.34), dtype=np.float32)
-    steel = np.asarray((0.12, 0.18, 0.42), dtype=np.float32)
+    midnight = np.asarray(_ORBIT_MIDNIGHT, dtype=np.float32)
+    deep_blue = np.asarray(_ORBIT_DEEP_BLUE, dtype=np.float32)
+    steel = np.asarray(_ORBIT_STEEL, dtype=np.float32)
     base = midnight + (deep_blue - midnight) * (0.35 + 0.30 * crown[:, None])
     base = np.clip(base + (steel - base) * (0.10 * side[:, None]), 0.0, 1.0)
 
@@ -415,13 +487,12 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
     else:
         for py, px, ray, hit_point in pending_hits:
             shadow_factor = 0.0 if shadow_lookup.get(ray.id * light_count, 0) > 0 else 1.0
-            image[py][px] = _shade_hit(
+            image[py][px] = _shade_orbit_hit(
                 ray,
                 hit_point,
                 center=center,
-                radius=radius,
-                lights=(light,),
-                shadow_factors=(shadow_factor,),
+                light=light,
+                shadow_factor=shadow_factor,
             )
 
     projected_center = state["projected_center"]  # type: ignore[assignment]
@@ -606,6 +677,58 @@ def render_orbiting_star_ball_frames(
     summary_path = output_dir / "summary.json"
     summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     return summary
+
+
+def render_orbiting_star_ball_vulkan_frames(
+    *,
+    output_dir: Path,
+    compare_backend: str | None = "cpu_python_reference",
+    width: int = 1024,
+    height: int = 1024,
+    latitude_bands: int = 80,
+    longitude_bands: int = 160,
+    frame_count: int = 120,
+    jobs: int = 1,
+    show_light_source: bool = False,
+) -> dict[str, object]:
+    return render_orbiting_star_ball_frames(
+        backend="vulkan",
+        compare_backend=compare_backend,
+        width=width,
+        height=height,
+        latitude_bands=latitude_bands,
+        longitude_bands=longitude_bands,
+        frame_count=frame_count,
+        output_dir=output_dir,
+        jobs=jobs,
+        show_light_source=show_light_source,
+    )
+
+
+def render_orbiting_star_ball_optix_4k(
+    *,
+    output_dir: Path,
+    compare_backend: str | None = "cpu_python_reference",
+    width: int = 3840,
+    height: int = 2160,
+    latitude_bands: int = 96,
+    longitude_bands: int = 192,
+    frame_count: int = 320,
+    jobs: int = 1,
+    show_light_source: bool = False,
+) -> dict[str, object]:
+    return render_orbiting_star_ball_frames(
+        backend="optix",
+        compare_backend=compare_backend,
+        width=width,
+        height=height,
+        latitude_bands=latitude_bands,
+        longitude_bands=longitude_bands,
+        frame_count=frame_count,
+        output_dir=output_dir,
+        jobs=jobs,
+        show_light_source=show_light_source,
+    )
 
 
 def main() -> None:

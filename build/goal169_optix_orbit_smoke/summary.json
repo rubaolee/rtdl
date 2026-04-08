@@ -1,0 +1,34 @@
+{
+  "backend": "optix",
+  "frame_count": 1,
+  "frames": [
+    {
+      "compare_backend": {
+        "backend": "cpu_python_reference",
+        "matches": true
+      },
+      "frame_index": 0,
+      "frame_path": "build/optix_orbit_smoke/frame_000.ppm",
+      "hit_pixels": 3110,
+      "phase": 0.0,
+      "query_seconds": 0.030375565999996468,
+      "rt_rows": 4096,
+      "shading_seconds": 0.05679533299999662,
+      "shadow_query_seconds": 0.0176109889999978,
+      "shadow_rays": 3110
+    }
+  ],
+  "image_height": 64,
+  "image_width": 64,
+  "jobs": 1,
+  "latitude_bands": 12,
+  "longitude_bands": 24,
+  "numpy_fast_path": false,
+  "query_share": 0.4579661229238248,
+  "show_light_source": false,
+  "total_query_seconds": 0.030375565999996468,
+  "total_shading_seconds": 0.05679533299999662,
+  "total_shadow_query_seconds": 0.0176109889999978,
+  "triangle_count": 528,
+  "wall_clock_seconds": 1.5145708199999959
+}

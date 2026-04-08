@@ -536,6 +536,57 @@ def pack_triangles(
     return PackedTriangles(records=arr, count=n, dimension=2)
 
 
+def pack_rays_3d_from_arrays(
+    ids,
+    ox,
+    oy,
+    oz,
+    dx,
+    dy,
+    dz,
+    tmax,
+) -> PackedRays:
+    """Fast bulk packing of 3-D rays from array-like inputs (numpy arrays preferred).
+
+    Bypasses per-element Python object creation so it scales to millions of rays
+    without the overhead of building a tuple[rt.Ray3D, ...] first.  Field order
+    and dtype exactly match the C _RtdlRay3D packed struct (uint32 id + 7×float64).
+    """
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        raise RuntimeError("pack_rays_3d_from_arrays requires numpy")
+
+    ids_a  = _np.asarray(ids,  dtype=_np.uint32)
+    ox_a   = _np.asarray(ox,   dtype=_np.float64)
+    oy_a   = _np.asarray(oy,   dtype=_np.float64)
+    oz_a   = _np.asarray(oz,   dtype=_np.float64)
+    dx_a   = _np.asarray(dx,   dtype=_np.float64)
+    dy_a   = _np.asarray(dy,   dtype=_np.float64)
+    dz_a   = _np.asarray(dz,   dtype=_np.float64)
+    tmax_a = _np.asarray(tmax, dtype=_np.float64)
+
+    n = len(ids_a)
+    # Numpy structured dtype that mirrors _RtdlRay3D with _pack_=1:
+    #   id(u4,@0), ox(f8,@4), oy(f8,@12), oz(f8,@20),
+    #   dx(f8,@28), dy(f8,@36), dz(f8,@44), tmax(f8,@52)  → itemsize 60
+    _dtype = _np.dtype({
+        "names":   ["id", "ox", "oy", "oz", "dx", "dy", "dz", "tmax"],
+        "formats": [_np.uint32, _np.float64, _np.float64, _np.float64,
+                    _np.float64, _np.float64, _np.float64, _np.float64],
+        "offsets": [0, 4, 12, 20, 28, 36, 44, 52],
+        "itemsize": 60,
+    })
+    buf = _np.empty(n, dtype=_dtype)
+    buf["id"]   = ids_a
+    buf["ox"]   = ox_a;  buf["oy"] = oy_a;  buf["oz"] = oz_a
+    buf["dx"]   = dx_a;  buf["dy"] = dy_a;  buf["dz"] = dz_a
+    buf["tmax"] = tmax_a
+
+    arr = (_RtdlRay3D * n).from_buffer_copy(buf)
+    return PackedRays(records=arr, count=n, dimension=3)
+
+
 def pack_rays(
     records=None,
     *,
