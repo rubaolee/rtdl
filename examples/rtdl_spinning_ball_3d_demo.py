@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 import sys
 import time
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -575,7 +576,18 @@ def _paint_disc(
             image[py][px] = _blend_rgb(image[py][px], color, alpha * falloff)
 
 
-def _write_ppm(path: Path, image: list[list[tuple[int, int, int]]]) -> None:
+def _write_ppm(path: Path, image: Any) -> None:
+    if hasattr(image, "shape") and hasattr(image, "tobytes"):
+        height = int(image.shape[0])
+        width = int(image.shape[1]) if height else 0
+        data = image
+        if str(getattr(image, "dtype", "")) != "uint8":
+            data = image.astype("uint8")
+        with path.open("wb") as handle:
+            handle.write(f"P6\n{width} {height}\n255\n".encode("ascii"))
+            handle.write(data.tobytes())
+        return
+
     height = len(image)
     width = len(image[0]) if height else 0
     with path.open("wb") as handle:

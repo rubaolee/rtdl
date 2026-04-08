@@ -72,6 +72,7 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
         self.assertEqual(summary["image_width"], 32)
         self.assertEqual(summary["image_height"], 32)
         self.assertGreater(summary["triangle_count"], 0)
+        self.assertIn("numpy_fast_path", summary)
         self.assertGreater(summary["total_query_seconds"], 0.0)
         self.assertGreater(summary["total_shading_seconds"], 0.0)
         self.assertGreater(summary["wall_clock_seconds"], 0.0)

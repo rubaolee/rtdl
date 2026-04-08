@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 import sys
 import time
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -15,6 +16,11 @@ for candidate in (str(REPO_ROOT), str(SRC_ROOT)):
         sys.path.insert(0, candidate)
 
 import rtdsl as rt
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - optional fast path
+    np = None  # type: ignore[assignment]
 
 from examples.rtdl_spinning_ball_3d_demo import _background_pixel
 from examples.rtdl_spinning_ball_3d_demo import _paint_disc
@@ -68,10 +74,13 @@ def _orbit_phase_samples(frame_count: int) -> tuple[float, ...]:
 
 def _frame_light(phase: float) -> dict[str, object]:
     angle = phase * math.tau
+    # Tilt the sun path so the visible highlight travels from upper-right
+    # toward lower-left instead of reading as a mostly horizontal sweep.
+    diag = math.cos(angle)
     return {
         "position": (
             math.cos(angle) * 36.0,
-            4.0 + math.sin(angle * 0.42) * 1.1,
+            4.0 + diag * 10.5,
             math.sin(angle) * 36.0,
         ),
         "color": (1.0, 0.96, 0.84),
@@ -225,11 +234,131 @@ def _overlay_star_and_ground(
         )
 
 
-def _make_background_image(width: int, height: int) -> list[list[tuple[int, int, int]]]:
+def _make_background_image(width: int, height: int) -> Any:
+    if np is not None:
+        return _make_background_image_numpy(width, height)
     return [
         [_background_pixel(px, py, width, height) for px in range(width)]
         for py in range(height)
     ]
+
+
+def _make_background_image_numpy(width: int, height: int) -> Any:
+    assert np is not None
+    xs = np.linspace(0.0, 1.0, width, dtype=np.float32)
+    ys = np.linspace(0.0, 1.0, height, dtype=np.float32)
+    u, v = np.meshgrid(xs, ys)
+    horizon = v
+    vignette = 1.0 - np.minimum(1.0, np.sqrt((u - 0.5) ** 2 + (v - 0.46) ** 2) * 1.32)
+    nebula = np.exp(-(((u - 0.34) ** 2) / 0.025 + ((v - 0.22) ** 2) / 0.008))
+    bloom = np.exp(-(((u - 0.70) ** 2) / 0.040 + ((v - 0.30) ** 2) / 0.018))
+    floor = np.exp(-(((v - 0.84) ** 2) / 0.010))
+    red = 0.015 + 0.025 * horizon + 0.060 * vignette + 0.090 * nebula + 0.035 * floor
+    green = 0.020 + 0.030 * horizon + 0.080 * vignette + 0.030 * nebula + 0.050 * bloom + 0.045 * floor
+    blue = 0.060 + 0.120 * horizon + 0.160 * vignette + 0.060 * bloom + 0.055 * floor
+    image = np.stack((red, green, blue), axis=-1)
+    return np.clip(np.rint(image * 255.0), 0.0, 255.0).astype(np.uint8)
+
+
+def _shade_pending_hits_numpy(
+    image: Any,
+    *,
+    pending_hits: list[tuple[int, int, rt.Ray3D, tuple[float, float, float]]],
+    center: tuple[float, float, float],
+    light: dict[str, object],
+    shadow_lookup: dict[int, int],
+    light_count: int,
+) -> None:
+    assert np is not None
+    hit_count = len(pending_hits)
+    if hit_count == 0:
+        return
+
+    py = np.empty(hit_count, dtype=np.int32)
+    px = np.empty(hit_count, dtype=np.int32)
+    ray_id = np.empty(hit_count, dtype=np.int64)
+    ray_dx = np.empty(hit_count, dtype=np.float32)
+    ray_dy = np.empty(hit_count, dtype=np.float32)
+    ray_dz = np.empty(hit_count, dtype=np.float32)
+    hit_x = np.empty(hit_count, dtype=np.float32)
+    hit_y = np.empty(hit_count, dtype=np.float32)
+    hit_z = np.empty(hit_count, dtype=np.float32)
+    for index, (row, col, ray, hit_point) in enumerate(pending_hits):
+        py[index] = row
+        px[index] = col
+        ray_id[index] = ray.id
+        ray_dx[index] = ray.dx
+        ray_dy[index] = ray.dy
+        ray_dz[index] = ray.dz
+        hit_x[index] = hit_point[0]
+        hit_y[index] = hit_point[1]
+        hit_z[index] = hit_point[2]
+
+    nx = hit_x - center[0]
+    ny = hit_y - center[1]
+    nz = hit_z - center[2]
+    n_len = np.sqrt(np.maximum(1.0e-12, nx * nx + ny * ny + nz * nz))
+    nx /= n_len
+    ny /= n_len
+    nz /= n_len
+
+    crown = np.clip((ny + 0.65) / 1.65, 0.0, 1.0)
+    side = np.clip((nz + 1.0) * 0.5, 0.0, 1.0)
+    midnight = np.asarray((0.04, 0.07, 0.18), dtype=np.float32)
+    deep_blue = np.asarray((0.08, 0.14, 0.34), dtype=np.float32)
+    steel = np.asarray((0.12, 0.18, 0.42), dtype=np.float32)
+    base = midnight + (deep_blue - midnight) * (0.35 + 0.30 * crown[:, None])
+    base = np.clip(base + (steel - base) * (0.10 * side[:, None]), 0.0, 1.0)
+
+    view_x = -ray_dx
+    view_y = -ray_dy
+    view_z = -ray_dz
+    view_len = np.sqrt(np.maximum(1.0e-12, view_x * view_x + view_y * view_y + view_z * view_z))
+    view_x /= view_len
+    view_y /= view_len
+    view_z /= view_len
+
+    fresnel = np.power(1.0 - np.maximum(0.0, nx * view_x + ny * view_y + nz * view_z), 2.6)
+    upper_glow = np.clip((ny + 0.55) / 1.55, 0.0, 1.0)
+    lower_cool = np.clip((0.15 - ny) / 1.15, 0.0, 1.0)
+
+    shadow_factor = np.asarray(
+        [0.0 if shadow_lookup.get(int(identifier), 0) > 0 else 1.0 for identifier in (ray_id * light_count)],
+        dtype=np.float32,
+    )
+
+    lx, ly, lz = light["position"]  # type: ignore[index]
+    lr, lg, lb = light["color"]  # type: ignore[index]
+    intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
+
+    ldx = np.asarray(lx, dtype=np.float32) - hit_x
+    ldy = np.asarray(ly, dtype=np.float32) - hit_y
+    ldz = np.asarray(lz, dtype=np.float32) - hit_z
+    light_len = np.sqrt(np.maximum(1.0e-12, ldx * ldx + ldy * ldy + ldz * ldz))
+    ldx /= light_len
+    ldy /= light_len
+    ldz /= light_len
+    lambert = np.maximum(0.0, nx * ldx + ny * ldy + nz * ldz) * shadow_factor
+
+    light_rgb = np.empty((hit_count, 3), dtype=np.float32)
+    light_rgb[:, 0] = 0.11 + lambert * float(lr) * 1.05 * intensity
+    light_rgb[:, 1] = 0.12 + lambert * float(lg) * 1.05 * intensity
+    light_rgb[:, 2] = 0.16 + lambert * float(lb) * 1.05 * intensity
+
+    half_x = ldx + view_x
+    half_y = ldy + view_y
+    half_z = ldz + view_z
+    half_len = np.sqrt(np.maximum(1.0e-12, half_x * half_x + half_y * half_y + half_z * half_z))
+    half_x /= half_len
+    half_y /= half_len
+    half_z /= half_len
+    specular = shadow_factor * intensity * np.power(np.maximum(0.0, nx * half_x + ny * half_y + nz * half_z), 52.0)
+
+    final = base * light_rgb
+    final[:, 0] += fresnel * 0.10 + upper_glow * 0.03 + specular * 0.14
+    final[:, 1] += fresnel * 0.10 + upper_glow * 0.05 + lower_cool * 0.01 + specular * 0.21
+    final[:, 2] += fresnel * 0.14 + upper_glow * 0.08 + lower_cool * 0.05 + specular * 0.28
+    image[py, px] = np.clip(np.rint(np.clip(final, 0.0, 1.0) * 255.0), 0.0, 255.0).astype(np.uint8)
 
 
 def _init_orbit_worker(state: dict[str, object]) -> None:
@@ -242,7 +371,11 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
     state = _ORBIT_WORKER_STATE
     light = _frame_light(phase)
     shading_started = time.perf_counter()
-    image = [list(row) for row in state["background_image"]]  # type: ignore[index]
+    source_image = state["background_image"]  # type: ignore[index]
+    if np is not None and hasattr(source_image, "shape"):
+        image = source_image.copy()
+    else:
+        image = [list(row) for row in source_image]  # type: ignore[arg-type]
     pending_hits = state["pending_hits"]  # type: ignore[assignment]
     center = state["center"]  # type: ignore[assignment]
     radius = state["radius"]  # type: ignore[assignment]
@@ -270,16 +403,26 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
         shadow_query_seconds = time.perf_counter() - shadow_started
         shadow_lookup = {int(row["ray_id"]): int(row["hit_count"]) for row in shadow_rows}
 
-    for py, px, ray, hit_point in pending_hits:
-        shadow_factor = 0.0 if shadow_lookup.get(ray.id * light_count, 0) > 0 else 1.0
-        image[py][px] = _shade_hit(
-            ray,
-            hit_point,
-            center=center,
-            radius=radius,
-            lights=(light,),
-            shadow_factors=(shadow_factor,),
+    if np is not None and hasattr(image, "shape"):
+        _shade_pending_hits_numpy(
+            image,
+            pending_hits=pending_hits,  # type: ignore[arg-type]
+            center=center,  # type: ignore[arg-type]
+            light=light,
+            shadow_lookup=shadow_lookup,
+            light_count=light_count,
         )
+    else:
+        for py, px, ray, hit_point in pending_hits:
+            shadow_factor = 0.0 if shadow_lookup.get(ray.id * light_count, 0) > 0 else 1.0
+            image[py][px] = _shade_hit(
+                ray,
+                hit_point,
+                center=center,
+                radius=radius,
+                lights=(light,),
+                shadow_factors=(shadow_factor,),
+            )
 
     projected_center = state["projected_center"]  # type: ignore[assignment]
     width = state["width"]  # type: ignore[assignment]
@@ -447,6 +590,7 @@ def render_orbiting_star_ball_frames(
         "image_height": height,
         "frame_count": frame_count,
         "jobs": jobs,
+        "numpy_fast_path": np is not None,
         "show_light_source": show_light_source,
         "triangle_count": len(triangles),
         "latitude_bands": latitude_bands,
