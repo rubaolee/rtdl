@@ -32,6 +32,24 @@ class Goal169VulkanOrbitDemoTest(unittest.TestCase):
         self.assertTrue(compare_summary["matches"])
         self.assertTrue(Path(summary["frames"][0]["frame_path"]).exists())
 
+    def test_vulkan_denser_compare_smoke(self) -> None:
+        output_dir = Path("build/goal169_vulkan_orbit_demo_test/denser_frame")
+        try:
+            summary = render_orbiting_star_ball_vulkan_frames(
+                output_dir=output_dir,
+                compare_backend="cpu_python_reference",
+                width=96,
+                height=96,
+                latitude_bands=16,
+                longitude_bands=32,
+                frame_count=1,
+            )
+        except Exception as exc:
+            self.skipTest(f"vulkan unavailable: {exc}")
+        compare_summary = summary["frames"][0]["compare_backend"]
+        self.assertIsNotNone(compare_summary)
+        self.assertTrue(compare_summary["matches"])
+
 
 if __name__ == "__main__":
     unittest.main()

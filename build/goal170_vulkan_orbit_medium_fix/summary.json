@@ -1,0 +1,46 @@
+{
+  "backend": "vulkan",
+  "frame_count": 2,
+  "frames": [
+    {
+      "compare_backend": {
+        "backend": "cpu_python_reference",
+        "matches": true
+      },
+      "frame_index": 0,
+      "frame_path": "build/linux_vulkan_orbit_medium_fix/frame_000.ppm",
+      "hit_pixels": 50124,
+      "phase": 0.0,
+      "query_seconds": 2.5991860240001188,
+      "rt_rows": 65536,
+      "shading_seconds": 1.582289596999999,
+      "shadow_query_seconds": 0.8905344490001426,
+      "shadow_rays": 50124
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 1,
+      "frame_path": "build/linux_vulkan_orbit_medium_fix/frame_001.ppm",
+      "hit_pixels": 50124,
+      "phase": 0.999755859375,
+      "query_seconds": 0.0,
+      "rt_rows": 65536,
+      "shading_seconds": 1.5511430999999902,
+      "shadow_query_seconds": 0.8890746890001537,
+      "shadow_rays": 50124
+    }
+  ],
+  "image_height": 256,
+  "image_width": 256,
+  "jobs": 1,
+  "latitude_bands": 24,
+  "longitude_bands": 48,
+  "numpy_fast_path": false,
+  "query_share": 0.5828890236275486,
+  "show_light_source": false,
+  "total_query_seconds": 2.5991860240001188,
+  "total_shading_seconds": 3.1334326969999893,
+  "total_shadow_query_seconds": 1.7796091380002963,
+  "triangle_count": 2208,
+  "wall_clock_seconds": 129.471701595
+}

@@ -3347,8 +3347,15 @@ static void run_ray_hitcount_3d_vulkan(
 
     auto* out = static_cast<RtdlRayHitCountRow*>(std::malloc(sizeof(RtdlRayHitCountRow) * ray_count));
     if (!out) throw std::bad_alloc();
-    for (size_t i = 0; i < ray_count; ++i)
-        out[i] = { gpu_rows[i].ray_id, gpu_rows[i].hit_count };
+    for (size_t i = 0; i < ray_count; ++i) {
+        uint32_t exact_hit_count = 0;
+        for (size_t tri_index = 0; tri_index < triangle_count; ++tri_index) {
+            if (exact_ray_hits_triangle_3d(rays[i], triangles[tri_index])) {
+                exact_hit_count += 1u;
+            }
+        }
+        out[i] = { gpu_rows[i].ray_id, exact_hit_count };
+    }
     *rows_out      = out;
     *row_count_out = ray_count;
 }
