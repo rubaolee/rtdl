@@ -23,8 +23,20 @@ Main files
 - `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py`
 
+Recommended artifact
+
+- preferred public demo:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4`
+
 Artifacts
 
-- `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/win_embree_earthlike_10s_32fps_diag_numpy_1024.gif`
-- `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/frame_180.png`
-- `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/summary.json`
+- original Goal 167 movie:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/win_embree_earthlike_10s_32fps_diag_numpy_1024.mp4`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/win_embree_earthlike_10s_32fps_diag_numpy_1024.gif`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/frame_180.png`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/summary.json`
+- smoother follow-up variant:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.gif`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/frame_180.png`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/summary.json`

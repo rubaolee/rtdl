@@ -6,6 +6,8 @@ Result
   - the diagonal upper-right-to-lower-left light sweep
   - the reviewed optional NumPy host-side fast path
   - a final copied-back movie artifact
+- a smoother follow-up `softvis` variant was produced afterward from the same
+  reviewed code line and is now the recommended public-facing artifact
 
 Code changes
 
@@ -70,12 +72,25 @@ Final numbers
 
 Artifacts
 
-- movie:
+- original Goal 167 movie:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/win_embree_earthlike_10s_32fps_diag_numpy_1024.mp4`
   - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/win_embree_earthlike_10s_32fps_diag_numpy_1024.gif`
-- representative frame:
   - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/frame_180.png`
-- summary:
   - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_1024/summary.json`
+- recommended smoother public artifact:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.gif`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/frame_180.png`
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/summary.json`
+
+Softvis note
+
+- the `softvis` variant softens light visibility near the sphere silhouette to
+  reduce abrupt dark popping
+- this improves the temporal stability, but does not claim the movie is fully
+  artifact-free
+- the `softvis` MP4 is now the recommended ad/demo artifact because it is the
+  best current visual result while staying honest about remaining limitations
 
 Honesty boundary
 
