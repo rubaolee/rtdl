@@ -1,0 +1,48 @@
+{
+  "backend": "vulkan",
+  "frame_count": 2,
+  "frames": [
+    {
+      "compare_backend": {
+        "backend": "cpu_python_reference",
+        "matches": true
+      },
+      "frame_index": 0,
+      "frame_path": "build/goal176_vulkan_medium/frame_000.ppm",
+      "hit_pixels": 12502,
+      "phase": 0.0,
+      "query_seconds": 0.6198033809996559,
+      "rt_rows": 16384,
+      "shading_seconds": 0.34208198599662865,
+      "shadow_query_seconds": 0.17766134499834152,
+      "shadow_rays": 12502
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 1,
+      "frame_path": "build/goal176_vulkan_medium/frame_001.ppm",
+      "hit_pixels": 12502,
+      "phase": 0.999755859375,
+      "query_seconds": 0.0,
+      "rt_rows": 16384,
+      "shading_seconds": 0.33036614800221287,
+      "shadow_query_seconds": 0.16708700099843554,
+      "shadow_rays": 12502
+    }
+  ],
+  "image_height": 128,
+  "image_width": 128,
+  "jobs": 1,
+  "latitude_bands": 20,
+  "light_count": 2,
+  "longitude_bands": 40,
+  "numpy_fast_path": false,
+  "query_share": 0.5892191868666368,
+  "show_light_source": true,
+  "temporal_blend_alpha": 0.15,
+  "total_query_seconds": 0.6198033809996559,
+  "total_shading_seconds": 0.6724481339988415,
+  "total_shadow_query_seconds": 0.34474834599677706,
+  "triangle_count": 1520,
+  "wall_clock_seconds": 16.490690771999652
+}

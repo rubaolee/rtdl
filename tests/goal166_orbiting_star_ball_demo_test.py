@@ -11,6 +11,8 @@ sys.path.insert(0, ".")
 import rtdsl as rt
 import examples.rtdl_orbiting_star_ball_demo as orbit_demo
 from examples.rtdl_orbiting_star_ball_demo import _frame_light
+from examples.rtdl_orbiting_star_ball_demo import _frame_lights
+from examples.rtdl_orbiting_star_ball_demo import _secondary_frame_light
 from examples.rtdl_orbiting_star_ball_demo import _blend_ppm_payloads
 from examples.rtdl_orbiting_star_ball_demo import _apply_temporal_blend
 from examples.rtdl_orbiting_star_ball_demo import _light_visibility_to_camera
@@ -73,6 +75,36 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
         self.assertAlmostEqual(pos_0[2], pos_1[2], places=6)
         self.assertIn("intensity", light_0)
         self.assertGreater(float(light_0["intensity"]), 0.0)
+
+    def test_secondary_light_is_off_at_clip_start(self) -> None:
+        light = _secondary_frame_light(0.0)
+        self.assertAlmostEqual(float(light["intensity"]), 0.0, places=6)
+        self.assertAlmostEqual(float(light["display_alpha"]), 0.0, places=6)
+
+    def test_secondary_light_activates_after_delay_then_fades(self) -> None:
+        early = _secondary_frame_light(0.0)
+        active = _secondary_frame_light(0.5)
+        faded = _secondary_frame_light(0.99)
+        self.assertAlmostEqual(float(early["intensity"]), 0.0, places=6)
+        self.assertGreater(float(active["intensity"]), 0.0)
+        self.assertLess(float(faded["intensity"]), float(active["intensity"]))
+
+    def test_secondary_light_moves_left_to_right_horizontally(self) -> None:
+        xs = [float(_secondary_frame_light(phase)["position"][0]) for phase in (0.1, 0.4, 0.7, 0.9)]
+        for left, right in zip(xs, xs[1:]):
+            self.assertLess(left, right)
+        for phase in (0.0, 0.25, 0.5, 0.75, 1.0):
+            position = _secondary_frame_light(phase)["position"]
+            self.assertAlmostEqual(float(position[1]), 9.6, places=6)
+            self.assertAlmostEqual(float(position[2]), 11.8, places=6)
+
+    def test_frame_lights_returns_yellow_primary_and_red_secondary(self) -> None:
+        lights = _frame_lights(0.5)
+        self.assertEqual(len(lights), 2)
+        primary, secondary = lights
+        self.assertGreater(float(primary["intensity"]), 0.0)
+        self.assertGreater(float(primary["color"][1]), 0.5)
+        self.assertLess(float(secondary["color"][1]), 0.4)
 
     def test_make_shadow_rays_returns_single_positive_tmax_ray(self) -> None:
         ray = rt.Ray3D(id=7, ox=0.0, oy=0.0, oz=5.0, dx=0.0, dy=0.0, dz=-1.0, tmax=10.0)
@@ -170,9 +202,9 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
                     output_dir=output_dir,
                     show_light_source=show_light_source,
                 )
-                self.assertEqual(summary["show_light_source"], show_light_source)
-                persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
-                self.assertEqual(persisted["show_light_source"], show_light_source)
+        self.assertEqual(summary["show_light_source"], show_light_source)
+        persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(persisted["show_light_source"], show_light_source)
 
     def test_temporal_blend_round_trips_in_summary(self) -> None:
         output_dir = Path("build/goal166_orbiting_star_ball_demo_test/temporal_blend_summary")
@@ -190,6 +222,22 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
         self.assertAlmostEqual(summary["temporal_blend_alpha"], 0.2)
         persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
         self.assertAlmostEqual(persisted["temporal_blend_alpha"], 0.2)
+
+    def test_summary_records_two_light_setup(self) -> None:
+        output_dir = Path("build/goal166_orbiting_star_ball_demo_test/light_count")
+        summary = render_orbiting_star_ball_frames(
+            backend="cpu_python_reference",
+            compare_backend=None,
+            width=20,
+            height=20,
+            latitude_bands=6,
+            longitude_bands=12,
+            frame_count=1,
+            output_dir=output_dir,
+        )
+        self.assertEqual(summary["light_count"], 2)
+        persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(persisted["light_count"], 2)
 
     def test_multi_frame_render_produces_distinct_frames(self) -> None:
         output_dir = Path("build/goal166_orbiting_star_ball_demo_test/multi")

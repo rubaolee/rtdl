@@ -1,0 +1,48 @@
+{
+  "backend": "optix",
+  "frame_count": 2,
+  "frames": [
+    {
+      "compare_backend": {
+        "backend": "cpu_python_reference",
+        "matches": true
+      },
+      "frame_index": 0,
+      "frame_path": "build/goal176_optix_medium/frame_000.ppm",
+      "hit_pixels": 7026,
+      "phase": 0.0,
+      "query_seconds": 0.31773380099912174,
+      "rt_rows": 12288,
+      "shading_seconds": 0.10873980799806304,
+      "shadow_query_seconds": 0.01632165699993493,
+      "shadow_rays": 7026
+    },
+    {
+      "compare_backend": null,
+      "frame_index": 1,
+      "frame_path": "build/goal176_optix_medium/frame_001.ppm",
+      "hit_pixels": 7026,
+      "phase": 0.999755859375,
+      "query_seconds": 0.0,
+      "rt_rows": 12288,
+      "shading_seconds": 0.09695733599801315,
+      "shadow_query_seconds": 0.005072195999673568,
+      "shadow_rays": 7026
+    }
+  ],
+  "image_height": 96,
+  "image_width": 128,
+  "jobs": 1,
+  "latitude_bands": 20,
+  "light_count": 2,
+  "longitude_bands": 40,
+  "numpy_fast_path": false,
+  "query_share": 0.6224526769832583,
+  "show_light_source": true,
+  "temporal_blend_alpha": 0.15,
+  "total_query_seconds": 0.31773380099912174,
+  "total_shading_seconds": 0.2056971439960762,
+  "total_shadow_query_seconds": 0.021393852999608498,
+  "triangle_count": 1520,
+  "wall_clock_seconds": 12.030537701000867
+}

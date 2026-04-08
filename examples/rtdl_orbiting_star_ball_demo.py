@@ -96,6 +96,34 @@ def _frame_light(phase: float) -> dict[str, object]:
     }
 
 
+def _secondary_frame_light(phase: float) -> dict[str, object]:
+    activation_start = 0.18
+    activation_end = 0.34
+    fade_out_start = 0.88
+    fade_out_end = 0.98
+    ramp_in = _smoothstep(activation_start, activation_end, phase)
+    ramp_out = 1.0 - _smoothstep(fade_out_start, fade_out_end, phase)
+    activation = ramp_in * max(0.0, ramp_out)
+    x = -44.0 + 88.0 * phase
+    return {
+        "position": (
+            x,
+            9.6,
+            11.8,
+        ),
+        "color": (1.0, 0.26, 0.18),
+        "intensity": 3.40 * activation,
+        "display_color": (255, 96, 72),
+        "ground_core_color": (255, 140, 112),
+        "display_alpha": 0.95 * activation,
+        "ground_alpha_scale": activation,
+    }
+
+
+def _frame_lights(phase: float) -> tuple[dict[str, object], ...]:
+    return (_frame_light(phase), _secondary_frame_light(phase))
+
+
 def _smoothstep(edge0: float, edge1: float, value: float) -> float:
     if edge1 <= edge0:
         return 1.0 if value >= edge1 else 0.0
@@ -183,6 +211,9 @@ def _overlay_star_and_ground(
 ) -> None:
     light_position = light["position"]  # type: ignore[index]
     color = tuple(light.get("display_color", (255, 212, 92)))  # type: ignore[arg-type]
+    draw_alpha = float(light.get("display_alpha", 1.0))
+    if float(light.get("intensity", 1.0)) <= 0.0 or draw_alpha <= 0.0:
+        return
     visibility = _light_visibility_to_camera(
         light_position=light_position,  # type: ignore[arg-type]
         eye=eye,
@@ -199,16 +230,17 @@ def _overlay_star_and_ground(
         fov_y_degrees=fov_y_degrees,
     )
     if show_light_source and projected is not None and visibility > 0.0:
-        _paint_disc(image, projected[0], projected[1], 34.0, color, 0.16)
-        _paint_disc(image, projected[0], projected[1], 18.0, color, 0.42)
-        _paint_disc(image, projected[0], projected[1], 7.5, (255, 250, 238), 0.96)
+        alpha_scale = visibility * draw_alpha
+        _paint_disc(image, projected[0], projected[1], 34.0, color, 0.16 * alpha_scale)
+        _paint_disc(image, projected[0], projected[1], 18.0, color, 0.42 * alpha_scale)
+        _paint_disc(image, projected[0], projected[1], 7.5, (255, 250, 238), 0.96 * alpha_scale)
         _paint_halo(
             image,
             center_x=projected[0],
             center_y=projected[1],
             radius=min(width, height) * 0.065,
             color=color,
-            alpha=0.32,
+            alpha=0.32 * alpha_scale,
         )
 
     horizontal_len = math.sqrt(light_position[0] * light_position[0] + light_position[2] * light_position[2])
@@ -226,9 +258,10 @@ def _overlay_star_and_ground(
         fov_y_degrees=fov_y_degrees,
     )
     if ground_projected is not None:
-        warm_core = (255, 224, 128)
-        outer_alpha = 0.14 + 0.24 * visibility
-        inner_alpha = 0.12 + 0.28 * visibility
+        warm_core = tuple(light.get("ground_core_color", (255, 224, 128)))  # type: ignore[arg-type]
+        ground_alpha_scale = float(light.get("ground_alpha_scale", 1.0))
+        outer_alpha = (0.14 + 0.24 * visibility) * ground_alpha_scale
+        inner_alpha = (0.12 + 0.28 * visibility) * ground_alpha_scale
         _paint_ellipse(
             image,
             ground_projected[0],
@@ -355,8 +388,9 @@ def _shade_orbit_hit(
     hit_point: tuple[float, float, float],
     *,
     center: tuple[float, float, float],
-    light: dict[str, object],
-    shadow_factor: float,
+    lights: tuple[dict[str, object], ...],
+    shadow_lookup: dict[int, int],
+    light_count: int,
 ) -> tuple[int, int, int]:
     nx, ny, nz = _normalize3(
         hit_point[0] - center[0],
@@ -369,20 +403,22 @@ def _shade_orbit_hit(
     upper_glow = _clamp01((ny + 0.55) / 1.55)
     lower_cool = _clamp01((0.15 - ny) / 1.15)
 
-    lx, ly, lz = light["position"]  # type: ignore[index]
-    ldx, ldy, ldz = _normalize3(lx - hit_point[0], ly - hit_point[1], lz - hit_point[2])
-    lambert = max(0.0, _dot3(nx, ny, nz, ldx, ldy, ldz)) * shadow_factor
-    lr, lg, lb = light["color"]  # type: ignore[index]
-    intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
-
-    light_rgb = [
-        0.11 + lambert * float(lr) * 1.05 * intensity,
-        0.12 + lambert * float(lg) * 1.05 * intensity,
-        0.16 + lambert * float(lb) * 1.05 * intensity,
-    ]
-
-    half_x, half_y, half_z = _normalize3(ldx + view[0], ldy + view[1], ldz + view[2])
-    specular = shadow_factor * intensity * (max(0.0, _dot3(nx, ny, nz, half_x, half_y, half_z)) ** 52.0)
+    light_rgb = [0.11, 0.12, 0.16]
+    specular = 0.0
+    for light_index, light in enumerate(lights):
+        intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
+        if intensity <= 0.0:
+            continue
+        shadow_factor = 0.0 if shadow_lookup.get(ray.id * light_count + light_index, 0) > 0 else 1.0
+        lx, ly, lz = light["position"]  # type: ignore[index]
+        ldx, ldy, ldz = _normalize3(lx - hit_point[0], ly - hit_point[1], lz - hit_point[2])
+        lambert = max(0.0, _dot3(nx, ny, nz, ldx, ldy, ldz)) * shadow_factor
+        lr, lg, lb = light["color"]  # type: ignore[index]
+        light_rgb[0] += lambert * float(lr) * 1.05 * intensity
+        light_rgb[1] += lambert * float(lg) * 1.05 * intensity
+        light_rgb[2] += lambert * float(lb) * 1.05 * intensity
+        half_x, half_y, half_z = _normalize3(ldx + view[0], ldy + view[1], ldz + view[2])
+        specular += shadow_factor * intensity * (max(0.0, _dot3(nx, ny, nz, half_x, half_y, half_z)) ** 52.0)
 
     final = []
     for index in range(3):
@@ -400,7 +436,7 @@ def _shade_pending_hits_numpy(
     *,
     pending_hits: list[tuple[int, int, rt.Ray3D, tuple[float, float, float]]],
     center: tuple[float, float, float],
-    light: dict[str, object],
+    lights: tuple[dict[str, object], ...],
     shadow_lookup: dict[int, int],
     light_count: int,
 ) -> None:
@@ -457,37 +493,40 @@ def _shade_pending_hits_numpy(
     upper_glow = np.clip((ny + 0.55) / 1.55, 0.0, 1.0)
     lower_cool = np.clip((0.15 - ny) / 1.15, 0.0, 1.0)
 
-    shadow_factor = np.asarray(
-        [0.0 if shadow_lookup.get(int(identifier), 0) > 0 else 1.0 for identifier in (ray_id * light_count)],
-        dtype=np.float32,
-    )
-
-    lx, ly, lz = light["position"]  # type: ignore[index]
-    lr, lg, lb = light["color"]  # type: ignore[index]
-    intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
-
-    ldx = np.asarray(lx, dtype=np.float32) - hit_x
-    ldy = np.asarray(ly, dtype=np.float32) - hit_y
-    ldz = np.asarray(lz, dtype=np.float32) - hit_z
-    light_len = np.sqrt(np.maximum(1.0e-12, ldx * ldx + ldy * ldy + ldz * ldz))
-    ldx /= light_len
-    ldy /= light_len
-    ldz /= light_len
-    lambert = np.maximum(0.0, nx * ldx + ny * ldy + nz * ldz) * shadow_factor
-
     light_rgb = np.empty((hit_count, 3), dtype=np.float32)
-    light_rgb[:, 0] = 0.11 + lambert * float(lr) * 1.05 * intensity
-    light_rgb[:, 1] = 0.12 + lambert * float(lg) * 1.05 * intensity
-    light_rgb[:, 2] = 0.16 + lambert * float(lb) * 1.05 * intensity
-
-    half_x = ldx + view_x
-    half_y = ldy + view_y
-    half_z = ldz + view_z
-    half_len = np.sqrt(np.maximum(1.0e-12, half_x * half_x + half_y * half_y + half_z * half_z))
-    half_x /= half_len
-    half_y /= half_len
-    half_z /= half_len
-    specular = shadow_factor * intensity * np.power(np.maximum(0.0, nx * half_x + ny * half_y + nz * half_z), 52.0)
+    light_rgb[:, 0] = 0.11
+    light_rgb[:, 1] = 0.12
+    light_rgb[:, 2] = 0.16
+    specular = np.zeros(hit_count, dtype=np.float32)
+    for light_index, light in enumerate(lights):
+        intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
+        if intensity <= 0.0:
+            continue
+        shadow_factor = np.asarray(
+            [0.0 if shadow_lookup.get(int(identifier), 0) > 0 else 1.0 for identifier in (ray_id * light_count + light_index)],
+            dtype=np.float32,
+        )
+        lx, ly, lz = light["position"]  # type: ignore[index]
+        lr, lg, lb = light["color"]  # type: ignore[index]
+        ldx = np.asarray(lx, dtype=np.float32) - hit_x
+        ldy = np.asarray(ly, dtype=np.float32) - hit_y
+        ldz = np.asarray(lz, dtype=np.float32) - hit_z
+        light_len = np.sqrt(np.maximum(1.0e-12, ldx * ldx + ldy * ldy + ldz * ldz))
+        ldx /= light_len
+        ldy /= light_len
+        ldz /= light_len
+        lambert = np.maximum(0.0, nx * ldx + ny * ldy + nz * ldz) * shadow_factor
+        light_rgb[:, 0] += lambert * float(lr) * 1.05 * intensity
+        light_rgb[:, 1] += lambert * float(lg) * 1.05 * intensity
+        light_rgb[:, 2] += lambert * float(lb) * 1.05 * intensity
+        half_x = ldx + view_x
+        half_y = ldy + view_y
+        half_z = ldz + view_z
+        half_len = np.sqrt(np.maximum(1.0e-12, half_x * half_x + half_y * half_y + half_z * half_z))
+        half_x /= half_len
+        half_y /= half_len
+        half_z /= half_len
+        specular += shadow_factor * intensity * np.power(np.maximum(0.0, nx * half_x + ny * half_y + nz * half_z), 52.0)
 
     final = base * light_rgb
     final[:, 0] += fresnel * 0.10 + upper_glow * 0.03 + specular * 0.14
@@ -504,7 +543,7 @@ def _init_orbit_worker(state: dict[str, object]) -> None:
 def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
     frame_index, phase = task
     state = _ORBIT_WORKER_STATE
-    light = _frame_light(phase)
+    lights = _frame_lights(phase)
     shading_started = time.perf_counter()
     source_image = state["background_image"]  # type: ignore[index]
     if np is not None and hasattr(source_image, "shape"):
@@ -520,15 +559,18 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
     shadow_rays: list[rt.Ray3D] = []
     light_count = int(state["light_count"])  # type: ignore[arg-type]
     for _, _, ray, hit_point in pending_hits:
-        shadow_rays.extend(
-            _make_shadow_rays(
-                ray=ray,
-                hit_point=hit_point,
-                center=center,
-                light=light,
-                base_id=ray.id * light_count,
+        for light_index, light in enumerate(lights):
+            if float(light.get("intensity", 1.0)) <= 0.0:
+                continue
+            shadow_rays.extend(
+                _make_shadow_rays(
+                    ray=ray,
+                    hit_point=hit_point,
+                    center=center,
+                    light=light,
+                    base_id=ray.id * light_count + light_index,
+                )
             )
-        )
 
     shadow_query_seconds = 0.0
     shadow_lookup: dict[int, int] = {}
@@ -543,19 +585,19 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
             image,
             pending_hits=pending_hits,  # type: ignore[arg-type]
             center=center,  # type: ignore[arg-type]
-            light=light,
+            lights=lights,
             shadow_lookup=shadow_lookup,
             light_count=light_count,
         )
     else:
         for py, px, ray, hit_point in pending_hits:
-            shadow_factor = 0.0 if shadow_lookup.get(ray.id * light_count, 0) > 0 else 1.0
             image[py][px] = _shade_orbit_hit(
                 ray,
                 hit_point,
                 center=center,
-                light=light,
-                shadow_factor=shadow_factor,
+                lights=lights,
+                shadow_lookup=shadow_lookup,
+                light_count=light_count,
             )
 
     projected_center = state["projected_center"]  # type: ignore[assignment]
@@ -579,19 +621,20 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
             alpha=0.14,
         )
 
-    _overlay_star_and_ground(
-        image,
-        light=light,
-        eye=state["eye"],  # type: ignore[arg-type]
-        target=state["target"],  # type: ignore[arg-type]
-        up_hint=state["up_hint"],  # type: ignore[arg-type]
-        width=width,
-        height=height,
-        fov_y_degrees=state["fov_y"],  # type: ignore[arg-type]
-        center=center,
-        radius=radius,
-        show_light_source=state["show_light_source"],  # type: ignore[arg-type]
-    )
+    for light in lights:
+        _overlay_star_and_ground(
+            image,
+            light=light,
+            eye=state["eye"],  # type: ignore[arg-type]
+            target=state["target"],  # type: ignore[arg-type]
+            up_hint=state["up_hint"],  # type: ignore[arg-type]
+            width=width,
+            height=height,
+            fov_y_degrees=state["fov_y"],  # type: ignore[arg-type]
+            center=center,
+            radius=radius,
+            show_light_source=state["show_light_source"],  # type: ignore[arg-type]
+        )
 
     shading_seconds = time.perf_counter() - shading_started
     frame_path = Path(state["output_dir"]) / f"frame_{frame_index:03d}.ppm"  # type: ignore[arg-type]
@@ -705,7 +748,7 @@ def render_orbiting_star_ball_frames(
         "hit_pixels": hit_pixels,
         "compare_summary": compare_summary,
         "show_light_source": show_light_source,
-        "light_count": 1,
+        "light_count": 2,
     }
     tasks = list(enumerate(phases))
     if jobs <= 1:
@@ -727,6 +770,7 @@ def render_orbiting_star_ball_frames(
         "image_height": height,
         "frame_count": frame_count,
         "jobs": jobs,
+        "light_count": int(worker_state["light_count"]),
         "numpy_fast_path": np is not None,
         "show_light_source": show_light_source,
         "temporal_blend_alpha": temporal_blend_alpha,
