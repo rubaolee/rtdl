@@ -28,14 +28,13 @@ aggregation, reporting, or visual output. A small example of that model is:
 There is now also a stronger v0.3 application-style visual demo line. The
 bounded 3D RTDL ray/triangle surface is already closed across `embree`,
 `optix`, and `vulkan` on Linux, while the current recommended public-facing
-movie artifact is the smoother Windows Embree MP4:
+movie artifact is now presented through a single public video URL:
 
-- [win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4](build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4)
+- [RTDL Visual Demo Video](https://youtu.be/Jfq6VsY-RR4)
 
-Supporting Linux GPU artifacts for the same demo line now also exist:
-
-- [goal170_optix_orbit_small.gif](build/goal170_optix_orbit_small/goal170_optix_orbit_small.gif)
-- [goal170_vulkan_orbit_medium_fix.gif](build/goal170_vulkan_orbit_medium_fix/goal170_vulkan_orbit_medium_fix.gif)
+The repo still preserves the accepted local movie artifacts and the supporting
+Linux backend demo artifacts in the deeper reports, but the front surface now
+uses the single public video link rather than local GIF previews.
 
 ## Why RTDL Exists
 

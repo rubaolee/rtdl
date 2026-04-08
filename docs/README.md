@@ -68,11 +68,11 @@ Keep these current facts in mind while reading:
   - [examples/rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
 - the stronger current v0.3 application-style demo line is:
   - [examples/rtdl_orbiting_star_ball_demo.py](../examples/rtdl_orbiting_star_ball_demo.py)
-- the current recommended public-facing artifact from that line is:
-  - [win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4](../build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4)
-- supporting Linux backend artifacts also now exist:
-  - [goal170_optix_orbit_small.gif](../build/goal170_optix_orbit_small/goal170_optix_orbit_small.gif)
-  - [goal170_vulkan_orbit_medium_fix.gif](../build/goal170_vulkan_orbit_medium_fix/goal170_vulkan_orbit_medium_fix.gif)
+- the current public-facing entry point for that line is:
+  - [RTDL Visual Demo Video](https://youtu.be/Jfq6VsY-RR4)
+- the accepted local `4K` and supporting Linux backend artifacts remain
+  preserved in the repo reports, but the front-surface docs now point readers
+  to the single public video URL rather than local GIF previews
 - current `main` also carries narrow generate-only support for the accepted
   v0.2 surface
 - there are now two important performance stories:
@@ -88,6 +88,8 @@ Keep these current facts in mind while reading:
   - `optix`
   - `vulkan`
 - the polished public movie artifact is currently strongest on Windows Embree
+- a finished accepted Windows `4K` artifact now also exists, with an explicitly
+  documented temporal-blink caveat
 - Linux OptiX and Vulkan now also have saved small compare-clean supporting
   artifacts for the same visual-demo line
 - Embree and OptiX are the mature high-performance backends on the accepted

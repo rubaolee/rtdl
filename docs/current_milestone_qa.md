@@ -21,10 +21,10 @@ For the new application-story proof, the strongest current v0.3 result is:
   - `embree`
   - `optix`
   - `vulkan`
-- a polished public Windows Embree movie artifact with the recommended current
-  public demo now being:
-  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4`
-- plus saved small Linux supporting artifacts for:
+- a public video entry point for that demo line:
+  - [RTDL Visual Demo Video](https://youtu.be/Jfq6VsY-RR4)
+- plus an accepted local Windows `4K` artifact preserved in the repo reports
+- plus saved small Linux supporting artifacts preserved in the repo reports for:
   - OptiX
   - Vulkan
 
@@ -111,6 +111,8 @@ The same applies to the v0.3 demo line:
 
 - the bounded 3D ray/triangle backend surface is closed
 - the preferred polished public artifact is currently the Windows Embree movie
+- a finished Windows `4K` movie is now also accepted, but with an explicit
+  left-bottom blink caveat
 - Linux OptiX and Vulkan now also have saved small compare-clean supporting
   GIF artifacts
 - but the movie itself should not be read as equally optimized across all
