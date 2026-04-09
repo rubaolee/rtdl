@@ -4,7 +4,14 @@ import argparse
 import json
 import math
 from pathlib import Path
+import sys
 import time
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SRC_ROOT = REPO_ROOT / "src"
+for candidate in (str(REPO_ROOT), str(SRC_ROOT)):
+    if candidate not in sys.path:
+        sys.path.insert(0, candidate)
 
 import rtdsl as rt
 
