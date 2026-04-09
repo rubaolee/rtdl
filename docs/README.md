@@ -19,7 +19,7 @@ Quick environment facts before you start:
 RTDL’s primary target is non-graphical geometric-query work. The visual demo is
 best read as a proof-of-capability application built on the same core:
 
-- [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [Watch The Public Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 - [Project Front Page](../README.md)
 
 ## Start Here
@@ -92,7 +92,7 @@ Keep these current facts in mind while reading:
 - the moving-star comparison path is still preserved here:
   - [examples/visual_demo/rtdl_orbiting_star_ball_demo.py](../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 - the current public-facing entry point for that line is:
-  - [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+  - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 - the accepted local `4K` and supporting Linux backend artifacts remain
   preserved in the repo reports, but the front-surface docs now point readers
   to the single public video URL rather than local GIF previews

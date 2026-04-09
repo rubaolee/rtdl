@@ -29,7 +29,7 @@ Specifically:
 
 The chosen public-facing video surface is now:
 
-- [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 
 This is the front-door artifact readers should see first.
 

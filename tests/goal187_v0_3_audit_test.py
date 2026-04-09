@@ -9,7 +9,7 @@ import unittest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
-SHORTS_URL = "https://youtube.com/shorts/O07Mg5luap8"
+SHORTS_URL = "https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes"
 
 
 class Goal187V03AuditTest(unittest.TestCase):

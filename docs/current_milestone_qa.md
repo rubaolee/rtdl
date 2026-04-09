@@ -24,7 +24,7 @@ For the new application-story proof, the strongest current v0.3 result is:
   - `optix`
   - `vulkan`
 - a public video entry point for that demo line:
-  - [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+  - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 - the cleanest preserved local counterpart to that public artifact:
   - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4](../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4)
 - plus an accepted local Windows `4K` artifact preserved in the repo reports,

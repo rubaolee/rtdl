@@ -65,7 +65,7 @@ python3 -m pip install -r requirements.txt
 
 Primary front-door links:
 
-- [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [Watch The Public Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 - [3D Rendering Source](examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
@@ -73,7 +73,7 @@ Primary front-door links:
 
    </td>
     <td valign="top" width="260">
-      <a href="https://youtube.com/shorts/O07Mg5luap8">
+      <a href="https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes">
         <img src="docs/assets/rtdl_visual_demo_thumb.png" alt="RTDL visual demo" width="240">
       </a>
     </td>
@@ -179,7 +179,7 @@ The bounded 3D RTDL ray/triangle surface is already closed across `embree`,
 `optix`, and `vulkan` on Linux, while the current recommended public-facing
 movie artifact is now presented through a single public video URL:
 
-- [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 
 The current primary preserved 3D demo source inside the repo is the
 hidden-star stable Earth line:
