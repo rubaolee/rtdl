@@ -25,6 +25,11 @@ If you are new to RTDL, use these files first:
 Files under `reference/` contain canonical kernels and helper generators used
 by examples, tests, and bounded evaluation paths.
 
+The `rtdl_generated_*` directories and the single
+`rtdl_generated_segment_polygon_hitcount_cpu.py` file at the examples root are
+preserved generated output artifacts. They are not the primary release-facing
+start points for new users.
+
 ## Internal And Historical Artifacts
 
 Files under `internal/` are preserved for development history, evaluation, or

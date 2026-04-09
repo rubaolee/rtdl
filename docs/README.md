@@ -120,7 +120,7 @@ Keep these current facts in mind while reading:
 - the Jaccard line now also has Linux wrapper-surface consistency on Embree,
   OptiX, and Vulkan through documented native CPU/oracle fallback
 - Linux is the primary validation platform
-- this Mac is only a limited local platform
+- macOS is only a limited local platform
 - PostGIS remains the external indexed comparison baseline
 - the motivating application target is RayJoin:
   - Liang Geng, Rubao Lee, and Xiaodong Zhang,

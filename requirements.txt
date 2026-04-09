@@ -1,2 +1,3 @@
 # Minimal Python package requirements for the public first-run and demo path.
+# See README.md for native backend prerequisites and fuller environment notes.
 numpy>=1.26

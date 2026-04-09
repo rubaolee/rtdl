@@ -53,12 +53,12 @@ RTDL v0.2 does not claim:
 - full polygon overlay materialization
 - generic continuous polygon Jaccard
 - native Embree/OptiX/Vulkan Jaccard kernels
-- that this Mac is a whole-platform closure host
+- that macOS is a whole-platform closure host
 
 ## Platform Interpretation
 
 - Linux is the primary v0.2 validation platform
-- this Mac is a limited local platform for Python reference, native CPU/oracle
+- macOS is a limited local platform for Python reference, native CPU/oracle
   where available, Embree-oriented work, documentation, and focused local tests
 
 ## Relationship To The Newer v0.3 Demo Line
