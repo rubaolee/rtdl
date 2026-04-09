@@ -17,9 +17,9 @@ Python-hosted 3D application.
 
 ## See It Quickly
 
-<a href="https://youtube.com/shorts/O07Mg5luap8">
-  <img src="docs/assets/rtdl_visual_demo_thumb.png" alt="RTDL visual demo" width="420">
-</a>
+<table>
+  <tr>
+    <td valign="top">
 
 Primary front-door links:
 
@@ -27,6 +27,15 @@ Primary front-door links:
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
+
+   </td>
+    <td valign="top" width="260">
+      <a href="https://youtube.com/shorts/O07Mg5luap8">
+        <img src="docs/assets/rtdl_visual_demo_thumb.png" alt="RTDL visual demo" width="240">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## What RTDL Is
 
