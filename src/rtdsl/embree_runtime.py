@@ -108,6 +108,7 @@ class _RtdlTriangle3D(ctypes.Structure):
 
 
 class _RtdlRay2D(ctypes.Structure):
+    _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
         ("ox", ctypes.c_double),

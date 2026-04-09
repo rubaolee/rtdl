@@ -7,7 +7,10 @@ Date: 2026-04-09
 Goal 189 starts the final `v0.3` engineering cleanup line: reconstructing the
 native backend engines out of their current single-file monolith shape.
 
-The first bounded slice is now complete for the native oracle.
+The first two bounded slices are now complete for:
+
+- the native oracle
+- the native Embree backend
 
 ## Current Native Inventory
 
@@ -66,11 +69,58 @@ Ran 8 tests in 2.405s
 OK
 ```
 
-## Next Slice
+## Second Slice Completed
 
-The next reconstruction target should be:
+The native Embree backend was reconstructed into a modular layout under:
+
+- `src/native/embree/rtdl_embree_prelude.h`
+- `src/native/embree/rtdl_embree_geometry.cpp`
+- `src/native/embree/rtdl_embree_scene.cpp`
+- `src/native/embree/rtdl_embree_api.cpp`
+
+Compatibility-preserving top-level entry point remains:
 
 - `src/native/rtdl_embree.cpp`
 
-That is the right second slice because it is materially smaller than OptiX and
-Vulkan while still representing a real production backend.
+That top-level file now only provides the stable runtime/build entry path and
+pulls the split Embree modules together.
+
+This slice also surfaced and fixed a real shared ABI problem:
+
+- native `RtdlRay2D` records were packed in the C ABI
+- the shared Python `ctypes` definition in `src/rtdsl/embree_runtime.py` was not
+
+That mismatch is now corrected, which keeps the reconstructed Embree path
+behavior-equivalent and also aligns the shared Python-side ABI used by the
+other native backends.
+
+## Verification
+
+Bounded Embree-facing tests passed after the split:
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.rtdsl_embree_test
+Ran 9 tests in 0.023s
+OK
+```
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.rtdsl_vulkan_test
+Ran 3 tests in 0.003s
+OK (skipped=1)
+```
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.goal162_visual_demo_test tests.goal146_jaccard_backend_surface_test
+Ran 5 tests in 0.438s
+OK
+```
+
+## Next Slice
+
+The next reconstruction target should now be:
+
+- `src/native/rtdl_optix.cpp`
+
+That is the right third slice because the oracle/Embree compatibility pattern
+is now proven and the remaining work is in the larger GPU-native engines.
