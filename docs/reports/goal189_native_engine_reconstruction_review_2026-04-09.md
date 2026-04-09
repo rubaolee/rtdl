@@ -12,8 +12,7 @@ Date: 2026-04-09
 ## External Review
 
 - Claude:
-  - pending:
-    - [GOAL189_CLAUDE_ONE_SENTENCE_HANDOFF.md](/Users/rl2025/rtdl_python_only/docs/handoff/GOAL189_CLAUDE_ONE_SENTENCE_HANDOFF.md)
+  - [goal189_external_review_claude_2026-04-09.md](/Users/rl2025/rtdl_python_only/docs/reports/goal189_external_review_claude_2026-04-09.md)
 - Gemini:
   - pending:
     - [GOAL189_GEMINI_ONE_SENTENCE_HANDOFF.md](/Users/rl2025/rtdl_python_only/docs/handoff/GOAL189_GEMINI_ONE_SENTENCE_HANDOFF.md)
