@@ -46,9 +46,14 @@ _ORBIT_STEEL = (0.10, 0.24, 0.60)
 _PPM_DIMENSIONS_RE = re.compile(rb"^(\d+)\s+(\d+)$")
 
 
-def _orbit_phase_samples(frame_count: int) -> tuple[float, ...]:
+def _orbit_phase_samples(frame_count: int, *, mode: str = "weighted") -> tuple[float, ...]:
     if frame_count <= 1:
         return (0.0,)
+    if mode == "uniform":
+        step = 1.0 / max(1, frame_count - 1)
+        return tuple(index * step for index in range(frame_count))
+    if mode != "weighted":
+        raise ValueError(f"unsupported phase sampling mode: {mode}")
     weights: list[float] = []
     steps = 4096
     for index in range(steps):
@@ -80,7 +85,7 @@ def _orbit_phase_samples(frame_count: int) -> tuple[float, ...]:
 
 
 def _frame_light(phase: float) -> dict[str, object]:
-    x = 44.0 - 88.0 * phase
+    x = 68.0 - 136.0 * phase
     return {
         "position": (
             x,
@@ -88,28 +93,55 @@ def _frame_light(phase: float) -> dict[str, object]:
             11.8,
         ),
         "color": (1.0, 0.86, 0.30),
-        "intensity": 2.42,
+        "intensity": 2.95,
         "display_color": (255, 212, 92),
         "ground_core_color": (255, 224, 128),
-        "display_alpha": 0.98,
-        "ground_alpha_scale": 1.0,
+        "display_alpha": 1.0,
+        "ground_alpha_scale": 1.08,
+        "size_scale": 1.28,
     }
 
 
+def _support_star_strength(phase: float) -> float:
+    if phase <= 0.32:
+        return 1.0
+    if phase >= 0.58:
+        return 0.0
+    return 1.0 - _smoothstep(0.32, 0.58, phase)
+
+
 def _secondary_frame_light(phase: float) -> dict[str, object]:
-    x = -44.0 + 88.0 * phase
+    strength = _support_star_strength(phase)
+    x = -54.0 + 56.0 * min(1.0, phase / 0.58)
     return {
         "position": (
             x,
-            0.08,
-            11.8,
+            -1.18,
+            8.6,
         ),
-        "color": (1.0, 0.82, 0.28),
-        "intensity": 2.05,
-        "display_color": (255, 208, 88),
-        "ground_core_color": (255, 216, 120),
-        "display_alpha": 0.95,
-        "ground_alpha_scale": 1.0,
+        "color": (1.0, 0.84, 0.30),
+        "intensity": 1.12 * strength,
+        "display_color": (255, 214, 112),
+        "ground_core_color": (255, 226, 148),
+        "display_alpha": 0.78 * strength,
+        "ground_alpha_scale": 0.74 * strength,
+        "size_scale": 0.82,
+    }
+
+
+def _stable_fill_light() -> dict[str, object]:
+    return {
+        "position": (
+            -4.8,
+            -1.05,
+            4.7,
+        ),
+        "color": (0.34, 0.38, 0.52),
+        "intensity": 0.72,
+        "display_color": (0, 0, 0),
+        "ground_core_color": (0, 0, 0),
+        "display_alpha": 0.0,
+        "ground_alpha_scale": 0.0,
     }
 
 
@@ -222,16 +254,17 @@ def _overlay_star_and_ground(
         height=height,
         fov_y_degrees=fov_y_degrees,
     )
+    size_scale = float(light.get("size_scale", 1.0))
     if show_light_source and projected is not None and visibility > 0.0:
         alpha_scale = visibility * draw_alpha
-        _paint_disc(image, projected[0], projected[1], 34.0, color, 0.16 * alpha_scale)
-        _paint_disc(image, projected[0], projected[1], 18.0, color, 0.42 * alpha_scale)
-        _paint_disc(image, projected[0], projected[1], 7.5, (255, 250, 238), 0.96 * alpha_scale)
+        _paint_disc(image, projected[0], projected[1], 34.0 * size_scale, color, 0.16 * alpha_scale)
+        _paint_disc(image, projected[0], projected[1], 18.0 * size_scale, color, 0.42 * alpha_scale)
+        _paint_disc(image, projected[0], projected[1], 7.5 * size_scale, (255, 250, 238), 0.96 * alpha_scale)
         _paint_halo(
             image,
             center_x=projected[0],
             center_y=projected[1],
-            radius=min(width, height) * 0.065,
+            radius=min(width, height) * 0.065 * size_scale,
             color=color,
             alpha=0.32 * alpha_scale,
         )
@@ -347,6 +380,64 @@ def _write_ppm_payload(path: Path, *, width: int, height: int, payload: bytes) -
         handle.write(f"{width} {height}\n".encode("ascii"))
         handle.write(b"255\n")
         handle.write(payload)
+
+
+def _orbit_frame_paths(output_dir: Path, frame_index: int) -> tuple[Path, Path, Path]:
+    final_path = output_dir / f"frame_{frame_index:03d}.ppm"
+    raw_path = output_dir / f"frame_{frame_index:03d}_raw.ppm"
+    meta_path = output_dir / f"frame_{frame_index:03d}.json"
+    return final_path, raw_path, meta_path
+
+
+def _load_frame_meta(meta_path: Path) -> dict[str, object] | None:
+    if not meta_path.exists():
+        return None
+    try:
+        return json.loads(meta_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError):
+        return None
+
+
+def _write_frame_meta(meta_path: Path, row: dict[str, object]) -> None:
+    meta_path.write_text(json.dumps(row, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def _restore_orbit_frame(task: tuple[int, float], state: dict[str, object]) -> dict[str, object] | None:
+    frame_index, phase = task
+    output_dir = Path(state["output_dir"])  # type: ignore[arg-type]
+    final_path, raw_path, meta_path = _orbit_frame_paths(output_dir, frame_index)
+    if not raw_path.exists():
+        return None
+    row = _load_frame_meta(meta_path)
+    if row is None:
+        return None
+    if int(row.get("frame_index", -1)) != frame_index:
+        return None
+    if abs(float(row.get("phase", -999.0)) - phase) > 1.0e-12:
+        return None
+    row["frame_path"] = str(final_path)
+    row["raw_frame_path"] = str(raw_path)
+    return row
+
+
+def _materialize_orbit_frames(summary_frames: list[dict[str, object]], alpha: float) -> None:
+    if not summary_frames:
+        return
+    previous_payload: bytes | None = None
+    previous_width: int | None = None
+    previous_height: int | None = None
+    for row in summary_frames:
+        raw_path = Path(str(row["raw_frame_path"]))
+        final_path = Path(str(row["frame_path"]))
+        width, height, payload = _read_ppm_bytes(raw_path)
+        if alpha > 0.0 and previous_payload is not None:
+            if width != previous_width or height != previous_height:
+                raise ValueError("all temporally blended frames must have the same dimensions")
+            payload = _blend_ppm_payloads(previous_payload, payload, alpha)
+        _write_ppm_payload(final_path, width=width, height=height, payload=payload)
+        previous_payload = payload
+        previous_width = width
+        previous_height = height
 
 
 def _apply_temporal_blend(frame_paths: list[Path], alpha: float) -> None:
@@ -536,6 +627,9 @@ def _init_orbit_worker(state: dict[str, object]) -> None:
 def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
     frame_index, phase = task
     state = _ORBIT_WORKER_STATE
+    restored = _restore_orbit_frame(task, state)
+    if restored is not None:
+        return restored
     lights = _frame_lights(phase)
     shading_started = time.perf_counter()
     source_image = state["background_image"]  # type: ignore[index]
@@ -630,12 +724,14 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
         )
 
     shading_seconds = time.perf_counter() - shading_started
-    frame_path = Path(state["output_dir"]) / f"frame_{frame_index:03d}.ppm"  # type: ignore[arg-type]
-    _write_ppm(frame_path, image)
-    return {
+    output_dir = Path(state["output_dir"])  # type: ignore[arg-type]
+    frame_path, raw_frame_path, meta_path = _orbit_frame_paths(output_dir, frame_index)
+    _write_ppm(raw_frame_path, image)
+    row = {
         "frame_index": frame_index,
         "phase": phase,
         "frame_path": str(frame_path),
+        "raw_frame_path": str(raw_frame_path),
         "query_seconds": state["query_seconds"] if frame_index == 0 else 0.0,  # type: ignore[index]
         "shadow_query_seconds": shadow_query_seconds,
         "shading_seconds": shading_seconds,
@@ -644,6 +740,8 @@ def _render_orbit_frame(task: tuple[int, float]) -> dict[str, object]:
         "hit_pixels": state["hit_pixels"],  # type: ignore[index]
         "compare_backend": state["compare_summary"] if frame_index == 0 else None,  # type: ignore[index]
     }
+    _write_frame_meta(meta_path, row)
+    return row
 
 
 def render_orbiting_star_ball_frames(
@@ -659,6 +757,7 @@ def render_orbiting_star_ball_frames(
     jobs: int = 1,
     show_light_source: bool = False,
     temporal_blend_alpha: float = 0.0,
+    phase_mode: str = "weighted",
 ) -> dict[str, object]:
     wall_started = time.perf_counter()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -683,7 +782,7 @@ def render_orbiting_star_ball_frames(
         up_hint=up_hint,
         fov_y_degrees=fov_y,
     )
-    phases = _orbit_phase_samples(frame_count)
+    phases = _orbit_phase_samples(frame_count, mode=phase_mode)
 
     query_started = time.perf_counter()
     rows = _run_backend_rows(backend, rays=rays, triangles=triangles)
@@ -741,7 +840,7 @@ def render_orbiting_star_ball_frames(
         "hit_pixels": hit_pixels,
         "compare_summary": compare_summary,
         "show_light_source": show_light_source,
-        "light_count": 2,
+        "light_count": len(_frame_lights(0.0)),
     }
     tasks = list(enumerate(phases))
     if jobs <= 1:
@@ -751,8 +850,7 @@ def render_orbiting_star_ball_frames(
         with ProcessPoolExecutor(max_workers=jobs, initializer=_init_orbit_worker, initargs=(worker_state,)) as executor:
             summary_frames = list(executor.map(_render_orbit_frame, tasks))
     summary_frames.sort(key=lambda row: int(row["frame_index"]))
-    frame_paths = [Path(str(row["frame_path"])) for row in summary_frames]
-    _apply_temporal_blend(frame_paths, temporal_blend_alpha)
+    _materialize_orbit_frames(summary_frames, temporal_blend_alpha)
     total_query_seconds = query_seconds
     total_shadow_query_seconds = sum(float(row["shadow_query_seconds"]) for row in summary_frames)
     total_shading_seconds = sum(float(row["shading_seconds"]) for row in summary_frames)
@@ -767,6 +865,7 @@ def render_orbiting_star_ball_frames(
         "numpy_fast_path": np is not None,
         "show_light_source": show_light_source,
         "temporal_blend_alpha": temporal_blend_alpha,
+        "phase_mode": phase_mode,
         "triangle_count": len(triangles),
         "latitude_bands": latitude_bands,
         "longitude_bands": longitude_bands,
@@ -795,6 +894,7 @@ def render_orbiting_star_ball_vulkan_frames(
     jobs: int = 1,
     show_light_source: bool = False,
     temporal_blend_alpha: float = 0.0,
+    phase_mode: str = "weighted",
 ) -> dict[str, object]:
     return render_orbiting_star_ball_frames(
         backend="vulkan",
@@ -808,6 +908,7 @@ def render_orbiting_star_ball_vulkan_frames(
         jobs=jobs,
         show_light_source=show_light_source,
         temporal_blend_alpha=temporal_blend_alpha,
+        phase_mode=phase_mode,
     )
 
 
@@ -823,6 +924,7 @@ def render_orbiting_star_ball_optix_4k(
     jobs: int = 1,
     show_light_source: bool = False,
     temporal_blend_alpha: float = 0.0,
+    phase_mode: str = "weighted",
 ) -> dict[str, object]:
     return render_orbiting_star_ball_frames(
         backend="optix",
@@ -836,6 +938,7 @@ def render_orbiting_star_ball_optix_4k(
         jobs=jobs,
         show_light_source=show_light_source,
         temporal_blend_alpha=temporal_blend_alpha,
+        phase_mode=phase_mode,
     )
 
 
@@ -851,6 +954,7 @@ def main() -> None:
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--show-light-source", action="store_true")
     parser.add_argument("--temporal-blend-alpha", type=float, default=0.0)
+    parser.add_argument("--phase-mode", choices=("weighted", "uniform"), default="weighted")
     parser.add_argument("--output-dir", type=Path, default=Path("build/rtdl_orbiting_star_ball_demo"))
     args = parser.parse_args()
 
@@ -866,6 +970,7 @@ def main() -> None:
         jobs=args.jobs,
         show_light_source=args.show_light_source,
         temporal_blend_alpha=args.temporal_blend_alpha,
+        phase_mode=args.phase_mode,
     )
     print(json.dumps(summary, indent=2, sort_keys=True))
 

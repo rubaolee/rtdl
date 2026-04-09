@@ -1,5 +1,9 @@
 # v0.3 Status Summary
 
+Superseded by the newer final-status package draft:
+
+- [goal184_v0_3_final_status_package_2026-04-09.md](/Users/rl2025/rtdl_python_only/docs/reports/goal184_v0_3_final_status_package_2026-04-09.md)
+
 Date: 2026-04-08
 
 ## Current Repo State

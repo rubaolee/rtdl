@@ -22,7 +22,7 @@ For the new application-story proof, the strongest current v0.3 result is:
   - `optix`
   - `vulkan`
 - a public video entry point for that demo line:
-  - [RTDL Visual Demo Video](https://youtu.be/Jfq6VsY-RR4)
+  - [RTDL Visual Demo Video](https://youtube.com/shorts/SOKZTISuH5c)
 - plus an accepted local Windows `4K` artifact preserved in the repo reports
 - plus saved small Linux supporting artifacts preserved in the repo reports for:
   - OptiX
@@ -68,7 +68,11 @@ Small example:
 
 - [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
 
-Stronger current application-style example:
+Preserved flagship baseline for the stronger current application-style example:
+
+- [rtdl_smooth_camera_orbit_demo.py](../examples/rtdl_smooth_camera_orbit_demo.py)
+
+Preserved moving-light comparison example:
 
 - [rtdl_orbiting_star_ball_demo.py](../examples/rtdl_orbiting_star_ball_demo.py)
 

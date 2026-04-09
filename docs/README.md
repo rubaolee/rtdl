@@ -66,10 +66,12 @@ Keep these current facts in mind while reading:
     geometry-query core and Python handles surrounding logic
 - the current small demonstration of that model is:
   - [examples/rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
-- the stronger current v0.3 application-style demo line is:
+- the preserved flagship baseline for the stronger current v0.3 application-style demo line is:
+  - [examples/rtdl_smooth_camera_orbit_demo.py](../examples/rtdl_smooth_camera_orbit_demo.py)
+- the moving-star comparison path is still preserved here:
   - [examples/rtdl_orbiting_star_ball_demo.py](../examples/rtdl_orbiting_star_ball_demo.py)
 - the current public-facing entry point for that line is:
-  - [RTDL Visual Demo Video](https://youtu.be/Jfq6VsY-RR4)
+  - [RTDL Visual Demo Video](https://youtube.com/shorts/SOKZTISuH5c)
 - the accepted local `4K` and supporting Linux backend artifacts remain
   preserved in the repo reports, but the front-surface docs now point readers
   to the single public video URL rather than local GIF previews

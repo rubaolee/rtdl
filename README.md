@@ -30,7 +30,17 @@ bounded 3D RTDL ray/triangle surface is already closed across `embree`,
 `optix`, and `vulkan` on Linux, while the current recommended public-facing
 movie artifact is now presented through a single public video URL:
 
-- [RTDL Visual Demo Video](https://youtu.be/Jfq6VsY-RR4)
+- [RTDL Visual Demo Video](https://youtube.com/shorts/SOKZTISuH5c)
+
+The current preserved flagship baseline inside the repo is the smoother
+one-light camera-orbit line:
+
+- [examples/rtdl_smooth_camera_orbit_demo.py](examples/rtdl_smooth_camera_orbit_demo.py)
+
+The moving-star orbit line remains preserved as a more intuitive but still more
+artifact-prone comparison path:
+
+- [examples/rtdl_orbiting_star_ball_demo.py](examples/rtdl_orbiting_star_ball_demo.py)
 
 The repo still preserves the accepted local movie artifacts and the supporting
 Linux backend demo artifacts in the deeper reports, but the front surface now
