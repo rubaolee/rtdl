@@ -30,8 +30,8 @@ Primary focus:
 - current user-facing examples:
   - `/Users/rl2025/rtdl_python_only/examples/rtdl_hello_world.py`
   - `/Users/rl2025/rtdl_python_only/examples/rtdl_hello_world_backends.py`
-  - `/Users/rl2025/rtdl_python_only/examples/rtdl_sorting.py`
-  - `/Users/rl2025/rtdl_python_only/examples/rtdl_sorting_single_file.py`
+  - `/Users/rl2025/rtdl_python_only/examples/internal/rtdl_sorting.py`
+  - `/Users/rl2025/rtdl_python_only/examples/internal/rtdl_sorting_single_file.py`
 
 Boundary:
 
@@ -94,7 +94,7 @@ Ran:
 cd /Users/rl2025/rtdl_python_only
 PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
 PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_python_reference
-PYTHONPATH=src:. python3 examples/rtdl_sorting_single_file.py 3 1 4 1 5 0 2 5
+PYTHONPATH=src:. python3 examples/internal/rtdl_sorting_single_file.py 3 1 4 1 5 0 2 5
 ```
 
 Observed result:

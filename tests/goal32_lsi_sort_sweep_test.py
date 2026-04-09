@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
 
 
 class Goal32LsiSortSweepTest(unittest.TestCase):

@@ -235,8 +235,8 @@ def _load_overlay_case(dataset: str) -> DatasetCase:
 
 
 def _load_ray_case(dataset: str) -> DatasetCase:
-    from examples.rtdl_ray_tri_hitcount import make_center_rays
-    from examples.rtdl_ray_tri_hitcount import make_random_triangles
+    from examples.reference.rtdl_ray_tri_hitcount import make_center_rays
+    from examples.reference.rtdl_ray_tri_hitcount import make_random_triangles
 
     if dataset == "authored_ray_tri_minimal":
         return DatasetCase(
@@ -255,7 +255,7 @@ def _load_ray_case(dataset: str) -> DatasetCase:
             },
             note="Small authored ray-vs-triangle example.",
         )
-    if dataset == "examples/rtdl_ray_tri_hitcount.py synthetic random generators":
+    if dataset == "examples/reference/rtdl_ray_tri_hitcount.py synthetic random generators":
         return DatasetCase(
             workload="ray_tri_hitcount",
             dataset=dataset,
@@ -289,8 +289,8 @@ def _load_ray_case(dataset: str) -> DatasetCase:
 
 
 def _load_segment_polygon_case(dataset: str, workload: str = "segment_polygon_hitcount") -> DatasetCase:
-    from examples.rtdl_goal10_reference import make_fixture_segment_polygon_case
-    from examples.rtdl_goal10_reference import make_segment_polygon_authored_case
+    from examples.reference.rtdl_goal10_reference import make_fixture_segment_polygon_case
+    from examples.reference.rtdl_goal10_reference import make_segment_polygon_authored_case
 
     if dataset == "authored_segment_polygon_minimal":
         case = make_segment_polygon_authored_case()
@@ -345,8 +345,8 @@ def _load_segment_polygon_case(dataset: str, workload: str = "segment_polygon_hi
 
 
 def _load_point_nearest_segment_case(dataset: str) -> DatasetCase:
-    from examples.rtdl_goal10_reference import make_fixture_point_nearest_segment_case
-    from examples.rtdl_goal10_reference import make_point_nearest_segment_authored_case
+    from examples.reference.rtdl_goal10_reference import make_fixture_point_nearest_segment_case
+    from examples.reference.rtdl_goal10_reference import make_point_nearest_segment_authored_case
 
     if dataset == "authored_point_nearest_segment_minimal":
         case = make_point_nearest_segment_authored_case()
@@ -525,19 +525,19 @@ def main(argv: list[str] | None = None) -> int:
     dataset = args.dataset or representative_dataset_names(args.workload)[0]
 
     if args.workload == "lsi":
-        from examples.rtdl_language_reference import county_zip_join_reference as kernel
+        from examples.reference.rtdl_language_reference import county_zip_join_reference as kernel
     elif args.workload == "pip":
-        from examples.rtdl_language_reference import point_in_counties_reference as kernel
+        from examples.reference.rtdl_language_reference import point_in_counties_reference as kernel
     elif args.workload == "overlay":
-        from examples.rtdl_language_reference import county_soil_overlay_reference as kernel
+        from examples.reference.rtdl_language_reference import county_soil_overlay_reference as kernel
     elif args.workload == "ray_tri_hitcount":
-        from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference as kernel
+        from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference as kernel
     elif args.workload == "segment_polygon_hitcount":
-        from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
+        from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
     elif args.workload == "segment_polygon_anyhit_rows":
-        from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
+        from examples.reference.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
     else:
-        from examples.rtdl_goal10_reference import point_nearest_segment_reference as kernel
+        from examples.reference.rtdl_goal10_reference import point_nearest_segment_reference as kernel
 
     payload = run_baseline_case(kernel, dataset, backend=args.backend)
     print(json.dumps(_json_ready(payload), indent=2, sort_keys=True))

@@ -22,7 +22,7 @@ render program.
 ## Files To Read
 
 - `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/docs/goal_173_windows_4k_movie_acceptance.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal173_windows_4k_movie_acceptance_2026-04-08.md`
 - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_4k_10s_32fps_yellow_jobs8/summary.json`

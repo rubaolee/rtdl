@@ -16,8 +16,8 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
 from goal15_compare_embree import build_lsi_dataset
 from goal15_compare_embree import build_pip_dataset
 from goal15_compare_embree import compile_native

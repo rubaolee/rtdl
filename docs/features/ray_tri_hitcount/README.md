@@ -10,7 +10,7 @@ one `hit_count` per ray.
 ## Docs
 
 - canonical example:
-  - [rtdl_ray_tri_hitcount.py](../../../examples/rtdl_ray_tri_hitcount.py)
+  - [rtdl_ray_tri_hitcount.py](../../../examples/reference/rtdl_ray_tri_hitcount.py)
 - language contracts:
   - [dsl_reference.md](../../rtdl/dsl_reference.md)
   - [workload_cookbook.md](../../rtdl/workload_cookbook.md)
@@ -30,7 +30,7 @@ return rt.emit(hits, fields=["ray_id", "hit_count"])
 - predicate:
   - `rt.ray_triangle_hit_count(exact=False)`
 - canonical reference kernel:
-  - [ray_triangle_hitcount_reference](../../../examples/rtdl_ray_tri_hitcount.py)
+  - [ray_triangle_hitcount_reference](../../../examples/reference/rtdl_ray_tri_hitcount.py)
 
 ## Example
 
@@ -38,7 +38,7 @@ Run:
 
 ```bash
 cd rtdl
-PYTHONPATH=src:. python3 examples/rtdl_ray_tri_hitcount.py
+PYTHONPATH=src:. python3 examples/reference/rtdl_ray_tri_hitcount.py
 ```
 
 App-style variant:

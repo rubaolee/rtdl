@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.rtdl_release_reference import segment_polygon_hitcount_reference
+from examples.reference.rtdl_release_reference import segment_polygon_hitcount_reference
 from rtdsl.baseline_runner import load_representative_case
 
 

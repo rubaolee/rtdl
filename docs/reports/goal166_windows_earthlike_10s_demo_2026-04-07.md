@@ -95,7 +95,7 @@ Main demo:
 
 Supporting 3D file updated during this line:
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_spinning_ball_3d_demo.py`
 
 Focused new tests:
 

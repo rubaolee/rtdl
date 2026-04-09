@@ -17,7 +17,7 @@ Code changes
   - added NumPy vectorized per-hit shading
   - preserved the diagonal light path in `_frame_light`
   - preserved array copies in `_render_orbit_frame` so the NumPy fast path is actually reachable
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_spinning_ball_3d_demo.py`
   - `_write_ppm` now accepts either nested Python pixels or a NumPy image buffer
 - `/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py`
   - summary contract now records `numpy_fast_path`

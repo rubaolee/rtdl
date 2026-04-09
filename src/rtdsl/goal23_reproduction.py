@@ -137,9 +137,9 @@ def generate_goal23_artifacts(
 
 
 def run_goal23_reproduction(*, config: dict[str, object] | None = None) -> dict[str, object]:
-    from examples.rtdl_language_reference import county_soil_overlay_reference
-    from examples.rtdl_language_reference import county_zip_join_reference
-    from examples.rtdl_language_reference import point_in_counties_reference
+    from examples.reference.rtdl_language_reference import county_soil_overlay_reference
+    from examples.reference.rtdl_language_reference import county_zip_join_reference
+    from examples.reference.rtdl_language_reference import point_in_counties_reference
 
     start_total = time.perf_counter()
     cfg = {

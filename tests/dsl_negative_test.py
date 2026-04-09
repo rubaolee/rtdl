@@ -5,7 +5,7 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
 
 
 class DslNegativeTest(unittest.TestCase):
@@ -46,7 +46,7 @@ class DslNegativeTest(unittest.TestCase):
             rt.run_cpu(county_zip_join_reference, left=(), right=(), extra=())
 
     def test_run_cpu_rejects_invalid_polygon_vertices(self) -> None:
-        from examples.rtdl_language_reference import point_in_counties_reference
+        from examples.reference.rtdl_language_reference import point_in_counties_reference
 
         with self.assertRaisesRegex(ValueError, "requires at least 3 vertices"):
             rt.run_cpu(

@@ -216,7 +216,7 @@ Comparison mode:
 Representative datasets:
 
 - `authored_ray_tri_minimal`
-- synthetic generators in `examples/rtdl_ray_tri_hitcount.py`
+- synthetic generators in `examples/reference/rtdl_ray_tri_hitcount.py`
 
 ## Review Rule
 

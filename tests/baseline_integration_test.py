@@ -9,13 +9,13 @@ sys.path.insert(0, ".")
 import rtdsl as rt
 from examples.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
 from examples.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
-from examples.rtdl_goal10_reference import point_nearest_segment_reference
-from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
-from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
-from examples.rtdl_language_reference import county_soil_overlay_reference
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
-from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
+from examples.reference.rtdl_goal10_reference import point_nearest_segment_reference
+from examples.reference.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
+from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference
+from examples.reference.rtdl_language_reference import county_soil_overlay_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 from tests._embree_support import embree_available
 
 

@@ -22,7 +22,7 @@ PREPARED_COPIES = (64, 256)
 
 
 def _kernel():
-    from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
+    from examples.reference.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
 
     return segment_polygon_anyhit_rows_reference
 

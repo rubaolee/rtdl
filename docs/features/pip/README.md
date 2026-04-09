@@ -10,7 +10,7 @@ one row per accepted containment hit.
 ## Docs
 
 - canonical kernel pattern:
-  - [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_language_reference.py)
+  - [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
 - language contracts:
   - [dsl_reference.md](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
   - [workload_cookbook.md](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
@@ -33,13 +33,13 @@ return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 - predicate:
   - `rt.point_in_polygon(exact=False, boundary_mode="inclusive")`
 - canonical reference kernel:
-  - [point_in_counties_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_language_reference.py)
+  - [point_in_counties_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
 
 ## Example
 
 Start here:
 
-- [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_language_reference.py)
+- [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
 
 For the strongest historical performance/correctness story, see the accepted
 `county_zipcode` positive-hit `pip` package in the v0.1 trust-anchor docs.

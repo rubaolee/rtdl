@@ -13,7 +13,7 @@ outside RTDL.
 - canonical example:
   - [rtdl_segment_polygon_anyhit_rows.py](/Users/rl2025/rtdl_python_only/examples/rtdl_segment_polygon_anyhit_rows.py)
 - shared reference kernel:
-  - [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py)
+  - [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
 - PostGIS SQL comparison:
   - [v0_2_segment_polygon_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_segment_polygon_postgis_workloads.sql)
 
@@ -32,7 +32,7 @@ return rt.emit(hits, fields=["segment_id", "polygon_id"])
 - predicate:
   - `rt.segment_polygon_anyhit_rows(exact=False)`
 - canonical reference kernel:
-  - [segment_polygon_anyhit_rows_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py)
+  - [segment_polygon_anyhit_rows_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
 
 ## Example
 

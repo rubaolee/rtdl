@@ -26,7 +26,7 @@ LARGE_POSTGIS_BACKENDS = ("cpu", "embree", "optix")
 
 
 def _kernel():
-    from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
+    from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference
 
     return segment_polygon_hitcount_reference
 

@@ -8,8 +8,8 @@ sys.path.insert(0, ".")
 sys.path.insert(0, "scripts")
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
 from goal15_compare_embree import build_lsi_dataset
 from goal15_compare_embree import build_pip_dataset
 from goal17_compare_prepared_embree import compare_goal17
@@ -19,7 +19,7 @@ from tests._embree_support import embree_available
 @unittest.skipUnless(embree_available(), "Embree runtime is not available")
 class Goal17PreparedRuntimeTest(unittest.TestCase):
     def test_prepare_embree_accepts_overlay_after_goal18_extension(self) -> None:
-        from examples.rtdl_language_reference import county_soil_overlay_reference
+        from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 
         prepared = rt.prepare_embree(county_soil_overlay_reference)
         self.assertEqual(prepared.predicate_name, "overlay_compose")

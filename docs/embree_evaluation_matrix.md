@@ -16,7 +16,7 @@ The current matrix is:
 | `overlay_county_soil_fixture` | `overlay` | `tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb` | `fixture` | County and soil subset fixtures converted to deterministic chain-derived polygons. |
 | `overlay_county_soil_tiled_x8` | `overlay` | `derived/br_county_soil_polygons_tiled_x8` | `derived` | County and soil polygon views tiled eight times with fixed offsets. |
 | `ray_authored_minimal` | `ray_tri_hitcount` | `authored_ray_tri_minimal` | `authored` | Hand-authored finite-ray hit-count sanity case. |
-| `ray_synthetic_small` | `ray_tri_hitcount` | `examples/rtdl_ray_tri_hitcount.py synthetic random generators` | `synthetic` | Canonical random helper generators with fixed seeds. |
+| `ray_synthetic_small` | `ray_tri_hitcount` | `examples/reference/rtdl_ray_tri_hitcount.py synthetic random generators` | `synthetic` | Canonical random helper generators with fixed seeds. |
 | `ray_synthetic_medium` | `ray_tri_hitcount` | `synthetic/ray_tri_medium` | `synthetic` | Medium deterministic synthetic ray/triangle case. |
 | `ray_synthetic_large` | `ray_tri_hitcount` | `synthetic/ray_tri_large` | `synthetic` | Large deterministic synthetic ray/triangle case. |
 | `segment_polygon_authored_minimal` | `segment_polygon_hitcount` | `authored_segment_polygon_minimal` | `authored` | Hand-authored segment/polygon hit-count sanity case. |

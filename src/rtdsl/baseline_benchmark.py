@@ -89,25 +89,25 @@ def write_benchmark_json(payload: dict[str, object], output_path: Path) -> Path:
 
 def _kernel_for_workload(workload: str):
     if workload == "lsi":
-        from examples.rtdl_language_reference import county_zip_join_reference as kernel
+        from examples.reference.rtdl_language_reference import county_zip_join_reference as kernel
         return kernel
     if workload == "pip":
-        from examples.rtdl_language_reference import point_in_counties_reference as kernel
+        from examples.reference.rtdl_language_reference import point_in_counties_reference as kernel
         return kernel
     if workload == "overlay":
-        from examples.rtdl_language_reference import county_soil_overlay_reference as kernel
+        from examples.reference.rtdl_language_reference import county_soil_overlay_reference as kernel
         return kernel
     if workload == "ray_tri_hitcount":
-        from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference as kernel
+        from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference as kernel
         return kernel
     if workload == "segment_polygon_hitcount":
-        from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
+        from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
         return kernel
     if workload == "segment_polygon_anyhit_rows":
-        from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
+        from examples.reference.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
         return kernel
     if workload == "point_nearest_segment":
-        from examples.rtdl_goal10_reference import point_nearest_segment_reference as kernel
+        from examples.reference.rtdl_goal10_reference import point_nearest_segment_reference as kernel
         return kernel
     raise ValueError(f"unknown baseline workload `{workload}`")
 

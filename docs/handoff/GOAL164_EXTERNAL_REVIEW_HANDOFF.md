@@ -6,7 +6,7 @@ Files to read:
 
 - `/Users/rl2025/rtdl_python_only/docs/goal_164_spinning_ball_3d_backend_closure.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal164_spinning_ball_3d_backend_closure_2026-04-07.md`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal164_spinning_ball_3d_demo_test.py`
 
 Review only for:

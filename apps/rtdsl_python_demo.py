@@ -4,8 +4,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import rtdsl as rt
-from examples.rtdl_ray_tri_hitcount import make_center_rays
-from examples.rtdl_ray_tri_hitcount import make_random_triangles
+from examples.reference.rtdl_ray_tri_hitcount import make_center_rays
+from examples.reference.rtdl_ray_tri_hitcount import make_random_triangles
 
 
 def segment_layout():

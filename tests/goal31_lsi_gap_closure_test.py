@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
 from rtdsl.baseline_runner import segments_from_records
 from rtdsl.datasets import chains_to_segments
 from rtdsl.datasets import load_cdb

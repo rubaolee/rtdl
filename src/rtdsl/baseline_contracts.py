@@ -168,7 +168,7 @@ BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
         comparison_mode="exact",
         representative_datasets=(
             "authored_ray_tri_minimal",
-            "examples/rtdl_ray_tri_hitcount.py synthetic random generators",
+            "examples/reference/rtdl_ray_tri_hitcount.py synthetic random generators",
         ),
         notes="Finite 2D rays against triangles with one hit-count record per ray.",
     ),

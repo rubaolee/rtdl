@@ -5,15 +5,15 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_sorting import derive_sorts_from_rows
-from examples.rtdl_sorting import expected_hit_counts
-from examples.rtdl_sorting import hit_counts_from_rows
-from examples.rtdl_sorting import make_ray_hit_sort_case
-from examples.rtdl_sorting import quicksort_reference
-from examples.rtdl_sorting import ray_hit_sorting_reference
-from examples.rtdl_sorting import run_sorting_backend
-from examples.rtdl_sorting import stable_sort_from_hit_counts
-from examples.rtdl_sorting import stable_sort_reference
+from examples.internal.rtdl_sorting import derive_sorts_from_rows
+from examples.internal.rtdl_sorting import expected_hit_counts
+from examples.internal.rtdl_sorting import hit_counts_from_rows
+from examples.internal.rtdl_sorting import make_ray_hit_sort_case
+from examples.internal.rtdl_sorting import quicksort_reference
+from examples.internal.rtdl_sorting import ray_hit_sorting_reference
+from examples.internal.rtdl_sorting import run_sorting_backend
+from examples.internal.rtdl_sorting import stable_sort_from_hit_counts
+from examples.internal.rtdl_sorting import stable_sort_reference
 from tests._embree_support import embree_available
 from tests.rtdsl_vulkan_test import vulkan_available
 

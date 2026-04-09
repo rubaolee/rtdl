@@ -105,8 +105,8 @@ def generate_section_5_6_artifacts(
 
 
 def run_section_5_6(config: ScalabilityConfig) -> dict[str, object]:
-    from examples.rtdl_language_reference import county_zip_join_reference
-    from examples.rtdl_language_reference import point_in_counties_reference
+    from examples.reference.rtdl_language_reference import county_zip_join_reference
+    from examples.reference.rtdl_language_reference import point_in_counties_reference
 
     lsi_kernel = county_zip_join_reference
     pip_kernel = point_in_counties_reference

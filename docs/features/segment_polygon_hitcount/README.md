@@ -31,7 +31,7 @@ return rt.emit(hits, fields=["segment_id", "hit_count"])
 - predicate:
   - `rt.segment_polygon_hitcount(exact=False)`
 - canonical reference kernel:
-  - [segment_polygon_hitcount_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py)
+  - [segment_polygon_hitcount_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
 
 ## Example
 

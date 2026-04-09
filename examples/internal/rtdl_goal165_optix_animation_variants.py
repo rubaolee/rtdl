@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_spinning_ball_3d_demo import render_spinning_ball_3d_frames
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import render_spinning_ball_3d_frames
 
 VARIANTS = [
     {"name": "current_spin", "spin_speed": 1.1},

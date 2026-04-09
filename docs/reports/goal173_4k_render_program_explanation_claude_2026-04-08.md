@@ -9,7 +9,7 @@ The accepted Windows 4K artifact is a 320-frame, 10-second MP4 at `3840x2160`,
 rendered at `32 fps` using the orbiting-star scene in
 [`rtdl_orbiting_star_ball_demo.py`](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py),
 built on top of
-[`rtdl_spinning_ball_3d_demo.py`](/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py).
+[`rtdl_spinning_ball_3d_demo.py`](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_spinning_ball_3d_demo.py).
 The render ran on `lestat@192.168.1.8` using `8` parallel jobs and took about
 `4560.9` seconds of wall clock time.
 

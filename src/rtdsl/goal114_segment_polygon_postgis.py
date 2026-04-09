@@ -141,7 +141,7 @@ def run_goal114_segment_polygon_postgis_validation(
     db_user: str | None = None,
 ) -> dict[str, object]:
     import rtdsl as rt
-    from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
+    from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference
 
     case = load_representative_case("segment_polygon_hitcount", dataset)
     postgis_rows, postgis_sec = run_postgis_segment_polygon_hitcount(

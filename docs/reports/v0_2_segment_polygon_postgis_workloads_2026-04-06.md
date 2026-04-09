@@ -45,7 +45,7 @@ Representative cases for the segment/polygon families are built from:
 
 Source:
 
-- [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py)
+- [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
 
 This is the small hand-authored example with:
 
@@ -60,7 +60,7 @@ Source fixture:
 
 Builder:
 
-- [make_fixture_segment_polygon_case](/Users/rl2025/rtdl_python_only/examples/rtdl_goal10_reference.py)
+- [make_fixture_segment_polygon_case](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
 
 Current shape:
 

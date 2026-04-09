@@ -16,7 +16,7 @@ for the bounded `ray_triangle_hit_count` 3D workload line.
 
 Main demo and test:
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal164_spinning_ball_3d_demo_test.py`
 
 Public/runtime-side 3D additions:
@@ -62,7 +62,7 @@ cd /Users/rl2025/rtdl_python_only
 python3 -m compileall \
   src/rtdsl/optix_runtime.py \
   tests/goal164_spinning_ball_3d_demo_test.py \
-  examples/rtdl_spinning_ball_3d_demo.py
+  examples/visual_demo/rtdl_spinning_ball_3d_demo.py
 PYTHONPATH=src:. python3 -m unittest tests.goal164_spinning_ball_3d_demo_test
 ```
 

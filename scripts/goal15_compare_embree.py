@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
 
 
 def pkg_config_flags(package: str, option: str) -> list[str]:

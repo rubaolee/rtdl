@@ -6,14 +6,14 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_goal10_reference import make_fixture_point_nearest_segment_case
-from examples.rtdl_goal10_reference import make_fixture_segment_polygon_case
-from examples.rtdl_goal10_reference import point_nearest_segment_reference
-from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference
-from examples.rtdl_language_reference import county_soil_overlay_reference
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
-from examples.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
+from examples.reference.rtdl_goal10_reference import make_fixture_point_nearest_segment_case
+from examples.reference.rtdl_goal10_reference import make_fixture_segment_polygon_case
+from examples.reference.rtdl_goal10_reference import point_nearest_segment_reference
+from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference
+from examples.reference.rtdl_language_reference import county_soil_overlay_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 
 
 class Goal40NativeOracleTest(unittest.TestCase):

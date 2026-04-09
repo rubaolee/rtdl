@@ -119,7 +119,7 @@ EMBREE_EVALUATION_MATRIX: tuple[EvaluationEntry, ...] = (
     EvaluationEntry(
         case_id="ray_synthetic_small",
         workload="ray_tri_hitcount",
-        dataset="examples/rtdl_ray_tri_hitcount.py synthetic random generators",
+        dataset="examples/reference/rtdl_ray_tri_hitcount.py synthetic random generators",
         title="Ray/Tri synthetic small",
         category="synthetic",
         provenance="Canonical example helper generators with fixed seeds.",

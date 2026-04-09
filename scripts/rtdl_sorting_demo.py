@@ -7,10 +7,10 @@ import sys
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_sorting import expected_hit_counts
-from examples.rtdl_sorting import quicksort_reference
-from examples.rtdl_sorting import run_sorting_backend
-from examples.rtdl_sorting import stable_sort_reference
+from examples.internal.rtdl_sorting import expected_hit_counts
+from examples.internal.rtdl_sorting import quicksort_reference
+from examples.internal.rtdl_sorting import run_sorting_backend
+from examples.internal.rtdl_sorting import stable_sort_reference
 
 
 def parse_args() -> argparse.Namespace:

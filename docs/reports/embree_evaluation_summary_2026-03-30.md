@@ -19,7 +19,7 @@
 | `overlay_county_soil_fixture` | `overlay` | `tests/fixtures/rayjoin/br_county_subset.cdb + tests/fixtures/rayjoin/br_soil_subset.cdb` | `fixture` | `True` | 0.000112 | 0.000211 | 0.532x |
 | `overlay_county_soil_tiled_x8` | `overlay` | `derived/br_county_soil_polygons_tiled_x8` | `derived` | `True` | 0.000275 | 0.000614 | 0.447x |
 | `ray_authored_minimal` | `ray_tri_hitcount` | `authored_ray_tri_minimal` | `authored` | `True` | 0.000041 | 0.000160 | 0.255x |
-| `ray_synthetic_small` | `ray_tri_hitcount` | `examples/rtdl_ray_tri_hitcount.py synthetic random generators` | `synthetic` | `True` | 0.001173 | 0.000223 | 5.271x |
+| `ray_synthetic_small` | `ray_tri_hitcount` | `examples/reference/rtdl_ray_tri_hitcount.py synthetic random generators` | `synthetic` | `True` | 0.001173 | 0.000223 | 5.271x |
 | `ray_synthetic_medium` | `ray_tri_hitcount` | `synthetic/ray_tri_medium` | `synthetic` | `True` | 0.015852 | 0.000437 | 36.244x |
 | `ray_synthetic_large` | `ray_tri_hitcount` | `synthetic/ray_tri_large` | `synthetic` | `True` | 0.300874 | 0.001822 | 165.138x |
 | `segment_polygon_authored_minimal` | `segment_polygon_hitcount` | `authored_segment_polygon_minimal` | `authored` | `True` | 0.000045 | 0.000178 | 0.255x |

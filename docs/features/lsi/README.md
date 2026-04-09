@@ -10,7 +10,7 @@ row per accepted segment/segment intersection.
 ## Docs
 
 - canonical kernel pattern:
-  - [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_language_reference.py)
+  - [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
 - language contracts:
   - [dsl_reference.md](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
   - [workload_cookbook.md](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
@@ -33,13 +33,13 @@ return rt.emit(
 - predicate:
   - `rt.segment_intersection(exact=False)`
 - canonical reference kernel:
-  - [county_zip_join_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_language_reference.py)
+  - [county_zip_join_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
 
 ## Example
 
 Start here:
 
-- [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/rtdl_language_reference.py)
+- [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
 
 This file contains the current minimal language-reference `lsi` kernel.
 

@@ -23,20 +23,20 @@ try:
 except ImportError:  # pragma: no cover - optional fast path
     np = None  # type: ignore[assignment]
 
-from examples.rtdl_spinning_ball_3d_demo import _background_pixel
-from examples.rtdl_spinning_ball_3d_demo import _clamp01
-from examples.rtdl_spinning_ball_3d_demo import _dot3
-from examples.rtdl_spinning_ball_3d_demo import _normalize3
-from examples.rtdl_spinning_ball_3d_demo import _paint_disc
-from examples.rtdl_spinning_ball_3d_demo import _paint_ellipse
-from examples.rtdl_spinning_ball_3d_demo import _paint_ground_shadow
-from examples.rtdl_spinning_ball_3d_demo import _paint_halo
-from examples.rtdl_spinning_ball_3d_demo import _project_world_to_screen
-from examples.rtdl_spinning_ball_3d_demo import _ray_sphere_intersection
-from examples.rtdl_spinning_ball_3d_demo import _run_backend_rows
-from examples.rtdl_spinning_ball_3d_demo import _write_ppm
-from examples.rtdl_spinning_ball_3d_demo import make_camera_rays
-from examples.rtdl_spinning_ball_3d_demo import make_uv_sphere_mesh
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _background_pixel
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _clamp01
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _dot3
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _normalize3
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _paint_disc
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _paint_ellipse
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _paint_ground_shadow
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _paint_halo
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _project_world_to_screen
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _ray_sphere_intersection
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _run_backend_rows
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _write_ppm
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import make_camera_rays
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import make_uv_sphere_mesh
 
 
 _ORBIT_WORKER_STATE: dict[str, object] = {}

@@ -18,7 +18,7 @@ Files read to recover context:
 - `docs/goal_161_v0_3_visual_demo_charter.md`
 - `docs/goal_164_spinning_ball_3d_backend_closure.md`
 - `docs/reports/goal164_spinning_ball_3d_backend_closure_2026-04-07.md`
-- `examples/rtdl_spinning_ball_3d_demo.py`
+- `examples/visual_demo/rtdl_spinning_ball_3d_demo.py`
 - `tests/goal164_spinning_ball_3d_demo_test.py`
 
 **Key context recovered:**

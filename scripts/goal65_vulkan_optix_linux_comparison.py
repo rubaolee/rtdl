@@ -8,9 +8,9 @@ import time
 from pathlib import Path
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_soil_overlay_reference
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_language_reference import county_soil_overlay_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
 from scripts.goal28d_complete_and_run_county_zipcode import select_county_zipcode_slice
 from scripts.goal28d_complete_and_run_county_zipcode import subset_by_face_ids
 

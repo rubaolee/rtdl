@@ -78,10 +78,10 @@ Renamed canonical user-facing files:
 - example:
   - `/Users/rl2025/rtdl_python_only/examples/rtdl_goal97_ray_hit_sorting.py`
   - to:
-  - `/Users/rl2025/rtdl_python_only/examples/rtdl_sorting.py`
+  - `/Users/rl2025/rtdl_python_only/examples/internal/rtdl_sorting.py`
 - compact single-file example:
   - now:
-  - `/Users/rl2025/rtdl_python_only/examples/rtdl_sorting_single_file.py`
+  - `/Users/rl2025/rtdl_python_only/examples/internal/rtdl_sorting_single_file.py`
 - demo script:
   - `/Users/rl2025/rtdl_python_only/scripts/goal97_ray_hit_sorting_demo.py`
   - to:
@@ -122,7 +122,7 @@ Ran:
 
 ```bash
 cd /Users/rl2025/rtdl_python_only
-PYTHONPATH=src:. python3 examples/rtdl_sorting_single_file.py 3 1 4 1 5 0 2 5
+PYTHONPATH=src:. python3 examples/internal/rtdl_sorting_single_file.py 3 1 4 1 5 0 2 5
 ```
 
 Observed result:

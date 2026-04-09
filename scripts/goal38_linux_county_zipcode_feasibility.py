@@ -11,8 +11,8 @@ from urllib.request import Request
 from urllib.request import urlopen
 
 import rtdsl as rt
-from examples.rtdl_language_reference import county_zip_join_reference
-from examples.rtdl_language_reference import point_in_counties_reference
+from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.reference.rtdl_language_reference import point_in_counties_reference
 
 
 USER_AGENT = "RTDL Goal38 State Feasibility/1.0"
