@@ -91,6 +91,16 @@ def _smooth_demo_lights(theme: str = "true_onelight") -> tuple[dict[str, object]
     return _smooth_demo_theme(theme)["lights"]  # type: ignore[return-value]
 
 
+def _smooth_camera_phase_samples(frame_count: int, *, mode: str = "uniform") -> tuple[float, ...]:
+    if frame_count <= 1:
+        return (0.0,)
+    if mode == "uniform":
+        # Non-looping videos should not duplicate the opening pose at phase 1.0.
+        step = 1.0 / frame_count
+        return tuple(index * step for index in range(frame_count))
+    return _orbit_phase_samples(frame_count, mode=mode)
+
+
 def _compare_hit_lookups(
     hit_lookup: dict[int, int],
     compare_lookup: dict[int, int],
@@ -348,7 +358,7 @@ def render_smooth_camera_orbit_frames(
         radius=radius,
         center=center,
     )
-    phases = _orbit_phase_samples(frame_count, mode=phase_mode)
+    phases = _smooth_camera_phase_samples(frame_count, mode=phase_mode)
     worker_state: dict[str, object] = {
         "backend": backend,
         "compare_backend": compare_backend,
@@ -393,6 +403,7 @@ def render_smooth_camera_orbit_frames(
         "show_light_source": show_light_source,
         "temporal_blend_alpha": temporal_blend_alpha,
         "phase_mode": phase_mode,
+        "phase_endpoint_inclusive": False if phase_mode == "uniform" and frame_count > 1 else True,
         "camera_motion": "front_arc",
         "theme": theme,
         "camera_sweep_degrees": 84.0,

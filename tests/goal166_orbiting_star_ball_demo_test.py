@@ -56,6 +56,19 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
         self.assertEqual(frame0.read_bytes(), b"P6\n1 1\n255\n" + bytes([0, 0, 0]))
         self.assertEqual(frame1.read_bytes(), b"P6\n1 1\n255\n" + bytes([150, 75, 0]))
 
+    def test_apply_temporal_blend_uses_previous_raw_frame_not_recursive_output(self) -> None:
+        output_dir = Path("build/goal166_orbiting_star_ball_demo_test/temporal_blend_pairwise")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        frame0 = output_dir / "frame_000.ppm"
+        frame1 = output_dir / "frame_001.ppm"
+        frame2 = output_dir / "frame_002.ppm"
+        frame0.write_bytes(b"P6\n1 1\n255\n" + bytes([0, 0, 0]))
+        frame1.write_bytes(b"P6\n1 1\n255\n" + bytes([200, 0, 0]))
+        frame2.write_bytes(b"P6\n1 1\n255\n" + bytes([100, 0, 0]))
+        _apply_temporal_blend([frame0, frame1, frame2], 0.5)
+        self.assertEqual(frame1.read_bytes(), b"P6\n1 1\n255\n" + bytes([100, 0, 0]))
+        self.assertEqual(frame2.read_bytes(), b"P6\n1 1\n255\n" + bytes([150, 0, 0]))
+
     def test_orbit_phase_samples_single_frame_returns_zero(self) -> None:
         phases = _orbit_phase_samples(1)
         self.assertEqual(phases, (0.0,))

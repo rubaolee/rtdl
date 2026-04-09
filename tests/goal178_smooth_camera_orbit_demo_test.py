@@ -10,6 +10,7 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 from examples.rtdl_smooth_camera_orbit_demo import _camera_eye_for_phase
+from examples.rtdl_smooth_camera_orbit_demo import _smooth_camera_phase_samples
 from examples.rtdl_smooth_camera_orbit_demo import _smooth_demo_lights
 from examples.rtdl_smooth_camera_orbit_demo import _smooth_demo_theme
 from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_frames
@@ -50,6 +51,12 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
         self.assertGreater(float(themed["halo_alpha"]), float(baseline["halo_alpha"]))
         self.assertLess(float(themed["ground_shadow_alpha"]), float(baseline["ground_shadow_alpha"]))
 
+    def test_uniform_phase_samples_do_not_repeat_opening_pose(self) -> None:
+        phases = _smooth_camera_phase_samples(5, mode="uniform")
+        self.assertEqual(len(phases), 5)
+        for actual, expected in zip(phases, (0.0, 0.2, 0.4, 0.6, 0.8), strict=True):
+            self.assertAlmostEqual(actual, expected)
+
     def test_render_one_frame_writes_summary_and_compare(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/one_frame")
         shutil.rmtree(output_dir, ignore_errors=True)
@@ -75,6 +82,7 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
         self.assertEqual(compare_summary["exact_mismatch_count"], 0)
         persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(persisted["phase_mode"], "uniform")
+        self.assertTrue(persisted["phase_endpoint_inclusive"])
 
     def test_themed_render_persists_theme_name(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/redsun_theme")
@@ -112,6 +120,8 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
         frame_bytes = [Path(frame["frame_path"]).read_bytes() for frame in summary["frames"]]
         self.assertNotEqual(frame_bytes[0], frame_bytes[1])
         self.assertNotEqual(frame_bytes[1], frame_bytes[2])
+        self.assertFalse(summary["phase_endpoint_inclusive"])
+        self.assertLess(summary["frames"][-1]["phase"], 1.0)
 
     def test_jobs_gt_one_render_produces_frames(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/jobs_two")

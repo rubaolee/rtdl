@@ -29,7 +29,7 @@ Specifically:
 
 The chosen public-facing video surface is now:
 
-- [RTDL Visual Demo Video](https://youtube.com/shorts/SOKZTISuH5c)
+- [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
 
 This is the front-door artifact readers should see first.
 
@@ -37,9 +37,15 @@ This is the front-door artifact readers should see first.
 
 ### True One-Light Smooth-Camera Baseline
 
-- [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
-- [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
-- [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
+This preserved local baseline should be read as the bridge from the released
+`v0.2.0` core into the newer `v0.3` application/demo layer:
+
+- `v0.2.0` remains the stable workload/package release on `main`
+- `v0.3` shows that the same RTDL core can sit inside Python-hosted graphics applications
+
+- [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
+- [frame_160.png](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
+- [summary.json](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
 
 Key facts:
 
@@ -58,9 +64,9 @@ Key facts:
 
 ### Moving-Star Repair Candidate
 
-- [win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4)
-- [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
-- [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/summary.json)
+- [win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4)
+- [frame_160.png](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
+- [summary.json](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/summary.json)
 
 Key facts:
 
@@ -79,7 +85,7 @@ Key facts:
 
 ### Full Local Comparison Set
 
-- [v0_3_movie_comparison_sheet_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/v0_3_movie_comparison_sheet_2026-04-08.md)
+- [v0_3_movie_comparison_sheet_2026-04-08.md](v0_3_movie_comparison_sheet_2026-04-08.md)
 
 That sheet preserves the major Windows comparison candidates side by side.
 
@@ -89,15 +95,15 @@ The bounded Linux supporting package is now explicit and review-backed.
 
 Main package:
 
-- [goal_182_linux_smooth_camera_supporting_package.md](/Users/rl2025/rtdl_python_only/docs/goal_182_linux_smooth_camera_supporting_package.md)
-- [goal182_linux_smooth_camera_supporting_package_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal182_linux_smooth_camera_supporting_package_2026-04-08.md)
+- [goal_182_linux_smooth_camera_supporting_package.md](../goal_182_linux_smooth_camera_supporting_package.md)
+- [goal182_linux_smooth_camera_supporting_package_2026-04-08.md](goal182_linux_smooth_camera_supporting_package_2026-04-08.md)
 
 Supporting artifacts:
 
 - OptiX:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/goal179_optix_smooth_preview/summary.json)
+  - [summary.json](../../build/goal179_optix_smooth_preview/summary.json)
 - Vulkan:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/goal179_vulkan_smooth_preview/summary.json)
+  - [summary.json](../../build/goal179_vulkan_smooth_preview/summary.json)
 
 Both Linux summaries record frame `0` compare-clean parity against `cpu_python_reference`.
 

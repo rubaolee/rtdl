@@ -25,12 +25,16 @@ aggregation, reporting, or visual output. A small example of that model is:
 
 - [examples/rtdl_lit_ball_demo.py](examples/rtdl_lit_ball_demo.py)
 
-There is now also a stronger v0.3 application-style visual demo line. The
-bounded 3D RTDL ray/triangle surface is already closed across `embree`,
+There is now also a stronger v0.3 application-style visual demo line. This is
+not a replacement for the released `v0.2.0` workload surface. It is a newer
+application/demo layer built on top of the same RTDL core, where RTDL handles
+geometric queries and Python handles the surrounding graphics work.
+
+The bounded 3D RTDL ray/triangle surface is already closed across `embree`,
 `optix`, and `vulkan` on Linux, while the current recommended public-facing
 movie artifact is now presented through a single public video URL:
 
-- [RTDL Visual Demo Video](https://youtube.com/shorts/SOKZTISuH5c)
+- [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
 
 The current preserved flagship baseline inside the repo is the smoother
 one-light camera-orbit line:

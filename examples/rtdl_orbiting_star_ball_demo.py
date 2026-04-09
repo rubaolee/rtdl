@@ -423,19 +423,20 @@ def _restore_orbit_frame(task: tuple[int, float], state: dict[str, object]) -> d
 def _materialize_orbit_frames(summary_frames: list[dict[str, object]], alpha: float) -> None:
     if not summary_frames:
         return
-    previous_payload: bytes | None = None
+    previous_raw_payload: bytes | None = None
     previous_width: int | None = None
     previous_height: int | None = None
     for row in summary_frames:
         raw_path = Path(str(row["raw_frame_path"]))
         final_path = Path(str(row["frame_path"]))
-        width, height, payload = _read_ppm_bytes(raw_path)
-        if alpha > 0.0 and previous_payload is not None:
+        width, height, raw_payload = _read_ppm_bytes(raw_path)
+        payload = raw_payload
+        if alpha > 0.0 and previous_raw_payload is not None:
             if width != previous_width or height != previous_height:
                 raise ValueError("all temporally blended frames must have the same dimensions")
-            payload = _blend_ppm_payloads(previous_payload, payload, alpha)
+            payload = _blend_ppm_payloads(previous_raw_payload, payload, alpha)
         _write_ppm_payload(final_path, width=width, height=height, payload=payload)
-        previous_payload = payload
+        previous_raw_payload = raw_payload
         previous_width = width
         previous_height = height
 
@@ -443,14 +444,14 @@ def _materialize_orbit_frames(summary_frames: list[dict[str, object]], alpha: fl
 def _apply_temporal_blend(frame_paths: list[Path], alpha: float) -> None:
     if alpha <= 0.0 or len(frame_paths) <= 1:
         return
-    previous_width, previous_height, previous_payload = _read_ppm_bytes(frame_paths[0])
+    previous_width, previous_height, previous_raw_payload = _read_ppm_bytes(frame_paths[0])
     for path in frame_paths[1:]:
         width, height, payload = _read_ppm_bytes(path)
         if width != previous_width or height != previous_height:
             raise ValueError("all temporally blended frames must have the same dimensions")
-        blended = _blend_ppm_payloads(previous_payload, payload, alpha)
+        blended = _blend_ppm_payloads(previous_raw_payload, payload, alpha)
         _write_ppm_payload(path, width=width, height=height, payload=blended)
-        previous_payload = blended
+        previous_raw_payload = payload
 
 
 def _orbit_surface_color(normal: tuple[float, float, float]) -> tuple[float, float, float]:

@@ -16,11 +16,11 @@ This sheet is for human review first:
 ## Candidate A: Warm-Fill Smooth Camera
 
 - movie:
-  - [win_embree_smooth_camera_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/win_embree_smooth_camera_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_hd_1024_uniform_320f/win_embree_smooth_camera_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_hd_1024_uniform_320f/frame_160.png)
 
-![Warm-Fill Smooth Camera](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/frame_160.png)
+![Warm-Fill Smooth Camera](../../build/win_embree_smooth_camera_hd_1024_uniform_320f/frame_160.png)
 
 Quick read:
 
@@ -31,11 +31,11 @@ Quick read:
 ## Candidate B: White-Fill Smooth Camera
 
 - movie:
-  - [win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/frame_160.png)
 
-![White-Fill Smooth Camera](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/frame_160.png)
+![White-Fill Smooth Camera](../../build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/frame_160.png)
 
 Quick read:
 
@@ -46,11 +46,11 @@ Quick read:
 ## Candidate C: Pseudo-One-Star Smooth Camera
 
 - movie:
-  - [win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/frame_160.png)
 
-![Pseudo-One-Star Smooth Camera](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/frame_160.png)
+![Pseudo-One-Star Smooth Camera](../../build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/frame_160.png)
 
 Quick read:
 
@@ -61,13 +61,13 @@ Quick read:
 ## Candidate D: True One-Light Smooth Camera
 
 - movie:
-  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
 - summary:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
+  - [summary.json](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
 
-![True One-Light Smooth Camera](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
+![True One-Light Smooth Camera](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
 
 Quick read:
 
@@ -78,13 +78,13 @@ Quick read:
 ## Candidate E: Orbit Support-Star Repair
 
 - movie:
-  - [win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4)
+  - [win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
 - summary:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/summary.json)
+  - [summary.json](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/summary.json)
 
-![Orbit Support-Star Repair](/Users/rl2025/rtdl_python_only/build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
+![Orbit Support-Star Repair](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
 
 Quick read:
 

@@ -17,12 +17,14 @@ is still the released v0.2 Linux segment/polygon surface:
 For the new application-story proof, the strongest current v0.3 result is:
 
 - a real 3D RTDL-plus-Python visual demo line
+- that line sits on top of the same released `v0.2.0` RTDL core rather than
+  replacing the workload/package story
 - bounded Linux 3D backend closure across:
   - `embree`
   - `optix`
   - `vulkan`
 - a public video entry point for that demo line:
-  - [RTDL Visual Demo Video](https://youtube.com/shorts/SOKZTISuH5c)
+  - [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
 - plus an accepted local Windows `4K` artifact preserved in the repo reports
 - plus saved small Linux supporting artifacts preserved in the repo reports for:
   - OptiX

@@ -32,22 +32,22 @@ This package remains centered on the smooth-camera set, but the moving-star repa
 ### Candidate A
 
 - warm-fill smooth-camera movie:
-  - `/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/win_embree_smooth_camera_hd_1024_uniform_320f.mp4`
+  - `build/win_embree_smooth_camera_hd_1024_uniform_320f/win_embree_smooth_camera_hd_1024_uniform_320f.mp4`
 
 ### Candidate B
 
 - brighter-white secondary-light smooth-camera movie:
-  - `/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4`
+  - `build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4`
 
 ### Candidate C
 
 - pseudo-one-star brighter-hero smooth-camera movie:
-  - `/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4`
+  - `build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4`
 
 ### Candidate D
 
 - true one-light smooth-camera movie:
-  - `/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4`
+  - `build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4`
 
 ## Success Criteria
 

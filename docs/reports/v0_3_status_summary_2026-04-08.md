@@ -2,7 +2,7 @@
 
 Superseded by the newer final-status package draft:
 
-- [goal184_v0_3_final_status_package_2026-04-09.md](/Users/rl2025/rtdl_python_only/docs/reports/goal184_v0_3_final_status_package_2026-04-09.md)
+- [goal184_v0_3_final_status_package_2026-04-09.md](goal184_v0_3_final_status_package_2026-04-09.md)
 
 Date: 2026-04-08
 
@@ -31,16 +31,16 @@ Date: 2026-04-08
 
 - Windows Embree remains the premier public movie path
 - current recommended public artifact:
-  - [win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4)
+  - [win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4](../../build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4)
 
 ### Linux supporting artifacts
 
 - Goal 170 is closed and online
 - saved Linux GPU-supporting artifacts:
   - OptiX:
-    - [goal170_optix_orbit_small.gif](/Users/rl2025/rtdl_python_only/build/goal170_optix_orbit_small/goal170_optix_orbit_small.gif)
+    - [goal170_optix_orbit_small.gif](../../build/goal170_optix_orbit_small/goal170_optix_orbit_small.gif)
   - Vulkan:
-    - [goal170_vulkan_orbit_medium_fix.gif](/Users/rl2025/rtdl_python_only/build/goal170_vulkan_orbit_medium_fix/goal170_vulkan_orbit_medium_fix.gif)
+    - [goal170_vulkan_orbit_medium_fix.gif](../../build/goal170_vulkan_orbit_medium_fix/goal170_vulkan_orbit_medium_fix.gif)
 
 ### Front-surface refresh
 
@@ -64,8 +64,8 @@ Objective:
 
 Current code changes:
 
-- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
-- [goal166_orbiting_star_ball_demo_test.py](/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py)
+- [rtdl_orbiting_star_ball_demo.py](../../examples/rtdl_orbiting_star_ball_demo.py)
+- [goal166_orbiting_star_ball_demo_test.py](../../tests/goal166_orbiting_star_ball_demo_test.py)
 
 What is already done for Goal 172:
 
@@ -86,10 +86,10 @@ What is already done for Goal 172:
 
 Goal 172 preview artifact:
 
-- [summary.json](/Users/rl2025/rtdl_python_only/build/goal172_temporal_blend_preview/summary.json)
-- [frame_000.png](/Users/rl2025/rtdl_python_only/build/goal172_temporal_blend_preview/frame_000.png)
-- [frame_001.png](/Users/rl2025/rtdl_python_only/build/goal172_temporal_blend_preview/frame_001.png)
-- [frame_005.png](/Users/rl2025/rtdl_python_only/build/goal172_temporal_blend_preview/frame_005.png)
+- [summary.json](../../build/goal172_temporal_blend_preview/summary.json)
+- [frame_000.png](../../build/goal172_temporal_blend_preview/frame_000.png)
+- [frame_001.png](../../build/goal172_temporal_blend_preview/frame_001.png)
+- [frame_005.png](../../build/goal172_temporal_blend_preview/frame_005.png)
 
 Preview facts:
 
@@ -107,13 +107,13 @@ Preview facts:
 ## Goal 172 Review State
 
 - Gemini review is in progress from:
-  - [GOAL172_GEMINI_ONE_SENTENCE_HANDOFF.md](/Users/rl2025/rtdl_python_only/docs/handoff/GOAL172_GEMINI_ONE_SENTENCE_HANDOFF.md)
+  - [GOAL172_GEMINI_ONE_SENTENCE_HANDOFF.md](../handoff/GOAL172_GEMINI_ONE_SENTENCE_HANDOFF.md)
 - Codex consensus draft already exists:
-  - [2026-04-08-codex-consensus-goal172-temporal-stability-option.md](/Users/rl2025/rtdl_python_only/history/ad_hoc_reviews/2026-04-08-codex-consensus-goal172-temporal-stability-option.md)
+  - [2026-04-08-codex-consensus-goal172-temporal-stability-option.md](../../history/ad_hoc_reviews/2026-04-08-codex-consensus-goal172-temporal-stability-option.md)
 - Goal 172 docs already exist but are not yet committed:
-  - [goal_172_temporal_stability_option.md](/Users/rl2025/rtdl_python_only/docs/goal_172_temporal_stability_option.md)
-  - [goal172_temporal_stability_option_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal172_temporal_stability_option_2026-04-08.md)
-  - [goal172_temporal_stability_option_review_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal172_temporal_stability_option_review_2026-04-08.md)
+  - [goal_172_temporal_stability_option.md](../goal_172_temporal_stability_option.md)
+  - [goal172_temporal_stability_option_2026-04-08.md](goal172_temporal_stability_option_2026-04-08.md)
+  - [goal172_temporal_stability_option_review_2026-04-08.md](goal172_temporal_stability_option_review_2026-04-08.md)
 
 ## Important Working Rules
 

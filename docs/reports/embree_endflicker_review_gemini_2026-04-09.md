@@ -1,0 +1,3 @@
+I will begin by locating the requested files within the `examples/` directory to analyze the camera and animation logic for potential off-by-one errors or interpolation issues.
+I'll examine the camera interpolation and frame loop logic in `examples/rtdl_smooth_camera_orbit_demo.py`, focusing on how the final frame index and time parameters are handled.
+I've noted that `_smooth_camera_phase_samples` in `uniform` mode stops just short of phase `1.0`, which might be appropriate for looping but could cause a "flicker" if the animation's end-of-shot logic expects a full `0.0` to `1.0` range. I'll now examine `_orbit_phase_samples` in `examples/rtdl_orbiting_star_ball_demo.py` to see how it handles phase endpoints.

@@ -15,11 +15,11 @@ The earlier moving-light visual-demo family had real technical value, but it fai
 Finished Windows Embree warm-fill smooth-camera movie:
 
 - artifact:
-  - [win_embree_smooth_camera_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/win_embree_smooth_camera_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_hd_1024_uniform_320f/win_embree_smooth_camera_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_hd_1024_uniform_320f/frame_160.png)
 - summary:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_hd_1024_uniform_320f/summary.json)
+  - [summary.json](../../build/win_embree_smooth_camera_hd_1024_uniform_320f/summary.json)
 
 Known run facts:
 
@@ -43,11 +43,11 @@ Known run facts:
 Brighter-white secondary-light smooth-camera variant:
 
 - artifact:
-  - [win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/frame_160.png)
 - summary:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/summary.json)
+  - [summary.json](../../build/win_embree_smooth_camera_whitefill_hd_1024_uniform_320f/summary.json)
 
 Known run facts:
 
@@ -71,11 +71,11 @@ Known run facts:
 Pseudo-one-star brighter-hero smooth-camera variant:
 
 - artifact:
-  - [win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/win_embree_smooth_camera_onestar_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/frame_160.png)
 - summary:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/summary.json)
+  - [summary.json](../../build/win_embree_smooth_camera_onestar_hd_1024_uniform_320f/summary.json)
 
 Known run facts:
 
@@ -104,11 +104,11 @@ Important boundary:
 True one-light smooth-camera variant:
 
 - artifact:
-  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
 - preview:
-  - [frame_160.png](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
+  - [frame_160.png](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
 - summary:
-  - [summary.json](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
+  - [summary.json](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
 
 Known run facts:
 
@@ -148,7 +148,7 @@ The accepted flagship should be whichever of the smooth-camera candidates is jud
 Accepted smooth-camera flagship baseline:
 
 - Candidate D:
-  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](/Users/rl2025/rtdl_python_only/build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
+  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
 
 Reason for acceptance:
 
