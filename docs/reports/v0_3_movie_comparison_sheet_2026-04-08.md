@@ -93,11 +93,13 @@ Quick read:
 - it is the strongest current answer to the blinking problem without abandoning the moving-star concept
 - it is still a visual candidate, not an already-accepted flagship
 
-## Decision Standard
+## Final Decision
 
-The eventual `v0.3` flagship movie should be whichever candidate best satisfies:
+The final preserved flagship was chosen after review:
 
-- temporal stability
-- intuitive visual story
-- visual polish
-- honesty about remaining limits
+- selected public-facing local artifact:
+  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4)
+- reason:
+  - it keeps the true one-light smooth-camera line
+  - it removes the weaker late tail from the longer full-length HD movie
+  - it is the cleanest bounded public-facing cut from the finished Windows Embree path

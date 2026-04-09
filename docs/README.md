@@ -95,7 +95,8 @@ Keep these current facts in mind while reading:
   - `vulkan`
 - the polished public movie artifact is currently strongest on Windows Embree
 - a finished accepted Windows `4K` artifact now also exists, with an explicitly
-  documented temporal-blink caveat
+  documented temporal-blink caveat, but the preserved public-facing local
+  counterpart is the cleaner HD `6s` cut
 - Linux OptiX and Vulkan now also have saved small compare-clean supporting
   artifacts for the same visual-demo line
 - Embree and OptiX are the mature high-performance backends on the accepted
