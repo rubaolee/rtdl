@@ -7,11 +7,12 @@ Date: 2026-04-09
 Goal 189 starts the final `v0.3` engineering cleanup line: reconstructing the
 native backend engines out of their current single-file monolith shape.
 
-The first three bounded slices are now complete for:
+All four bounded reconstruction slices are now complete for:
 
 - the native oracle
 - the native Embree backend
 - the native OptiX backend
+- the native Vulkan backend
 
 ## Current Native Inventory
 
@@ -163,12 +164,52 @@ GPU runtime execution pass. The split preserves the current runtime/build
 surface, and the stronger OptiX runtime checks should still be exercised on a
 machine with the CUDA/OptiX toolchain available.
 
-## Next Slice
+## Final Slice Completed
 
-The final reconstruction target should now be:
+The native Vulkan backend was reconstructed into a modular layout under:
+
+- `src/native/vulkan/rtdl_vulkan_prelude.h`
+- `src/native/vulkan/rtdl_vulkan_core.cpp`
+- `src/native/vulkan/rtdl_vulkan_api.cpp`
+
+Compatibility-preserving top-level entry point remains:
 
 - `src/native/rtdl_vulkan.cpp`
 
-That is the right final slice because the oracle, Embree, and OptiX
-compatibility patterns are now established and Vulkan is the only remaining
-single-file native engine.
+That top-level file now only provides the stable runtime/build entry path and
+pulls the split Vulkan modules together.
+
+## Verification
+
+Bounded Vulkan-facing checks passed after the split:
+
+```text
+python3 -m compileall src/native/rtdl_vulkan.cpp src/native/vulkan
+Listing 'src/native/vulkan'...
+```
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.rtdsl_vulkan_test tests.goal169_vulkan_orbit_demo_test
+Ran 5 tests in 0.024s
+OK (skipped=3)
+```
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.rtdsl_embree_test tests.goal43_optix_validation_test
+Ran 11 tests in 0.037s
+OK
+```
+
+## Current Closure State
+
+Goal 189 has now completed the full planned reconstruction order:
+
+1. native oracle
+2. Embree
+3. OptiX
+4. Vulkan
+
+The native engines are no longer maintained as four single-file monoliths.
+Each backend still preserves the same stable top-level source path expected by
+the current Python runtime/build surface, but the real implementation now lives
+in backend-specific module directories under `src/native/`.
