@@ -17,7 +17,9 @@ Python-hosted 3D application.
 
 ## See It Quickly
 
-[![RTDL visual demo](docs/assets/rtdl_visual_demo_thumb.png)](https://youtube.com/shorts/O07Mg5luap8)
+<a href="https://youtube.com/shorts/O07Mg5luap8">
+  <img src="docs/assets/rtdl_visual_demo_thumb.png" alt="RTDL visual demo" width="420">
+</a>
 
 Primary front-door links:
 
