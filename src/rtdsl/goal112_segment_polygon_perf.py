@@ -43,7 +43,7 @@ def backend_available(backend: str) -> bool:
 
 
 def _kernel():
-    from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference
+    from examples.reference.rtdl_workload_reference import segment_polygon_hitcount_reference
 
     return segment_polygon_hitcount_reference
 

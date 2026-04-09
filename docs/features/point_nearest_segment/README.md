@@ -11,10 +11,10 @@ answers and do not need full k-nearest search.
 ## Docs
 
 - canonical kernel pattern:
-  - [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
+  - [rtdl_workload_reference.py](../../../examples/reference/rtdl_workload_reference.py)
 - language contracts:
-  - [dsl_reference.md](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
-  - [workload_cookbook.md](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+  - [dsl_reference.md](../../rtdl/dsl_reference.md)
+  - [workload_cookbook.md](../../rtdl/workload_cookbook.md)
 
 Kernel shape:
 
@@ -31,13 +31,13 @@ return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
 - predicate:
   - `rt.point_nearest_segment(exact=False)`
 - canonical reference kernel:
-  - [point_nearest_segment_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
+  - [point_nearest_segment_reference](../../../examples/reference/rtdl_workload_reference.py)
 
 ## Example
 
 Start here:
 
-- [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
+- [rtdl_workload_reference.py](../../../examples/reference/rtdl_workload_reference.py)
 
 That file includes both authored and fixture-backed helper cases for this
 feature family.
@@ -46,7 +46,7 @@ feature family.
 
 - use stable point and segment ids so downstream nearest rows stay auditable
 - validate with `rt.run_cpu(...)` first
-- keep expectations modest: this is a supported workload, but not the current flagship live branch story
+- keep expectations modest: this is a supported workload, but not the current main release story
 
 ## Try
 

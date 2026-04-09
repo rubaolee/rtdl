@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Shared reference kernels and fixture builders for public workload examples."""
+
 import rtdsl as rt
 
 
@@ -72,7 +74,7 @@ def make_fixture_point_nearest_segment_case():
     return {"points": points, "segments": segments}
 
 
-GOAL10_KERNELS = (
+WORKLOAD_REFERENCE_KERNELS = (
     segment_polygon_hitcount_reference,
     segment_polygon_anyhit_rows_reference,
     point_nearest_segment_reference,

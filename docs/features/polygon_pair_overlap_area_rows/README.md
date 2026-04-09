@@ -11,13 +11,13 @@ under the current orthogonal integer-grid unit-cell contract.
 ## Docs
 
 - canonical example:
-  - [rtdl_polygon_pair_overlap_area_rows.py](/Users/rl2025/rtdl_python_only/examples/rtdl_polygon_pair_overlap_area_rows.py)
+  - [rtdl_polygon_pair_overlap_area_rows.py](../../../examples/rtdl_polygon_pair_overlap_area_rows.py)
 - PostGIS parity helper:
-  - [goal138_polygon_overlap_postgis.py](/Users/rl2025/rtdl_python_only/src/rtdsl/goal138_polygon_overlap_postgis.py)
+  - [goal138_polygon_overlap_postgis.py](../../../src/rtdsl/goal138_polygon_overlap_postgis.py)
 - saved PostGIS SQL:
-  - [v0_2_jaccard_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_jaccard_postgis_workloads.sql)
+  - [v0_2_jaccard_postgis_workloads.sql](../../sql/v0_2_jaccard_postgis_workloads.sql)
 - closure report:
-  - [goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md)
+  - [goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md](../../reports/goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md)
 
 Kernel shape:
 
@@ -44,14 +44,14 @@ return rt.emit(
 - predicate:
   - `rt.polygon_pair_overlap_area_rows(exact=False)`
 - canonical reference kernel:
-  - [polygon_pair_overlap_area_rows_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_polygon_pair_overlap_area_rows.py)
+  - [polygon_pair_overlap_area_rows_reference](../../../examples/rtdl_polygon_pair_overlap_area_rows.py)
 
 ## Example
 
 Run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
 ```
 

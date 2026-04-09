@@ -28,12 +28,12 @@ Project-level front door:
 
 1. [Quick Tutorial](quick_tutorial.md)
 2. [RTDL v0.2 User Guide](v0_2_user_guide.md)
-3. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
-4. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
-5. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
-6. [Release-Facing Examples](release_facing_examples.md)
-7. [Feature Homes](features/README.md)
-8. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+3. [Release-Facing Examples](release_facing_examples.md)
+4. [Feature Homes](features/README.md)
+5. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+6. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
+7. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
+8. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
 9. [Current Milestone Q/A](current_milestone_qa.md)
 10. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
 11. [v0.1 Release Notes](v0_1_release_notes.md)
@@ -85,6 +85,12 @@ Keep these current facts in mind while reading:
   baseline on `main`
 - the newer `v0.3` line is an application-style demo layer on top of that
   released core, not a separate replacement release
+- the public example tree is now organized as:
+  - top-level release-facing examples
+  - `examples/reference/`
+  - `examples/generated/`
+  - `examples/visual_demo/`
+  - `examples/internal/`
 - the preserved primary source baseline for the stronger current v0.3 application-style demo line is:
   - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 - the smoother one-light camera-orbit line remains preserved as a stable comparison path:

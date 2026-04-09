@@ -25,9 +25,9 @@ Updated:
 Added:
 
 - `tests/goal129_generate_only_second_workload_test.py`
-- `examples/rtdl_generated_segment_polygon_anyhit_bundle/README.md`
-- `examples/rtdl_generated_segment_polygon_anyhit_bundle/request.json`
-- `examples/rtdl_generated_segment_polygon_anyhit_bundle/generated_segment_polygon_anyhit_rows_cpu_python_reference_authored_segment_polygon_minimal.py`
+- `examples/generated/rtdl_generated_segment_polygon_anyhit_bundle/README.md`
+- `examples/generated/rtdl_generated_segment_polygon_anyhit_bundle/request.json`
+- `examples/generated/rtdl_generated_segment_polygon_anyhit_bundle/generated_segment_polygon_anyhit_rows_cpu_python_reference_authored_segment_polygon_minimal.py`
 
 ## What changed
 
@@ -74,7 +74,7 @@ Focused generate-only regression:
 
 Generated bundle run:
 
-- `PYTHONPATH=src:. python3 examples/rtdl_generated_segment_polygon_anyhit_bundle/generated_segment_polygon_anyhit_rows_cpu_python_reference_authored_segment_polygon_minimal.py`
+- `PYTHONPATH=src:. python3 examples/generated/rtdl_generated_segment_polygon_anyhit_bundle/generated_segment_polygon_anyhit_rows_cpu_python_reference_authored_segment_polygon_minimal.py`
   - result:
     - `workload: segment_polygon_anyhit_rows`
     - `backend: cpu_python_reference`

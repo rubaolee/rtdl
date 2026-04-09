@@ -25,10 +25,10 @@ For the new application-story proof, the strongest current v0.3 result is:
   - `vulkan`
 - a public video entry point for that demo line:
   - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
-- the cleanest preserved local counterpart to that public artifact:
-  - [win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4](../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/1024/win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4)
-- plus a smaller preserved local supporting artifact for the same hidden-star line:
-  - [win_embree_hidden_star_earth_256_10s_32fps_user_stable_rtdl_shadow.mp4](../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/256/win_embree_hidden_star_earth_256_10s_32fps_user_stable_rtdl_shadow.mp4)
+- the repo’s primary preserved source artifact for that line:
+  - [rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+- preserved local Windows hidden-star artifacts remain available under:
+  - `build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/`
 - the earlier Linux OptiX and Vulkan smooth-camera support artifacts remain preserved as secondary comparison/support material, not as the primary hidden-star demo outputs
 
 The archived v0.1 `county_zipcode` positive-hit `pip` line remains the trust
@@ -45,7 +45,7 @@ Vulkan is now:
   boundaries
 - slower than PostGIS, OptiX, and Embree on those boundaries
 
-So Vulkan is a supported portable backend, not the current flagship performance
+So Vulkan is a supported portable backend, not the current main performance
 backend.
 
 ## What is RTDL doing in Python?

@@ -48,6 +48,12 @@ PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_pyt
 PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
+Those three commands teach three different things:
+
+- `rtdl_hello_world.py`: the smallest possible RTDL execution shape
+- `rtdl_hello_world_backends.py`: how backend selection changes the same scene
+- `rtdl_segment_polygon_hitcount.py`: what a release-facing workload example looks like
+
 ## What RTDL programs do
 
 An RTDL program usually has the same shape:
@@ -157,6 +163,11 @@ After this hello-world example, the best next files are:
 - `examples/visual_demo/rtdl_lit_ball_demo.py`
 - `docs/features/README.md`
 - `docs/architecture_api_performance_overview.md`
+
+If you want a clear map of which example directories are public versus
+historical, also read:
+
+- `examples/README.md`
 
 That path moves from a tiny ray-query example to the current release-facing
 spatial workloads and then to the broader architecture/performance story.

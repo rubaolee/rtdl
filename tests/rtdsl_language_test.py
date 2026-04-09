@@ -10,7 +10,7 @@ sys.path.insert(0, "src")
 import rtdsl as rt
 from examples.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
 from examples.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
-from examples.reference.rtdl_goal10_reference import GOAL10_KERNELS
+from examples.reference.rtdl_workload_reference import WORKLOAD_REFERENCE_KERNELS
 from examples.reference.rtdl_language_reference import LANGUAGE_REFERENCE_KERNELS
 from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference
 
@@ -51,7 +51,7 @@ class RtDslLanguageTest(unittest.TestCase):
             "point_nearest_segment_reference": "point_nearest_segment",
         }
 
-        for kernel_fn in LANGUAGE_REFERENCE_KERNELS + (ray_triangle_hitcount_reference,) + GOAL10_KERNELS:
+        for kernel_fn in LANGUAGE_REFERENCE_KERNELS + (ray_triangle_hitcount_reference,) + WORKLOAD_REFERENCE_KERNELS:
             compiled, plan, generated = self._generate(kernel_fn)
             self.assertEqual(plan.workload_kind, expected[compiled.name])
             payload = json.loads(generated["metadata"].read_text(encoding="utf-8"))

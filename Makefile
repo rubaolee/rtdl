@@ -141,7 +141,7 @@ build-optix:
 
 build:
 	mkdir -p $(BUILD_DIR)
-	PYTHONPATH=src:. python3 -c "import rtdsl as rt; from examples.reference.rtdl_language_reference import LANGUAGE_REFERENCE_KERNELS; from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference; from examples.reference.rtdl_goal10_reference import GOAL10_KERNELS; [rt.lower_to_execution_plan(rt.compile_kernel(kernel)) for kernel in (LANGUAGE_REFERENCE_KERNELS + (ray_triangle_hitcount_reference,) + GOAL10_KERNELS)]"
+	PYTHONPATH=src:. python3 -c "import rtdsl as rt; from examples.reference.rtdl_language_reference import LANGUAGE_REFERENCE_KERNELS; from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference; from examples.reference.rtdl_workload_reference import WORKLOAD_REFERENCE_KERNELS; [rt.lower_to_execution_plan(rt.compile_kernel(kernel)) for kernel in (LANGUAGE_REFERENCE_KERNELS + (ray_triangle_hitcount_reference,) + WORKLOAD_REFERENCE_KERNELS)]"
 
 run: run-rtdsl-py
 

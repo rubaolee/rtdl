@@ -128,6 +128,13 @@ cd rtdl
 PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
+The repo also preserves example generated output under:
+
+- [examples/generated/](../examples/generated/README.md)
+
+Those files are useful for inspection and handoff workflows, but they are not
+the main first-run entry points for new users.
+
 ## Notes
 
 - these are the release-facing examples for the frozen v0.2 scope

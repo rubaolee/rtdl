@@ -289,8 +289,8 @@ def _load_ray_case(dataset: str) -> DatasetCase:
 
 
 def _load_segment_polygon_case(dataset: str, workload: str = "segment_polygon_hitcount") -> DatasetCase:
-    from examples.reference.rtdl_goal10_reference import make_fixture_segment_polygon_case
-    from examples.reference.rtdl_goal10_reference import make_segment_polygon_authored_case
+    from examples.reference.rtdl_workload_reference import make_fixture_segment_polygon_case
+    from examples.reference.rtdl_workload_reference import make_segment_polygon_authored_case
 
     if dataset == "authored_segment_polygon_minimal":
         case = make_segment_polygon_authored_case()
@@ -345,8 +345,8 @@ def _load_segment_polygon_case(dataset: str, workload: str = "segment_polygon_hi
 
 
 def _load_point_nearest_segment_case(dataset: str) -> DatasetCase:
-    from examples.reference.rtdl_goal10_reference import make_fixture_point_nearest_segment_case
-    from examples.reference.rtdl_goal10_reference import make_point_nearest_segment_authored_case
+    from examples.reference.rtdl_workload_reference import make_fixture_point_nearest_segment_case
+    from examples.reference.rtdl_workload_reference import make_point_nearest_segment_authored_case
 
     if dataset == "authored_point_nearest_segment_minimal":
         case = make_point_nearest_segment_authored_case()
@@ -533,11 +533,11 @@ def main(argv: list[str] | None = None) -> int:
     elif args.workload == "ray_tri_hitcount":
         from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference as kernel
     elif args.workload == "segment_polygon_hitcount":
-        from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference as kernel
+        from examples.reference.rtdl_workload_reference import segment_polygon_hitcount_reference as kernel
     elif args.workload == "segment_polygon_anyhit_rows":
-        from examples.reference.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference as kernel
+        from examples.reference.rtdl_workload_reference import segment_polygon_anyhit_rows_reference as kernel
     else:
-        from examples.reference.rtdl_goal10_reference import point_nearest_segment_reference as kernel
+        from examples.reference.rtdl_workload_reference import point_nearest_segment_reference as kernel
 
     payload = run_baseline_case(kernel, dataset, backend=args.backend)
     print(json.dumps(_json_ready(payload), indent=2, sort_keys=True))

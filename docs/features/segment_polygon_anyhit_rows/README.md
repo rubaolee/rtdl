@@ -11,11 +11,11 @@ outside RTDL.
 ## Docs
 
 - canonical example:
-  - [rtdl_segment_polygon_anyhit_rows.py](/Users/rl2025/rtdl_python_only/examples/rtdl_segment_polygon_anyhit_rows.py)
+  - [rtdl_segment_polygon_anyhit_rows.py](../../../examples/rtdl_segment_polygon_anyhit_rows.py)
 - shared reference kernel:
-  - [rtdl_goal10_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
+  - [rtdl_workload_reference.py](../../../examples/reference/rtdl_workload_reference.py)
 - PostGIS SQL comparison:
-  - [v0_2_segment_polygon_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_segment_polygon_postgis_workloads.sql)
+  - [v0_2_segment_polygon_postgis_workloads.sql](../../sql/v0_2_segment_polygon_postgis_workloads.sql)
 
 Kernel shape:
 
@@ -32,15 +32,15 @@ return rt.emit(hits, fields=["segment_id", "polygon_id"])
 - predicate:
   - `rt.segment_polygon_anyhit_rows(exact=False)`
 - canonical reference kernel:
-  - [segment_polygon_anyhit_rows_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
+  - [segment_polygon_anyhit_rows_reference](../../../examples/reference/rtdl_workload_reference.py)
 
 ## Example
 
 Run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 ## Best Practices

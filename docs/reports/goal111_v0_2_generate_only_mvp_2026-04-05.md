@@ -20,7 +20,7 @@ The final package adds:
 - generator tests:
   - `tests/goal111_generate_only_mvp_test.py`
 - tracked worked example:
-  - `examples/rtdl_generated_segment_polygon_hitcount_cpu.py`
+  - `examples/generated/rtdl_generated_segment_polygon_hitcount_cpu.py`
 
 ## Accepted request contract
 
@@ -88,12 +88,12 @@ python3 scripts/rtdl_generate_only.py \
   --dataset authored_segment_polygon_minimal \
   --backend cpu \
   --output-mode summary \
-  --output examples/rtdl_generated_segment_polygon_hitcount_cpu.py
+  --output examples/generated/rtdl_generated_segment_polygon_hitcount_cpu.py
 ```
 
 The generated example file is:
 
-- `examples/rtdl_generated_segment_polygon_hitcount_cpu.py`
+- `examples/generated/rtdl_generated_segment_polygon_hitcount_cpu.py`
 
 Local smoke generation and generated-program execution were also validated on
 the universally runnable reference backend:

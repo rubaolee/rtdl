@@ -45,10 +45,10 @@ New users see this prefix on every quick-start and example command, but the docs
 The primary workload example `rtdl_segment_polygon_hitcount.py` contains:
 
 ```python
-from examples.reference.rtdl_goal10_reference import segment_polygon_hitcount_reference
+from examples.reference.rtdl_workload_reference import segment_polygon_hitcount_reference
 ```
 
-`rtdl_goal10_reference.py` is an internal development artifact with a goal-tracking name. It is exposed to external users without explanation. A new user following the import chain lands in a file that reads as internal scaffolding.
+`rtdl_workload_reference.py` is an internal development artifact with a goal-tracking name. It is exposed to external users without explanation. A new user following the import chain lands in a file that reads as internal scaffolding.
 
 ### 6. The `examples/` directory mixes release-facing and internal files with no separation
 

@@ -11,13 +11,13 @@ the orthogonal integer-grid unit-cell contract.
 ## Docs
 
 - canonical example:
-  - [rtdl_polygon_set_jaccard.py](/Users/rl2025/rtdl_python_only/examples/rtdl_polygon_set_jaccard.py)
+  - [rtdl_polygon_set_jaccard.py](../../../examples/rtdl_polygon_set_jaccard.py)
 - generated handoff bundle:
-  - [generated_polygon_set_jaccard_bundle](/Users/rl2025/rtdl_python_only/examples/rtdl_generated_polygon_set_jaccard_bundle/README.md)
+  - [generated_polygon_set_jaccard_bundle](../../../examples/generated/rtdl_generated_polygon_set_jaccard_bundle/README.md)
 - saved PostGIS SQL:
-  - [v0_2_jaccard_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_jaccard_postgis_workloads.sql)
+  - [v0_2_jaccard_postgis_workloads.sql](../../sql/v0_2_jaccard_postgis_workloads.sql)
 - public-data audit:
-  - [goal141_public_jaccard_linux_audit_2026-04-06.md](/Users/rl2025/rtdl_python_only/docs/reports/goal141_public_jaccard_linux_audit_2026-04-06.md)
+  - [goal141_public_jaccard_linux_audit_2026-04-06.md](../../reports/goal141_public_jaccard_linux_audit_2026-04-06.md)
 
 Kernel shape:
 
@@ -37,22 +37,22 @@ return rt.emit(
 - predicate:
   - `rt.polygon_set_jaccard(exact=False)`
 - canonical reference kernel:
-  - [polygon_set_jaccard_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_polygon_set_jaccard.py)
+  - [polygon_set_jaccard_reference](../../../examples/rtdl_polygon_set_jaccard.py)
 
 ## Example
 
 Run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 ```
 
 Generate a runnable handoff bundle:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
+cd rtdl
+PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 ## Best Practices

@@ -36,9 +36,9 @@ Implementation files:
 
 Tracked worked bundle:
 
-- `examples/rtdl_generated_segment_polygon_bundle/README.md`
-- `examples/rtdl_generated_segment_polygon_bundle/request.json`
-- `examples/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py`
+- `examples/generated/rtdl_generated_segment_polygon_bundle/README.md`
+- `examples/generated/rtdl_generated_segment_polygon_bundle/request.json`
+- `examples/generated/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py`
 
 The generator now supports:
 
@@ -117,20 +117,20 @@ python3 scripts/rtdl_generate_only.py \
   --backend cpu_python_reference \
   --artifact-shape handoff_bundle \
   --output-mode summary \
-  --output examples/rtdl_generated_segment_polygon_bundle
+  --output examples/generated/rtdl_generated_segment_polygon_bundle
 ```
 
 Bundle contents:
 
-- `examples/rtdl_generated_segment_polygon_bundle/README.md`
-- `examples/rtdl_generated_segment_polygon_bundle/request.json`
-- `examples/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py`
+- `examples/generated/rtdl_generated_segment_polygon_bundle/README.md`
+- `examples/generated/rtdl_generated_segment_polygon_bundle/request.json`
+- `examples/generated/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py`
 
 Generated program run:
 
 ```bash
 cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py
+python3 examples/generated/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py
 ```
 
 Observed payload:

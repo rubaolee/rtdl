@@ -116,7 +116,7 @@ The current strongest released workload surfaces are:
 And the current strongest application-style proof is:
 
 - a bounded RTDL-plus-Python 3D demo line with Windows Embree as the polished
-  flagship and Linux OptiX/Vulkan as supporting backend artifacts
+  main public artifact and Linux OptiX/Vulkan as supporting backend artifacts
 
 ## Start Fast
 
@@ -204,6 +204,16 @@ The repo still preserves the accepted local movie artifacts and the supporting
 Linux backend demo artifacts in the deeper reports, but the front surface now
 uses the single public video link rather than local GIF previews.
 
+## Example Layout
+
+The `examples/` directory is organized by audience:
+
+- top-level `examples/`: first-run and release-facing examples
+- `examples/reference/`: readable reference kernels and fixture builders
+- `examples/generated/`: preserved generated bundles and generated example output
+- `examples/visual_demo/`: RTDL-plus-Python application demos
+- `examples/internal/`: preserved internal and historical artifacts
+
 ## Why RTDL Exists
 
 Ray tracing hardware and software are very good at hierarchical geometric
@@ -276,7 +286,7 @@ Current `main` therefore:
 - has Linux/PostGIS-backed correctness and performance evidence for those
   families
 - keeps Linux as the primary validation platform
-- keeps this Mac as a limited local platform
+- keeps local macOS as a limited platform
 
 Current `main` still does **not** mean:
 

@@ -22,7 +22,7 @@ This bundle was generated from RTDL Goal 113 generate-only maturation.
 From the RTDL repo root:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py
+PYTHONPATH=src:. python3 examples/generated/rtdl_generated_segment_polygon_bundle/generated_segment_polygon_hitcount_cpu_python_reference_authored_segment_polygon_minimal.py
 ```
 
 The generated program contains:

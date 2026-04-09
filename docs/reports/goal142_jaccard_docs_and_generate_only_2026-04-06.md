@@ -15,9 +15,9 @@ Accepted as a narrow product/documentation expansion.
 - focused tests:
   - [goal142_generate_only_jaccard_test.py](/Users/rl2025/rtdl_python_only/tests/goal142_generate_only_jaccard_test.py)
 - checked-in worked bundle:
-  - [README.md](/Users/rl2025/rtdl_python_only/examples/rtdl_generated_polygon_set_jaccard_bundle/README.md)
-  - [request.json](/Users/rl2025/rtdl_python_only/examples/rtdl_generated_polygon_set_jaccard_bundle/request.json)
-  - [generated program](/Users/rl2025/rtdl_python_only/examples/rtdl_generated_polygon_set_jaccard_bundle/generated_polygon_set_jaccard_cpu_python_reference_authored_polygon_set_jaccard_minimal.py)
+  - [README.md](/Users/rl2025/rtdl_python_only/examples/generated/rtdl_generated_polygon_set_jaccard_bundle/README.md)
+  - [request.json](/Users/rl2025/rtdl_python_only/examples/generated/rtdl_generated_polygon_set_jaccard_bundle/request.json)
+  - [generated program](/Users/rl2025/rtdl_python_only/examples/generated/rtdl_generated_polygon_set_jaccard_bundle/generated_polygon_set_jaccard_cpu_python_reference_authored_polygon_set_jaccard_minimal.py)
 
 ## Documentation updates
 

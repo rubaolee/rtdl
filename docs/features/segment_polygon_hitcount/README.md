@@ -10,11 +10,11 @@ segment/polygon pair.
 ## Docs
 
 - canonical example:
-  - [rtdl_segment_polygon_hitcount.py](/Users/rl2025/rtdl_python_only/examples/rtdl_segment_polygon_hitcount.py)
+  - [rtdl_segment_polygon_hitcount.py](../../../examples/rtdl_segment_polygon_hitcount.py)
 - app-style example:
-  - [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+  - [rtdl_road_hazard_screening.py](../../../examples/rtdl_road_hazard_screening.py)
 - PostGIS SQL comparison:
-  - [v0_2_segment_polygon_postgis_workloads.sql](/Users/rl2025/rtdl_python_only/docs/sql/v0_2_segment_polygon_postgis_workloads.sql)
+  - [v0_2_segment_polygon_postgis_workloads.sql](../../sql/v0_2_segment_polygon_postgis_workloads.sql)
 
 Kernel shape:
 
@@ -31,22 +31,22 @@ return rt.emit(hits, fields=["segment_id", "hit_count"])
 - predicate:
   - `rt.segment_polygon_hitcount(exact=False)`
 - canonical reference kernel:
-  - [segment_polygon_hitcount_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_goal10_reference.py)
+  - [segment_polygon_hitcount_reference](../../../examples/reference/rtdl_workload_reference.py)
 
 ## Example
 
 Run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 App-style run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
 ## Best Practices

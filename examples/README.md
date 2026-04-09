@@ -4,6 +4,7 @@ This directory contains two kinds of material:
 
 - release-facing examples you can run first
 - reference kernels and helper generators used by examples and tests
+- preserved generated bundles and generated example output
 - internal or historical development artifacts that are kept for auditability
 
 ## Start Here
@@ -19,17 +20,17 @@ If you are new to RTDL, use these files first:
 - `rtdl_road_hazard_screening.py`
 - `visual_demo/rtdl_lit_ball_demo.py`
 - `visual_demo/rtdl_hidden_star_stable_ball_demo.py`
-- `visual_demo/rtdl_smooth_camera_orbit_demo.py`
 
 ## Reference Material
 
 Files under `reference/` contain canonical kernels and helper generators used
 by examples, tests, and bounded evaluation paths.
 
-The `rtdl_generated_*` directories and the single
-`rtdl_generated_segment_polygon_hitcount_cpu.py` file at the examples root are
-preserved generated output artifacts. They are not the primary release-facing
-start points for new users.
+## Generated Material
+
+Files under `generated/` are preserved generated output artifacts. They are
+useful for inspection and handoff workflows, but they are not the primary
+release-facing start points for new users.
 
 ## Internal And Historical Artifacts
 

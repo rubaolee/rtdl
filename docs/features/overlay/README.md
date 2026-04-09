@@ -11,11 +11,11 @@ indicate exact follow-up work.
 ## Docs
 
 - canonical kernel pattern:
-  - [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
-  - [rtdl_codex_authored.py](/Users/rl2025/rtdl_python_only/examples/internal/rtdl_codex_authored.py)
+  - [rtdl_language_reference.py](../../../examples/reference/rtdl_language_reference.py)
+  - [rtdl_codex_authored.py](../../../examples/internal/rtdl_codex_authored.py)
 - language contracts:
-  - [dsl_reference.md](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
-  - [workload_cookbook.md](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+  - [dsl_reference.md](../../rtdl/dsl_reference.md)
+  - [workload_cookbook.md](../../rtdl/workload_cookbook.md)
 
 Kernel shape:
 
@@ -35,14 +35,14 @@ return rt.emit(
 - predicate:
   - `rt.overlay_compose()`
 - canonical reference kernel:
-  - [county_soil_overlay_reference](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
+  - [county_soil_overlay_reference](../../../examples/reference/rtdl_language_reference.py)
 
 ## Example
 
 Start here:
 
-- [rtdl_language_reference.py](/Users/rl2025/rtdl_python_only/examples/reference/rtdl_language_reference.py)
-- [rtdl_codex_authored.py](/Users/rl2025/rtdl_python_only/examples/internal/rtdl_codex_authored.py)
+- [rtdl_language_reference.py](../../../examples/reference/rtdl_language_reference.py)
+- [rtdl_codex_authored.py](../../../examples/internal/rtdl_codex_authored.py)
 
 ## Best Practices
 
