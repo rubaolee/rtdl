@@ -2,6 +2,38 @@
 
 This is the shortest path to writing and running a small RTDL program.
 
+If you are evaluating RTDL for the first time, the key idea is:
+
+- RTDL is the geometric-query core
+- Python is the surrounding application language
+
+So the normal first step is not a giant benchmark. It is a tiny runnable
+program that shows the RTDL execution shape clearly.
+
+## Fastest First Run
+
+From the repository root:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
+```
+
+The `PYTHONPATH=src:.` prefix tells Python to import the local RTDL package
+from this checkout.
+
+Expected output:
+
+```text
+hello, world
+```
+
+If that works, your next two useful commands are:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
 ## What RTDL programs do
 
 An RTDL program usually has the same shape:
@@ -97,6 +129,9 @@ Example:
 PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_python_reference
 ```
 
+The released workload examples use the same general pattern, just with more
+realistic inputs and emitted rows.
+
 ## Next steps
 
 After this hello-world example, the best next files are:
@@ -114,8 +149,8 @@ spatial workloads and then to the broader architecture/performance story.
 
 If you already know which workload family you want, jump straight to:
 
-- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
-- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+- [Release-Facing Examples](release_facing_examples.md)
+- [Feature Homes](features/README.md)
 
 ## RTDL Plus Python
 
@@ -137,3 +172,9 @@ to reconstruct the visible span, compute brightness, print ASCII, and write a
 real `.pgm` image. It is not a claim that RTDL v0.2.0 is a full rendering
 system. It is a concrete example of RTDL working well as the geometric core of
 a Python application.
+
+## If You Only Remember Three Things
+
+- use RTDL when the hard part of your problem is geometric querying
+- start with `examples/rtdl_hello_world.py`, then a release-facing example
+- treat RTDL as the core query engine and Python as the application layer

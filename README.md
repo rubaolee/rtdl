@@ -3,6 +3,20 @@
 RTDL is a research system for writing and running **non-graphical ray-tracing
 programs**.
 
+RTDL is useful when your problem is really a geometric query problem:
+
+- segment/polygon hit counting
+- segment/polygon any-hit row emission
+- bounded polygon-set similarity
+- Python applications that need a fast geometric-query core
+
+Current public front door:
+
+- [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [Quick Tutorial](docs/quick_tutorial.md)
+- [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
+- [Release-Facing Examples](docs/release_facing_examples.md)
+
 In graphics, ray tracing answers questions like “what does this pixel see?”.
 RTDL uses the same traversal machinery for other questions, especially spatial
 data questions such as:
@@ -18,6 +32,52 @@ The point of RTDL is simple:
 - run it across multiple backends
 - avoid hand-writing backend-specific code for Embree, OptiX, and Vulkan
 
+## Why It Is Useful
+
+RTDL is a good fit when you want to:
+
+- express a geometric query once and run it on different backends
+- keep the query logic visible in Python instead of burying it in backend code
+- get row outputs such as counts, hit rows, or bounded aggregate metrics
+- build a Python application where RTDL is the heavy geometric-query core
+
+The current strongest concrete workload surfaces are:
+
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
+
+And the current strongest application-style proof is:
+
+- a bounded RTDL-plus-Python 3D demo line with Windows Embree as the polished
+  flagship and Linux OptiX/Vulkan as supporting backend artifacts
+
+## Start Fast
+
+If you want the shortest path to seeing RTDL do something real:
+
+1. run the hello-world program
+2. run one released workload example
+3. inspect the feature docs for the surface you care about
+
+Repository-root commands:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+The `PYTHONPATH=src:.` prefix tells Python to import the local RTDL package
+from this checkout.
+
+Then continue with:
+
+1. [Quick Tutorial](docs/quick_tutorial.md)
+2. [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
+3. [Release-Facing Examples](docs/release_facing_examples.md)
+4. [Feature Homes](docs/features/README.md)
+
 RTDL also already works well with Python for user applications. A user does not
 need to stay inside a fixed list of named workloads. RTDL can provide the
 geometry-query core while Python handles surrounding application logic,
@@ -25,10 +85,13 @@ aggregation, reporting, or visual output. A small example of that model is:
 
 - [examples/rtdl_lit_ball_demo.py](examples/rtdl_lit_ball_demo.py)
 
-There is now also a stronger v0.3 application-style visual demo line. This is
-not a replacement for the released `v0.2.0` workload surface. It is a newer
-application/demo layer built on top of the same RTDL core, where RTDL handles
-geometric queries and Python handles the surrounding graphics work.
+The repo currently has two layers:
+
+- the released `v0.2.0` workload surface for row-oriented geometric-query work
+- the newer `v0.3` application/demo layer built on the same RTDL core
+
+The v0.3 line is not a replacement release. It is a proof that RTDL can act as
+the geometric-query core inside a larger Python application.
 
 The bounded 3D RTDL ray/triangle surface is already closed across `embree`,
 `optix`, and `vulkan` on Linux, while the current recommended public-facing
@@ -257,19 +320,8 @@ If you are new to the project, start here:
 1. [Docs Index](docs/README.md)
 2. [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 3. [Release-Facing Examples](docs/release_facing_examples.md)
-4. [Feature Homes](docs/features/README.md)
-5. [Quick Tutorial](docs/quick_tutorial.md)
-6. [RTDL v0.2 Release Reports](docs/release_reports/v0_2/README.md)
-7. [RTDL v0.2 Release Statement](docs/release_reports/v0_2/release_statement.md)
-8. [RTDL v0.2 Support Matrix](docs/release_reports/v0_2/support_matrix.md)
-9. [Architecture, API, And Performance Overview](docs/architecture_api_performance_overview.md)
-10. [v0.1 Release Notes](docs/v0_1_release_notes.md)
-11. [v0.1 Reproduction And Verification](docs/v0_1_reproduction_and_verification.md)
-12. [v0.1 Support Matrix](docs/v0_1_support_matrix.md)
-13. [v0.1 Release Reports](docs/release_reports/v0_1/README.md)
-14. [RTDL v0.1 Archive](docs/archive/v0_1/README.md)
-15. [RayJoin Reproduction Performance Report](docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-16. [RayJoin Target](docs/rayjoin_target.md)
+4. [Quick Tutorial](docs/quick_tutorial.md)
+5. [Feature Homes](docs/features/README.md)
 
 ## Project Status
 

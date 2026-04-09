@@ -35,8 +35,8 @@ Within that frozen surface:
 
 Canonical workload-by-workload homes:
 
-- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
-- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+- [Release-Facing Examples](release_facing_examples.md)
+- [Feature Homes](features/README.md)
 
 The important boundary is that v0.2.0 is broader and stronger than v0.1, but it
 is still not claiming that every backend/workload path is equally mature.
@@ -224,37 +224,51 @@ It is not the main validation platform for:
 
 ## Quick Start
 
+If you want the easiest path:
+
+1. run `examples/rtdl_hello_world.py`
+2. run one release-facing example with `cpu_python_reference`
+3. then switch backends deliberately
+
+Repository-root commands:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+The `PYTHONPATH=src:.` prefix tells Python to import the local RTDL package
+from this checkout.
+
+Then move to the workload examples below.
+
 Run the v0.2 hitcount example:
 
 ```bash
-cd /path/to/rtdl_python_only
-python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 Run the v0.2 any-hit example:
 
 ```bash
-cd /path/to/rtdl_python_only
-python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 Run the narrow Jaccard example:
 
 ```bash
-cd /path/to/rtdl_python_only
 PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 ```
 
 Generate a runnable handoff artifact:
 
 ```bash
-cd /path/to/rtdl_python_only
-python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
+PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 For app-style usage, start here:
 
-- [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+- [rtdl_road_hazard_screening.py](../examples/rtdl_road_hazard_screening.py)
 
 ## RTDL Plus Python Applications
 
@@ -278,8 +292,8 @@ is a full graphics/rendering system.
 
 For per-feature usage guidance, best practices, and limitations, use:
 
-- [Release-Facing Examples](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md)
-- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+- [Release-Facing Examples](release_facing_examples.md)
+- [Feature Homes](features/README.md)
 
 ## Current Limits
 
