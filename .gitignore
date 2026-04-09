@@ -4,3 +4,5 @@ __pycache__/
 build/
 deck_status/
 *.log
+*.tmp.py
+docs/reports/goal155_external_review_gemini_2026-04-07.md
