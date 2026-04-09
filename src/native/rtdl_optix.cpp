@@ -2992,12 +2992,23 @@ static void run_ray_hitcount_3d_optix(
     std::vector<GpuRayHitRecord> gpu_rows(ray_count);
     download(gpu_rows.data(), d_output.ptr, ray_count);
 
+    std::vector<uint32_t> exact_counts(ray_count, 0u);
+    for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+        uint32_t count = 0u;
+        for (size_t triangle_index = 0; triangle_index < triangle_count; ++triangle_index) {
+            if (exact_ray_hits_triangle_3d(rays[ray_index], triangles[triangle_index])) {
+                count += 1u;
+            }
+        }
+        exact_counts[ray_index] = count;
+    }
+
     auto* out = static_cast<RtdlRayHitCountRow*>(
         std::malloc(sizeof(RtdlRayHitCountRow) * ray_count));
     if (!out && ray_count > 0) throw std::bad_alloc();
     for (size_t i = 0; i < ray_count; ++i) {
         out[i].ray_id    = gpu_rows[i].ray_id;
-        out[i].hit_count = gpu_rows[i].hit_count;
+        out[i].hit_count = exact_counts[i];
     }
     *rows_out      = out;
     *row_count_out = ray_count;
