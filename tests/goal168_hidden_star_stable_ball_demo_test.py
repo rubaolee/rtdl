@@ -9,7 +9,9 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import _frame_light
+from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import render_hidden_star_stable_ball_optix_frames
 from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import render_hidden_star_stable_ball_frames
+from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import render_hidden_star_stable_ball_vulkan_frames
 
 
 class Goal168HiddenStarStableBallDemoTest(unittest.TestCase):
@@ -67,6 +69,40 @@ class Goal168HiddenStarStableBallDemoTest(unittest.TestCase):
         self.assertTrue(any(int(frame["shadow_rays"]) > 0 for frame in summary["frames"]))
         persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(persisted["shadow_mode"], "rtdl_light_to_surface")
+
+    def test_vulkan_wrapper_uses_expected_backend(self) -> None:
+        output_dir = Path("build/goal168_hidden_star_stable_ball_demo_test/vulkan_wrapper")
+        try:
+            summary = render_hidden_star_stable_ball_vulkan_frames(
+                output_dir=output_dir,
+                compare_backend=None,
+                width=16,
+                height=16,
+                latitude_bands=4,
+                longitude_bands=8,
+                frame_count=1,
+            )
+        except Exception as exc:
+            self.skipTest(f"vulkan unavailable: {exc}")
+        self.assertEqual(summary["backend"], "vulkan")
+        self.assertEqual(summary["shadow_mode"], "rtdl_light_to_surface")
+
+    def test_optix_wrapper_uses_expected_backend(self) -> None:
+        output_dir = Path("build/goal168_hidden_star_stable_ball_demo_test/optix_wrapper")
+        try:
+            summary = render_hidden_star_stable_ball_optix_frames(
+                output_dir=output_dir,
+                compare_backend=None,
+                width=16,
+                height=16,
+                latitude_bands=4,
+                longitude_bands=8,
+                frame_count=1,
+            )
+        except Exception as exc:
+            self.skipTest(f"optix unavailable: {exc}")
+        self.assertEqual(summary["backend"], "optix")
+        self.assertEqual(summary["shadow_mode"], "rtdl_light_to_surface")
 
 
 if __name__ == "__main__":

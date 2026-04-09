@@ -400,6 +400,58 @@ def render_hidden_star_stable_ball_frames(
     return summary
 
 
+def render_hidden_star_stable_ball_vulkan_frames(
+    *,
+    output_dir: Path,
+    compare_backend: str | None = "cpu_python_reference",
+    width: int = 256,
+    height: int = 256,
+    latitude_bands: int = 24,
+    longitude_bands: int = 48,
+    frame_count: int = 96,
+    jobs: int = 1,
+    shadow_mode: str = "rtdl_light_to_surface",
+) -> dict[str, object]:
+    return render_hidden_star_stable_ball_frames(
+        backend="vulkan",
+        compare_backend=compare_backend,
+        width=width,
+        height=height,
+        latitude_bands=latitude_bands,
+        longitude_bands=longitude_bands,
+        frame_count=frame_count,
+        output_dir=output_dir,
+        jobs=jobs,
+        shadow_mode=shadow_mode,
+    )
+
+
+def render_hidden_star_stable_ball_optix_frames(
+    *,
+    output_dir: Path,
+    compare_backend: str | None = "cpu_python_reference",
+    width: int = 256,
+    height: int = 256,
+    latitude_bands: int = 24,
+    longitude_bands: int = 48,
+    frame_count: int = 96,
+    jobs: int = 1,
+    shadow_mode: str = "rtdl_light_to_surface",
+) -> dict[str, object]:
+    return render_hidden_star_stable_ball_frames(
+        backend="optix",
+        compare_backend=compare_backend,
+        width=width,
+        height=height,
+        latitude_bands=latitude_bands,
+        longitude_bands=longitude_bands,
+        frame_count=frame_count,
+        output_dir=output_dir,
+        jobs=jobs,
+        shadow_mode=shadow_mode,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Render a stable hidden-star Earth ball using RTDL camera hits and optional RTDL shadow visibility.")
     parser.add_argument("--backend", default="embree")
