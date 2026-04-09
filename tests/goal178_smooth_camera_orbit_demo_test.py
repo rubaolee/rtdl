@@ -54,7 +54,9 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
     def test_uniform_phase_samples_do_not_repeat_opening_pose(self) -> None:
         phases = _smooth_camera_phase_samples(5, mode="uniform")
         self.assertEqual(len(phases), 5)
-        for actual, expected in zip(phases, (0.0, 0.2, 0.4, 0.6, 0.8), strict=True):
+        self.assertEqual(len(phases), 5)
+        expected_phases = (0.0, 0.2, 0.4, 0.6, 0.8)
+        for actual, expected in zip(phases, expected_phases):
             self.assertAlmostEqual(actual, expected)
 
     def test_render_one_frame_writes_summary_and_compare(self) -> None:
