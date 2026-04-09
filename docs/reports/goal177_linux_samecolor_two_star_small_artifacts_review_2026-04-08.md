@@ -4,8 +4,10 @@
 
 - code and artifact review by Codex
 - external review via Gemini
+- external review via Claude
 - saved external review:
   - [goal177_external_review_gemini_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal177_external_review_gemini_2026-04-08.md)
+  - [goal177_external_review_claude_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal177_external_review_claude_2026-04-08.md)
 
 ## Codex Findings
 
