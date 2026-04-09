@@ -139,11 +139,9 @@ Counter-rebuttal:
 
 - not if the new public surface is defined as bounded geometric-query work such
   as:
-  - ray/triangle hit count as a public feature line
+  - `ray_tri_hitcount_3d` as a public feature line
   - point-in-mesh / point-in-volume style inclusion tests
   - occlusion/visibility queries framed as geometric predicates
-  - nearest/distance or Hausdorff-adjacent geometry workloads only if bounded
-    and honestly documented
 - the demo remains evidence, not the target
 
 Hot conflict:
@@ -171,15 +169,58 @@ Recommended headline:
 
 ## Concrete v0.4 objectives
 
-### Objective 1: promote bounded 3D query surface to public feature status
+Two decisions have to be separated clearly:
 
-Candidates:
+- the first 3D substrate feature to formalize
+- the headline release workload that gives `v0.4` its identity
 
-- `ray_tri_hitcount` as a stronger public workload line
-- one bounded point-in-mesh / point-in-volume surface
-- one bounded visibility/occlusion surface framed as geometry, not rendering
+The current package now commits to both:
 
-### Objective 2: define exact public contracts
+- first substrate feature to formalize:
+  - `ray_tri_hitcount_3d`
+- headline release workload:
+  - `point_in_volume`
+
+This split resolves the strongest external objections:
+
+- Claude is right that the package was not actionable until one concrete first
+  target was chosen
+- Gemini is right that `v0.4` still needs a real non-graphical 3D workload
+  rather than stopping at generic ray visibility mechanics
+
+### Objective 1: formalize the bounded 3D query substrate
+
+Promote:
+
+- `ray_tri_hitcount_3d`
+
+to a real public feature line with:
+
+- a feature home
+- a direct non-demo example
+- explicit input/output contracts
+- explicit backend support wording
+
+Important honesty note:
+
+- this is not a wholly new workload family
+- it is a contractual and documentation lift of capability already proven in
+  `v0.3.0`
+
+### Objective 2: ship one real non-graphical 3D workload
+
+Chosen release target:
+
+- `point_in_volume`
+
+Reason:
+
+- it provides the non-graphical user story that the 3D ray/triangle substrate
+  alone does not
+- it is the cleanest 3D analog to the current `pip` mental model
+- it uses the proven 3D primitive without making RTDL look like a renderer
+
+### Objective 3: define exact public contracts
 
 For every new `v0.4` 3D feature:
 
@@ -189,7 +230,7 @@ For every new `v0.4` 3D feature:
 - accepted boundaries
 - exact vs bounded claims
 
-### Objective 3: add one non-demo user-facing 3D example chain
+### Objective 4: add one non-demo user-facing 3D example chain
 
 The front-door examples should include at least one 3D example that is clearly
 non-graphical:
@@ -198,7 +239,9 @@ non-graphical:
 - not a polished visual artifact
 - a direct geometric-query example that shows why 3D support matters
 
-### Objective 4: keep demos as proof, not product center
+This is a release-entry requirement, not an optional side objective.
+
+### Objective 5: keep demos as proof, not product center
 
 The hidden-star demo should remain:
 
@@ -208,13 +251,21 @@ It should not become:
 
 - the main definition of RTDL
 
-### Objective 5: align performance and validation story
+### Objective 6: align performance and validation story
 
 `v0.4` should force a cleaner release story:
 
 - which 3D workloads are reference-clean on which backends
 - which ones are bounded
 - which ones are performance claims versus proof-of-capability claims
+
+Important honesty note:
+
+- `v0.4` may begin as a correctness-first 3D release rather than a
+  performance-first one
+- if no honest external 3D comparison baseline exists yet, the release docs
+  must say that directly rather than silently inheriting the `v0.1`/`v0.2`
+  performance narrative
 
 ## What v0.4 should not be
 
@@ -240,21 +291,28 @@ Recommended decision:
 
 To open `v0.4` cleanly, answer these first:
 
-1. Which single 3D workload should be the first accepted `v0.4` public target?
-2. Is point-in-volume or point-in-mesh more honest and achievable than broader
-   3D LSI/PIP claims?
-3. Which backends must be required for `v0.4` acceptance:
+1. What exact accepted-boundary wording will define `point_in_volume`:
+   - closed or watertight meshes only
+   - boundary policy
+   - excluded degeneracies
+2. Which backends must be required for `v0.4` acceptance:
    - CPU reference
    - oracle
    - Embree
    - OptiX
    - Vulkan
-4. What is the minimal non-demo 3D example that teaches the new feature
+3. What is the minimal non-demo 3D example that teaches the new feature
    directly?
+4. Is `v0.4` a correctness-first release, or is there an honest external 3D
+   baseline for a performance story?
 
 ## Codex provisional conclusion
 
-The strongest `v0.4` move is not to chase prettier demos. It is to convert the
-engineering and application proof from `v0.3.0` into a new bounded 3D
-geometric-query release surface that is clearly non-graphical, explicitly
-contracted, and honest about backend maturity.
+The strongest `v0.4` move is not to chase prettier demos. It is to:
+
+- formalize `ray_tri_hitcount_3d` as a real public substrate feature
+- then make `point_in_volume` the concrete non-graphical workload that gives
+  the release its identity
+
+That package is clearly non-graphical, explicitly contracted, and honest about
+backend maturity.

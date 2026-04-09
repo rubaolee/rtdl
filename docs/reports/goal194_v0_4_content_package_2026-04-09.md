@@ -39,6 +39,19 @@ It should **not** be:
 
 ## The first v0.4 workload anchor
 
+Two decisions are now explicit:
+
+- first substrate feature to formalize:
+  - `ray_tri_hitcount_3d`
+- headline release workload:
+  - `point_in_volume`
+
+This resolves the main external tension:
+
+- Claude is right that the package needs a concrete first engineering target
+- Gemini is right that `v0.4` still needs a real non-graphical workload and
+  cannot stop at generic ray visibility mechanics
+
 ### Recommended anchor
 
 - **point-in-volume / point-in-mesh classification**
@@ -65,6 +78,22 @@ Reason:
 
 - the feature should read as a spatial-data workload, not as a rendering
   helper
+
+### Substrate feature that should be formalized first
+
+Before `point_in_volume` becomes the release headline, `v0.4` should first
+make the already-proven 3D primitive explicit:
+
+- `ray_tri_hitcount_3d`
+
+This work should be described honestly as:
+
+- a contractual and documentation lift of capability already proven in
+  `v0.3.0`
+
+not as:
+
+- a wholly new workload family
 
 ### Recommended contract
 
@@ -144,6 +173,12 @@ new 3D line, even if it is small and synthetic at first.
 Without that, the new feature will look ornamental rather than like real RTDL
 surface area.
 
+Important honesty note:
+
+- `v0.4` may need to begin as a correctness-first 3D release if no honest
+  external 3D performance baseline exists yet
+- if so, the release docs must say that directly
+
 ### 5. One tutorial extension
 
 The current tutorial path is 2D-heavy. `v0.4` should add:
@@ -175,7 +210,7 @@ carry the public identity of the release.
 
 ## Proposed initial goal order for v0.4
 
-### Goal 1: 3D workload design contract
+### Goal 1: formalize `ray_tri_hitcount_3d` as a public feature line
 
 Define:
 
@@ -185,28 +220,37 @@ Define:
 - accepted geometry assumptions
 - exact current limitations
 
-### Goal 2: Python/DSL surface for 3D points and volume classification
+### Goal 2: define the public `point_in_volume` workload contract
+
+Define:
+
+- closed/watertight mesh requirement
+- accepted boundary policy
+- excluded degeneracies
+- emitted row shape
+
+### Goal 3: Python/DSL surface for 3D points and volume classification
 
 Add the user-facing surface cleanly, not as internal demo reuse.
 
-### Goal 3: reference and oracle implementation
+### Goal 4: reference and oracle implementation
 
 Get the truth path right before broad backend claims.
 
-### Goal 4: Embree closure
+### Goal 5: Embree closure
 
 Use Embree as the first high-confidence native backend.
 
-### Goal 5: OptiX and Vulkan closure
+### Goal 6: OptiX and Vulkan closure
 
 Bring the GPU paths in only after the workload contract is stable.
 
-### Goal 6: docs/tutorial/release-facing example chain
+### Goal 7: docs/tutorial/release-facing example chain
 
 Make sure new users can actually see and use the feature without reading
 internal reports.
 
-### Goal 7: bounded benchmark and release audit
+### Goal 8: bounded benchmark and release audit
 
 Add the evidence layer that turns implementation into releasable surface.
 
@@ -219,6 +263,7 @@ Do not make `v0.4` about:
 - generalized 3D rendering
 - broad 3D LSI/PIP/overlay claims all at once
 - backend proliferation without a clear user-visible new workload
+- Hausdorff-adjacent workloads as `v0.4` headline scope
 
 ## Risks and mitigations
 

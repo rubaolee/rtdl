@@ -1,6 +1,6 @@
 # Codex Consensus: v0.4 Direction Decision
 
-Status: provisional consensus after Gemini review; Claude response still needed
+Status: closed after Claude and Gemini review
 
 ## Codex position
 
@@ -34,6 +34,33 @@ But the concrete acceptance target should be tightened to:
   story
 - one non-demo example chain that teaches that workload directly
 - explicit backend acceptance boundaries and performance/non-performance claims
+
+## What Claude changed
+
+Claude agreed with the direction but identified the remaining non-actionable
+gap:
+
+- the package still had not chosen the concrete first target
+
+Claude's strongest useful corrections were:
+
+- formalize `ray_tri_hitcount_3d` first as a public substrate feature
+- do not pretend that this alone is enough to define `v0.4`
+- choose one real non-graphical workload for release identity
+- remove Hausdorff-adjacent work from `v0.4` headline scope
+- treat the non-demo 3D example as a release-entry requirement
+
+## Final Codex conclusion
+
+The settled `v0.4` package is:
+
+- first substrate feature to formalize:
+  - `ray_tri_hitcount_3d`
+- headline release workload:
+  - `point_in_volume`
+
+This preserves the original recommendation while making it actionable and
+honest.
 
 The wrong `v0.4` directions remain:
 
