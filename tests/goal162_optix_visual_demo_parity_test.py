@@ -6,9 +6,9 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_orbit_lights_ball_demo import make_disk_mesh
-from examples.rtdl_orbit_lights_ball_demo import make_scanline_rays
-from examples.rtdl_orbit_lights_ball_demo import ray_triangle_hitcount_demo
+from examples.visual_demo.rtdl_orbit_lights_ball_demo import make_disk_mesh
+from examples.visual_demo.rtdl_orbit_lights_ball_demo import make_scanline_rays
+from examples.visual_demo.rtdl_orbit_lights_ball_demo import ray_triangle_hitcount_demo
 from tests.rtdl_sorting_test import optix_available
 
 

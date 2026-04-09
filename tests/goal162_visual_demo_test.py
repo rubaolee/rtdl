@@ -6,7 +6,7 @@ import unittest
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_orbit_lights_ball_demo import render_orbit_lights_ball_frames
+from examples.visual_demo.rtdl_orbit_lights_ball_demo import render_orbit_lights_ball_frames
 
 
 class Goal162VisualDemoTest(unittest.TestCase):
