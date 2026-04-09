@@ -35,11 +35,11 @@ This is the front-door artifact readers should see first.
 
 Current preserved public-facing local counterpart:
 
-- [win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4)
+- [win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4](../../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/1024/win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4)
 
 ## Strongest Preserved Local Review Artifacts
 
-### True One-Light Smooth-Camera Baseline
+### Hidden-Star Stable RTDL-Shadow Baseline
 
 This preserved local baseline should be read as the bridge from the released
 `v0.2.0` core into the newer `v0.3` application/demo layer:
@@ -47,9 +47,8 @@ This preserved local baseline should be read as the bridge from the released
 - `v0.2.0` remains the stable workload/package release on `main`
 - `v0.3` shows that the same RTDL core can sit inside Python-hosted graphics applications
 
-- [win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f.mp4)
-- [frame_160.png](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/frame_160.png)
-- [summary.json](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_320f/summary.json)
+- [win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4](../../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/1024/win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4)
+- [summary.json](../../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/1024/summary.json)
 
 Key facts:
 
@@ -60,65 +59,39 @@ Key facts:
 - frames:
   - `320`
 - jobs:
-  - `12`
+  - `1`
 - light count:
   - `1`
-- query share:
-  - `0.36087708147453185`
+- shadow mode:
+  - `rtdl_light_to_surface`
 
-### Moving-Star Repair Candidate
-
-- [win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/win_embree_orbit_supportstar_hd_1024_uniform_320f.mp4)
-- [frame_160.png](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/frame_160.png)
-- [summary.json](../../build/win_embree_orbit_supportstar_hd_1024_uniform_320f/summary.json)
-
-Key facts:
-
-- backend:
-  - `embree`
-- size:
-  - `1024 x 1024`
-- frames:
-  - `320`
-- jobs:
-  - `12`
-- light count:
-  - `2`
-- query share:
-  - `0.1868590466889054`
+The earlier smooth-camera and moving-star candidates remain preserved as
+comparison history, but they are no longer the primary `v0.3` demo source.
 
 ### Full Local Comparison Set
 
 - [v0_3_movie_comparison_sheet_2026-04-08.md](v0_3_movie_comparison_sheet_2026-04-08.md)
 
-That sheet preserves the major Windows comparison candidates side by side.
+That sheet preserves the earlier Windows comparison candidates side by side.
 
 ## Linux Supporting Backend Package
 
 The bounded Linux supporting package is now explicit and review-backed.
 
-Main package:
-
-- [goal_182_linux_smooth_camera_supporting_package.md](../goal_182_linux_smooth_camera_supporting_package.md)
-- [goal182_linux_smooth_camera_supporting_package_2026-04-08.md](goal182_linux_smooth_camera_supporting_package_2026-04-08.md)
-
-Selected supporting artifacts:
+Current selected supporting artifacts for the same hidden-star line:
 
 - OptiX:
-  - [goal188_optix_smooth_camera_256_noblend_hq.mp4](../../build/goal188_optix_smooth_camera_256_noblend/goal188_optix_smooth_camera_256_noblend_hq.mp4)
+  - [goal168_hidden_star_optix_256.mp4](../../build/goal168_hidden_star_optix_256/goal168_hidden_star_optix_256.mp4)
+  - [summary.json](../../build/goal168_hidden_star_optix_256/summary.json)
 - Vulkan:
-  - [goal188_vulkan_smooth_camera_256_noblend_hq.mp4](../../build/goal188_vulkan_smooth_camera_256_noblend/goal188_vulkan_smooth_camera_256_noblend_hq.mp4)
+  - [goal168_hidden_star_vulkan_256.mp4](../../build/goal168_hidden_star_vulkan_256/goal168_hidden_star_vulkan_256.mp4)
+  - [summary.json](../../build/goal168_hidden_star_vulkan_256/summary.json)
 
 Why these are the preserved Linux movies:
 
-- they are visually better than the later `ssaa2` experiments
-- they are good enough to show the Linux OptiX/Vulkan backend application story
+- they use the same hidden-star RTDL-shadow design as the current main Windows demo source
+- they are good enough to show the Linux OptiX/Vulkan backend application story for the same user-level scene
 - they are not being presented as equally polished flagship movies
-
-Rejected later experiments:
-
-- `goal188_optix_smooth_camera_256_ssaa2`
-- `goal188_vulkan_smooth_camera_256_ssaa2`
 
 ## Honesty Boundary
 
@@ -133,12 +106,12 @@ What it does claim is narrower and true:
 
 - RTDL can serve as the heavy geometric-query core in real Python-hosted graphics/demo applications
 - Linux backend closure for the bounded 3D demo surface is real
-- Windows Embree movie production is real, with the `6s` cut as the cleanest public-facing artifact
-- supporting OptiX and Vulkan Linux artifacts are real, but secondary and less polished than the Windows flagship
+- Windows Embree movie production is real, with the hidden-star RTDL-shadow Earth movie as the current public-facing artifact
+- supporting OptiX and Vulkan Linux artifacts are real, but secondary and less polished than the Windows Embree artifact
 
 ## What Remains Future Work
 
 - stronger visual art direction
-- more stable and intuitive moving-light shots
-- further temporal-polish work on the orbit-style line
+- more complex RTDL-shadow scenes with real occluding geometry
+- stronger cross-backend polish beyond the bounded hidden-star line
 - any broader claim beyond the bounded `v0.3` demo/application scope
