@@ -157,7 +157,7 @@ That kernel is a generic ray-vs-triangle hit-count query:
 
 The stable hidden-star implementation lives in:
 
-- `examples/rtdl_hidden_star_stable_ball_demo.py`
+- `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`
 
 Key logic in that file:
 
@@ -194,7 +194,7 @@ This avoids wasting the second RTDL pass on points that are geometrically guaran
 
 Focused tests were added in:
 
-- `examples/goal168_hidden_star_stable_ball_demo_test.py`
+- `tests/goal168_hidden_star_stable_ball_demo_test.py`
 
 They verify:
 
@@ -314,9 +314,9 @@ This confirms that the accepted fix is stable for the target scene.
   - user-facing single-light support added earlier in the effort
 - `examples/goal166_orbiting_star_ball_demo_test.py`
   - focused single-light test added earlier in the effort
-- `examples/rtdl_hidden_star_stable_ball_demo.py`
+- `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`
   - final stable hidden-star implementation
-- `examples/goal168_hidden_star_stable_ball_demo_test.py`
+- `tests/goal168_hidden_star_stable_ball_demo_test.py`
   - focused tests for analytic and RTDL-shadow stable modes
 
 ### Accepted 256 Outputs
@@ -334,8 +334,8 @@ This confirms that the accepted fix is stable for the target scene.
 If another machine is going to import this work into the main repo, the minimum recommended copy set is:
 
 1. source
-   - `examples/rtdl_hidden_star_stable_ball_demo.py`
-   - `examples/goal168_hidden_star_stable_ball_demo_test.py`
+   - `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`
+   - `tests/goal168_hidden_star_stable_ball_demo_test.py`
 
 2. this report
    - `docs/reports/goal168_hidden_star_stable_rtdl_shadow_demo_2026-04-09.md`
@@ -357,6 +357,13 @@ Optional comparison artifacts:
 ```powershell
 $env:PYTHONPATH='src;.'
 python -m unittest examples.goal168_hidden_star_stable_ball_demo_test
+```
+
+In the current repo layout, the matching command is:
+
+```powershell
+$env:PYTHONPATH='src;.'
+python -m unittest tests.goal168_hidden_star_stable_ball_demo_test
 ```
 
 ### Accepted 256 RTDL-Shadow Render

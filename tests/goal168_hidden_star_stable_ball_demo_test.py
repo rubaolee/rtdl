@@ -8,10 +8,13 @@ import unittest
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
+import rtdsl as rt
 from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import _frame_light
+from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import _make_light_to_surface_shadow_ray
 from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import render_hidden_star_stable_ball_optix_frames
 from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import render_hidden_star_stable_ball_frames
 from examples.visual_demo.rtdl_hidden_star_stable_ball_demo import render_hidden_star_stable_ball_vulkan_frames
+from examples.visual_demo.rtdl_spinning_ball_3d_demo import _run_backend_rows
 
 
 class Goal168HiddenStarStableBallDemoTest(unittest.TestCase):
@@ -69,6 +72,28 @@ class Goal168HiddenStarStableBallDemoTest(unittest.TestCase):
         self.assertTrue(any(int(frame["shadow_rays"]) > 0 for frame in summary["frames"]))
         persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(persisted["shadow_mode"], "rtdl_light_to_surface")
+
+    def test_light_to_surface_shadow_ray_detects_real_occluder(self) -> None:
+        light = _frame_light(0.0)
+        hit_point = (0.0, 0.08, 1.46)
+        shadow_ray = _make_light_to_surface_shadow_ray(ray_id=7, hit_point=hit_point, light=light)
+        occluder = (
+            rt.Triangle3D(
+                id=1,
+                x0=33.6,
+                y0=-0.12,
+                z0=6.60,
+                x1=34.0,
+                y1=-0.12,
+                z1=6.60,
+                x2=33.8,
+                y2=0.28,
+                z2=6.60,
+            ),
+        )
+        rows = _run_backend_rows("cpu_python_reference", rays=(shadow_ray,), triangles=occluder)
+        lookup = {int(row["ray_id"]): int(row["hit_count"]) for row in rows}
+        self.assertGreater(lookup.get(7, 0), 0)
 
     def test_vulkan_wrapper_uses_expected_backend(self) -> None:
         output_dir = Path("build/goal168_hidden_star_stable_ball_demo_test/vulkan_wrapper")

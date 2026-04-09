@@ -26,12 +26,10 @@ For the new application-story proof, the strongest current v0.3 result is:
 - a public video entry point for that demo line:
   - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 - the cleanest preserved local counterpart to that public artifact:
-  - [win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4](../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4)
-- plus an accepted local Windows `4K` artifact preserved in the repo reports,
-  but not chosen as the final preserved public-facing local artifact
-- plus saved Linux supporting artifacts for:
-  - [OptiX](../build/goal188_optix_smooth_camera_256_noblend/goal188_optix_smooth_camera_256_noblend_hq.mp4)
-  - [Vulkan](../build/goal188_vulkan_smooth_camera_256_noblend/goal188_vulkan_smooth_camera_256_noblend_hq.mp4)
+  - [win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4](../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/1024/win_embree_hidden_star_earth_1024_10s_32fps_user_stable_rtdl_shadow.mp4)
+- plus a smaller preserved local supporting artifact for the same hidden-star line:
+  - [win_embree_hidden_star_earth_256_10s_32fps_user_stable_rtdl_shadow.mp4](../build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/256/win_embree_hidden_star_earth_256_10s_32fps_user_stable_rtdl_shadow.mp4)
+- the earlier Linux OptiX and Vulkan smooth-camera support artifacts remain preserved as secondary comparison/support material, not as the primary hidden-star demo outputs
 
 The archived v0.1 `county_zipcode` positive-hit `pip` line remains the trust
 anchor and strongest older prepared/repeated raw-input performance story.
@@ -124,10 +122,8 @@ The same applies to the v0.3 demo line:
 
 - the bounded 3D ray/triangle backend surface is closed
 - the preferred polished public artifact is currently the Windows Embree movie
-- a finished Windows `4K` movie is now also accepted, but with an explicit
-  left-bottom blink caveat and without replacing the newer HD `6s` public cut
-- Linux OptiX and Vulkan now also have saved small compare-clean supporting
-  MP4 artifacts
+- the preferred preserved local counterpart now comes from the hidden-star RTDL-shadow line
+- earlier smooth-camera Windows/Linux artifacts remain preserved as comparison/support material
 - but the movie itself should not be read as equally optimized across all
   backends
 
