@@ -1,0 +1,2 @@
+# Minimal Python package requirements for the public first-run and demo path.
+numpy>=1.26

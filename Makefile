@@ -1,5 +1,16 @@
 BUILD_DIR := build
 
+# Public release-facing targets:
+#   make build
+#   make test
+#   make verify
+#   make build-optix
+#   make build-vulkan
+#
+# Historical and goal-numbered targets below are preserved for auditability and
+# internal reproduction work. They are not the primary front-door interface for
+# new users.
+
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 OPTIX_LIB_NAME   := librtdl_optix.dylib
@@ -96,7 +107,17 @@ VULKAN_CXXFLAGS := \
 
 VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK) $(GEOS_LIBS)
 
-.PHONY: build build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+
+help:
+	@echo "Public targets:"
+	@echo "  build         - compile/lower the canonical kernels"
+	@echo "  test          - run the unittest suite"
+	@echo "  verify        - run the broader verification driver"
+	@echo "  build-optix   - build the OptiX backend library"
+	@echo "  build-vulkan  - build the Vulkan backend library"
+	@echo ""
+	@echo "Other targets are preserved for internal reproduction and audit work."
 
 build-vulkan:
 	mkdir -p $(BUILD_DIR)

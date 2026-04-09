@@ -7,6 +7,15 @@ This directory has two kinds of material:
 
 If you are new to RTDL, read the live docs first.
 
+Quick environment facts before you start:
+
+- this checkout currently identifies itself as `v0.3.0-pre`
+- clone the repo as `rtdl`
+- the local Python package imported by the examples is `rtdsl`
+- `PYTHONPATH=src:.` is what makes `src/rtdsl/` importable from the checkout
+- Python `3.10+` is the expected floor
+- `numpy` is recommended for the smoother demo/application examples
+
 RTDL’s primary target is non-graphical geometric-query work. The visual demo is
 best read as a proof-of-capability application built on the same core:
 

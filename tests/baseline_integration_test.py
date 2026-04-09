@@ -7,8 +7,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
-from examples.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
+from examples.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
+from examples.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
 from examples.rtdl_goal10_reference import point_nearest_segment_reference
 from examples.rtdl_goal10_reference import segment_polygon_anyhit_rows_reference
 from examples.rtdl_goal10_reference import segment_polygon_hitcount_reference

@@ -10,10 +10,10 @@ one `hit_count` per ray.
 ## Docs
 
 - canonical example:
-  - [rtdl_ray_tri_hitcount.py](/Users/rl2025/rtdl_python_only/examples/rtdl_ray_tri_hitcount.py)
+  - [rtdl_ray_tri_hitcount.py](../../../examples/rtdl_ray_tri_hitcount.py)
 - language contracts:
-  - [dsl_reference.md](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
-  - [workload_cookbook.md](/Users/rl2025/rtdl_python_only/docs/rtdl/workload_cookbook.md)
+  - [dsl_reference.md](../../rtdl/dsl_reference.md)
+  - [workload_cookbook.md](../../rtdl/workload_cookbook.md)
 
 Kernel shape:
 
@@ -30,14 +30,14 @@ return rt.emit(hits, fields=["ray_id", "hit_count"])
 - predicate:
   - `rt.ray_triangle_hit_count(exact=False)`
 - canonical reference kernel:
-  - [ray_triangle_hitcount_reference](/Users/rl2025/rtdl_python_only/examples/rtdl_ray_tri_hitcount.py)
+  - [ray_triangle_hitcount_reference](../../../examples/rtdl_ray_tri_hitcount.py)
 
 ## Example
 
 Run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_ray_tri_hitcount.py
 ```
 
@@ -48,7 +48,7 @@ App-style variant:
 Run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
 ```
 

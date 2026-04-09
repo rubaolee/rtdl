@@ -5,6 +5,13 @@ This page is the canonical example index for the frozen RTDL v0.2 surface.
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
 
+Before running any command below:
+
+- clone the repo with `git clone https://github.com/rubaolee/rtdl.git`
+- enter the checkout with `cd rtdl`
+- keep the `PYTHONPATH=src:.` prefix so Python imports the local `rtdsl`
+  package from `src/rtdsl/`
+
 ## Core examples
 
 ### Segment/Polygon Hit Count
@@ -14,7 +21,7 @@ live workload/package story.
 - run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
@@ -25,7 +32,7 @@ PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu
 - run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
@@ -36,7 +43,7 @@ PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend 
 - run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 ```
 
@@ -47,7 +54,7 @@ PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 - run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
 ```
 
@@ -66,11 +73,21 @@ This is a small user-authored RTDL-plus-Python application. RTDL handles the
 ray/triangle hit relationships. Python handles the visible-span recovery,
 brightness calculation, ASCII preview, and `.pgm` image output.
 
+The visual-demo scripts create the output directory automatically when needed,
+so an empty fresh clone does not need a pre-existing `build/` directory.
+
 Run:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
+```
+
+Small first sanity check for the smoother 3D demo line:
+
+```bash
+cd rtdl
+PYTHONPATH=src:. python3 examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo
 ```
 
 Important boundary:
@@ -86,12 +103,14 @@ Important boundary:
 Current accepted narrow generate-only example:
 
 ```bash
-cd /path/to/rtdl_python_only
+cd rtdl
 PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 ## Notes
 
 - these are the release-facing examples for the frozen v0.2 scope
+- if you cloned the repo as `rtdl`, every command above is intended to work
+  from that clone root
 - older demos and exploratory examples still exist in the repo, but they are
   not the primary release-facing entry points

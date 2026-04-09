@@ -21,7 +21,7 @@ matrix and should be read through the separate `v0.3` docs.
 
 | Platform | Role | Current status |
 | --- | --- | --- |
-| Linux (`lestat@192.168.1.20` and clean-clone equivalents) | primary v0.2 validation platform | accepted |
+| Linux (primary validation host and clean-clone equivalents) | primary v0.2 validation platform | accepted |
 | This Mac | local development/doc/focused-test platform | limited local |
 
 ## Backend Roles

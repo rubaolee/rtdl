@@ -15,6 +15,48 @@ Its primary domain is non-graphical spatial computation. The visual demo is
 included as proof that the same query core can also support a bounded
 Python-hosted 3D application.
 
+Current checkout identity:
+
+- repo state anchor: `v0.3.0-pre`
+- stable released workload surface: `v0.2.0`
+- newer application/demo proof layer: `v0.3` on top of the same RTDL core
+
+## Before Your First Run
+
+Clone the repo like this:
+
+```bash
+git clone https://github.com/rubaolee/rtdl.git
+cd rtdl
+```
+
+Runtime basics:
+
+- use Python `3.10+`
+- the local Python package name is `rtdsl`
+- the repository name is `rtdl`
+- `PYTHONPATH=src:.` tells Python to import the local `rtdsl` package from
+  `src/rtdsl/` in this checkout
+
+Minimal Python dependency guidance:
+
+- required for the documented first-run path:
+  - Python `3.10+`
+- recommended for smoother demo/application runs:
+  - `numpy`
+- native backends also require their local host libraries/SDKs:
+  - Embree for `embree`
+  - NVIDIA OptiX SDK and CUDA for `optix`
+  - Vulkan SDK / loader for `vulkan`
+  - GEOS/PostGIS only for the documented external-checking and broader
+    validation surfaces
+
+Fastest safe install path for new users:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
 ## See It Quickly
 
 <table>
@@ -93,6 +135,12 @@ PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu
 
 The `PYTHONPATH=src:.` prefix tells Python to import the local RTDL package
 from this checkout.
+
+If you omit that prefix, Python will usually fail with:
+
+```text
+ModuleNotFoundError: No module named 'rtdsl'
+```
 
 Then continue with:
 

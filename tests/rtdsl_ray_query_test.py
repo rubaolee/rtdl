@@ -9,8 +9,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.rtdl_codex_ray_query import CODEX_RAY_QUERY_KERNELS
-from examples.rtdl_gemini_ray_query import GEMINI_RAY_QUERY_KERNELS
+from examples.internal.rtdl_codex_ray_query import CODEX_RAY_QUERY_KERNELS
+from examples.internal.rtdl_gemini_ray_query import GEMINI_RAY_QUERY_KERNELS
 from examples.rtdl_ray_tri_hitcount import RAY_QUERY_REFERENCE_KERNELS
 
 

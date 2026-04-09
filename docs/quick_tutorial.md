@@ -10,6 +10,20 @@ If you are evaluating RTDL for the first time, the key idea is:
 So the normal first step is not a giant benchmark. It is a tiny runnable
 program that shows the RTDL execution shape clearly.
 
+Environment assumptions for this tutorial:
+
+- clone the repo as `rtdl`
+- run commands from the repo root
+- use Python `3.10+`
+- keep the `PYTHONPATH=src:.` prefix so Python imports the local `rtdsl`
+  package from `src/rtdsl/`
+
+If you want the recommended optional package for the demo/application path:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
 ## Fastest First Run
 
 From the repository root:

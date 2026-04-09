@@ -6,7 +6,7 @@ Two tiers:
 
 Usage (Linux):
     cd /home/lestat/work/rtdl_python_only
-    PYTHONPATH=src:. python3 examples/rtdl_goal165_optix_animation_variants.py
+    PYTHONPATH=src:. python3 examples/internal/rtdl_goal165_optix_animation_variants.py
 """
 from __future__ import annotations
 
