@@ -2,8 +2,13 @@
 
 External review status:
 
-- Claude was unavailable due to token exhaustion at this stage.
+- Claude review is now also saved.
 - Gemini review was completed and approved the package.
+
+Saved external reviews:
+
+- [goal169_external_review_claude_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal169_external_review_claude_2026-04-08.md)
+- Gemini review content is recorded directly in this review note.
 
 Gemini review:
 

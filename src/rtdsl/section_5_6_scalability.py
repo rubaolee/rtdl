@@ -313,13 +313,8 @@ def build_scalability_figure_svg(payload: dict[str, object], *, workload: str, t
     records = [record for record in payload["records"] if record["workload"] == workload]
     if not records:
         return _empty_figure_svg(f"No `{workload}` records for this run.")
-    width = 1200
-    height = 820
-    margin = 70
-    panel_w = 480
-    panel_h = 260
-    gap_x = 80
-    gap_y = 90
+    width = 860
+    height = 980
     series = {
         distribution: sorted(
             [record for record in records if record["distribution"] == distribution],
@@ -330,29 +325,71 @@ def build_scalability_figure_svg(payload: dict[str, object], *, workload: str, t
     max_time = max(record["query_time_ms"] for record in records) or 1.0
     max_throughput = max(record["throughput"] for record in records) or 1.0
     x_max = max(record["probe_polygons"] for record in records) or 1
+    subtitle = (
+        f"Fixed build side R={payload['config']['build_polygons']} polygons; "
+        "uniform and gaussian probe distributions."
+    )
+    workload_label = "LSI" if workload == "lsi" else "PIP"
 
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">',
-        '<style>text{font-family:Helvetica,Arial,sans-serif;font-size:12px;} .title{font-size:22px;font-weight:bold;} .subtitle{font-size:12px;fill:#555;} .axis{stroke:#333;stroke-width:1;} .grid{stroke:#ddd;stroke-width:1;} .small{font-size:11px;fill:#444;}</style>',
+        (
+            '<style>'
+            'text{font-family:Helvetica,Arial,sans-serif;font-size:14px;fill:#222;} '
+            '.title{font-size:28px;font-weight:bold;} '
+            '.subtitle{font-size:14px;fill:#555;} '
+            '.section{font-size:16px;font-weight:bold;} '
+            '.axis{stroke:#333;stroke-width:1.4;} '
+            '.grid{stroke:#e2e5ea;stroke-width:1;} '
+            '.small{font-size:12px;fill:#444;} '
+            '.legend-label{font-size:13px;fill:#333;}'
+            '</style>'
+        ),
         '<rect width="100%" height="100%" fill="white"/>',
-        f'<text x="40" y="34" class="title">{_svg_escape(title)}</text>',
-        f'<text x="40" y="54" class="subtitle">Scaled Embree analogue with fixed build side R={payload["config"]["build_polygons"]} polygons and varying probe side S.</text>',
+        f'<text x="46" y="44" class="title">{_svg_escape(title)}</text>',
+        f'<text x="46" y="68" class="subtitle">{_svg_escape(subtitle)}</text>',
+        f'<text x="46" y="100" class="section">{workload_label} scalability study</text>',
     ]
+    legend = (
+        ("uniform", "Uniform", "#1565c0"),
+        ("gaussian", "Gaussian", "#c62828"),
+    )
+    legend_x = 520
+    legend_y = 92
+    for index, (_, label, color) in enumerate(legend):
+        x = legend_x + index * 132
+        parts.append(f'<line x1="{x}" y1="{legend_y}" x2="{x+34}" y2="{legend_y}" stroke="{color}" stroke-width="3.2"/>')
+        parts.append(f'<circle cx="{x+17}" cy="{legend_y}" r="4.5" fill="{color}"/>')
+        parts.append(f'<text x="{x+44}" y="{legend_y+5}" class="legend-label">{label}</text>')
 
-    panel_specs = [
-        ("uniform", "query_time_ms", "(a) Uniform - Query Time", "Query Time (ms)", max_time, "#1565c0"),
-        ("gaussian", "query_time_ms", "(b) Gaussian - Query Time", "Query Time (ms)", max_time, "#6a1b9a"),
-        ("uniform", "throughput", "(c) Uniform - Throughput", _throughput_label(workload), max_throughput, "#2e7d32"),
-        ("gaussian", "throughput", "(d) Gaussian - Throughput", _throughput_label(workload), max_throughput, "#ef6c00"),
-    ]
-
-    for index, (distribution, field, panel_title, y_label, y_max, color) in enumerate(panel_specs):
-        row = index // 2
-        col = index % 2
-        x0 = margin + col * (panel_w + gap_x)
-        y0 = 90 + row * (panel_h + gap_y)
-        points = series[distribution]
-        _append_panel(parts, points, x0=x0, y0=y0, width=panel_w, height=panel_h, x_max=x_max, y_max=y_max, field=field, title=panel_title, y_label=y_label, color=color)
+    _append_multi_series_panel(
+        parts,
+        panel_title="Query Time",
+        y_label="Query Time (ms)",
+        field="query_time_ms",
+        x0=46,
+        y0=126,
+        width=768,
+        height=332,
+        x_max=x_max,
+        y_max=max_time,
+        series=series,
+        legend=legend,
+    )
+    _append_multi_series_panel(
+        parts,
+        panel_title="Throughput",
+        y_label=_throughput_label(workload),
+        field="throughput",
+        x0=46,
+        y0=520,
+        width=768,
+        height=332,
+        x_max=x_max,
+        y_max=max_throughput,
+        series=series,
+        legend=legend,
+    )
 
     parts.append("</svg>")
     return "\n".join(parts)
@@ -586,6 +623,60 @@ def _append_panel(
         polyline.append(f"{x:.1f},{y:.1f}")
         parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="{color}"/>')
     parts.append(f'<polyline fill="none" stroke="{color}" stroke-width="2" points="{" ".join(polyline)}"/>')
+
+
+def _append_multi_series_panel(
+    parts: list[str],
+    *,
+    panel_title: str,
+    y_label: str,
+    field: str,
+    x0: int,
+    y0: int,
+    width: int,
+    height: int,
+    x_max: int,
+    y_max: float,
+    series: dict[str, list[dict[str, object]]],
+    legend: tuple[tuple[str, str, str], ...],
+) -> None:
+    parts.append(f'<rect x="{x0}" y="{y0}" width="{width}" height="{height}" rx="10" fill="#fbfcfe" stroke="#c7cdd6"/>')
+    parts.append(f'<text x="{x0+18}" y="{y0+26}" class="section">{_svg_escape(panel_title)}</text>')
+    plot_left = x0 + 72
+    plot_top = y0 + 42
+    plot_width = width - 108
+    plot_height = height - 92
+    axis_bottom = plot_top + plot_height
+    axis_right = plot_left + plot_width
+    parts.append(f'<line class="axis" x1="{plot_left}" y1="{axis_bottom}" x2="{axis_right}" y2="{axis_bottom}"/>')
+    parts.append(f'<line class="axis" x1="{plot_left}" y1="{plot_top}" x2="{plot_left}" y2="{axis_bottom}"/>')
+    parts.append(f'<text x="{plot_left + plot_width / 2:.1f}" y="{y0+height-18}" text-anchor="middle" class="small">Probe-side polygons (S)</text>')
+    y_anchor = plot_top + plot_height / 2
+    parts.append(
+        f'<text x="{x0+22}" y="{y_anchor:.1f}" transform="rotate(-90 {x0+22},{y_anchor:.1f})" text-anchor="middle" class="small">{_svg_escape(y_label)}</text>'
+    )
+    for tick in range(5):
+        x_value = x_max * (tick + 1) / 5
+        x = plot_left + plot_width * x_value / x_max
+        parts.append(f'<line class="grid" x1="{x:.1f}" y1="{plot_top}" x2="{x:.1f}" y2="{axis_bottom}"/>')
+        parts.append(f'<text x="{x:.1f}" y="{axis_bottom+20}" text-anchor="middle" class="small">{int(x_value)}</text>')
+    for tick in range(5):
+        y_value = y_max * tick / 4
+        y = axis_bottom - plot_height * tick / 4
+        parts.append(f'<line class="grid" x1="{plot_left}" y1="{y:.1f}" x2="{axis_right}" y2="{y:.1f}"/>')
+        label = f"{y_value:.1f}" if y_max < 1000 else f"{int(y_value)}"
+        parts.append(f'<text x="{plot_left-10}" y="{y+4:.1f}" text-anchor="end" class="small">{label}</text>')
+    for distribution, _, color in legend:
+        points = series[distribution]
+        polyline = []
+        for point in points:
+            x = plot_left + plot_width * point["probe_polygons"] / x_max
+            y = axis_bottom - plot_height * float(point[field]) / y_max
+            polyline.append(f"{x:.1f},{y:.1f}")
+            parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.2" fill="{color}" stroke="white" stroke-width="1"/>')
+        parts.append(
+            f'<polyline fill="none" stroke="{color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="{" ".join(polyline)}"/>'
+        )
 
 
 def _svg_escape(text: str) -> str:

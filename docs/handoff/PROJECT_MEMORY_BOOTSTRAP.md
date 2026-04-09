@@ -250,6 +250,32 @@ Current honest reading:
 - this is a platform limitation, not a new Linux regression
 - the best current release-readiness checkpoint is Goal 150, not just Goal 135
 
+## 7A. Current v0.3 Visual-Demo State
+
+This is the current best short reading:
+
+- Goal 164 already closed the bounded 3D RTDL ray/triangle visual-demo surface
+  on Linux across:
+  - `embree`
+  - `optix`
+  - `vulkan`
+- Goal 166 produced the first real Windows Embree Earth-like movie
+- Goal 167 added a NumPy-backed host-side fast path and a diagonal public movie
+  line
+- the current recommended public-facing artifact is now the smoother
+  `softvis` Windows Embree MP4:
+  - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024/win_embree_earthlike_10s_32fps_diag_numpy_softvis_1024.mp4`
+
+Important honesty boundary:
+
+- the polished public artifact is currently an Embree-driven Windows movie
+- the broader backend target still includes:
+  - `embree`
+  - `optix`
+  - `vulkan`
+- the fact that the polished ad artifact is currently Embree-based does not
+  erase the already-closed Linux 3D backend surface
+
 ## 8. Documentation Surface To Trust First
 
 Read in this order when recovering context:

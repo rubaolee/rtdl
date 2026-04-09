@@ -586,28 +586,45 @@ def _render_report(payload: dict[str, object], figure13_svg: Path, figure14_svg:
 
 def _build_overlay_speedup_svg(payload: dict[str, object]) -> str:
     rows = payload["table4_rows"]
-    width = 900
-    height = 420
-    left = 220
-    top = 70
-    bar_h = 36
-    gap = 34
+    width = 980
+    height = 440
+    left = 250
+    top = 96
+    bar_h = 34
+    gap = 30
     max_speedup = max((row["speedup_vs_cpu"] or 0.0) for row in rows) or 1.0
-    chart_w = width - left - 80
+    chart_w = width - left - 86
+    chart_bottom = top + len(rows) * (bar_h + gap)
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">',
-        '<style>text{font-family:Helvetica,Arial,sans-serif;font-size:12px;} .title{font-size:22px;font-weight:bold;} .axis{stroke:#333;stroke-width:1;}</style>',
+        (
+            '<style>'
+            'text{font-family:Helvetica,Arial,sans-serif;font-size:14px;fill:#222;} '
+            '.title{font-size:26px;font-weight:bold;} '
+            '.subtitle{font-size:14px;fill:#555;} '
+            '.axis{stroke:#333;stroke-width:1.4;} '
+            '.grid{stroke:#e2e5ea;stroke-width:1;} '
+            '.small{font-size:12px;fill:#444;}'
+            '</style>'
+        ),
         '<rect width="100%" height="100%" fill="white"/>',
-        '<text x="30" y="34" class="title">Figure 15 Bounded Overlay Speedup Analogue</text>',
-        '<text x="30" y="54">Embree speedup over CPU for the current overlay-seed local analogue cases.</text>',
-        f'<line class="axis" x1="{left}" y1="{top + len(rows) * (bar_h + gap)}" x2="{left + chart_w}" y2="{top + len(rows) * (bar_h + gap)}"/>',
+        '<text x="42" y="42" class="title">Figure 15 Analogue: Overlay-Seed Speedup</text>',
+        '<text x="42" y="66" class="subtitle">Embree speedup over the native CPU oracle on the validated local overlay-seed cases.</text>',
+        f'<line class="axis" x1="{left}" y1="{top}" x2="{left}" y2="{chart_bottom}"/>',
+        f'<line class="axis" x1="{left}" y1="{chart_bottom}" x2="{left + chart_w}" y2="{chart_bottom}"/>',
     ]
+    for tick in range(5):
+        x_value = max_speedup * tick / 4
+        x = left + chart_w * tick / 4
+        parts.append(f'<line class="grid" x1="{x:.1f}" y1="{top}" x2="{x:.1f}" y2="{chart_bottom}"/>')
+        parts.append(f'<text x="{x:.1f}" y="{chart_bottom+22}" text-anchor="middle" class="small">{x_value:.1f}x</text>')
+    parts.append(f'<text x="{left + chart_w/2:.1f}" y="{chart_bottom+44}" text-anchor="middle" class="small">Embree speedup over CPU</text>')
     for idx, row in enumerate(rows):
         y = top + idx * (bar_h + gap)
         bar_w = chart_w * ((row["speedup_vs_cpu"] or 0.0) / max_speedup)
-        parts.append(f'<text x="20" y="{y + 22}">{_svg_escape(row["local_case_id"])}</text>')
-        parts.append(f'<rect x="{left}" y="{y}" width="{bar_w:.1f}" height="{bar_h}" fill="#1565c0"/>')
-        parts.append(f'<text x="{left + bar_w + 8:.1f}" y="{y + 22}">{row["speedup_vs_cpu"]:.2f}x</text>')
+        parts.append(f'<text x="{left-14}" y="{y + 22}" text-anchor="end">{_svg_escape(row["local_case_id"])}</text>')
+        parts.append(f'<rect x="{left}" y="{y}" width="{bar_w:.1f}" height="{bar_h}" rx="6" fill="#1565c0"/>')
+        parts.append(f'<text x="{left + bar_w + 10:.1f}" y="{y + 22}">{row["speedup_vs_cpu"]:.2f}x</text>')
     parts.append("</svg>")
     return "\n".join(parts)
 

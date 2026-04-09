@@ -775,7 +775,7 @@ def render_spinning_ball_3d_frames(
 
         _overlay_lights(
             image,
-            phase=phase,
+            phase=spin_phase,
             eye=eye,
             target=target,
             up_hint=up_hint,

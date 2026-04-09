@@ -121,14 +121,109 @@ def _clamp01(value: float) -> float:
     return min(1.0, max(0.0, value))
 
 
+def _mix(a: float, b: float, t: float) -> float:
+    return a * (1.0 - t) + b * t
+
+
+def _blend_rgb(
+    base: tuple[int, int, int],
+    overlay: tuple[int, int, int],
+    alpha: float,
+) -> tuple[int, int, int]:
+    alpha = _clamp01(alpha)
+    return (
+        int(round(_mix(base[0], overlay[0], alpha))),
+        int(round(_mix(base[1], overlay[1], alpha))),
+        int(round(_mix(base[2], overlay[2], alpha))),
+    )
+
+
 def _surface_color(nx: float, ny: float, nz: float, spin_phase: float) -> tuple[float, float, float]:
-    angle = math.atan2(ny, nx) + spin_phase
-    bands = 0.5 + 0.5 * math.sin(angle * 6.0 + nz * 4.0)
-    swirl = 0.5 + 0.5 * math.sin((nx * 3.0 - ny * 2.0 + nz * 4.0) * math.pi + spin_phase * 1.7)
-    r = 0.18 + 0.45 * bands + 0.10 * swirl
-    g = 0.20 + 0.30 * (1.0 - bands) + 0.18 * swirl
-    b = 0.28 + 0.50 * swirl
-    return _clamp01(r), _clamp01(g), _clamp01(b)
+    longitude = math.atan2(ny, nx) + spin_phase
+    latitude = math.asin(max(-1.0, min(1.0, nz)))
+    pearl = 0.5 + 0.5 * math.sin(longitude * 2.1 + latitude * 1.7)
+    drift = 0.5 + 0.5 * math.sin(longitude * 0.8 - latitude * 2.4 + spin_phase * 0.6)
+    edge_cool = (1.0 - max(0.0, nz)) ** 1.6
+
+    deep_r, deep_g, deep_b = 0.10, 0.18, 0.33
+    warm_r, warm_g, warm_b = 0.87, 0.34, 0.54
+    cool_r, cool_g, cool_b = 0.18, 0.78, 0.86
+
+    base_r = _mix(deep_r, warm_r, pearl)
+    base_g = _mix(deep_g, warm_g, pearl)
+    base_b = _mix(deep_b, warm_b, pearl)
+
+    base_r = _mix(base_r, cool_r, 0.28 * drift + 0.20 * edge_cool)
+    base_g = _mix(base_g, cool_g, 0.28 * drift + 0.20 * edge_cool)
+    base_b = _mix(base_b, cool_b, 0.28 * drift + 0.20 * edge_cool)
+    return _clamp01(base_r), _clamp01(base_g), _clamp01(base_b)
+
+
+def _background_pixel(x: float, y: float, *, scene_left: float, scene_right: float, scene_bottom: float, scene_top: float) -> tuple[int, int, int]:
+    u = (x - scene_left) / (scene_right - scene_left)
+    v = (y - scene_bottom) / (scene_top - scene_bottom)
+    cx = (u - 0.5) * 1.35
+    cy = (v - 0.52) * 1.10
+    dist = math.sqrt(cx * cx + cy * cy)
+    vignette = _clamp01(1.0 - dist)
+    horizon = 0.35 + 0.65 * v
+    r = _mix(0.02, 0.08, horizon) * (0.65 + 0.35 * vignette)
+    g = _mix(0.03, 0.09, horizon) * (0.65 + 0.35 * vignette)
+    b = _mix(0.08, 0.20, horizon) * (0.72 + 0.28 * vignette)
+    return int(round(_clamp01(r) * 255.0)), int(round(_clamp01(g) * 255.0)), int(round(_clamp01(b) * 255.0))
+
+
+def _overlay_light_scene(
+    background: tuple[int, int, int],
+    x: float,
+    y: float,
+    *,
+    lights: tuple[dict[str, tuple[float, float, float] | float], ...],
+    phase: float,
+    center_x: float,
+    center_y: float,
+    radius: float,
+) -> tuple[int, int, int]:
+    color = background
+
+    # Two visible orbiting lights with a short fading trajectory.
+    for light_index, light in enumerate(lights[:2]):
+        lr, lg, lb = light["color"]  # type: ignore[index]
+        orb_rgb = (
+            int(round(_clamp01(lr) * 255.0)),
+            int(round(_clamp01(lg) * 255.0)),
+            int(round(_clamp01(lb) * 255.0)),
+        )
+
+        for step in range(8, 0, -1):
+            trail_phase = (phase - (step / 90.0)) % 1.0
+            trail_lights = _frame_lights(trail_phase)
+            tx, ty, _ = trail_lights[light_index]["position"]  # type: ignore[index]
+            trail_dx = x - tx
+            trail_dy = y - ty
+            trail_d2 = trail_dx * trail_dx + trail_dy * trail_dy
+            trail_alpha = (1.0 - step / 9.0) * 0.14 * math.exp(-trail_d2 / 0.010)
+            if trail_alpha > 1.0e-4:
+                color = _blend_rgb(color, orb_rgb, trail_alpha)
+
+        lx, ly, _ = light["position"]  # type: ignore[index]
+        dx = x - lx
+        dy = y - ly
+        d2 = dx * dx + dy * dy
+        glow_alpha = 0.55 * math.exp(-d2 / 0.020)
+        core_alpha = 0.95 * math.exp(-d2 / 0.0028)
+        if glow_alpha > 1.0e-4:
+            color = _blend_rgb(color, orb_rgb, glow_alpha)
+        if core_alpha > 1.0e-4:
+            color = _blend_rgb(color, (255, 255, 255), core_alpha)
+
+    # Subtle atmospheric halo behind the ball.
+    hx = (x - center_x) / (radius * 1.9)
+    hy = (y - center_y) / (radius * 1.9)
+    halo = math.exp(-(hx * hx + hy * hy) / 0.9) * 0.08
+    if halo > 1.0e-4:
+        color = _blend_rgb(color, (70, 110, 170), halo)
+    return color
 
 
 def _shade_pixel(
@@ -153,6 +248,7 @@ def _shade_pixel(
     light_g = ambient
     light_b = ambient
     specular = 0.0
+    rim = (1.0 - max(0.0, nz)) ** 2.2
     px = (x - center_x) / radius
     py = (y - center_y) / radius
     pz = nz
@@ -170,11 +266,11 @@ def _shade_pixel(
         rx = 2.0 * lambert * nx - dx
         ry = 2.0 * lambert * ny - dy
         rz = 2.0 * lambert * nz - dz
-        specular += max(0.0, rx * view_x + ry * view_y + rz * view_z) ** 20 * 0.35 * strength
+        specular += max(0.0, rx * view_x + ry * view_y + rz * view_z) ** 28 * 0.42 * strength
 
-    r = _clamp01(base_r * light_r + specular)
-    g = _clamp01(base_g * light_g + specular)
-    b = _clamp01(base_b * light_b + specular)
+    r = _clamp01(base_r * light_r + specular + rim * 0.08)
+    g = _clamp01(base_g * light_g + specular + rim * 0.12)
+    b = _clamp01(base_b * light_b + specular + rim * 0.20)
     return int(round(r * 255.0)), int(round(g * 255.0)), int(round(b * 255.0))
 
 
@@ -190,6 +286,29 @@ def _write_ppm(path: Path, rgb_rows: list[list[tuple[int, int, int]]]) -> None:
                 values.extend((str(red), str(green), str(blue)))
             handle.write(" ".join(values))
             handle.write("\n")
+
+
+def _apply_shadow(
+    background: tuple[int, int, int],
+    x: float,
+    y: float,
+    *,
+    center_x: float,
+    center_y: float,
+    radius: float,
+) -> tuple[int, int, int]:
+    sx = (x - center_x) / (radius * 1.28)
+    sy = (y - (center_y - radius * 0.92)) / (radius * 0.34)
+    d2 = sx * sx + sy * sy
+    if d2 >= 1.0:
+        return background
+    shadow = (1.0 - d2) ** 1.8 * 0.42
+    red, green, blue = background
+    return (
+        int(round(red * (1.0 - shadow))),
+        int(round(green * (1.0 - shadow))),
+        int(round(blue * (1.0 - shadow))),
+    )
 
 
 def _select_runner(name: str):
@@ -310,8 +429,34 @@ def render_orbit_lights_ball_frames(
         sample_hit_rows = sum(1 for row_id in range(sample_rows) if hit_counts.get(row_id, 0) > 0)
         for row in range(height):
             row_pixels: list[tuple[int, int, int]] = []
+            center_sample_y = scene_top - (((row * vertical_samples) + 0.5 * vertical_samples) / sample_rows) * (scene_top - scene_bottom)
             for col in range(width):
                 x = scene_left + ((col + 0.5) / width) * (scene_right - scene_left)
+                background = _apply_shadow(
+                    _background_pixel(
+                        x,
+                        center_sample_y,
+                        scene_left=scene_left,
+                        scene_right=scene_right,
+                        scene_bottom=scene_bottom,
+                        scene_top=scene_top,
+                    ),
+                    x,
+                    center_sample_y,
+                    center_x=center_x,
+                    center_y=center_y,
+                    radius=radius,
+                )
+                background = _overlay_light_scene(
+                    background,
+                    x,
+                    center_sample_y,
+                    lights=lights,
+                    phase=phase,
+                    center_x=center_x,
+                    center_y=center_y,
+                    radius=radius,
+                )
                 red_acc = 0
                 green_acc = 0
                 blue_acc = 0
@@ -340,7 +485,7 @@ def render_orbit_lights_ball_frames(
                     green_acc += green
                     blue_acc += blue
                 if covered == 0:
-                    row_pixels.append((8, 10, 20))
+                    row_pixels.append(background)
                 else:
                     row_pixels.append(
                         (
