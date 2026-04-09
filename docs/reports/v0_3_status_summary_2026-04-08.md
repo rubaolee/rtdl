@@ -1,6 +1,9 @@
 # v0.3 Status Summary
 
-Superseded by the newer final-status package draft:
+Historical intermediate note only. Do not use this file as the current live
+or release-facing `v0.3` state.
+
+Use the newer final-status package instead:
 
 - [goal184_v0_3_final_status_package_2026-04-09.md](goal184_v0_3_final_status_package_2026-04-09.md)
 

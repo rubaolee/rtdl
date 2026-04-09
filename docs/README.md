@@ -17,11 +17,11 @@ best read as a proof-of-capability application built on the same core:
 
 Project-level front door:
 
-1. [RTDL v0.2 User Guide](v0_2_user_guide.md)
-2. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
-3. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
-4. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
-5. [Quick Tutorial](quick_tutorial.md)
+1. [Quick Tutorial](quick_tutorial.md)
+2. [RTDL v0.2 User Guide](v0_2_user_guide.md)
+3. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
+4. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
+5. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
 6. [Release-Facing Examples](release_facing_examples.md)
 7. [Feature Homes](features/README.md)
 8. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)

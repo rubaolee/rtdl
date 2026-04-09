@@ -15,7 +15,7 @@ live workload/package story.
 
 ```bash
 cd /path/to/rtdl_python_only
-python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 ### Segment/Polygon Any-Hit Rows
@@ -26,7 +26,7 @@ python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference
 
 ```bash
 cd /path/to/rtdl_python_only
-python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 ### Polygon-Set Jaccard
@@ -87,7 +87,7 @@ Current accepted narrow generate-only example:
 
 ```bash
 cd /path/to/rtdl_python_only
-python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
+PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 ## Notes

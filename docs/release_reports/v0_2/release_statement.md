@@ -61,6 +61,15 @@ RTDL v0.2 does not claim:
 - this Mac is a limited local platform for Python reference, native CPU/oracle
   where available, Embree-oriented work, documentation, and focused local tests
 
+## Relationship To The Newer v0.3 Demo Line
+
+The newer `v0.3` work in this repo should not be read as changing the released
+`v0.2.0` package definition.
+
+- `v0.2.0` remains the stable released workload/package surface
+- the `v0.3` line is a newer application/demo proof built on the same RTDL core
+- the `v0.3` visual-demo work is evidence of versatility, not a replacement release
+
 ## External Evidence Note
 
 An Antigravity external test report is preserved as supplementary evidence:

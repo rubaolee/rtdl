@@ -13,6 +13,10 @@ Status wording used below:
 - `limited local`: usable on this Mac only as a local support path, not as the
   primary release-validation host
 
+This matrix is for the released `v0.2.0` workload/package surface only.
+The newer `v0.3` visual-demo/application line is intentionally outside this
+matrix and should be read through the separate `v0.3` docs.
+
 ## Platform Roles
 
 | Platform | Role | Current status |
