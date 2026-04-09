@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import shutil
 import sys
 import unittest
 
@@ -10,6 +11,7 @@ sys.path.insert(0, ".")
 
 from examples.rtdl_smooth_camera_orbit_demo import _camera_eye_for_phase
 from examples.rtdl_smooth_camera_orbit_demo import _smooth_demo_lights
+from examples.rtdl_smooth_camera_orbit_demo import _smooth_demo_theme
 from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_frames
 from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_optix_frames
 from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_vulkan_frames
@@ -37,8 +39,20 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
         self.assertGreater(float(lights[0]["display_alpha"]), 0.0)
         self.assertGreater(float(lights[0]["size_scale"]), 1.0)
 
+    def test_deep_blue_redsun_theme_is_redder_and_brighter(self) -> None:
+        baseline = _smooth_demo_theme("true_onelight")
+        themed = _smooth_demo_theme("deep_blue_redsun")
+        baseline_light = baseline["lights"][0]
+        themed_light = themed["lights"][0]
+        self.assertGreater(float(themed_light["intensity"]), float(baseline_light["intensity"]))
+        self.assertGreater(float(themed_light["color"][0]), float(themed_light["color"][1]))
+        self.assertGreater(float(themed_light["color"][0]), float(themed_light["color"][2]))
+        self.assertGreater(float(themed["halo_alpha"]), float(baseline["halo_alpha"]))
+        self.assertLess(float(themed["ground_shadow_alpha"]), float(baseline["ground_shadow_alpha"]))
+
     def test_render_one_frame_writes_summary_and_compare(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/one_frame")
+        shutil.rmtree(output_dir, ignore_errors=True)
         summary = render_smooth_camera_orbit_frames(
             backend="cpu_python_reference",
             compare_backend="cpu_python_reference",
@@ -56,8 +70,30 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
         compare_summary = summary["frames"][0]["compare_backend"]
         self.assertIsNotNone(compare_summary)
         self.assertTrue(compare_summary["matches"])
+        self.assertTrue(compare_summary["exact_matches"])
+        self.assertEqual(compare_summary["visible_mismatch_count"], 0)
+        self.assertEqual(compare_summary["exact_mismatch_count"], 0)
         persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(persisted["phase_mode"], "uniform")
+
+    def test_themed_render_persists_theme_name(self) -> None:
+        output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/redsun_theme")
+        shutil.rmtree(output_dir, ignore_errors=True)
+        summary = render_smooth_camera_orbit_frames(
+            backend="cpu_python_reference",
+            compare_backend=None,
+            width=16,
+            height=16,
+            latitude_bands=4,
+            longitude_bands=8,
+            frame_count=1,
+            output_dir=output_dir,
+            phase_mode="uniform",
+            theme="deep_blue_redsun",
+        )
+        self.assertEqual(summary["theme"], "deep_blue_redsun")
+        persisted = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(persisted["theme"], "deep_blue_redsun")
 
     def test_multi_frame_render_produces_distinct_frames(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/multi")

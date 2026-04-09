@@ -44,19 +44,67 @@ from examples.rtdl_spinning_ball_3d_demo import make_uv_sphere_mesh
 _SMOOTH_WORKER_STATE: dict[str, object] = {}
 
 
-def _smooth_demo_lights() -> tuple[dict[str, object], ...]:
-    return (
-        {
-            "position": (4.35, 2.35, 5.55),
-            "color": (1.0, 0.87, 0.34),
-            "intensity": 3.05,
-            "display_color": (255, 214, 98),
-            "ground_core_color": (255, 226, 132),
-            "display_alpha": 1.0,
-            "ground_alpha_scale": 1.05,
-            "size_scale": 1.36,
-        },
+def _smooth_demo_theme(theme: str = "true_onelight") -> dict[str, object]:
+    if theme == "true_onelight":
+        return {
+            "lights": (
+                {
+                    "position": (4.35, 2.35, 5.55),
+                    "color": (1.0, 0.87, 0.34),
+                    "intensity": 3.05,
+                    "display_color": (255, 214, 98),
+                    "ground_core_color": (255, 226, 132),
+                    "display_alpha": 1.0,
+                    "ground_alpha_scale": 1.05,
+                    "size_scale": 1.36,
+                },
+            ),
+            "halo_color": (76, 120, 255),
+            "halo_alpha": 0.17,
+            "ground_shadow_alpha": 0.28,
+        }
+    if theme == "deep_blue_redsun":
+        return {
+            "lights": (
+                {
+                    "position": (4.55, 2.55, 5.65),
+                    "color": (1.0, 0.34, 0.24),
+                    "intensity": 3.55,
+                    "display_color": (255, 92, 64),
+                    "ground_core_color": (255, 128, 96),
+                    "display_alpha": 1.0,
+                    "ground_alpha_scale": 1.12,
+                    "size_scale": 1.44,
+                },
+            ),
+            "halo_color": (44, 98, 255),
+            "halo_alpha": 0.23,
+            "ground_shadow_alpha": 0.20,
+        }
+    raise ValueError(f"unsupported smooth-camera theme: {theme}")
+
+
+def _smooth_demo_lights(theme: str = "true_onelight") -> tuple[dict[str, object], ...]:
+    return _smooth_demo_theme(theme)["lights"]  # type: ignore[return-value]
+
+
+def _compare_hit_lookups(
+    hit_lookup: dict[int, int],
+    compare_lookup: dict[int, int],
+) -> dict[str, object]:
+    ray_ids = set(hit_lookup) | set(compare_lookup)
+    exact_mismatch_count = sum(1 for ray_id in ray_ids if hit_lookup.get(ray_id) != compare_lookup.get(ray_id))
+    visible_mismatch_count = sum(
+        1
+        for ray_id in ray_ids
+        if (hit_lookup.get(ray_id, 0) > 0) != (compare_lookup.get(ray_id, 0) > 0)
     )
+    return {
+        "matches": visible_mismatch_count == 0,
+        "exact_matches": exact_mismatch_count == 0,
+        "visible_mismatch_count": visible_mismatch_count,
+        "exact_mismatch_count": exact_mismatch_count,
+    }
 
 
 def _camera_eye_for_phase(phase: float, *, center: tuple[float, float, float]) -> tuple[float, float, float]:
@@ -113,6 +161,9 @@ def _render_smooth_frame(task: tuple[int, float]) -> dict[str, object]:
     triangles = state["triangles"]  # type: ignore[assignment]
     lights = state["lights"]  # type: ignore[assignment]
     light_count = int(state["light_count"])  # type: ignore[arg-type]
+    halo_color = state["halo_color"]  # type: ignore[assignment]
+    halo_alpha = float(state["halo_alpha"])  # type: ignore[arg-type]
+    ground_shadow_alpha = float(state["ground_shadow_alpha"])  # type: ignore[arg-type]
 
     eye = _camera_eye_for_phase(phase, center=center)  # type: ignore[arg-type]
     rays = make_camera_rays(
@@ -133,7 +184,7 @@ def _render_smooth_frame(task: tuple[int, float]) -> dict[str, object]:
     if frame_index == 0 and compare_backend and compare_backend != "none":
         compare_rows = _run_backend_rows(compare_backend, rays=rays, triangles=triangles)
         compare_lookup = {int(row["ray_id"]): int(row["hit_count"]) for row in compare_rows}
-        compare_summary = {"backend": compare_backend, "matches": compare_lookup == hit_lookup}
+        compare_summary = {"backend": compare_backend, **_compare_hit_lookups(hit_lookup, compare_lookup)}
 
     source_image = state["background_image"]  # type: ignore[index]
     if np is not None and hasattr(source_image, "shape"):
@@ -213,15 +264,15 @@ def _render_smooth_frame(task: tuple[int, float]) -> dict[str, object]:
             center_y=min(height - 1.0, projected_center[1] + height * 0.24),
             radius_x=width * 0.18,
             radius_y=height * 0.058,
-            alpha=0.28,
+            alpha=ground_shadow_alpha,
         )
         _paint_halo(
             image,
             center_x=projected_center[0],
             center_y=projected_center[1],
             radius=min(width, height) * 0.15,
-            color=(76, 120, 255),
-            alpha=0.17,
+            color=halo_color,  # type: ignore[arg-type]
+            alpha=halo_alpha,
         )
 
     if bool(state["show_light_source"]):  # type: ignore[arg-type]
@@ -277,6 +328,7 @@ def render_smooth_camera_orbit_frames(
     show_light_source: bool = False,
     temporal_blend_alpha: float = 0.0,
     phase_mode: str = "uniform",
+    theme: str = "true_onelight",
 ) -> dict[str, object]:
     wall_started = time.perf_counter()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -285,7 +337,8 @@ def render_smooth_camera_orbit_frames(
     up_hint = (0.0, 1.0, 0.0)
     radius = 1.46
     fov_y = 28.0
-    lights = _smooth_demo_lights()
+    theme_spec = _smooth_demo_theme(theme)
+    lights = theme_spec["lights"]  # type: ignore[assignment]
     triangles = make_uv_sphere_mesh(
         latitude_bands=latitude_bands,
         longitude_bands=longitude_bands,
@@ -307,6 +360,9 @@ def render_smooth_camera_orbit_frames(
         "triangles": triangles,
         "lights": lights,
         "light_count": len(lights),
+        "halo_color": theme_spec["halo_color"],
+        "halo_alpha": theme_spec["halo_alpha"],
+        "ground_shadow_alpha": theme_spec["ground_shadow_alpha"],
         "show_light_source": show_light_source,
         "output_dir": output_dir,
     }
@@ -335,6 +391,7 @@ def render_smooth_camera_orbit_frames(
         "temporal_blend_alpha": temporal_blend_alpha,
         "phase_mode": phase_mode,
         "camera_motion": "front_arc",
+        "theme": theme,
         "camera_sweep_degrees": 84.0,
         "triangle_count": len(triangles),
         "latitude_bands": latitude_bands,
@@ -365,6 +422,7 @@ def render_smooth_camera_orbit_vulkan_frames(
     show_light_source: bool = False,
     temporal_blend_alpha: float = 0.0,
     phase_mode: str = "uniform",
+    theme: str = "true_onelight",
 ) -> dict[str, object]:
     return render_smooth_camera_orbit_frames(
         backend="vulkan",
@@ -379,6 +437,7 @@ def render_smooth_camera_orbit_vulkan_frames(
         show_light_source=show_light_source,
         temporal_blend_alpha=temporal_blend_alpha,
         phase_mode=phase_mode,
+        theme=theme,
     )
 
 
@@ -395,6 +454,7 @@ def render_smooth_camera_orbit_optix_frames(
     show_light_source: bool = False,
     temporal_blend_alpha: float = 0.0,
     phase_mode: str = "uniform",
+    theme: str = "true_onelight",
 ) -> dict[str, object]:
     return render_smooth_camera_orbit_frames(
         backend="optix",
@@ -409,6 +469,7 @@ def render_smooth_camera_orbit_optix_frames(
         show_light_source=show_light_source,
         temporal_blend_alpha=temporal_blend_alpha,
         phase_mode=phase_mode,
+        theme=theme,
     )
 
 
@@ -425,6 +486,7 @@ def main() -> None:
     parser.add_argument("--show-light-source", action="store_true")
     parser.add_argument("--temporal-blend-alpha", type=float, default=0.0)
     parser.add_argument("--phase-mode", choices=("weighted", "uniform"), default="uniform")
+    parser.add_argument("--theme", choices=("true_onelight", "deep_blue_redsun"), default="true_onelight")
     parser.add_argument("--output-dir", type=Path, default=Path("build/rtdl_smooth_camera_orbit_demo"))
     args = parser.parse_args()
 
@@ -441,6 +503,7 @@ def main() -> None:
         show_light_source=args.show_light_source,
         temporal_blend_alpha=args.temporal_blend_alpha,
         phase_mode=args.phase_mode,
+        theme=args.theme,
     )
     print(json.dumps(summary, indent=2, sort_keys=True))
 
