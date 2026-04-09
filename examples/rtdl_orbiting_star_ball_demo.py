@@ -80,43 +80,36 @@ def _orbit_phase_samples(frame_count: int) -> tuple[float, ...]:
 
 
 def _frame_light(phase: float) -> dict[str, object]:
-    angle = phase * math.tau
-    # Tilt the sun path so the visible highlight travels from upper-right
-    # toward lower-left instead of reading as a mostly horizontal sweep.
-    diag = math.cos(angle)
+    x = 44.0 - 88.0 * phase
     return {
         "position": (
-            math.cos(angle) * 36.0,
-            4.0 + diag * 10.5,
-            math.sin(angle) * 36.0,
+            x,
+            0.08,
+            11.8,
         ),
         "color": (1.0, 0.86, 0.30),
         "intensity": 2.42,
         "display_color": (255, 212, 92),
+        "ground_core_color": (255, 224, 128),
+        "display_alpha": 0.98,
+        "ground_alpha_scale": 1.0,
     }
 
 
 def _secondary_frame_light(phase: float) -> dict[str, object]:
-    activation_start = 0.18
-    activation_end = 0.34
-    fade_out_start = 0.88
-    fade_out_end = 0.98
-    ramp_in = _smoothstep(activation_start, activation_end, phase)
-    ramp_out = 1.0 - _smoothstep(fade_out_start, fade_out_end, phase)
-    activation = ramp_in * max(0.0, ramp_out)
     x = -44.0 + 88.0 * phase
     return {
         "position": (
             x,
-            9.6,
+            0.08,
             11.8,
         ),
-        "color": (1.0, 0.26, 0.18),
-        "intensity": 3.40 * activation,
-        "display_color": (255, 96, 72),
-        "ground_core_color": (255, 140, 112),
-        "display_alpha": 0.95 * activation,
-        "ground_alpha_scale": activation,
+        "color": (1.0, 0.82, 0.28),
+        "intensity": 2.05,
+        "display_color": (255, 208, 88),
+        "ground_core_color": (255, 216, 120),
+        "display_alpha": 0.95,
+        "ground_alpha_scale": 1.0,
     }
 
 

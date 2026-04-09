@@ -66,28 +66,33 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
         for left, right in zip(phases, phases[1:]):
             self.assertLessEqual(left, right)
 
-    def test_frame_light_completes_orbit(self) -> None:
+    def test_frame_light_moves_right_to_left_horizontally(self) -> None:
         light_0 = _frame_light(0.0)
         light_1 = _frame_light(1.0)
         pos_0 = light_0["position"]
         pos_1 = light_1["position"]
-        self.assertAlmostEqual(pos_0[0], pos_1[0], places=6)
+        self.assertGreater(pos_0[0], pos_1[0])
+        self.assertAlmostEqual(pos_0[1], 0.08, places=6)
+        self.assertAlmostEqual(pos_1[1], 0.08, places=6)
+        self.assertAlmostEqual(pos_0[2], 11.8, places=6)
         self.assertAlmostEqual(pos_0[2], pos_1[2], places=6)
         self.assertIn("intensity", light_0)
         self.assertGreater(float(light_0["intensity"]), 0.0)
 
-    def test_secondary_light_is_off_at_clip_start(self) -> None:
+    def test_secondary_light_is_on_at_clip_start(self) -> None:
         light = _secondary_frame_light(0.0)
-        self.assertAlmostEqual(float(light["intensity"]), 0.0, places=6)
-        self.assertAlmostEqual(float(light["display_alpha"]), 0.0, places=6)
+        self.assertGreater(float(light["intensity"]), 0.0)
+        self.assertGreater(float(light["display_alpha"]), 0.0)
 
-    def test_secondary_light_activates_after_delay_then_fades(self) -> None:
+    def test_secondary_light_stays_on_through_clip(self) -> None:
         early = _secondary_frame_light(0.0)
         active = _secondary_frame_light(0.5)
-        faded = _secondary_frame_light(0.99)
-        self.assertAlmostEqual(float(early["intensity"]), 0.0, places=6)
+        late = _secondary_frame_light(0.99)
+        self.assertGreater(float(early["intensity"]), 0.0)
         self.assertGreater(float(active["intensity"]), 0.0)
-        self.assertLess(float(faded["intensity"]), float(active["intensity"]))
+        self.assertGreater(float(late["intensity"]), 0.0)
+        self.assertAlmostEqual(float(early["intensity"]), float(active["intensity"]), places=6)
+        self.assertAlmostEqual(float(active["intensity"]), float(late["intensity"]), places=6)
 
     def test_secondary_light_moves_left_to_right_horizontally(self) -> None:
         xs = [float(_secondary_frame_light(phase)["position"][0]) for phase in (0.1, 0.4, 0.7, 0.9)]
@@ -95,16 +100,27 @@ class Goal166OrbitingStarBallDemoTest(unittest.TestCase):
             self.assertLess(left, right)
         for phase in (0.0, 0.25, 0.5, 0.75, 1.0):
             position = _secondary_frame_light(phase)["position"]
-            self.assertAlmostEqual(float(position[1]), 9.6, places=6)
+            self.assertAlmostEqual(float(position[1]), 0.08, places=6)
             self.assertAlmostEqual(float(position[2]), 11.8, places=6)
 
-    def test_frame_lights_returns_yellow_primary_and_red_secondary(self) -> None:
+    def test_frame_lights_returns_two_warm_yellow_lights(self) -> None:
         lights = _frame_lights(0.5)
         self.assertEqual(len(lights), 2)
         primary, secondary = lights
         self.assertGreater(float(primary["intensity"]), 0.0)
+        self.assertGreater(float(secondary["intensity"]), 0.0)
         self.assertGreater(float(primary["color"][1]), 0.5)
-        self.assertLess(float(secondary["color"][1]), 0.4)
+        self.assertGreater(float(secondary["color"][1]), 0.5)
+        self.assertLess(float(secondary["intensity"]), float(primary["intensity"]))
+
+    def test_frame_lights_are_horizontally_mirrored_on_equator(self) -> None:
+        for phase in (0.0, 0.25, 0.5, 0.75, 1.0):
+            primary, secondary = _frame_lights(phase)
+            primary_position = primary["position"]
+            secondary_position = secondary["position"]
+            self.assertAlmostEqual(float(primary_position[0]), -float(secondary_position[0]), places=6)
+            self.assertAlmostEqual(float(primary_position[1]), float(secondary_position[1]), places=6)
+            self.assertAlmostEqual(float(primary_position[2]), float(secondary_position[2]), places=6)
 
     def test_make_shadow_rays_returns_single_positive_tmax_ray(self) -> None:
         ray = rt.Ray3D(id=7, ox=0.0, oy=0.0, oz=5.0, dx=0.0, dy=0.0, dz=-1.0, tmax=10.0)
