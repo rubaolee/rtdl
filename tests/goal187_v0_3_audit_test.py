@@ -9,7 +9,7 @@ import unittest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
-SHORTS_URL = "https://youtube.com/shorts/SOKZTISuH5c"
+SHORTS_URL = "https://youtube.com/shorts/O07Mg5luap8"
 
 
 class Goal187V03AuditTest(unittest.TestCase):
@@ -25,8 +25,8 @@ class Goal187V03AuditTest(unittest.TestCase):
 
     def test_live_docs_point_to_smooth_camera_baseline(self) -> None:
         docs = {
-            REPO_ROOT / "README.md": "examples/rtdl_smooth_camera_orbit_demo.py",
-            REPO_ROOT / "docs/README.md": "examples/rtdl_smooth_camera_orbit_demo.py",
+            REPO_ROOT / "README.md": "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
+            REPO_ROOT / "docs/README.md": "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
             REPO_ROOT / "docs/current_milestone_qa.md": "rtdl_smooth_camera_orbit_demo.py",
         }
         for path, needle in docs.items():
@@ -42,7 +42,7 @@ class Goal187V03AuditTest(unittest.TestCase):
             output_dir.mkdir(parents=True, exist_ok=True)
         cmd = [
             PYTHON,
-            str(REPO_ROOT / "examples/rtdl_smooth_camera_orbit_demo.py"),
+            str(REPO_ROOT / "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py"),
             "--backend",
             "cpu_python_reference",
             "--compare-backend",
@@ -83,7 +83,7 @@ class Goal187V03AuditTest(unittest.TestCase):
             output_dir.mkdir(parents=True, exist_ok=True)
         cmd = [
             PYTHON,
-            str(REPO_ROOT / "examples/rtdl_orbiting_star_ball_demo.py"),
+            str(REPO_ROOT / "examples/visual_demo/rtdl_orbiting_star_ball_demo.py"),
             "--backend",
             "cpu_python_reference",
             "--compare-backend",

@@ -9,7 +9,7 @@
   - broad moving bright/dark sweep across the ball
   - moving ground-light cue
 - Active demo file:
-  - `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+  - `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - Current strongest completed artifact:
   - `/Users/rl2025/rtdl_python_only/build/win_embree_earthlike_final_1024`
   - settings:

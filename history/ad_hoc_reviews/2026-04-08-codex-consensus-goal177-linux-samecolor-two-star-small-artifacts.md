@@ -5,7 +5,7 @@ Goal 177 is ready to close.
 Reasons:
 
 - the code change is bounded to the small Linux supporting-artifact line:
-  - [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
+  - [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
   - [goal166_orbiting_star_ball_demo_test.py](/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py)
 - the final artifact shape is consistent with the user's direction:
   - same warm-yellow family

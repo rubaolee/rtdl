@@ -6,7 +6,7 @@ Files to read:
 
 - `/Users/rl2025/rtdl_python_only/docs/goal_161_v0_3_visual_demo_charter.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal161_v0_3_visual_demo_charter_2026-04-07.md`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_lit_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_lit_ball_demo.py`
 
 Review only for:
 

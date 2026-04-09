@@ -58,7 +58,7 @@ Current user-programming note:
 - RTDL should not be understood only as a fixed workload catalog
 - users can already combine RTDL kernels with Python application logic
 - the current small demo of that pattern is:
-  - [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+  - [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 - RTDL provides the geometry-query core there, while Python handles brightness
   reconstruction and image output
 

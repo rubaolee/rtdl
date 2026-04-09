@@ -139,7 +139,7 @@ def infer_test_requirement(path: Path, kind: str) -> str:
 
 def infer_test_evidence(path: Path) -> str:
     rel = path.relative_to(ROOT).as_posix()
-    if rel == "examples/rtdl_lit_ball_demo.py":
+    if rel == "examples/visual_demo/rtdl_lit_ball_demo.py":
         return "goal158_demo_smoke"
     if rel.startswith("examples/rtdl_generated_"):
         return "generated_artifact_compile"

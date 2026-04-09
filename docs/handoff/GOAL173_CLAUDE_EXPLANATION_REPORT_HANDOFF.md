@@ -21,7 +21,7 @@ render program.
 
 ## Files To Read
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/docs/goal_173_windows_4k_movie_acceptance.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal173_windows_4k_movie_acceptance_2026-04-08.md`

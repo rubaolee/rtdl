@@ -30,7 +30,7 @@ Remote output directory:
 ## Verified Before Launch
 
 - local compile:
-  - `python3 -m compileall examples/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
+  - `python3 -m compileall examples/visual_demo/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
 - local tests:
   - `PYTHONPATH=src:. python3 -m unittest tests.goal166_orbiting_star_ball_demo_test`
   - `Ran 24 tests`

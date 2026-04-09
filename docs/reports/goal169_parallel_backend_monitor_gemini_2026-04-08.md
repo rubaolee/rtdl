@@ -24,7 +24,7 @@ Both goals are well-defined and align honestly with the existing project archite
     *   **Native Code Stability:** Potential bugs or inefficiencies in the `src/native/rtdl_vulkan.cpp` implementation, which could affect correctness or stability.
 *   **Evidence Needed for Closure:**
     *   Successful compilation of `librtdl_vulkan.so` via `make build-vulkan` on the designated Linux environment.
-    *   Execution of `python3 examples/rtdl_orbiting_star_ball_demo.py --backend vulkan` resulting in error-free operation.
+    *   Execution of `python3 examples/visual_demo/rtdl_orbiting_star_ball_demo.py --backend vulkan` resulting in error-free operation.
     *   Visual verification of the orbiting-star 3D demo's output, confirming fidelity against a known-good reference.
     *   Passing of relevant automated tests (if `test` or `verify` targets cover Vulkan backend functionality for this demo).
 
@@ -39,7 +39,7 @@ Both goals are well-defined and align honestly with the existing project archite
     *   **Native Code Stability:** Potential bugs or inefficiencies in the `src/native/rtdl_optix.cpp` (C++/CUDA) implementation.
 *   **Evidence Needed for Closure:**
     *   Successful compilation of `librtdl_optix.so` via `make build-optix` on the designated Linux environment with a compatible NVIDIA GPU.
-    *   Execution of `python3 examples/rtdl_orbiting_star_ball_demo.py --backend optix --width 3840 --height 2160` without errors.
+    *   Execution of `python3 examples/visual_demo/rtdl_orbiting_star_ball_demo.py --backend optix --width 3840 --height 2160` without errors.
     *   Visual verification of the 4K rendered output, confirming fidelity.
     *   Satisfactory performance metrics (e.g., frame rate, render time) recorded in `summary.json` for 4K resolution, meeting predefined thresholds on specified hardware.
 

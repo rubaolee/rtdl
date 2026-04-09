@@ -7,7 +7,7 @@ Files to read:
 - [goal_172_temporal_stability_option.md](/Users/rl2025/rtdl_python_only/docs/goal_172_temporal_stability_option.md)
 - [goal172_temporal_stability_option_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal172_temporal_stability_option_2026-04-08.md)
 - [goal172_temporal_stability_option_review_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal172_temporal_stability_option_review_2026-04-08.md)
-- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
+- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 - [goal166_orbiting_star_ball_demo_test.py](/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py)
 - [goal172 preview summary](/Users/rl2025/rtdl_python_only/build/goal172_temporal_blend_preview/summary.json)
 

@@ -16,7 +16,7 @@ bounded tool for reducing abrupt dark/light pops between adjacent frames.
 ## Implementation
 
 - main file:
-  - [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
+  - [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 - focused tests:
   - [goal166_orbiting_star_ball_demo_test.py](/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py)
 
@@ -30,7 +30,7 @@ Key properties:
 
 ## Verification
 
-- `python3 -m compileall examples/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
+- `python3 -m compileall examples/visual_demo/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
 - `PYTHONPATH=src:. python3 -m unittest tests.goal166_orbiting_star_ball_demo_test`
   - `Ran 19 tests`
   - `OK`

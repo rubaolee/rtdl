@@ -4,7 +4,7 @@ and honest. The project is ready to proceed with the Windows 4K render.
 
 **Findings**
 The provided code
-([rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)),
+([rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)),
 report
 ([goal175_two_star_4k_variant_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal175_two_star_4k_variant_2026-04-08.md)),
 and tests

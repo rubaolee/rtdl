@@ -24,7 +24,7 @@ Python-hosted 3D application.
 Primary front-door links:
 
 - [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
-- [3D Rendering Source](examples/rtdl_smooth_camera_orbit_demo.py)
+- [3D Rendering Source](examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
@@ -117,7 +117,7 @@ That is what the visual demo is meant to show:
 
 RTDL already includes a small example of that model:
 
-- [examples/rtdl_lit_ball_demo.py](examples/rtdl_lit_ball_demo.py)
+- [examples/visual_demo/rtdl_lit_ball_demo.py](examples/visual_demo/rtdl_lit_ball_demo.py)
 
 The repo currently has two layers:
 
@@ -136,12 +136,12 @@ movie artifact is now presented through a single public video URL:
 The current preserved flagship baseline inside the repo is the smoother
 one-light camera-orbit line:
 
-- [examples/rtdl_smooth_camera_orbit_demo.py](examples/rtdl_smooth_camera_orbit_demo.py)
+- [examples/visual_demo/rtdl_smooth_camera_orbit_demo.py](examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 
 The moving-star orbit line remains preserved as a more intuitive but still more
 artifact-prone comparison path:
 
-- [examples/rtdl_orbiting_star_ball_demo.py](examples/rtdl_orbiting_star_ball_demo.py)
+- [examples/visual_demo/rtdl_orbiting_star_ball_demo.py](examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 
 The repo still preserves the accepted local movie artifacts and the supporting
 Linux backend demo artifacts in the deeper reports, but the front surface now

@@ -10,8 +10,8 @@ Read these files:
 - `/Users/rl2025/rtdl_python_only/README.md`
 - `/Users/rl2025/rtdl_python_only/docs/README.md`
 - `/Users/rl2025/rtdl_python_only/docs/current_milestone_qa.md`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_smooth_camera_orbit_demo.py`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal178_smooth_camera_orbit_demo_test.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal179_smooth_camera_linux_backend_test.py`

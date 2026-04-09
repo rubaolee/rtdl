@@ -7,7 +7,7 @@ The moving-star variants produced visible temporal blinking in dark regions, esp
 ## Scope
 
 - add a new Python demo:
-  - `examples/rtdl_smooth_camera_orbit_demo.py`
+  - `examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
 - keep RTDL responsible for:
   - primary ray/triangle query work
   - shadow ray/triangle query work

@@ -10,8 +10,8 @@ Audit the current bounded `v0.3` code and live docs together, then verify the li
 
 Code:
 
-- [rtdl_smooth_camera_orbit_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_smooth_camera_orbit_demo.py)
-- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
+- [rtdl_smooth_camera_orbit_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
+- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 
 Tests:
 
@@ -58,7 +58,7 @@ This module checks:
 
 Compile check:
 
-- `python3 -m compileall examples/rtdl_orbiting_star_ball_demo.py examples/rtdl_smooth_camera_orbit_demo.py tests/goal166_orbiting_star_ball_demo_test.py tests/goal178_smooth_camera_orbit_demo_test.py tests/goal179_smooth_camera_linux_backend_test.py tests/goal187_v0_3_audit_test.py`
+- `python3 -m compileall examples/visual_demo/rtdl_orbiting_star_ball_demo.py examples/visual_demo/rtdl_smooth_camera_orbit_demo.py tests/goal166_orbiting_star_ball_demo_test.py tests/goal178_smooth_camera_orbit_demo_test.py tests/goal179_smooth_camera_linux_backend_test.py tests/goal187_v0_3_audit_test.py`
 
 Bounded local test slice:
 

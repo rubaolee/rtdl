@@ -21,7 +21,7 @@ Files to read:
 - OptiX native implementation:
   - `/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp`
 - smooth-camera demo:
-  - `/Users/rl2025/rtdl_python_only/examples/rtdl_smooth_camera_orbit_demo.py`
+  - `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
 
 Measured reproduction facts:
 

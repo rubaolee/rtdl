@@ -17,7 +17,7 @@ Important boundaries:
 - The ongoing Windows 4K Embree `jobs=8` render is separate non-closure work and should not be treated as Goal 169 evidence.
 
 Files to review:
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/src/native/rtdl_vulkan.cpp`
 - `/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp`
 - `/Users/rl2025/rtdl_python_only/src/rtdsl/optix_runtime.py`
@@ -41,7 +41,7 @@ Evidence summary:
   - `matches = true`
 
 Local verification already established:
-- `python3 -m compileall examples/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py tests/goal169_vulkan_orbit_demo_test.py tests/goal169_optix_orbit_demo_test.py src/rtdsl/optix_runtime.py`
+- `python3 -m compileall examples/visual_demo/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py tests/goal169_vulkan_orbit_demo_test.py tests/goal169_optix_orbit_demo_test.py src/rtdsl/optix_runtime.py`
 - `PYTHONPATH=src:. python3 -m unittest tests.goal166_orbiting_star_ball_demo_test tests.goal169_vulkan_orbit_demo_test tests.goal169_optix_orbit_demo_test`
 - Result:
   - `Ran 17 tests`

@@ -60,7 +60,7 @@ user-facing workflow.
 
 ## RTDL Plus Python App Demo
 
-- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+- [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 
 This is a small user-authored RTDL-plus-Python application. RTDL handles the
 ray/triangle hit relationships. Python handles the visible-span recovery,
@@ -70,7 +70,7 @@ Run:
 
 ```bash
 cd /path/to/rtdl_python_only
-PYTHONPATH=src:. python3 examples/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
+PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
 ```
 
 Important boundary:

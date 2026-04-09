@@ -12,7 +12,7 @@ Read these files:
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal179_linux_smooth_camera_backend_previews_review_2026-04-08.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal179_claude_code_draft_2026-04-08.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal178_179_external_review_claude_2026-04-08.md`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_smooth_camera_orbit_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal178_smooth_camera_orbit_demo_test.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal179_smooth_camera_linux_backend_test.py`
 

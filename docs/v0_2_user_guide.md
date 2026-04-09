@@ -283,7 +283,7 @@ That model already works well in the repo today:
 
 The clearest small example is:
 
-- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+- [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 
 That demo uses RTDL to compute ray/triangle hit relationships and then uses
 Python to compute brightness and write a real `.pgm` image. This is an example

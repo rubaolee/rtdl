@@ -8,7 +8,7 @@ discipline, and test-quality sufficiency.
 - `/Users/rl2025/rtdl_python_only/docs/goal_176_linux_gpu_backend_test_plan.md`
 - `/Users/rl2025/rtdl_python_only/tests/goal169_vulkan_orbit_demo_test.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal169_optix_orbit_demo_test.py`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 
 ## Context
 

@@ -13,12 +13,12 @@ This keeps the RTDL boundary intact while shifting the visual motion source from
 
 ## Implemented Files
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_smooth_camera_orbit_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal178_smooth_camera_orbit_demo_test.py`
 
 ## Local Verification
 
-- `python3 -m compileall examples/rtdl_smooth_camera_orbit_demo.py tests/goal178_smooth_camera_orbit_demo_test.py`
+- `python3 -m compileall examples/visual_demo/rtdl_smooth_camera_orbit_demo.py tests/goal178_smooth_camera_orbit_demo_test.py`
 - `PYTHONPATH=src:. python3 -m unittest tests.goal178_smooth_camera_orbit_demo_test`
 
 Result:

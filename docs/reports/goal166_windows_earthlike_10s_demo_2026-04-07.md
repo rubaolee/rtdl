@@ -91,7 +91,7 @@ So for this demo as currently implemented:
 
 Main demo:
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 
 Supporting 3D file updated during this line:
 

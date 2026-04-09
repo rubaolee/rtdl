@@ -12,8 +12,8 @@ The `v0.3` line now has multiple preserved demo variants, multiple review packag
 ## Scope
 
 - audit the current `v0.3` code paths:
-  - `examples/rtdl_smooth_camera_orbit_demo.py`
-  - `examples/rtdl_orbiting_star_ball_demo.py`
+  - `examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
+  - `examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - audit the bounded `v0.3` tests:
   - orbit demo tests
   - smooth-camera tests

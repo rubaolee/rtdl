@@ -19,7 +19,7 @@ Acceptance
 
 Main files
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py`
 

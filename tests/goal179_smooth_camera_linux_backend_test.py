@@ -7,8 +7,8 @@ import unittest
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_optix_frames
-from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_vulkan_frames
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_optix_frames
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_vulkan_frames
 
 
 class Goal179SmoothCameraLinuxBackendTest(unittest.TestCase):

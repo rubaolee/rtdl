@@ -11,7 +11,7 @@ Result
 
 Code changes
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
   - added optional NumPy imports
   - added NumPy background generation
   - added NumPy vectorized per-hit shading

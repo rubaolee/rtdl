@@ -7,7 +7,7 @@ Files to read:
 - [goal_177_linux_samecolor_two_star_small_artifacts.md](/Users/rl2025/rtdl_python_only/docs/goal_177_linux_samecolor_two_star_small_artifacts.md)
 - [goal177_linux_samecolor_two_star_small_artifacts_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal177_linux_samecolor_two_star_small_artifacts_2026-04-08.md)
 - [goal177_linux_samecolor_two_star_small_artifacts_review_2026-04-08.md](/Users/rl2025/rtdl_python_only/docs/reports/goal177_linux_samecolor_two_star_small_artifacts_review_2026-04-08.md)
-- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
+- [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 - [goal166_orbiting_star_ball_demo_test.py](/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py)
 
 Context:

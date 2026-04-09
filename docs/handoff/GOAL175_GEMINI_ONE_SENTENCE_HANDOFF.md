@@ -8,7 +8,7 @@ and honesty before the Windows 4K render is launched.
 - `/Users/rl2025/rtdl_python_only/docs/goal_175_two_star_4k_variant.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal175_two_star_4k_variant_2026-04-08.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal175_two_star_4k_variant_review_2026-04-08.md`
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py`
 - `/Users/rl2025/rtdl_python_only/build/goal175_two_star_preview/summary.json`
 

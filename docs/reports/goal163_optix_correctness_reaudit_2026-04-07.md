@@ -48,7 +48,7 @@ Command:
 
 ```bash
 cd /home/lestat/work/rtdl_v03_optix_audit
-PYTHONPATH=src:. python3 examples/rtdl_orbit_lights_ball_demo.py \
+PYTHONPATH=src:. python3 examples/visual_demo/rtdl_orbit_lights_ball_demo.py \
   --backend optix \
   --compare-backend cpu \
   --width 96 \

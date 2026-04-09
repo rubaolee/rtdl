@@ -7,7 +7,7 @@ import unittest
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_orbiting_star_ball_demo import render_orbiting_star_ball_vulkan_frames
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import render_orbiting_star_ball_vulkan_frames
 
 
 class Goal169VulkanOrbitDemoTest(unittest.TestCase):

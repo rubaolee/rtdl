@@ -9,13 +9,13 @@ import unittest
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
-from examples.rtdl_smooth_camera_orbit_demo import _camera_eye_for_phase
-from examples.rtdl_smooth_camera_orbit_demo import _smooth_camera_phase_samples
-from examples.rtdl_smooth_camera_orbit_demo import _smooth_demo_lights
-from examples.rtdl_smooth_camera_orbit_demo import _smooth_demo_theme
-from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_frames
-from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_optix_frames
-from examples.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_vulkan_frames
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import _camera_eye_for_phase
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import _smooth_camera_phase_samples
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import _smooth_demo_lights
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import _smooth_demo_theme
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_frames
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_optix_frames
+from examples.visual_demo.rtdl_smooth_camera_orbit_demo import render_smooth_camera_orbit_vulkan_frames
 
 
 class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):

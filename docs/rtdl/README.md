@@ -51,5 +51,5 @@ Current user-programming note:
 - RTDL can already work well as the geometry-query layer inside Python
   applications
 - a concrete small example is:
-  - [rtdl_lit_ball_demo.py](../../examples/rtdl_lit_ball_demo.py)
+  - [rtdl_lit_ball_demo.py](../../examples/visual_demo/rtdl_lit_ball_demo.py)
 - that demo is not a claim that RTDL is a rendering system

@@ -10,7 +10,7 @@ story.
 
 Added the new demo:
 
-- [rtdl_lit_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_lit_ball_demo.py)
+- [rtdl_lit_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_lit_ball_demo.py)
 
 Updated the following docs to mention the demo and the RTDL-plus-Python model:
 
@@ -45,8 +45,8 @@ The docs explicitly keep these limits:
 
 ## Validation
 
-- `python3 -m compileall examples/rtdl_lit_ball_demo.py`
-- `PYTHONPATH=src:. python3 examples/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm`
+- `python3 -m compileall examples/visual_demo/rtdl_lit_ball_demo.py`
+- `PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm`
 
 Result:
 

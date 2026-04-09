@@ -17,7 +17,7 @@ Both now have:
 
 ## Main Code Surface
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/examples/rtdl_spinning_ball_3d_demo.py`
 - `/Users/rl2025/rtdl_python_only/src/native/rtdl_vulkan.cpp`
 - `/Users/rl2025/rtdl_python_only/src/native/rtdl_optix.cpp`

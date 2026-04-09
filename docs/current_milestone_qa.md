@@ -71,15 +71,15 @@ RTDL also already works well with Python user applications where:
 
 Small example:
 
-- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+- [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 
 Preserved flagship baseline for the stronger current application-style example:
 
-- [rtdl_smooth_camera_orbit_demo.py](../examples/rtdl_smooth_camera_orbit_demo.py)
+- [rtdl_smooth_camera_orbit_demo.py](../examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 
 Preserved moving-light comparison example:
 
-- [rtdl_orbiting_star_ball_demo.py](../examples/rtdl_orbiting_star_ball_demo.py)
+- [rtdl_orbiting_star_ball_demo.py](../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 
 ## Does the CPU still matter when using OptiX or Vulkan?
 

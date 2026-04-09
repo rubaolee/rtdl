@@ -9,7 +9,7 @@ import sys
 import time
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 for candidate in (str(REPO_ROOT), str(SRC_ROOT)):
     if candidate not in sys.path:
@@ -22,15 +22,15 @@ try:
 except ImportError:  # pragma: no cover - optional fast path
     np = None  # type: ignore[assignment]
 
-from examples.rtdl_orbiting_star_ball_demo import _make_background_image
-from examples.rtdl_orbiting_star_ball_demo import _make_shadow_rays
-from examples.rtdl_orbiting_star_ball_demo import _materialize_orbit_frames
-from examples.rtdl_orbiting_star_ball_demo import _orbit_frame_paths
-from examples.rtdl_orbiting_star_ball_demo import _orbit_phase_samples
-from examples.rtdl_orbiting_star_ball_demo import _overlay_star_and_ground
-from examples.rtdl_orbiting_star_ball_demo import _shade_orbit_hit
-from examples.rtdl_orbiting_star_ball_demo import _shade_pending_hits_numpy
-from examples.rtdl_orbiting_star_ball_demo import _write_frame_meta
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _make_background_image
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _make_shadow_rays
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _materialize_orbit_frames
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _orbit_frame_paths
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _orbit_phase_samples
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _overlay_star_and_ground
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _shade_orbit_hit
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _shade_pending_hits_numpy
+from examples.visual_demo.rtdl_orbiting_star_ball_demo import _write_frame_meta
 from examples.rtdl_spinning_ball_3d_demo import _paint_ground_shadow
 from examples.rtdl_spinning_ball_3d_demo import _paint_halo
 from examples.rtdl_spinning_ball_3d_demo import _project_world_to_screen

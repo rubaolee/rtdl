@@ -24,7 +24,7 @@ Continue Goal 175 from the current live Windows 4K render state.
 
 ## Implemented Files
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal166_orbiting_star_ball_demo_test.py`
 
 ## Goal 175 Docs
@@ -38,7 +38,7 @@ Continue Goal 175 from the current live Windows 4K render state.
 
 ## Current Verified Local State
 
-- `python3 -m compileall examples/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
+- `python3 -m compileall examples/visual_demo/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
 - `PYTHONPATH=src:. python3 -m unittest tests.goal166_orbiting_star_ball_demo_test`
 - result:
   - `Ran 24 tests`

@@ -64,7 +64,7 @@ Objective:
 
 Current code changes:
 
-- [rtdl_orbiting_star_ball_demo.py](../../examples/rtdl_orbiting_star_ball_demo.py)
+- [rtdl_orbiting_star_ball_demo.py](../../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 - [goal166_orbiting_star_ball_demo_test.py](../../tests/goal166_orbiting_star_ball_demo_test.py)
 
 What is already done for Goal 172:
@@ -78,7 +78,7 @@ What is already done for Goal 172:
   - file-level temporal blend behavior
   - summary persistence
 - local verification passed:
-  - `python3 -m compileall examples/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
+  - `python3 -m compileall examples/visual_demo/rtdl_orbiting_star_ball_demo.py tests/goal166_orbiting_star_ball_demo_test.py`
   - `PYTHONPATH=src:. python3 -m unittest tests.goal166_orbiting_star_ball_demo_test`
     - `Ran 19 tests`
     - `OK`

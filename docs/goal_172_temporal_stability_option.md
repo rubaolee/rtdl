@@ -9,7 +9,7 @@ changing the RTDL geometric-query surface.
 ## Accepted Scope
 
 - add an optional temporal post-blend step to:
-  - [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/rtdl_orbiting_star_ball_demo.py)
+  - [rtdl_orbiting_star_ball_demo.py](/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 - keep the default behavior unchanged when the new option is disabled
 - add focused tests for:
   - payload blending

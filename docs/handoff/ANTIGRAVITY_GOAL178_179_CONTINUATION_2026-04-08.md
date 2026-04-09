@@ -22,7 +22,7 @@ Continue from the current smooth camera-orbit state.
 
 ### Implemented Files
 
-- `/Users/rl2025/rtdl_python_only/examples/rtdl_smooth_camera_orbit_demo.py`
+- `/Users/rl2025/rtdl_python_only/examples/visual_demo/rtdl_smooth_camera_orbit_demo.py`
 - `/Users/rl2025/rtdl_python_only/tests/goal178_smooth_camera_orbit_demo_test.py`
 
 ### Docs

@@ -140,7 +140,7 @@ After this hello-world example, the best next files are:
 - `examples/rtdl_segment_polygon_hitcount.py`
 - `examples/rtdl_segment_polygon_anyhit_rows.py`
 - `examples/rtdl_polygon_set_jaccard.py`
-- `examples/rtdl_lit_ball_demo.py`
+- `examples/visual_demo/rtdl_lit_ball_demo.py`
 - `docs/features/README.md`
 - `docs/architecture_api_performance_overview.md`
 
@@ -165,7 +165,7 @@ That is often the most practical way to use the system:
 
 The clearest small example is:
 
-- [rtdl_lit_ball_demo.py](../examples/rtdl_lit_ball_demo.py)
+- [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 
 That demo uses RTDL only for ray/triangle hit relationships, then uses Python
 to reconstruct the visible span, compute brightness, print ASCII, and write a
