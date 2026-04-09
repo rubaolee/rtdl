@@ -24,6 +24,7 @@ Python-hosted 3D application.
 Primary front-door links:
 
 - [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [Flagship Demo Source](examples/rtdl_smooth_camera_orbit_demo.py)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
