@@ -42,46 +42,49 @@ from examples.rtdl_spinning_ball_3d_demo import make_uv_sphere_mesh
 
 
 _SMOOTH_WORKER_STATE: dict[str, object] = {}
+_SMOOTH_DEMO_THEMES: dict[str, dict[str, object]] = {
+    "true_onelight": {
+        "lights": (
+            {
+                "position": (4.35, 2.35, 5.55),
+                "color": (1.0, 0.87, 0.34),
+                "intensity": 3.05,
+                "display_color": (255, 214, 98),
+                "ground_core_color": (255, 226, 132),
+                "display_alpha": 1.0,
+                "ground_alpha_scale": 1.05,
+                "size_scale": 1.36,
+            },
+        ),
+        "halo_color": (76, 120, 255),
+        "halo_alpha": 0.17,
+        "ground_shadow_alpha": 0.28,
+    },
+    "deep_blue_redsun": {
+        "lights": (
+            {
+                "position": (4.55, 2.55, 5.65),
+                "color": (1.0, 0.34, 0.24),
+                "intensity": 3.55,
+                "display_color": (255, 92, 64),
+                "ground_core_color": (255, 128, 96),
+                "display_alpha": 1.0,
+                "ground_alpha_scale": 1.12,
+                "size_scale": 1.44,
+            },
+        ),
+        "halo_color": (44, 98, 255),
+        "halo_alpha": 0.23,
+        "ground_shadow_alpha": 0.20,
+    },
+}
 
 
 def _smooth_demo_theme(theme: str = "true_onelight") -> dict[str, object]:
-    if theme == "true_onelight":
-        return {
-            "lights": (
-                {
-                    "position": (4.35, 2.35, 5.55),
-                    "color": (1.0, 0.87, 0.34),
-                    "intensity": 3.05,
-                    "display_color": (255, 214, 98),
-                    "ground_core_color": (255, 226, 132),
-                    "display_alpha": 1.0,
-                    "ground_alpha_scale": 1.05,
-                    "size_scale": 1.36,
-                },
-            ),
-            "halo_color": (76, 120, 255),
-            "halo_alpha": 0.17,
-            "ground_shadow_alpha": 0.28,
-        }
-    if theme == "deep_blue_redsun":
-        return {
-            "lights": (
-                {
-                    "position": (4.55, 2.55, 5.65),
-                    "color": (1.0, 0.34, 0.24),
-                    "intensity": 3.55,
-                    "display_color": (255, 92, 64),
-                    "ground_core_color": (255, 128, 96),
-                    "display_alpha": 1.0,
-                    "ground_alpha_scale": 1.12,
-                    "size_scale": 1.44,
-                },
-            ),
-            "halo_color": (44, 98, 255),
-            "halo_alpha": 0.23,
-            "ground_shadow_alpha": 0.20,
-        }
-    raise ValueError(f"unsupported smooth-camera theme: {theme}")
+    theme_spec = _SMOOTH_DEMO_THEMES.get(theme)
+    if theme_spec is None:
+        raise ValueError(f"unsupported smooth-camera theme: {theme}")
+    return theme_spec
 
 
 def _smooth_demo_lights(theme: str = "true_onelight") -> tuple[dict[str, object], ...]:

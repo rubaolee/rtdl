@@ -97,6 +97,7 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
 
     def test_multi_frame_render_produces_distinct_frames(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/multi")
+        shutil.rmtree(output_dir, ignore_errors=True)
         summary = render_smooth_camera_orbit_frames(
             backend="cpu_python_reference",
             compare_backend=None,
@@ -114,6 +115,7 @@ class Goal178SmoothCameraOrbitDemoTest(unittest.TestCase):
 
     def test_jobs_gt_one_render_produces_frames(self) -> None:
         output_dir = Path("build/goal178_smooth_camera_orbit_demo_test/jobs_two")
+        shutil.rmtree(output_dir, ignore_errors=True)
         summary = render_smooth_camera_orbit_frames(
             backend="cpu_python_reference",
             compare_backend=None,
