@@ -73,7 +73,11 @@ Small example:
 
 - [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 
-Preserved flagship baseline for the stronger current application-style example:
+Preserved primary source baseline for the stronger current application-style example:
+
+- [rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+
+Preserved stable comparison baseline:
 
 - [rtdl_smooth_camera_orbit_demo.py](../examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 

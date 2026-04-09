@@ -18,6 +18,7 @@ If you are new to RTDL, use these files first:
 - `rtdl_polygon_set_jaccard.py`
 - `rtdl_road_hazard_screening.py`
 - `visual_demo/rtdl_lit_ball_demo.py`
+- `visual_demo/rtdl_hidden_star_stable_ball_demo.py`
 - `visual_demo/rtdl_smooth_camera_orbit_demo.py`
 
 ## Reference Material

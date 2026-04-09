@@ -23,18 +23,18 @@ class Goal187V03AuditTest(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             self.assertIn(SHORTS_URL, text, msg=str(path))
 
-    def test_live_docs_point_to_smooth_camera_baseline(self) -> None:
+    def test_live_docs_point_to_hidden_star_primary_demo(self) -> None:
         docs = {
-            REPO_ROOT / "README.md": "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
-            REPO_ROOT / "docs/README.md": "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
-            REPO_ROOT / "docs/current_milestone_qa.md": "rtdl_smooth_camera_orbit_demo.py",
+            REPO_ROOT / "README.md": "examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py",
+            REPO_ROOT / "docs/README.md": "examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py",
+            REPO_ROOT / "docs/current_milestone_qa.md": "rtdl_hidden_star_stable_ball_demo.py",
         }
         for path, needle in docs.items():
             text = path.read_text(encoding="utf-8")
             self.assertIn(needle, text, msg=str(path))
 
-    def test_smooth_camera_cli_system_smoke(self) -> None:
-        output_dir = REPO_ROOT / "build/goal187_v0_3_audit_test/smooth_cli"
+    def test_hidden_star_cli_system_smoke(self) -> None:
+        output_dir = REPO_ROOT / "build/goal187_v0_3_audit_test/hidden_star_cli"
         if output_dir.exists():
             for child in output_dir.iterdir():
                 child.unlink()
@@ -42,11 +42,11 @@ class Goal187V03AuditTest(unittest.TestCase):
             output_dir.mkdir(parents=True, exist_ok=True)
         cmd = [
             PYTHON,
-            str(REPO_ROOT / "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py"),
+            str(REPO_ROOT / "examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py"),
             "--backend",
             "cpu_python_reference",
             "--compare-backend",
-            "cpu_python_reference",
+            "none",
             "--width",
             "20",
             "--height",
@@ -59,10 +59,8 @@ class Goal187V03AuditTest(unittest.TestCase):
             "2",
             "--jobs",
             "1",
-            "--temporal-blend-alpha",
-            "0.10",
-            "--phase-mode",
-            "uniform",
+            "--shadow-mode",
+            "rtdl_light_to_surface",
             "--output-dir",
             str(output_dir),
         ]
@@ -71,8 +69,9 @@ class Goal187V03AuditTest(unittest.TestCase):
         self.assertEqual(summary["backend"], "cpu_python_reference")
         self.assertEqual(summary["frame_count"], 2)
         self.assertEqual(summary["light_count"], 1)
-        self.assertEqual(summary["phase_mode"], "uniform")
-        self.assertTrue(summary["frames"][0]["compare_backend"]["matches"])
+        self.assertEqual(summary["shadow_mode"], "rtdl_light_to_surface")
+        self.assertGreater(summary["total_shadow_query_seconds"], 0.0)
+        self.assertTrue(any(int(frame["shadow_rays"]) > 0 for frame in summary["frames"]))
 
     def test_orbit_cli_system_smoke(self) -> None:
         output_dir = REPO_ROOT / "build/goal187_v0_3_audit_test/orbit_cli"

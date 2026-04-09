@@ -85,7 +85,9 @@ Keep these current facts in mind while reading:
   baseline on `main`
 - the newer `v0.3` line is an application-style demo layer on top of that
   released core, not a separate replacement release
-- the preserved flagship baseline for the stronger current v0.3 application-style demo line is:
+- the preserved primary source baseline for the stronger current v0.3 application-style demo line is:
+  - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+- the smoother one-light camera-orbit line remains preserved as a stable comparison path:
   - [examples/visual_demo/rtdl_smooth_camera_orbit_demo.py](../examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 - the moving-star comparison path is still preserved here:
   - [examples/visual_demo/rtdl_orbiting_star_ball_demo.py](../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)

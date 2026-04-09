@@ -66,7 +66,7 @@ python3 -m pip install -r requirements.txt
 Primary front-door links:
 
 - [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
-- [3D Rendering Source](examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
+- [3D Rendering Source](examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
@@ -181,8 +181,17 @@ movie artifact is now presented through a single public video URL:
 
 - [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
 
-The current preserved flagship baseline inside the repo is the smoother
-one-light camera-orbit line:
+The current primary preserved 3D demo source inside the repo is the
+hidden-star stable Earth line:
+
+- [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+
+It keeps RTDL in both the camera-hit and shadow-visibility stages while
+avoiding the unstable self-shadow construction from the earlier moving-light
+path.
+
+The smoother one-light camera-orbit line remains preserved as a stable
+comparison path:
 
 - [examples/visual_demo/rtdl_smooth_camera_orbit_demo.py](examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
 

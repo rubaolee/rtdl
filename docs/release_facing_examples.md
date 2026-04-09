@@ -90,6 +90,13 @@ cd rtdl
 PYTHONPATH=src:. python3 examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo
 ```
 
+Primary hidden-star stable 3D demo sanity check:
+
+```bash
+cd rtdl
+PYTHONPATH=src:. python3 examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo
+```
+
 Important boundary:
 
 - this is a user-level RTDL-plus-Python application demo
