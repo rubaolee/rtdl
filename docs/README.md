@@ -9,7 +9,7 @@ If you are new to RTDL, read the live docs first.
 
 Quick environment facts before you start:
 
-- this checkout currently identifies itself as `v0.3.0-pre`
+- this checkout currently identifies itself as `v0.3.0`
 - clone the repo as `rtdl`
 - the local Python package imported by the examples is `rtdsl`
 - `PYTHONPATH=src:.` is what makes `src/rtdsl/` importable from the checkout
@@ -31,18 +31,21 @@ Project-level front door:
 3. [Release-Facing Examples](release_facing_examples.md)
 4. [Feature Homes](features/README.md)
 5. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
-6. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
-7. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
-8. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
-9. [Current Milestone Q/A](current_milestone_qa.md)
-10. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
-11. [v0.1 Release Notes](v0_1_release_notes.md)
-12. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
-13. [v0.1 Support Matrix](v0_1_support_matrix.md)
-14. [v0.1 Release Reports](release_reports/v0_1/README.md)
-15. [RTDL v0.1 Archive](archive/v0_1/README.md)
-16. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-17. [RayJoin Target](rayjoin_target.md)
+6. [RTDL v0.3 Release Reports](release_reports/v0_3/README.md)
+7. [RTDL v0.3 Release Statement](release_reports/v0_3/release_statement.md)
+8. [RTDL v0.3 Support Matrix](release_reports/v0_3/support_matrix.md)
+9. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
+10. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
+11. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
+12. [Current Milestone Q/A](current_milestone_qa.md)
+13. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+14. [v0.1 Release Notes](v0_1_release_notes.md)
+15. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
+16. [v0.1 Support Matrix](v0_1_support_matrix.md)
+17. [v0.1 Release Reports](release_reports/v0_1/README.md)
+18. [RTDL v0.1 Archive](archive/v0_1/README.md)
+19. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+20. [RayJoin Target](rayjoin_target.md)
 
 Broader background:
 
@@ -70,7 +73,7 @@ Process-level:
 Keep these current facts in mind while reading:
 
 - the accepted bounded package remains the current v0.1 trust anchor
-- current `main` is now the released v0.2.0 branch state
+- current `main` is now the released `v0.3.0` branch state
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
@@ -83,8 +86,8 @@ Keep these current facts in mind while reading:
   - [examples/visual_demo/rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
-- the newer `v0.3` line is an application-style demo layer on top of that
-  released core, not a separate replacement release
+- the released `v0.3.0` line is an application-style demo layer on top of that
+  same released core, not a replacement for the bounded `v0.2.0` workload surface
 - the public example tree is now organized as:
   - top-level release-facing examples
   - `examples/reference/`

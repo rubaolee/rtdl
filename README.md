@@ -17,9 +17,9 @@ Python-hosted 3D application.
 
 Current checkout identity:
 
-- repo state anchor: `v0.3.0-pre`
-- stable released workload surface: `v0.2.0`
-- newer application/demo proof layer: `v0.3` on top of the same RTDL core
+- repo state anchor: `v0.3.0`
+- stable released workload surface inside this release: `v0.2.0`
+- released application/demo proof layer: `v0.3.0` on top of the same RTDL core
 
 ## Before Your First Run
 
@@ -172,8 +172,9 @@ The repo currently has two layers:
 - the released `v0.2.0` workload surface for row-oriented geometric-query work
 - the newer `v0.3` application/demo layer built on the same RTDL core
 
-The v0.3 line is not a replacement release. It is a proof that RTDL can act as
-the geometric-query core inside a larger Python application.
+The v0.3 line is now a released proof-of-capability layer showing that RTDL can
+act as the geometric-query core inside a larger Python application. It does
+not replace the bounded `v0.2.0` workload definition inside the same repo.
 
 The bounded 3D RTDL ray/triangle surface is already closed across `embree`,
 `optix`, and `vulkan` on Linux, while the current recommended public-facing
