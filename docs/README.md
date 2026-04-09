@@ -7,6 +7,12 @@ This directory has two kinds of material:
 
 If you are new to RTDL, read the live docs first.
 
+RTDL’s primary target is non-graphical geometric-query work. The visual demo is
+best read as a proof-of-capability application built on the same core:
+
+- [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+- [Project Front Page](../README.md)
+
 ## Start Here
 
 Project-level front door:

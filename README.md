@@ -1,35 +1,46 @@
 # RTDL
 
-RTDL is a research system for writing and running **non-graphical ray-tracing
-programs**.
+RTDL is a research runtime for **non-graphical geometric-query workloads**
+built on ray-tracing traversal machinery.
 
-RTDL is useful when your problem is really a geometric query problem:
+It is designed for problems such as:
 
 - segment/polygon hit counting
 - segment/polygon any-hit row emission
 - bounded polygon-set similarity
 - Python applications that need a fast geometric-query core
 
-Current public front door:
+RTDL is **not** positioned as a general-purpose renderer or graphics engine.
+Its primary domain is non-graphical spatial computation. The visual demo is
+included as proof that the same query core can also support a bounded
+Python-hosted 3D application.
 
-- [RTDL Visual Demo Video](https://youtube.com/shorts/O07Mg5luap8)
+## See It Quickly
+
+[![RTDL visual demo](docs/assets/rtdl_visual_demo_thumb.png)](https://youtube.com/shorts/O07Mg5luap8)
+
+Primary front-door links:
+
+- [Watch The Public Demo Video](https://youtube.com/shorts/O07Mg5luap8)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 
+## What RTDL Is
+
 In graphics, ray tracing answers questions like “what does this pixel see?”.
-RTDL uses the same traversal machinery for other questions, especially spatial
-data questions such as:
+RTDL reuses that traversal machinery for non-graphical geometric questions,
+especially spatial data questions such as:
 
 - which line segments intersect
 - which points fall inside which polygons
 - which objects overlap or need exact follow-up checking
 
-The point of RTDL is simple:
+The core idea is simple:
 
 - write the workload once
-- keep the semantics visible
-- run it across multiple backends
+- keep the query semantics visible in Python
+- run the same workload across multiple backends
 - avoid hand-writing backend-specific code for Embree, OptiX, and Vulkan
 
 ## Why It Is Useful
@@ -41,7 +52,7 @@ RTDL is a good fit when you want to:
 - get row outputs such as counts, hit rows, or bounded aggregate metrics
 - build a Python application where RTDL is the heavy geometric-query core
 
-The current strongest concrete workload surfaces are:
+The current strongest released workload surfaces are:
 
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
@@ -59,7 +70,7 @@ If you want the shortest path to seeing RTDL do something real:
 
 1. run the hello-world program
 2. run one released workload example
-3. inspect the feature docs for the surface you care about
+3. continue into the quick tutorial and user guide
 
 Repository-root commands:
 
@@ -78,10 +89,21 @@ Then continue with:
 3. [Release-Facing Examples](docs/release_facing_examples.md)
 4. [Feature Homes](docs/features/README.md)
 
-RTDL also already works well with Python for user applications. A user does not
-need to stay inside a fixed list of named workloads. RTDL can provide the
+## What The Video Means
+
+RTDL also works well inside larger Python applications. A user does not need
+to stay inside a fixed list of named workloads. RTDL can provide the
 geometry-query core while Python handles surrounding application logic,
-aggregation, reporting, or visual output. A small example of that model is:
+aggregation, reporting, or visual output.
+
+That is what the visual demo is meant to show:
+
+- RTDL is still the query engine
+- Python is handling the surrounding application pipeline
+- the movie demonstrates versatility, not a change in RTDL’s primary product
+  definition
+
+RTDL already includes a small example of that model:
 
 - [examples/rtdl_lit_ball_demo.py](examples/rtdl_lit_ball_demo.py)
 
