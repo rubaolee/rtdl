@@ -1,0 +1,562 @@
+#include "rtdl_oracle_internal.h"
+
+namespace rtdl::oracle {
+
+#if RTDL_ORACLE_HAS_GEOS
+class GeosPreparedPolygonSet {
+ public:
+  explicit GeosPreparedPolygonSet(const std::vector<Polygon2D>& polygons) : context_(GEOS_init_r()) {
+    if (context_ == nullptr) {
+      throw std::runtime_error("failed to initialize GEOS context");
+    }
+    geometries_.reserve(polygons.size());
+    prepared_.reserve(polygons.size());
+    for (const Polygon2D& polygon : polygons) {
+      GEOSGeometry* geometry = build_polygon_geometry(polygon.vertices);
+      if (geometry == nullptr) {
+        throw std::runtime_error("failed to build GEOS polygon geometry");
+      }
+      const GEOSPreparedGeometry* prepared = GEOSPrepare_r(context_, geometry);
+      if (prepared == nullptr) {
+        GEOSGeom_destroy_r(context_, geometry);
+        throw std::runtime_error("failed to prepare GEOS polygon geometry");
+      }
+      geometries_.push_back(geometry);
+      prepared_.push_back(prepared);
+    }
+  }
+
+  GeosPreparedPolygonSet(const GeosPreparedPolygonSet&) = delete;
+  GeosPreparedPolygonSet& operator=(const GeosPreparedPolygonSet&) = delete;
+
+  ~GeosPreparedPolygonSet() {
+    if (context_ == nullptr) {
+      return;
+    }
+    for (const GEOSPreparedGeometry* prepared : prepared_) {
+      if (prepared != nullptr) {
+        GEOSPreparedGeom_destroy_r(context_, prepared);
+      }
+    }
+    for (GEOSGeometry* geometry : geometries_) {
+      if (geometry != nullptr) {
+        GEOSGeom_destroy_r(context_, geometry);
+      }
+    }
+    GEOS_finish_r(context_);
+  }
+
+  bool covers(size_t polygon_index, double x, double y) const {
+    GEOSGeometry* point = build_point_geometry(x, y);
+    if (point == nullptr) {
+      throw std::runtime_error("failed to build GEOS point geometry");
+    }
+    char covers_value = GEOSPreparedCovers_r(context_, prepared_.at(polygon_index), point);
+    GEOSGeom_destroy_r(context_, point);
+    if (covers_value == 2) {
+      throw std::runtime_error("GEOSPreparedCovers_r failed");
+    }
+    return covers_value == 1;
+  }
+
+ private:
+  GEOSGeometry* build_point_geometry(double x, double y) const {
+    GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, 1, 2);
+    if (sequence == nullptr) {
+      return nullptr;
+    }
+    if (!GEOSCoordSeq_setX_r(context_, sequence, 0, x) ||
+        !GEOSCoordSeq_setY_r(context_, sequence, 0, y)) {
+      GEOSCoordSeq_destroy_r(context_, sequence);
+      return nullptr;
+    }
+    return GEOSGeom_createPoint_r(context_, sequence);
+  }
+
+  GEOSGeometry* build_polygon_geometry(const std::vector<Vec2>& vertices) const {
+    size_t ring_size = vertices.size();
+    bool closed = ring_size > 0 &&
+                  vertices.front().x == vertices.back().x &&
+                  vertices.front().y == vertices.back().y;
+    if (!closed) {
+      ring_size += 1;
+    }
+    GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, ring_size, 2);
+    if (sequence == nullptr) {
+      return nullptr;
+    }
+    for (size_t i = 0; i < vertices.size(); ++i) {
+      if (!GEOSCoordSeq_setX_r(context_, sequence, i, vertices[i].x) ||
+          !GEOSCoordSeq_setY_r(context_, sequence, i, vertices[i].y)) {
+        GEOSCoordSeq_destroy_r(context_, sequence);
+        return nullptr;
+      }
+    }
+    if (!closed) {
+      if (!GEOSCoordSeq_setX_r(context_, sequence, ring_size - 1, vertices.front().x) ||
+          !GEOSCoordSeq_setY_r(context_, sequence, ring_size - 1, vertices.front().y)) {
+        GEOSCoordSeq_destroy_r(context_, sequence);
+        return nullptr;
+      }
+    }
+    GEOSGeometry* ring = GEOSGeom_createLinearRing_r(context_, sequence);
+    if (ring == nullptr) {
+      return nullptr;
+    }
+    GEOSGeometry* polygon = GEOSGeom_createPolygon_r(context_, ring, nullptr, 0);
+    if (polygon == nullptr) {
+      GEOSGeom_destroy_r(context_, ring);
+      return nullptr;
+    }
+    return polygon;
+  }
+
+  GEOSContextHandle_t context_;
+  std::vector<GEOSGeometry*> geometries_;
+  std::vector<const GEOSPreparedGeometry*> prepared_;
+};
+#endif
+
+Vec2 sub(const Vec2& a, const Vec2& b) {
+  return {a.x - b.x, a.y - b.y};
+}
+
+double cross(const Vec2& a, const Vec2& b) {
+  return a.x * b.y - a.y * b.x;
+}
+
+std::vector<Segment2D> decode_segments(const RtdlSegment* records, size_t count) {
+  std::vector<Segment2D> values;
+  values.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    values.push_back({records[i].id, {records[i].x0, records[i].y0}, {records[i].x1, records[i].y1}});
+  }
+  return values;
+}
+
+std::vector<Point2D> decode_points(const RtdlPoint* records, size_t count) {
+  std::vector<Point2D> values;
+  values.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    values.push_back({records[i].id, {records[i].x, records[i].y}});
+  }
+  return values;
+}
+
+std::vector<Triangle2D> decode_triangles(const RtdlTriangle* records, size_t count) {
+  std::vector<Triangle2D> values;
+  values.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    values.push_back({records[i].id, {records[i].x0, records[i].y0}, {records[i].x1, records[i].y1}, {records[i].x2, records[i].y2}});
+  }
+  return values;
+}
+
+std::vector<RayQuery2D> decode_rays(const RtdlRay2D* records, size_t count) {
+  std::vector<RayQuery2D> values;
+  values.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    values.push_back({records[i].id, {records[i].ox, records[i].oy}, {records[i].dx, records[i].dy}, records[i].tmax});
+  }
+  return values;
+}
+
+std::vector<Polygon2D> decode_polygons(
+    const RtdlPolygonRef* refs,
+    size_t ref_count,
+    const double* vertices_xy,
+    size_t vertex_xy_count) {
+  std::vector<Polygon2D> polygons;
+  polygons.reserve(ref_count);
+  size_t vertex_count = vertex_xy_count / 2;
+  for (size_t i = 0; i < ref_count; ++i) {
+    const RtdlPolygonRef& ref = refs[i];
+    if (static_cast<size_t>(ref.vertex_offset) + static_cast<size_t>(ref.vertex_count) > vertex_count) {
+      throw std::runtime_error("polygon vertex buffer is out of range");
+    }
+    if (ref.vertex_count < 3) {
+      throw std::runtime_error("polygon requires at least 3 vertices");
+    }
+    Polygon2D polygon;
+    polygon.id = ref.id;
+    polygon.vertices.reserve(ref.vertex_count);
+    for (size_t j = 0; j < ref.vertex_count; ++j) {
+      size_t index = static_cast<size_t>(ref.vertex_offset) + j;
+      polygon.vertices.push_back({vertices_xy[index * 2], vertices_xy[index * 2 + 1]});
+    }
+    polygons.push_back(std::move(polygon));
+  }
+  return polygons;
+}
+
+bool segment_intersection(const Segment2D& left, const Segment2D& right, Vec2* point_out) {
+  Vec2 p = left.a;
+  Vec2 r = sub(left.b, left.a);
+  Vec2 q = right.a;
+  Vec2 s = sub(right.b, right.a);
+
+  double denom = cross(r, s);
+  if (std::fabs(denom) < kSegmentIntersectionEps) {
+    return false;
+  }
+
+  Vec2 qmp = sub(q, p);
+  double t = cross(qmp, s) / denom;
+  double u = cross(qmp, r) / denom;
+  if (!(0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0)) {
+    return false;
+  }
+
+  if (point_out != nullptr) {
+    point_out->x = p.x + t * r.x;
+    point_out->y = p.y + t * r.y;
+  }
+  return true;
+}
+
+bool point_on_segment(const Vec2& point, const Vec2& start, const Vec2& end) {
+  double length_sq = (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y);
+  if (length_sq <= kPointEps * kPointEps) {
+    return std::fabs(point.x - start.x) <= kPointEps &&
+           std::fabs(point.y - start.y) <= kPointEps;
+  }
+  double length = std::sqrt(length_sq);
+  double cross_value = (point.x - start.x) * (end.y - start.y) - (point.y - start.y) * (end.x - start.x);
+  if (std::fabs(cross_value) > kPointEps * length) {
+    return false;
+  }
+  double dot = (point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y);
+  double along_eps = kPointEps * length;
+  if (dot < -along_eps) {
+    return false;
+  }
+  if (dot - length_sq > along_eps) {
+    return false;
+  }
+  return true;
+}
+
+bool point_in_polygon(double x, double y, const std::vector<Vec2>& vertices) {
+  Vec2 point {x, y};
+  for (size_t i = 0; i < vertices.size(); ++i) {
+    const Vec2& start = vertices[i];
+    const Vec2& end = vertices[(i + 1) % vertices.size()];
+    if (point_on_segment(point, start, end)) {
+      return true;
+    }
+  }
+
+  bool inside = false;
+  size_t j = vertices.size() - 1;
+  for (size_t i = 0; i < vertices.size(); ++i) {
+    const Vec2& vi = vertices[i];
+    const Vec2& vj = vertices[j];
+    bool crossing = ((vi.y > y) != (vj.y > y)) &&
+                    (x <= (vj.x - vi.x) * (y - vi.y) / ((vj.y - vi.y) == 0.0 ? kRayCrossingDenomEps : (vj.y - vi.y)) + vi.x);
+    if (crossing) {
+      inside = !inside;
+    }
+    j = i;
+  }
+  return inside;
+}
+
+std::vector<Segment2D> segments_from_polygons(const std::vector<Polygon2D>& polygons) {
+  std::vector<Segment2D> segments;
+  for (const Polygon2D& polygon : polygons) {
+    for (size_t i = 0; i < polygon.vertices.size(); ++i) {
+      segments.push_back({polygon.id, polygon.vertices[i], polygon.vertices[(i + 1) % polygon.vertices.size()]});
+    }
+  }
+  return segments;
+}
+
+std::vector<RtdlLsiRow> oracle_lsi(
+    const std::vector<Segment2D>& left_segments,
+    const std::vector<Segment2D>& right_segments) {
+  struct IndexedSegmentBounds {
+    size_t original_index;
+    const Segment2D* segment;
+    double min_x;
+    double max_x;
+    double min_y;
+    double max_y;
+  };
+
+  auto min_max = [](const Segment2D& segment) {
+    return IndexedSegmentBounds{
+        0,
+        &segment,
+        std::min(segment.a.x, segment.b.x),
+        std::max(segment.a.x, segment.b.x),
+        std::min(segment.a.y, segment.b.y),
+        std::max(segment.a.y, segment.b.y),
+    };
+  };
+
+  std::vector<IndexedSegmentBounds> build_sorted;
+  build_sorted.reserve(right_segments.size());
+  for (size_t index = 0; index < right_segments.size(); ++index) {
+    IndexedSegmentBounds bounds = min_max(right_segments[index]);
+    bounds.original_index = index;
+    build_sorted.push_back(bounds);
+  }
+  std::stable_sort(
+      build_sorted.begin(),
+      build_sorted.end(),
+      [](const IndexedSegmentBounds& left, const IndexedSegmentBounds& right) {
+        return left.min_x < right.min_x;
+      });
+
+  std::vector<IndexedSegmentBounds> probe_sorted;
+  probe_sorted.reserve(left_segments.size());
+  for (size_t index = 0; index < left_segments.size(); ++index) {
+    IndexedSegmentBounds bounds = min_max(left_segments[index]);
+    bounds.original_index = index;
+    probe_sorted.push_back(bounds);
+  }
+  std::stable_sort(
+      probe_sorted.begin(),
+      probe_sorted.end(),
+      [](const IndexedSegmentBounds& left, const IndexedSegmentBounds& right) {
+        return left.min_x < right.min_x;
+      });
+
+  std::vector<std::vector<std::pair<size_t, RtdlLsiRow>>> hits_by_probe(left_segments.size());
+  std::vector<size_t> active;
+  std::vector<size_t> next_active;
+  size_t build_cursor = 0;
+
+  for (const IndexedSegmentBounds& probe : probe_sorted) {
+    while (build_cursor < build_sorted.size() && build_sorted[build_cursor].min_x <= probe.max_x) {
+      active.push_back(build_cursor);
+      build_cursor += 1;
+    }
+
+    next_active.clear();
+    std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits = hits_by_probe[probe.original_index];
+    for (size_t active_index : active) {
+      const IndexedSegmentBounds& build = build_sorted[active_index];
+      if (build.max_x < probe.min_x) {
+        continue;
+      }
+      next_active.push_back(active_index);
+      if (build.max_y < probe.min_y || build.min_y > probe.max_y) {
+        continue;
+      }
+      Vec2 point {};
+      if (!segment_intersection(*probe.segment, *build.segment, &point)) {
+        continue;
+      }
+      probe_hits.push_back({
+          build.original_index,
+          {probe.segment->id, build.segment->id, point.x, point.y},
+      });
+    }
+    active.swap(next_active);
+  }
+
+  std::vector<RtdlLsiRow> rows;
+  for (std::vector<std::pair<size_t, RtdlLsiRow>>& probe_hits : hits_by_probe) {
+    std::stable_sort(
+        probe_hits.begin(),
+        probe_hits.end(),
+        [](const auto& left, const auto& right) {
+          return left.first < right.first;
+        });
+    for (const auto& hit : probe_hits) {
+      rows.push_back(hit.second);
+    }
+  }
+  return rows;
+}
+
+Bounds2D bounds_for_polygon(const Polygon2D& polygon) {
+  Bounds2D bounds {
+      polygon.vertices[0].x,
+      polygon.vertices[0].y,
+      polygon.vertices[0].x,
+      polygon.vertices[0].y,
+  };
+  for (const Vec2& vertex : polygon.vertices) {
+    bounds.min_x = std::min(bounds.min_x, vertex.x);
+    bounds.min_y = std::min(bounds.min_y, vertex.y);
+    bounds.max_x = std::max(bounds.max_x, vertex.x);
+    bounds.max_y = std::max(bounds.max_y, vertex.y);
+  }
+  return bounds;
+}
+
+Bounds2D bounds_for_segment(const Segment2D& segment) {
+  return {
+      std::min(segment.a.x, segment.b.x),
+      std::min(segment.a.y, segment.b.y),
+      std::max(segment.a.x, segment.b.x),
+      std::max(segment.a.y, segment.b.y),
+  };
+}
+
+bool bounds_overlap(const Bounds2D& left, const Bounds2D& right) {
+  return !(left.max_x < right.min_x || right.max_x < left.min_x ||
+           left.max_y < right.min_y || right.max_y < left.min_y);
+}
+
+PolygonBucketIndex build_polygon_bucket_index(const std::vector<Bounds2D>& polygon_bounds) {
+  if (polygon_bounds.empty()) {
+    return {0.0, 1.0, {}};
+  }
+  double global_min = polygon_bounds.front().min_x;
+  double global_max = polygon_bounds.front().max_x;
+  for (const Bounds2D& bounds : polygon_bounds) {
+    global_min = std::min(global_min, bounds.min_x);
+    global_max = std::max(global_max, bounds.max_x);
+  }
+  const double span = std::max(global_max - global_min, 1.0e-9);
+  const size_t bucket_count = std::max<size_t>(16, std::min<size_t>(polygon_bounds.size() * 2, 8192));
+  const double bucket_width = span / static_cast<double>(bucket_count);
+  std::vector<std::vector<size_t>> buckets(bucket_count);
+  for (size_t polygon_index = 0; polygon_index < polygon_bounds.size(); ++polygon_index) {
+    const Bounds2D& bounds = polygon_bounds[polygon_index];
+    const auto first = static_cast<size_t>(std::clamp(
+        static_cast<long long>(std::floor((bounds.min_x - global_min) / bucket_width)),
+        0LL,
+        static_cast<long long>(bucket_count - 1)));
+    const auto last = static_cast<size_t>(std::clamp(
+        static_cast<long long>(std::floor((bounds.max_x - global_min) / bucket_width)),
+        0LL,
+        static_cast<long long>(bucket_count - 1)));
+    for (size_t bucket_id = first; bucket_id <= last; ++bucket_id) {
+      buckets[bucket_id].push_back(polygon_index);
+    }
+  }
+  return {global_min, bucket_width, std::move(buckets)};
+}
+
+std::vector<RtdlPipRow> oracle_pip(
+    const std::vector<Point2D>& points,
+    const std::vector<Polygon2D>& polygons,
+    bool positive_only) {
+  std::vector<RtdlPipRow> rows;
+  if (!positive_only) {
+    rows.reserve(points.size() * polygons.size());
+  }
+  std::vector<Bounds2D> bounds;
+  if (positive_only) {
+    bounds.reserve(polygons.size());
+    for (const Polygon2D& polygon : polygons) {
+      bounds.push_back(bounds_for_polygon(polygon));
+    }
+  }
+#if RTDL_ORACLE_HAS_GEOS
+  GeosPreparedPolygonSet geos(polygons);
+  for (const Point2D& point : points) {
+    for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
+      if (positive_only) {
+        const Bounds2D& b = bounds[polygon_index];
+        if (point.p.x < b.min_x || point.p.x > b.max_x || point.p.y < b.min_y || point.p.y > b.max_y) {
+          continue;
+        }
+      }
+      const bool contains = geos.covers(polygon_index, point.p.x, point.p.y);
+      if (positive_only && !contains) {
+        continue;
+      }
+      rows.push_back({point.id, polygons[polygon_index].id, contains ? 1u : 0u});
+    }
+  }
+  return rows;
+#endif
+  for (const Point2D& point : points) {
+    for (size_t polygon_index = 0; polygon_index < polygons.size(); ++polygon_index) {
+      const Polygon2D& polygon = polygons[polygon_index];
+      if (positive_only) {
+        const Bounds2D& b = bounds[polygon_index];
+        if (point.p.x < b.min_x || point.p.x > b.max_x || point.p.y < b.min_y || point.p.y > b.max_y) {
+          continue;
+        }
+      }
+      const bool contains = point_in_polygon(point.p.x, point.p.y, polygon.vertices);
+      if (positive_only && !contains) {
+        continue;
+      }
+      rows.push_back({point.id, polygon.id, contains ? 1u : 0u});
+    }
+  }
+  return rows;
+}
+
+bool point_in_triangle(double x, double y, const Triangle2D& triangle) {
+  Vec2 v0 = sub(triangle.c, triangle.a);
+  Vec2 v1 = sub(triangle.b, triangle.a);
+  Vec2 v2 {x - triangle.a.x, y - triangle.a.y};
+
+  double dot00 = v0.x * v0.x + v0.y * v0.y;
+  double dot01 = v0.x * v1.x + v0.y * v1.y;
+  double dot02 = v0.x * v2.x + v0.y * v2.y;
+  double dot11 = v1.x * v1.x + v1.y * v1.y;
+  double dot12 = v1.x * v2.x + v1.y * v2.y;
+
+  double denom = dot00 * dot11 - dot01 * dot01;
+  if (std::fabs(denom) < kPointEps) {
+    return false;
+  }
+
+  double inv = 1.0 / denom;
+  double u = (dot11 * dot02 - dot01 * dot12) * inv;
+  double v = (dot00 * dot12 - dot01 * dot02) * inv;
+  return u >= 0.0 && v >= 0.0 && (u + v) <= 1.0;
+}
+
+bool finite_ray_hits_triangle(const RayQuery2D& ray, const Triangle2D& triangle) {
+  Vec2 end {ray.o.x + ray.d.x * ray.tmax, ray.o.y + ray.d.y * ray.tmax};
+  Segment2D ray_segment {ray.id, ray.o, end};
+
+  if (point_in_triangle(ray.o.x, ray.o.y, triangle) || point_in_triangle(end.x, end.y, triangle)) {
+    return true;
+  }
+
+  Segment2D edges[3] = {
+      {triangle.id, triangle.a, triangle.b},
+      {triangle.id, triangle.b, triangle.c},
+      {triangle.id, triangle.c, triangle.a},
+  };
+  for (const Segment2D& edge : edges) {
+    if (segment_intersection(ray_segment, edge, nullptr)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool segment_hits_polygon(const Segment2D& segment, const Polygon2D& polygon) {
+  if (point_in_polygon(segment.a.x, segment.a.y, polygon.vertices)) {
+    return true;
+  }
+  if (point_in_polygon(segment.b.x, segment.b.y, polygon.vertices)) {
+    return true;
+  }
+  for (size_t i = 0; i < polygon.vertices.size(); ++i) {
+    Segment2D edge {polygon.id, polygon.vertices[i], polygon.vertices[(i + 1) % polygon.vertices.size()]};
+    if (segment_intersection(segment, edge, nullptr)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+double point_segment_distance(const Point2D& point, const Segment2D& segment) {
+  Vec2 v = sub(segment.b, segment.a);
+  Vec2 w = sub(point.p, segment.a);
+  double denom = v.x * v.x + v.y * v.y;
+  if (denom < kDegenerateDistanceEps) {
+    Vec2 d = sub(point.p, segment.a);
+    return std::sqrt(d.x * d.x + d.y * d.y);
+  }
+  double t = (w.x * v.x + w.y * v.y) / denom;
+  t = std::max(0.0, std::min(1.0, t));
+  Vec2 projection {segment.a.x + t * v.x, segment.a.y + t * v.y};
+  Vec2 d = sub(point.p, projection);
+  return std::sqrt(d.x * d.x + d.y * d.y);
+}
+
+}  // namespace rtdl::oracle
