@@ -16,5 +16,15 @@ Summary:
 
 ## External Review Status
 
-- Claude review: handoff prepared, awaiting external execution
-- Gemini review: handoff prepared, awaiting external execution
+- Claude review: saved at
+  - `/Users/rl2025/rtdl_python_only/docs/reports/goal190_external_review_claude_2026-04-09.md`
+- Gemini review: saved at
+  - `/Users/rl2025/rtdl_python_only/docs/reports/goal190_external_review_gemini_2026-04-09.md`
+
+## Closure
+
+- Codex consensus: saved
+- Claude review: saved
+- Gemini review: saved
+
+Goal 190 is now closed under the project's usual multi-review bar.
