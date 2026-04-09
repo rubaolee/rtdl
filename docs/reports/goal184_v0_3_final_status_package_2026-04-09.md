@@ -33,6 +33,10 @@ The chosen public-facing video surface is now:
 
 This is the front-door artifact readers should see first.
 
+Current preserved public-facing local counterpart:
+
+- [win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4](../../build/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s/win_embree_smooth_camera_true_onelight_hd_1024_uniform_192f_6s.mp4)
+
 ## Strongest Preserved Local Review Artifacts
 
 ### True One-Light Smooth-Camera Baseline
@@ -98,14 +102,23 @@ Main package:
 - [goal_182_linux_smooth_camera_supporting_package.md](../goal_182_linux_smooth_camera_supporting_package.md)
 - [goal182_linux_smooth_camera_supporting_package_2026-04-08.md](goal182_linux_smooth_camera_supporting_package_2026-04-08.md)
 
-Supporting artifacts:
+Selected supporting artifacts:
 
 - OptiX:
-  - [summary.json](../../build/goal179_optix_smooth_preview/summary.json)
+  - [goal188_optix_smooth_camera_256_noblend_hq.mp4](../../build/goal188_optix_smooth_camera_256_noblend/goal188_optix_smooth_camera_256_noblend_hq.mp4)
 - Vulkan:
-  - [summary.json](../../build/goal179_vulkan_smooth_preview/summary.json)
+  - [goal188_vulkan_smooth_camera_256_noblend_hq.mp4](../../build/goal188_vulkan_smooth_camera_256_noblend/goal188_vulkan_smooth_camera_256_noblend_hq.mp4)
 
-Both Linux summaries record frame `0` compare-clean parity against `cpu_python_reference`.
+Why these are the preserved Linux movies:
+
+- they are visually better than the later `ssaa2` experiments
+- they are good enough to show the Linux OptiX/Vulkan backend application story
+- they are not being presented as equally polished flagship movies
+
+Rejected later experiments:
+
+- `goal188_optix_smooth_camera_256_ssaa2`
+- `goal188_vulkan_smooth_camera_256_ssaa2`
 
 ## Honesty Boundary
 
@@ -120,8 +133,8 @@ What it does claim is narrower and true:
 
 - RTDL can serve as the heavy geometric-query core in real Python-hosted graphics/demo applications
 - Linux backend closure for the bounded 3D demo surface is real
-- Windows Embree movie production is real
-- supporting OptiX and Vulkan Linux artifacts are real
+- Windows Embree movie production is real, with the `6s` cut as the cleanest public-facing artifact
+- supporting OptiX and Vulkan Linux artifacts are real, but secondary and less polished than the Windows flagship
 
 ## What Remains Future Work
 
