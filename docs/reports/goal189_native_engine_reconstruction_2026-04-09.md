@@ -7,10 +7,11 @@ Date: 2026-04-09
 Goal 189 starts the final `v0.3` engineering cleanup line: reconstructing the
 native backend engines out of their current single-file monolith shape.
 
-The first two bounded slices are now complete for:
+The first three bounded slices are now complete for:
 
 - the native oracle
 - the native Embree backend
+- the native OptiX backend
 
 ## Current Native Inventory
 
@@ -116,11 +117,58 @@ Ran 5 tests in 0.438s
 OK
 ```
 
-## Next Slice
+## Third Slice Completed
 
-The next reconstruction target should now be:
+The native OptiX backend was reconstructed into a modular layout under:
+
+- `src/native/optix/rtdl_optix_prelude.h`
+- `src/native/optix/rtdl_optix_core.cpp`
+- `src/native/optix/rtdl_optix_workloads.cpp`
+- `src/native/optix/rtdl_optix_api.cpp`
+
+Compatibility-preserving top-level entry point remains:
 
 - `src/native/rtdl_optix.cpp`
 
-That is the right third slice because the oracle/Embree compatibility pattern
-is now proven and the remaining work is in the larger GPU-native engines.
+That top-level file now only provides the stable runtime/build entry path and
+pulls the split OptiX modules together.
+
+This slice keeps the embedded CUDA kernel strings and the host-side workload
+launchers separated from the exported C API, which is a meaningful structural
+improvement even though OptiX remains a large backend internally.
+
+## Verification
+
+Bounded checks passed after the split:
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.goal43_optix_validation_test
+Ran 2 tests in 0.001s
+OK
+```
+
+```text
+PYTHONPATH=src:. python3 -m unittest tests.rtdsl_embree_test tests.rtdsl_vulkan_test
+Ran 12 tests in 0.026s
+OK (skipped=1)
+```
+
+```text
+python3 -m compileall src/native/rtdl_optix.cpp src/native/optix src/rtdsl/embree_runtime.py
+Listing 'src/native/optix'...
+```
+
+On this host, that bounded verification is structural rather than a full live
+GPU runtime execution pass. The split preserves the current runtime/build
+surface, and the stronger OptiX runtime checks should still be exercised on a
+machine with the CUDA/OptiX toolchain available.
+
+## Next Slice
+
+The final reconstruction target should now be:
+
+- `src/native/rtdl_vulkan.cpp`
+
+That is the right final slice because the oracle, Embree, and OptiX
+compatibility patterns are now established and Vulkan is the only remaining
+single-file native engine.
