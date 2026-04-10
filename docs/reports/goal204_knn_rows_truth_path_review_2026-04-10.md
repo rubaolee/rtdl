@@ -7,7 +7,7 @@ Implementation and local verification are complete.
 External-review state:
 
 - Claude: blocked by CLI daily limit (`2026-04-10`)
-- Gemini: pending
+- Gemini: complete
 - Codex: complete
 
 ## Local verification
@@ -20,4 +20,11 @@ External-review state:
 
 ## Review update
 
-Update this file after the Gemini response file lands.
+Gemini approved the Goal 204 truth-path slice and confirmed that:
+
+- distance ordering and `neighbor_id` tie-breaking are deterministic and honest
+- `neighbor_rank` is computed correctly and remains 1-based
+- short-result behavior is correct and emits no padding rows
+- the implementation preserves the intended `v0.4` scope boundary by remaining truth-path-only
+
+Goal 204 is therefore closed under the current Codex + Gemini bar.

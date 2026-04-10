@@ -108,6 +108,13 @@ struct RtdlFixedRadiusNeighborRow {
   double distance;
 };
 
+struct RtdlKnnNeighborRow {
+  uint32_t query_id;
+  uint32_t neighbor_id;
+  double distance;
+  uint32_t neighbor_rank;
+};
+
 int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patch_out);
 int rtdl_oracle_run_lsi(
     const RtdlSegment* left,
@@ -217,6 +224,16 @@ int rtdl_oracle_run_fixed_radius_neighbors(
     double radius,
     uint32_t k_max,
     RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_knn_rows(
+    const RtdlPoint* query_points,
+    size_t query_point_count,
+    const RtdlPoint* search_points,
+    size_t search_point_count,
+    uint32_t k,
+    RtdlKnnNeighborRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
