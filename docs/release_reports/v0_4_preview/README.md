@@ -8,6 +8,8 @@ It is not a release report. It is the planning package that defines what
 
 Files:
 
+- [Preview Release Statement](release_statement.md)
+- [Preview Support Matrix](support_matrix.md)
 - [Theme And Scope](theme_and_scope.md)
 - [Proposed Surfaces](proposed_surfaces.md)
 - [Acceptance Criteria](acceptance_criteria.md)

@@ -10,6 +10,7 @@ If you are new to RTDL, read the live docs first.
 Quick environment facts before you start:
 
 - this checkout currently identifies itself as `v0.3.0`
+- active development after that release is the `v0.4` nearest-neighbor line
 - clone the repo as `rtdl`
 - the local Python package imported by the examples is `rtdsl`
 - `PYTHONPATH=src:.` is what makes `src/rtdsl/` importable from the checkout
@@ -34,19 +35,21 @@ Project-level front door:
 6. [RTDL v0.3 Release Reports](release_reports/v0_3/README.md)
 7. [RTDL v0.3 Release Statement](release_reports/v0_3/release_statement.md)
 8. [RTDL v0.3 Support Matrix](release_reports/v0_3/support_matrix.md)
-9. [RTDL v0.4 Preview Package](release_reports/v0_4_preview/README.md)
-10. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
-11. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
-12. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
-13. [Current Milestone Q/A](current_milestone_qa.md)
-14. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
-15. [v0.1 Release Notes](v0_1_release_notes.md)
-16. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
-17. [v0.1 Support Matrix](v0_1_support_matrix.md)
-18. [v0.1 Release Reports](release_reports/v0_1/README.md)
-19. [RTDL v0.1 Archive](archive/v0_1/README.md)
-20. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-21. [RayJoin Target](rayjoin_target.md)
+9. [RTDL v0.4 Preview Release Statement](release_reports/v0_4_preview/release_statement.md)
+10. [RTDL v0.4 Preview Support Matrix](release_reports/v0_4_preview/support_matrix.md)
+11. [RTDL v0.4 Preview Package](release_reports/v0_4_preview/README.md)
+12. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
+13. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
+14. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
+15. [Current Milestone Q/A](current_milestone_qa.md)
+16. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+17. [v0.1 Release Notes](v0_1_release_notes.md)
+18. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
+19. [v0.1 Support Matrix](v0_1_support_matrix.md)
+20. [v0.1 Release Reports](release_reports/v0_1/README.md)
+21. [RTDL v0.1 Archive](archive/v0_1/README.md)
+22. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+23. [RayJoin Target](rayjoin_target.md)
 
 Broader background:
 
@@ -98,6 +101,9 @@ Keep these current facts in mind while reading:
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that
   same released core, not a replacement for the bounded `v0.2.0` workload surface
+- the active post-release engineering line is now the `v0.4` nearest-neighbor preview:
+  - `fixed_radius_neighbors`
+  - `knn_rows`
 - the public example tree is now organized as:
   - top-level release-facing examples
   - `examples/reference/`
