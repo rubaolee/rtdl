@@ -7,7 +7,7 @@ Implementation and local verification are complete.
 External-review state:
 
 - Claude: blocked by CLI daily limit (`2026-04-10`)
-- Gemini: handoff written, but no response file produced yet
+- Gemini: complete
 - Codex: complete
 
 ## Local verification
@@ -25,10 +25,16 @@ Current honest state:
 - Goal 203 implementation and local verification are complete.
 - Codex consensus is saved at:
   - `history/ad_hoc_reviews/2026-04-10-codex-consensus-goal203-knn-rows-dsl-surface.md`
+- Gemini review is saved at:
+  - `docs/reports/gemini_goal203_knn_rows_dsl_surface_review_2026-04-10.md`
 - Claude could not finish automatically because the Claude CLI hit its daily
   limit during this attempt.
-- Gemini was launched but did not write the requested response file yet.
-- Codex consensus still needs to be recorded as part of closure.
 
-This goal is therefore implemented and documented, but it is not yet closed
-under the normal `2+` review bar.
+Shared conclusion:
+
+- the `knn_rows` API surface is technically correct
+- the lowering path is explicit and honest
+- the runtime-not-yet-implemented boundary is documented clearly
+- the goal stays properly bounded for `v0.4`
+
+Goal 203 is closed under the standing `2+` AI bar with Codex + Gemini.
