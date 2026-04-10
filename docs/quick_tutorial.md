@@ -56,6 +56,15 @@ PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_p
 PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
+If you want application-shaped nearest-neighbor examples instead of bare
+workload kernels, start with:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference
+PYTHONPATH=src:. python3 examples/rtdl_event_hotspot_screening.py --backend cpu_python_reference
+PYTHONPATH=src:. python3 examples/rtdl_facility_knn_assignment.py --backend cpu_python_reference
+```
+
 Those three commands teach three different things:
 
 - `rtdl_hello_world.py`: the smallest possible RTDL execution shape
@@ -170,6 +179,9 @@ After this hello-world example, the best next files are:
 - `docs/release_facing_examples.md`
 - `examples/rtdl_fixed_radius_neighbors.py`
 - `examples/rtdl_knn_rows.py`
+- `examples/rtdl_service_coverage_gaps.py`
+- `examples/rtdl_event_hotspot_screening.py`
+- `examples/rtdl_facility_knn_assignment.py`
 - `examples/rtdl_segment_polygon_hitcount.py`
 - `examples/rtdl_segment_polygon_anyhit_rows.py`
 - `examples/rtdl_polygon_set_jaccard.py`

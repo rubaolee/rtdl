@@ -72,6 +72,7 @@ Primary front-door links:
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
+- [v0.4 Application Examples](docs/v0_4_application_examples.md)
 
    </td>
     <td valign="top" width="260">

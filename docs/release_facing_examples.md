@@ -41,6 +41,16 @@ cd rtdl
 PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
+### App-Style Nearest-Neighbor Examples
+
+- [rtdl_service_coverage_gaps.py](../examples/rtdl_service_coverage_gaps.py)
+- [rtdl_event_hotspot_screening.py](../examples/rtdl_event_hotspot_screening.py)
+- [rtdl_facility_knn_assignment.py](../examples/rtdl_facility_knn_assignment.py)
+
+See:
+
+- [v0.4 Application Examples](v0_4_application_examples.md)
+
 If Embree is available locally, both examples also support:
 
 ```bash
