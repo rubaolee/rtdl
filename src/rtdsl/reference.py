@@ -169,6 +169,37 @@ def ray_triangle_hit_count_cpu(
     return tuple(results)
 
 
+def fixed_radius_neighbors_cpu(
+    query_points: tuple[Point, ...],
+    search_points: tuple[Point, ...],
+    *,
+    radius: float,
+    k_max: int,
+) -> tuple[dict[str, float | int], ...]:
+    rows = []
+    radius_sq = radius * radius
+    for query_point in query_points:
+        candidates = []
+        for search_point in search_points:
+            dx = search_point.x - query_point.x
+            dy = search_point.y - query_point.y
+            distance_sq = dx * dx + dy * dy
+            if distance_sq > radius_sq:
+                continue
+            candidates.append((math.sqrt(distance_sq), search_point.id))
+
+        candidates.sort(key=lambda item: (item[0], item[1]))
+        for distance, neighbor_id in candidates[:k_max]:
+            rows.append(
+                {
+                    "query_id": query_point.id,
+                    "neighbor_id": neighbor_id,
+                    "distance": distance,
+                }
+            )
+    return tuple(rows)
+
+
 def segment_polygon_hitcount_cpu(
     segments: tuple[Segment, ...],
     polygons: tuple[Polygon, ...],

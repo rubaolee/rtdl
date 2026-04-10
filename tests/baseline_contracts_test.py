@@ -5,6 +5,7 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
+from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radius_neighbors_reference
 from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 from examples.reference.rtdl_language_reference import county_zip_join_reference
 from examples.reference.rtdl_language_reference import point_in_counties_reference
@@ -18,7 +19,16 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
     def test_workload_order_is_frozen(self) -> None:
         self.assertEqual(
             rt.BASELINE_WORKLOAD_ORDER,
-            ("lsi", "pip", "overlay", "ray_tri_hitcount", "segment_polygon_hitcount", "segment_polygon_anyhit_rows", "point_nearest_segment"),
+            (
+                "lsi",
+                "pip",
+                "overlay",
+                "ray_tri_hitcount",
+                "segment_polygon_hitcount",
+                "segment_polygon_anyhit_rows",
+                "point_nearest_segment",
+                "fixed_radius_neighbors",
+            ),
         )
 
     def test_reference_kernels_match_frozen_contracts(self) -> None:
@@ -49,6 +59,10 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
         rt.validate_compiled_kernel_against_baseline(
             rt.compile_kernel(point_nearest_segment_reference),
             "point_nearest_segment",
+        )
+        rt.validate_compiled_kernel_against_baseline(
+            rt.compile_kernel(fixed_radius_neighbors_reference),
+            "fixed_radius_neighbors",
         )
 
     def test_lsi_comparison_policy_uses_float_tolerance(self) -> None:
@@ -89,5 +103,14 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
                 "point_nearest_segment",
                 ({"point_id": 1, "segment_id": 2, "distance": 0.5},),
                 ({"point_id": 1, "segment_id": 2, "distance": 0.5000001},),
+            )
+        )
+
+    def test_fixed_radius_neighbors_uses_float_tolerance_for_distance(self) -> None:
+        self.assertTrue(
+            rt.compare_baseline_rows(
+                "fixed_radius_neighbors",
+                ({"query_id": 1, "neighbor_id": 2, "distance": 0.5},),
+                ({"query_id": 1, "neighbor_id": 2, "distance": 0.5000001},),
             )
         )

@@ -7,6 +7,7 @@ from dataclasses import is_dataclass
 from .api import compile_kernel
 from .ir import CompiledKernel
 from .oracle_runtime import run_oracle
+from .reference import fixed_radius_neighbors_cpu
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import pip_cpu
@@ -134,6 +135,13 @@ def _run_cpu_python_reference_from_normalized(
         )
     elif predicate_name == "point_nearest_segment":
         rows = point_nearest_segment_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
+    elif predicate_name == "fixed_radius_neighbors":
+        rows = fixed_radius_neighbors_cpu(
+            normalized_inputs[left_name],
+            normalized_inputs[right_name],
+            radius=float(compiled.refine_op.predicate.options["radius"]),
+            k_max=int(compiled.refine_op.predicate.options["k_max"]),
+        )
     else:
         raise ValueError(f"unsupported RTDL CPU simulator predicate: {predicate_name}")
 

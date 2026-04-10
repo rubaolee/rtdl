@@ -464,6 +464,50 @@ def load_overpass_elements(path: str | Path) -> tuple[dict[str, object], ...]:
     return tuple(payload.get("elements", ()))
 
 
+def load_natural_earth_populated_places_geojson(
+    path: str | Path,
+    *,
+    limit: int | None = None,
+) -> tuple[Point, ...]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    features = payload.get("features", ())
+    if not isinstance(features, list):
+        raise ValueError("Natural Earth populated places payload must contain a FeatureCollection `features` list")
+
+    records = []
+    next_id = 1
+    for feature in features:
+        if not isinstance(feature, dict):
+            continue
+        geometry = feature.get("geometry", {})
+        if geometry.get("type") != "Point":
+            continue
+        coordinates = geometry.get("coordinates", ())
+        if not isinstance(coordinates, (list, tuple)) or len(coordinates) < 2:
+            continue
+        properties = feature.get("properties", {})
+        if not isinstance(properties, dict):
+            properties = {}
+        point_id = properties.get("ne_id", properties.get("id", next_id))
+        records.append(
+            Point(
+                id=int(point_id),
+                x=float(coordinates[0]),
+                y=float(coordinates[1]),
+            )
+        )
+        next_id += 1
+        if limit is not None and len(records) >= limit:
+            break
+
+    payload_points = _CanonicalPointTuple(records)
+    if payload_points:
+        from .embree_runtime import pack_points
+
+        payload_points._rtdl_packed_points = pack_points(records=payload_points)
+    return payload_points
+
+
 def overpass_elements_stats(elements: tuple[dict[str, object], ...] | list[dict[str, object]]) -> OverpassElementStats:
     skipped_non_way_count = 0
     skipped_short_geometry_count = 0

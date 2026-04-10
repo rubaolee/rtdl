@@ -40,6 +40,7 @@ from .datasets import download_rayjoin_sample
 from .datasets import count_arcgis_loaded_pages
 from .datasets import load_arcgis_feature_pages
 from .datasets import load_cdb
+from .datasets import load_natural_earth_populated_places_geojson
 from .datasets import load_overpass_elements
 from .datasets import overpass_elements_stats
 from .datasets import overpass_elements_to_cdb
@@ -162,6 +163,7 @@ from .paper_reproduction import dataset_families
 from .paper_reproduction import local_profiles
 from .paper_reproduction import PaperTarget
 from .paper_reproduction import RAYJOIN_PAPER_TARGETS
+from .reference import fixed_radius_neighbors_cpu
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import point_nearest_segment_cpu
@@ -334,6 +336,7 @@ __all__ = [
     "chains_to_segments",
     "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
+    "fixed_radius_neighbors_cpu",
     "EmbreeRowView",
     "embree_version",
     "OptixRowView",
@@ -394,6 +397,7 @@ __all__ = [
     "layout",
     "load_arcgis_feature_pages",
     "load_cdb",
+    "load_natural_earth_populated_places_geojson",
     "load_overpass_elements",
     "local_profiles",
     "overpass_elements_stats",

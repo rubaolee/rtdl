@@ -1,0 +1,50 @@
+{
+  "type": "FeatureCollection",
+  "name": "natural_earth_populated_places_sample",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "ne_id": 101,
+        "name": "Baton Rouge"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-91.14032, 30.45809]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ne_id": 102,
+        "name": "New Orleans"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-90.07153, 29.95106]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ne_id": 103,
+        "name": "Lafayette"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-92.01984, 30.22409]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "ne_id": 104,
+        "name": "Shreveport"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-93.75018, 32.52515]
+      }
+    }
+  ]
+}

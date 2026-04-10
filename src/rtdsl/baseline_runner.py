@@ -50,6 +50,7 @@ def infer_workload(kernel_fn_or_compiled) -> str:
         "segment_polygon_hitcount": "segment_polygon_hitcount",
         "segment_polygon_anyhit_rows": "segment_polygon_anyhit_rows",
         "point_nearest_segment": "point_nearest_segment",
+        "fixed_radius_neighbors": "fixed_radius_neighbors",
     }
     return mapping[predicate]
 
@@ -73,6 +74,8 @@ def load_representative_case(workload: str, dataset: str) -> DatasetCase:
         return _load_segment_polygon_case(dataset, workload="segment_polygon_anyhit_rows")
     if workload == "point_nearest_segment":
         return _load_point_nearest_segment_case(dataset)
+    if workload == "fixed_radius_neighbors":
+        return _load_fixed_radius_neighbors_case(dataset)
     raise ValueError(f"unknown baseline workload `{workload}`")
 
 
@@ -365,6 +368,35 @@ def _load_point_nearest_segment_case(dataset: str) -> DatasetCase:
             note="County-derived point/nearest-segment case using deterministic fixture slices.",
         )
     raise ValueError(f"unsupported point_nearest_segment dataset `{dataset}`")
+
+
+def _load_fixed_radius_neighbors_case(dataset: str) -> DatasetCase:
+    from examples.reference.rtdl_fixed_radius_neighbors_reference import make_fixed_radius_neighbors_authored_case
+    from examples.reference.rtdl_fixed_radius_neighbors_reference import make_fixture_fixed_radius_neighbors_case
+    from examples.reference.rtdl_fixed_radius_neighbors_reference import make_natural_earth_fixed_radius_neighbors_case
+
+    if dataset == "authored_fixed_radius_neighbors_minimal":
+        return DatasetCase(
+            workload="fixed_radius_neighbors",
+            dataset=dataset,
+            inputs=make_fixed_radius_neighbors_authored_case(),
+            note="Small authored fixed-radius-neighbor example with tie ordering and truncation.",
+        )
+    if dataset == "tests/fixtures/rayjoin/br_county_subset.cdb":
+        return DatasetCase(
+            workload="fixed_radius_neighbors",
+            dataset=dataset,
+            inputs=make_fixture_fixed_radius_neighbors_case(),
+            note="County-derived fixed-radius-neighbor case using deterministic point slices.",
+        )
+    if dataset == "tests/fixtures/public/natural_earth_populated_places_sample.geojson":
+        return DatasetCase(
+            workload="fixed_radius_neighbors",
+            dataset=dataset,
+            inputs=make_natural_earth_fixed_radius_neighbors_case(),
+            note="Tiny public populated-places sample for bounded external-facing validation.",
+        )
+    raise ValueError(f"unsupported fixed_radius_neighbors dataset `{dataset}`")
 
 
 def _chains_to_polygons(cdb, *, limit_chains: int | None = None) -> tuple[Polygon, ...]:
