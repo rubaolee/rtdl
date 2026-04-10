@@ -6,9 +6,11 @@ Implementation and local verification are complete.
 
 External-review state:
 
-- Claude: pending
-- Gemini: pending
-- Codex: pending
+- Claude: complete
+- Gemini: complete
+- Codex: complete
+
+Goal 201 is closed for `v0.4` under the standing `2+` AI bar.
 
 ## Local verification
 
@@ -20,4 +22,18 @@ External-review state:
 
 ## Review update
 
-Update this file after the Claude and Gemini response files land.
+- Claude review:
+  - `docs/reports/claude_goal201_fixed_radius_neighbors_external_baselines_review_2026-04-10.md`
+- Gemini review:
+  - `docs/reports/gemini_goal201_fixed_radius_neighbors_external_baselines_review_2026-04-10.md`
+- Codex consensus:
+  - `history/ad_hoc_reviews/2026-04-10-codex-consensus-goal201-fixed-radius-neighbors-external-baselines.md`
+
+Shared conclusion:
+
+- Goal 201 is complete and honest.
+- The SciPy `cKDTree` baseline and bounded PostGIS helper preserve the
+  RTDL `fixed_radius_neighbors` contract exactly.
+- Optional-dependency handling is clear and does not pollute the first-run path.
+- The goal remains correctly scoped for `v0.4`: comparison support only, not a
+  performance-claim slice.
