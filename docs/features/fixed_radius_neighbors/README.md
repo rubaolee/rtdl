@@ -11,6 +11,8 @@ Current implemented boundary:
 - Python truth path: yes
 - native CPU/oracle path: yes
 - Embree: yes
+- SciPy `cKDTree` external baseline: yes
+- bounded PostGIS helper: yes
 - OptiX / Vulkan: not yet
 
 ## Purpose
@@ -155,6 +157,8 @@ return rt.emit(neighbors, fields=["query_id", "neighbor_id", "distance"])
 ## Limitations
 
 - current accelerated closure is Embree only
+- SciPy and PostGIS are optional comparison dependencies, not required first-run
+  dependencies
 - first release scope is 2D only
 - first release scope is Euclidean only
 - first release scope is row materialization, not aggregate summaries

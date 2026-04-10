@@ -55,6 +55,12 @@ from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import embree_version
+from .external_baselines import build_postgis_fixed_radius_neighbors_sql
+from .external_baselines import connect_postgis
+from .external_baselines import postgis_available
+from .external_baselines import run_postgis_fixed_radius_neighbors
+from .external_baselines import run_scipy_fixed_radius_neighbors
+from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import OptixRowView
 from .optix_runtime import prepare_optix
@@ -222,10 +228,10 @@ def representative_dataset_names(workload: str):
     return _representative_dataset_names(workload)
 
 
-def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both"):
+def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both", *, postgis_dsn: str | None = None):
     from .baseline_runner import run_baseline_case as _run_baseline_case
 
-    return _run_baseline_case(kernel_fn_or_compiled, dataset, backend=backend)
+    return _run_baseline_case(kernel_fn_or_compiled, dataset, backend=backend, postgis_dsn=postgis_dsn)
 
 
 def run_baseline_benchmark(*, workloads, backends, iterations: int, warmup: int):
@@ -336,6 +342,8 @@ __all__ = [
     "chains_to_segments",
     "count_arcgis_loaded_pages",
     "download_rayjoin_sample",
+    "build_postgis_fixed_radius_neighbors_sql",
+    "connect_postgis",
     "fixed_radius_neighbors_cpu",
     "EmbreeRowView",
     "embree_version",
@@ -414,6 +422,7 @@ __all__ = [
     "lsi_cpu",
     "overlay_compose_cpu",
     "parse_cdb_text",
+    "postgis_available",
     "pip_cpu",
     "Point",
     "point_nearest_segment_cpu",
@@ -446,9 +455,12 @@ __all__ = [
     "run_goal23_reproduction",
     "run_cpu",
     "run_cpu_python_reference",
+    "run_postgis_fixed_radius_neighbors",
+    "run_scipy_fixed_radius_neighbors",
     "run_section_5_6",
     "ScalabilityConfig",
     "schema_path",
+    "scipy_available",
     "segment_intersection",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",

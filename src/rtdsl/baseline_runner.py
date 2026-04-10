@@ -15,6 +15,9 @@ from .datasets import chains_to_probe_points
 from .datasets import chains_to_segments
 from .datasets import load_cdb
 from .embree_runtime import run_embree
+from .external_baselines import connect_postgis
+from .external_baselines import run_postgis_fixed_radius_neighbors
+from .external_baselines import run_scipy_fixed_radius_neighbors
 from .optix_runtime import run_optix
 from .reference import Point
 from .reference import Polygon
@@ -79,9 +82,17 @@ def load_representative_case(workload: str, dataset: str) -> DatasetCase:
     raise ValueError(f"unknown baseline workload `{workload}`")
 
 
-def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both") -> dict[str, object]:
-    if backend not in {"cpu_python_reference", "cpu", "embree", "optix", "both"}:
-        raise ValueError("baseline backend must be one of: cpu_python_reference, cpu, embree, optix, both")
+def run_baseline_case(
+    kernel_fn_or_compiled,
+    dataset: str,
+    backend: str = "both",
+    *,
+    postgis_dsn: str | None = None,
+) -> dict[str, object]:
+    if backend not in {"cpu_python_reference", "cpu", "embree", "optix", "both", "scipy", "postgis"}:
+        raise ValueError(
+            "baseline backend must be one of: cpu_python_reference, cpu, embree, optix, both, scipy, postgis"
+        )
     compiled = (
         kernel_fn_or_compiled
         if hasattr(kernel_fn_or_compiled, "refine_op")
@@ -104,6 +115,28 @@ def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both"
         payload["embree_rows"] = run_embree(compiled, **bound_inputs)
     if backend == "optix":
         payload["optix_rows"] = run_optix(compiled, **bound_inputs)
+    if backend == "scipy":
+        python_rows = run_cpu_python_reference(compiled, **bound_inputs)
+        payload["cpu_python_reference_rows"] = python_rows
+        payload["scipy_rows"] = _run_fixed_radius_neighbors_scipy_baseline(compiled, bound_inputs)
+        payload["parity"] = compare_baseline_rows(
+            workload,
+            python_rows,
+            payload["scipy_rows"],
+        )
+    if backend == "postgis":
+        python_rows = run_cpu_python_reference(compiled, **bound_inputs)
+        payload["cpu_python_reference_rows"] = python_rows
+        payload["postgis_rows"] = _run_fixed_radius_neighbors_postgis_baseline(
+            compiled,
+            bound_inputs,
+            postgis_dsn=postgis_dsn,
+        )
+        payload["parity"] = compare_baseline_rows(
+            workload,
+            python_rows,
+            payload["postgis_rows"],
+        )
     if backend == "both":
         payload["parity"] = compare_baseline_rows(
             workload,
@@ -111,6 +144,47 @@ def run_baseline_case(kernel_fn_or_compiled, dataset: str, backend: str = "both"
             payload["embree_rows"],
         )
     return payload
+
+
+def _fixed_radius_neighbor_params(compiled) -> tuple[float, int]:
+    predicate = compiled.refine_op.predicate
+    return float(predicate.options["radius"]), int(predicate.options["k_max"])
+
+
+def _run_fixed_radius_neighbors_scipy_baseline(compiled, bound_inputs) -> tuple[dict[str, object], ...]:
+    workload = infer_workload(compiled)
+    if workload != "fixed_radius_neighbors":
+        raise ValueError("SciPy external baseline is currently implemented only for fixed_radius_neighbors")
+    radius, k_max = _fixed_radius_neighbor_params(compiled)
+    return run_scipy_fixed_radius_neighbors(
+        bound_inputs["query_points"],
+        bound_inputs["search_points"],
+        radius=radius,
+        k_max=k_max,
+    )
+
+
+def _run_fixed_radius_neighbors_postgis_baseline(
+    compiled,
+    bound_inputs,
+    *,
+    postgis_dsn: str | None,
+) -> tuple[dict[str, object], ...]:
+    workload = infer_workload(compiled)
+    if workload != "fixed_radius_neighbors":
+        raise ValueError("PostGIS external baseline is currently implemented only for fixed_radius_neighbors")
+    radius, k_max = _fixed_radius_neighbor_params(compiled)
+    connection = connect_postgis(postgis_dsn)
+    try:
+        return run_postgis_fixed_radius_neighbors(
+            connection,
+            bound_inputs["query_points"],
+            bound_inputs["search_points"],
+            radius=radius,
+            k_max=k_max,
+        )
+    finally:
+        connection.close()
 
 
 def _load_lsi_case(dataset: str) -> DatasetCase:
@@ -551,7 +625,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run RTDL Embree baseline workloads.")
     parser.add_argument("workload", choices=BASELINE_WORKLOADS.keys())
     parser.add_argument("--dataset", default=None)
-    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix", "both"), default="both")
+    parser.add_argument(
+        "--backend",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "both", "scipy", "postgis"),
+        default="both",
+    )
+    parser.add_argument(
+        "--postgis-dsn",
+        default=None,
+        help="Optional PostGIS DSN; required only for --backend postgis.",
+    )
     args = parser.parse_args(argv)
 
     dataset = args.dataset or representative_dataset_names(args.workload)[0]
@@ -573,7 +656,12 @@ def main(argv: list[str] | None = None) -> int:
     else:
         from examples.reference.rtdl_workload_reference import point_nearest_segment_reference as kernel
 
-    payload = run_baseline_case(kernel, dataset, backend=args.backend)
+    payload = run_baseline_case(
+        kernel,
+        dataset,
+        backend=args.backend,
+        postgis_dsn=args.postgis_dsn,
+    )
     print(json.dumps(_json_ready(payload), indent=2, sort_keys=True))
     return 0
 
