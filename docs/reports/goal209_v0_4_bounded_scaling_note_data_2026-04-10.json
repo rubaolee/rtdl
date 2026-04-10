@@ -1,0 +1,217 @@
+{
+  "cases": [
+    {
+      "case": "fixture",
+      "query_count": 3,
+      "results": [
+        {
+          "backend": "cpu_python_reference",
+          "max_ms": 0.018917,
+          "median_ms": 0.015709,
+          "min_ms": 0.013792,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 9
+        },
+        {
+          "backend": "cpu",
+          "max_ms": 0.103209,
+          "median_ms": 0.023625,
+          "min_ms": 0.0225,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 9
+        },
+        {
+          "backend": "embree",
+          "max_ms": 0.270084,
+          "median_ms": 0.054875,
+          "min_ms": 0.052959,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 9
+        }
+      ],
+      "search_count": 3,
+      "workload": "fixed_radius_neighbors"
+    },
+    {
+      "case": "fixture",
+      "query_count": 3,
+      "results": [
+        {
+          "backend": "cpu_python_reference",
+          "max_ms": 0.028083,
+          "median_ms": 0.026583,
+          "min_ms": 0.025542,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 9
+        },
+        {
+          "backend": "cpu",
+          "max_ms": 0.094167,
+          "median_ms": 0.044458,
+          "min_ms": 0.04125,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 9
+        },
+        {
+          "backend": "embree",
+          "max_ms": 0.082583,
+          "median_ms": 0.055334,
+          "min_ms": 0.052042,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 9
+        }
+      ],
+      "search_count": 3,
+      "workload": "knn_rows"
+    },
+    {
+      "case": "fixture_tiled_x8",
+      "query_count": 24,
+      "results": [
+        {
+          "backend": "cpu_python_reference",
+          "max_ms": 0.298375,
+          "median_ms": 0.235541,
+          "min_ms": 0.162292,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 72
+        },
+        {
+          "backend": "cpu",
+          "max_ms": 0.233084,
+          "median_ms": 0.18275,
+          "min_ms": 0.14325,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 72
+        },
+        {
+          "backend": "embree",
+          "max_ms": 0.245666,
+          "median_ms": 0.212125,
+          "min_ms": 0.136541,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 72
+        }
+      ],
+      "search_count": 24,
+      "workload": "fixed_radius_neighbors"
+    },
+    {
+      "case": "fixture_tiled_x8",
+      "query_count": 24,
+      "results": [
+        {
+          "backend": "cpu_python_reference",
+          "max_ms": 0.36325,
+          "median_ms": 0.219,
+          "min_ms": 0.216208,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 72
+        },
+        {
+          "backend": "cpu",
+          "max_ms": 0.263584,
+          "median_ms": 0.209875,
+          "min_ms": 0.19775,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 72
+        },
+        {
+          "backend": "embree",
+          "max_ms": 0.412625,
+          "median_ms": 0.320625,
+          "min_ms": 0.286458,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 72
+        }
+      ],
+      "search_count": 24,
+      "workload": "knn_rows"
+    },
+    {
+      "case": "fixture_tiled_x32",
+      "query_count": 96,
+      "results": [
+        {
+          "backend": "cpu_python_reference",
+          "max_ms": 1.521875,
+          "median_ms": 1.224417,
+          "min_ms": 1.051708,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 288
+        },
+        {
+          "backend": "cpu",
+          "max_ms": 0.69375,
+          "median_ms": 0.541125,
+          "min_ms": 0.445208,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 288
+        },
+        {
+          "backend": "embree",
+          "max_ms": 0.768917,
+          "median_ms": 0.504125,
+          "min_ms": 0.439375,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 288
+        }
+      ],
+      "search_count": 96,
+      "workload": "fixed_radius_neighbors"
+    },
+    {
+      "case": "fixture_tiled_x32",
+      "query_count": 96,
+      "results": [
+        {
+          "backend": "cpu_python_reference",
+          "max_ms": 4.023417,
+          "median_ms": 3.848416,
+          "min_ms": 3.121833,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 288
+        },
+        {
+          "backend": "cpu",
+          "max_ms": 0.84875,
+          "median_ms": 0.781208,
+          "min_ms": 0.651,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 288
+        },
+        {
+          "backend": "embree",
+          "max_ms": 1.529167,
+          "median_ms": 1.106792,
+          "min_ms": 1.039584,
+          "parity_mode": "exact_ids_and_flags_plus_float_tolerance",
+          "parity_ok": true,
+          "rows": 288
+        }
+      ],
+      "search_count": 96,
+      "workload": "knn_rows"
+    }
+  ],
+  "note": "Bounded nearest-neighbor scaling note for v0.4 on the local macOS development host.",
+  "repeats": 5,
+  "scipy_available": false
+}

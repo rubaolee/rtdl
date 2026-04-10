@@ -609,7 +609,9 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors(
       point_query.radius = static_cast<float>(radius);
       RTCPointQueryContext context;
       rtcInitPointQueryContext(&context);
+      g_query_kind = QueryKind::kFixedRadiusNeighbors;
       rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
+      g_query_kind = QueryKind::kNone;
       std::sort(query_rows.begin(), query_rows.end(), [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
         if (left.distance < right.distance - 1.0e-12) {
           return true;

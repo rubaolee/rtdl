@@ -100,6 +100,20 @@ Post-review rerun after the exact-radius fix:
   - `Ran 4 tests`
   - `OK`
 
+Late correction discovered during Goal 209 bounded scaling work:
+
+- `rtdl_embree_run_fixed_radius_neighbors(...)` was missing
+  `g_query_kind = QueryKind::kFixedRadiusNeighbors` before `rtcPointQuery(...)`
+- that omission caused the shared point-query callback to take the wrong branch
+  and return zero rows on real Embree runs
+
+Repair and rerun:
+
+- `/Users/rl2025/rtdl_python_only/src/native/embree/rtdl_embree_api.cpp`
+- `PYTHONPATH=src:. python3 -m unittest tests.goal200_fixed_radius_neighbors_embree_test`
+  - `Ran 5 tests`
+  - `OK`
+
 ## Acceptance summary
 
 Goal 200 is complete:

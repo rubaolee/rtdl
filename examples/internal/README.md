@@ -6,6 +6,7 @@ Files in this directory are preserved for:
 - LLM-authoring experiments
 - archived comparison paths
 - bounded audit and reproduction support
+- bounded benchmark/scaling support
 
 They are not the primary release-facing entry points for new users.
 

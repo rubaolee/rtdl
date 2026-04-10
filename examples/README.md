@@ -13,6 +13,8 @@ If you are new to RTDL, use these files first:
 
 - `rtdl_hello_world.py`
 - `rtdl_hello_world_backends.py`
+- `rtdl_fixed_radius_neighbors.py`
+- `rtdl_knn_rows.py`
 - `rtdl_segment_polygon_hitcount.py`
 - `rtdl_segment_polygon_anyhit_rows.py`
 - `rtdl_polygon_pair_overlap_area_rows.py`

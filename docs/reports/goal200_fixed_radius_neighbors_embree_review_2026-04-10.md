@@ -25,6 +25,18 @@ then fixed before final acceptance:
 - the Embree callback originally used `distance <= radius + 1e-12`
 - this was tightened to the exact public rule `distance <= radius`
 
+Later, Goal 209 surfaced one more real backend bug that had escaped the earlier
+closeout:
+
+- the fixed-radius Embree runner had not set
+  `g_query_kind = QueryKind::kFixedRadiusNeighbors` before `rtcPointQuery(...)`
+- this caused the shared callback to take the wrong branch and could yield zero
+  rows on real runs
+
+That bug is now fixed in:
+
+- `/Users/rl2025/rtdl_python_only/src/native/embree/rtdl_embree_api.cpp`
+
 The resulting accepted implementation now satisfies:
 
 - inclusive radius filtering

@@ -48,11 +48,22 @@ PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_pyt
 PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
+If you want to jump directly into the active `v0.4` line, the two cleanest
+nearest-neighbor examples are:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
+```
+
 Those three commands teach three different things:
 
 - `rtdl_hello_world.py`: the smallest possible RTDL execution shape
 - `rtdl_hello_world_backends.py`: how backend selection changes the same scene
 - `rtdl_segment_polygon_hitcount.py`: what a release-facing workload example looks like
+
+The two nearest-neighbor commands show what the active `v0.4` workload family
+looks like in public user-facing form.
 
 ## What RTDL programs do
 
@@ -157,6 +168,8 @@ realistic inputs and emitted rows.
 After this hello-world example, the best next files are:
 
 - `docs/release_facing_examples.md`
+- `examples/rtdl_fixed_radius_neighbors.py`
+- `examples/rtdl_knn_rows.py`
 - `examples/rtdl_segment_polygon_hitcount.py`
 - `examples/rtdl_segment_polygon_anyhit_rows.py`
 - `examples/rtdl_polygon_set_jaccard.py`

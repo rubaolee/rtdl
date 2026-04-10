@@ -12,6 +12,42 @@ Before running any command below:
 - keep the `PYTHONPATH=src:.` prefix so Python imports the local `rtdsl`
   package from `src/rtdsl/`
 
+## v0.4 nearest-neighbor preview examples
+
+These are the current release-facing examples for the active `v0.4` line.
+They are correctness-first nearest-neighbor examples, not a released benchmark
+claim yet.
+
+### Fixed-Radius Neighbors
+
+- code:
+  - [rtdl_fixed_radius_neighbors.py](../examples/rtdl_fixed_radius_neighbors.py)
+- run:
+
+```bash
+cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+```
+
+### K-Nearest-Neighbor Rows
+
+- code:
+  - [rtdl_knn_rows.py](../examples/rtdl_knn_rows.py)
+- run:
+
+```bash
+cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
+```
+
+If Embree is available locally, both examples also support:
+
+```bash
+cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend embree
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend embree
+```
+
 ## Core examples
 
 ### Segment/Polygon Hit Count
