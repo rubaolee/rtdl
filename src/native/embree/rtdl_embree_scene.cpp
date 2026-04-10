@@ -42,6 +42,7 @@ enum class QueryKind {
   kRayHitCount,
   kSegmentPolygonHitCount,
   kFixedRadiusNeighbors,
+  kKnnRows,
 };
 
 struct SegmentSceneData {
@@ -106,6 +107,13 @@ struct FixedRadiusNeighborsQueryState {
   const std::vector<Point2D>* search_points;
   double radius;
   std::vector<RtdlFixedRadiusNeighborRow>* rows;
+  std::unordered_set<uint32_t>* seen_neighbor_ids;
+};
+
+struct KnnRowsQueryState {
+  const Point2D* query;
+  const std::vector<Point2D>* search_points;
+  std::vector<RtdlKnnNeighborRow>* rows;
   std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
@@ -300,7 +308,22 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   if (args == nullptr || args->userPtr == nullptr) {
     return false;
   }
-  auto* state = static_cast<FixedRadiusNeighborsQueryState*>(args->userPtr);
+  if (g_query_kind == QueryKind::kFixedRadiusNeighbors) {
+    auto* state = static_cast<FixedRadiusNeighborsQueryState*>(args->userPtr);
+    const Point2D& search_point = (*state->search_points)[args->primID];
+    if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
+      return false;
+    }
+    double dx = search_point.p.x - state->query->p.x;
+    double dy = search_point.p.y - state->query->p.y;
+    double distance = std::sqrt(dx * dx + dy * dy);
+    if (distance <= state->radius) {
+      state->seen_neighbor_ids->insert(search_point.id);
+      state->rows->push_back({state->query->id, search_point.id, distance});
+    }
+    return false;
+  }
+  auto* state = static_cast<KnnRowsQueryState*>(args->userPtr);
   const Point2D& search_point = (*state->search_points)[args->primID];
   if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
     return false;
@@ -308,10 +331,8 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   double dx = search_point.p.x - state->query->p.x;
   double dy = search_point.p.y - state->query->p.y;
   double distance = std::sqrt(dx * dx + dy * dy);
-  if (distance <= state->radius) {
-    state->seen_neighbor_ids->insert(search_point.id);
-    state->rows->push_back({state->query->id, search_point.id, distance});
-  }
+  state->seen_neighbor_ids->insert(search_point.id);
+  state->rows->push_back({state->query->id, search_point.id, distance, 0u});
   return false;
 }
 

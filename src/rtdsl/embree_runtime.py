@@ -196,6 +196,15 @@ class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlKnnNeighborRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+        ("neighbor_rank", ctypes.c_uint32),
+    ]
+
+
 @dataclass(frozen=True)
 class PackedSegments:
     records: object
@@ -286,6 +295,7 @@ class PreparedEmbreeKernel:
             "segment_polygon_anyhit_rows",
             "point_nearest_segment",
             "fixed_radius_neighbors",
+            "knn_rows",
         }:
             raise ValueError(
                 "the current prepared Embree path supports only Embree-backed local workloads"
@@ -334,6 +344,8 @@ class PreparedEmbreeExecution:
             return _call_point_nearest_segment_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "fixed_radius_neighbors":
             return _call_fixed_radius_neighbors_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "knn_rows":
+            return _call_knn_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
 
     def run(self) -> tuple[dict[str, object], ...]:
@@ -1335,6 +1347,88 @@ def _call_fixed_radius_neighbors_embree_packed(compiled: CompiledKernel, packed_
     )
 
 
+def _run_knn_rows_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = normalized_inputs[query_name]
+    search_points = normalized_inputs[search_name]
+    k = int(compiled.refine_op.predicate.options["k"])
+
+    query_array = (_RtdlPoint * len(query_points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in query_points
+    ])
+    search_array = (_RtdlPoint * len(search_points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in search_points
+    ])
+
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_knn_rows(
+        query_array,
+        len(query_points),
+        search_array,
+        len(search_points),
+        k,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "query_id": rows_ptr[index].query_id,
+                "neighbor_id": rows_ptr[index].neighbor_id,
+                "distance": rows_ptr[index].distance,
+                "neighbor_rank": rows_ptr[index].neighbor_rank,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_embree_free_rows(rows_ptr)
+
+
+def _run_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_knn_rows_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = packed_inputs[query_name]
+    search_points = packed_inputs[search_name]
+    k = int(compiled.refine_op.predicate.options["k"])
+
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_knn_rows(
+        query_points.records,
+        query_points.count,
+        search_points.records,
+        search_points.count,
+        k,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlKnnNeighborRow,
+        field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"),
+    )
+
+
 def _encode_polygons(polygons):
     refs = []
     vertices = []
@@ -1585,6 +1679,19 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_run_fixed_radius_neighbors.restype = ctypes.c_int
+
+    library.rtdl_embree_run_knn_rows.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_run_knn_rows.restype = ctypes.c_int
 
     return library
 

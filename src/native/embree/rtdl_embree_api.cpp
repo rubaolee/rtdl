@@ -633,6 +633,91 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(
+    const RtdlPoint* query_points,
+    size_t query_count,
+    const RtdlPoint* search_points,
+    size_t search_count,
+    size_t k,
+    RtdlKnnNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (k == 0) {
+      throw std::runtime_error("knn_rows k must be positive");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Point2D> query_values;
+    std::vector<Point2D> search_values;
+    query_values.reserve(query_count);
+    search_values.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y}});
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+      search_values.push_back({search_points[i].id, {search_points[i].x, search_points[i].y}});
+    }
+
+    EmbreeDevice device;
+    PointSceneData data {&search_values};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(search_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, point_bounds, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<RtdlKnnNeighborRow> rows;
+    for (const Point2D& query : query_values) {
+      std::vector<RtdlKnnNeighborRow> query_rows;
+      std::unordered_set<uint32_t> seen_neighbor_ids;
+      KnnRowsQueryState state {&query, &search_values, &query_rows, &seen_neighbor_ids};
+      RTCPointQuery point_query;
+      point_query.x = static_cast<float>(query.p.x);
+      point_query.y = static_cast<float>(query.p.y);
+      point_query.z = 0.0f;
+      point_query.time = 0.0f;
+      point_query.radius = std::numeric_limits<float>::infinity();
+      RTCPointQueryContext context;
+      rtcInitPointQueryContext(&context);
+      g_query_kind = QueryKind::kKnnRows;
+      rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
+      g_query_kind = QueryKind::kNone;
+      std::sort(query_rows.begin(), query_rows.end(), [](const RtdlKnnNeighborRow& left, const RtdlKnnNeighborRow& right) {
+        if (left.distance < right.distance - 1.0e-12) {
+          return true;
+        }
+        if (right.distance < left.distance - 1.0e-12) {
+          return false;
+        }
+        return left.neighbor_id < right.neighbor_id;
+      });
+      if (query_rows.size() > k) {
+        query_rows.resize(k);
+      }
+      for (size_t index = 0; index < query_rows.size(); ++index) {
+        query_rows[index].neighbor_rank = static_cast<uint32_t>(index + 1);
+      }
+      rows.insert(rows.end(), query_rows.begin(), query_rows.end());
+    }
+    std::stable_sort(rows.begin(), rows.end(), [](const RtdlKnnNeighborRow& left, const RtdlKnnNeighborRow& right) {
+      return left.query_id < right.query_id;
+    });
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT void rtdl_embree_free_rows(void* rows) {
   std::free(rows);
 }
