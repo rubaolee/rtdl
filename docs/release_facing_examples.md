@@ -1,6 +1,7 @@
 # Release-Facing Examples
 
-This page is the canonical example index for the frozen RTDL v0.2 surface.
+This page is the canonical example index for the frozen RTDL `v0.2` surface
+and the active RTDL `v0.4` nearest-neighbor preview line.
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.

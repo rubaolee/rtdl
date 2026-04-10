@@ -120,7 +120,7 @@ unless a later surface adds that behavior explicitly.
 
 ## Example kernel shape
 
-Planned kernel shape:
+Example kernel shape:
 
 ```python
 query_points = rt.input("query_points", rt.Points, role="probe")
@@ -156,7 +156,6 @@ return rt.emit(neighbors, fields=["query_id", "neighbor_id", "distance", "neighb
 
 ## Limitations
 
-- current status is planned only
 - first release scope is 2D only
 - first release scope is Euclidean only
 - first release scope is row materialization, not aggregate summaries
