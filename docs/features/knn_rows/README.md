@@ -2,17 +2,17 @@
 
 ## Status
 
-Planned public workload line for `v0.4`.
+Active public workload line for `v0.4`.
 
 Current implemented boundary:
 
-- public DSL surface: not yet
-- lowering: not yet
-- Python truth path: not yet
-- native CPU/oracle path: not yet
-- Embree: not yet
-- SciPy `cKDTree` external baseline: planned
-- bounded PostGIS helper: planned
+- public DSL surface: yes
+- lowering: yes
+- Python truth path: yes
+- native CPU/oracle path: yes
+- Embree: yes
+- SciPy `cKDTree` external baseline: yes
+- bounded PostGIS helper: yes
 - OptiX / Vulkan: not yet
 
 ## Purpose

@@ -220,7 +220,7 @@ def hydrant_nearest_road():
     return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
 ```
 
-## Planned v0.4: Fixed-Radius Neighbors
+## Active v0.4: Fixed-Radius Neighbors
 
 ```python
 import rtdsl as rt
@@ -242,9 +242,12 @@ Current status:
 - contract frozen for `v0.4`
 - API surface added
 - lowering support added
-- runtime support not implemented yet
+- Python truth path implemented
+- native CPU/oracle implemented
+- Embree implemented
+- optional SciPy / PostGIS external baselines implemented
 
-## Planned v0.4: KNN Rows
+## Active v0.4: KNN Rows
 
 ```python
 import rtdsl as rt
@@ -266,7 +269,10 @@ Current status:
 - contract frozen for `v0.4`
 - API surface added
 - lowering support added
-- runtime support not implemented yet
+- Python truth path implemented
+- native CPU/oracle implemented
+- Embree implemented
+- optional SciPy / PostGIS external baselines implemented
 
 ## Quick Execution Examples
 

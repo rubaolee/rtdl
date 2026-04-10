@@ -33,12 +33,10 @@ This reference only describes the RTDL features that are implemented today:
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
   - `point_nearest_segment`
+  - `fixed_radius_neighbors`
+  - `knn_rows`
 
 Anything outside this surface is not part of the current language.
-
-Planned `v0.4` surface that is visible at the API level but not yet lowered:
-
-- `fixed_radius_neighbors`
 
 ## Kernel Grammar
 

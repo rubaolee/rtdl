@@ -42,8 +42,7 @@ The kernel function must take no Python arguments.
 Current `v0.4` surface under active closure:
 
 - `Points x Points` with `fixed_radius_neighbors(radius=..., k_max=...)`
-- planned next workload in the same family:
-  - `Points x Points` with `knn_rows(k=...)`
+- `Points x Points` with `knn_rows(k=...)`
 
 ## Supported Emit Fields
 
@@ -126,8 +125,17 @@ Current boundary:
   - lowering
   - Python truth-path execution
   - native CPU/oracle execution
-- accelerated backend closure is still pending
-- `knn_rows(k=...)` is now a frozen planned contract with DSL/lowering in progress
+  - Embree execution
+  - optional SciPy / PostGIS external baselines
+- `knn_rows(...)` now supports:
+  - public DSL authoring
+  - lowering
+  - Python truth-path execution
+  - native CPU/oracle execution
+  - Embree execution
+  - optional SciPy / PostGIS external baselines
+- OptiX / Vulkan nearest-neighbor closure is still not part of the active
+  `v0.4` preview acceptance package
 
 ## Recommended Prompting Pattern
 
