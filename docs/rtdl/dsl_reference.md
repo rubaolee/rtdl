@@ -321,7 +321,9 @@ Current status:
 
 - the predicate factory exists at the API level
 - lowering support exists
-- runtime support is not implemented yet
+- Python truth-path support exists
+- native CPU/oracle support exists
+- accelerated backend support exists through Embree
 - use the feature home for the frozen public contract:
   - [KNN Rows](../features/knn_rows/README.md)
 
