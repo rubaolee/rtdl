@@ -413,6 +413,7 @@ Current future-direction references, listed in chronological order, are:
 
 Additional notes and context are collected here:
 
+- [Workloads And Research Foundations](docs/workloads_and_research_foundations.md)
 - [Future Ray-Tracing Directions](docs/future_ray_tracing_directions.md)
 
 ## Where To Start
