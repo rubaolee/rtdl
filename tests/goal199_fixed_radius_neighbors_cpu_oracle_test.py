@@ -77,6 +77,22 @@ class Goal199FixedRadiusNeighborsCpuOracleTest(unittest.TestCase):
         self.assertEqual(payload["workload"], "fixed_radius_neighbors")
         self.assertEqual(tuple(row["neighbor_id"] for row in payload["cpu_python_reference_rows"][:3]), (1, 2, 3))
 
+    def test_run_cpu_matches_python_reference_on_out_of_order_queries(self) -> None:
+        case = {
+            "query_points": (
+                rt.Point(id=20, x=3.0, y=0.0),
+                rt.Point(id=10, x=0.0, y=0.0),
+            ),
+            "search_points": (
+                rt.Point(id=1, x=0.0, y=0.0),
+                rt.Point(id=2, x=3.0, y=0.0),
+            ),
+        }
+        native_rows = rt.run_cpu(fixed_radius_neighbors_reference, **case)
+        python_rows = rt.run_cpu_python_reference(fixed_radius_neighbors_reference, **case)
+        self.assertEqual(native_rows, python_rows)
+        self.assertEqual(tuple(row["query_id"] for row in native_rows), (10, 20))
+
 
 if __name__ == "__main__":
     unittest.main()

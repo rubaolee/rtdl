@@ -560,6 +560,12 @@ extern "C" int rtdl_oracle_run_fixed_radius_neighbors(
       }
       rows.insert(rows.end(), query_rows.begin(), query_rows.end());
     }
+    std::stable_sort(
+        rows.begin(),
+        rows.end(),
+        [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+          return left.query_id < right.query_id;
+        });
 
     *rows_out = rtdl::oracle::copy_rows_out(rows);
     *row_count_out = rows.size();

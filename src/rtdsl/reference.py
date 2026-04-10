@@ -197,6 +197,7 @@ def fixed_radius_neighbors_cpu(
                     "distance": distance,
                 }
             )
+    rows.sort(key=lambda row: row["query_id"])
     return tuple(rows)
 
 

@@ -73,6 +73,33 @@ class Goal198FixedRadiusNeighborsTruthPathTest(unittest.TestCase):
             (1, 2, 3),
         )
 
+    def test_rows_are_grouped_by_ascending_query_id(self) -> None:
+        rows = rt.fixed_radius_neighbors_cpu(
+            (
+                rt.Point(id=20, x=3.0, y=0.0),
+                rt.Point(id=10, x=0.0, y=0.0),
+            ),
+            (
+                rt.Point(id=1, x=0.0, y=0.0),
+                rt.Point(id=2, x=3.0, y=0.0),
+            ),
+            radius=0.1,
+            k_max=2,
+        )
+        self.assertEqual(tuple(row["query_id"] for row in rows), (10, 20))
+
+    def test_zero_radius_matches_only_coincident_points(self) -> None:
+        rows = rt.fixed_radius_neighbors_cpu(
+            (rt.Point(id=10, x=1.0, y=1.0),),
+            (
+                rt.Point(id=1, x=1.0, y=1.0),
+                rt.Point(id=2, x=1.0, y=1.0001),
+            ),
+            radius=0.0,
+            k_max=4,
+        )
+        self.assertEqual(rows, ({"query_id": 10, "neighbor_id": 1, "distance": 0.0},))
+
 
 if __name__ == "__main__":
     unittest.main()
