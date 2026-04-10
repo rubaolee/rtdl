@@ -1,3 +1,4 @@
+from pathlib import Path
 import math
 import sys
 import unittest
@@ -10,6 +11,9 @@ from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radiu
 from examples.reference.rtdl_fixed_radius_neighbors_reference import make_fixed_radius_neighbors_authored_case
 from examples.reference.rtdl_fixed_radius_neighbors_reference import make_fixture_fixed_radius_neighbors_case
 from examples.reference.rtdl_fixed_radius_neighbors_reference import make_natural_earth_fixed_radius_neighbors_case
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal198FixedRadiusNeighborsTruthPathTest(unittest.TestCase):
@@ -48,7 +52,7 @@ class Goal198FixedRadiusNeighborsTruthPathTest(unittest.TestCase):
 
     def test_natural_earth_loader_and_case(self) -> None:
         points = rt.load_natural_earth_populated_places_geojson(
-            "/Users/rl2025/rtdl_python_only/tests/fixtures/public/natural_earth_populated_places_sample.geojson"
+            REPO_ROOT / "tests" / "fixtures" / "public" / "natural_earth_populated_places_sample.geojson"
         )
         self.assertEqual(tuple(point.id for point in points), (101, 102, 103, 104))
         case = make_natural_earth_fixed_radius_neighbors_case()

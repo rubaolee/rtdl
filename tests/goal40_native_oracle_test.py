@@ -6,6 +6,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
+from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radius_neighbors_reference
+from examples.reference.rtdl_fixed_radius_neighbors_reference import make_fixture_fixed_radius_neighbors_case
 from examples.reference.rtdl_workload_reference import make_fixture_point_nearest_segment_case
 from examples.reference.rtdl_workload_reference import make_fixture_segment_polygon_case
 from examples.reference.rtdl_workload_reference import point_nearest_segment_reference
@@ -79,6 +81,7 @@ class Goal40NativeOracleTest(unittest.TestCase):
     def test_run_cpu_matches_python_reference_for_goal10_workloads(self) -> None:
         segment_case = make_fixture_segment_polygon_case()
         point_case = make_fixture_point_nearest_segment_case()
+        neighbor_case = make_fixture_fixed_radius_neighbors_case()
 
         self.assertEqual(
             rt.run_cpu(segment_polygon_hitcount_reference, **segment_case),
@@ -91,4 +94,12 @@ class Goal40NativeOracleTest(unittest.TestCase):
         for native_row, python_row in zip(native_rows, python_rows):
             self.assertEqual(native_row["point_id"], python_row["point_id"])
             self.assertEqual(native_row["segment_id"], python_row["segment_id"])
+            self.assertTrue(math.isclose(native_row["distance"], python_row["distance"], rel_tol=1e-12, abs_tol=1e-12))
+
+        native_neighbor_rows = rt.run_cpu(fixed_radius_neighbors_reference, **neighbor_case)
+        python_neighbor_rows = rt.run_cpu_python_reference(fixed_radius_neighbors_reference, **neighbor_case)
+        self.assertEqual(len(native_neighbor_rows), len(python_neighbor_rows))
+        for native_row, python_row in zip(native_neighbor_rows, python_neighbor_rows):
+            self.assertEqual(native_row["query_id"], python_row["query_id"])
+            self.assertEqual(native_row["neighbor_id"], python_row["neighbor_id"])
             self.assertTrue(math.isclose(native_row["distance"], python_row["distance"], rel_tol=1e-12, abs_tol=1e-12))

@@ -510,6 +510,62 @@ extern "C" int rtdl_oracle_run_point_nearest_segment(
   }, error_out, error_size);
 }
 
+extern "C" int rtdl_oracle_run_fixed_radius_neighbors(
+    const RtdlPoint* query_points,
+    size_t query_point_count,
+    const RtdlPoint* search_points,
+    size_t search_point_count,
+    double radius,
+    uint32_t k_max,
+    RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<rtdl::oracle::Point2D> query_values = rtdl::oracle::decode_points(query_points, query_point_count);
+    std::vector<rtdl::oracle::Point2D> search_values = rtdl::oracle::decode_points(search_points, search_point_count);
+    const double radius_sq = radius * radius;
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    for (const rtdl::oracle::Point2D& query_point : query_values) {
+      std::vector<RtdlFixedRadiusNeighborRow> query_rows;
+      for (const rtdl::oracle::Point2D& search_point : search_values) {
+        const double dx = search_point.p.x - query_point.p.x;
+        const double dy = search_point.p.y - query_point.p.y;
+        const double distance_sq = dx * dx + dy * dy;
+        if (distance_sq > radius_sq) {
+          continue;
+        }
+        query_rows.push_back({query_point.id, search_point.id, std::sqrt(distance_sq)});
+      }
+      std::sort(
+          query_rows.begin(),
+          query_rows.end(),
+          [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+            if (left.distance < right.distance - rtdl::oracle::kPointEps) {
+              return true;
+            }
+            if (right.distance < left.distance - rtdl::oracle::kPointEps) {
+              return false;
+            }
+            return left.neighbor_id < right.neighbor_id;
+          });
+      if (query_rows.size() > static_cast<size_t>(k_max)) {
+        query_rows.resize(static_cast<size_t>(k_max));
+      }
+      rows.insert(rows.end(), query_rows.begin(), query_rows.end());
+    }
+
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 extern "C" void rtdl_oracle_free_rows(void* rows) {
   std::free(rows);
 }

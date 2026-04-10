@@ -568,6 +568,8 @@ def main(argv: list[str] | None = None) -> int:
         from examples.reference.rtdl_workload_reference import segment_polygon_hitcount_reference as kernel
     elif args.workload == "segment_polygon_anyhit_rows":
         from examples.reference.rtdl_workload_reference import segment_polygon_anyhit_rows_reference as kernel
+    elif args.workload == "fixed_radius_neighbors":
+        from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radius_neighbors_reference as kernel
     else:
         from examples.reference.rtdl_workload_reference import point_nearest_segment_reference as kernel
 

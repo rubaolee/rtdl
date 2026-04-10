@@ -39,7 +39,7 @@ The kernel function must take no Python arguments.
 - `Segments x Polygons` with `segment_polygon_hitcount(exact=False)`
 - `Points x Segments` with `point_nearest_segment(exact=False)`
 
-Planned-but-not-yet-lowered `v0.4` surface:
+Current `v0.4` surface under active closure:
 
 - `Points x Points` with `fixed_radius_neighbors(radius=..., k_max=...)`
 
@@ -81,7 +81,7 @@ For Point/Nearest Segment:
 - `segment_id`
 - `distance`
 
-For planned `Fixed-Radius Neighbors`:
+For `Fixed-Radius Neighbors`:
 
 - `query_id`
 - `neighbor_id`
@@ -110,11 +110,14 @@ An RTDL program is acceptable only if:
 - `rt.lower_to_execution_plan(...)` succeeds
 - the resulting plan matches one of the supported workload kinds
 
-Exception:
+Current boundary:
 
-- `fixed_radius_neighbors(...)` is a planned `v0.4` predicate at the API
-  level, but `rt.lower_to_execution_plan(...)` is expected to reject it until
-  later implementation goals land.
+- `fixed_radius_neighbors(...)` now supports:
+  - public DSL authoring
+  - lowering
+  - Python truth-path execution
+  - native CPU/oracle execution
+- accelerated backend closure is still pending
 
 ## Recommended Prompting Pattern
 

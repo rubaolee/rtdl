@@ -2,10 +2,15 @@
 
 ## Status
 
-Planned public workload for `v0.4`.
+Active public workload line for `v0.4`.
 
-This contract is frozen for implementation, but the workload is not yet
-implemented in the released runtime.
+Current implemented boundary:
+
+- public DSL surface: yes
+- lowering: yes
+- Python truth path: yes
+- native CPU/oracle path: yes
+- Embree / OptiX / Vulkan: not yet
 
 ## Purpose
 
@@ -112,7 +117,7 @@ zero-count summary rows.
 
 ## Example kernel shape
 
-Planned kernel shape:
+Current kernel shape:
 
 ```python
 query_points = rt.input("query_points", rt.Points, role="probe")
@@ -148,7 +153,7 @@ return rt.emit(neighbors, fields=["query_id", "neighbor_id", "distance"])
 
 ## Limitations
 
-- planned for `v0.4`; not yet implemented
+- current closure is Python truth path plus native CPU/oracle only
 - first release scope is 2D only
 - first release scope is Euclidean only
 - first release scope is row materialization, not aggregate summaries

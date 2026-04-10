@@ -430,9 +430,11 @@ class LoweringTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "float-based"):
             rt.lower_to_execution_plan(rt.compile_kernel(exact_rth))
 
-    def test_lower_fixed_radius_neighbors_rejects_unimplemented_lowering(self) -> None:
-        with self.assertRaisesRegex(ValueError, "Goal 197 adds the DSL/Python contract only"):
-            rt.lower_to_execution_plan(rt.compile_kernel(_frn_kernel))
+    def test_lower_fixed_radius_neighbors_plan(self) -> None:
+        plan = rt.lower_to_execution_plan(rt.compile_kernel(_frn_kernel))
+        self.assertEqual(plan.workload_kind, "fixed_radius_neighbors")
+        self.assertEqual(plan.accel_kind, "native_loop")
+        self.assertEqual(plan.emit_fields, ("query_id", "neighbor_id", "distance"))
 
     def test_build_output_record_rejects_empty_emit_fields(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")

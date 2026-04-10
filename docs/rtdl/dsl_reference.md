@@ -301,12 +301,15 @@ Required option:
 
 Meaning:
 
-- planned `v0.4` point-to-point radius-neighbor row materialization
+- `v0.4` point-to-point radius-neighbor row materialization
 
 Current status:
 
 - the predicate factory exists at the API level
-- lowering/runtime support is not implemented yet
+- lowering support exists
+- Python truth-path support exists
+- native CPU/oracle support exists
+- accelerated backend support is not implemented yet
 - use the feature home for the frozen public contract:
   - [Fixed-Radius Neighbors](../features/fixed_radius_neighbors/README.md)
 
@@ -444,15 +447,15 @@ Allowed emit fields:
 - `segment_id`
 - `distance`
 
-### `fixed_radius_neighbors` (planned)
+### `fixed_radius_neighbors`
 
-Required planned shape:
+Required shape:
 
 - build input: `points`
 - probe input: `points`
 - predicate: `fixed_radius_neighbors(radius=..., k_max=...)`
 
-Allowed planned emit fields:
+Allowed emit fields:
 
 - `query_id`
 - `neighbor_id`
@@ -461,7 +464,8 @@ Allowed planned emit fields:
 Current note:
 
 - this contract is frozen for `v0.4`
-- lowering/runtime support is not implemented yet
+- current closure is Python truth path plus native CPU/oracle
+- accelerated backend closure is still pending
 
 ## Canonical Kernel Shapes
 
