@@ -19,7 +19,13 @@ Attempted but not usable:
 ## Consensus
 
 Claude's review passed the implementation with no blocking findings and
-confirmed:
+confirmed the overall closure shape, but one real contract-alignment note was
+then fixed before final acceptance:
+
+- the Embree callback originally used `distance <= radius + 1e-12`
+- this was tightened to the exact public rule `distance <= radius`
+
+The resulting accepted implementation now satisfies:
 
 - inclusive radius filtering
 - deterministic ordering

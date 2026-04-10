@@ -59,6 +59,13 @@ point-query callback could revisit the same build primitive.
 That was fixed during the goal by adding per-query deduplication in the native
 query state before row materialization.
 
+After external review, one more contract-alignment repair was applied:
+
+- the point-query callback now enforces the exact public radius rule
+  `distance <= radius`
+- the earlier temporary `distance <= radius + 1e-12` tolerance was removed so
+  the Embree path matches the written workload contract exactly
+
 ### Tests
 
 Added:
@@ -76,6 +83,15 @@ The new test slice covers:
 ## Verification
 
 Ran:
+
+- `PYTHONPATH=src:. python3 -m unittest tests.goal200_fixed_radius_neighbors_embree_test tests.goal199_fixed_radius_neighbors_cpu_oracle_test tests.goal198_fixed_radius_neighbors_truth_path_test`
+  - `Ran 18 tests`
+  - `OK`
+- `PYTHONPATH=src:. python3 -m unittest tests.goal40_native_oracle_test tests.cpu_embree_parity_test`
+  - `Ran 4 tests`
+  - `OK`
+
+Post-review rerun after the exact-radius fix:
 
 - `PYTHONPATH=src:. python3 -m unittest tests.goal200_fixed_radius_neighbors_embree_test tests.goal199_fixed_radius_neighbors_cpu_oracle_test tests.goal198_fixed_radius_neighbors_truth_path_test`
   - `Ran 18 tests`

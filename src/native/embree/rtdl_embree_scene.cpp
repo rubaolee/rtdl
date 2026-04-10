@@ -308,7 +308,7 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   double dx = search_point.p.x - state->query->p.x;
   double dy = search_point.p.y - state->query->p.y;
   double distance = std::sqrt(dx * dx + dy * dy);
-  if (distance <= state->radius + 1.0e-12) {
+  if (distance <= state->radius) {
     state->seen_neighbor_ids->insert(search_point.id);
     state->rows->push_back({state->query->id, search_point.id, distance});
   }
