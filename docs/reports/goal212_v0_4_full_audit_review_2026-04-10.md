@@ -9,4 +9,20 @@
 - Closure bar for this round:
   - Codex + external whole-line audit
 
-Status: implementation complete, consolidated verification passed, external full audit pending.
+Status: implementation complete, consolidated verification passed, Gemini whole-line audit complete.
+
+Gemini result:
+
+- Verdict: ready for final release-packaging work
+- Main findings:
+  - nearest-neighbor contracts, DSL surfaces, truth paths, and native CPU/Embree
+    paths are internally consistent
+  - the late Embree `g_query_kind` bug was correctly found and fixed during the
+    Goal 209 scaling work
+  - live docs and process history across Goals 196-211 are honest and coherent
+
+Remaining release-gate note:
+
+- per the current project rule, Claude should still perform the whole-line
+  audit after the `4am` availability window before the final `v0.4` tag is
+  created
