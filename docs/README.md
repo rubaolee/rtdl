@@ -69,6 +69,15 @@ Process-level:
 2. [AI Collaboration Workflow](ai_collaboration_workflow.md)
 3. [Audit Flow](audit_flow.md)
 
+Imported historical artifacts:
+
+1. [History Capture And External Artifact Import (2026-04-10)](reports/history_capture_external_artifacts_2026-04-10.md)
+2. [External Gemini v0.3 Final Audit Report](reports/RTDL_v0_3_Final_Audit_Report_2026-04-09_external.md)
+3. [External Gemini Wiki Generation Report](reports/RTDL_Wiki_Generation_Report_2026-04-09_external.md)
+4. [External Claude v0.4 Code Audit](reports/rtdl_v0_4_code_audit_2026-04-10_external.md)
+5. [External Raw Reports](reports/external_raw/README.md)
+6. [Preserved Wiki Drafts](wiki_drafts/README.md)
+
 ## Live State Summary
 
 Keep these current facts in mind while reading:
