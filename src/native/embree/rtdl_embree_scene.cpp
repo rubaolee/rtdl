@@ -41,6 +41,7 @@ enum class QueryKind {
   kOverlay,
   kRayHitCount,
   kSegmentPolygonHitCount,
+  kFixedRadiusNeighbors,
 };
 
 struct SegmentSceneData {
@@ -49,6 +50,10 @@ struct SegmentSceneData {
 
 struct PolygonSceneData {
   const std::vector<Polygon2D>* polygons;
+};
+
+struct PointSceneData {
+  const std::vector<Point2D>* points;
 };
 
 struct TriangleSceneData {
@@ -94,6 +99,14 @@ struct RayHitCountState3D {
 struct SegmentPolygonHitCountState {
   const Segment2D* segment;
   uint32_t* hit_count;
+};
+
+struct FixedRadiusNeighborsQueryState {
+  const Point2D* query;
+  const std::vector<Point2D>* search_points;
+  double radius;
+  std::vector<RtdlFixedRadiusNeighborRow>* rows;
+  std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
 thread_local QueryKind g_query_kind = QueryKind::kNone;
@@ -162,6 +175,17 @@ void polygon_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->lower_z = -kEps;
   args->bounds_o->upper_x = b.max_x;
   args->bounds_o->upper_y = b.max_y;
+  args->bounds_o->upper_z = kEps;
+}
+
+void point_bounds(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<PointSceneData*>(args->geometryUserPtr);
+  const Point2D& point = (*data->points)[args->primID];
+  args->bounds_o->lower_x = point.p.x - kEps;
+  args->bounds_o->lower_y = point.p.y - kEps;
+  args->bounds_o->lower_z = -kEps;
+  args->bounds_o->upper_x = point.p.x + kEps;
+  args->bounds_o->upper_y = point.p.y + kEps;
   args->bounds_o->upper_z = kEps;
 }
 
@@ -269,6 +293,25 @@ bool polygon_point_query_collect(RTCPointQueryFunctionArguments* args) {
   }
   auto* state = static_cast<PipQueryState*>(args->userPtr);
   state->candidate_polygon_indices->insert(args->primID);
+  return false;
+}
+
+bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
+  if (args == nullptr || args->userPtr == nullptr) {
+    return false;
+  }
+  auto* state = static_cast<FixedRadiusNeighborsQueryState*>(args->userPtr);
+  const Point2D& search_point = (*state->search_points)[args->primID];
+  if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
+    return false;
+  }
+  double dx = search_point.p.x - state->query->p.x;
+  double dy = search_point.p.y - state->query->p.y;
+  double distance = std::sqrt(dx * dx + dy * dy);
+  if (distance <= state->radius + 1.0e-12) {
+    state->seen_neighbor_ids->insert(search_point.id);
+    state->rows->push_back({state->query->id, search_point.id, distance});
+  }
   return false;
 }
 

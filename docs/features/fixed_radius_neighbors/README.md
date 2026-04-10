@@ -10,7 +10,8 @@ Current implemented boundary:
 - lowering: yes
 - Python truth path: yes
 - native CPU/oracle path: yes
-- Embree / OptiX / Vulkan: not yet
+- Embree: yes
+- OptiX / Vulkan: not yet
 
 ## Purpose
 
@@ -153,7 +154,7 @@ return rt.emit(neighbors, fields=["query_id", "neighbor_id", "distance"])
 
 ## Limitations
 
-- current closure is Python truth path plus native CPU/oracle only
+- current accelerated closure is Embree only
 - first release scope is 2D only
 - first release scope is Euclidean only
 - first release scope is row materialization, not aggregate summaries

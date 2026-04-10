@@ -188,6 +188,14 @@ class _RtdlPointNearestSegmentRow(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+    ]
+
+
 @dataclass(frozen=True)
 class PackedSegments:
     records: object
@@ -277,6 +285,7 @@ class PreparedEmbreeKernel:
             "segment_polygon_hitcount",
             "segment_polygon_anyhit_rows",
             "point_nearest_segment",
+            "fixed_radius_neighbors",
         }:
             raise ValueError(
                 "the current prepared Embree path supports only Embree-backed local workloads"
@@ -323,6 +332,8 @@ class PreparedEmbreeExecution:
             return _call_segment_polygon_anyhit_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "point_nearest_segment":
             return _call_point_nearest_segment_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "fixed_radius_neighbors":
+            return _call_fixed_radius_neighbors_embree_packed(self.compiled, self.packed_inputs, self.library)
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
 
     def run(self) -> tuple[dict[str, object], ...]:
@@ -1239,6 +1250,91 @@ def _call_point_nearest_segment_embree_packed(compiled: CompiledKernel, packed_i
     )
 
 
+def _run_fixed_radius_neighbors_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = normalized_inputs[query_name]
+    search_points = normalized_inputs[search_name]
+    radius = float(compiled.refine_op.predicate.options["radius"])
+    k_max = int(compiled.refine_op.predicate.options["k_max"])
+
+    query_array = (_RtdlPoint * len(query_points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in query_points
+    ])
+    search_array = (_RtdlPoint * len(search_points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in search_points
+    ])
+
+    rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_fixed_radius_neighbors(
+        query_array,
+        len(query_points),
+        search_array,
+        len(search_points),
+        radius,
+        k_max,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "query_id": rows_ptr[index].query_id,
+                "neighbor_id": rows_ptr[index].neighbor_id,
+                "distance": rows_ptr[index].distance,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_embree_free_rows(rows_ptr)
+
+
+def _run_fixed_radius_neighbors_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_fixed_radius_neighbors_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_fixed_radius_neighbors_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = packed_inputs[query_name]
+    search_points = packed_inputs[search_name]
+    radius = float(compiled.refine_op.predicate.options["radius"])
+    k_max = int(compiled.refine_op.predicate.options["k_max"])
+
+    rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_fixed_radius_neighbors(
+        query_points.records,
+        query_points.count,
+        search_points.records,
+        search_points.count,
+        radius,
+        k_max,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlFixedRadiusNeighborRow,
+        field_names=("query_id", "neighbor_id", "distance"),
+    )
+
+
 def _encode_polygons(polygons):
     refs = []
     vertices = []
@@ -1476,6 +1572,20 @@ def _load_embree_library():
     ]
     library.rtdl_embree_run_point_nearest_segment.restype = ctypes.c_int
 
+    library.rtdl_embree_run_fixed_radius_neighbors.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_embree_run_fixed_radius_neighbors.restype = ctypes.c_int
+
     return library
 
 
@@ -1491,6 +1601,7 @@ def _ensure_embree_library() -> Path:
     build_dir = repo_root / "build"
     build_dir.mkdir(exist_ok=True)
     source_path = repo_root / "src" / "native" / "rtdl_embree.cpp"
+    source_paths = (source_path, *sorted((repo_root / "src" / "native" / "embree").glob("*")))
     system = platform.system()
     if system == "Darwin":
         library_ext = ".dylib"
@@ -1524,7 +1635,8 @@ def _ensure_embree_library() -> Path:
             "Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or install Embree first."
         )
 
-    needs_build = not library_path.exists() or library_path.stat().st_mtime < source_path.stat().st_mtime
+    newest_source_mtime = max(path.stat().st_mtime for path in source_paths)
+    needs_build = not library_path.exists() or library_path.stat().st_mtime < newest_source_mtime
     if needs_build:
         command = [
             compiler,

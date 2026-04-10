@@ -302,7 +302,7 @@ BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
             "tests/fixtures/rayjoin/br_county_subset.cdb",
             "tests/fixtures/public/natural_earth_populated_places_sample.geojson",
         ),
-        notes="Goal 198 truth-path support is Python-reference only; native CPU/oracle closure lands later.",
+        notes="Current closure includes Python truth path, native CPU/oracle support, and Embree support; external baseline and later NN-family extensions land in later goals.",
     ),
 }
 

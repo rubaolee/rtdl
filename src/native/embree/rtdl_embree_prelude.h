@@ -134,6 +134,12 @@ struct RtdlPointNearestSegmentRow {
   double distance;
 };
 
+struct RtdlFixedRadiusNeighborRow {
+  uint32_t query_id;
+  uint32_t neighbor_id;
+  double distance;
+};
+
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
 int rtdl_embree_run_lsi(
     const RtdlSegment* left,
@@ -215,6 +221,17 @@ int rtdl_embree_run_point_nearest_segment(
     const RtdlSegment* segments,
     size_t segment_count,
     RtdlPointNearestSegmentRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_fixed_radius_neighbors(
+    const RtdlPoint* query_points,
+    size_t query_count,
+    const RtdlPoint* search_points,
+    size_t search_count,
+    double radius,
+    size_t k_max,
+    RtdlFixedRadiusNeighborRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
