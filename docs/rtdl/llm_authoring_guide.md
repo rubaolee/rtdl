@@ -39,6 +39,10 @@ The kernel function must take no Python arguments.
 - `Segments x Polygons` with `segment_polygon_hitcount(exact=False)`
 - `Points x Segments` with `point_nearest_segment(exact=False)`
 
+Planned-but-not-yet-lowered `v0.4` surface:
+
+- `Points x Points` with `fixed_radius_neighbors(radius=..., k_max=...)`
+
 ## Supported Emit Fields
 
 For LSI:
@@ -77,6 +81,12 @@ For Point/Nearest Segment:
 - `segment_id`
 - `distance`
 
+For planned `Fixed-Radius Neighbors`:
+
+- `query_id`
+- `neighbor_id`
+- `distance`
+
 ## Do Not Do These Things
 
 - `precision="exact"`
@@ -99,6 +109,12 @@ An RTDL program is acceptable only if:
 - `rt.compile_kernel(...)` succeeds
 - `rt.lower_to_execution_plan(...)` succeeds
 - the resulting plan matches one of the supported workload kinds
+
+Exception:
+
+- `fixed_radius_neighbors(...)` is a planned `v0.4` predicate at the API
+  level, but `rt.lower_to_execution_plan(...)` is expected to reject it until
+  later implementation goals land.
 
 ## Recommended Prompting Pattern
 

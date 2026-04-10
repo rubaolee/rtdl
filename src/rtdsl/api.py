@@ -153,6 +153,17 @@ def point_nearest_segment(*, exact: bool = False) -> Predicate:
     return Predicate(name="point_nearest_segment", options={"exact": exact})
 
 
+def fixed_radius_neighbors(*, radius: float, k_max: int) -> Predicate:
+    if radius < 0.0:
+        raise ValueError("fixed_radius_neighbors radius must be non-negative")
+    if k_max <= 0:
+        raise ValueError("fixed_radius_neighbors k_max must be positive")
+    return Predicate(
+        name="fixed_radius_neighbors",
+        options={"radius": float(radius), "k_max": int(k_max)},
+    )
+
+
 def contains(
     *,
     exact: bool = False,

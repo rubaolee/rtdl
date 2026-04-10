@@ -74,6 +74,11 @@ def lower_to_execution_plan(kernel: CompiledKernel) -> RTExecutionPlan:
         return _lower_polygon_set_jaccard(kernel, build_input, probe_input)
     if predicate.name == "point_nearest_segment":
         return _lower_point_nearest_segment(kernel, build_input, probe_input)
+    if predicate.name == "fixed_radius_neighbors":
+        raise ValueError(
+            "fixed_radius_neighbors is a planned v0.4 workload surface; "
+            "Goal 197 adds the DSL/Python contract only, not lowering yet"
+        )
 
     raise ValueError(f"unsupported predicate for current RTDL lowering: {predicate.name}")
 

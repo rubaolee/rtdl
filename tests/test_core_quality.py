@@ -85,6 +85,15 @@ def _pns_kernel():
     return rt.emit(hits, fields=["point_id", "segment_id", "distance"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def _frn_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=0.5, k_max=8))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+
 class TypesTest(unittest.TestCase):
     def test_layout_rejects_empty_fields(self) -> None:
         with self.assertRaisesRegex(ValueError, "at least one field"):
@@ -277,6 +286,20 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(p.name, "point_nearest_segment")
         self.assertIs(p.options["exact"], False)
 
+    def test_fixed_radius_neighbors_predicate_options(self) -> None:
+        p = rt.fixed_radius_neighbors(radius=0.5, k_max=8)
+        self.assertEqual(p.name, "fixed_radius_neighbors")
+        self.assertEqual(p.options["radius"], 0.5)
+        self.assertEqual(p.options["k_max"], 8)
+
+    def test_fixed_radius_neighbors_rejects_negative_radius(self) -> None:
+        with self.assertRaisesRegex(ValueError, "non-negative"):
+            rt.fixed_radius_neighbors(radius=-0.1, k_max=4)
+
+    def test_fixed_radius_neighbors_rejects_non_positive_k_max(self) -> None:
+        with self.assertRaisesRegex(ValueError, "positive"):
+            rt.fixed_radius_neighbors(radius=1.0, k_max=0)
+
     def test_overlay_compose_predicate_options(self) -> None:
         p = rt.overlay_compose()
         self.assertEqual(p.name, "overlay_compose")
@@ -406,6 +429,10 @@ class LoweringTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "float-based"):
             rt.lower_to_execution_plan(rt.compile_kernel(exact_rth))
+
+    def test_lower_fixed_radius_neighbors_rejects_unimplemented_lowering(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Goal 197 adds the DSL/Python contract only"):
+            rt.lower_to_execution_plan(rt.compile_kernel(_frn_kernel))
 
     def test_build_output_record_rejects_empty_emit_fields(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")

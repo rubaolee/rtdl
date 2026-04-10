@@ -220,6 +220,29 @@ def hydrant_nearest_road():
     return rt.emit(nearest, fields=["point_id", "segment_id", "distance"])
 ```
 
+## Planned v0.4: Fixed-Radius Neighbors
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def nearby_facilities():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    rows = rt.refine(
+        candidates,
+        predicate=rt.fixed_radius_neighbors(radius=0.5, k_max=16),
+    )
+    return rt.emit(rows, fields=["query_id", "neighbor_id", "distance"])
+```
+
+Current status:
+
+- contract frozen for `v0.4`
+- API surface added
+- lowering/runtime support not implemented yet
+
 ## Quick Execution Examples
 
 Oracle:

@@ -36,6 +36,10 @@ This reference only describes the RTDL features that are implemented today:
 
 Anything outside this surface is not part of the current language.
 
+Planned `v0.4` surface that is visible at the API level but not yet lowered:
+
+- `fixed_radius_neighbors`
+
 ## Kernel Grammar
 
 RTDL kernels are written in Python, but the accepted authoring shape is fixed.
@@ -293,6 +297,19 @@ Required option:
 
 - `exact=False`
 
+### `rt.fixed_radius_neighbors(radius=..., k_max=...)`
+
+Meaning:
+
+- planned `v0.4` point-to-point radius-neighbor row materialization
+
+Current status:
+
+- the predicate factory exists at the API level
+- lowering/runtime support is not implemented yet
+- use the feature home for the frozen public contract:
+  - [Fixed-Radius Neighbors](../features/fixed_radius_neighbors/README.md)
+
 ## Role Resolution
 
 RTDL supports explicit and implicit roles.
@@ -426,6 +443,25 @@ Allowed emit fields:
 - `point_id`
 - `segment_id`
 - `distance`
+
+### `fixed_radius_neighbors` (planned)
+
+Required planned shape:
+
+- build input: `points`
+- probe input: `points`
+- predicate: `fixed_radius_neighbors(radius=..., k_max=...)`
+
+Allowed planned emit fields:
+
+- `query_id`
+- `neighbor_id`
+- `distance`
+
+Current note:
+
+- this contract is frozen for `v0.4`
+- lowering/runtime support is not implemented yet
 
 ## Canonical Kernel Shapes
 

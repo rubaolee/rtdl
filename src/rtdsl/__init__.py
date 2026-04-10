@@ -1,6 +1,7 @@
 from .api import compile_kernel
 from .api import contains
 from .api import emit
+from .api import fixed_radius_neighbors
 from .api import input
 from .api import kernel
 from .api import overlay_compose
