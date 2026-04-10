@@ -6,6 +6,7 @@ sys.path.insert(0, ".")
 
 import rtdsl as rt
 from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radius_neighbors_reference
+from examples.reference.rtdl_knn_rows_reference import knn_rows_reference
 from examples.reference.rtdl_language_reference import county_soil_overlay_reference
 from examples.reference.rtdl_language_reference import county_zip_join_reference
 from examples.reference.rtdl_language_reference import point_in_counties_reference
@@ -28,6 +29,7 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
                 "segment_polygon_anyhit_rows",
                 "point_nearest_segment",
                 "fixed_radius_neighbors",
+                "knn_rows",
             ),
         )
 
@@ -63,6 +65,10 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
         rt.validate_compiled_kernel_against_baseline(
             rt.compile_kernel(fixed_radius_neighbors_reference),
             "fixed_radius_neighbors",
+        )
+        rt.validate_compiled_kernel_against_baseline(
+            rt.compile_kernel(knn_rows_reference),
+            "knn_rows",
         )
 
     def test_lsi_comparison_policy_uses_float_tolerance(self) -> None:
@@ -112,5 +118,14 @@ class EmbreeBaselineContractsTest(unittest.TestCase):
                 "fixed_radius_neighbors",
                 ({"query_id": 1, "neighbor_id": 2, "distance": 0.5},),
                 ({"query_id": 1, "neighbor_id": 2, "distance": 0.5000001},),
+            )
+        )
+
+    def test_knn_rows_uses_float_tolerance_for_distance(self) -> None:
+        self.assertTrue(
+            rt.compare_baseline_rows(
+                "knn_rows",
+                ({"query_id": 1, "neighbor_id": 2, "distance": 0.5, "neighbor_rank": 1},),
+                ({"query_id": 1, "neighbor_id": 2, "distance": 0.5000001, "neighbor_rank": 1},),
             )
         )

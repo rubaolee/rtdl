@@ -201,6 +201,33 @@ def fixed_radius_neighbors_cpu(
     return tuple(rows)
 
 
+def knn_rows_cpu(
+    query_points: tuple[Point, ...],
+    search_points: tuple[Point, ...],
+    *,
+    k: int,
+) -> tuple[dict[str, float | int], ...]:
+    rows = []
+    for query_point in query_points:
+        candidates = []
+        for search_point in search_points:
+            distance = math.hypot(search_point.x - query_point.x, search_point.y - query_point.y)
+            candidates.append((distance, search_point.id))
+
+        candidates.sort(key=lambda item: (item[0], item[1]))
+        for rank, (distance, neighbor_id) in enumerate(candidates[:k], start=1):
+            rows.append(
+                {
+                    "query_id": query_point.id,
+                    "neighbor_id": neighbor_id,
+                    "distance": distance,
+                    "neighbor_rank": rank,
+                }
+            )
+    rows.sort(key=lambda row: row["query_id"])
+    return tuple(rows)
+
+
 def segment_polygon_hitcount_cpu(
     segments: tuple[Segment, ...],
     polygons: tuple[Polygon, ...],

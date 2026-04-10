@@ -171,6 +171,7 @@ from .paper_reproduction import local_profiles
 from .paper_reproduction import PaperTarget
 from .paper_reproduction import RAYJOIN_PAPER_TARGETS
 from .reference import fixed_radius_neighbors_cpu
+from .reference import knn_rows_cpu
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import point_nearest_segment_cpu
@@ -346,6 +347,7 @@ __all__ = [
     "build_postgis_fixed_radius_neighbors_sql",
     "connect_postgis",
     "fixed_radius_neighbors_cpu",
+    "knn_rows_cpu",
     "EmbreeRowView",
     "embree_version",
     "OptixRowView",

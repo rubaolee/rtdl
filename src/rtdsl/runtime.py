@@ -8,6 +8,7 @@ from .api import compile_kernel
 from .ir import CompiledKernel
 from .oracle_runtime import run_oracle
 from .reference import fixed_radius_neighbors_cpu
+from .reference import knn_rows_cpu
 from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import pip_cpu
@@ -141,6 +142,12 @@ def _run_cpu_python_reference_from_normalized(
             normalized_inputs[right_name],
             radius=float(compiled.refine_op.predicate.options["radius"]),
             k_max=int(compiled.refine_op.predicate.options["k_max"]),
+        )
+    elif predicate_name == "knn_rows":
+        rows = knn_rows_cpu(
+            normalized_inputs[left_name],
+            normalized_inputs[right_name],
+            k=int(compiled.refine_op.predicate.options["k"]),
         )
     else:
         raise ValueError(f"unsupported RTDL CPU simulator predicate: {predicate_name}")

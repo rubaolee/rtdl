@@ -14,6 +14,7 @@ BASELINE_WORKLOAD_ORDER = (
     "segment_polygon_anyhit_rows",
     "point_nearest_segment",
     "fixed_radius_neighbors",
+    "knn_rows",
 )
 BASELINE_PRECISION_MODE = "float_approx"
 BASELINE_FLOAT_ABS_TOL = 1e-6
@@ -303,6 +304,39 @@ BASELINE_WORKLOADS: dict[str, WorkloadContract] = {
             "tests/fixtures/public/natural_earth_populated_places_sample.geojson",
         ),
         notes="Current closure includes Python truth path, native CPU/oracle support, and Embree support; external baseline and later NN-family extensions land in later goals.",
+    ),
+    "knn_rows": WorkloadContract(
+        workload="knn_rows",
+        backend="rtdl",
+        precision=BASELINE_PRECISION_MODE,
+        predicate="knn_rows",
+        accel="bvh",
+        inputs=(
+            InputContract(
+                name="query_points",
+                geometry="points",
+                role="probe",
+                layout_name="Point2D",
+                layout_fields=("x", "y", "id"),
+                logical_record_fields=("id", "x", "y"),
+            ),
+            InputContract(
+                name="search_points",
+                geometry="points",
+                role="build",
+                layout_name="Point2D",
+                layout_fields=("x", "y", "id"),
+                logical_record_fields=("id", "x", "y"),
+            ),
+        ),
+        emit_fields=("query_id", "neighbor_id", "distance", "neighbor_rank"),
+        comparison_mode="exact_ids_and_flags_plus_float_tolerance",
+        representative_datasets=(
+            "authored_knn_rows_minimal",
+            "tests/fixtures/rayjoin/br_county_subset.cdb",
+            "tests/fixtures/public/natural_earth_populated_places_sample.geojson",
+        ),
+        notes="Current closure includes Python truth path only; native/backend and external baseline support land in later goals.",
     ),
 }
 
