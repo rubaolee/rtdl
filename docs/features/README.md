@@ -15,6 +15,7 @@ Use these feature homes when you want to answer practical questions quickly:
 
 Current feature homes:
 
+- [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) (planned for `v0.4`)
 - [LSI](lsi/README.md)
 - [PIP](pip/README.md)
 - [Overlay](overlay/README.md)
