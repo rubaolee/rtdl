@@ -17,7 +17,9 @@ from .datasets import load_cdb
 from .embree_runtime import run_embree
 from .external_baselines import connect_postgis
 from .external_baselines import run_postgis_fixed_radius_neighbors
+from .external_baselines import run_postgis_knn_rows
 from .external_baselines import run_scipy_fixed_radius_neighbors
+from .external_baselines import run_scipy_knn_rows
 from .optix_runtime import run_optix
 from .reference import Point
 from .reference import Polygon
@@ -121,7 +123,7 @@ def run_baseline_case(
     if backend == "scipy":
         python_rows = run_cpu_python_reference(compiled, **bound_inputs)
         payload["cpu_python_reference_rows"] = python_rows
-        payload["scipy_rows"] = _run_fixed_radius_neighbors_scipy_baseline(compiled, bound_inputs)
+        payload["scipy_rows"] = _run_scipy_baseline(compiled, bound_inputs)
         payload["parity"] = compare_baseline_rows(
             workload,
             python_rows,
@@ -130,7 +132,7 @@ def run_baseline_case(
     if backend == "postgis":
         python_rows = run_cpu_python_reference(compiled, **bound_inputs)
         payload["cpu_python_reference_rows"] = python_rows
-        payload["postgis_rows"] = _run_fixed_radius_neighbors_postgis_baseline(
+        payload["postgis_rows"] = _run_postgis_baseline(
             compiled,
             bound_inputs,
             postgis_dsn=postgis_dsn,
@@ -154,38 +156,55 @@ def _fixed_radius_neighbor_params(compiled) -> tuple[float, int]:
     return float(predicate.options["radius"]), int(predicate.options["k_max"])
 
 
-def _run_fixed_radius_neighbors_scipy_baseline(compiled, bound_inputs) -> tuple[dict[str, object], ...]:
+def _knn_rows_params(compiled) -> int:
+    return int(compiled.refine_op.predicate.options["k"])
+
+
+def _run_scipy_baseline(compiled, bound_inputs) -> tuple[dict[str, object], ...]:
     workload = infer_workload(compiled)
-    if workload != "fixed_radius_neighbors":
-        raise ValueError("SciPy external baseline is currently implemented only for fixed_radius_neighbors")
-    radius, k_max = _fixed_radius_neighbor_params(compiled)
-    return run_scipy_fixed_radius_neighbors(
-        bound_inputs["query_points"],
-        bound_inputs["search_points"],
-        radius=radius,
-        k_max=k_max,
-    )
+    if workload == "fixed_radius_neighbors":
+        radius, k_max = _fixed_radius_neighbor_params(compiled)
+        return run_scipy_fixed_radius_neighbors(
+            bound_inputs["query_points"],
+            bound_inputs["search_points"],
+            radius=radius,
+            k_max=k_max,
+        )
+    if workload == "knn_rows":
+        return run_scipy_knn_rows(
+            bound_inputs["query_points"],
+            bound_inputs["search_points"],
+            k=_knn_rows_params(compiled),
+        )
+    raise ValueError("SciPy external baseline is currently implemented only for fixed_radius_neighbors and knn_rows")
 
 
-def _run_fixed_radius_neighbors_postgis_baseline(
+def _run_postgis_baseline(
     compiled,
     bound_inputs,
     *,
     postgis_dsn: str | None,
 ) -> tuple[dict[str, object], ...]:
     workload = infer_workload(compiled)
-    if workload != "fixed_radius_neighbors":
-        raise ValueError("PostGIS external baseline is currently implemented only for fixed_radius_neighbors")
-    radius, k_max = _fixed_radius_neighbor_params(compiled)
     connection = connect_postgis(postgis_dsn)
     try:
-        return run_postgis_fixed_radius_neighbors(
-            connection,
-            bound_inputs["query_points"],
-            bound_inputs["search_points"],
-            radius=radius,
-            k_max=k_max,
-        )
+        if workload == "fixed_radius_neighbors":
+            radius, k_max = _fixed_radius_neighbor_params(compiled)
+            return run_postgis_fixed_radius_neighbors(
+                connection,
+                bound_inputs["query_points"],
+                bound_inputs["search_points"],
+                radius=radius,
+                k_max=k_max,
+            )
+        if workload == "knn_rows":
+            return run_postgis_knn_rows(
+                connection,
+                bound_inputs["query_points"],
+                bound_inputs["search_points"],
+                k=_knn_rows_params(compiled),
+            )
+        raise ValueError("PostGIS external baseline is currently implemented only for fixed_radius_neighbors and knn_rows")
     finally:
         connection.close()
 

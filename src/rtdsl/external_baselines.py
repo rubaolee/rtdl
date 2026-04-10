@@ -63,6 +63,51 @@ def run_scipy_fixed_radius_neighbors(
     return tuple(rows)
 
 
+def run_scipy_knn_rows(
+    query_points: tuple[Point, ...],
+    search_points: tuple[Point, ...],
+    *,
+    k: int,
+    tree_factory=None,
+) -> tuple[dict[str, float | int], ...]:
+    if tree_factory is None:
+        tree_factory = _load_ckdtree()
+
+    if not search_points:
+        return ()
+
+    search_coords = tuple((point.x, point.y) for point in search_points)
+    tree = tree_factory(search_coords)
+    rows: list[dict[str, float | int]] = []
+    query_k = min(k, len(search_points))
+
+    for query_point in query_points:
+        distances, indexes = tree.query((query_point.x, query_point.y), k=query_k)
+        if query_k == 1:
+            distance_index_pairs = ((float(distances), int(indexes)),)
+        else:
+            distance_index_pairs = tuple((float(distance), int(index)) for distance, index in zip(distances, indexes))
+
+        candidates: list[tuple[float, int]] = []
+        for distance, index in distance_index_pairs:
+            search_point = search_points[index]
+            candidates.append((distance, search_point.id))
+
+        candidates.sort(key=lambda item: (item[0], item[1]))
+        for rank, (distance, neighbor_id) in enumerate(candidates, start=1):
+            rows.append(
+                {
+                    "query_id": query_point.id,
+                    "neighbor_id": neighbor_id,
+                    "distance": distance,
+                    "neighbor_rank": rank,
+                }
+            )
+
+    rows.sort(key=lambda row: row["query_id"])
+    return tuple(rows)
+
+
 def connect_postgis(dsn: str | None = None):
     resolved_dsn = dsn or os.environ.get("RTDL_POSTGIS_DSN")
     if not resolved_dsn:
@@ -102,6 +147,40 @@ SELECT query_id, neighbor_id, distance
 FROM ranked_neighbors
 WHERE neighbor_rank <= %s
 ORDER BY query_id, distance, neighbor_id
+""".strip()
+
+
+def build_postgis_knn_rows_sql(
+    *,
+    query_table: str = "rtdl_query_points_tmp",
+    search_table: str = "rtdl_search_points_tmp",
+) -> str:
+    return f"""
+SELECT
+    q.id AS query_id,
+    ranked.neighbor_id,
+    ranked.distance,
+    ranked.neighbor_rank
+FROM {query_table} AS q
+CROSS JOIN LATERAL (
+    SELECT
+        ranked_inner.neighbor_id,
+        ranked_inner.distance,
+        ranked_inner.neighbor_rank
+    FROM (
+        SELECT
+            s.id AS neighbor_id,
+            ST_Distance(q.geom, s.geom) AS distance,
+            ROW_NUMBER() OVER (
+                ORDER BY ST_Distance(q.geom, s.geom), s.id
+            ) AS neighbor_rank
+        FROM {search_table} AS s
+        ORDER BY q.geom <-> s.geom, ST_Distance(q.geom, s.geom), s.id
+        LIMIT %s
+    ) AS ranked_inner
+    ORDER BY ranked_inner.neighbor_rank
+) AS ranked
+ORDER BY query_id, neighbor_rank
 """.strip()
 
 
@@ -166,6 +245,72 @@ VALUES (%s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 0))
                 "distance": float(distance),
             }
             for query_id, neighbor_id, distance in rows
+        )
+    finally:
+        cursor.close()
+
+
+def run_postgis_knn_rows(
+    connection,
+    query_points: tuple[Point, ...],
+    search_points: tuple[Point, ...],
+    *,
+    k: int,
+    query_table: str = "rtdl_query_points_tmp",
+    search_table: str = "rtdl_search_points_tmp",
+) -> tuple[dict[str, float | int], ...]:
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            f"""
+CREATE TEMP TABLE {query_table} (
+    id BIGINT NOT NULL,
+    x DOUBLE PRECISION NOT NULL,
+    y DOUBLE PRECISION NOT NULL,
+    geom geometry(Point, 0) NOT NULL
+) ON COMMIT DROP
+""".strip()
+        )
+        cursor.execute(
+            f"""
+CREATE TEMP TABLE {search_table} (
+    id BIGINT NOT NULL,
+    x DOUBLE PRECISION NOT NULL,
+    y DOUBLE PRECISION NOT NULL,
+    geom geometry(Point, 0) NOT NULL
+) ON COMMIT DROP
+""".strip()
+        )
+        cursor.executemany(
+            f"""
+INSERT INTO {query_table} (id, x, y, geom)
+VALUES (%s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 0))
+""".strip(),
+            [(point.id, point.x, point.y, point.x, point.y) for point in query_points],
+        )
+        cursor.executemany(
+            f"""
+INSERT INTO {search_table} (id, x, y, geom)
+VALUES (%s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 0))
+""".strip(),
+            [(point.id, point.x, point.y, point.x, point.y) for point in search_points],
+        )
+        cursor.execute(
+            build_postgis_knn_rows_sql(
+                query_table=query_table,
+                search_table=search_table,
+            ),
+            (k,),
+        )
+        rows = cursor.fetchall()
+        return tuple(
+            {
+                "query_id": int(query_id),
+                "neighbor_id": int(neighbor_id),
+                "distance": float(distance),
+                "neighbor_rank": int(neighbor_rank),
+            }
+            for query_id, neighbor_id, distance, neighbor_rank in rows
         )
     finally:
         cursor.close()
