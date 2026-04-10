@@ -1,14 +1,16 @@
-# Verdict
+# Gemini Goal 201 Review
 
-Approved. The Goal 201 implementation successfully adds the external baseline harness for `fixed_radius_neighbors` using SciPy and PostGIS while preserving the RTDL contract exactly. The optional-dependency honesty is maintained, and the scope is cleanly bounded for `v0.4`.
+## Verdict
 
-# Findings
+Pass. Goal 201 successfully adds the first external baseline harness for the `fixed_radius_neighbors` workload, satisfying the acceptance criteria without compromising the public contract or default dependencies.
 
-- **Correctness**: Both SciPy and PostGIS baseline implementations adhere precisely to the RTDL `fixed_radius_neighbors` contract (`distance <= radius`, per-query sorting by ascending `distance` then `neighbor_id`, global sorting by ascending `query_id`, and truncation to `k_max`).
-- **Contract Honesty**: The baseline runner appropriately integrates the new backends (`scipy` and `postgis`) and compares them against the Python truth path. SciPy's raw return order is not exposed; instead, the RTDL exact public semantics are re-applied. PostGIS is heavily bounded to a specific SQL structure for deterministic top-k behavior, ensuring it does not become the definitive truth path.
-- **Optional-Dependency Honesty**: The `external_baselines.py` cleanly handles cases where `scipy` or `psycopg2` are unavailable via check functions. Missing dependencies raise clear errors instead of failing on import, fulfilling the requirement that they are not required in the default first-run environment. The documentation clearly states these are optional comparison dependencies.
-- **Scope**: Goal 201 limits itself cleanly to the required external backends, omitting any OptiX, Vulkan, or performance-win claims, matching the non-goals exactly.
+## Findings
 
-# Summary
+- **Correctness:** Both the SciPy and PostGIS baseline implementations enforce the exact RTDL semantics (`distance <= radius`, sorted by ascending `distance` then `neighbor_id`, grouped by `query_id`, and truncated to `k_max`). The implementations correctly handle RTDL's explicit deterministic tie-breaking.
+- **Contract Honesty:** The baselines correctly act as comparison tools rather than defining the truth path. The RTDL public contract remains exactly as defined by the Python reference and native CPU paths. SciPy and PostGIS results are explicitly reshaped to match RTDL guarantees.
+- **Optional-Dependency Honesty:** Both SciPy and psycopg2 (PostGIS) are properly guarded by `scipy_available()` and `postgis_available()` checks, remaining completely optional. They are not required for the default RTDL first-run environment, and raise descriptive `RuntimeError` exceptions only when their specific baselines are requested.
+- **Clean Scoping for v0.4:** The goal accurately bounds its scope to just the SciPy and PostGIS CPU baselines for `fixed_radius_neighbors` without bleeding into performance claims, OptiX, or Vulkan implementations.
 
-Goal 201 is correctly implemented and ready for `v0.4`. It achieves its objective of closing the first non-RTDL comparison line for `fixed_radius_neighbors` using SciPy `cKDTree` and PostGIS. The strict alignment with the established public workload contract ensures external systems do not redefine expected behaviors. Comprehensive tests and clear optional-dependency separation confirm the goal's integrity.
+## Summary
+
+The external baseline implementations in `src/rtdsl/external_baselines.py` and the wiring in `src/rtdsl/baseline_runner.py` meet all the stated non-goals and acceptance criteria for Goal 201. The tests provide solid coverage across the authored, runner, and SQL-shape paths. The documentation correctly sets expectations about the optional dependencies. Goal 201 is cleanly scoped and ready for `v0.4`.

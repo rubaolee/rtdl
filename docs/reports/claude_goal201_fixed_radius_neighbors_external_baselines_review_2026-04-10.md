@@ -1,58 +1,63 @@
-# Claude Review: Goal 201 Fixed-Radius Neighbors External Baselines
-
-Date: 2026-04-10
+# Claude Review — Goal 201 Fixed-Radius Neighbors External Baselines
+## 2026-04-10
 
 ## Verdict
 
-Goal 201 is complete and honest. All five acceptance criteria are met. Close it for `v0.4`.
+Goal 201 is closed and clean. All five acceptance criteria are met. The SciPy
+and PostGIS baselines are correct, the contract is faithfully re-applied in both
+paths, optional-dependency handling is honest throughout, and the scope is
+exactly right for `v0.4`.
 
 ## Findings
 
-**Correctness.**
-The SciPy baseline correctly re-applies every RTDL contract step after
-`query_ball_point`: explicit `distance <= radius` re-filter via `math.hypot`,
-per-query sort by `(distance, neighbor_id)`, `k_max` truncation after ordering,
-then a final global sort by `query_id`. The library return order is never
-trusted as the contract. The PostGIS SQL matches exactly: `ST_DWithin` as a
-candidate predicate, `ROW_NUMBER() OVER (PARTITION BY q.id ORDER BY
-ST_Distance(...), s.id)` for deterministic `k_max` truncation, and a final
-`ORDER BY query_id, distance, neighbor_id`. SRID=0 (planar) geometry is the
-right choice for a Euclidean workload. The `_FakeKDTree` in the test file uses
-squared-distance comparison correctly (`<= radius_sq`), so the authored-case
-parity assertions are sound.
+**Contract correctness — SciPy path.**
+`run_scipy_fixed_radius_neighbors` calls `query_ball_point(r=radius)` for
+candidate generation, then re-applies `distance <= radius` via `math.hypot`
+before sorting. The secondary check is not redundant noise: it makes the
+inclusive-boundary rule explicit and guards against any future tree-factory
+substitution whose radius semantics differ. The per-query sort is
+`(distance, neighbor_id)`, truncation to `k_max` comes after that sort, and the
+final global sort is by `query_id`. This is the exact public contract.
 
-One minor observation: the `query_table` / `search_table` names in
-`build_postgis_fixed_radius_neighbors_sql` are interpolated via f-string rather
-than parameterized. These are internal defaults, not user-supplied strings, so
-this is acceptable for a bounded comparison helper, but worth noting if the
-function is ever exposed more broadly.
-
-**Contract honesty.**
-Neither baseline silently inherits library semantics. Both explicitly reconstruct
-the RTDL output shape. The runner correctly pairs each external backend against
-the Python truth path for parity comparison, not against the Embree path, which
-is the right reference.
+**Contract correctness — PostGIS path.**
+The SQL uses `ST_DWithin` (inclusive) as the candidate predicate, `ROW_NUMBER()
+OVER (PARTITION BY q.id ORDER BY ST_Distance(...), s.id)` for deterministic
+top-`k` ranking, and `ORDER BY query_id, distance, neighbor_id` in the outer
+query. The geometry column is typed `geometry(Point, 0)` with SRID 0, which is
+appropriate for the Euclidean contract. Parameters are passed via `%s`
+placeholders throughout — no injection surface. One note: `query_table` and
+`search_table` are interpolated via f-string rather than parameterized; they are
+internal defaults with no user-supplied path, so this is acceptable for a
+bounded comparison helper.
 
 **Optional-dependency honesty.**
 `scipy_available()` and `postgis_available()` use `importlib.util.find_spec`
-with no import-time side effects. Error messages clearly name the missing
-dependency and the install action. The README Limitations section states
-explicitly that SciPy and PostGIS are optional comparison dependencies, not
-required first-run dependencies. No test requires either library to be present;
-the test suite uses `_FakeKDTree` and `_FakePostgisConnection` throughout.
+rather than a bare import, so availability checks are free of import-time side
+effects. `connect_postgis` raises with a clear message if neither a DSN argument
+nor `RTDL_POSTGIS_DSN` is set, and raises separately if `psycopg2` is absent.
+The README Limitations section states the optional-dependency contract in plain
+language. Nothing in the normal first-run path touches either import.
+
+**Test coverage.**
+Seven tests cover: authored-case parity (SciPy and PostGIS), global sort
+ordering on reversed query-id input, SQL shape assertions, runner-level parity
+for both backends via mocks, and the public Natural Earth fixture through the
+fake tree. The `_FakeKDTree` and `_FakePostgisConnection` fakes are
+behaviorally correct: `_FakeKDTree.query_ball_point` uses `distance² <= radius²`
+(equivalent to `distance <= radius`), and the fake cursor replicates the
+deterministic sort the real PostGIS SQL would produce.
 
 **Scope.**
-Goal 201 does not claim performance wins, does not touch the public workload
-contract, and does not introduce OptiX or Vulkan work. The external baseline
-role is correctly bounded to moderate comparison and SQL-backed validation.
-Test coverage spans authored, Natural Earth, runner integration, and SQL shape
-assertions. The baseline runner CLI `--backend scipy` and `--backend postgis`
-are wired and guarded.
+No performance claims, no changes to the public workload contract, no new
+required dependencies, no OptiX or Vulkan work. The goal document, progress
+report, and code are in agreement on all of this.
 
 ## Summary
 
-Goal 201 cleanly adds the first external comparison story for
-`fixed_radius_neighbors` without letting either SciPy or PostGIS define the
-workload contract. The RTDL truth path remains the Python reference and native
-CPU/oracle. All acceptance criteria check out. The implementation is minimal,
-honest about optionality, and correctly scoped for `v0.4`.
+Goal 201 adds a correct, honestly-scoped external comparison story to
+`fixed_radius_neighbors` without touching the public contract or the first-run
+dependency set. Both baselines re-apply RTDL semantics rather than adopting
+the external library's native output ordering as truth. The optional-dependency
+wiring is clean in code and stated plainly in docs. `v0.4` now has a full
+stack for this workload: Python truth path, native CPU/oracle, Embree, SciPy
+baseline, and bounded PostGIS comparison helper.
