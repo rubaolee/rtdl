@@ -30,8 +30,10 @@ It is intended to mark:
 
 ## Final Tag Gate
 
-Do not create the `v0.4.0` tag until:
+Do not create the `v0.4.0` tag until you explicitly authorize release.
 
-- the post-`4am` Claude whole-line audit is complete
-- any real findings from that audit are fixed
-- the repo remains green on the bounded `v0.4` audit test slice
+The final technical release gate is already satisfied:
+
+- the post-`4am` Claude whole-line audit completed
+- Claude's real doc findings were fixed
+- the bounded `v0.4` audit test slice remained green

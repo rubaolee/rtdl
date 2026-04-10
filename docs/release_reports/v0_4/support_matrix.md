@@ -1,7 +1,7 @@
 # RTDL v0.4 Support Matrix
 
 Date: 2026-04-10
-Status: prepared for release packaging, final Claude audit pending
+Status: prepared for release, tag not created yet
 
 ## Reading Guide
 

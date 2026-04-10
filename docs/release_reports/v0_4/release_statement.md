@@ -1,7 +1,7 @@
 # RTDL v0.4 Release Statement
 
 Date: 2026-04-10
-Status: prepared for release packaging, final Claude audit pending
+Status: prepared for release, tag not created yet
 
 ## Statement
 
@@ -13,9 +13,8 @@ two new workload families to the public RTDL surface:
 - `fixed_radius_neighbors`
 - `knn_rows`
 
-This package is already written as the canonical `v0.4` release report set, but
-the final release tag is intentionally held until the whole-line Claude audit
-after the `4am` availability window.
+This package is the canonical `v0.4` release report set, prepared ahead of the
+final user-authorized tag step.
 
 ## What The v0.4 Line Stands On
 
@@ -33,8 +32,7 @@ The `v0.4` line now has:
   - bounded PostGIS comparison paths
 - public top-level examples for both workloads
 - one bounded scaling note for the nearest-neighbor family
-- a whole-line Gemini audit that says the package is ready for final
-  release-packaging work
+- whole-line Gemini and Claude audits clearing the package for release
 
 ## What The v0.4 Line Adds
 
@@ -50,7 +48,7 @@ The `v0.4` line now has:
 
 The `v0.4` line does not claim:
 
-- final release-tag completion yet in this prepared package snapshot
+- final release-tag completion yet
 - a benchmark win over external nearest-neighbor libraries
 - GPU nearest-neighbor backend closure
 - that SciPy or PostGIS are required dependencies for ordinary first-run use

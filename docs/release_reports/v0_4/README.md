@@ -11,5 +11,5 @@ Current honesty boundary:
 
 - package prepared
 - Gemini whole-line audit complete
-- final Claude whole-line audit still pending
+- Claude whole-line audit complete
 - release tag not created yet in this package snapshot

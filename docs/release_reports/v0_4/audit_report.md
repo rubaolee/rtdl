@@ -1,7 +1,7 @@
 # RTDL v0.4 Audit Report
 
 Date: 2026-04-10
-Status: Gemini whole-line audit complete, final Claude audit pending
+Status: Gemini and Claude whole-line audits complete
 
 ## Current Audit Evidence
 
@@ -10,15 +10,16 @@ Whole-line implementation audit package:
 - [Goal 212 audit report](../../reports/goal212_v0_4_full_audit_2026-04-10.md)
 - [Goal 212 review note](../../reports/goal212_v0_4_full_audit_review_2026-04-10.md)
 - [Gemini whole-line audit](../../reports/gemini_goal212_v0_4_full_audit_review_2026-04-10.md)
+- [Claude whole-line audit](../../reports/claude_goal212_v0_4_full_audit_review_2026-04-10.md)
 - [Codex consensus](../../../history/ad_hoc_reviews/2026-04-10-codex-consensus-goal212-v0_4-full-audit.md)
 
 ## Current Audit Verdict
 
-Gemini's whole-line verdict is:
+Whole-line audit verdict:
 
 - the nearest-neighbor line is internally consistent
 - the code/docs/process story is technically honest
-- the current `v0.4` line is ready for final release-packaging work
+- the current `v0.4` line is ready for final user-authorized release closure
 
 ## Important Mid-Line Finding Preserved In The Audit Trail
 
@@ -35,7 +36,10 @@ That event strengthens the audit story rather than weakening it, because the
 whole-line process actually surfaced and fixed a real backend defect before
 release.
 
-## Remaining Release Gate
+## Release Gate Result
 
-Per the standing project rule, one more whole-line Claude audit should still be
-performed after the `4am` reset before the final release tag is created.
+The whole-line audit gate is closed:
+
+- Gemini audit completed
+- Claude audit completed
+- Claude's two stale-label findings were fixed before any tag creation
