@@ -241,7 +241,32 @@ Current status:
 
 - contract frozen for `v0.4`
 - API surface added
-- lowering/runtime support not implemented yet
+- lowering support added
+- runtime support not implemented yet
+
+## Planned v0.4: KNN Rows
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def nearest_facilities():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    rows = rt.refine(
+        candidates,
+        predicate=rt.knn_rows(k=8),
+    )
+    return rt.emit(rows, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+```
+
+Current status:
+
+- contract frozen for `v0.4`
+- API surface added
+- lowering support added
+- runtime support not implemented yet
 
 ## Quick Execution Examples
 

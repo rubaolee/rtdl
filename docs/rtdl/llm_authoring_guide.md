@@ -42,6 +42,8 @@ The kernel function must take no Python arguments.
 Current `v0.4` surface under active closure:
 
 - `Points x Points` with `fixed_radius_neighbors(radius=..., k_max=...)`
+- planned next workload in the same family:
+  - `Points x Points` with `knn_rows(k=...)`
 
 ## Supported Emit Fields
 
@@ -87,6 +89,13 @@ For `Fixed-Radius Neighbors`:
 - `neighbor_id`
 - `distance`
 
+For `KNN Rows`:
+
+- `query_id`
+- `neighbor_id`
+- `distance`
+- `neighbor_rank`
+
 ## Do Not Do These Things
 
 - `precision="exact"`
@@ -118,6 +127,7 @@ Current boundary:
   - Python truth-path execution
   - native CPU/oracle execution
 - accelerated backend closure is still pending
+- `knn_rows(k=...)` is now a frozen planned contract with DSL/lowering in progress
 
 ## Recommended Prompting Pattern
 

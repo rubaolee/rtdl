@@ -93,6 +93,7 @@ class RtDslLanguageTest(unittest.TestCase):
         self.assertIn("segment_polygon_hitcount(exact=False)", guide)
         self.assertIn("point_nearest_segment(exact=False)", guide)
         self.assertIn("fixed_radius_neighbors(radius=..., k_max=...)", guide)
+        self.assertIn("knn_rows(k=...)", guide)
 
 
 if __name__ == "__main__":

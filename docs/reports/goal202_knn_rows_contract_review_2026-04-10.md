@@ -7,7 +7,7 @@ Contract and documentation are complete.
 External-review state:
 
 - Claude: blocked by CLI daily limit (`2026-04-10`)
-- Gemini: handoff written, but no response file produced yet
+- Gemini: complete
 - Codex: complete
 
 ## Local verification
@@ -27,10 +27,16 @@ Current honest state:
 
 - Goal 202 contract and feature-home docs are complete.
 - Codex consensus is saved.
+- Gemini review is saved at:
+  - `docs/reports/gemini_goal202_knn_rows_contract_review_2026-04-10.md`
 - Claude could not finish automatically because the Claude CLI hit its daily
   limit during this attempt.
-- Gemini was launched multiple times but did not write the requested response
-  file.
 
-This goal is therefore documented and ready for external-review completion, but
-it is not yet closed under the normal `2+` review bar.
+Shared conclusion:
+
+- the `knn_rows` contract is sharp enough to implement
+- rank and tie rules are deterministic and explicit
+- the short-result rule is honest and usable
+- the goal is cleanly scoped for `v0.4`
+
+Goal 202 is closed under the standing `2+` AI bar with Codex + Gemini.

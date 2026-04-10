@@ -4,6 +4,7 @@ from .api import emit
 from .api import fixed_radius_neighbors
 from .api import input
 from .api import kernel
+from .api import knn_rows
 from .api import overlay_compose
 from .api import point_nearest_segment
 from .api import point_in_polygon
@@ -402,6 +403,7 @@ __all__ = [
     "render_python_program",
     "input",
     "kernel",
+    "knn_rows",
     "layout",
     "load_arcgis_feature_pages",
     "load_cdb",

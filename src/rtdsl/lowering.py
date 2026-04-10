@@ -33,6 +33,7 @@ _EMIT_FIELD_TYPES = {
     "query_id": "uint32_t",
     "neighbor_id": "uint32_t",
     "distance": "float",
+    "neighbor_rank": "uint32_t",
 }
 
 
@@ -78,6 +79,8 @@ def lower_to_execution_plan(kernel: CompiledKernel) -> RTExecutionPlan:
         return _lower_point_nearest_segment(kernel, build_input, probe_input)
     if predicate.name == "fixed_radius_neighbors":
         return _lower_fixed_radius_neighbors(kernel, build_input, probe_input)
+    if predicate.name == "knn_rows":
+        return _lower_knn_rows(kernel, build_input, probe_input)
 
     raise ValueError(f"unsupported predicate for current RTDL lowering: {predicate.name}")
 
@@ -484,6 +487,70 @@ def _lower_fixed_radius_neighbors(kernel: CompiledKernel, build_input, probe_inp
             tmin="0.0f",
             tmax="FLT_MAX",
             description="Fixed-radius-neighbor placeholder over point sets; current runtime uses a native float nested-loop path.",
+        ),
+        bvh_policy="current local backend uses native_loop for this workload; BVH build is not yet implemented",
+    )
+
+
+def _lower_knn_rows(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionPlan:
+    if build_input.geometry.name != "points" or probe_input.geometry.name != "points":
+        raise ValueError("knn_rows lowering requires point build input and point probe input")
+
+    output_record = _build_output_record("KnnNeighborRecord", kernel.emit_op.fields)
+    build_buffer_name = _input_buffer_name(build_input)
+    probe_buffer_name = _input_buffer_name(probe_input)
+    k = kernel.refine_op.predicate.options["k"]
+
+    return RTExecutionPlan(
+        kernel_name=kernel.name,
+        workload_kind="knn_rows",
+        backend="rtdl",
+        precision=kernel.precision,
+        build_input=build_input,
+        probe_input=probe_input,
+        accel_kind="native_loop",
+        predicate="knn_rows",
+        exact_refine_mode="analytic_float_knn_rows",
+        emit_fields=kernel.emit_op.fields,
+        payload_registers=(
+            PayloadRegister(index=0, name="query_index", encoding="u32"),
+            PayloadRegister(index=1, name="neighbor_index", encoding="u32"),
+            PayloadRegister(index=2, name="distance_bits", encoding="f32_bits"),
+            PayloadRegister(index=3, name="neighbor_rank", encoding="u32"),
+        ),
+        launch_params=(
+            LaunchParam(name="traversable", c_type="OptixTraversableHandle", role="rt_accel"),
+            LaunchParam(name=build_buffer_name, c_type=f"const {build_input.layout.name}*", role="device_input_build"),
+            LaunchParam(name=probe_buffer_name, c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
+            LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
+            LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
+            LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
+        ),
+        host_steps=(
+            f"Upload `{build_input.name}` search points and `{probe_input.name}` query points.",
+            "Current local backend for this planned workload is still a native analytic nearest-neighbor pass.",
+            f"Sort each query's candidate set by distance then neighbor id, assign 1-based neighbor_rank, and emit at most k={k!r} rows.",
+        ),
+        device_programs=(
+            "__raygen__rtdl_knn_rows",
+            "__miss__rtdl_miss",
+            "__closesthit__rtdl_knn_rows_refine",
+        ),
+        buffers=(
+            BufferSpec(name=build_buffer_name, element=build_input.layout.name, role="device_input_build"),
+            BufferSpec(name=probe_buffer_name, element=probe_input.layout.name, role="device_input_probe"),
+            BufferSpec(name="output_records", element=output_record.name, role="device_output"),
+            BufferSpec(name="output_count", element="uint32_t", role="device_counter"),
+            BufferSpec(name="output_capacity", element="uint32_t", role="device_limit"),
+        ),
+        output_record=output_record,
+        ray_spec=RaySpec(
+            origin=("probe.x", "probe.y", "0.0f"),
+            direction=("0.0f", "1.0f", "0.0f"),
+            tmin="0.0f",
+            tmax="FLT_MAX",
+            description="KNN placeholder over point sets; current runtime is planned as a native float nearest-neighbor pass.",
         ),
         bvh_policy="current local backend uses native_loop for this workload; BVH build is not yet implemented",
     )

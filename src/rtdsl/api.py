@@ -164,6 +164,15 @@ def fixed_radius_neighbors(*, radius: float, k_max: int) -> Predicate:
     )
 
 
+def knn_rows(*, k: int) -> Predicate:
+    if k <= 0:
+        raise ValueError("knn_rows k must be positive")
+    return Predicate(
+        name="knn_rows",
+        options={"k": int(k)},
+    )
+
+
 def contains(
     *,
     exact: bool = False,

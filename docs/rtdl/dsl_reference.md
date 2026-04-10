@@ -313,6 +313,20 @@ Current status:
 - use the feature home for the frozen public contract:
   - [Fixed-Radius Neighbors](../features/fixed_radius_neighbors/README.md)
 
+### `rt.knn_rows(k=...)`
+
+Meaning:
+
+- `v0.4` point-to-point K-nearest-neighbor row materialization
+
+Current status:
+
+- the predicate factory exists at the API level
+- lowering support exists
+- runtime support is not implemented yet
+- use the feature home for the frozen public contract:
+  - [KNN Rows](../features/knn_rows/README.md)
+
 ## Role Resolution
 
 RTDL supports explicit and implicit roles.
@@ -460,6 +474,21 @@ Allowed emit fields:
 - `query_id`
 - `neighbor_id`
 - `distance`
+
+### `knn_rows`
+
+Required shape:
+
+- build input: `points`
+- probe input: `points`
+- predicate: `knn_rows(k=...)`
+
+Allowed emit fields:
+
+- `query_id`
+- `neighbor_id`
+- `distance`
+- `neighbor_rank`
 
 Current note:
 

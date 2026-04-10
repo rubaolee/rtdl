@@ -94,6 +94,15 @@ def _frn_kernel():
     return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def _knn_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.knn_rows(k=8))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+
+
 class TypesTest(unittest.TestCase):
     def test_layout_rejects_empty_fields(self) -> None:
         with self.assertRaisesRegex(ValueError, "at least one field"):
@@ -300,6 +309,15 @@ class ApiTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "positive"):
             rt.fixed_radius_neighbors(radius=1.0, k_max=0)
 
+    def test_knn_rows_predicate_options(self) -> None:
+        p = rt.knn_rows(k=8)
+        self.assertEqual(p.name, "knn_rows")
+        self.assertEqual(p.options["k"], 8)
+
+    def test_knn_rows_rejects_non_positive_k(self) -> None:
+        with self.assertRaisesRegex(ValueError, "positive"):
+            rt.knn_rows(k=0)
+
     def test_overlay_compose_predicate_options(self) -> None:
         p = rt.overlay_compose()
         self.assertEqual(p.name, "overlay_compose")
@@ -435,6 +453,12 @@ class LoweringTest(unittest.TestCase):
         self.assertEqual(plan.workload_kind, "fixed_radius_neighbors")
         self.assertEqual(plan.accel_kind, "native_loop")
         self.assertEqual(plan.emit_fields, ("query_id", "neighbor_id", "distance"))
+
+    def test_lower_knn_rows_plan(self) -> None:
+        plan = rt.lower_to_execution_plan(rt.compile_kernel(_knn_kernel))
+        self.assertEqual(plan.workload_kind, "knn_rows")
+        self.assertEqual(plan.accel_kind, "native_loop")
+        self.assertEqual(plan.emit_fields, ("query_id", "neighbor_id", "distance", "neighbor_rank"))
 
     def test_build_output_record_rejects_empty_emit_fields(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")
