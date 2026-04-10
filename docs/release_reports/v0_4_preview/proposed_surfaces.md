@@ -2,24 +2,24 @@
 
 ## Headline public surface
 
-- `point_in_volume`
+- `fixed_radius_neighbors`
 
 ## Supporting surfaces
 
-- stronger public `ray_tri_hitcount` documentation and examples
-- one bounded non-demo 3D example chain
-- continued hidden-star visual demo only as proof-of-capability support
+- `knn_rows`
+- `nearest_distance`
+- preserved `v0.3.0` visual-demo material as proof-of-capability history only
 
 ## Proposed first public user story
 
 Users have:
 
-- 3D points
-- closed triangle meshes
+- query points
+- search points
 
 They want:
 
-- to classify which points lie inside which volumes
+- to find neighbors within a radius and emit row results
 
 RTDL should provide:
 
@@ -27,13 +27,14 @@ RTDL should provide:
 
 ## Proposed emitted fields
 
-- `point_id`
-- `volume_id`
-- `contains`
+- `query_id`
+- `neighbor_id`
+- `distance`
 
 ## Proposed first boundary
 
-- closed manifold meshes only
-- bounded parity-style classification
-- explicit limitations around degenerate or non-manifold meshes
+- 2D points only
+- Euclidean distance only
+- explicit search radius semantics
+- explicit `k_max` truncation semantics
 - explicit backend support matrix

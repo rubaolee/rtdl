@@ -1,12 +1,11 @@
 # Goal 193: v0.4 Direction Decision
 
 Date: 2026-04-09
-Status: proposed direction package
+Status: revised direction package
 
 ## Inputs reviewed
 
-The proposal below is grounded in the current public and release-facing
-surfaces:
+The revised proposal below is grounded in:
 
 - [README](../../README.md)
 - [Docs Index](../README.md)
@@ -17,52 +16,38 @@ surfaces:
 - [Architecture, API, And Performance Overview](../architecture_api_performance_overview.md)
 - [Vision](../vision.md)
 - [Future Ray-Tracing Directions](../future_ray_tracing_directions.md)
-- [Ray/Triangle Hit Count feature home](../features/ray_tri_hitcount/README.md)
+- [RTNN paper](../../../Downloads/3503221.3508409.pdf)
+- [X-HD paper](../../../Downloads/2026-xhd.pdf)
 
 ## Current position after v0.3.0
 
-`v0.3.0` is a real release, but it leaves an intentional tension in the repo
-story:
+`v0.3.0` released successfully, but it also clarified something important:
 
-- the strongest stable workload/package identity is still the `v0.2.0` surface
-- the newest public-facing attention hook is the `v0.3.0` hidden-star 3D demo
-- the front page is honest that RTDL is not a renderer
-- but the most visible public proof is still an application demo rather than a
-  new workload family
+- the 3D demo is a useful proof-of-capability
+- it is not the right center of gravity for the next milestone
+- the repo's durable identity is still "non-graphical geometric-query runtime"
 
-That tension is acceptable for `v0.3.0`, but it is not a strong long-term
-release identity for `v0.4`.
+So the next version should not continue the demo line as the main product
+story. It should return to RTDL's core lane and add a new non-graphical
+workload family.
 
-## The hard conflict
+## The real conflict for v0.4
 
-There are three credible directions for `v0.4`.
+There are three credible directions.
 
 ### Proposal A: Demo-first v0.4
 
-Make `v0.4` about better applications and stronger 3D demo polish:
+Make `v0.4` about stronger public demos and application polish.
 
-- more polished hidden-star variants
-- more public videos
-- cleaner app wrappers
-- stronger cross-backend demo parity
+### Proposal B: Backend-first v0.4
 
-### Proposal B: Backend/platform-first v0.4
+Make `v0.4` about more backend closure and backend maturity work on the current
+surface.
 
-Make `v0.4` about broader platform closure:
+### Proposal C: New 2D workload-family-first v0.4
 
-- more native backend work
-- more backend portability
-- stronger packaging around the current workloads
-
-### Proposal C: Workload-language-first v0.4
-
-Make `v0.4` about turning the `v0.3.0` 3D proof into new public
-non-graphical workload surface:
-
-- promote bounded 3D geometric-query workloads to first-class public features
-- keep the application/demo line as proof, not as the product center
-- unify the repo story around "RTDL as a language/runtime for geometric
-  queries in 2D and bounded 3D"
+Make `v0.4` about adding one real new 2D/non-graphical workload family that
+fits RTDL's language/runtime identity and has clear research support.
 
 ## Sharp proposal/rebuttal
 
@@ -70,249 +55,213 @@ non-graphical workload surface:
 
 Argument for it:
 
-- the public demo is the most attention-grabbing artifact
-- `v0.3.0` proved RTDL can support applications
-- better demos would make the front page feel stronger
+- demos are visible
+- demos attract attention
+- `v0.3.0` already proved RTDL can sit inside applications
 
 Rebuttal:
 
-- this is the wrong center of gravity for RTDL
-- it would make the repo look like it is pivoting into graphics
-- it optimizes presentation more than language/runtime substance
-- it weakens the honesty boundary already stated on the front page
-
-Hot conflict:
-
-- the front page says RTDL is a non-graphical geometric-query runtime
-- a demo-first `v0.4` would make the repo behave like that statement is only a
-  disclaimer rather than the actual product identity
+- this would keep pushing the repo away from its real identity
+- it would make the front-page honesty boundary weaker, not stronger
+- it would optimize presentation instead of language/runtime value
 
 Conclusion:
 
-- reject Proposal A as the main `v0.4` release theme
-- keep demos as supporting proof, not the main release identity
+- reject Proposal A as the main `v0.4` theme
 
-### Proposal B: double down on backend/platform reach
+### Proposal B: double down on backend maturity
 
 Argument for it:
 
-- RTDL is fundamentally a multi-backend runtime
-- backend maturity remains a differentiator
-- more portability would make the runtime story stronger
+- RTDL is fundamentally multi-backend
+- backend closure still matters for trust and performance
 
 Rebuttal:
 
-- backend work without new surface semantics does not give users a clearer
-  reason to adopt `v0.4`
-- it improves infrastructure more than public capability
-- it risks another milestone where the public surface still looks like
-  "`v0.2.0` workloads plus engineering cleanup"
-
-Hot conflict:
-
-- a backend-first `v0.4` would be rational for the implementation team
-- but weak for external users because it does not answer:
-  - what new kind of problem can RTDL solve now?
+- backend work alone still does not answer the user-facing question:
+  - what new problem can RTDL solve in `v0.4`?
+- it would make `v0.4` feel like infrastructure maintenance rather than a new
+  release with new workload substance
 
 Conclusion:
 
-- backend work should be part of `v0.4`
-- but only in support of a new user-visible workload expansion
+- backend work should support `v0.4`
+- but it should not be the release identity
 
-### Proposal C: convert the 3D proof into a real bounded 3D workload release
+### Proposal C: add a new nearest-neighbor workload family
 
 Argument for it:
 
-- it aligns with the current front-page honesty boundary
-- it turns the `v0.3.0` demo from proof-of-capability into a bridge toward new
-  non-graphical workload surface
-- it gives `v0.4` a crisp identity: RTDL grows from 2D workload families into
-  bounded 3D geometric queries
-- it uses the strongest new engineering asset already built in `v0.3.0`:
-  multi-backend 3D ray/triangle query support
+- nearest-neighbor search is a clean non-graphical spatial workload family
+- it has direct research support in RTNN
+- X-HD reinforces that nearest-neighbor search is a meaningful building block
+  for later higher-level workloads like Hausdorff distance
+- it gives `v0.4` a public identity that is clearly different from both:
+  - the current released 2D workload set
+  - the `v0.3.0` application/demo proof line
 
 Rebuttal risk:
 
-- "is this just graphics by another name?"
+- "is this too far from the current RayJoin-style line?"
 
 Counter-rebuttal:
 
-- not if the new public surface is defined as bounded geometric-query work such
-  as:
-  - `ray_tri_hitcount_3d` as a public feature line
-  - point-in-mesh / point-in-volume style inclusion tests
-  - occlusion/visibility queries framed as geometric predicates
-- the demo remains evidence, not the target
-
-Hot conflict:
-
-- this direction forces RTDL to choose substance over spectacle
-- it says the correct response to a successful demo is not "make prettier
-  videos" but "extract the real workload surface the demo proved we can
-  support"
+- no, because it stays in exactly the same RTDL lane:
+  - non-graphical spatial querying
+  - backend-heavy traversal
+  - row-oriented outputs
+- it expands the language/runtime surface without changing the product identity
 
 Conclusion:
 
 - Proposal C is the strongest `v0.4` direction
 
+## Why nearest-neighbor is the right next family
+
+The two papers imply a clear priority order:
+
+- RTNN is directly about neighbor search as a workload family
+- X-HD treats nearest-neighbor search as the building block for Hausdorff
+  distance
+
+That means:
+
+- nearest-neighbor search is the right `v0.4` headline family
+- Hausdorff distance is a plausible later extension, not the first `v0.4`
+  headline workload
+
 ## Recommended v0.4 theme
 
 Recommended release theme:
 
-- **`v0.4`: bounded 3D geometric-query release**
+- **`v0.4`: neighbor-search workload release**
 
 Recommended headline:
 
-- extend RTDL from the stable `v0.2.0` 2D workload/package surface and the
-  `v0.3.0` application proof layer into a first-class bounded 3D
-  geometric-query surface
+- extend RTDL from the current released workload core into a new
+  nearest-neighbor spatial-query family
 
 ## Concrete v0.4 objectives
 
-Two decisions have to be separated clearly:
+Two decisions are now explicit:
 
-- the first 3D substrate feature to formalize
-- the headline release workload that gives `v0.4` its identity
+- headline workload family:
+  - nearest-neighbor search
+- first accepted public workload:
+  - fixed-radius neighbor rows
 
-The current package now commits to both:
+This split is deliberate:
 
-- first substrate feature to formalize:
-  - `ray_tri_hitcount_3d`
-- headline release workload:
-  - `point_in_volume`
+- the family gives `v0.4` its identity
+- the first accepted workload keeps the initial scope bounded
 
-This split resolves the strongest external objections:
-
-- Claude is right that the package was not actionable until one concrete first
-  target was chosen
-- Gemini is right that `v0.4` still needs a real non-graphical 3D workload
-  rather than stopping at generic ray visibility mechanics
-
-### Objective 1: formalize the bounded 3D query substrate
-
-Promote:
-
-- `ray_tri_hitcount_3d`
-
-to a real public feature line with:
-
-- a feature home
-- a direct non-demo example
-- explicit input/output contracts
-- explicit backend support wording
-
-Important honesty note:
-
-- this is not a wholly new workload family
-- it is a contractual and documentation lift of capability already proven in
-  `v0.3.0`
-
-### Objective 2: ship one real non-graphical 3D workload
+### Objective 1: ship fixed-radius neighbor rows
 
 Chosen release target:
 
-- `point_in_volume`
+- `fixed_radius_neighbors`
 
 Reason:
 
-- it provides the non-graphical user story that the 3D ray/triangle substrate
-  alone does not
-- it is the cleanest 3D analog to the current `pip` mental model
-- it uses the proven 3D primitive without making RTDL look like a renderer
+- cleaner public contract than full KNN
+- simpler row semantics
+- easier correctness story
+- directly supported by RTNN's problem framing
 
-### Objective 3: define exact public contracts
+### Objective 2: define the nearest-neighbor public contract
 
-For every new `v0.4` 3D feature:
+For the new workload family, define:
 
-- input types
-- precision limits
-- backend coverage
-- accepted boundaries
+- point input types
+- search radius semantics
+- maximum returned neighbor count semantics
+- emitted row shape
+- duplicate and tie behavior
 - exact vs bounded claims
 
-### Objective 4: add one non-demo user-facing 3D example chain
+### Objective 3: add one direct non-demo example chain
 
-The front-door examples should include at least one 3D example that is clearly
-non-graphical:
+The front door should include at least one example like:
 
-- not a movie
-- not a polished visual artifact
-- a direct geometric-query example that shows why 3D support matters
+- `examples/rtdl_fixed_radius_neighbors.py`
 
-This is a release-entry requirement, not an optional side objective.
+It should be:
 
-### Objective 5: keep demos as proof, not product center
+- small
+- non-graphical
+- row-oriented
+- copy-paste runnable
 
-The hidden-star demo should remain:
+### Objective 4: add KNN as the second workload in the same family
 
-- public proof that RTDL can sit inside a Python-hosted application
+Second candidate workload:
 
-It should not become:
+- `knn_rows`
 
-- the main definition of RTDL
+But it should follow fixed-radius search, not lead the milestone.
+
+### Objective 5: keep Hausdorff distance out of headline scope
+
+The X-HD paper is still valuable, but the lesson for `v0.4` is:
+
+- Hausdorff distance depends on nearest-neighbor search
+- therefore Hausdorff distance is a later extension or stretch goal
+- it should not be the first release identity of `v0.4`
 
 ### Objective 6: align performance and validation story
 
-`v0.4` should force a cleaner release story:
+`v0.4` should clearly distinguish:
 
-- which 3D workloads are reference-clean on which backends
-- which ones are bounded
-- which ones are performance claims versus proof-of-capability claims
+- correctness closure
+- bounded performance evidence
+- external baseline story
 
-Important honesty note:
+Unlike the older 2D PostGIS story, nearest-neighbor search may need a different
+external baseline, such as:
 
-- `v0.4` may begin as a correctness-first 3D release rather than a
-  performance-first one
-- if no honest external 3D comparison baseline exists yet, the release docs
-  must say that directly rather than silently inheriting the `v0.1`/`v0.2`
-  performance narrative
+- existing GPU/CPU neighbor-search libraries
+- brute-force CPU reference on bounded inputs
 
 ## What v0.4 should not be
 
 Do not make `v0.4` into:
 
-- a "better movie" release
-- a pure backend-refactor release
-- a vague "more demos, more platforms" milestone
-
-Those would consume effort without solving the core identity split left by
-`v0.3.0`.
+- a demo-first milestone
+- a 3D milestone
+- a rendering-adjacent milestone
+- a backend-only cleanup release
+- a Hausdorff-distance-first release
 
 ## Decision
 
 Recommended decision:
 
-- **make `v0.4` a workload-language-first milestone**
-- use the `v0.3.0` hidden-star and ray/triangle work as supporting evidence
-- convert bounded 3D query capability into explicit non-graphical public
-  workload surface
+- **make `v0.4` a 2D nearest-neighbor workload milestone**
+- keep `v0.3.0` 3D work as preserved proof material only
+- use RTNN as the primary workload signal
+- treat X-HD as supporting evidence that nearest-neighbor search opens a strong
+  future path
 
 ## Immediate next planning questions
 
 To open `v0.4` cleanly, answer these first:
 
-1. What exact accepted-boundary wording will define `point_in_volume`:
-   - closed or watertight meshes only
-   - boundary policy
-   - excluded degeneracies
-2. Which backends must be required for `v0.4` acceptance:
+1. What exact row contract should define `fixed_radius_neighbors`?
+2. Should the public family name be:
+   - `nearest_neighbors`
+   - `fixed_radius_neighbors`
+   - `knn_rows`
+3. Which backends are required for first closure:
    - CPU reference
    - oracle
    - Embree
    - OptiX
    - Vulkan
-3. What is the minimal non-demo 3D example that teaches the new feature
-   directly?
-4. Is `v0.4` a correctness-first release, or is there an honest external 3D
-   baseline for a performance story?
+4. What is the most honest external baseline for bounded performance comparison?
+5. Should `knn_rows` be a same-release secondary feature or a follow-on goal?
 
 ## Codex provisional conclusion
 
-The strongest `v0.4` move is not to chase prettier demos. It is to:
-
-- formalize `ray_tri_hitcount_3d` as a real public substrate feature
-- then make `point_in_volume` the concrete non-graphical workload that gives
-  the release its identity
-
-That package is clearly non-graphical, explicitly contracted, and honest about
-backend maturity.
+The strongest `v0.4` move is not to chase 3D proof work further. It is to add
+a nearest-neighbor workload family that is clearly non-graphical, directly
+research-backed, and aligned with RTDL's identity as a spatial-query runtime.

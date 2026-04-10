@@ -4,7 +4,7 @@
 
 `v0.4` should be:
 
-- a bounded 3D geometric-query release
+- a nearest-neighbor workload release
 
 ## Why this is the right next step
 
@@ -13,8 +13,9 @@
 `v0.3.0` proved that RTDL can act as the geometric-query core inside bounded
 Python-hosted applications.
 
-The next honest step is not more demo polish. It is to turn the bounded 3D
-proof work into one explicit non-graphical workload line.
+The next honest step is not more demo polish and not more 3D exploration. It is
+to add one new non-graphical workload family that sits directly in RTDL's core
+lane.
 
 ## What v0.4 is not
 
@@ -29,6 +30,6 @@ proof work into one explicit non-graphical workload line.
 
 Recommended one-sentence identity:
 
-- RTDL v0.4 extends the released 2D RTDL core with one first-class bounded 3D
-  spatial-data workload built on the same multi-backend geometric-query runtime
-  model.
+- RTDL v0.4 extends the released RTDL workload core with a first-class
+  nearest-neighbor query family built on the same multi-backend geometric-query
+  runtime model.

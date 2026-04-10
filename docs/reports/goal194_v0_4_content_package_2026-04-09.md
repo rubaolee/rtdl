@@ -1,12 +1,12 @@
 # Goal 194: v0.4 Content Package
 
 Date: 2026-04-09
-Status: prepared
+Status: revised around nearest-neighbor workloads
 
 ## Result
 
-The `v0.4` content is now defined as a bounded next-version package rather than
-an open-ended idea.
+The `v0.4` content is now defined as a 2D/non-graphical package rather than a
+3D extension of the demo line.
 
 The package below is the handoff-ready content for the next version kickoff.
 
@@ -14,126 +14,115 @@ The package below is the handoff-ready content for the next version kickoff.
 
 Recommended identity:
 
-- **RTDL v0.4: bounded 3D geometric-query release**
+- **RTDL v0.4: nearest-neighbor workload release**
 
 More explicit reading:
 
 - `v0.2.0` established the stable 2D workload/package core
-- `v0.3.0` proved that the same RTDL core can sit inside bounded Python-hosted
-  applications
-- `v0.4` should turn that proof into one explicit, non-graphical, first-class
-  3D workload line
+- `v0.3.0` proved bounded RTDL-plus-Python application capability
+- `v0.4` should return to the core RTDL lane and add one new non-graphical
+  workload family
 
 ## Main public claim for v0.4
 
 The main claim should be:
 
-- RTDL supports a bounded 3D spatial-data workload family on top of the same
-  multi-backend runtime principles already proven in 2D
+- RTDL supports a new nearest-neighbor spatial-query family on top of the same
+  multi-backend runtime model already used for the released 2D workload core
 
 It should **not** be:
 
-- RTDL makes prettier movies
-- RTDL is now a rendering engine
-- RTDL broadly supports generic 3D geometry processing
+- RTDL makes better demos
+- RTDL is now a rendering system
+- RTDL broadly supports 3D geometry processing
 
 ## The first v0.4 workload anchor
 
 Two decisions are now explicit:
 
-- first substrate feature to formalize:
-  - `ray_tri_hitcount_3d`
-- headline release workload:
-  - `point_in_volume`
+- headline workload family:
+  - nearest-neighbor search
+- first accepted public workload:
+  - `fixed_radius_neighbors`
 
-This resolves the main external tension:
+This resolves the strategic direction cleanly:
 
-- Claude is right that the package needs a concrete first engineering target
-- Gemini is right that `v0.4` still needs a real non-graphical workload and
-  cannot stop at generic ray visibility mechanics
+- it is a real new workload family
+- it is still non-graphical
+- it is directly supported by RTNN
+- it keeps Hausdorff distance in the correct role as a later derivative, not a
+  first release anchor
 
 ### Recommended anchor
 
-- **point-in-volume / point-in-mesh classification**
+- **fixed-radius neighbor rows**
 
 Why this is the right first anchor:
 
-- it has a clear non-graphical user story
-- it is conceptually close to the existing 2D `pip` family
-- it can be built honestly on the current bounded 3D ray/triangle primitive
-- it keeps RTDL in the spatial-data/runtime lane rather than the graphics lane
+- it is simpler than full KNN
+- it has clean row semantics
+- it is easy to explain publicly
+- it matches the RTNN search interface model of radius plus bounded neighbor
+  count
 
 ### Recommended naming
 
 Prefer public naming like:
 
-- `point_in_volume`
+- `fixed_radius_neighbors`
 
-Avoid weaker names like:
+Avoid weaker or more confusing names like:
 
-- `mesh_visibility_test`
-- `raycast_contains`
+- `rtnn`
+- `range_neighbor`
+- `point_sphere_hits`
 
 Reason:
 
-- the feature should read as a spatial-data workload, not as a rendering
-  helper
-
-### Substrate feature that should be formalized first
-
-Before `point_in_volume` becomes the release headline, `v0.4` should first
-make the already-proven 3D primitive explicit:
-
-- `ray_tri_hitcount_3d`
-
-This work should be described honestly as:
-
-- a contractual and documentation lift of capability already proven in
-  `v0.3.0`
-
-not as:
-
-- a wholly new workload family
+- the public feature should describe the workload, not the implementation trick
 
 ### Recommended contract
 
-Initial bounded contract for `point_in_volume`:
+Initial bounded contract for `fixed_radius_neighbors`:
 
 - probe side:
-  - 3D points
+  - 2D points
 - build side:
-  - closed triangle meshes
-- predicate idea:
-  - bounded parity-style inside/outside test built on ray/triangle hit counts
-- output:
-  - `point_id`
-  - `volume_id`
-  - `contains`
+  - 2D points
+- inputs:
+  - search radius `r`
+  - maximum neighbor count `k_max`
+- output rows:
+  - `query_id`
+  - `neighbor_id`
+  - `distance`
 
 ### Recommended first boundary
 
 The first accepted boundary should be narrow and explicit:
 
-- closed manifold meshes only
-- inclusive/exclusive boundary mode must be defined explicitly
-- deterministic synthetic and authored fixture sets first
-- no claim of robust computational geometry on arbitrary degenerate meshes
+- 2D points only
+- Euclidean distance only
+- exact row semantics for bounded deterministic inputs
+- explicit tie policy
+- explicit maximum-row behavior when the true neighbor count exceeds `k_max`
 
 ## Secondary supporting surfaces for v0.4
 
 These can support the release, but should not be the headline:
 
-- stronger public `ray_tri_hitcount` documentation and examples
-- bounded 3D visibility/occlusion examples
-- continued hidden-star demo as proof-of-capability regression test
+- `knn_rows`
+- `nearest_distance`
+- later Hausdorff-distance planning
+- preserved `v0.3.0` hidden-star demo only as proof-of-capability history
 
 ## What v0.4 should ship publicly
 
-### 1. One first-class 3D feature home
+### 1. One first-class nearest-neighbor feature home
 
 Add a real feature home for:
 
-- `point_in_volume`
+- `fixed_radius_neighbors`
 
 It must include:
 
@@ -148,14 +137,14 @@ It must include:
 
 Add at least one top-level release-facing example, for example:
 
-- `examples/rtdl_point_in_volume.py`
+- `examples/rtdl_fixed_radius_neighbors.py`
 
 That example should be:
 
 - small
 - non-graphical
 - copy-paste runnable
-- clearly useful on its own
+- clearly row-oriented
 
 ### 3. One reference kernel chain
 
@@ -167,25 +156,30 @@ So the language/runtime shape is obvious without reading the visual demos.
 
 ### 4. One bounded benchmark/evaluation story
 
-`v0.4` should include at least one honest performance or scaling story for the
-new 3D line, even if it is small and synthetic at first.
+`v0.4` should include at least one honest bounded performance or scaling story
+for the new neighbor-search line.
 
-Without that, the new feature will look ornamental rather than like real RTDL
-surface area.
+The most likely external baselines are:
 
-Important honesty note:
+- brute-force CPU reference
+- `scipy.spatial.cKDTree` as the default external CPU baseline
+- published neighbor-search libraries from the RTNN comparison set when they
+  are reproducible on the target host, especially:
+  - `PCLOctree`
+  - `FRNN`
+  - `FastRNN`
 
-- `v0.4` may need to begin as a correctness-first 3D release if no honest
-  external 3D performance baseline exists yet
-- if so, the release docs must say that directly
+Not:
+
+- PostGIS as the primary comparison story
 
 ### 5. One tutorial extension
 
-The current tutorial path is 2D-heavy. `v0.4` should add:
+The current tutorial path should add:
 
-- a short tutorial section that explains how 3D inputs differ
-- what the new 3D workload means
-- how it relates to the old `pip` mental model
+- what neighbor search means in RTDL terms
+- how radius and `k_max` shape output rows
+- how this differs from the existing join-style families
 
 ## Backend acceptance plan
 
@@ -204,51 +198,47 @@ Recommended acceptance layers:
 
 ### Honest release wording
 
-If GPU backends are bounded or slower, the release docs must say so directly.
-Do not repeat the `v0.3.0` mistake of letting the most visible proof artifact
-carry the public identity of the release.
+If GPU backends remain bounded or are not yet performance leaders, the release
+docs must say so directly.
 
 ## Proposed initial goal order for v0.4
 
-### Goal 1: formalize `ray_tri_hitcount_3d` as a public feature line
+### Goal 1: define the public `fixed_radius_neighbors` contract
 
 Define:
 
-- public name
 - input types
-- emit fields
-- accepted geometry assumptions
-- exact current limitations
+- output rows
+- radius semantics
+- `k_max` semantics
+- tie policy
+- overflow behavior
 
-### Goal 2: define the public `point_in_volume` workload contract
+### Goal 2: add Python/DSL surface for `fixed_radius_neighbors`
 
-Define:
+Add the user-facing surface cleanly as a new workload family.
 
-- closed/watertight mesh requirement
-- accepted boundary policy
-- excluded degeneracies
-- emitted row shape
-
-### Goal 3: Python/DSL surface for 3D points and volume classification
-
-Add the user-facing surface cleanly, not as internal demo reuse.
-
-### Goal 4: reference and oracle implementation
+### Goal 3: reference and oracle implementation
 
 Get the truth path right before broad backend claims.
 
-### Goal 5: Embree closure
+### Goal 4: Embree closure
 
 Use Embree as the first high-confidence native backend.
 
-### Goal 6: OptiX and Vulkan closure
+### Goal 5: OptiX and Vulkan closure
 
-Bring the GPU paths in only after the workload contract is stable.
+Bring the GPU paths in only after the contract and truth path are stable.
+
+### Goal 6: add `knn_rows` as the second workload in the same family
+
+Use the same family framing, but do not let KNN become the first public
+contract.
 
 ### Goal 7: docs/tutorial/release-facing example chain
 
-Make sure new users can actually see and use the feature without reading
-internal reports.
+Make sure new users can see and run the new workload without touching internal
+history.
 
 ### Goal 8: bounded benchmark and release audit
 
@@ -260,57 +250,71 @@ Do not make `v0.4` about:
 
 - new public movies
 - demo polish as the main milestone
-- generalized 3D rendering
-- broad 3D LSI/PIP/overlay claims all at once
-- backend proliferation without a clear user-visible new workload
-- Hausdorff-adjacent workloads as `v0.4` headline scope
+- generalized 3D work
+- Hausdorff distance as the headline release workload
+- backend proliferation without a clear new public workload
 
 ## Risks and mitigations
 
-### Risk: identity slop
+### Risk: RTNN-style implementation details overpower the workload story
 
 Problem:
 
-- `v0.4` could still read as "graphics by euphemism"
+- the repo could talk more about rays, AABBs, and scheduling than about the
+  actual workload contract
 
 Mitigation:
 
-- lead with `point_in_volume` or equivalent spatial-data language
-- keep demos in supporting role only
+- keep the public feature named by the workload
+- keep implementation tricks below the contract layer
 
-### Risk: broad but shallow 3D support
+### Risk: KNN scope creep
 
 Problem:
 
-- adding many bounded 3D terms without one strong workload
+- jumping to full KNN first would complicate row semantics and closure
 
 Mitigation:
 
-- make one workload the headline and release gate
+- make fixed-radius neighbor rows the first contract
+- add KNN second
 
-### Risk: backend maturity debt
+### Risk: weak external comparison story
 
 Problem:
 
-- claiming too much before GPU boundaries are proven
+- the old PostGIS comparison line does not transfer automatically
 
 Mitigation:
 
-- require reference + oracle + Embree first
-- treat OptiX/Vulkan as follow-on closure layers, not automatic entitlement
+- start with correctness-first closure
+- use honest neighbor-search baselines later
 
-### Risk: no real user story
+### Risk: Hausdorff distraction
 
 Problem:
 
-- generic hit-count promotion feels abstract
+- the X-HD paper could tempt the milestone into too much distance-workload
+  scope at once
 
 Mitigation:
 
-- attach the feature to a concrete non-graphical use case such as:
-  - volumetric containment auditing
-  - 3D asset occupancy classification
-  - 3D point-cloud-in-mesh screening
+- keep Hausdorff as a later extension after nearest-neighbor closure
+
+### Risk: backend transfer assumptions
+
+Problem:
+
+- the current accepted Embree/native infrastructure is strongest on existing
+  join-style workloads
+- nearest-neighbor search may require different point/AABB packing and BVH
+  ownership choices than the current segment/polygon paths
+
+Mitigation:
+
+- surface this explicitly in Goals 3 and 4
+- do not assume the existing Embree path transfers unchanged just because the
+  backend name is the same
 
 ## Finish line for "v0.4 content is ready"
 
@@ -325,4 +329,4 @@ The next kickoff should not ask:
 
 It should ask:
 
-- "how do we implement the first bounded `point_in_volume` workload cleanly?"
+- "how do we implement the first `fixed_radius_neighbors` workload cleanly?"

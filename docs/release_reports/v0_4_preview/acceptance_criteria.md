@@ -4,7 +4,7 @@
 
 ## Workload contract
 
-- one explicit public workload contract for `point_in_volume`
+- one explicit public workload contract for `fixed_radius_neighbors`
 - clear naming, input layouts, output rows, and documented limitations
 
 ## Truth path

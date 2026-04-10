@@ -6,13 +6,15 @@ Start by reading these files from the current repo checkout:
 - `docs/README.md`
 - `docs/release_reports/v0_3/release_statement.md`
 - `docs/reports/goal193_v0_4_direction_decision_2026-04-09.md`
+- `docs/reports/goal194_v0_4_content_package_2026-04-09.md`
 
 Task:
 
-- review the `v0.4` direction package
-- challenge it, especially where the argument might be overconfident,
-  under-scoped, or product-confused
-- decide whether the recommended direction is the right one after `v0.3.0`
+- review the revised `v0.4` package
+- challenge it sharply
+- decide whether replacing the earlier 3D-first draft with a nearest-neighbor
+  workload release is the right move
+- identify the strongest remaining weakness in the revised plan
 
 Requirements for your response:
 
@@ -28,5 +30,8 @@ Requirements for your response:
 Important context:
 
 - RTDL must remain positioned as a non-graphical geometric-query runtime
-- the visual demos are allowed only as bounded proof-of-capability
-- the question is what `v0.4` should be, not how to re-explain `v0.3.0`
+- the visual demos are preserved proof material only, not the center of `v0.4`
+- the revised package is nearest-neighbor-first, with:
+  - `fixed_radius_neighbors` as the first accepted workload
+  - `knn_rows` as the second workload in the same family
+- the question is whether this revised package is the right `v0.4` plan
