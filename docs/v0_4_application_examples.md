@@ -9,13 +9,7 @@ All three examples are bounded and correctness-first:
 - Python handles grouping, summaries, and app-specific decisions
 - PostgreSQL/PostGIS scripts are provided as transparent comparison shapes
 
-Run commands from the repo root:
-
-```bash
-cd rtdl
-```
-
-with:
+Run commands from the repository root:
 
 ```bash
 PYTHONPATH=src:.

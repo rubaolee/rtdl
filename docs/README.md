@@ -9,7 +9,7 @@ If you are new to RTDL, read the live docs first.
 
 Quick environment facts before you start:
 
-- this checkout currently identifies itself as `v0.3.0`
+- this checkout currently identifies itself as `v0.4.0`
 - active development after that release is the `v0.4` nearest-neighbor line (active preview, reopened for GPU completion)
 - clone the repo as `rtdl`
 - the local Python package imported by the examples is `rtdsl`
@@ -93,7 +93,7 @@ Imported historical artifacts:
 Keep these current facts in mind while reading:
 
 - the accepted bounded package remains the current v0.1 trust anchor
-- current `main` is now the released `v0.3.0` branch state
+- current `main` is now the released `v0.4.0` branch state
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
