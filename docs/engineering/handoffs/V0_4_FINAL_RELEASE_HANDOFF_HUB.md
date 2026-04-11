@@ -12,9 +12,8 @@ Goal 228/229 evidence before taking any release action.
 
 ### Accomplishments:
 *   **Audit PASSED**: Full cross-backend parity (CPU, Embree, OptiX, Vulkan) for nearest-neighbor workloads after the fixed-radius boundary repair.
-*   **Infrastructure Fix**: Resolved Python 3.9 syntax issues in the core `rtdsl` package.
-*   **Aesthetic Redesign**: Overhauled `README.md` with a premium visual banner and a clearer value proposition.
-*   **Documentation Reorganization**: Structured the `docs/` directory into `user_guides/`, `reference/`, `research/`, and `engineering/`.
+*   **Infrastructure Fix**: Keep the Python 3.9 compatibility note only if the release action is taken from a checkout that still carries that local compatibility patch.
+*   **Release Boundary**: This clean release-prep worktree reflects the pushed `main` truth and excludes the unrelated local docs reorganization from the primary checkout.
 
 ---
 
@@ -30,20 +29,19 @@ All work is backed by formal audit artifacts.
 ---
 
 ## 3. Critical Environment Requirements
-The host environment is **Python 3.9.6**. 
+The release-prep worktree should be treated as the canonical packaging checkout.
 
 > [!CAUTION]
-> **PYTHON 3.10+ COMPATIBILITY PATCH**: 
-> I have applied `from __future__ import annotations` to the `src/rtdsl/` package to support the project's use of `str | None` type hints. 
-> **DO NOT REVERT THESE CHANGES** until the host environment is officially upgraded to 3.10+.
+> Do not assume local-only compatibility or docs-reorganization changes from the
+> primary checkout are present here unless they have been deliberately
+> reintroduced and reviewed.
 
 ---
 
 ## 4. Visual & Content Assets
-*   🚀 **New Project Banner**: Located at [docs/assets/rtdl_banner.png](file:///Users/rl2025/rtdl_python_only/docs/assets/rtdl_banner.png).
 *   📚 **Bibliography**: Consolidated the research paper list into the [Foundations Document](file:///Users/rl2025/rtdl_python_only/docs/workloads_and_research_foundations.md).
-*   🏠 **Main Entry**: Redesigned front page is live at [README.md](file:///Users/rl2025/rtdl_python_only/README.md).
-*   📂 **New Docs Hub**: The organized documentation index is at [docs/README.md](file:///Users/rl2025/rtdl_python_only/docs/README.md).
+*   🏠 **Main Entry**: Current committed front page is at [README.md](file:///Users/rl2025/rtdl_python_only/README.md).
+*   📂 **Docs Hub**: Current committed documentation index is at [docs/README.md](file:///Users/rl2025/rtdl_python_only/docs/README.md).
 
 ---
 
@@ -52,10 +50,11 @@ The code and documentation are close, but release packaging should still wait
 for the refreshed heavy benchmark evidence and the boundary-fix slice to be the
 accepted current truth. After that, the next AI should execute the following:
 
-1.  **Stage All Changes**: `git add .` (Includes README redesign, documentation updates, reports, and the Python 3.9 fix).
-2.  **Final Commit**: `git commit -m "v0.4: Final audit closure and premium README redesign"`
-3.  **Version Update**: Increment the [VERSION](file:///Users/rl2025/rtdl_python_only/VERSION) file from `v0.3.0` to `v0.4.0`.
-4.  **Git Tag**: Create the official `v0.4.0` tag.
+1.  **Use the clean release-prep worktree** rather than the unrelated dirty primary checkout.
+2.  **Stage only the deliberate final release package changes**.
+3.  **Final Commit**: use a bounded release-packaging commit message, not a catch-all commit over unrelated local dirt.
+4.  **Version Update**: Increment the [VERSION](file:///Users/rl2025/rtdl_python_only/VERSION) file from `v0.3.0` to `v0.4.0` only after explicit user authorization.
+5.  **Git Tag**: Create the official `v0.4.0` tag only after explicit user authorization.
 
 ---
 *Status: Packaging checklist only. Verify refreshed Goal 228/229 evidence before any v0.4.0 release action.*

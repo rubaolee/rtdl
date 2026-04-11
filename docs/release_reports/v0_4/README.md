@@ -10,6 +10,7 @@ These documents are the canonical release-facing package for the `v0.4` line.
 Current honesty boundary:
 
 - package prepared
-- Gemini whole-line audit complete
-- Claude whole-line audit complete
+- whole-line Gemini and Claude audits complete
+- later heavy benchmark evidence and the Goal 229 boundary fix are now part of
+  the live release truth
 - release tag not created yet in this package snapshot

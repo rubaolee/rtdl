@@ -14,7 +14,8 @@ It is intended to mark:
 - the stable earlier workload core already preserved in the repo
 - the completed `fixed_radius_neighbors` line
 - the completed `knn_rows` line
-- the correctness-first CPU/oracle + Embree nearest-neighbor closure
+- the correctness-first CPU/oracle + Embree + OptiX + Vulkan nearest-neighbor
+  closure
 
 ## Public Entry Points
 
@@ -32,8 +33,10 @@ It is intended to mark:
 
 Do not create the `v0.4.0` tag until you explicitly authorize release.
 
-The final technical release gate is already satisfied:
+The final technical release gate is satisfied in engineering terms, but still
+requires explicit user authorization for release action:
 
-- the post-`4am` Claude whole-line audit completed
-- Claude's real doc findings were fixed
-- the bounded `v0.4` audit test slice remained green
+- the whole-line Gemini and Claude audits completed
+- the later heavy Linux benchmark is preserved
+- the Goal 229 accelerated boundary fix restored heavy-case parity
+- the focused post-fix verification slices remained green

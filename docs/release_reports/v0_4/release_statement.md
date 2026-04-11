@@ -27,19 +27,26 @@ The `v0.4` line now has:
 - Python truth paths for both workloads
 - native CPU/oracle execution for both workloads
 - Embree execution for both workloads
+- OptiX execution for both workloads
+- Vulkan execution for both workloads
 - optional external baseline helpers for:
   - SciPy `cKDTree`
   - bounded PostGIS comparison paths
 - public top-level examples for both workloads
 - one bounded scaling note for the nearest-neighbor family
-- whole-line Gemini and Claude audits clearing the package for release
+- heavy Linux benchmark evidence comparing CPU, Embree, OptiX, Vulkan, and
+  indexed PostGIS
+- Goal 229 accelerated boundary-fix evidence restoring full heavy-case parity
+- whole-line Gemini and Claude audits plus later post-benchmark follow-up
+  evidence clearing the package for final release decision
 
 ## What The v0.4 Line Adds
 
 `v0.4` adds:
 
 - the first public nearest-neighbor workload family in RTDL
-- a correctness-first multi-backend story for two related workloads
+- a correctness-first multi-backend story for two related workloads across
+  CPU/oracle, Embree, OptiX, and Vulkan
 - a cleaner research-to-workload bridge through explicit workload/foundation
   documentation
 - public first-run examples that no longer depend on internal goal naming
@@ -50,7 +57,6 @@ The `v0.4` line does not claim:
 
 - final release-tag completion yet
 - a benchmark win over external nearest-neighbor libraries
-- GPU nearest-neighbor backend closure
 - that SciPy or PostGIS are required dependencies for ordinary first-run use
 
 ## Relationship To Earlier Releases
@@ -65,3 +71,11 @@ Read the repo now as:
 
 - [rtdl_fixed_radius_neighbors.py](../../../examples/rtdl_fixed_radius_neighbors.py)
 - [rtdl_knn_rows.py](../../../examples/rtdl_knn_rows.py)
+
+## Current Honest Release Boundary
+
+- the nearest-neighbor workloads are now running across CPU/oracle, Embree,
+  OptiX, and Vulkan
+- the heavy Linux benchmark and Goal 229 fix restored full heavy-case
+  fixed-radius parity across CPU, Embree, OptiX, Vulkan, and indexed PostGIS
+- the repo still remains pre-tag until explicit user-authorized release action
