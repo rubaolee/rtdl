@@ -21,6 +21,12 @@ So this page separates:
 - current implementation status
 - research foundation
 
+It is intentionally narrower than the full repo history:
+
+- it lists the public/current workload families and the main papers that justify
+  them
+- it does not try to restate every archived planning or review artifact
+
 ## Current Supported Workloads
 
 ### Released v0.2.0 workload surface
@@ -51,9 +57,22 @@ part of the current released headline surface:
 - `ray_tri_hitcount`
 - `point_nearest_segment`
 
+`ray_tri_hitcount` is included here as a real low-level primitive workload in
+the repo, but not as a front-door named paper-reproduction target in the same
+way as the RayJoin and RTNN lines.
+
 ## Workload To Paper Mapping
 
-### `lsi`, `pip`, `overlay`
+### RayJoin-centered spatial workloads
+
+Workloads:
+
+- `lsi`
+- `pip`
+- `overlay`
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `point_nearest_segment`
 
 Primary foundation:
 
@@ -61,45 +80,17 @@ Primary foundation:
   *RayJoin: Fast and Precise Spatial Join*,
   Proceedings of the 38th ACM International Conference on Supercomputing
   (ICS 2024),
-  DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
+  DOI: [10.1145/3650200.3656610](https://doi.org/10.1145/3650200.3656610)
 
 Why it matters:
 
 - RayJoin is the first direct application target for RTDL
 - it gives the project a concrete non-graphical spatial-join problem
 - the current RTDL spatial workload line was initially shaped around this paper
-
-### `segment_polygon_hitcount`, `segment_polygon_anyhit_rows`
-
-Primary foundation:
-
-- Liang Geng, Rubao Lee, and Xiaodong Zhang,
-  *RayJoin: Fast and Precise Spatial Join*,
-  Proceedings of the 38th ACM International Conference on Supercomputing
-  (ICS 2024),
-  DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
-
-Why it matters:
-
-- these workloads are RTDL’s bounded release-facing segment/polygon evolution
-  from the original spatial-join problem
-- they stay in the same non-graphical ray-tracing-for-spatial-computation lane
-
-### `point_nearest_segment`
-
-Primary foundation:
-
-- Liang Geng, Rubao Lee, and Xiaodong Zhang,
-  *RayJoin: Fast and Precise Spatial Join*,
-  Proceedings of the 38th ACM International Conference on Supercomputing
-  (ICS 2024),
-  DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
-
-Why it matters:
-
-- this is a natural adjacency workload in the same spatial-query family
-- it helps expand RTDL beyond join-only surfaces while staying consistent with
-  the project’s original spatial-data focus
+- these workloads are the RayJoin-derived and RayJoin-adjacent spatial-query
+  family in RTDL
+- some of them are closer to direct paper reproduction targets than others, but
+  they all belong to the same non-graphical spatial-data lane
 
 ### `polygon_pair_overlap_area_rows`, `polygon_set_jaccard`
 
@@ -112,6 +103,9 @@ Research relationship:
 - this line is currently justified more by bounded workload-design extension
   from RTDL’s spatial-query program than by one single canonical paper in the
   repo
+- it is still grounded in real geometric-overlap use cases, especially overlap
+  measurement and similarity-style comparison, even though this page does not
+  currently name one single anchor paper for it
 - it should therefore be read as **research-adjacent**, but not yet as the same
   kind of direct paper reproduction target that RayJoin is
 
@@ -119,10 +113,10 @@ Research relationship:
 
 Primary foundation:
 
-- Jianqiao Sun, Yao Zhang, Minsong Wei, and Xiaoyong Du,
-  *RTNN: Accelerating Nearest Neighbor Search with Ray Tracing*,
-  Proceedings of the 2022 ACM SIGMOD/PODS International Conference on
-  Management of Data (SIGMOD 2022),
+- Yuhao Zhu,
+  *RTNN: Accelerating Neighbor Search Using Hardware Ray Tracing*,
+  Proceedings of the 27th ACM SIGPLAN Annual Symposium on Principles and
+  Practice of Parallel Programming (PPoPP '22),
   DOI: [10.1145/3503221.3508409](https://doi.org/10.1145/3503221.3508409)
 
 Why it matters:
@@ -141,7 +135,7 @@ research-backed direction:
   *X-HD: Fast Hausdorff Distance Computation with Ray Tracing*,
   Proceedings of the 39th ACM International Conference on Supercomputing
   (ICS 2026),
-  DOI: not listed in the current public materials yet
+  DOI: not yet available in the current public materials (ICS 2026 proceedings)
 
 Why it matters:
 
@@ -163,7 +157,7 @@ is framed as a broader ray-tracing-enabled data/runtime system:
   *LibRTS: A Spatial Indexing Library by Ray Tracing*,
   Proceedings of the 30th ACM SIGPLAN Annual Symposium on Principles and
   Practice of Parallel Programming (PPoPP 2025),
-  DOI: [10.1145/3710848.3710850](https://dl.acm.org/doi/10.1145/3710848.3710850)
+  DOI: [10.1145/3710848.3710850](https://doi.org/10.1145/3710848.3710850)
 
 - Xuri Shi, Kai Zhang, X. Sean Wang, Xiaodong Zhang, and Rubao Lee,
   *RayDB: Building Databases with Ray Tracing Cores*,
