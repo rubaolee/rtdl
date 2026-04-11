@@ -6,6 +6,10 @@ and the active RTDL `v0.4` nearest-neighbor preview line.
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
 
+If you want a guided learning order instead of a flat example list, start with:
+
+- [RTDL Tutorials](tutorials/README.md)
+
 Before running any command below:
 
 - clone the repo with `git clone https://github.com/rubaolee/rtdl.git`

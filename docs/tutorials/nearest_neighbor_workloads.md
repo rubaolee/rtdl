@@ -1,0 +1,116 @@
+# Tutorial: Nearest-Neighbor Workloads
+
+This tutorial covers the active `v0.4` nearest-neighbor line.
+
+Current public workloads:
+
+- `fixed_radius_neighbors`
+- `knn_rows`
+
+These are active preview features, not a released package yet.
+
+## What You Will Learn
+
+- how to write and run the current nearest-neighbor workloads
+- when to choose radius-based output versus top-`k` output
+- how the same workload can grow into a small RTDL-plus-Python application
+
+## Start With `fixed_radius_neighbors`
+
+Run:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+```
+
+This workload answers:
+
+- which search points fall within radius `r` of each query point?
+
+It emits:
+
+- `query_id`
+- `neighbor_id`
+- `distance`
+
+Use it when you want:
+
+- service-radius screening
+- local density row materialization
+- bounded neighborhood joins
+
+## Then Learn `knn_rows`
+
+Run:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
+```
+
+This workload answers:
+
+- what are the nearest `k` search points for each query point?
+
+It emits:
+
+- `query_id`
+- `neighbor_id`
+- `distance`
+- `neighbor_rank`
+
+Use it when you want:
+
+- top-`k` facility matching
+- graph-edge candidate generation
+- deterministic nearest-neighbor row output
+
+## Backend Progression
+
+Once the CPU truth path is clear, the same example programs can be run on:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend embree
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend optix
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend vulkan
+```
+
+and:
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend embree
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend optix
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend vulkan
+```
+
+Honest boundary:
+
+- Embree and OptiX are the stronger accelerated backends today
+- Vulkan is supported as a correctness-first path, not the optimized flagship
+
+## Application-Shaped Examples
+
+After the bare workload examples, move to:
+
+- [examples/rtdl_service_coverage_gaps.py](../../examples/rtdl_service_coverage_gaps.py)
+- [examples/rtdl_event_hotspot_screening.py](../../examples/rtdl_event_hotspot_screening.py)
+- [examples/rtdl_facility_knn_assignment.py](../../examples/rtdl_facility_knn_assignment.py)
+
+These teach the intended composition model:
+
+- RTDL does the neighbor query
+- Python does grouping, summaries, and app-specific decisions
+
+See also:
+
+- [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
+
+## Next Pages
+
+For exact frozen contracts:
+
+- [Fixed-Radius Neighbors Feature Home](../features/fixed_radius_neighbors/README.md)
+- [KNN Rows Feature Home](../features/knn_rows/README.md)
+
+For app/demo composition:
+
+- [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
