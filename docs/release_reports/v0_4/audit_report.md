@@ -12,6 +12,9 @@ Whole-line implementation audit package:
 - [Gemini whole-line audit](../../reports/gemini_goal212_v0_4_full_audit_review_2026-04-10.md)
 - [Claude whole-line audit](../../reports/claude_goal212_v0_4_full_audit_review_2026-04-10.md)
 - [Codex consensus](../../../history/ad_hoc_reviews/2026-04-10-codex-consensus-goal212-v0_4-full-audit.md)
+- [Goal 228 heavy benchmark report](../../reports/goal228_v0_4_heavy_nearest_neighbor_perf_2026-04-10.md)
+- [Goal 229 boundary-fix report](../../reports/goal229_fixed_radius_neighbors_accelerated_boundary_fix_2026-04-10.md)
+- [Goal 232 final pre-release verification report](../../reports/goal232_final_pre_release_verification_2026-04-10.md)
 
 ## Current Audit Verdict
 
@@ -64,3 +67,6 @@ preserved:
 - Claude's two stale-label findings were fixed before any tag creation
 - the later Goal 228 heavy benchmark is preserved
 - the later Goal 229 boundary fix is preserved
+- the clean release-prep worktree full verification run is preserved:
+  - `Ran 525 tests in 116.882s`
+  - `OK (skipped=59)`
