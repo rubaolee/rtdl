@@ -47,7 +47,7 @@ class TestMatrixRunnerTest(unittest.TestCase):
     def test_run_group_reports_command(self) -> None:
         payload = MODULE.run_group("unit")
         self.assertEqual(payload["group"], "unit")
-        self.assertIn("python3 -m unittest", payload["command"])
+        self.assertIn(f"{sys.executable} -m unittest", payload["command"])
         self.assertEqual(payload["module_count"], len(MODULE.TEST_GROUPS["unit"]))
         self.assertIn("output", payload)
 
@@ -61,7 +61,7 @@ class TestMatrixRunnerTest(unittest.TestCase):
         )
         payload = json.loads(cp.stdout)
         self.assertEqual(payload["group"], "unit")
-        self.assertIn("python3 -m unittest", payload["command"])
+        self.assertIn(f"{sys.executable} -m unittest", payload["command"])
         self.assertEqual(payload["module_count"], len(MODULE.TEST_GROUPS["unit"]))
         self.assertIn("output", payload)
 

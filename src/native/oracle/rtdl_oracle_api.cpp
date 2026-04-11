@@ -1,10 +1,16 @@
 #include "rtdl_oracle_internal.h"
 
+#if defined(_WIN32)
+#  define RTDL_ORACLE_EXPORT extern "C" __declspec(dllexport)
+#else
+#  define RTDL_ORACLE_EXPORT extern "C"
+#endif
+
 namespace rtdl::oracle {
 
 }  // namespace rtdl::oracle
 
-extern "C" int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patch_out) {
+RTDL_ORACLE_EXPORT int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patch_out) {
   if (major_out == nullptr || minor_out == nullptr || patch_out == nullptr) {
     return 1;
   }
@@ -14,7 +20,7 @@ extern "C" int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patc
   return 0;
 }
 
-extern "C" int rtdl_oracle_run_lsi(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_lsi(
     const RtdlSegment* left,
     size_t left_count,
     const RtdlSegment* right,
@@ -37,7 +43,7 @@ extern "C" int rtdl_oracle_run_lsi(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_pip(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_pip(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlPolygonRef* polygons,
@@ -64,7 +70,7 @@ extern "C" int rtdl_oracle_run_pip(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_overlay(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_overlay(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -145,7 +151,7 @@ extern "C" int rtdl_oracle_run_overlay(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_ray_hitcount(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_ray_hitcount(
     const RtdlRay2D* rays,
     size_t ray_count,
     const RtdlTriangle* triangles,
@@ -180,7 +186,7 @@ extern "C" int rtdl_oracle_run_ray_hitcount(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_segment_polygon_hitcount(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -256,7 +262,7 @@ extern "C" int rtdl_oracle_run_segment_polygon_hitcount(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_segment_polygon_anyhit_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_segment_polygon_anyhit_rows(
     const RtdlSegment* segments,
     size_t segment_count,
     const RtdlPolygonRef* polygons,
@@ -329,7 +335,7 @@ extern "C" int rtdl_oracle_run_segment_polygon_anyhit_rows(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_polygon_pair_overlap_area_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_pair_overlap_area_rows(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -427,7 +433,7 @@ extern "C" int rtdl_oracle_run_polygon_pair_overlap_area_rows(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_polygon_set_jaccard(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_set_jaccard(
     const RtdlPolygonRef* left_polygons,
     size_t left_count,
     const double* left_vertices_xy,
@@ -467,7 +473,7 @@ extern "C" int rtdl_oracle_run_polygon_set_jaccard(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_point_nearest_segment(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_point_nearest_segment(
     const RtdlPoint* points,
     size_t point_count,
     const RtdlSegment* segments,
@@ -510,7 +516,7 @@ extern "C" int rtdl_oracle_run_point_nearest_segment(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_fixed_radius_neighbors(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_fixed_radius_neighbors(
     const RtdlPoint* query_points,
     size_t query_point_count,
     const RtdlPoint* search_points,
@@ -572,7 +578,7 @@ extern "C" int rtdl_oracle_run_fixed_radius_neighbors(
   }, error_out, error_size);
 }
 
-extern "C" int rtdl_oracle_run_knn_rows(
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows(
     const RtdlPoint* query_points,
     size_t query_point_count,
     const RtdlPoint* search_points,
@@ -633,6 +639,6 @@ extern "C" int rtdl_oracle_run_knn_rows(
   }, error_out, error_size);
 }
 
-extern "C" void rtdl_oracle_free_rows(void* rows) {
+RTDL_ORACLE_EXPORT void rtdl_oracle_free_rows(void* rows) {
   std::free(rows);
 }

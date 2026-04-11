@@ -23,7 +23,7 @@ ENV["PYTHONPATH"] = os.pathsep.join(("src", ".", ENV.get("PYTHONPATH", ""))).str
 class ReportSmokeTest(unittest.TestCase):
     def test_baseline_runner_missing_workload_reports_usage(self) -> None:
         cp = subprocess.run(
-            ["python3", "-m", "rtdsl.baseline_runner"],
+            [sys.executable, "-m", "rtdsl.baseline_runner"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -35,7 +35,7 @@ class ReportSmokeTest(unittest.TestCase):
 
     def test_baseline_runner_invalid_dataset_reports_error(self) -> None:
         cp = subprocess.run(
-            ["python3", "-m", "rtdsl.baseline_runner", "lsi", "--dataset", "__missing_dataset__"],
+            [sys.executable, "-m", "rtdsl.baseline_runner", "lsi", "--dataset", "__missing_dataset__"],
             cwd=ROOT,
             capture_output=True,
             text=True,

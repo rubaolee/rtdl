@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import platform
 import statistics
 import subprocess
 import sys
@@ -21,6 +22,8 @@ from examples.reference.rtdl_language_reference import point_in_counties_referen
 from goal15_compare_embree import build_lsi_dataset
 from goal15_compare_embree import build_pip_dataset
 from goal15_compare_embree import compile_native
+from goal15_compare_embree import _default_embree_prefix
+from goal15_compare_embree import _native_runtime_env
 from goal15_compare_embree import pair_rows
 from goal15_compare_embree import write_points_csv
 from goal15_compare_embree import write_polygons_csv
@@ -73,17 +76,30 @@ def _median_repeat(fn, *, repeats: int) -> float:
     return statistics.median(samples)
 
 
-def _native_summary(executable: Path, args: list[str], timing_out: Path) -> dict[str, object]:
+def _native_summary(
+    executable: Path,
+    args: list[str],
+    timing_out: Path,
+    *,
+    env: dict[str, str] | None = None,
+) -> dict[str, object]:
     timing_out.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run([str(executable), *args, "--timing-out", str(timing_out)], check=True)
+    subprocess.run([str(executable), *args, "--timing-out", str(timing_out)], check=True, env=env)
     return json.loads(timing_out.read_text(encoding="utf-8"))
 
 
-def _native_median(executable: Path, args: list[str], timing_dir: Path, *, repeats: int) -> float:
+def _native_median(
+    executable: Path,
+    args: list[str],
+    timing_dir: Path,
+    *,
+    repeats: int,
+    env: dict[str, str] | None = None,
+) -> float:
     timings = []
     for index in range(repeats):
         timing_path = timing_dir / f"timing_{index:02d}.json"
-        payload = _native_summary(executable, args, timing_path)
+        payload = _native_summary(executable, args, timing_path, env=env)
         timings.append(float(payload["total_sec"]))
     return statistics.median(timings)
 
@@ -146,6 +162,8 @@ def compare_goal19(
     start_total = time.perf_counter()
     out = Path(output_dir or ROOT / "build" / "goal19_compare")
     out.mkdir(parents=True, exist_ok=True)
+    system = platform.system()
+    native_env = _native_runtime_env(system, _default_embree_prefix(system))
 
     lsi_exe = compile_native("goal15_lsi_native", "goal15_lsi_native.cpp")
     pip_exe = compile_native("goal15_pip_native", "goal15_pip_native.cpp")
@@ -172,7 +190,12 @@ def compare_goal19(
         fixture_dir.mkdir(parents=True, exist_ok=True)
         native_args, _, _ = _write_large_inputs(workload, fixture_inputs, fixture_dir)
         native_pairs = fixture_dir / "native_pairs.csv"
-        native_payload = _native_summary(executables[workload], [*native_args, "--pairs-out", str(native_pairs)], fixture_dir / "native_timing.json")
+        native_payload = _native_summary(
+            executables[workload],
+            [*native_args, "--pairs-out", str(native_pairs)],
+            fixture_dir / "native_timing.json",
+            env=native_env,
+        )
         native_lines = native_pairs.read_text(encoding="utf-8").splitlines()
 
         dict_rows = rt.run_embree(kernel, **fixture_inputs)
@@ -188,7 +211,13 @@ def compare_goal19(
             prepared_rows.close()
 
         modes = _prepare_mode_medians(kernel, fixture_inputs, repeats=fixture_repeats)
-        native_median = _native_median(executables[workload], native_args, fixture_dir / "native_timings", repeats=fixture_repeats)
+        native_median = _native_median(
+            executables[workload],
+            native_args,
+            fixture_dir / "native_timings",
+            repeats=fixture_repeats,
+            env=native_env,
+        )
         dict_hash = _hash_rows(dict_rows, left_field, right_field)
         results["fixture"][workload] = {
             "build": fixture_profile[workload]["build"],
@@ -217,11 +246,22 @@ def compare_goal19(
         large_dir = out / "large_profile" / workload
         large_dir.mkdir(parents=True, exist_ok=True)
         native_args, _, _ = _write_large_inputs(workload, large_inputs, large_dir)
-        native_payload = _native_summary(executables[workload], native_args, large_dir / "native_summary.json")
+        native_payload = _native_summary(
+            executables[workload],
+            native_args,
+            large_dir / "native_summary.json",
+            env=native_env,
+        )
         dict_rows = rt.run_embree(kernel, **large_inputs)
         dict_hash = _hash_rows(dict_rows, left_field, right_field)
         modes = _prepare_mode_medians(kernel, large_inputs, repeats=large_repeats)
-        native_median = _native_median(executables[workload], native_args, large_dir / "native_timings", repeats=large_repeats)
+        native_median = _native_median(
+            executables[workload],
+            native_args,
+            large_dir / "native_timings",
+            repeats=large_repeats,
+            env=native_env,
+        )
         results["large_profile"][workload] = {
             "build": large_profile[workload]["build"],
             "probe": large_profile[workload]["probe"],

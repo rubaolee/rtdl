@@ -56,7 +56,7 @@ Minimal Python dependency guidance:
 Fastest safe install path for new users:
 
 ```bash
-python3 -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## See It Quickly
@@ -132,8 +132,8 @@ If you want the shortest path to seeing RTDL do something real:
 Repository-root commands:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 The `PYTHONPATH=src:.` prefix tells Python to import the local RTDL package

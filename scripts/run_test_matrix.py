@@ -99,7 +99,7 @@ def group_modules(name: str) -> tuple[str, ...]:
 def run_group(name: str) -> dict[str, object]:
     modules = group_modules(name)
     cp = subprocess.run(
-        ["python3", "-m", "unittest", *modules],
+        [sys.executable, "-m", "unittest", *modules],
         cwd=str(ROOT),
         env=build_env(),
         text=True,
@@ -111,7 +111,7 @@ def run_group(name: str) -> dict[str, object]:
         output = (output + ("\n" if output else "") + cp.stderr).strip()
     return {
         "group": name,
-        "command": "python3 -m unittest " + " ".join(modules),
+        "command": sys.executable + " -m unittest " + " ".join(modules),
         "module_count": len(modules),
         "returncode": cp.returncode,
         "ok": cp.returncode == 0,

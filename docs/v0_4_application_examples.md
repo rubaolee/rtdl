@@ -33,7 +33,7 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference --copies 2
+PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference --copies 2
 ```
 
 ## Event Hotspot Screening
@@ -48,7 +48,7 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_event_hotspot_screening.py --backend cpu_python_reference --copies 2
+PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend cpu_python_reference --copies 2
 ```
 
 Important boundary:
@@ -69,7 +69,7 @@ Question:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_facility_knn_assignment.py --backend cpu_python_reference --copies 2
+PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend cpu_python_reference --copies 2
 ```
 
 ## Optional SciPy Comparison
@@ -77,9 +77,9 @@ PYTHONPATH=src:. python3 examples/rtdl_facility_knn_assignment.py --backend cpu_
 If SciPy is installed, all three examples also support:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_service_coverage_gaps.py --backend scipy
-PYTHONPATH=src:. python3 examples/rtdl_event_hotspot_screening.py --backend scipy
-PYTHONPATH=src:. python3 examples/rtdl_facility_knn_assignment.py --backend scipy
+PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend scipy
+PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend scipy
+PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend scipy
 ```
 
 ## Honest Summary

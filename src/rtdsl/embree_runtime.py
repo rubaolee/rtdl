@@ -6,6 +6,7 @@ import functools
 import os
 import platform
 import subprocess
+import tempfile
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
@@ -51,6 +52,24 @@ def _geos_pkg_config_flags(option: str) -> list[str]:
     if flags:
         return flags
     return ["-lgeos_c"] if option == "--libs" else []
+
+
+def _run_windows_compile(command: list[str], *, vcvars: Path, cwd: Path) -> None:
+    script = "\r\n".join(
+        (
+            "@echo off",
+            f'call "{vcvars}" >nul 2>&1',
+            "if errorlevel 1 exit /b %errorlevel%",
+            subprocess.list2cmdline(command),
+        )
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".bat", delete=False, encoding="utf-8", newline="") as handle:
+        handle.write(script)
+        script_path = Path(handle.name)
+    try:
+        subprocess.run(["cmd", "/c", str(script_path)], check=True, cwd=cwd)
+    finally:
+        script_path.unlink(missing_ok=True)
 
 
 class _RtdlSegment(ctypes.Structure):
@@ -1791,12 +1810,7 @@ def _ensure_embree_library() -> Path:
                 raise RuntimeError(
                     "Windows Embree build requires vcvars64.bat. Set RTDL_VCVARS64 to the Visual Studio Build Tools vcvars64.bat path."
                 )
-            quoted = " ".join(f'\"{part}\"' if " " in part else part for part in command)
-            subprocess.run(
-                ["cmd", "/c", f'call "{vcvars}" >nul 2>&1 && {quoted}'],
-                check=True,
-                cwd=repo_root,
-            )
+            _run_windows_compile(command, vcvars=vcvars, cwd=repo_root)
         else:
             subprocess.run(command, check=True, cwd=repo_root)
     return library_path

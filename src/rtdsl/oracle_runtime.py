@@ -5,6 +5,7 @@ import functools
 import os
 import platform
 import subprocess
+import tempfile
 from pathlib import Path
 
 from .ir import CompiledKernel
@@ -24,6 +25,8 @@ def _pkg_config_flags(package: str, option: str) -> list[str]:
 
 
 def _geos_pkg_config_flags(option: str) -> list[str]:
+    if platform.system() == "Windows":
+        return []
     flags = _pkg_config_flags("geos", option)
     if flags:
         return flags
@@ -31,6 +34,24 @@ def _geos_pkg_config_flags(option: str) -> list[str]:
     if flags:
         return flags
     return ["-lgeos_c"] if option == "--libs" else []
+
+
+def _run_windows_compile(command: list[str], *, vcvars: Path, cwd: Path) -> None:
+    script = "\r\n".join(
+        (
+            "@echo off",
+            f'call "{vcvars}" >nul 2>&1',
+            "if errorlevel 1 exit /b %errorlevel%",
+            subprocess.list2cmdline(command),
+        )
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".bat", delete=False, encoding="utf-8", newline="") as handle:
+        handle.write(script)
+        script_path = Path(handle.name)
+    try:
+        subprocess.run(["cmd", "/c", str(script_path)], check=True, cwd=cwd)
+    finally:
+        script_path.unlink(missing_ok=True)
 
 
 class _RtdlSegment(ctypes.Structure):
@@ -846,28 +867,50 @@ def _ensure_oracle_library() -> Path:
     source_path = repo_root / "src" / "native" / "rtdl_oracle.cpp"
     source_paths = (source_path, *sorted((repo_root / "src" / "native" / "oracle").glob("*")))
     system = platform.system()
-    library_ext = ".dylib" if system == "Darwin" else ".so"
+    if system == "Darwin":
+        library_ext = ".dylib"
+    elif system == "Windows":
+        library_ext = ".dll"
+    else:
+        library_ext = ".so"
     library_path = build_dir / f"librtdl_oracle{library_ext}"
-    compiler = os.environ.get("CXX", "clang++" if system == "Darwin" else "g++")
-    shared_flags = ["-dynamiclib", "-fPIC"] if system == "Darwin" else ["-shared", "-fPIC"]
+    if system == "Darwin":
+        compiler = os.environ.get("CXX", "clang++")
+        shared_flags = ["-dynamiclib", "-fPIC"]
+    elif system == "Windows":
+        compiler = os.environ.get("CXX", r"C:\Program Files\LLVM\bin\clang++.exe")
+        shared_flags = ["-shared"]
+    else:
+        compiler = os.environ.get("CXX", "g++")
+        shared_flags = ["-shared", "-fPIC"]
     geos_cflags = _geos_pkg_config_flags("--cflags")
     geos_libs = _geos_pkg_config_flags("--libs")
     newest_source_mtime = max(path.stat().st_mtime for path in source_paths)
     needs_build = not library_path.exists() or library_path.stat().st_mtime < newest_source_mtime
     if needs_build:
-        subprocess.run(
-            [
-                compiler,
-                "-std=c++17",
-                "-O2",
-                *shared_flags,
-                *geos_cflags,
-                str(source_path),
-                *geos_libs,
-                "-o",
-                str(library_path),
-            ],
-            check=True,
-            cwd=repo_root,
-        )
+        command = [
+            compiler,
+            "-std=c++17",
+            "-O2",
+            *shared_flags,
+            *geos_cflags,
+            str(source_path),
+            *geos_libs,
+            "-o",
+            str(library_path),
+        ]
+        if system == "Windows":
+            vcvars = Path(
+                os.environ.get(
+                    "RTDL_VCVARS64",
+                    r"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+                )
+            )
+            if not vcvars.exists():
+                raise RuntimeError(
+                    "Windows oracle build requires vcvars64.bat. Set RTDL_VCVARS64 to the Visual Studio Build Tools vcvars64.bat path."
+                )
+            _run_windows_compile(command, vcvars=vcvars, cwd=repo_root)
+        else:
+            subprocess.run(command, check=True, cwd=repo_root)
     return library_path

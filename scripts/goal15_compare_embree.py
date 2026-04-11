@@ -7,6 +7,7 @@ import os
 import platform
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -42,6 +43,43 @@ def geos_pkg_config_flags(option: str) -> list[str]:
     return ["-lgeos_c"] if option == "--libs" else []
 
 
+def _run_windows_compile(command: list[str], *, vcvars: Path, cwd: Path) -> None:
+    script = "\r\n".join(
+        (
+            "@echo off",
+            f'call "{vcvars}" >nul 2>&1',
+            "if errorlevel 1 exit /b %errorlevel%",
+            subprocess.list2cmdline(command),
+        )
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".bat", delete=False, encoding="utf-8", newline="") as handle:
+        handle.write(script)
+        script_path = Path(handle.name)
+    try:
+        subprocess.run(["cmd", "/c", str(script_path)], check=True, cwd=cwd)
+    finally:
+        script_path.unlink(missing_ok=True)
+
+
+def _default_embree_prefix(system: str) -> Path:
+    if system == "Darwin":
+        return Path("/opt/homebrew/opt/embree")
+    if system == "Windows":
+        if "RTDL_EMBREE_PREFIX" in os.environ:
+            return Path(os.environ["RTDL_EMBREE_PREFIX"])
+        home = Path.home()
+        for candidate in (
+            home / "vendor",
+            home / "vendor" / "embree",
+            home / "vendor" / "embree-4.4.0",
+            home / "vendor" / "embree-4.4.0.x64.windows",
+        ):
+            if (candidate / "include" / "embree4").exists():
+                return candidate
+        return home / "vendor"
+    return Path("/usr")
+
+
 def write_segments_csv(path: Path, segments: tuple[rt.Segment, ...]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
@@ -69,32 +107,60 @@ def write_polygons_csv(path: Path, polygons: tuple[rt.Polygon, ...]) -> None:
 def compile_native(exe_name: str, source_name: str) -> Path:
     build_dir = ROOT / "build" / "goal15_native"
     build_dir.mkdir(parents=True, exist_ok=True)
-    output_path = build_dir / exe_name
     source_path = ROOT / "apps" / source_name
     native_path = ROOT / "src" / "native" / "rtdl_embree.cpp"
     system = platform.system()
-    default_prefix = "/opt/homebrew/opt/embree" if system == "Darwin" else "/usr"
-    embree_prefix = Path(os.environ.get("RTDL_EMBREE_PREFIX", default_prefix))
-    geos_cflags = geos_pkg_config_flags("--cflags")
-    geos_libs = geos_pkg_config_flags("--libs")
-    cmd = [
-        "c++",
-        "-std=c++17",
-        "-O2",
-        *geos_cflags,
-        "-I",
-        str(embree_prefix / "include"),
-        str(source_path),
-        str(native_path),
-        "-L",
-        str(embree_prefix / "lib"),
-        "-Wl,-rpath," + str(embree_prefix / "lib"),
-        "-lembree4",
-        *geos_libs,
-        "-o",
-        str(output_path),
-    ]
-    subprocess.run(cmd, check=True)
+    embree_prefix = _default_embree_prefix(system)
+    output_name = exe_name + ".exe" if system == "Windows" else exe_name
+    output_path = build_dir / output_name
+    geos_cflags = [] if system == "Windows" else geos_pkg_config_flags("--cflags")
+    geos_libs = [] if system == "Windows" else geos_pkg_config_flags("--libs")
+    if system == "Windows":
+        compiler = os.environ.get("CXX", r"C:\Program Files\LLVM\bin\clang++.exe")
+        cmd = [
+            compiler,
+            "-std=c++17",
+            "-O2",
+            *geos_cflags,
+            "-I",
+            str(embree_prefix / "include"),
+            str(source_path),
+            str(native_path),
+            str(embree_prefix / "lib" / "embree4.lib"),
+            str(embree_prefix / "lib" / "tbb12.lib"),
+            "-o",
+            str(output_path),
+        ]
+        vcvars = Path(
+            os.environ.get(
+                "RTDL_VCVARS64",
+                r"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+            )
+        )
+        if not vcvars.exists():
+            raise RuntimeError(
+                "Windows native comparison build requires vcvars64.bat. Set RTDL_VCVARS64 to the Visual Studio Build Tools vcvars64.bat path."
+            )
+        _run_windows_compile(cmd, vcvars=vcvars, cwd=ROOT)
+    else:
+        cmd = [
+            "c++",
+            "-std=c++17",
+            "-O2",
+            *geos_cflags,
+            "-I",
+            str(embree_prefix / "include"),
+            str(source_path),
+            str(native_path),
+            "-L",
+            str(embree_prefix / "lib"),
+            "-Wl,-rpath," + str(embree_prefix / "lib"),
+            "-lembree4",
+            *geos_libs,
+            "-o",
+            str(output_path),
+        ]
+        subprocess.run(cmd, check=True)
     return output_path
 
 
@@ -110,8 +176,22 @@ def time_call(fn, *args, **kwargs):
     return result, end - start
 
 
-def run_native(executable: Path, args: list[str]) -> dict[str, object]:
-    subprocess.run([str(executable), *args], check=True)
+def _native_runtime_env(system: str, embree_prefix: Path) -> dict[str, str] | None:
+    if system != "Windows":
+        return None
+    env = os.environ.copy()
+    path_entries = [
+        str(embree_prefix / "bin"),
+        str(embree_prefix / "lib"),
+        str(embree_prefix),
+        env.get("PATH", ""),
+    ]
+    env["PATH"] = os.pathsep.join(entry for entry in path_entries if entry)
+    return env
+
+
+def run_native(executable: Path, args: list[str], *, env: dict[str, str] | None = None) -> dict[str, object]:
+    subprocess.run([str(executable), *args], check=True, env=env)
     return {}
 
 
@@ -154,6 +234,9 @@ def build_pip_dataset(build_count: int, probe_count: int, distribution: str):
 def compare_goal15(output_dir: Path | None = None) -> dict[str, object]:
     out = Path(output_dir or ROOT / "build" / "goal15_compare")
     out.mkdir(parents=True, exist_ok=True)
+    system = platform.system()
+    embree_prefix = _default_embree_prefix(system)
+    native_env = _native_runtime_env(system, embree_prefix)
     lsi_exe = compile_native("goal15_lsi_native", "goal15_lsi_native.cpp")
     pip_exe = compile_native("goal15_pip_native", "goal15_pip_native.cpp")
 
@@ -174,7 +257,11 @@ def compare_goal15(output_dir: Path | None = None) -> dict[str, object]:
     native_timing = lsi_dir / "native_timing.json"
     write_segments_csv(left_csv, left)
     write_segments_csv(right_csv, right)
-    run_native(lsi_exe, ["--left", str(left_csv), "--right", str(right_csv), "--pairs-out", str(native_pairs), "--timing-out", str(native_timing)])
+    run_native(
+        lsi_exe,
+        ["--left", str(left_csv), "--right", str(right_csv), "--pairs-out", str(native_pairs), "--timing-out", str(native_timing)],
+        env=native_env,
+    )
     cpu_rows, cpu_sec = time_call(rt.run_cpu, county_zip_join_reference, left=left, right=right)
     embree_rows, embree_sec = time_call(rt.run_embree, county_zip_join_reference, left=left, right=right)
     cpu_pairs = pair_rows(cpu_rows, "left_id", "right_id")
@@ -201,7 +288,11 @@ def compare_goal15(output_dir: Path | None = None) -> dict[str, object]:
     native_timing = pip_dir / "native_timing.json"
     write_points_csv(points_csv, points)
     write_polygons_csv(polygons_csv, polygons)
-    run_native(pip_exe, ["--points", str(points_csv), "--polygons", str(polygons_csv), "--pairs-out", str(native_pairs), "--timing-out", str(native_timing)])
+    run_native(
+        pip_exe,
+        ["--points", str(points_csv), "--polygons", str(polygons_csv), "--pairs-out", str(native_pairs), "--timing-out", str(native_timing)],
+        env=native_env,
+    )
     cpu_rows, cpu_sec = time_call(rt.run_cpu, point_in_counties_reference, points=points, polygons=polygons)
     embree_rows, embree_sec = time_call(rt.run_embree, point_in_counties_reference, points=points, polygons=polygons)
     cpu_pairs = pair_rows(cpu_rows, "point_id", "polygon_id")

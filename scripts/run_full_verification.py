@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import rtdsl as rt
+from examples.reference.rtdl_language_reference import county_zip_join_reference
 from goal15_compare_embree import compare_goal15
 from tests._embree_support import embree_available
 
@@ -38,14 +39,14 @@ def run_command(*args: str, cwd: Path | None = None) -> subprocess.CompletedProc
 
 
 def run_unittest_suite() -> dict[str, object]:
-    cp = run_command("python3", "-m", "unittest", "discover", "-s", "tests", "-p", "*_test.py")
+    cp = run_command(sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "*_test.py")
     if cp.returncode != 0:
         raise RuntimeError(cp.stdout + ("\n" + cp.stderr if cp.stderr else ""))
     transcript = cp.stdout
     if cp.stderr:
         transcript = (transcript + ("\n" if transcript else "") + cp.stderr).strip()
     return {
-        "command": "python3 -m unittest discover -s tests -p '*_test.py'",
+        "command": sys.executable + " -m unittest discover -s tests -p '*_test.py'",
         "output": transcript,
     }
 
@@ -53,13 +54,13 @@ def run_unittest_suite() -> dict[str, object]:
 def run_cli_smokes() -> dict[str, object]:
     results: dict[str, object] = {}
 
-    missing = run_command("python3", "-m", "rtdsl.baseline_runner")
+    missing = run_command(sys.executable, "-m", "rtdsl.baseline_runner")
     if missing.returncode == 0 or "usage:" not in missing.stderr.lower():
         raise RuntimeError("baseline_runner missing-arg smoke check did not fail with usage output")
     results["baseline_runner_missing_arg"] = {"returncode": missing.returncode}
 
     invalid_dataset = run_command(
-        "python3",
+        sys.executable,
         "-m",
         "rtdsl.baseline_runner",
         "lsi",
@@ -72,7 +73,7 @@ def run_cli_smokes() -> dict[str, object]:
     results["baseline_runner_invalid_dataset"] = {"returncode": invalid_dataset.returncode}
 
     cpu_ok = run_command(
-        "python3",
+        sys.executable,
         "-m",
         "rtdsl.baseline_runner",
         "lsi",
@@ -119,7 +120,7 @@ def run_embree_smokes() -> dict[str, object]:
     if not embree_available():
         return {"skipped": True, "reason": "Embree is not installed in the current environment"}
     payload = rt.run_baseline_case(
-        rt.compile_kernel(__import__("examples.rtdl_language_reference", fromlist=["county_zip_join_reference"]).county_zip_join_reference),
+        rt.compile_kernel(county_zip_join_reference),
         "authored_lsi_minimal",
         backend="both",
     )

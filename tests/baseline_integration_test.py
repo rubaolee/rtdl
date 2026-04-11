@@ -9,6 +9,8 @@ sys.path.insert(0, ".")
 import rtdsl as rt
 from examples.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
 from examples.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
+from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radius_neighbors_reference
+from examples.reference.rtdl_knn_rows_reference import knn_rows_reference
 from examples.reference.rtdl_workload_reference import point_nearest_segment_reference
 from examples.reference.rtdl_workload_reference import segment_polygon_anyhit_rows_reference
 from examples.reference.rtdl_workload_reference import segment_polygon_hitcount_reference
@@ -34,6 +36,8 @@ class EmbreeBaselineIntegrationTest(unittest.TestCase):
             "segment_polygon_hitcount": segment_polygon_hitcount_reference,
             "segment_polygon_anyhit_rows": segment_polygon_anyhit_rows_reference,
             "point_nearest_segment": point_nearest_segment_reference,
+            "fixed_radius_neighbors": fixed_radius_neighbors_reference,
+            "knn_rows": knn_rows_reference,
         }
         for workload in rt.BASELINE_WORKLOAD_ORDER:
             for dataset in rt.representative_dataset_names(workload):
