@@ -1,5 +1,14 @@
 # Embree RayJoin Reproduction Program
 
+Historical note:
+
+- this is a preserved pre-NVIDIA planning program from the older Embree-only
+  reproduction phase
+- it should not be read as the current live roadmap for the released `v0.4.0`
+  repository state
+- current future-facing paper-consistency direction belongs to the post-`v0.4`
+  line
+
 ## Purpose
 
 This program defines the next pre-NVIDIA phase of RTDL.

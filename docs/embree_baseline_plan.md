@@ -1,5 +1,12 @@
 # Embree Baseline Plan
 
+Historical note:
+
+- this is preserved pre-`v0.4.0` planning context from the earlier Embree-first
+  phase of the project
+- it is not the current release plan for RTDL
+- for current released status, use the `v0.4.0` release reports instead
+
 ## Goal
 
 The Embree baseline goal is to make RTDL a complete executable system on this Mac for the current RayJoin-aligned workload surface.
@@ -10,7 +17,7 @@ That means:
 - `rt.run_embree(...)` is the real native backend runtime,
 - the workload, dataset, and ABI contracts are stable enough to carry forward into the future OptiX backend.
 
-This is the pre-GPU foundation for RTDL v0.1.
+This is the preserved pre-GPU foundation plan from the old `v0.1` line.
 
 ## Baseline Scope
 

@@ -2,6 +2,11 @@
 
 This file summarizes the current multi-agent workflow used in RTDL.
 
+Current authoritative rule source:
+
+- `refresh.md` in the maintainer home directory remains the first file to re-read
+  before substantial RTDL work after context loss or long sessions.
+
 ## Roles
 
 ### Codex
@@ -36,8 +41,9 @@ Typical round:
 
 - Codex controls the main repo
 - external implementation work must be reviewed before merge
-- at least two AIs should agree before closure when that rule is active for the
-  round
+- the default closure rule is now stronger than generic "two AIs should agree":
+  - saved Codex consensus is required
+  - plus at least one saved Gemini or Claude review artifact
 - when one reviewer is quota-blocked or unavailable, the fallback rule must be
   stated explicitly
 
@@ -60,3 +66,4 @@ round. Historical details remain in `history/`.
 The stricter reviewer-accountability and audit-contract rules are documented in:
 
 - `docs/audit_flow.md`
+- `refresh.md`

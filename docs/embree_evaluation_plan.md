@@ -1,5 +1,11 @@
 # Embree Evaluation Plan
 
+Historical note:
+
+- this document describes a preserved pre-`v0.4.0` Embree evaluation phase
+- it is useful for historical planning context, not as the live release or
+  roadmap document for the current RTDL line
+
 ## Goal
 
 Goal 9 is to reproduce as much of the RayJoin evaluation structure as practical
@@ -11,7 +17,8 @@ Status note:
 - This document now serves as the checked-in foundation for the newer Goal 13 paper-reproduction phase.
 - The preserved Goal 13 artifact set extends the same Embree evaluation machinery toward RayJoin-paper table and figure analogues, even though Goal 13 itself is now canceled as superseded by Goal 15.
 
-This is not the final RT-core result. It is the local pre-GPU evaluation phase.
+This is not the final RT-core result. It is the preserved local pre-GPU
+evaluation phase from the earlier project line.
 
 The outputs of Goal 9 are:
 

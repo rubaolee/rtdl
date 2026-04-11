@@ -1,0 +1,140 @@
+{
+  "by_priority_and_review": [
+    {
+      "count": 1,
+      "priority_tier": 1,
+      "review_status": "reviewed"
+    },
+    {
+      "count": 7,
+      "priority_tier": 2,
+      "review_status": "reviewed"
+    },
+    {
+      "count": 1123,
+      "priority_tier": 3,
+      "review_status": "not_reviewed"
+    },
+    {
+      "count": 61,
+      "priority_tier": 3,
+      "review_status": "reviewed"
+    },
+    {
+      "count": 41,
+      "priority_tier": 4,
+      "review_status": "not_reviewed"
+    },
+    {
+      "count": 16,
+      "priority_tier": 4,
+      "review_status": "reviewed"
+    },
+    {
+      "count": 110,
+      "priority_tier": 5,
+      "review_status": "not_reviewed"
+    },
+    {
+      "count": 10,
+      "priority_tier": 5,
+      "review_status": "reviewed"
+    },
+    {
+      "count": 108,
+      "priority_tier": 6,
+      "review_status": "not_reviewed"
+    },
+    {
+      "count": 11,
+      "priority_tier": 6,
+      "review_status": "reviewed"
+    }
+  ],
+  "by_review_status": {
+    "not_reviewed": 1382,
+    "reviewed": 106
+  },
+  "recent_runs": [
+    {
+      "created_at_utc": "2026-04-11T12:21:57.524255+00:00",
+      "git_commit": "5dde20764e04f2d3248c7b5d42f7b87056cd9cea",
+      "notes": "Engineering/support docs audit pass covering workflow and older Embree planning docs.",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 13,
+      "scope_label": "goal254_engineering_support_docs"
+    },
+    {
+      "created_at_utc": "2026-04-11T11:00:17.340692+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Goal 252 archive and early goal docs audit pass",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 12,
+      "scope_label": "archive_and_early_goal_docs_audit_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T10:58:54.596171+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Goal 251 architecture and process docs audit pass",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 11,
+      "scope_label": "architecture_process_docs_audit_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T10:52:41.265651+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Goal 250 feature docs audit pass with example bootstrap repairs",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 10,
+      "scope_label": "feature_docs_audit_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T10:36:15.911620+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Goal 249 native CPU/oracle environment hardening",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 9,
+      "scope_label": "native_cpu_oracle_environment_hardening_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T10:31:15.644615+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Goal 248 follow-up remediation pass",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 8,
+      "scope_label": "follow_up_remediation_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T05:26:17.258617+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Seeded pass for preserved wiki drafts and selected archive/release-adjacent handoff and report files.",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 7,
+      "scope_label": "archive_surface_audit_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T05:22:40.069673+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Seeded pass for the release-critical nearest-neighbor verification surface after v0.4.0 release.",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 6,
+      "scope_label": "verification_surface_audit_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T05:19:16.929952+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Seeded pass for the public code-facing RTDL surface after v0.4.0 release, preserving oracle environment-hardening follow-up.",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 5,
+      "scope_label": "code_surface_audit_pass"
+    },
+    {
+      "created_at_utc": "2026-04-11T05:16:07.715203+00:00",
+      "git_commit": "c416920309fda46b8a568a3db2a9ef37911c2062",
+      "notes": "Seeded pass for the release-facing example surface after the hello-world bootstrap repair.",
+      "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+      "run_id": 4,
+      "scope_label": "examples_audit_pass"
+    }
+  ]
+}
