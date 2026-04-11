@@ -157,7 +157,8 @@ The example is intentionally minimal and uses only:
 - `rt.run_cpu_python_reference(...)`
 
 That keeps the first program short and easy to read. After that, you can look
-at the larger examples for other backends.
+at the larger examples for other backends (Embree, OptiX, and Vulkan are
+supported for most workloads).
 
 If you want the same scene with backend switching, use:
 

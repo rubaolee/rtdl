@@ -307,7 +307,7 @@ Current status:
 - lowering support exists
 - Python truth-path support exists
 - native CPU/oracle support exists
-- accelerated backend support is not implemented yet
+- accelerated backend support exists (Embree, OptiX, Vulkan)
 - use the feature home for the frozen public contract:
   - [Fixed-Radius Neighbors](../features/fixed_radius_neighbors/README.md)
 
@@ -323,7 +323,7 @@ Current status:
 - lowering support exists
 - Python truth-path support exists
 - native CPU/oracle support exists
-- accelerated backend support exists through Embree
+- accelerated backend support exists (Embree, OptiX, Vulkan)
 - use the feature home for the frozen public contract:
   - [KNN Rows](../features/knn_rows/README.md)
 
@@ -493,8 +493,8 @@ Allowed emit fields:
 Current note:
 
 - this contract is frozen for `v0.4`
-- current closure is Python truth path plus native CPU/oracle
-- accelerated backend closure is still pending
+- current closure includes Python truth path, native CPU/oracle, Embree, OptiX,
+  and Vulkan
 
 ## Canonical Kernel Shapes
 
@@ -579,7 +579,6 @@ def hydrant_nearest_road():
 ## Non-Goals Of The Current Language
 
 - exact or robust precision
-- multiple backends
 - non-BVH acceleration structures
 - arbitrary control flow inside kernels
 - typed kernel parameters

@@ -43,20 +43,37 @@ PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_referenc
 
 ### App-Style Nearest-Neighbor Examples
 
+Code:
+
 - [rtdl_service_coverage_gaps.py](../examples/rtdl_service_coverage_gaps.py)
 - [rtdl_event_hotspot_screening.py](../examples/rtdl_event_hotspot_screening.py)
 - [rtdl_facility_knn_assignment.py](../examples/rtdl_facility_knn_assignment.py)
 
-See:
-
-- [v0.4 Application Examples](v0_4_application_examples.md)
-
-If Embree is available locally, both examples also support:
+Run:
 
 ```bash
 cd rtdl
+PYTHONPATH=src:. python3 examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference
+```
+
+See [v0.4 Application Examples](v0_4_application_examples.md) for full descriptions and SQL comparisons.
+
+### Accelerated Backend Selection
+
+If accelerated backends are available, the `v0.4` nearest-neighbor examples support:
+
+```bash
+# Embree (CPU)
 PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend embree
 PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend embree
+
+# OptiX (GPU RT-cores)
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend optix
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend optix
+
+# Vulkan (GPU RT-cores, correctness-first)
+PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend vulkan
+PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend vulkan
 ```
 
 ## Core examples

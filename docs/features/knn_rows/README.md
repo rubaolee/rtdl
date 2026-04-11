@@ -13,7 +13,8 @@ Current implemented boundary:
 - Embree: yes
 - SciPy `cKDTree` external baseline: yes
 - bounded PostGIS helper: yes
-- OptiX / Vulkan: not yet
+- OptiX: yes
+- Vulkan: yes (correctness-first)
 
 ## Purpose
 
@@ -152,10 +153,10 @@ return rt.emit(neighbors, fields=["query_id", "neighbor_id", "distance", "neighb
 
 - treating this as radius filtering
 - assuming unlimited neighbors per query
-- reading current docs as proof of implementation before the runtime lands
 
 ## Limitations
 
+- current accelerated closure includes Embree, OptiX, and Vulkan
 - first release scope is 2D only
 - first release scope is Euclidean only
 - first release scope is row materialization, not aggregate summaries

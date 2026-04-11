@@ -13,7 +13,8 @@ Current implemented boundary:
 - Embree: yes
 - SciPy `cKDTree` external baseline: yes
 - bounded PostGIS helper: yes
-- OptiX / Vulkan: not yet
+- OptiX: yes
+- Vulkan: yes (correctness-first)
 
 ## Purpose
 
@@ -152,13 +153,11 @@ return rt.emit(neighbors, fields=["query_id", "neighbor_id", "distance"])
 - using this as a count-only workload
 - assuming unlimited neighbors per query
 - treating this as KNN without an explicit radius rule
-- reading current docs as proof of implementation before the runtime lands
 
 ## Limitations
 
-- current accelerated closure is Embree only
-- SciPy and PostGIS are optional comparison dependencies, not required first-run
-  dependencies
+- current accelerated closure includes Embree, OptiX, and Vulkan
+- SciPy and PostGIS are implemented as optional comparison baselines
 - first release scope is 2D only
 - first release scope is Euclidean only
 - first release scope is row materialization, not aggregate summaries

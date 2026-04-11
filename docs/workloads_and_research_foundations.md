@@ -40,8 +40,7 @@ These are the accepted public workloads in the released `v0.2.0` package:
 
 ### Active v0.4 preview workload surface
 
-These are implemented in the active nearest-neighbor preview line, but are not
-released yet:
+These are implemented in the active nearest-neighbor preview line (currently running across CPU/Oracle, Embree, OptiX, and Vulkan backends), but are not released yet:
 
 - `fixed_radius_neighbors`
 - `knn_rows`
@@ -182,8 +181,7 @@ These matter because they show that RTDL is part of a coherent research line:
 - RTDL’s earliest and strongest workload foundation is RayJoin
 - the active `v0.4` line is founded on nearest-neighbor research rather than
   an ad hoc feature choice
-- some current workloads, especially the narrow Jaccard line, are real and
-  useful but are not yet tied here to a single canonical workload paper in the
-  same direct way
+- the overlap-area and Jaccard line now has a named pathology-image
+  cross-comparison paper anchor rather than only a loose research association
 - the project’s workload growth should keep following named research targets,
   not arbitrary feature accumulation

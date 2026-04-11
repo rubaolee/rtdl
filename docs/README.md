@@ -10,7 +10,7 @@ If you are new to RTDL, read the live docs first.
 Quick environment facts before you start:
 
 - this checkout currently identifies itself as `v0.3.0`
-- active development after that release is the `v0.4` nearest-neighbor line
+- active development after that release is the `v0.4` nearest-neighbor line (active preview, reopened for GPU completion)
 - clone the repo as `rtdl`
 - the local Python package imported by the examples is `rtdsl`
 - `PYTHONPATH=src:.` is what makes `src/rtdsl/` importable from the checkout
