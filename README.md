@@ -23,7 +23,7 @@ core can power a bounded Python application.
   <img
     src="docs/assets/rtdl_visual_demo_thumb.png"
     alt="RTDL visual demo"
-    width="360"
+    width="240"
   />
 </a>
 
