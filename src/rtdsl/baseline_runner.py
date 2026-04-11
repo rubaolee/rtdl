@@ -21,6 +21,7 @@ from .external_baselines import run_postgis_knn_rows
 from .external_baselines import run_scipy_fixed_radius_neighbors
 from .external_baselines import run_scipy_knn_rows
 from .optix_runtime import run_optix
+from .vulkan_runtime import run_vulkan
 from .reference import Point
 from .reference import Polygon
 from .reference import Ray2D
@@ -94,9 +95,9 @@ def run_baseline_case(
     *,
     postgis_dsn: str | None = None,
 ) -> dict[str, object]:
-    if backend not in {"cpu_python_reference", "cpu", "embree", "optix", "both", "scipy", "postgis"}:
+    if backend not in {"cpu_python_reference", "cpu", "embree", "optix", "vulkan", "both", "scipy", "postgis"}:
         raise ValueError(
-            "baseline backend must be one of: cpu_python_reference, cpu, embree, optix, both, scipy, postgis"
+            "baseline backend must be one of: cpu_python_reference, cpu, embree, optix, vulkan, both, scipy, postgis"
         )
     compiled = (
         kernel_fn_or_compiled
@@ -120,6 +121,19 @@ def run_baseline_case(
         payload["embree_rows"] = run_embree(compiled, **bound_inputs)
     if backend == "optix":
         payload["optix_rows"] = run_optix(compiled, **bound_inputs)
+    if backend == "vulkan":
+        if workload not in {"fixed_radius_neighbors", "knn_rows"}:
+            raise ValueError(
+                "Vulkan baseline backend is currently implemented only for fixed_radius_neighbors and knn_rows"
+            )
+        python_rows = run_cpu_python_reference(compiled, **bound_inputs)
+        payload["cpu_python_reference_rows"] = python_rows
+        payload["vulkan_rows"] = run_vulkan(compiled, **bound_inputs)
+        payload["parity"] = compare_baseline_rows(
+            workload,
+            python_rows,
+            payload["vulkan_rows"],
+        )
     if backend == "scipy":
         python_rows = run_cpu_python_reference(compiled, **bound_inputs)
         payload["cpu_python_reference_rows"] = python_rows
@@ -678,7 +692,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dataset", default=None)
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "optix", "both", "scipy", "postgis"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "both", "scipy", "postgis"),
         default="both",
     )
     parser.add_argument(
