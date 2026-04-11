@@ -10,7 +10,7 @@ If you are new to RTDL, read the live docs first.
 Quick environment facts before you start:
 
 - this checkout currently identifies itself as `v0.4.0`
-- active development after that release is the `v0.4` nearest-neighbor line (active preview, reopened for GPU completion)
+- the live released surface on `main` is now the `v0.4` nearest-neighbor line
 - clone the repo as `rtdl`
 - the local Python package imported by the examples is `rtdsl`
 - `PYTHONPATH=src:.` is what makes `src/rtdsl/` importable from the checkout
@@ -41,22 +41,19 @@ Project-level front door:
 12. [RTDL v0.4 Release Package](release_reports/v0_4/README.md)
 13. [RTDL v0.4 Release Statement](release_reports/v0_4/release_statement.md)
 14. [RTDL v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
-15. [Goal 220: v0.4 GPU Status Refresh](goal_220_v0_4_gpu_status_refresh.md)
-16. [RTDL v0.4 Preview Package](release_reports/v0_4_preview/README.md)
-17. [RTDL v0.4 Preview Release Statement](release_reports/v0_4_preview/release_statement.md)
-18. [RTDL v0.4 Preview Support Matrix](release_reports/v0_4_preview/support_matrix.md)
-19. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
-20. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
-21. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
-22. [Current Milestone Q/A](current_milestone_qa.md)
-23. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
-24. [v0.1 Release Notes](v0_1_release_notes.md)
-25. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
-26. [v0.1 Support Matrix](v0_1_support_matrix.md)
-27. [v0.1 Release Reports](release_reports/v0_1/README.md)
-28. [RTDL v0.1 Archive](archive/v0_1/README.md)
-29. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-30. [RayJoin Target](rayjoin_target.md)
+15. [RTDL v0.4 Preview Package](release_reports/v0_4_preview/README.md)
+16. [RTDL v0.4 Preview Release Statement](release_reports/v0_4_preview/release_statement.md)
+17. [RTDL v0.4 Preview Support Matrix](release_reports/v0_4_preview/support_matrix.md)
+18. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
+19. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
+20. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
+21. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
+22. [v0.1 Release Notes](v0_1_release_notes.md)
+23. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
+24. [v0.1 Support Matrix](v0_1_support_matrix.md)
+25. [v0.1 Release Reports](release_reports/v0_1/README.md)
+26. [RTDL v0.1 Archive](archive/v0_1/README.md)
+27. [RayJoin Target](rayjoin_target.md)
 
 Broader background:
 
@@ -79,6 +76,12 @@ Process-level:
 2. [AI Collaboration Workflow](ai_collaboration_workflow.md)
 3. [Audit Flow](audit_flow.md)
 
+Historical and maintainer-facing context:
+
+1. [v0.4 GPU Status Refresh](goal_220_v0_4_gpu_status_refresh.md)
+2. [Archived Milestone Q/A](current_milestone_qa.md)
+3. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
+
 Imported historical artifacts:
 
 1. [History Capture And External Artifact Import (2026-04-10)](reports/history_capture_external_artifacts_2026-04-10.md)
@@ -92,66 +95,43 @@ Imported historical artifacts:
 
 Keep these current facts in mind while reading:
 
-- the accepted bounded package remains the current v0.1 trust anchor
 - current `main` is now the released `v0.4.0` branch state
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
-- RTDL should not be read only as a fixed workload list:
-  - users can also write RTDL-plus-Python applications where RTDL provides the
-    geometry-query core and Python handles surrounding logic
-- the current small demonstration of that model is:
-  - [examples/visual_demo/rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
+- the live released engineering line on `main` is now the `v0.4` nearest-neighbor surface:
+  - `fixed_radius_neighbors`
+  - `knn_rows`
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that
   same released core, not a replacement for the bounded `v0.2.0` workload surface
-- the active post-release engineering line is now the `v0.4` nearest-neighbor preview:
-  - `fixed_radius_neighbors`
-  - `knn_rows`
+- RTDL should not be read only as a fixed workload list:
+  - users can also write RTDL-plus-Python applications where RTDL provides the
+    geometry-query core and Python handles surrounding logic
 - the public example tree is now organized as:
   - top-level release-facing examples
   - `examples/reference/`
   - `examples/generated/`
   - `examples/visual_demo/`
   - `examples/internal/`
-- the preserved primary source baseline for the stronger current v0.3 application-style demo line is:
+- the current small demonstration of that model is:
+  - [examples/visual_demo/rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
+- the primary preserved source for the v0.3 visual demo line is:
   - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
-- the smoother one-light camera-orbit line remains preserved as a stable comparison path:
-  - [examples/visual_demo/rtdl_smooth_camera_orbit_demo.py](../examples/visual_demo/rtdl_smooth_camera_orbit_demo.py)
-- the moving-star comparison path is still preserved here:
-  - [examples/visual_demo/rtdl_orbiting_star_ball_demo.py](../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
-- the current public-facing entry point for that line is:
+- the public-facing entry point for that visual line is:
   - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
-- the accepted local `4K` and supporting Linux backend artifacts remain
-  preserved in the repo reports, but the front-surface docs now point readers
-  to the single public video URL rather than local GIF previews
-- current `main` also carries narrow generate-only support for the accepted
-  v0.2 surface
-- there are now two important performance stories:
-  - the v0.1 long exact-source `county_zipcode` positive-hit `pip` trust-anchor
-    surface
-  - the v0.2 Linux/PostGIS-backed segment/polygon large-row surface through
-    `x4096`
-- the Jaccard line is supported, but under a narrower pathology/unit-cell
-  contract than the segment/polygon families
-- the bounded 3D visual-demo ray/triangle line is already closed on Linux
-  across:
+- there are two important performance stories preserved in the repo history:
+  - the v0.1 exact-source `county_zipcode` positive-hit `pip` trust-anchor
+  - the v0.2 Linux/PostGIS-backed segment/polygon large-row surface
+- the Jaccard line is supported under a narrower pathology/unit-cell contract
+  than the segment/polygon families
+- the bounded 3D visual-demo ray/triangle line is closed on Linux across:
   - `embree`
   - `optix`
   - `vulkan`
-- the polished public movie artifact is currently strongest on Windows Embree
-- the preserved primary local counterpart now comes from the hidden-star
-  RTDL-shadow Earth line
-- Linux OptiX and Vulkan now also have saved hidden-star supporting artifacts
-  for the same visual-demo line
-- Embree and OptiX are the mature high-performance backends on the accepted
-  v0.1 and segment/polygon performance surfaces
-- Vulkan is supported and parity-clean there, but slower
-- the Jaccard line now also has Linux wrapper-surface consistency on Embree,
-  OptiX, and Vulkan through documented native CPU/oracle fallback
 - Linux is the primary validation platform
 - macOS is only a limited local platform
 - PostGIS remains the external indexed comparison baseline

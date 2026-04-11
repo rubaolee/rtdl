@@ -1,8 +1,18 @@
-# Current Milestone Q/A
+# Archived Milestone Q/A
+
+This page is preserved historical context for maintainers.
+
+It is not part of the primary `v0.4.0` user-learning path and should not be
+read as the front-door release summary. For current public status, use:
+
+- [RTDL v0.4 Release Statement](release_reports/v0_4/release_statement.md)
+- [RTDL v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
+- [Quick Tutorial](quick_tutorial.md)
+- [Tutorials](tutorials/README.md)
 
 Date: 2026-04-09
 
-## What is the current strongest RTDL result?
+## What was the strongest RTDL result at that point?
 
 There are now two different “strongest” answers, and both matter.
 
@@ -27,14 +37,12 @@ For the new application-story proof, the strongest current v0.3 result is:
   - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
 - the repo’s primary preserved source artifact for that line:
   - [rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
-- preserved local Windows hidden-star artifacts remain available under:
-  - `build/windows_goal168_import/goal168_hidden_star_rtdl_shadow_handoff_2026-04-09/artifacts/`
 - the earlier Linux OptiX and Vulkan smooth-camera support artifacts remain preserved as secondary comparison/support material, not as the primary hidden-star demo outputs
 
 The archived v0.1 `county_zipcode` positive-hit `pip` line remains the trust
 anchor and strongest older prepared/repeated raw-input performance story.
 
-## Is Vulkan a failure?
+## Was Vulkan a failure at that point?
 
 No.
 
@@ -48,7 +56,7 @@ Vulkan is now:
 So Vulkan is a supported portable backend, not the current main performance
 backend.
 
-## What is RTDL doing in Python?
+## What was RTDL doing in Python?
 
 Python owns:
 
@@ -83,7 +91,7 @@ Preserved moving-light comparison example:
 
 - [rtdl_orbiting_star_ball_demo.py](../examples/visual_demo/rtdl_orbiting_star_ball_demo.py)
 
-## Does the CPU still matter when using OptiX or Vulkan?
+## Did the CPU still matter when using OptiX or Vulkan?
 
 Yes.
 
@@ -91,7 +99,7 @@ For the mature positive-hit `pip` story, the accelerator usually does
 candidate generation and the CPU exact-finalizes the candidate subset for
 trusted final truth.
 
-## Are the internal oracles still important?
+## Were the internal oracles still important?
 
 Yes.
 
@@ -106,7 +114,7 @@ They matter for:
 - demos
 - trustable sanity checks
 
-## Are all RTDL workloads equally mature?
+## Were all RTDL workloads equally mature?
 
 No.
 
@@ -127,7 +135,7 @@ The same applies to the v0.3 demo line:
 - but the movie itself should not be read as equally optimized across all
   backends
 
-## Why do the reports distinguish prepared and repeated raw-input timing?
+## Why did the reports distinguish prepared and repeated raw-input timing?
 
 Because they measure different things.
 
@@ -138,7 +146,7 @@ Because they measure different things.
 
 Mixing these would make the performance claims misleading.
 
-## Can RTDL honestly claim performance now?
+## Could RTDL honestly claim performance at that point?
 
 Yes, with explicit boundaries.
 

@@ -38,5 +38,5 @@ requires explicit user authorization for release action:
 
 - the whole-line Gemini and Claude audits completed
 - the later heavy Linux benchmark is preserved
-- the Goal 229 accelerated boundary fix restored heavy-case parity
+- the accelerated boundary fix restored heavy-case parity
 - the focused post-fix verification slices remained green
