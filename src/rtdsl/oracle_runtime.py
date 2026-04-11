@@ -7,6 +7,7 @@ import platform
 import subprocess
 import tempfile
 from pathlib import Path
+from typing import NoReturn
 
 from .ir import CompiledKernel
 
@@ -693,6 +694,52 @@ def _check_status(status: int, error=None) -> None:
     raise RuntimeError(message)
 
 
+def _oracle_build_help_text(*, system: str) -> str:
+    if system == "Darwin":
+        return (
+            "Install GEOS and pkg-config so the native oracle can link successfully "
+            "(for example with Homebrew: `brew install geos pkg-config`)."
+        )
+    if system == "Linux":
+        return (
+            "Install GEOS development headers and pkg-config so the native oracle can link "
+            "successfully (for example `libgeos-dev` plus `pkg-config`)."
+        )
+    if system == "Windows":
+        return (
+            "Install the required native toolchain and ensure RTDL_VCVARS64 points to "
+            "vcvars64.bat before building the native oracle."
+        )
+    return "Install the native oracle dependencies and retry."
+
+
+def _raise_oracle_build_failure(
+    *,
+    command: list[str],
+    system: str,
+    error: BaseException,
+) -> NoReturn:
+    detail = ""
+    if isinstance(error, subprocess.CalledProcessError):
+        if error.stderr:
+            detail = error.stderr.strip()
+        elif error.stdout:
+            detail = error.stdout.strip()
+        else:
+            detail = str(error)
+    else:
+        detail = str(error)
+
+    message = [
+        "RTDL native oracle build failed while preparing run_cpu(...).",
+        _oracle_build_help_text(system=system),
+        f"Compiler command: {subprocess.list2cmdline(command)}",
+    ]
+    if detail:
+        message.append(f"Tool output: {detail}")
+    raise RuntimeError(" ".join(message))
+
+
 @functools.lru_cache(maxsize=1)
 def _load_oracle_library():
     library_path = _ensure_oracle_library()
@@ -910,7 +957,13 @@ def _ensure_oracle_library() -> Path:
                 raise RuntimeError(
                     "Windows oracle build requires vcvars64.bat. Set RTDL_VCVARS64 to the Visual Studio Build Tools vcvars64.bat path."
                 )
-            _run_windows_compile(command, vcvars=vcvars, cwd=repo_root)
+            try:
+                _run_windows_compile(command, vcvars=vcvars, cwd=repo_root)
+            except (OSError, subprocess.CalledProcessError) as exc:
+                _raise_oracle_build_failure(command=command, system=system, error=exc)
         else:
-            subprocess.run(command, check=True, cwd=repo_root)
+            try:
+                subprocess.run(command, check=True, cwd=repo_root, capture_output=True, text=True)
+            except (OSError, subprocess.CalledProcessError) as exc:
+                _raise_oracle_build_failure(command=command, system=system, error=exc)
     return library_path

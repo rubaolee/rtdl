@@ -1,12 +1,15 @@
 # Goal 175 Windows Render Status
 
+Archived historical status note. This report is preserved as a process record
+for a prior render job and is not a release-facing status page.
+
 ## Current State
 
 The Goal 175 two-star 4K movie is actively rendering on the Windows workstation.
 
 Windows host:
 
-- `lestat@192.168.1.8`
+- internal Windows workstation used during the historical run
 
 Remote output directory:
 

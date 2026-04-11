@@ -1,7 +1,7 @@
 # Release-Facing Examples
 
 This page is the canonical example index for the frozen RTDL `v0.2` surface
-and the active RTDL `v0.4` nearest-neighbor preview line.
+and the released RTDL `v0.4` nearest-neighbor line.
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -19,11 +19,10 @@ Before running any command below:
 - commands below use `python` as the public convention
 - if your shell only provides `python3`, substitute `python3` for `python`
 
-## v0.4 nearest-neighbor preview examples
+## v0.4 nearest-neighbor examples
 
-These are the current release-facing examples for the active `v0.4` line.
-They are correctness-first nearest-neighbor examples, not a released benchmark
-claim yet.
+These are the current release-facing examples for the released `v0.4` line.
+They are correctness-first nearest-neighbor examples, not a benchmark claim.
 
 ### Fixed-Radius Neighbors
 

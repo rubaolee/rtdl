@@ -1,6 +1,6 @@
 # RTDL v0.4 Application Examples
 
-This page shows how the current nearest-neighbor preview features can be used
+This page shows how the current nearest-neighbor release features can be used
 as small applications rather than only as bare workload kernels.
 
 All three examples are bounded and correctness-first:

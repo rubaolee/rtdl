@@ -37,9 +37,10 @@ return rt.emit(hits, fields=["ray_id", "hit_count"])
 Run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/reference/rtdl_ray_tri_hitcount.py
+python examples/reference/rtdl_ray_tri_hitcount.py
 ```
+
+Use `python3` instead if that is what your shell exposes.
 
 App-style variant:
 
@@ -48,8 +49,7 @@ App-style variant:
 Run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
+python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
 ```
 
 ## Best Practices

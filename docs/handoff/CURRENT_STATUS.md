@@ -1,53 +1,24 @@
 # RTDL Current Status
 
+Archived historical handoff.
+
 Date: 2026-04-05
+Historical scope: this file describes a pre-`v0.4.0` RayJoin-era project state
+around the `v0.1` line. It is preserved for process history only and is not a
+live source of truth for the released repository.
 
-Repo:
-- local workspace: `/Users/rl2025/rtdl_python_only`
-- last published head before this local doc/package work: `d88266e`
-- current local tree contains the updated status deck and Goal 104 performance
-  report
+Current source of truth:
 
-Project position:
-- RTDL v0.1 is released
-- the accepted bounded package remains the trust anchor
-- the strongest current backend story is the long exact-source
-  `county_zipcode` positive-hit `pip` surface
-- Embree and OptiX are parity-clean and faster than PostGIS on the accepted
-  prepared and repeated raw-input boundaries there
-- Vulkan is hardware-validated and parity-clean on that flagship surface, but
-  slower than PostGIS and less complete than Embree/OptiX
+- [README.md](../../README.md)
+- [docs/README.md](../README.md)
+- [docs/release_reports/v0_4/release_statement.md](../release_reports/v0_4/release_statement.md)
+- [docs/release_reports/v0_4/support_matrix.md](../release_reports/v0_4/support_matrix.md)
 
-Current top priority:
-- keep the released front-door documentation and published claims internally
-  consistent without weakening the evidence boundaries
+Historical notes preserved below:
 
-Performance priority order:
-1. OptiX
-2. Embree
-3. Vulkan
-4. Python/native oracle paths are correctness references, not performance
-   targets
-
-Current documentation state:
-- front-door docs have been updated to the current backend story
-- the status deck has been updated to Goal 103 / Goal 104 state
-
-Current reproduction state:
-- Goal 102 closes the full honest bounded RayJoin reproduction package for:
-  - Embree
-  - OptiX
-- Goal 103 closes the Vulkan-only bounded RayJoin reproduction package
-- Goal 104 explains the experiment boundaries, datasets, and performance
-  results for Goals 102 and 103 in one place
-
-Do not do first:
-- do not silently widen claims beyond the accepted package boundaries
-- do not treat archived goal docs as the front-door project narrative
-- do not regress the reviewed parity/performance story in README, docs, or
-  slides
-
-Do first:
-- keep the front-door docs and slides aligned
-- preserve exact wording around bounded versus exact reproduction
-- keep all published claims backed by linked artifacts and reviewed reports
+- local workspace at the time: an earlier `rtdl_python_only` checkout
+- project position at the time: `v0.1` released, later lines still in progress
+- strongest bounded backend story at the time: the `county_zipcode`
+  point-in-polygon surface
+- guidance at the time: keep front-door claims aligned to the reviewed bounded
+  reproduction package

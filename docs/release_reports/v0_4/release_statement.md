@@ -1,7 +1,7 @@
 # RTDL v0.4 Release Statement
 
 Date: 2026-04-10
-Status: prepared for release, tag not created yet
+Status: released as `v0.4.0`
 
 ## Statement
 
@@ -13,8 +13,8 @@ two new workload families to the public RTDL surface:
 - `fixed_radius_neighbors`
 - `knn_rows`
 
-This package is the canonical `v0.4` release report set, prepared ahead of the
-final user-authorized tag step.
+This package is the canonical `v0.4` release report set for the published
+`v0.4.0` release.
 
 ## What The v0.4 Line Stands On
 
@@ -36,7 +36,7 @@ The `v0.4` line now has:
 - one bounded scaling note for the nearest-neighbor family
 - heavy Linux benchmark evidence comparing CPU, Embree, OptiX, Vulkan, and
   indexed PostGIS
-- Goal 229 accelerated boundary-fix evidence restoring full heavy-case parity
+- accelerated boundary-fix evidence restoring full heavy-case parity
 - whole-line Gemini and Claude audits plus later post-benchmark follow-up
   evidence clearing the package for final release decision
 
@@ -55,7 +55,6 @@ The `v0.4` line now has:
 
 The `v0.4` line does not claim:
 
-- final release-tag completion yet
 - a benchmark win over external nearest-neighbor libraries
 - that SciPy or PostGIS are required dependencies for ordinary first-run use
 
@@ -76,6 +75,6 @@ Read the repo now as:
 
 - the nearest-neighbor workloads are now running across CPU/oracle, Embree,
   OptiX, and Vulkan
-- the heavy Linux benchmark and Goal 229 fix restored full heavy-case
+- the heavy Linux benchmark and the accelerated boundary fix restored full heavy-case
   fixed-radius parity across CPU, Embree, OptiX, Vulkan, and indexed PostGIS
-- the repo still remains pre-tag until explicit user-authorized release action
+- the repo now ships the nearest-neighbor line as the `v0.4.0` release

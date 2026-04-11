@@ -44,15 +44,15 @@ return rt.emit(
 Run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+python examples/rtdl_polygon_set_jaccard.py
 ```
+
+Use `python3` instead if that is what your shell exposes.
 
 Generate a runnable handoff bundle:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
+python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 ## Best Practices

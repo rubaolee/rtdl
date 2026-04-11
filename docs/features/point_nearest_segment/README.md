@@ -39,6 +39,14 @@ Start here:
 
 - [rtdl_workload_reference.py](../../../examples/reference/rtdl_workload_reference.py)
 
+Run from the repository root:
+
+```bash
+python examples/reference/rtdl_workload_reference.py
+```
+
+Use `python3` instead if that is what your shell exposes.
+
 That file includes both authored and fixture-backed helper cases for this
 feature family.
 

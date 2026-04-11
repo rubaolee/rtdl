@@ -1,7 +1,17 @@
 # RTDL Architecture, API, And Performance Overview
 
+Archived historical overview.
+
 Date: 2026-04-05
-Status: current milestone overview
+Historical scope: this document captures a pre-`v0.4.0` milestone view centered on older `pip` and RayJoin-era performance narratives. It is preserved for architectural history, not as the current front-door release summary.
+
+Current source of truth:
+
+- [README.md](../README.md)
+- [docs/README.md](README.md)
+- [docs/release_reports/v0_4/release_statement.md](release_reports/v0_4/release_statement.md)
+- [docs/release_reports/v0_4/support_matrix.md](release_reports/v0_4/support_matrix.md)
+
 
 ## What RTDL is
 
@@ -156,12 +166,12 @@ For the accepted long exact-source `county_zipcode` positive-hit `pip` surface:
 - PostGIS:
   - about `3.09-3.58 s`
 
-Current honest reading:
+Historical honest reading at that milestone:
 
-- OptiX and Embree are high-performance backends on this accepted surface
-- OptiX now also has an accepted prepared run-1 win against PostGIS on this
-  surface
-- Vulkan is complete and correct on this accepted surface, but slower
+- OptiX and Embree were the strongest performance backends on the accepted surface under discussion
+- Vulkan was complete and correct on that accepted surface, but slower
+
+The released `v0.4.0` nearest-neighbor line has a newer backend/performance story than the one summarized here.
 
 ## API shape
 

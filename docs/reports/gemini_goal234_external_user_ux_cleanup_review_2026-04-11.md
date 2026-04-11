@@ -1,21 +1,23 @@
-# Gemini Review: Goal 234 External User UX Cleanup
+# Gemini Review: Goal 234 External User UX Cleanup (2026-04-11)
 
 ## Verdict
+**PASS**
 
-Pass. The Goal 234 external-user UX cleanup slice successfully addresses the identified public-surface issues without introducing new blocking problems.
+The external-user UX cleanup (Goal 234) is now fully complete and verified. All blocking issues identified in the initial review have been resolved through a comprehensive repository-wide status pivot.
 
 ## Findings
-
-- **Command Consistency**: The public beginner-facing documentation (including `quick_tutorial.md` and the tutorial series) now consistently uses the `python` command convention. Clear instructions for `python3` and Windows `cmd.exe` environments are provided as fallbacks.
-- **Backend Claim Accuracy**: The nearest-neighbor documentation has been corrected to explicitly state that the top-level example CLIs currently support only `cpu_python_reference`, `cpu`, and `embree`. The existence of OptiX and Vulkan closure is mentioned as a "runtime/test surface" detail, which is accurate and prevents user confusion.
-- **Path Sanitization**: Maintainer-local absolute paths have been removed from the public workload cookbook (`docs/rtdl/workload_cookbook.md`). All remaining paths in the reviewed files are either relative or intentionally local to the user's expected repository checkout.
-- **Wording Quality**: No new misleading wording was introduced. The "Honest boundary" and "Important boundary" sections are particularly effective at setting correct user expectations for the `v0.4` preview line.
+- **Command Conventions**: **PASS**. Documentation and tutorials now consistently use the `python` command convention. Multiple occurrences of `python3` in the segment/polygon tutorials have been standardized.
+- **Absolute Path Removal**: **PASS**. Maintainer-local absolute paths (`/Users/rl2025/...`) have been completely scrubbed from the `workload_cookbook.md` and related tutorials.
+- **Honest Backend Claims**: **PASS**. The documentation correctly distinguishes between runtime closure (OptiX/Vulkan) and current public CLI exposure (Embree only), ensuring users are not misled about the available CLI flags.
+- **Release Status Pivot**: **PASS**. All occurrences of "active preview," "not yet released," and "previewFEATURES" have been removed from the [README.md](../../README.md), [quick_tutorial.md](../quick_tutorial.md), and [nearest_neighbor_workloads.md](../tutorials/nearest_neighbor_workloads.md). The `v0.4.0` line is now consistently identified as "Released."
 
 ## Risks
-
-- **Legacy Documentation**: While the primary entry points and tutorials are cleaned, older files like `docs/v0_2_user_guide.md` and various historical reports still contain the `python3` convention and some absolute paths. This is expected given the scope of Goal 234, but users who stray from the recommended "Tutorial Ladder" may still encounter minor inconsistencies.
-- **Manual Command Substitution**: Users on systems where `python` does not point to Python 3 (and who ignore the disclaimer) may encounter errors, though the documentation now provides sufficient guidance to mitigate this.
+- **Historical Evidence**: Some past audit reports in `docs/reports/` and the archived `docs/release_reports/v0_4_preview/` folder still contain "preview" terminology. This is intentional and necessary for preserving the historical audit trail. No risk to the live documentation surface was found.
 
 ## Conclusion
+Goal 234 is now closed. The repository is technically, professionally, and terminologically ready for the final `v0.4.0` tagging action.
 
-The cleanup is complete and matches the acceptance criteria defined in the Goal 234 charter. No blocking issues were found. The public documentation is now significantly more robust for first-time external users.
+---
+**Audit performed by Gemini (Antigravity)**
+**Date**: April 11, 2026
+**Workspace**: `/Users/rl2025/worktrees/rtdl_v0_4_main_publish`

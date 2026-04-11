@@ -15,10 +15,10 @@ Use these feature homes when you want to answer practical questions quickly:
 
 Current feature homes:
 
-- [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) (active `v0.4` preview line)
-- [KNN Rows](knn_rows/README.md) (active `v0.4` preview line)
-- [LSI](lsi/README.md)
-- [PIP](pip/README.md)
+- [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) (released in `v0.4.0`)
+- [KNN Rows](knn_rows/README.md) (released in `v0.4.0`)
+- [LSI: Line Segment Intersection](lsi/README.md)
+- [PIP: Point In Polygon](pip/README.md)
 - [Overlay](overlay/README.md)
 - [Ray/Triangle Hit Count](ray_tri_hitcount/README.md)
 - [Point/Nearest Segment](point_nearest_segment/README.md)
@@ -32,7 +32,7 @@ Reading order for new users:
 1. [RTDL Quick Tutorial](../quick_tutorial.md)
 2. [RTDL v0.2 User Guide](../v0_2_user_guide.md)
 3. this feature index
-4. [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) or [KNN Rows](knn_rows/README.md) for the active nearest-neighbor line
+4. [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) or [KNN Rows](knn_rows/README.md) for the released nearest-neighbor line
 5. the specific feature home you plan to use
 6. [RTDL Workload Cookbook](../rtdl/workload_cookbook.md)
 7. [RTDL DSL Reference](../rtdl/dsl_reference.md)

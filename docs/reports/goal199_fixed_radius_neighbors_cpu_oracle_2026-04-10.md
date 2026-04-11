@@ -23,7 +23,7 @@ and accelerated backend closure are still later goals.
 
 Updated:
 
-- [lowering.py](/Users/rl2025/rtdl_python_only/src/rtdsl/lowering.py)
+- [lowering.py](../../src/rtdsl/lowering.py)
 
 The workload now lowers into a `native_loop` execution plan with explicit
 `query_id`, `neighbor_id`, and `distance` emit fields.
@@ -32,9 +32,9 @@ The workload now lowers into a `native_loop` execution plan with explicit
 
 Updated:
 
-- [oracle_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/oracle_runtime.py)
-- [rtdl_oracle_abi.h](/Users/rl2025/rtdl_python_only/src/native/oracle/rtdl_oracle_abi.h)
-- [rtdl_oracle_api.cpp](/Users/rl2025/rtdl_python_only/src/native/oracle/rtdl_oracle_api.cpp)
+- [oracle_runtime.py](../../src/rtdsl/oracle_runtime.py)
+- [rtdl_oracle_abi.h](../../src/native/oracle/rtdl_oracle_abi.h)
+- [rtdl_oracle_api.cpp](../../src/native/oracle/rtdl_oracle_api.cpp)
 
 Added native support for:
 
@@ -48,7 +48,7 @@ Added native support for:
 
 Updated:
 
-- [oracle_runtime.py](/Users/rl2025/rtdl_python_only/src/rtdsl/oracle_runtime.py)
+- [oracle_runtime.py](../../src/rtdsl/oracle_runtime.py)
 
 The native oracle library rebuild check now watches the modular oracle source
 tree instead of only the top-level shim file. This avoids stale-library misses
@@ -58,15 +58,15 @@ after modular oracle edits.
 
 Added:
 
-- [goal199_fixed_radius_neighbors_cpu_oracle_test.py](/Users/rl2025/rtdl_python_only/tests/goal199_fixed_radius_neighbors_cpu_oracle_test.py)
+- [goal199_fixed_radius_neighbors_cpu_oracle_test.py](../../tests/goal199_fixed_radius_neighbors_cpu_oracle_test.py)
 
 Updated:
 
-- [goal40_native_oracle_test.py](/Users/rl2025/rtdl_python_only/tests/goal40_native_oracle_test.py)
-- [test_core_quality.py](/Users/rl2025/rtdl_python_only/tests/test_core_quality.py)
-- [llm_authoring_guide.md](/Users/rl2025/rtdl_python_only/docs/rtdl/llm_authoring_guide.md)
-- [dsl_reference.md](/Users/rl2025/rtdl_python_only/docs/rtdl/dsl_reference.md)
-- [fixed_radius_neighbors/README.md](/Users/rl2025/rtdl_python_only/docs/features/fixed_radius_neighbors/README.md)
+- [goal40_native_oracle_test.py](../../tests/goal40_native_oracle_test.py)
+- [test_core_quality.py](../../tests/test_core_quality.py)
+- [llm_authoring_guide.md](../rtdl/llm_authoring_guide.md)
+- [dsl_reference.md](../rtdl/dsl_reference.md)
+- [fixed_radius_neighbors/README.md](../features/fixed_radius_neighbors/README.md)
 
 ## Verification
 

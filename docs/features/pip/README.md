@@ -1,4 +1,4 @@
-# PIP
+# Point-in-Polygon (PIP)
 
 ## Purpose
 
@@ -40,6 +40,14 @@ return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 Start here:
 
 - [rtdl_language_reference.py](../../../examples/reference/rtdl_language_reference.py)
+
+Run from the repository root:
+
+```bash
+python examples/reference/rtdl_language_reference.py
+```
+
+Use `python3` instead if that is what your shell exposes.
 
 For the strongest historical performance/correctness story, see the accepted
 `county_zipcode` positive-hit `pip` package in the v0.1 trust-anchor docs.

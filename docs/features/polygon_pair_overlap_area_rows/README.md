@@ -51,9 +51,10 @@ return rt.emit(
 Run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
+python examples/rtdl_polygon_pair_overlap_area_rows.py
 ```
+
+Use `python3` instead if that is what your shell exposes.
 
 ## Best Practices
 

@@ -2,8 +2,8 @@
 
 This page was imported from a parallel checkout on 2026-04-10 as a preserved
 draft artifact. It is **not** the current live source of truth for RTDL docs.
-For current examples, start at [examples/README.md](/Users/rl2025/rtdl_python_only/examples/README.md)
-and [docs/release_facing_examples.md](/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md).
+For current examples, start at [examples/README.md](../../examples/README.md)
+and [docs/release_facing_examples.md](../release_facing_examples.md).
 
 ---
 

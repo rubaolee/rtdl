@@ -7,7 +7,7 @@ Current public workloads:
 - `fixed_radius_neighbors`
 - `knn_rows`
 
-These are active preview features, not a released package yet.
+These are released v0.4.0 features.
 
 Command convention used below:
 

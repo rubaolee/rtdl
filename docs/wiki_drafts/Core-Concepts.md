@@ -2,7 +2,7 @@
 
 This page was imported from a parallel checkout on 2026-04-10 as a preserved
 draft artifact. It is **not** the current live source of truth for RTDL docs.
-For current language docs, start at [docs/rtdl/README.md](/Users/rl2025/rtdl_python_only/docs/rtdl/README.md).
+For current language docs, start at [docs/rtdl/README.md](../rtdl/README.md).
 
 ---
 

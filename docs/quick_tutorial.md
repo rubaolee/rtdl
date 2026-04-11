@@ -57,7 +57,7 @@ These show three different entry points:
 
 - same tiny program across backends
 - released workload-family example
-- active nearest-neighbor preview example
+- released nearest-neighbor workload example
 
 ## The Tutorial Ladder
 
@@ -84,7 +84,7 @@ Read:
 - [Segment And Polygon Workloads](tutorials/segment_polygon_workloads.md)
   - if you want the stable released workload families
 - [Nearest-Neighbor Workloads](tutorials/nearest_neighbor_workloads.md)
-  - if you want the active `v0.4` preview line
+  - if you want the released `v0.4` workload line
 - [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
   - if you want the 2D/3D demo/application side
 

@@ -1,7 +1,7 @@
 # RTDL v0.4 Support Matrix
 
 Date: 2026-04-10
-Status: reopened for GPU completion, tag not created
+Status: released as `v0.4.0`
 
 ## Reading Guide
 
@@ -47,8 +47,8 @@ Status wording used below:
 
 ## Honest Summary
 
-- `v0.4` is a non-graphical nearest-neighbor release line reopened under a GPU-required bar
+- `v0.4` is a released non-graphical nearest-neighbor line that was reopened under a GPU-required bar before closure
 - CPU/oracle, Embree, and OptiX are part of the intended execution closure surface
 - Vulkan is part of the intended execution closure surface, but under a correctness-first and performance-bounded interpretation
 - SciPy and bounded PostGIS remain validation/comparison helpers
-- final release readiness still depends on the post-GPU benchmark/support-matrix refresh and final re-audit
+- the post-GPU benchmark refresh and final re-audit are now part of the released evidence

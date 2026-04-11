@@ -20,7 +20,7 @@ Current checkout identity:
 - repo state anchor: `v0.4.0`
 - stable released workload surface inside this release: `v0.2.0`
 - released application/demo proof layer: `v0.3.0` on top of the same RTDL core
-- prepared nearest-neighbor workload expansion: `v0.4.0` (active preview, reopened for GPU completion)
+- released nearest-neighbor workload expansion: `v0.4.0`
 
 ## Before Your First Run
 

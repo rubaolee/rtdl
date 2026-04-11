@@ -1,4 +1,4 @@
-# LSI
+# Line-Segment Intersection (LSI)
 
 ## Purpose
 
@@ -40,6 +40,14 @@ return rt.emit(
 Start here:
 
 - [rtdl_language_reference.py](../../../examples/reference/rtdl_language_reference.py)
+
+Run from the repository root:
+
+```bash
+python examples/reference/rtdl_language_reference.py
+```
+
+Use `python3` instead if that is what your shell exposes.
 
 This file contains the current minimal language-reference `lsi` kernel.
 

@@ -22,9 +22,8 @@ Whole-line audit verdict:
 
 - the nearest-neighbor line is internally consistent
 - the code/docs/process story is technically honest
-- the current `v0.4` line is technically ready for final user-authorized
-  release closure once the later heavy benchmark evidence is included as part of
-  the live package truth
+- the released `v0.4.0` line includes the later heavy benchmark evidence as
+  part of the live package truth
 
 ## Important Mid-Line Finding Preserved In The Audit Trail
 
@@ -85,4 +84,4 @@ All blocking findings have been resolved, maintainer-local context has been scru
 
 **Release Conclusion**:
 - [Gemini final review-closure note](../../reports/gemini_v0_4_final_review_closure_2026-04-11.md)
-- Verdict: **RELEASE AUTHORIZED** (Pending final user tagging action)
+- Verdict: **RELEASE AUTHORIZED AND PUBLISHED AS `v0.4.0`**

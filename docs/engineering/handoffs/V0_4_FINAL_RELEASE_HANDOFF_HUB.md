@@ -1,6 +1,15 @@
-# 🟢 RTDL v0.4 Final Release Handoff Hub
+# RTDL v0.4 Final Release Handoff Hub
 
-**ATTENTION NEXT AI**: Please read this document carefully before taking any further action. It contains the final audit results, environment requirements, and the remaining steps to close the `v0.4.0` release.
+Archived release handoff.
+
+This document is preserved as the historical release-packaging hub used before `v0.4.0` publication. It is not the live source of truth for the already-released repository state.
+
+Current source of truth:
+
+- [README.md](../../../README.md)
+- [docs/README.md](../../README.md)
+- [docs/release_reports/v0_4/release_statement.md](../../release_reports/v0_4/release_statement.md)
+- [docs/handoff/V0_4_FINAL_RELEASE_SIGN_OFF_SUMMARY_2026-04-11.md](../../handoff/V0_4_FINAL_RELEASE_SIGN_OFF_SUMMARY_2026-04-11.md)
 
 ---
 
@@ -20,12 +29,12 @@ Goal 228/229 evidence before taking any release action.
 ## 2. Technical Evidence & Reports
 All work is backed by formal audit artifacts. 
 
-*   **[Final v0.4 Audit Verdict](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/reports/gemini_v0_4_final_re_audit_report_2026-04-10.md)**: technical sign-off and backend parity verification.
+*   **[Final v0.4 Audit Verdict](../../reports/gemini_v0_4_final_re_audit_report_2026-04-10.md)**: technical sign-off and backend parity verification.
 *   **[Test Evidence]**: Clean release-prep verification now includes a full `unittest discover` pass with **525 tests, 0 failures, 59 skips**, plus CLI/artifact/Embree smokes via `scripts/run_full_verification.py`.
-*   **[Support Matrix](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/release_reports/v0_4/support_matrix.md)**: Honestly updated for "reopened for GPU" status.
-*   **[Heavy Linux Benchmark](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/reports/goal228_v0_4_heavy_nearest_neighbor_perf_2026-04-10.md)**: refreshed heavy nearest-neighbor benchmark and parity evidence.
-*   **[Boundary Fix Follow-Up](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/reports/goal229_fixed_radius_neighbors_accelerated_boundary_fix_2026-04-10.md)**: exact repair rationale, regression tests, and Linux rerun proof.
-*   **[Final Pre-Release Verification](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/reports/goal232_final_pre_release_verification_2026-04-10.md)**: clean-worktree verification transcript and release-decision package.
+*   **[Support Matrix](../../release_reports/v0_4/support_matrix.md)**: Honestly updated for "reopened for GPU" status.
+*   **[Heavy Linux Benchmark](../../reports/goal228_v0_4_heavy_nearest_neighbor_perf_2026-04-10.md)**: refreshed heavy nearest-neighbor benchmark and parity evidence.
+*   **[Boundary Fix Follow-Up](../../reports/goal229_fixed_radius_neighbors_accelerated_boundary_fix_2026-04-10.md)**: exact repair rationale, regression tests, and Linux rerun proof.
+*   **[Final Pre-Release Verification](../../reports/goal232_final_pre_release_verification_2026-04-10.md)**: clean-worktree verification transcript and release-decision package.
 
 ---
 
@@ -40,22 +49,17 @@ The release-prep worktree should be treated as the canonical packaging checkout.
 ---
 
 ## 4. Visual & Content Assets
-*   📚 **Bibliography**: Consolidated the research paper list into the [Foundations Document](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/workloads_and_research_foundations.md).
-*   🏠 **Main Entry**: Current committed front page is at [README.md](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/README.md).
-*   📂 **Docs Hub**: Current committed documentation index is at [docs/README.md](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/docs/README.md).
+*   📚 **Bibliography**: Consolidated the research paper list into the [Foundations Document](../../workloads_and_research_foundations.md).
+*   🏠 **Main Entry**: Current committed front page is at [README.md](../../../README.md).
+*   📂 **Docs Hub**: Current committed documentation index is at [docs/README.md](../../README.md).
 
 ---
 
-## 5. 🛠 Remaining Release Actions
-The code and documentation are close, but release packaging should still wait
-for the refreshed heavy benchmark evidence and the boundary-fix slice to be the
-accepted current truth. After that, the next AI should execute the following:
+## 5. Historical Meaning
 
-1.  **Use the clean release-prep worktree** rather than the unrelated dirty primary checkout.
-2.  **Stage only the deliberate final release package changes**.
-3.  **Final Commit**: use a bounded release-packaging commit message, not a catch-all commit over unrelated local dirt.
-4.  **Version Update**: Increment the [VERSION](file:///Users/rl2025/worktrees/rtdl_v0_4_release_prep/VERSION) file from `v0.3.0` to `v0.4.0` only after explicit user authorization.
-5.  **Git Tag**: Create the official `v0.4.0` tag only after explicit user authorization.
+This handoff records the release-packaging checklist that existed before the `v0.4.0` tag and `main` publication. Those actions are already complete in the released repository history.
+
+Use this file for process reconstruction only, not for new release instructions.
 
 ---
-*Status: Packaging checklist only. Verify refreshed Goal 228/229 evidence before any v0.4.0 release action.*
+*Status: historical packaging checklist. `v0.4.0` has already been released.*

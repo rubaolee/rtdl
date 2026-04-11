@@ -39,9 +39,10 @@ return rt.emit(hits, fields=["segment_id", "polygon_id"])
 Run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
+
+Use `python3` instead if that is what your shell exposes.
 
 ## Best Practices
 

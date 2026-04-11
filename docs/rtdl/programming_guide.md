@@ -127,11 +127,11 @@ Use `rt.run_optix(...)` when:
 Current trusted GPU path:
 
 - bounded, correctness-checked runs
-- trusted PTX generation on `192.168.1.20` uses the `nvcc` fallback
+- PTX generation depends on a working local CUDA and `nvcc` toolchain
 
 ### Vulkan
 
-Use `rt.run_vulkan(...)` only when:
+Use `rt.run_vulkan(...)` when:
 
 - you are explicitly working on the current bounded Vulkan path
 - you understand that Vulkan is correctness-closed only on the accepted bounded

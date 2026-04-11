@@ -78,14 +78,16 @@ The live repo now distinguishes three test layers:
 
 The canonical runner is:
 
-- `python3 scripts/run_test_matrix.py --group unit`
-- `python3 scripts/run_test_matrix.py --group integration`
-- `python3 scripts/run_test_matrix.py --group system`
-- `python3 scripts/run_test_matrix.py --group full`
+- `python scripts/run_test_matrix.py --group unit`
+- `python scripts/run_test_matrix.py --group integration`
+- `python scripts/run_test_matrix.py --group system`
+- `python scripts/run_test_matrix.py --group full`
+
+Use `python3` instead if that is what your shell exposes.
 
 The full discovery command remains useful:
 
-- `python3 -m unittest discover -s tests -p '*test.py'`
+- `python -m unittest discover -s tests -p '*test.py'`
 
 But the test-matrix runner is the clearer release-style verification surface.
 

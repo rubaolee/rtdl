@@ -38,15 +38,15 @@ return rt.emit(hits, fields=["segment_id", "hit_count"])
 Run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
+
+Use `python3` instead if that is what your shell exposes.
 
 App-style run:
 
 ```bash
-cd rtdl
-PYTHONPATH=src:. python3 examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
 ## Best Practices

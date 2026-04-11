@@ -9,8 +9,10 @@ Comprehensive quality tests covering gaps in:
   - reference.py: geometric edge cases (parallel, boundary, degenerate, tie-breaking)
   - runtime.py:   input coercion, run_cpu_python_reference for all predicates
 """
+import subprocess
 import sys
 import unittest
+from unittest import mock
 
 sys.path.insert(0, "src")
 sys.path.insert(0, ".")
@@ -817,6 +819,60 @@ class RuntimeInputNormalizationTest(unittest.TestCase):
             triangles=(rt.Triangle(id=10, x0=2.0, y0=-1.0, x1=3.0, y1=1.0, x2=4.0, y2=-1.0),),
         )
         self.assertEqual(rows[0]["hit_count"], 1)
+
+
+class OracleRuntimeDiagnosticsTest(unittest.TestCase):
+    def test_raise_oracle_build_failure_mentions_macos_dependencies(self) -> None:
+        import rtdsl.oracle_runtime as oracle_runtime
+
+        error = subprocess.CalledProcessError(
+            1,
+            ["clang++", "-std=c++17"],
+            stderr="ld: library 'geos_c' not found",
+        )
+        with self.assertRaisesRegex(RuntimeError, "brew install geos pkg-config"):
+            oracle_runtime._raise_oracle_build_failure(
+                command=["clang++", "-std=c++17"],
+                system="Darwin",
+                error=error,
+            )
+
+    def test_raise_oracle_build_failure_mentions_linux_dependencies(self) -> None:
+        import rtdsl.oracle_runtime as oracle_runtime
+
+        error = subprocess.CalledProcessError(
+            1,
+            ["g++", "-std=c++17"],
+            stderr="/usr/bin/ld: cannot find -lgeos_c",
+        )
+        with self.assertRaisesRegex(RuntimeError, "libgeos-dev"):
+            oracle_runtime._raise_oracle_build_failure(
+                command=["g++", "-std=c++17"],
+                system="Linux",
+                error=error,
+            )
+
+    def test_run_cpu_surfaces_oracle_build_failure_with_rtdl_context(self) -> None:
+        import rtdsl.oracle_runtime as oracle_runtime
+
+        with mock.patch.object(
+            oracle_runtime,
+            "_ensure_oracle_library",
+            side_effect=RuntimeError(
+                "RTDL native oracle build failed while preparing run_cpu(...). "
+                "Install GEOS and pkg-config so the native oracle can link successfully."
+            ),
+        ):
+            oracle_runtime._load_oracle_library.cache_clear()
+            try:
+                with self.assertRaisesRegex(RuntimeError, "RTDL native oracle build failed while preparing run_cpu"):
+                    rt.run_cpu(
+                        _pip_kernel,
+                        points=(rt.Point(id=1, x=0.5, y=0.5),),
+                        polygons=(rt.Polygon(id=10, vertices=((0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0))),),
+                    )
+            finally:
+                oracle_runtime._load_oracle_library.cache_clear()
 
 
 class RunCpuPythonReferenceTest(unittest.TestCase):

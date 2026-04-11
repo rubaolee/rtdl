@@ -1,15 +1,15 @@
 # RTDL v0.4 Tag Preparation
 
 Date: 2026-04-10
-Prepared tag: `v0.4.0`
-Status: prepared, not created yet
+Published tag: `v0.4.0`
+Status: published
 
 ## Tag Meaning
 
-`v0.4.0` will mark the first released RTDL version that adds the
+`v0.4.0` marks the first released RTDL version that adds the
 nearest-neighbor workload family to the public non-graphical RTDL surface.
 
-It is intended to mark:
+It marks:
 
 - the stable earlier workload core already preserved in the repo
 - the completed `fixed_radius_neighbors` line
@@ -29,14 +29,13 @@ It is intended to mark:
 - foundations page:
   - [workloads_and_research_foundations.md](../../workloads_and_research_foundations.md)
 
-## Final Tag Gate
+## Tag Record
 
-Do not create the `v0.4.0` tag until you explicitly authorize release.
-
-The final technical release gate is satisfied in engineering terms, but still
-requires explicit user authorization for release action:
+The final technical release gate was satisfied before publication:
 
 - the whole-line Gemini and Claude audits completed
 - the later heavy Linux benchmark is preserved
 - the accelerated boundary fix restored heavy-case parity
 - the focused post-fix verification slices remained green
+
+The published tag points to the released `v0.4.0` commit on `main`.

@@ -18,7 +18,7 @@ through the small hello-world or sorting demos.
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 This workload emits one row per segment with:
@@ -37,7 +37,7 @@ Use it when you want:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 This workload emits one row per true pair:
@@ -61,8 +61,8 @@ The released package also includes:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
-PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 ```
 
 These are narrower than the segment/polygon families. In particular, the
@@ -91,6 +91,6 @@ For exact workload contracts:
 
 - [Feature Homes](../features/README.md)
 
-For the active preview line:
+For the nearest-neighbor line:
 
 - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
