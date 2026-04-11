@@ -7,6 +7,11 @@ It teaches the smallest important idea:
 - RTDL handles the geometric query
 - Python handles the surrounding program
 
+Command convention used below:
+
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
+
 ## What You Will Learn
 
 - how to run a local RTDL program from the repo
@@ -18,7 +23,7 @@ It teaches the smallest important idea:
 From the repo root:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/rtdl_hello_world.py
 ```
 
 Expected output:
@@ -74,21 +79,21 @@ For this example, the concrete kernel is in:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
 ```
 
 Then try:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu
-PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend embree
 ```
 
 If your machine is set up for GPU backends:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend optix
-PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend vulkan
 ```
 
 ## What To Notice

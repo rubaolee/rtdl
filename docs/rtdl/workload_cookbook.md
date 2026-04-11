@@ -13,9 +13,14 @@ Scope of this file:
 This file is intentionally example-first. It should not duplicate the full
 semantic explanations from the programming guide.
 
+Command convention used below:
+
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
+
 For feature-by-feature usage guidance, see:
 
-- [Feature Homes](/Users/rl2025/rtdl_python_only/docs/features/README.md)
+- [Feature Homes](../features/README.md)
 
 ## LSI
 
@@ -114,8 +119,8 @@ def road_polygon_touch_counts():
 Quick run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+cd rtdl
+python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 Notes:
@@ -127,13 +132,13 @@ Notes:
 - the family also has a dedicated PostGIS validation driver:
   - `scripts/goal114_segment_polygon_postgis_validation.py`
 - an app-style example now exists here:
-  - [rtdl_road_hazard_screening.py](/Users/rl2025/rtdl_python_only/examples/rtdl_road_hazard_screening.py)
+  - [rtdl_road_hazard_screening.py](../../examples/rtdl_road_hazard_screening.py)
 
 App-style run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
+cd rtdl
+python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
 That example treats the workload as a screening primitive:
@@ -160,8 +165,8 @@ def road_polygon_hits():
 Quick run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+cd rtdl
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 Notes:
@@ -195,8 +200,8 @@ def polygon_set_similarity():
 Quick run:
 
 ```bash
-cd /Users/rl2025/rtdl_python_only
-PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+cd rtdl
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 ```
 
 Notes:
@@ -245,6 +250,8 @@ Current status:
 - Python truth path implemented
 - native CPU/oracle implemented
 - Embree implemented
+- OptiX implemented
+- Vulkan implemented
 - optional SciPy / PostGIS external baselines implemented
 
 ## Active v0.4: KNN Rows

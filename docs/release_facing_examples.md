@@ -16,6 +16,8 @@ Before running any command below:
 - enter the checkout with `cd rtdl`
 - keep the `PYTHONPATH=src:.` prefix so Python imports the local `rtdsl`
   package from `src/rtdsl/`
+- commands below use `python` as the public convention
+- if your shell only provides `python3`, substitute `python3` for `python`
 
 ## v0.4 nearest-neighbor preview examples
 
@@ -30,7 +32,7 @@ claim yet.
 - run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 ### K-Nearest-Neighbor Rows
@@ -40,7 +42,7 @@ PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_p
 - run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 ### App-Style Nearest-Neighbor Examples
@@ -54,28 +56,32 @@ Code:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference
 ```
 
 See [v0.4 Application Examples](v0_4_application_examples.md) for full descriptions and SQL comparisons.
 
-### Accelerated Backend Selection
+### Public CLI Backend Selection
 
-If accelerated backends are available, the `v0.4` nearest-neighbor examples support:
+The public nearest-neighbor example CLIs currently support:
 
 ```bash
-# Embree (CPU)
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend embree
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree
 
-# OptiX (GPU RT-cores)
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend optix
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend optix
-
-# Vulkan (GPU RT-cores, correctness-first)
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend vulkan
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree
 ```
+
+Important boundary:
+
+- OptiX and Vulkan nearest-neighbor closure exists in the runtime and test
+  surface
+- the public top-level nearest-neighbor example CLIs do not expose `optix` or
+  `vulkan` backend flags yet
+- use the CPU truth path or Embree through these public example scripts today
 
 ## Core examples
 
@@ -86,7 +92,7 @@ PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend vulkan
 - run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 ### Segment/Polygon Any-Hit Rows
@@ -96,7 +102,7 @@ PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu
 - run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
 ### Polygon-Set Jaccard
@@ -106,7 +112,7 @@ PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend 
 - run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 ```
 
 ### Polygon-Pair Overlap Area Rows
@@ -116,7 +122,7 @@ PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
 - run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
 ```
 
 ## App-style example
@@ -143,7 +149,7 @@ background, and frame output.
 Primary hidden-star stable 3D demo sanity check:
 
 ```bash
-PYTHONPATH=src:. python3 examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo
+PYTHONPATH=src:. python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo
 ```
 
 Secondary smaller app demo:
@@ -160,13 +166,13 @@ so an empty fresh clone does not need a pre-existing `build/` directory.
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
+PYTHONPATH=src:. python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
 ```
 
 Small first sanity check for the smoother comparison line:
 
 ```bash
-PYTHONPATH=src:. python3 examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo
+PYTHONPATH=src:. python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo
 ```
 
 Important boundary:
@@ -182,7 +188,7 @@ Important boundary:
 Current accepted narrow generate-only example:
 
 ```bash
-PYTHONPATH=src:. python3 scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
+PYTHONPATH=src:. python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle
 ```
 
 The repo also preserves example generated output under:

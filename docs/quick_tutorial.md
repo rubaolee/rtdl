@@ -8,12 +8,17 @@ If you only want one mental model, use this:
 - RTDL is the geometric-query core
 - Python is the surrounding application language
 
+Command convention used below:
+
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
+
 ## Fastest First Run
 
 From the repository root:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world.py
+PYTHONPATH=src:. python examples/rtdl_hello_world.py
 ```
 
 Expected output:
@@ -34,9 +39,18 @@ python examples\rtdl_hello_world.py
 If the first run worked, try one of these next:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_python_reference
-PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_hello_world_backends.py --backend cpu_python_reference
+python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+python examples\rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 These show three different entry points:

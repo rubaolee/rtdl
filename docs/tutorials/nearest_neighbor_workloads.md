@@ -9,6 +9,11 @@ Current public workloads:
 
 These are active preview features, not a released package yet.
 
+Command convention used below:
+
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
+
 ## What You Will Learn
 
 - how to write and run the current nearest-neighbor workloads
@@ -20,7 +25,7 @@ These are active preview features, not a released package yet.
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
 This workload answers:
@@ -44,7 +49,7 @@ Use it when you want:
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 This workload answers:
@@ -66,26 +71,25 @@ Use it when you want:
 
 ## Backend Progression
 
-Once the CPU truth path is clear, the same example programs can be run on:
+Once the CPU truth path is clear, the same public example programs can be run
+on:
 
 ```bash
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend embree
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend optix
-PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend vulkan
-```
-
-and:
-
-```bash
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend embree
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend optix
-PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree
 ```
 
 Honest boundary:
 
-- Embree and OptiX are the stronger accelerated backends today
-- Vulkan is supported as a correctness-first path, not the optimized flagship
+- the public top-level nearest-neighbor example CLIs currently expose:
+  - `cpu_python_reference`
+  - `cpu`
+  - `embree`
+- OptiX and Vulkan nearest-neighbor closure exists in the runtime and test
+  surface, but those backend values are not exposed through these two public
+  example CLIs yet
+- Embree is the current accelerated backend available through the public
+  nearest-neighbor examples
 
 ## Application-Shaped Examples
 
