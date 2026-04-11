@@ -94,20 +94,26 @@ Why it matters:
 
 ### `polygon_pair_overlap_area_rows`, `polygon_set_jaccard`
 
-Current status:
+Primary foundation:
 
-- supported now under a narrower pathology/unit-cell boundary
+- Kaibo Wang, Yin Huai, Rubao Lee, Fusheng Wang, Xiaodong Zhang, and Joel H.
+  Saltz,
+  *Accelerating Pathology Image Data Cross-Comparison on CPU-GPU Hybrid Systems*,
+  Proceedings of the VLDB Endowment 5(11), 1543--1554, 2012,
+  DOI: [10.14778/2350229.2350268](https://doi.org/10.14778/2350229.2350268)
 
-Research relationship:
+Why it matters:
 
-- this line is currently justified more by bounded workload-design extension
-  from RTDL’s spatial-query program than by one single canonical paper in the
-  repo
-- it is still grounded in real geometric-overlap use cases, especially overlap
-  measurement and similarity-style comparison, even though this page does not
-  currently name one single anchor paper for it
-- it should therefore be read as **research-adjacent**, but not yet as the same
-  kind of direct paper reproduction target that RayJoin is
+- this paper is the right historical anchor for RTDL's overlap-area and Jaccard
+  similarity line
+- it is explicitly about large-scale spatial cross-comparison in pathology
+  imaging
+- the workload center of that paper is computing intersection/union behavior on
+  polygon sets and using Jaccard similarity as the comparison measure
+- RTDL's `polygon_pair_overlap_area_rows` and `polygon_set_jaccard` are the
+  direct bounded descendants of that overlap/similarity lane, even though the
+  current RTDL surface is packaged as reusable language workloads rather than as
+  the original pathology application pipeline
 
 ### `fixed_radius_neighbors`, `knn_rows`
 
