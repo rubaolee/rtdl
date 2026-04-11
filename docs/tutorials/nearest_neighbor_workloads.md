@@ -1,120 +1,160 @@
 # Tutorial: Nearest-Neighbor Workloads
 
-This tutorial covers the active `v0.4` nearest-neighbor line.
+RTDL `v0.4.0` adds two released nearest-neighbor workloads:
 
-Current public workloads:
-
-- `fixed_radius_neighbors`
-- `knn_rows`
-
-These are released v0.4.0 features.
+| Workload | Question it answers | Output shape |
+| --- | --- | --- |
+| `fixed_radius_neighbors` | Which search points are within radius `r` of each query? | One row per `(query, neighbor)` pair within the radius |
+| `knn_rows` | What are the `k` nearest search points to each query? | Ranked nearest-neighbor rows per query |
 
 Command convention used below:
 
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
 
-## What You Will Learn
+---
 
-- how to write and run the current nearest-neighbor workloads
-- when to choose radius-based output versus top-`k` output
-- how the same workload can grow into a small RTDL-plus-Python application
+## `fixed_radius_neighbors`
 
-## Start With `fixed_radius_neighbors`
-
-Run:
+### Run it
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
-This workload answers:
+Expected output excerpt:
 
-- which search points fall within radius `r` of each query point?
+```json
+{
+  "app": "fixed_radius_neighbors",
+  "radius": 0.5,
+  "neighbors_by_query": {
+    "100": [
+      {"neighbor_id": 1, "distance": 0.0},
+      {"neighbor_id": 2, "distance": 0.3}
+    ]
+  }
+}
+```
 
-It emits:
+### The kernel
 
-- `query_id`
-- `neighbor_id`
-- `distance`
+```python
+import rtdsl as rt
 
-Use it when you want:
+@rt.kernel(backend="rtdl", precision="float_approx")
+def fixed_radius_neighbors_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=0.5, k_max=3))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+```
 
-- service-radius screening
-- local density row materialization
-- bounded neighborhood joins
+### Parameters
 
-## Then Learn `knn_rows`
+- `radius`: only neighbors with `distance <= radius` are emitted
+- `k_max`: maximum neighbors to emit per query
 
-Run:
+### Use when
+
+- you want all neighbors inside a service radius
+- you need local-density row materialization
+- you want a bounded neighborhood join with a distance filter
+
+---
+
+## `knn_rows`
+
+### Run it
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
-This workload answers:
+Expected output excerpt:
 
-- what are the nearest `k` search points for each query point?
+```json
+{
+  "app": "knn_rows",
+  "k": 3,
+  "neighbors_by_query": {
+    "100": [
+      {"neighbor_id": 1, "neighbor_rank": 1, "distance": 0.0},
+      {"neighbor_id": 2, "neighbor_rank": 2, "distance": 0.3}
+    ]
+  }
+}
+```
 
-It emits:
+### The kernel
 
-- `query_id`
-- `neighbor_id`
-- `distance`
-- `neighbor_rank`
+```python
+import rtdsl as rt
 
-Use it when you want:
+@rt.kernel(backend="rtdl", precision="float_approx")
+def knn_rows_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.knn_rows(k=3))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+```
 
-- top-`k` facility matching
-- graph-edge candidate generation
-- deterministic nearest-neighbor row output
+### Parameters
 
-## Backend Progression
+- `k`: number of nearest neighbors to return per query
 
-Once the CPU truth path is clear, the same public example programs can be run
-on:
+### Use when
+
+- you need the top `k` nearest neighbors per query
+- you want explicit `neighbor_rank` in the output
+- you are building graph-style candidate edges
+
+---
+
+## `fixed_radius_neighbors` vs `knn_rows`
+
+| Question | Choose |
+| --- | --- |
+| "Which points are within 5 km?" | `fixed_radius_neighbors` |
+| "What are the nearest 3 facilities?" | `knn_rows` |
+| Need distance threshold as part of the contract | `fixed_radius_neighbors` |
+| Need ranked nearest rows even when far away | `knn_rows` |
+
+Important difference:
+
+- `fixed_radius_neighbors` is distance-filtered
+- `knn_rows` is top-`k` ranked output
+
+---
+
+## Backend progression
+
+The public examples are easiest to learn on:
 
 ```bash
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
+```
+
+Then move to the native CPU and accelerated backends that your machine
+supports:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu
 PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree
 PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree
 ```
 
-Honest boundary:
+The released `v0.4.0` nearest-neighbor line also has OptiX and Vulkan backend
+implementations, but availability depends on the machine and local runtime
+setup. Use the feature and support-matrix docs for the exact platform story.
 
-- the public top-level nearest-neighbor example CLIs currently expose:
-  - `cpu_python_reference`
-  - `cpu`
-  - `embree`
-- OptiX and Vulkan nearest-neighbor closure exists in the runtime and test
-  surface, but those backend values are not exposed through these two public
-  example CLIs yet
-- Embree is the current accelerated backend available through the public
-  nearest-neighbor examples
+---
 
-## Application-Shaped Examples
-
-After the bare workload examples, move to:
-
-- [examples/rtdl_service_coverage_gaps.py](../../examples/rtdl_service_coverage_gaps.py)
-- [examples/rtdl_event_hotspot_screening.py](../../examples/rtdl_event_hotspot_screening.py)
-- [examples/rtdl_facility_knn_assignment.py](../../examples/rtdl_facility_knn_assignment.py)
-
-These teach the intended composition model:
-
-- RTDL does the neighbor query
-- Python does grouping, summaries, and app-specific decisions
-
-See also:
+## Next
 
 - [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
-
-## Next Pages
-
-For exact frozen contracts:
-
-- [Fixed-Radius Neighbors Feature Home](../features/fixed_radius_neighbors/README.md)
-- [KNN Rows Feature Home](../features/knn_rows/README.md)
-
-For app/demo composition:
-
-- [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
+- [Feature Homes](../features/README.md)

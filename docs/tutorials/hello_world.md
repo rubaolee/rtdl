@@ -1,8 +1,8 @@
 # Tutorial: Hello World
 
-This is the best first RTDL program in the repo.
+This is the first RTDL kernel you should read in full.
 
-It teaches the smallest important idea:
+It teaches the smallest complete RTDL idea:
 
 - RTDL handles the geometric query
 - Python handles the surrounding program
@@ -12,15 +12,9 @@ Command convention used below:
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
 
-## What You Will Learn
+---
 
-- how to run a local RTDL program from the repo
-- the basic `input -> traverse -> refine -> emit` kernel shape
-- how the same small scene can run on different backends
-
-## First Command
-
-From the repo root:
+## Run it first
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world.py
@@ -39,78 +33,127 @@ set PYTHONPATH=src;.
 python examples\rtdl_hello_world.py
 ```
 
-## What The Program Does
+---
 
-The scene has:
+## The scene
 
-- one horizontal ray
-- three labeled rectangles
-- one visible rectangle on the ray path
+The ray travels left to right across three rectangles:
 
-The current hello-world path uses rays against triangles, so each rectangle is
-represented as two triangles.
+- one left miss
+- one middle hit labelled `hello, world`
+- one right miss
 
-That means the RTDL kernel reports a primitive hit count of `2`, while the
-surrounding Python program maps that back to the visible rectangle label and
-prints:
+RTDL works with triangles, so the visible rectangle is encoded as two triangles.
+That is why the underlying hit count is `2` even though the printed answer is a
+single label.
 
-- `hello, world`
+---
 
-## Kernel Shape
-
-The same structure appears in many RTDL kernels:
+## The full kernel
 
 ```python
+import rtdsl as rt
+
 @rt.kernel(backend="rtdl", precision="float_approx")
-def my_kernel():
-    probe = rt.input("probe", ..., role="probe")
-    build = rt.input("build", ..., role="build")
-    candidates = rt.traverse(probe, build, accel="bvh")
-    refined = rt.refine(candidates, predicate=...)
-    return rt.emit(refined, fields=[...])
+def hello_world_kernel():
+    rays = rt.input("rays", rt.Rays, layout=rt.Ray2DLayout, role="probe")
+    triangles = rt.input("triangles", rt.Triangles, layout=rt.Triangle2DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
 ```
 
-For this example, the concrete kernel is in:
+### Line by line
 
-- [examples/rtdl_hello_world_backends.py](../../examples/rtdl_hello_world_backends.py)
+`@rt.kernel(...)`
 
-## Try A Different Backend
+- marks the function as an RTDL kernel
+- `precision="float_approx"` means the traversal side may use float-oriented approximations internally
 
-Run:
+`rt.input("rays", ..., role="probe")`
+
+- declares the active geometry, the things that search
+
+`rt.input("triangles", ..., role="build")`
+
+- declares the geometry to be searched
+- this side is built into the acceleration structure
+
+`rt.traverse(rays, triangles, accel="bvh")`
+
+- runs BVH traversal to find candidate `(ray, triangle)` pairs quickly
+
+`rt.refine(candidates, predicate=...)`
+
+- applies the exact predicate to keep only real hits
+
+`rt.emit(hits, fields=[...])`
+
+- chooses which output fields appear in each result row
+
+---
+
+## The Python wrapper
+
+The kernel only describes the query. Python runs the program:
+
+```python
+rows = rt.run_cpu_python_reference(
+    hello_world_kernel,
+    rays=rays,
+    triangles=triangles,
+)
+```
+
+That returns rows like:
+
+```python
+({"ray_id": 0, "hit_count": 2},)
+```
+
+Then Python maps `hit_count == 2` back to the visible rectangle label and
+prints:
+
+```text
+hello, world
+```
+
+---
+
+## Try a different backend
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
-```
-
-Then try:
-
-```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend embree
 ```
 
-If your machine is set up for GPU backends:
+If your machine is configured for GPU backends:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend vulkan
 ```
 
-## What To Notice
+Expected JSON excerpt:
 
-- the scene description stays the same
-- the kernel definition stays the same
+```json
+{
+  "backend": "cpu_python_reference",
+  "triangle_hit_count": 2,
+  "visible_hit_label": "hello, world"
+}
+```
+
+What to notice:
+
+- the kernel stays the same
+- the scene stays the same
 - only the runner/backend changes
 
-That is the core authoring pattern to remember.
+---
 
-## Next Tutorial
-
-If you want the next smallest programmable example, go to:
+## Next
 
 - [Sorting Demo](sorting_demo.md)
-
-If you want to jump straight into public workload examples, go to:
-
 - [Segment And Polygon Workloads](segment_polygon_workloads.md)
-- [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)

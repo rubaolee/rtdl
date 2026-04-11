@@ -1,96 +1,186 @@
 # Tutorial: Segment And Polygon Workloads
 
-This tutorial covers the stable released workload families in `v0.2.0`.
+This tutorial covers the stable released `v0.2.0` workload families.
 
-Use it when you want to learn RTDL through real public workloads rather than
-through the small hello-world or sorting demos.
+These are the best place to learn RTDL through real public workloads instead of
+through the tiny hello-world or sorting demos.
 
-## What You Will Learn
+Command convention used below:
 
-- the difference between count-style and row-style outputs
-- how RTDL models segment/polygon interaction workloads
-- how the overlap and Jaccard line fits beside the segment/polygon line
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
 
-## Start With These Two Examples
+---
 
-### Segment/Polygon Hit Count
+## Two output styles
 
-Run:
+RTDL workloads usually emit one of two shapes:
 
-```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
-```
+| Style | Example | What you get |
+| --- | --- | --- |
+| count per probe | `segment_polygon_hitcount` | one row per segment with `segment_id`, `hit_count` |
+| row per true pair | `segment_polygon_anyhit_rows` | one row per `(segment, polygon)` true-hit pair |
 
-This workload emits one row per segment with:
+Count-style output is compact. Row-style output gives you the detailed pairs
+for downstream aggregation in Python.
 
-- `segment_id`
-- `hit_count`
+---
 
-Use it when you want:
+## `segment_polygon_hitcount`
 
-- screening
-- ranking
-- compact summaries
+Question:
 
-### Segment/Polygon Any-Hit Rows
+- how many polygons does each segment intersect?
 
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
 ```
 
-This workload emits one row per true pair:
+Expected output excerpt:
 
-- `segment_id`
-- `polygon_id`
+```json
+{
+  "row_count": 40,
+  "rows": [
+    {"segment_id": 1, "hit_count": 2},
+    {"segment_id": 2, "hit_count": 1}
+  ]
+}
+```
 
-Use it when you want:
+Kernel shape:
 
-- auditing
-- join-style output
-- custom aggregation in Python after RTDL finishes
+```python
+@rt.kernel(backend="rtdl", precision="float_approx")
+def segment_polygon_hitcount_kernel():
+    segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(segments, polygons, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_hitcount(exact=False))
+    return rt.emit(hits, fields=["segment_id", "hit_count"])
+```
 
-## The Overlap And Jaccard Line
+Use when:
 
-The released package also includes:
+- you want compact screening or ranking
+- you need per-segment summaries
 
-- [examples/rtdl_polygon_pair_overlap_area_rows.py](../../examples/rtdl_polygon_pair_overlap_area_rows.py)
-- [examples/rtdl_polygon_set_jaccard.py](../../examples/rtdl_polygon_set_jaccard.py)
+---
+
+## `segment_polygon_anyhit_rows`
+
+Question:
+
+- which `(segment, polygon)` pairs actually intersect?
+
+Run:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
+```
+
+Expected output excerpt:
+
+```json
+{
+  "rows": [
+    {"segment_id": 1, "polygon_id": 3},
+    {"segment_id": 1, "polygon_id": 7}
+  ]
+}
+```
+
+Kernel shape:
+
+```python
+@rt.kernel(backend="rtdl", precision="float_approx")
+def segment_polygon_anyhit_rows_kernel():
+    segments = rt.input("segments", rt.Segments, layout=rt.Segment2DLayout, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(segments, polygons, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_polygon_anyhit_rows(exact=False))
+    return rt.emit(hits, fields=["segment_id", "polygon_id"])
+```
+
+Use when:
+
+- you need the actual pair table
+- you want to group or aggregate in Python afterward
+- auditing matters more than compactness
+
+---
+
+## `hitcount` vs `anyhit_rows`
+
+| Need | Choose |
+| --- | --- |
+| one summary row per segment | `segment_polygon_hitcount` |
+| every true pair as rows | `segment_polygon_anyhit_rows` |
+| compact output | `segment_polygon_hitcount` |
+| join-style downstream processing | `segment_polygon_anyhit_rows` |
+
+---
+
+## The overlap and Jaccard line
+
+The released package also includes two narrower polygon-overlap workloads:
+
+### `polygon_pair_overlap_area_rows`
+
+Question:
+
+- for each overlapping polygon pair, what is the overlap area?
 
 Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
+```
+
+Kernel shape:
+
+```python
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_pair_overlap_area_rows_kernel():
+    left_polygons = rt.input("left_polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="probe")
+    right_polygons = rt.input("right_polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(left_polygons, right_polygons, accel="bvh")
+    overlaps = rt.refine(candidates, predicate=rt.polygon_pair_overlap_area_rows())
+    return rt.emit(overlaps, fields=["left_polygon_id", "right_polygon_id", "overlap_area"])
+```
+
+### `polygon_set_jaccard`
+
+Question:
+
+- what is the Jaccard similarity between two polygon sets?
+
+Run:
+
+```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 ```
 
-These are narrower than the segment/polygon families. In particular, the
-Jaccard line is packaged under a bounded pathology-style overlap contract rather
-than as a generic polygon-similarity engine.
+This workload is packaged under a bounded pathology-style overlap contract. It
+is not framed as a generic polygon-similarity engine for every use case.
 
-## Which One To Learn First
+---
 
-Recommended order:
+## Recommended learning order
 
 1. `segment_polygon_hitcount`
 2. `segment_polygon_anyhit_rows`
 3. `polygon_pair_overlap_area_rows`
 4. `polygon_set_jaccard`
 
-That order moves from the easiest output shape to the more specialized overlap
-and similarity line.
+That order moves from the simplest count-style output to the more specialized
+overlap and similarity line.
 
-## Next Pages
+---
 
-For example commands:
-
-- [Release-Facing Examples](../release_facing_examples.md)
-
-For exact workload contracts:
-
-- [Feature Homes](../features/README.md)
-
-For the nearest-neighbor line:
+## Next
 
 - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
+- [Release-Facing Examples](../release_facing_examples.md)

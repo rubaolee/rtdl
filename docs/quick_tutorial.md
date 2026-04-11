@@ -1,19 +1,19 @@
 # RTDL Quick Tutorial
 
-This page is the fastest way for a beginner to get a first successful RTDL run
-and then move into the right tutorial track.
+RTDL is a geometric-query language that runs inside Python.
 
-If you only want one mental model, use this:
-
-- RTDL is the geometric-query core
-- Python is the surrounding application language
+You write a kernel, a small function that describes what query to run, and then
+call an RTDL runner to execute it. Python owns everything around the kernel:
+data loading, post-processing, presentation, and output.
 
 Command convention used below:
 
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
 
-## Fastest First Run
+---
+
+## Step 1: First run
 
 From the repository root:
 
@@ -34,34 +34,118 @@ set PYTHONPATH=src;.
 python examples\rtdl_hello_world.py
 ```
 
-## Fastest Second Run
+---
 
-If the first run worked, try one of these next:
+## Step 2: What is a kernel?
+
+Every RTDL program has the same four-step shape:
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def my_kernel():
+    probe = rt.input("probe_name", rt.Rays, role="probe")
+    build = rt.input("build_name", rt.Triangles, role="build")
+    candidates = rt.traverse(probe, build, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
+```
+
+- `input` declares the geometry you will pass in
+- `traverse` finds candidate pairs quickly with a BVH
+- `refine` applies the exact predicate
+- `emit` selects which fields appear in each output row
+
+Then run it:
+
+```python
+rows = rt.run_cpu_python_reference(my_kernel, probe_name=(...), build_name=(...))
+```
+
+`rows` is a tuple of dicts, one per output row.
+
+---
+
+## Step 3: Same kernel, different backend
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+Expected output:
+
+```json
+{
+  "backend": "cpu_python_reference",
+  "triangle_hit_count": 2,
+  "visible_hit_rect_id": 2,
+  "visible_hit_label": "hello, world"
+}
+```
+
+Then try:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend embree
+```
+
+If your machine is configured for GPU backends:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend vulkan
+```
+
+What stays the same:
+
+- the scene
+- the kernel
+- the output meaning
+
+What changes:
+
+- which runner executes the kernel
+
+---
+
+## Step 4: Try a spatial query
+
+```bash
 PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
-Windows `cmd.exe`:
+Expected output excerpt:
 
-```bat
-set PYTHONPATH=src;.
-python examples\rtdl_hello_world_backends.py --backend cpu_python_reference
-python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
-python examples\rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+```json
+{
+  "app": "fixed_radius_neighbors",
+  "radius": 0.5,
+  "neighbors_by_query": {
+    "100": [{"neighbor_id": 1, "distance": 0.0}],
+    "101": [{"neighbor_id": 4, "distance": 0.2}]
+  }
+}
 ```
 
-These show three different entry points:
+The kernel shape is still the same:
 
-- same tiny program across backends
-- released workload-family example
-- released nearest-neighbor workload example
+```python
+@rt.kernel(backend="rtdl", precision="float_approx")
+def fixed_radius_neighbors_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=0.5, k_max=3))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+```
 
-## The Tutorial Ladder
+---
 
-After the first successful run, follow this learning order:
+## Tutorial ladder
+
+Follow this order to learn progressively:
 
 1. [Hello World](tutorials/hello_world.md)
 2. [Sorting Demo](tutorials/sorting_demo.md)
@@ -69,27 +153,14 @@ After the first successful run, follow this learning order:
 4. [Nearest-Neighbor Workloads](tutorials/nearest_neighbor_workloads.md)
 5. [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
 
-Or use the full tutorial hub:
+Or jump directly to the full hub:
 
 - [RTDL Tutorials](tutorials/README.md)
 
-## Which Tutorial Should You Read?
+---
 
-Read:
+## Three things to remember
 
-- [Hello World](tutorials/hello_world.md)
-  - if you want the smallest possible RTDL example
-- [Sorting Demo](tutorials/sorting_demo.md)
-  - if you want to see RTDL inside a compact Python demo
-- [Segment And Polygon Workloads](tutorials/segment_polygon_workloads.md)
-  - if you want the stable released workload families
-- [Nearest-Neighbor Workloads](tutorials/nearest_neighbor_workloads.md)
-  - if you want the released `v0.4` workload line
-- [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
-  - if you want the 2D/3D demo/application side
-
-## If You Only Remember Three Things
-
-- start with `examples/rtdl_hello_world.py`
-- learn RTDL through the tutorial ladder, not by jumping straight into archive reports
-- treat RTDL as the core query engine and Python as the application layer
+- the kernel describes the query; Python runs the surrounding program
+- `rt.run_cpu_python_reference(...)` is the easiest runner to start with
+- switching backends changes execution, not the public kernel shape

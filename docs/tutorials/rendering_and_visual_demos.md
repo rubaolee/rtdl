@@ -1,74 +1,154 @@
 # Tutorial: RTDL Plus Python Rendering
 
-This tutorial is for readers who want to understand the 2D/3D demo side of the
-repo without misunderstanding RTDL as a full rendering engine.
+RTDL is not a rendering engine. But it can act as the geometric-query core
+inside one:
 
-The correct model is:
+- RTDL handles ray/triangle-style query work
+- Python handles scene setup, shading, animation, and output
 
-- RTDL handles the geometric-query core
-- Python handles the surrounding scene/app/output logic
+This tutorial shows what that composition looks like in practice.
 
-## What You Will Learn
+Command convention used below:
 
-- how RTDL participates in the visual demos
-- why the visual demos belong in the repo
-- where to start if you want a small rendering-oriented example
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
 
-## First Demo To Read
+---
 
-Start with:
+## First demo: lit ball
 
-- [examples/visual_demo/rtdl_lit_ball_demo.py](../../examples/visual_demo/rtdl_lit_ball_demo.py)
+This is the best small demonstration of the RTDL-plus-Python split.
 
 Run:
 
 ```bash
-PYTHONPATH=src:. python3 examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm
+PYTHONPATH=src:. python examples/visual_demo/rtdl_lit_ball_demo.py \
+    --backend cpu_python_reference --compare-backend none \
+    --width 48 --height 24 --triangles 128 --output /dev/null
 ```
 
-This is the best small demonstration of the RTDL-plus-Python split:
+Windows `cmd.exe`:
 
-- RTDL answers ray/triangle hit-count questions
-- Python reconstructs visible spans, computes brightness, and writes the image
+```bat
+set PYTHONPATH=src;.
+python examples\visual_demo\rtdl_lit_ball_demo.py ^
+    --backend cpu_python_reference --compare-backend none ^
+    --width 48 --height 24 --triangles 128 --output NUL
+```
 
-## Then Move To The Main 3D Demo
+Expected output excerpt:
 
-Primary source:
+```text
+            @@%%##*+=--:.
+         @@@@@@@%%##*+=-:.
+       @@@@@@@@@@%##*+=-:.
+```
+
+### The RTDL kernel
+
+RTDL does one core thing in this demo: count how many sphere triangles each
+ray intersects.
+
+```python
+@rt.kernel(backend="rtdl", precision="float_approx")
+def ray_triangle_hitcount_demo():
+    rays = rt.input("rays", rt.Rays, layout=rt.Ray2DLayout, role="probe")
+    triangles = rt.input("triangles", rt.Triangles, layout=rt.Triangle2DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
+```
+
+### What Python does with the rows
+
+Python receives the rows and then handles:
+
+- hit-span reconstruction
+- surface normal estimation
+- brightness calculation
+- ASCII character lookup
+- frame assembly
+- file writing
+
+That is the honest boundary: RTDL is the query core; Python is the application
+layer.
+
+Source file:
+
+- [examples/visual_demo/rtdl_lit_ball_demo.py](../../examples/visual_demo/rtdl_lit_ball_demo.py)
+
+---
+
+## Main 3D demo: hidden star stable ball
+
+This larger demo adds shadow queries and multi-step scene logic.
+
+Run a small sanity check:
+
+```bash
+PYTHONPATH=src:. python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py \
+    --backend cpu_python_reference --compare-backend none \
+    --width 48 --height 24 \
+    --latitude-bands 6 --longitude-bands 12 \
+    --frames 1 --jobs 1 \
+    --shadow-mode rtdl_light_to_surface \
+    --output-dir build/quick_hidden_star_demo
+```
+
+What RTDL handles:
+
+1. primary visibility queries
+2. shadow-ray queries
+
+What Python handles:
+
+- mesh generation
+- scanline construction
+- shading
+- animation control
+- frame packaging
+
+Source file:
 
 - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](../../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 
-Small sanity check:
+---
 
-```bash
-PYTHONPATH=src:. python3 examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo
+## Other visual demos
+
+These follow the same pattern:
+
+- `rtdl_orbiting_star_ball_demo.py`
+- `rtdl_orbit_lights_ball_demo.py`
+- `rtdl_smooth_camera_orbit_demo.py`
+- `rtdl_spinning_ball_3d_demo.py`
+
+All of them use RTDL for geometric queries and Python for the surrounding
+application.
+
+---
+
+## The model to remember
+
+```text
+Python application
+  -> scene, light, camera, animation
+  -> calls rt.run_*(...)
+  -> receives rows
+  -> shading, output, packaging
+
+RTDL kernel
+  -> traversal
+  -> predicate/refine
+  -> emitted rows
 ```
 
-This example is larger, but it teaches the same boundary:
+RTDL is not a renderer. The demos still belong in the repo because they show
+RTDL acting as a real geometry-query core inside larger Python applications.
 
-- RTDL owns primary visibility and shadow-query work
-- Python owns animation, shading, frame management, and output packaging
+---
 
-## Why This Tutorial Exists
-
-Beginners often see the visual demos and ask one of two wrong questions:
-
-1. “Is RTDL secretly just a renderer?”
-2. “Are these demos unrelated to the language?”
-
-The honest answer is:
-
-- RTDL is not a full rendering engine
-- the demos still matter because they show RTDL acting as a real geometric core
-  inside larger Python applications
-
-## Next Pages
-
-For the workload side of RTDL, return to:
+## Next
 
 - [Segment And Polygon Workloads](segment_polygon_workloads.md)
 - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
-
-For broader example indexing:
-
-- [Release-Facing Examples](../release_facing_examples.md)
-- [examples/README.md](../../examples/README.md)
