@@ -19,14 +19,6 @@ core can power a bounded Python application.
 
 ## See It Quickly
 
-<a href="https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes">
-  <img
-    src="docs/assets/rtdl_visual_demo_thumb.png"
-    alt="RTDL visual demo"
-    width="240"
-  />
-</a>
-
 Primary front-door links:
 
 - [Watch The Public Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
@@ -35,6 +27,16 @@ Primary front-door links:
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
 - [Documentation Index](docs/README.md)
+
+Demo preview:
+
+<a href="https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes">
+  <img
+    src="docs/assets/rtdl_visual_demo_thumb.png"
+    alt="RTDL visual demo"
+    width="240"
+  />
+</a>
 
 ## Start In Two Minutes
 
