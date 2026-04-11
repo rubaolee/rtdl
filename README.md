@@ -1,16 +1,20 @@
 # RTDL
 
-RTDL is a language/runtime for non-graphical spatial and geometric-query work.
+RTDL is a DSL/runtime for using ray tracing to accelerate computation.
 
 It gives you:
 
-- built-in workload primitives for released spatial queries
+- built-in workload primitives for released geometric and nearest-neighbor workloads
 - a Python-hosted DSL for writing kernels
 - multiple execution backends behind one public surface
-- a clean model where RTDL owns the heavy query work and Python owns the surrounding application logic
+- a clean model where RTDL owns the heavy accelerated work and Python owns the surrounding application logic
+
+The current released surface is strongest on non-graphical geometric and
+nearest-neighbor computation, but the language goal is broader than spatial
+queries alone.
 
 RTDL is not a general-purpose renderer or graphics engine.  
-The visual demo in this repository exists as a proof that the same RTDL query
+The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.
 
 ## See It Quickly
