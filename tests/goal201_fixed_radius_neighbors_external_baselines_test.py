@@ -31,9 +31,13 @@ class _FakePostgisCursor:
     def __init__(self, connection):
         self._connection = connection
         self._rows = []
+        self._executed_sql = connection.executed_sql
 
     def execute(self, sql, params=None):
+        self._executed_sql.append(sql.strip())
         if "CREATE TEMP TABLE" in sql:
+            return
+        if "CREATE INDEX" in sql or sql.strip().startswith("ANALYZE"):
             return
         if "WITH ranked_neighbors AS" in sql:
             radius, k_max = params
@@ -76,6 +80,7 @@ class _FakePostgisConnection:
         self.query_points = ()
         self.search_points = ()
         self.closed = False
+        self.executed_sql = []
 
     def cursor(self):
         return _FakePostgisCursor(self)
@@ -122,8 +127,9 @@ class Goal201FixedRadiusNeighborsExternalBaselinesTest(unittest.TestCase):
 
     def test_postgis_runner_matches_python_reference_with_fake_connection(self) -> None:
         case = make_fixed_radius_neighbors_authored_case()
+        connection = _FakePostgisConnection()
         rows = rt.run_postgis_fixed_radius_neighbors(
-            _FakePostgisConnection(),
+            connection,
             case["query_points"],
             case["search_points"],
             radius=0.5,
@@ -131,6 +137,10 @@ class Goal201FixedRadiusNeighborsExternalBaselinesTest(unittest.TestCase):
         )
         python_rows = rt.run_cpu_python_reference(fixed_radius_neighbors_reference, **case)
         self.assertEqual(rows, python_rows)
+        self.assertTrue(any("CREATE INDEX rtdl_query_points_tmp_geom_gist" in sql for sql in connection.executed_sql))
+        self.assertTrue(any("CREATE INDEX rtdl_search_points_tmp_geom_gist" in sql for sql in connection.executed_sql))
+        self.assertTrue(any(sql == "ANALYZE rtdl_query_points_tmp" for sql in connection.executed_sql))
+        self.assertTrue(any(sql == "ANALYZE rtdl_search_points_tmp" for sql in connection.executed_sql))
 
     def test_baseline_runner_supports_scipy_backend(self) -> None:
         case = make_fixed_radius_neighbors_authored_case()

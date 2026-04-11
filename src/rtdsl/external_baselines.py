@@ -194,6 +194,30 @@ def run_postgis_fixed_radius_neighbors(
     query_table: str = "rtdl_query_points_tmp",
     search_table: str = "rtdl_search_points_tmp",
 ) -> tuple[dict[str, float | int], ...]:
+    prepare_postgis_point_tables(
+        connection,
+        query_points,
+        search_points,
+        query_table=query_table,
+        search_table=search_table,
+    )
+    return query_postgis_fixed_radius_neighbors(
+        connection,
+        radius=radius,
+        k_max=k_max,
+        query_table=query_table,
+        search_table=search_table,
+    )
+
+
+def prepare_postgis_point_tables(
+    connection,
+    query_points: tuple[Point, ...],
+    search_points: tuple[Point, ...],
+    *,
+    query_table: str = "rtdl_query_points_tmp",
+    search_table: str = "rtdl_search_points_tmp",
+) -> None:
     cursor = connection.cursor()
     try:
         cursor.execute(
@@ -230,6 +254,28 @@ VALUES (%s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 0))
 """.strip(),
             [(point.id, point.x, point.y, point.x, point.y) for point in search_points],
         )
+        cursor.execute(
+            f"CREATE INDEX {query_table}_geom_gist ON {query_table} USING GIST (geom)"
+        )
+        cursor.execute(
+            f"CREATE INDEX {search_table}_geom_gist ON {search_table} USING GIST (geom)"
+        )
+        cursor.execute(f"ANALYZE {query_table}")
+        cursor.execute(f"ANALYZE {search_table}")
+    finally:
+        cursor.close()
+
+
+def query_postgis_fixed_radius_neighbors(
+    connection,
+    *,
+    radius: float,
+    k_max: int,
+    query_table: str = "rtdl_query_points_tmp",
+    search_table: str = "rtdl_search_points_tmp",
+) -> tuple[dict[str, float | int], ...]:
+    cursor = connection.cursor()
+    try:
         cursor.execute(
             build_postgis_fixed_radius_neighbors_sql(
                 query_table=query_table,
@@ -259,42 +305,30 @@ def run_postgis_knn_rows(
     query_table: str = "rtdl_query_points_tmp",
     search_table: str = "rtdl_search_points_tmp",
 ) -> tuple[dict[str, float | int], ...]:
+    prepare_postgis_point_tables(
+        connection,
+        query_points,
+        search_points,
+        query_table=query_table,
+        search_table=search_table,
+    )
+    return query_postgis_knn_rows(
+        connection,
+        k=k,
+        query_table=query_table,
+        search_table=search_table,
+    )
+
+
+def query_postgis_knn_rows(
+    connection,
+    *,
+    k: int,
+    query_table: str = "rtdl_query_points_tmp",
+    search_table: str = "rtdl_search_points_tmp",
+) -> tuple[dict[str, float | int], ...]:
     cursor = connection.cursor()
     try:
-        cursor.execute(
-            f"""
-CREATE TEMP TABLE {query_table} (
-    id BIGINT NOT NULL,
-    x DOUBLE PRECISION NOT NULL,
-    y DOUBLE PRECISION NOT NULL,
-    geom geometry(Point, 0) NOT NULL
-) ON COMMIT DROP
-""".strip()
-        )
-        cursor.execute(
-            f"""
-CREATE TEMP TABLE {search_table} (
-    id BIGINT NOT NULL,
-    x DOUBLE PRECISION NOT NULL,
-    y DOUBLE PRECISION NOT NULL,
-    geom geometry(Point, 0) NOT NULL
-) ON COMMIT DROP
-""".strip()
-        )
-        cursor.executemany(
-            f"""
-INSERT INTO {query_table} (id, x, y, geom)
-VALUES (%s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 0))
-""".strip(),
-            [(point.id, point.x, point.y, point.x, point.y) for point in query_points],
-        )
-        cursor.executemany(
-            f"""
-INSERT INTO {search_table} (id, x, y, geom)
-VALUES (%s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 0))
-""".strip(),
-            [(point.id, point.x, point.y, point.x, point.y) for point in search_points],
-        )
         cursor.execute(
             build_postgis_knn_rows_sql(
                 query_table=query_table,

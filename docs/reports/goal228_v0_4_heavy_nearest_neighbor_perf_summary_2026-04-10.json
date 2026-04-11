@@ -1,0 +1,185 @@
+{
+  "base_point_count": 7342,
+  "cases": [
+    {
+      "case": "natural_earth_tiled",
+      "postgis_ground_truth_rows": 45632,
+      "query_count": 29368,
+      "results": [
+        {
+          "backend": "postgis",
+          "iterations": 12,
+          "max_ms": 889.626,
+          "median_ms": 837.179,
+          "min_ms": 834.415,
+          "parity_ok": true,
+          "row_count": 45632,
+          "total_ms": 10098.298
+        },
+        {
+          "backend": "cpu",
+          "distance_max_abs_error": 0.0,
+          "distance_median_abs_error": 0.0,
+          "distance_within_1e_4": true,
+          "iterations": 3,
+          "key_match": true,
+          "max_ms": 3652.019,
+          "median_ms": 3643.792,
+          "min_ms": 3642.781,
+          "parity_ok": true,
+          "row_count": 45632,
+          "same_length": true,
+          "strict_baseline_parity_ok": true,
+          "total_ms": 10938.592
+        },
+        {
+          "backend": "embree",
+          "distance_max_abs_error": null,
+          "distance_median_abs_error": null,
+          "distance_within_1e_4": false,
+          "iterations": 146,
+          "key_match": false,
+          "max_ms": 259.071,
+          "median_ms": 67.293,
+          "min_ms": 66.35,
+          "parity_ok": false,
+          "row_count": 45626,
+          "same_length": false,
+          "strict_baseline_parity_ok": false,
+          "total_ms": 10044.151
+        },
+        {
+          "backend": "optix",
+          "distance_max_abs_error": null,
+          "distance_median_abs_error": null,
+          "distance_within_1e_4": false,
+          "iterations": 85,
+          "key_match": false,
+          "max_ms": 769.962,
+          "median_ms": 110.228,
+          "min_ms": 109.631,
+          "parity_ok": false,
+          "row_count": 45626,
+          "same_length": false,
+          "strict_baseline_parity_ok": false,
+          "total_ms": 10049.84
+        },
+        {
+          "backend": "vulkan",
+          "distance_max_abs_error": null,
+          "distance_median_abs_error": null,
+          "distance_within_1e_4": false,
+          "iterations": 99,
+          "key_match": false,
+          "max_ms": 531.347,
+          "median_ms": 96.629,
+          "min_ms": 95.077,
+          "parity_ok": false,
+          "row_count": 45626,
+          "same_length": false,
+          "strict_baseline_parity_ok": false,
+          "total_ms": 10019.7
+        }
+      ],
+      "search_count": 117472,
+      "workload": "fixed_radius_neighbors"
+    },
+    {
+      "case": "natural_earth_tiled",
+      "postgis_ground_truth_rows": 1377,
+      "query_count": 459,
+      "results": [
+        {
+          "backend": "postgis",
+          "iterations": 4,
+          "max_ms": 3246.391,
+          "median_ms": 3154.728,
+          "min_ms": 3146.657,
+          "parity_ok": true,
+          "row_count": 1377,
+          "total_ms": 12702.503
+        },
+        {
+          "backend": "cpu",
+          "distance_max_abs_error": 0.0,
+          "distance_median_abs_error": 0.0,
+          "distance_within_1e_4": true,
+          "iterations": 51,
+          "key_match": true,
+          "max_ms": 222.488,
+          "median_ms": 194.54,
+          "min_ms": 194.001,
+          "parity_ok": true,
+          "row_count": 1377,
+          "same_length": true,
+          "strict_baseline_parity_ok": true,
+          "total_ms": 10012.594
+        },
+        {
+          "backend": "embree",
+          "distance_max_abs_error": 0.0,
+          "distance_median_abs_error": 0.0,
+          "distance_within_1e_4": true,
+          "iterations": 16,
+          "key_match": true,
+          "max_ms": 661.663,
+          "median_ms": 631.233,
+          "min_ms": 629.705,
+          "parity_ok": true,
+          "row_count": 1377,
+          "same_length": true,
+          "strict_baseline_parity_ok": true,
+          "total_ms": 10134.748
+        },
+        {
+          "backend": "optix",
+          "distance_max_abs_error": 1.0643e-05,
+          "distance_median_abs_error": 3.87e-07,
+          "distance_within_1e_4": true,
+          "iterations": 917,
+          "key_match": true,
+          "max_ms": 352.971,
+          "median_ms": 10.567,
+          "min_ms": 10.382,
+          "parity_ok": true,
+          "row_count": 1377,
+          "same_length": true,
+          "strict_baseline_parity_ok": false,
+          "total_ms": 10004.054
+        },
+        {
+          "backend": "vulkan",
+          "distance_max_abs_error": 1.0643e-05,
+          "distance_median_abs_error": 3.82e-07,
+          "distance_within_1e_4": true,
+          "iterations": 932,
+          "key_match": true,
+          "max_ms": 102.506,
+          "median_ms": 10.618,
+          "min_ms": 10.348,
+          "parity_ok": true,
+          "row_count": 1377,
+          "same_length": true,
+          "strict_baseline_parity_ok": false,
+          "total_ms": 10004.441
+        }
+      ],
+      "search_count": 7342,
+      "workload": "knn_rows"
+    }
+  ],
+  "dataset_path": "/home/lestat/work/rtdl_v04_perf/build/datasets/natural_earth_populated_places_full.geojson",
+  "dataset_url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_populated_places_simple.geojson",
+  "min_seconds_per_backend": 10.0,
+  "note": "Heavy Linux v0.4 nearest-neighbor benchmark using Natural Earth populated places as a real-world-derived point corpus.",
+  "workload_configs": {
+    "fixed_radius_neighbors": {
+      "copies": 16,
+      "query_stride": 4
+    },
+    "knn_rows": {
+      "copies": 1,
+      "query_stride": 16
+    }
+  }
+}

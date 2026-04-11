@@ -33,9 +33,13 @@ class _FakePostgisCursor:
     def __init__(self, connection):
         self._connection = connection
         self._rows = []
+        self._executed_sql = connection.executed_sql
 
     def execute(self, sql, params=None):
+        self._executed_sql.append(sql.strip())
         if "CREATE TEMP TABLE" in sql:
+            return
+        if "CREATE INDEX" in sql or sql.strip().startswith("ANALYZE"):
             return
         if "CROSS JOIN LATERAL" in sql:
             (k,) = params
@@ -77,6 +81,7 @@ class _FakePostgisConnection:
         self.query_points = ()
         self.search_points = ()
         self.closed = False
+        self.executed_sql = []
 
     def cursor(self):
         return _FakePostgisCursor(self)
@@ -122,14 +127,17 @@ class Goal207KnnRowsExternalBaselinesTest(unittest.TestCase):
 
     def test_postgis_runner_matches_python_reference_with_fake_connection(self) -> None:
         case = make_knn_rows_authored_case()
+        connection = _FakePostgisConnection()
         rows = rt.run_postgis_knn_rows(
-            _FakePostgisConnection(),
+            connection,
             case["query_points"],
             case["search_points"],
             k=3,
         )
         python_rows = rt.run_cpu_python_reference(knn_rows_reference, **case)
         self.assertEqual(rows, python_rows)
+        self.assertTrue(any("CREATE INDEX rtdl_query_points_tmp_geom_gist" in sql for sql in connection.executed_sql))
+        self.assertTrue(any("CREATE INDEX rtdl_search_points_tmp_geom_gist" in sql for sql in connection.executed_sql))
 
     def test_baseline_runner_supports_scipy_backend(self) -> None:
         case = make_knn_rows_authored_case()
