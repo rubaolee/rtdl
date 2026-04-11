@@ -180,13 +180,14 @@ def _native_runtime_env(system: str, embree_prefix: Path) -> dict[str, str] | No
     if system != "Windows":
         return None
     env = os.environ.copy()
+    path_key = next((key for key in env if key.upper() == "PATH"), "PATH")
     path_entries = [
         str(embree_prefix / "bin"),
         str(embree_prefix / "lib"),
         str(embree_prefix),
-        env.get("PATH", ""),
+        env.get(path_key, ""),
     ]
-    env["PATH"] = os.pathsep.join(entry for entry in path_entries if entry)
+    env[path_key] = os.pathsep.join(entry for entry in path_entries if entry)
     return env
 
 

@@ -80,11 +80,12 @@ TEST_GROUPS: dict[str, tuple[str, ...]] = {
 
 def build_env() -> dict[str, str]:
     env = os.environ.copy()
+    pythonpath_key = next((key for key in env if key.upper() == "PYTHONPATH"), "PYTHONPATH")
     entries = [str(ROOT / "src"), str(ROOT)]
-    existing = env.get("PYTHONPATH")
+    existing = env.get(pythonpath_key)
     if existing:
         entries.append(existing)
-    env["PYTHONPATH"] = os.pathsep.join(entries)
+    env[pythonpath_key] = os.pathsep.join(entries)
     return env
 
 

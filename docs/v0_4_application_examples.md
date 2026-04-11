@@ -36,6 +36,13 @@ Run:
 PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference --copies 2
 ```
 
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_service_coverage_gaps.py --backend cpu_python_reference --copies 2
+```
+
 ## Event Hotspot Screening
 
 - code: [examples/rtdl_event_hotspot_screening.py](../examples/rtdl_event_hotspot_screening.py)
@@ -49,6 +56,13 @@ Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend cpu_python_reference --copies 2
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_event_hotspot_screening.py --backend cpu_python_reference --copies 2
 ```
 
 Important boundary:
@@ -70,6 +84,13 @@ Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend cpu_python_reference --copies 2
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_facility_knn_assignment.py --backend cpu_python_reference --copies 2
 ```
 
 ## Optional SciPy Comparison

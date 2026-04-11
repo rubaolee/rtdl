@@ -23,11 +23,12 @@ from tests._embree_support import embree_available
 
 def run_command(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
+    pythonpath_key = next((key for key in env if key.upper() == "PYTHONPATH"), "PYTHONPATH")
     pythonpath_entries = [str(ROOT / "src"), str(ROOT)]
-    existing = env.get("PYTHONPATH")
+    existing = env.get(pythonpath_key)
     if existing:
         pythonpath_entries.append(existing)
-    env["PYTHONPATH"] = os.pathsep.join(pythonpath_entries)
+    env[pythonpath_key] = os.pathsep.join(pythonpath_entries)
     return subprocess.run(
         args,
         cwd=str(cwd or ROOT),

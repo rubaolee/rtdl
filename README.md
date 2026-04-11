@@ -59,6 +59,14 @@ Fastest safe install path for new users:
 python -m pip install -r requirements.txt
 ```
 
+Windows note:
+
+- `PYTHONPATH=src:. python ...` is Unix-style shell syntax
+- on Windows `cmd.exe`, use:
+  - `set PYTHONPATH=src;. && python ...`
+- on PowerShell, use:
+  - `$env:PYTHONPATH="src;."; python ...`
+
 ## See It Quickly
 
 <table>
@@ -134,6 +142,14 @@ Repository-root commands:
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world.py
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+Windows equivalents:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_hello_world.py
+python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
 The `PYTHONPATH=src:.` prefix tells Python to import the local RTDL package

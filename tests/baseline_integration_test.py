@@ -84,6 +84,7 @@ class EmbreeBaselineIntegrationTest(unittest.TestCase):
             warmup=1,
         )
         output_path = Path("build/test_embree_baseline_benchmark.json")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         rt.write_baseline_benchmark_json(payload, output_path)
         self.assertTrue(output_path.exists())
         parsed = json.loads(output_path.read_text(encoding="utf-8"))

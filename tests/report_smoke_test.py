@@ -17,7 +17,8 @@ from run_full_verification import run_full_verification
 
 ROOT = Path(__file__).resolve().parents[1]
 ENV = os.environ.copy()
-ENV["PYTHONPATH"] = os.pathsep.join(("src", ".", ENV.get("PYTHONPATH", ""))).strip(os.pathsep)
+_pythonpath_key = next((key for key in ENV if key.upper() == "PYTHONPATH"), "PYTHONPATH")
+ENV[_pythonpath_key] = os.pathsep.join(("src", ".", ENV.get(_pythonpath_key, ""))).strip(os.pathsep)
 
 
 class ReportSmokeTest(unittest.TestCase):
