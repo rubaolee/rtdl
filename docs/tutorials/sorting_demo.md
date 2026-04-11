@@ -7,6 +7,11 @@ This is not a claim that RTDL should replace Python sorting. It is a compact
 demonstration that RTDL query results can drive arbitrary downstream Python
 logic.
 
+Command convention used below:
+
+- use `python`
+- if your shell only provides `python3`, substitute `python3`
+
 ---
 
 ## Run it

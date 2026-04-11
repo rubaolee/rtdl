@@ -152,3 +152,4 @@ RTDL acting as a real geometry-query core inside larger Python applications.
 
 - [Segment And Polygon Workloads](segment_polygon_workloads.md)
 - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
+- [Tutorial Index](README.md)

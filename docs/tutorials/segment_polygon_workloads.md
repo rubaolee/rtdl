@@ -38,6 +38,13 @@ Run:
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
 ```
 
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4
+```
+
 Expected output excerpt:
 
 ```json
@@ -79,6 +86,13 @@ Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4
 ```
 
 Expected output excerpt:
@@ -139,6 +153,13 @@ Run:
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
 ```
 
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_polygon_pair_overlap_area_rows.py
+```
+
 Kernel shape:
 
 ```python
@@ -161,6 +182,13 @@ Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_polygon_set_jaccard.py
 ```
 
 This workload is packaged under a bounded pathology-style overlap contract. It

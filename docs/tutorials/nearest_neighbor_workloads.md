@@ -22,6 +22,13 @@ Command convention used below:
 PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
 ```
 
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+```
+
 Expected output excerpt:
 
 ```json
@@ -70,6 +77,13 @@ def fixed_radius_neighbors_kernel():
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
 Expected output excerpt:
@@ -138,6 +152,14 @@ PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_py
 PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 ```
 
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+python examples\rtdl_knn_rows.py --backend cpu_python_reference
+```
+
 Then move to the native CPU and accelerated backends that your machine
 supports:
 
@@ -146,6 +168,16 @@ PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu
 PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu
 PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree
 PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree
+```
+
+Windows `cmd.exe`:
+
+```bat
+set PYTHONPATH=src;.
+python examples\rtdl_fixed_radius_neighbors.py --backend cpu
+python examples\rtdl_knn_rows.py --backend cpu
+python examples\rtdl_fixed_radius_neighbors.py --backend embree
+python examples\rtdl_knn_rows.py --backend embree
 ```
 
 The released `v0.4.0` nearest-neighbor line also has OptiX and Vulkan backend
@@ -158,3 +190,4 @@ setup. Use the feature and support-matrix docs for the exact platform story.
 
 - [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
 - [Feature Homes](../features/README.md)
+- [Tutorial Index](README.md)
