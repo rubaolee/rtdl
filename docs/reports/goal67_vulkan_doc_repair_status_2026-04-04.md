@@ -36,7 +36,7 @@ Repaired files include:
 - [docs/v0_1_final_plan.md](../v0_1_final_plan.md)
 - [docs/v0_1_roadmap.md](../v0_1_roadmap.md)
 - [docs/vision.md](../vision.md)
-- [rtdl_status_summary.js](../../rtdl_status_summary.js)
+- [rtdl_status_summary.js](../../deck_status/rtdl_status_summary.js)
 
 ## Validation
 

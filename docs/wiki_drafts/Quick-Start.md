@@ -58,4 +58,4 @@ PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend embree
 ```
 
 ## Next Steps
-Head over to the [Core Concepts](Core-Concepts) page to learn how to write your own kernels.
+Head over to the [Core Concepts](Core-Concepts.md) page to learn how to write your own kernels.

@@ -33,7 +33,7 @@ RTDL is designed to be the "geometric engine" for Python applications. It handle
 ---
 
 ## Navigation
-*   [Quick-Start](Quick-Start)
-*   [Core Concepts](Core-Concepts)
-*   [Backend Guide](Backends)
-*   [Example Gallery](Example-Gallery)
+- [Quick Start](Quick-Start.md)
+- [Core Concepts](Core-Concepts.md)
+- [Backends](Backends.md)
+- [Example Gallery](Example-Gallery.md)

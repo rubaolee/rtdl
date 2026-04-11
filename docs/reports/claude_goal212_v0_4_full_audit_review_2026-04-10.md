@@ -102,8 +102,9 @@ matrix.
 
 **workloads_and_research_foundations.md**
 
-Clean and honest. The RTNN paper citation (SIGMOD 2022) is the correct primary
-foundation for the nearest-neighbor workload family. The Jaccard/overlap area
+Clean and honest overall, but the RTNN paper citation note here was stale and
+has since been corrected. The nearest-neighbor workload family now points to
+the right primary foundation. The Jaccard/overlap area
 line is correctly labeled "research-adjacent" rather than claiming a direct
 paper reproduction target. The X-HD Hausdorff direction is correctly flagged
 as future, not current.

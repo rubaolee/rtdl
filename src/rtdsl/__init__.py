@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .api import compile_kernel
 from .api import contains
 from .api import emit
