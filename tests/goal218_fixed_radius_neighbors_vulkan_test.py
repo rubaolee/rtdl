@@ -163,6 +163,23 @@ class Goal218FixedRadiusNeighborsVulkanTest(unittest.TestCase):
         query_ids = [r["query_id"] for r in vulkan_rows]
         self.assertEqual(query_ids, sorted(query_ids))
 
+    def test_large_coordinate_boundary_case_keeps_interior_neighbor(self) -> None:
+        case = {
+            "query_points": (
+                rt.Point(id=1, x=2994.268071, y=1470.581977),
+            ),
+            "search_points": (
+                rt.Point(id=10, x=2994.268071, y=1470.581977),
+                rt.Point(id=20, x=2994.168071, y=1470.581977),
+                rt.Point(id=30, x=2993.900014, y=1470.920398),
+            ),
+        }
+        cpu_rows = rt.run_cpu(fixed_radius_neighbors_reference, **case)
+        vulkan_rows = rt.run_vulkan(fixed_radius_neighbors_reference, **case)
+        self.assertEqual(tuple(row["neighbor_id"] for row in cpu_rows), (10, 20, 30))
+        self.assertEqual(tuple(row["neighbor_id"] for row in vulkan_rows), (10, 20, 30))
+        self.assertTrue(math.isclose(vulkan_rows[-1]["distance"], cpu_rows[-1]["distance"], rel_tol=1e-12, abs_tol=1e-12))
+
 
 if __name__ == "__main__":
     unittest.main()

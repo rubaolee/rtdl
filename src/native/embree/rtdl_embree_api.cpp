@@ -597,6 +597,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors(
     rtcCommitScene(holder.scene);
 
     std::vector<RtdlFixedRadiusNeighborRow> rows;
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
     for (const Point2D& query : query_values) {
       std::vector<RtdlFixedRadiusNeighborRow> query_rows;
       std::unordered_set<uint32_t> seen_neighbor_ids;
@@ -606,7 +607,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors(
       point_query.y = static_cast<float>(query.p.y);
       point_query.z = 0.0f;
       point_query.time = 0.0f;
-      point_query.radius = static_cast<float>(radius);
+      point_query.radius = static_cast<float>(radius + kFixedRadiusCandidateEps);
       RTCPointQueryContext context;
       rtcInitPointQueryContext(&context);
       g_query_kind = QueryKind::kFixedRadiusNeighbors;

@@ -3415,6 +3415,8 @@ static void run_fixed_radius_neighbors_vulkan(
         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
 {
     VkContext* ctx = get_context();
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    constexpr size_t kFixedRadiusSlack = 8;
     std::call_once(g_frn_init, [ctx]() {
         g_frn_pipe = new ComputePipeline(build_compute_pipeline(ctx, kFrnComp, "frn.comp", 4));
     });
@@ -3426,8 +3428,13 @@ static void run_fixed_radius_neighbors_vulkan(
     for (size_t i = 0; i < search_count; ++i)
         gpu_search[i]  = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id};
 
+    const size_t capped_k_max = std::min(k_max, search_count);
+    const size_t candidate_slack = std::min(
+        kFixedRadiusSlack,
+        search_count > capped_k_max ? search_count - capped_k_max : size_t{0});
+    const size_t kernel_k_max = capped_k_max + candidate_slack;
     const size_t output_capacity = checked_mul_size_t(
-        query_count, k_max, "fixed_radius_neighbors");
+        query_count, kernel_k_max, "fixed_radius_neighbors");
     VkDeviceSize qry_sz  = sizeof(GpuPoint)    * query_count;
     VkDeviceSize srch_sz = sizeof(GpuPoint)    * search_count;
     VkDeviceSize out_sz  = checked_output_bytes(
@@ -3449,7 +3456,7 @@ static void run_fixed_radius_neighbors_vulkan(
 
     struct FrnParams { uint32_t nqueries, nsearch; float radius_f; uint32_t k_max_u; };
     FrnParams params{ (uint32_t)query_count, (uint32_t)search_count,
-                      (float)radius, (uint32_t)k_max };
+                      (float)(radius + kFixedRadiusCandidateEps), (uint32_t)kernel_k_max };
     BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
@@ -3471,24 +3478,69 @@ static void run_fixed_radius_neighbors_vulkan(
     free_buf(ctx, d_queries); free_buf(ctx, d_search);
     free_buf(ctx, d_out);     free_buf(ctx, d_params);
 
-    // Filter sentinel entries and collect valid rows
-    std::vector<RtdlFixedRadiusNeighborRow> rows;
-    rows.reserve(output_capacity);
-    for (size_t i = 0; i < output_capacity; ++i) {
-        if (gpu_rows[i].neighbor_id == 0xffffffffu) continue;
-        rows.push_back({
-            gpu_rows[i].query_id,
-            gpu_rows[i].neighbor_id,
-            static_cast<double>(gpu_rows[i].distance),
-        });
+    std::unordered_map<uint32_t, const RtdlPoint*> query_by_id;
+    std::unordered_map<uint32_t, const RtdlPoint*> search_by_id;
+    query_by_id.reserve(query_count);
+    search_by_id.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        query_by_id.emplace(query_points[i].id, query_points + i);
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+        search_by_id.emplace(search_points[i].id, search_points + i);
     }
 
-    // Sort by query_id ascending (within each query the shader already sorted by
-    // distance ASC, neighbor_id ASC as required by the public contract)
-    std::stable_sort(rows.begin(), rows.end(),
+    std::vector<RtdlFixedRadiusNeighborRow> exact_rows;
+    exact_rows.reserve(output_capacity);
+    for (size_t i = 0; i < output_capacity; ++i) {
+        if (gpu_rows[i].neighbor_id == 0xffffffffu) continue;
+        auto query_it = query_by_id.find(gpu_rows[i].query_id);
+        auto search_it = search_by_id.find(gpu_rows[i].neighbor_id);
+        if (query_it == query_by_id.end() || search_it == search_by_id.end()) {
+            continue;
+        }
+        double dx = search_it->second->x - query_it->second->x;
+        double dy = search_it->second->y - query_it->second->y;
+        double exact_distance = std::sqrt(dx * dx + dy * dy);
+        if (exact_distance <= radius) {
+            exact_rows.push_back({
+                gpu_rows[i].query_id,
+                gpu_rows[i].neighbor_id,
+                exact_distance,
+            });
+        }
+    }
+
+    std::stable_sort(exact_rows.begin(), exact_rows.end(),
         [](const RtdlFixedRadiusNeighborRow& a, const RtdlFixedRadiusNeighborRow& b) {
-            return a.query_id < b.query_id;
+            if (a.query_id != b.query_id) {
+                return a.query_id < b.query_id;
+            }
+            if (a.distance < b.distance - 1.0e-12) {
+                return true;
+            }
+            if (b.distance < a.distance - 1.0e-12) {
+                return false;
+            }
+            return a.neighbor_id < b.neighbor_id;
         });
+
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    rows.reserve(exact_rows.size());
+    uint32_t current_query_id = 0;
+    size_t current_count = 0;
+    bool have_query = false;
+    for (const auto& row : exact_rows) {
+        if (!have_query || row.query_id != current_query_id) {
+            current_query_id = row.query_id;
+            current_count = 0;
+            have_query = true;
+        }
+        if (current_count >= k_max) {
+            continue;
+        }
+        rows.push_back(row);
+        current_count += 1;
+    }
 
     auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
         std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * rows.size()));

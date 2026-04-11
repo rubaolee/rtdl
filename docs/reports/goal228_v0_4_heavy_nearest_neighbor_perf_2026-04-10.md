@@ -112,20 +112,20 @@ PostGIS ground-truth rows:
 Performance:
 
 - PostGIS:
-  - median `837.179 ms`
+  - median `834.03 ms`
   - iterations `12`
 - CPU:
-  - median `3643.792 ms`
+  - median `3633.902 ms`
   - iterations `3`
 - Embree:
-  - median `67.293 ms`
-  - iterations `146`
+  - median `66.937 ms`
+  - iterations `147`
 - OptiX:
-  - median `110.228 ms`
-  - iterations `85`
+  - median `125.383 ms`
+  - iterations `75`
 - Vulkan:
-  - median `96.629 ms`
-  - iterations `99`
+  - median `118.369 ms`
+  - iterations `81`
 
 Correctness against PostGIS:
 
@@ -133,14 +133,17 @@ Correctness against PostGIS:
   - exact row count match
   - exact row identity match
 - Embree:
-  - `45626` rows instead of `45632`
-  - row-identity mismatch relative to PostGIS
+  - exact row count match
+  - exact row identity match
+  - max distance error `0.0`
 - OptiX:
-  - `45626` rows instead of `45632`
-  - row-identity mismatch relative to PostGIS
+  - exact row count match
+  - exact row identity match
+  - max distance error `0.0`
 - Vulkan:
-  - `45626` rows instead of `45632`
-  - row-identity mismatch relative to PostGIS
+  - exact row count match
+  - exact row identity match
+  - max distance error `0.0`
 
 ### knn_rows
 
@@ -151,20 +154,20 @@ PostGIS ground-truth rows:
 Performance:
 
 - PostGIS:
-  - median `3154.728 ms`
+  - median `3158.1 ms`
   - iterations `4`
 - CPU:
-  - median `194.54 ms`
+  - median `197.423 ms`
   - iterations `51`
 - Embree:
-  - median `631.233 ms`
+  - median `628.572 ms`
   - iterations `16`
 - OptiX:
-  - median `10.567 ms`
-  - iterations `917`
+  - median `10.565 ms`
+  - iterations `918`
 - Vulkan:
-  - median `10.618 ms`
-  - iterations `932`
+  - median `10.599 ms`
+  - iterations `931`
 
 Correctness against PostGIS:
 
@@ -192,6 +195,10 @@ Main positive findings:
 - `fixed_radius_neighbors` is now genuinely fast on accelerated backends.
   Embree is the strongest backend here, and both GPU backends are also much
   faster than CPU and PostGIS.
+- the shared accelerated `fixed_radius_neighbors` boundary bug exposed by the
+  first heavy run is now fixed.
+  The refreshed heavy rerun shows full row-count and row-identity parity across
+  CPU, Embree, OptiX, Vulkan, and indexed PostGIS.
 - `knn_rows` is where the GPU line clearly pays off.
   OptiX and Vulkan are effectively tied and are about:
   - `18x` faster than CPU
@@ -201,10 +208,6 @@ Main positive findings:
 
 Most important weaknesses:
 
-- `fixed_radius_neighbors` still has a boundary-correctness problem on Embree,
-  OptiX, and Vulkan for the heavy real-world case.
-  All three accelerated backends miss the same `6` rows relative to CPU and
-  indexed PostGIS.
 - `knn_rows` on Embree remains a weak spot.
   It is correct, but materially slower than CPU and far behind both GPU
   backends on this case.
@@ -215,9 +218,8 @@ Most important weaknesses:
 ## Recommended Next Work
 
 1. Fix the shared accelerated `fixed_radius_neighbors` boundary issue.
-   The common `6`-row miss on Embree, OptiX, and Vulkan strongly suggests a
-   shared float-threshold or squared-distance boundary policy mismatch rather
-   than three independent bugs.
+   This is now complete and should remain covered by the new large-coordinate
+   boundary regression tests plus the refreshed heavy Linux benchmark.
 2. Keep OptiX and Vulkan as the primary optimization path for `knn_rows`.
    The heavy benchmark says clearly that GPU is the right direction for this
    workload family.

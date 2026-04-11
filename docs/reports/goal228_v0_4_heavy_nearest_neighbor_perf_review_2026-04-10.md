@@ -22,17 +22,18 @@ What is accepted:
   `v0.4` workloads
 - Gemini agrees the measurement methodology is technically honest
 
-What is not normalized away:
+What changed after the first benchmark run:
 
-- `fixed_radius_neighbors` still has a shared accelerated correctness gap on the
-  heavy real-world case:
-  - CPU and PostGIS: `45632` rows
-  - Embree, OptiX, Vulkan: `45626` rows
-- that is now a concrete follow-up engineering issue, not a hidden benchmark
-  caveat
+- the initial heavy run exposed a real shared accelerated
+  `fixed_radius_neighbors` boundary bug on Embree, OptiX, and Vulkan
+- that bug has now been fixed and rerun on Linux
+- the refreshed heavy summary shows:
+  - CPU, Embree, OptiX, Vulkan, and indexed PostGIS all return `45632` rows
+  - row identity now matches across all five paths
 
 So Goal 228 closes as:
 
 - benchmark implemented
 - findings documented
-- follow-up bug clearly identified
+- indexed PostGIS comparison path validated
+- refreshed heavy rerun preserved as the active benchmark evidence
