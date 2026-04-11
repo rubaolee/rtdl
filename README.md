@@ -31,13 +31,19 @@ Primary front-door links:
 
 Demo preview:
 
-<a href="https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes">
-  <img
-    src="docs/assets/rtdl_visual_demo_thumb.png"
-    alt="RTDL visual demo"
-    width="240"
-  />
-</a>
+<p>
+  <a href="https://www.youtube.com/watch?v=VnzVWAPln3k">
+    <img
+      src="docs/assets/rtdl_visual_demo_thumb.png"
+      alt="RTDL demo video thumbnail"
+      width="240"
+    />
+  </a>
+</p>
+
+<p>
+  <a href="https://www.youtube.com/watch?v=VnzVWAPln3k"><strong>Open the RTDL demo video on YouTube</strong></a>
+</p>
 
 ## Start In Two Minutes
 
