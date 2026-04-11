@@ -749,6 +749,8 @@ struct GpuOverlayFlags   { uint32_t requires_lsi, requires_pip; };              
 struct GpuRayHitRecord   { uint32_t ray_id, hit_count; };                        //  8 bytes
 struct GpuSegPolyRecord  { uint32_t segment_id, hit_count; };                    //  8 bytes
 struct GpuPnsRecord      { uint32_t point_id, segment_id; float distance; };     // 12 bytes
+struct GpuFrnRecord      { uint32_t query_id, neighbor_id; float distance; };    // 12 bytes
+struct GpuKnnRecord      { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; }; // 16 bytes
 #pragma pack(pop)
 
 static bool exact_segment_intersection(
@@ -1782,6 +1784,197 @@ void main() {
 }
 )GLSL";
 
+// ---------- FixedRadiusNeighbors compute shader --------------------------------
+// Brute-force compute: one workgroup-item per query point, iterates all search
+// points, maintains a sorted list of up to k_max neighbours within radius.
+// Mirrors the CUDA kernel in the OptiX backend.
+//
+// Output layout: 3 uint32 words per record, k_max records per query:
+//   word 0: query_id
+//   word 1: neighbor_id  (0xffffffff = empty/sentinel)
+//   word 2: distance as float bits
+
+static const char* kFrnComp = R"GLSL(
+#version 460
+layout(local_size_x = 64) in;
+// Query points: interleaved floats [x, y, id_bits, ...]
+layout(set=0, binding=0, std430) readonly buffer QueryBuf  { float data[]; } queries;
+// Search points: same format
+layout(set=0, binding=1, std430) readonly buffer SearchBuf { float data[]; } search;
+// Output: [query_id, neighbor_id (0xffffffff=empty), dist_bits] per slot,
+//         k_max slots per query, row-major
+layout(set=0, binding=2, std430) buffer OutBuf { uint data[]; } output_buf;
+// Uniform parameters
+layout(set=0, binding=3, std140) uniform Params {
+    uint  nqueries;
+    uint  nsearch;
+    float radius;
+    uint  k_max;
+};
+
+void main() {
+    uint qidx = gl_GlobalInvocationID.x;
+    if (qidx >= nqueries) return;
+
+    // Load query point
+    uint qbase_in = qidx * 3u;
+    float px = queries.data[qbase_in];
+    float py = queries.data[qbase_in + 1u];
+    uint  qid = floatBitsToUint(queries.data[qbase_in + 2u]);
+
+    // Base offset in output buffer (3 uints per slot, k_max slots per query)
+    uint out_base = qidx * k_max * 3u;
+
+    // Initialise all slots with sentinel
+    for (uint s = 0u; s < k_max; ++s) {
+        uint ob = out_base + s * 3u;
+        output_buf.data[ob]      = qid;
+        output_buf.data[ob + 1u] = 0xffffffffu;
+        output_buf.data[ob + 2u] = floatBitsToUint(1.0e30);
+    }
+
+    float radius_sq = radius * radius;
+
+    // For each search point, test and insert if within radius
+    for (uint sidx = 0u; sidx < nsearch; ++sidx) {
+        uint sb = sidx * 3u;
+        float sx = search.data[sb];
+        float sy = search.data[sb + 1u];
+        uint  nid = floatBitsToUint(search.data[sb + 2u]);
+
+        float dx = sx - px;
+        float dy = sy - py;
+        float dist_sq = dx * dx + dy * dy;
+        if (dist_sq > radius_sq) continue;
+        float dist = sqrt(dist_sq);
+
+        // Find insertion position (sorted by distance ASC, then neighbor_id ASC)
+        uint insert_at = k_max;
+        for (uint slot = 0u; slot < k_max; ++slot) {
+            uint ob = out_base + slot * 3u;
+            uint  slot_nid  = output_buf.data[ob + 1u];
+            float slot_dist = uintBitsToFloat(output_buf.data[ob + 2u]);
+            bool empty       = (slot_nid == 0xffffffffu);
+            bool better_dist = dist < slot_dist - 1.0e-7;
+            bool same_dist   = abs(dist - slot_dist) <= 1.0e-7;
+            bool better_id   = same_dist && (nid < slot_nid);
+            if (empty || better_dist || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k_max) continue;
+
+        // Shift existing entries down to make room (from the end toward insert_at+1)
+        for (uint slot = k_max - 1u; slot > insert_at; --slot) {
+            uint src_b = out_base + (slot - 1u) * 3u;
+            uint dst_b = out_base + slot * 3u;
+            output_buf.data[dst_b]      = output_buf.data[src_b];
+            output_buf.data[dst_b + 1u] = output_buf.data[src_b + 1u];
+            output_buf.data[dst_b + 2u] = output_buf.data[src_b + 2u];
+        }
+
+        // Write new entry at insert_at
+        uint ib = out_base + insert_at * 3u;
+        output_buf.data[ib]      = qid;
+        output_buf.data[ib + 1u] = nid;
+        output_buf.data[ib + 2u] = floatBitsToUint(dist);
+    }
+}
+)GLSL";
+
+// ---------- KNNRows compute shader -------------------------------------------
+// Brute-force compute: one workgroup-item per query point, iterates all search
+// points, maintains the k nearest neighbours sorted by distance ASC then
+// neighbor_id ASC, and assigns a 1-based neighbor_rank to non-empty rows.
+//
+// Output layout: 4 uint32 words per record, k records per query:
+//   word 0: query_id
+//   word 1: neighbor_id (0xffffffff = empty/sentinel)
+//   word 2: distance as float bits
+//   word 3: neighbor_rank
+
+static const char* kKnnComp = R"GLSL(
+#version 460
+layout(local_size_x = 64) in;
+layout(set=0, binding=0, std430) readonly buffer QueryBuf  { float data[]; } queries;
+layout(set=0, binding=1, std430) readonly buffer SearchBuf { float data[]; } search;
+layout(set=0, binding=2, std430) buffer OutBuf { uint data[]; } output_buf;
+layout(set=0, binding=3, std140) uniform Params {
+    uint nqueries;
+    uint nsearch;
+    uint k;
+    uint _pad0;
+};
+
+void main() {
+    uint qidx = gl_GlobalInvocationID.x;
+    if (qidx >= nqueries) return;
+
+    uint qbase_in = qidx * 3u;
+    float px = queries.data[qbase_in];
+    float py = queries.data[qbase_in + 1u];
+    uint qid = floatBitsToUint(queries.data[qbase_in + 2u]);
+
+    uint out_base = qidx * k * 4u;
+    for (uint s = 0u; s < k; ++s) {
+        uint ob = out_base + s * 4u;
+        output_buf.data[ob]      = qid;
+        output_buf.data[ob + 1u] = 0xffffffffu;
+        output_buf.data[ob + 2u] = floatBitsToUint(1.0e30);
+        output_buf.data[ob + 3u] = 0u;
+    }
+
+    for (uint sidx = 0u; sidx < nsearch; ++sidx) {
+        uint sb = sidx * 3u;
+        float sx = search.data[sb];
+        float sy = search.data[sb + 1u];
+        uint nid = floatBitsToUint(search.data[sb + 2u]);
+
+        float dx = sx - px;
+        float dy = sy - py;
+        float dist = sqrt(dx * dx + dy * dy);
+
+        uint insert_at = k;
+        for (uint slot = 0u; slot < k; ++slot) {
+            uint ob = out_base + slot * 4u;
+            uint slot_nid = output_buf.data[ob + 1u];
+            float slot_dist = uintBitsToFloat(output_buf.data[ob + 2u]);
+            bool empty = (slot_nid == 0xffffffffu);
+            bool better_dist = dist < slot_dist - 1.0e-7;
+            bool same_dist = abs(dist - slot_dist) <= 1.0e-7;
+            bool better_id = same_dist && (nid < slot_nid);
+            if (empty || better_dist || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k) continue;
+
+        for (uint slot = k - 1u; slot > insert_at; --slot) {
+            uint src_b = out_base + (slot - 1u) * 4u;
+            uint dst_b = out_base + slot * 4u;
+            output_buf.data[dst_b]      = output_buf.data[src_b];
+            output_buf.data[dst_b + 1u] = output_buf.data[src_b + 1u];
+            output_buf.data[dst_b + 2u] = output_buf.data[src_b + 2u];
+            output_buf.data[dst_b + 3u] = output_buf.data[src_b + 3u];
+        }
+
+        uint ins_b = out_base + insert_at * 4u;
+        output_buf.data[ins_b]      = qid;
+        output_buf.data[ins_b + 1u] = nid;
+        output_buf.data[ins_b + 2u] = floatBitsToUint(dist);
+        output_buf.data[ins_b + 3u] = 0u;
+    }
+
+    for (uint slot = 0u; slot < k; ++slot) {
+        uint ob = out_base + slot * 4u;
+        if (output_buf.data[ob + 1u] == 0xffffffffu) break;
+        output_buf.data[ob + 3u] = slot + 1u;
+    }
+}
+)GLSL";
+
 // ── Pipeline building ────────────────────────────────────────────────────────
 
 struct RtPipeline {
@@ -2217,8 +2410,10 @@ static RtPipeline*      g_overlay_pipe= nullptr;
 static RtPipeline*      g_rhc_pipe    = nullptr;
 static RtPipeline*      g_sph_pipe    = nullptr;
 static ComputePipeline* g_pns_pipe    = nullptr;
+static ComputePipeline* g_frn_pipe    = nullptr;
+static ComputePipeline* g_knn_pipe    = nullptr;
 static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_count_init, g_pip_pos_init, g_overlay_init;
-static std::once_flag   g_rhc_init, g_sph_init, g_pns_init;
+static std::once_flag   g_rhc_init, g_sph_init, g_pns_init, g_frn_init, g_knn_init;
 static RtPipeline*      g_rhc3d_pipe = nullptr;
 static std::once_flag   g_rhc3d_init;
 
@@ -3208,6 +3403,190 @@ static void run_ray_hitcount_3d_vulkan(
     }
     *rows_out      = out;
     *row_count_out = ray_count;
+}
+
+// ---------- FixedRadiusNeighbors (compute brute-force) -----------------------
+
+static void run_fixed_radius_neighbors_vulkan(
+        const RtdlPoint* query_points, size_t query_count,
+        const RtdlPoint* search_points, size_t search_count,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
+{
+    VkContext* ctx = get_context();
+    std::call_once(g_frn_init, [ctx]() {
+        g_frn_pipe = new ComputePipeline(build_compute_pipeline(ctx, kFrnComp, "frn.comp", 4));
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    std::vector<GpuPoint> gpu_search(search_count);
+    for (size_t i = 0; i < query_count; ++i)
+        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, query_points[i].id};
+    for (size_t i = 0; i < search_count; ++i)
+        gpu_search[i]  = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id};
+
+    const size_t output_capacity = checked_mul_size_t(
+        query_count, k_max, "fixed_radius_neighbors");
+    VkDeviceSize qry_sz  = sizeof(GpuPoint)    * query_count;
+    VkDeviceSize srch_sz = sizeof(GpuPoint)    * search_count;
+    VkDeviceSize out_sz  = checked_output_bytes(
+        output_capacity, sizeof(GpuFrnRecord), "fixed_radius_neighbors");
+
+    BufMem d_queries = alloc_buffer(ctx, qry_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_search  = alloc_buffer(ctx, srch_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_out     = alloc_buffer(ctx, out_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    upload_to_buf(ctx, d_queries, gpu_queries.data(), qry_sz);
+    upload_to_buf(ctx, d_search,  gpu_search.data(),  srch_sz);
+
+    struct FrnParams { uint32_t nqueries, nsearch; float radius_f; uint32_t k_max_u; };
+    FrnParams params{ (uint32_t)query_count, (uint32_t)search_count,
+                      (float)radius, (uint32_t)k_max };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_frn_pipe->dset_layout, 4, false);
+    bind_ssbo(ctx->device, ds.set, d_queries.buffer, qry_sz,  0);
+    bind_ssbo(ctx->device, ds.set, d_search.buffer,  srch_sz, 1);
+    bind_ssbo(ctx->device, ds.set, d_out.buffer,     out_sz,  2);
+    bind_ubo (ctx->device, ds.set, d_params.buffer,  sizeof(params), 3);
+
+    uint32_t groups = ((uint32_t)query_count + 63u) / 64u;
+    dispatch_compute(ctx, *g_frn_pipe, ds.set, groups);
+
+    std::vector<GpuFrnRecord> gpu_rows(output_capacity);
+    download_from_buf(ctx, gpu_rows.data(), d_out, out_sz);
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_queries); free_buf(ctx, d_search);
+    free_buf(ctx, d_out);     free_buf(ctx, d_params);
+
+    // Filter sentinel entries and collect valid rows
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    rows.reserve(output_capacity);
+    for (size_t i = 0; i < output_capacity; ++i) {
+        if (gpu_rows[i].neighbor_id == 0xffffffffu) continue;
+        rows.push_back({
+            gpu_rows[i].query_id,
+            gpu_rows[i].neighbor_id,
+            static_cast<double>(gpu_rows[i].distance),
+        });
+    }
+
+    // Sort by query_id ascending (within each query the shader already sorted by
+    // distance ASC, neighbor_id ASC as required by the public contract)
+    std::stable_sort(rows.begin(), rows.end(),
+        [](const RtdlFixedRadiusNeighborRow& a, const RtdlFixedRadiusNeighborRow& b) {
+            return a.query_id < b.query_id;
+        });
+
+    auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty())
+        std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
+    *rows_out      = out;
+    *row_count_out = rows.size();
+}
+
+// ---------- KNNRows (compute brute-force) ------------------------------------
+
+static void run_knn_rows_vulkan(
+        const RtdlPoint* query_points, size_t query_count,
+        const RtdlPoint* search_points, size_t search_count,
+        size_t k,
+        RtdlKnnNeighborRow** rows_out, size_t* row_count_out)
+{
+    VkContext* ctx = get_context();
+    std::call_once(g_knn_init, [ctx]() {
+        g_knn_pipe = new ComputePipeline(build_compute_pipeline(ctx, kKnnComp, "knn.comp", 4));
+    });
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    std::vector<GpuPoint> gpu_search(search_count);
+    for (size_t i = 0; i < query_count; ++i)
+        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, query_points[i].id};
+    for (size_t i = 0; i < search_count; ++i)
+        gpu_search[i]  = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id};
+
+    const size_t output_capacity = checked_mul_size_t(
+        query_count, k, "knn_rows");
+    VkDeviceSize qry_sz  = sizeof(GpuPoint) * query_count;
+    VkDeviceSize srch_sz = sizeof(GpuPoint) * search_count;
+    VkDeviceSize out_sz  = checked_output_bytes(
+        output_capacity, sizeof(GpuKnnRecord), "knn_rows");
+
+    BufMem d_queries = alloc_buffer(ctx, qry_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_search = alloc_buffer(ctx, srch_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_out = alloc_buffer(ctx, out_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    upload_to_buf(ctx, d_queries, gpu_queries.data(), qry_sz);
+    upload_to_buf(ctx, d_search, gpu_search.data(), srch_sz);
+
+    struct KnnParams { uint32_t nqueries, nsearch, k_u, pad0; };
+    KnnParams params{ (uint32_t)query_count, (uint32_t)search_count, (uint32_t)k, 0u };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_knn_pipe->dset_layout, 4, false);
+    bind_ssbo(ctx->device, ds.set, d_queries.buffer, qry_sz, 0);
+    bind_ssbo(ctx->device, ds.set, d_search.buffer, srch_sz, 1);
+    bind_ssbo(ctx->device, ds.set, d_out.buffer, out_sz, 2);
+    bind_ubo(ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+
+    uint32_t groups = ((uint32_t)query_count + 63u) / 64u;
+    dispatch_compute(ctx, *g_knn_pipe, ds.set, groups);
+
+    std::vector<GpuKnnRecord> gpu_rows(output_capacity);
+    download_from_buf(ctx, gpu_rows.data(), d_out, out_sz);
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_queries); free_buf(ctx, d_search);
+    free_buf(ctx, d_out); free_buf(ctx, d_params);
+
+    std::vector<RtdlKnnNeighborRow> rows;
+    rows.reserve(output_capacity);
+    for (size_t i = 0; i < output_capacity; ++i) {
+        if (gpu_rows[i].neighbor_id == 0xffffffffu) continue;
+        rows.push_back({
+            gpu_rows[i].query_id,
+            gpu_rows[i].neighbor_id,
+            static_cast<double>(gpu_rows[i].distance),
+            gpu_rows[i].neighbor_rank,
+        });
+    }
+
+    std::stable_sort(rows.begin(), rows.end(),
+        [](const RtdlKnnNeighborRow& a, const RtdlKnnNeighborRow& b) {
+            return a.query_id < b.query_id;
+        });
+
+    auto* out = static_cast<RtdlKnnNeighborRow*>(
+        std::malloc(sizeof(RtdlKnnNeighborRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty())
+        std::memcpy(out, rows.data(), sizeof(RtdlKnnNeighborRow) * rows.size());
+    *rows_out = out;
+    *row_count_out = rows.size();
 }
 
 // ── Error wrapper ─────────────────────────────────────────────────────────────

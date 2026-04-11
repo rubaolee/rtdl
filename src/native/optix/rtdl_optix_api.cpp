@@ -144,6 +144,65 @@ extern "C" int rtdl_optix_run_point_nearest_segment(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_fixed_radius_neighbors(
+        const RtdlPoint* query_points, size_t query_count,
+        const RtdlPoint* search_points, size_t search_count,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        if (radius < 0.0)
+            throw std::runtime_error("fixed_radius_neighbors radius must be non-negative");
+        if (k_max == 0)
+            throw std::runtime_error("fixed_radius_neighbors k_max must be positive");
+        if (query_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_neighbors query_count exceeds uint32 limit");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_neighbors search_count exceeds uint32 limit");
+        if (k_max > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_neighbors k_max exceeds uint32 limit");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (query_count == 0 || search_count == 0) return;
+        run_fixed_radius_neighbors_cuda(
+            query_points, query_count,
+            search_points, search_count,
+            radius, k_max,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_knn_rows(
+        const RtdlPoint* query_points, size_t query_count,
+        const RtdlPoint* search_points, size_t search_count,
+        size_t k,
+        RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        if (k == 0)
+            throw std::runtime_error("knn_rows k must be positive");
+        if (query_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("knn_rows query_count exceeds uint32 limit");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("knn_rows search_count exceeds uint32 limit");
+        if (k > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("knn_rows k exceeds uint32 limit");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (query_count == 0 || search_count == 0) return;
+        run_knn_rows_cuda(
+            query_points, query_count,
+            search_points, search_count,
+            k,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_free_rows(void* rows) {
     std::free(rows);
 }

@@ -8,7 +8,8 @@ Public API mirrors optix_runtime.py (just substitute "vulkan" for "optix"):
 Current Vulkan-native workload surface:
   segment_intersection, point_in_polygon, overlay_compose,
   ray_triangle_hit_count, segment_polygon_hitcount,
-  segment_polygon_anyhit_rows, point_nearest_segment
+  segment_polygon_anyhit_rows, point_nearest_segment,
+  fixed_radius_neighbors
 
 Additional accepted public Vulkan surface:
   polygon_pair_overlap_area_rows, polygon_set_jaccard
@@ -110,6 +111,23 @@ class _RtdlSegmentPolygonAnyHitRow(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id",    ctypes.c_uint32),
+        ("neighbor_id", ctypes.c_uint32),
+        ("distance",    ctypes.c_double),
+    ]
+
+
+class _RtdlKnnNeighborRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+        ("neighbor_rank", ctypes.c_uint32),
+    ]
+
+
 class _RtdlPointNearestSegmentRow(ctypes.Structure):
     _fields_ = [
         ("point_id",   ctypes.c_uint32),
@@ -173,6 +191,8 @@ class PreparedVulkanKernel:
         "segment_polygon_hitcount",
         "segment_polygon_anyhit_rows",
         "point_nearest_segment",
+        "fixed_radius_neighbors",
+        "knn_rows",
     }
 
     def __init__(self, kernel_fn_or_compiled):
@@ -221,6 +241,8 @@ class PreparedVulkanExecution:
             "segment_polygon_hitcount": _call_segment_polygon_hitcount_vulkan_packed,
             "segment_polygon_anyhit_rows": _call_segment_polygon_anyhit_rows_vulkan_packed,
             "point_nearest_segment":  _call_point_nearest_segment_vulkan_packed,
+            "fixed_radius_neighbors": _call_fixed_radius_neighbors_vulkan_packed,
+            "knn_rows": _call_knn_rows_vulkan_packed,
         }
         fn = dispatch.get(pred)
         if fn is None:
@@ -565,6 +587,47 @@ def _call_point_nearest_segment_vulkan_packed(compiled: CompiledKernel, packed, 
         field_names=("point_id", "segment_id", "distance"))
 
 
+def _call_fixed_radius_neighbors_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
+    query_points  = packed[compiled.candidates.left.name]
+    search_points = packed[compiled.candidates.right.name]
+    radius = float(compiled.refine_op.predicate.options["radius"])
+    k_max  = int(compiled.refine_op.predicate.options["k_max"])
+    rows_ptr  = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error     = ctypes.create_string_buffer(4096)
+    status = lib.rtdl_vulkan_run_fixed_radius_neighbors(
+        query_points.records, query_points.count,
+        search_points.records, search_points.count,
+        radius, k_max,
+        ctypes.byref(rows_ptr), ctypes.byref(row_count),
+        error, len(error))
+    _check_status(status, error)
+    return VulkanRowView(
+        library=lib, rows_ptr=rows_ptr,
+        row_count=row_count.value, row_type=_RtdlFixedRadiusNeighborRow,
+        field_names=("query_id", "neighbor_id", "distance"))
+
+
+def _call_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
+    query_points = packed[compiled.candidates.left.name]
+    search_points = packed[compiled.candidates.right.name]
+    k = int(compiled.refine_op.predicate.options["k"])
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = lib.rtdl_vulkan_run_knn_rows(
+        query_points.records, query_points.count,
+        search_points.records, search_points.count,
+        k,
+        ctypes.byref(rows_ptr), ctypes.byref(row_count),
+        error, len(error))
+    _check_status(status, error)
+    return VulkanRowView(
+        library=lib, rows_ptr=rows_ptr,
+        row_count=row_count.value, row_type=_RtdlKnnNeighborRow,
+        field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"))
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Library loading
 # ─────────────────────────────────────────────────────────────────────────────
@@ -697,6 +760,27 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_vulkan_run_point_nearest_segment.restype = ctypes.c_int
 
+    _require_backend_symbol(lib, "rtdl_vulkan_run_fixed_radius_neighbors").argtypes = [
+        ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p, ctypes.c_size_t,
+    ]
+    lib.rtdl_vulkan_run_fixed_radius_neighbors.restype = ctypes.c_int
+
+    _require_backend_symbol(lib, "rtdl_vulkan_run_knn_rows").argtypes = [
+        ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p, ctypes.c_size_t,
+    ]
+    lib.rtdl_vulkan_run_knn_rows.restype = ctypes.c_int
+
 
 def _require_backend_symbol(lib, symbol_name: str):
     try:
@@ -771,8 +855,12 @@ def _pack_for_geometry(geometry_input, payload):
         pack_segments, pack_points, pack_polygons,
         pack_triangles, pack_rays,
     )
-    geometry_name = geometry_input.geometry.name
-    expected_dimension = _geometry_layout_dimension(geometry_input)
+    if isinstance(geometry_input, str):
+        geometry_name = geometry_input
+        expected_dimension = None
+    else:
+        geometry_name = geometry_input.geometry.name
+        expected_dimension = _geometry_layout_dimension(geometry_input)
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
@@ -787,7 +875,7 @@ def _pack_for_geometry(geometry_input, payload):
         return payload if isinstance(payload, PackedPolygons)  else pack_polygons(records=payload)
     if geometry_name == "triangles":
         if isinstance(payload, PackedTriangles):
-            if payload.dimension != expected_dimension:
+            if expected_dimension is not None and payload.dimension != expected_dimension:
                 raise ValueError(
                     "packed triangles payload dimension does not match the kernel input layout"
                 )
@@ -795,7 +883,7 @@ def _pack_for_geometry(geometry_input, payload):
         return pack_triangles(records=payload, dimension=expected_dimension)
     if geometry_name == "rays":
         if isinstance(payload, PackedRays):
-            if payload.dimension != expected_dimension:
+            if expected_dimension is not None and payload.dimension != expected_dimension:
                 raise ValueError(
                     "packed rays payload dimension does not match the kernel input layout"
                 )

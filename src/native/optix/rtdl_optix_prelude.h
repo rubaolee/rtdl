@@ -2,14 +2,16 @@
 
 // rtdl_optix.cpp — NVIDIA OptiX 7 backend for rtdl
 //
-// Implements all six workloads (LSI, PIP, Overlay, RayHitCount,
-// SegmentPolygonHitcount, PointNearestSegment) through the OptiX backend.
+// Implements all current OptiX-native workloads (LSI, PIP, Overlay,
+// RayHitCount, SegmentPolygonHitcount, PointNearestSegment,
+// FixedRadiusNeighbors) through the OptiX backend.
 // The mature RT-traversal workloads use OptiX 7 custom-geometry BVH traversal.
 // Some families still follow a bounded local maturity story:
 // - SegmentPolygonHitcount now defaults to a host-indexed candidate-reduction
 //   path; the older OptiX custom-AABB traversal path remains available as an
 //   explicit experimental mode
 // - PointNearestSegment uses CUDA-parallel brute-force
+// - FixedRadiusNeighbors currently uses CUDA-parallel brute-force
 //
 // Device kernels are embedded as CUDA source strings and compiled to PTX at
 // runtime via NVRTC.  Compiled pipelines are cached across calls in static
@@ -142,6 +144,17 @@ struct RtdlSegmentPolygonAnyHitRow {
     uint32_t segment_id, polygon_id;
 };
 
+struct RtdlFixedRadiusNeighborRow {
+    uint32_t query_id, neighbor_id;
+    double distance;
+};
+
+struct RtdlKnnNeighborRow {
+    uint32_t query_id, neighbor_id;
+    double distance;
+    uint32_t neighbor_rank;
+};
+
 struct RtdlPointNearestSegmentRow {
     uint32_t point_id, segment_id;
     double distance;
@@ -193,6 +206,19 @@ int  rtdl_optix_run_point_nearest_segment(
          const RtdlPoint*   points,   size_t point_count,
          const RtdlSegment* segments, size_t segment_count,
          RtdlPointNearestSegmentRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_fixed_radius_neighbors(
+         const RtdlPoint* query_points, size_t query_count,
+         const RtdlPoint* search_points, size_t search_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_knn_rows(
+         const RtdlPoint* query_points, size_t query_count,
+         const RtdlPoint* search_points, size_t search_count,
+         size_t k,
+         RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_free_rows(void* rows);
 
