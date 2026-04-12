@@ -667,26 +667,46 @@ def _run_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -
     search_name = compiled.candidates.right.name
     query_points = normalized_inputs[query_name]
     search_points = normalized_inputs[search_name]
-    query_array = (_RtdlPoint * len(query_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in query_points
-    ])
-    search_array = (_RtdlPoint * len(search_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in search_points
-    ])
     rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_knn_rows(
-        query_array,
-        len(query_points),
-        search_array,
-        len(search_points),
-        ctypes.c_uint32(int(compiled.refine_op.predicate.options["k"])),
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    k = ctypes.c_uint32(int(compiled.refine_op.predicate.options["k"]))
+    if query_points and isinstance(query_points[0], Point3D):
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_knn_rows_3d(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_knn_rows(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     try:
         return tuple(
@@ -1014,6 +1034,18 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_knn_rows.restype = ctypes.c_int
+    library.rtdl_oracle_run_knn_rows_3d.argtypes = [
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_knn_rows_3d.restype = ctypes.c_int
     library.rtdl_oracle_run_bounded_knn_rows.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,

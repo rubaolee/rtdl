@@ -70,6 +70,15 @@ def frn_2d_kernel():
     return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def knn_3d_kernel():
+    query_points = rt.input("query_points", rt.Points3D, role="probe")
+    search_points = rt.input("search_points", rt.Points3D, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.knn_rows(k=2))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+
+
 # ---------------------------------------------------------------------------
 # 1. Point3D geometry type and layout
 # ---------------------------------------------------------------------------
@@ -413,6 +422,27 @@ class BoundedKnnOracleTest(unittest.TestCase):
             (
                 {"query_id": 1, "neighbor_id": 2, "distance": 0.5, "neighbor_rank": 1},
                 {"query_id": 1, "neighbor_id": 3, "distance": 0.8, "neighbor_rank": 2},
+            ),
+        )
+
+
+class Knn3DOracleTest(unittest.TestCase):
+
+    def test_run_cpu_supports_point3d_for_knn_rows(self) -> None:
+        rows = rt.run_cpu(
+            knn_3d_kernel,
+            query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
+            search_points=(
+                rt.Point3D(id=3, x=0.0, y=0.0, z=0.5),
+                rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),
+                rt.Point3D(id=4, x=0.0, y=0.0, z=0.8),
+            ),
+        )
+        self.assertEqual(
+            rows,
+            (
+                {"query_id": 1, "neighbor_id": 2, "distance": 0.5, "neighbor_rank": 1},
+                {"query_id": 1, "neighbor_id": 3, "distance": 0.5, "neighbor_rank": 2},
             ),
         )
 
@@ -855,21 +885,22 @@ class Point3DOracleRejectionTest(unittest.TestCase):
         )
         self.assertEqual(rows, ({"query_id": 1, "neighbor_id": 2, "distance": 0.5},))
 
-    def test_run_cpu_knn_rows_rejects_point3d(self) -> None:
-        @rt.kernel(backend="rtdl", precision="float_approx")
-        def knn_3d_k():
-            qp = rt.input("query_points", rt.Points3D, role="probe")
-            sp = rt.input("search_points", rt.Points3D, role="build")
-            c = rt.traverse(qp, sp, accel="bvh")
-            hits = rt.refine(c, predicate=rt.knn_rows(k=2))
-            return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
-
-        with self.assertRaisesRegex(ValueError, "2D"):
-            rt.run_cpu(
-                knn_3d_k,
-                query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
-                search_points=(rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),),
-            )
+    def test_run_cpu_knn_rows_supports_point3d(self) -> None:
+        rows = rt.run_cpu(
+            knn_3d_kernel,
+            query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
+            search_points=(
+                rt.Point3D(id=3, x=0.0, y=0.0, z=0.5),
+                rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),
+            ),
+        )
+        self.assertEqual(
+            rows,
+            (
+                {"query_id": 1, "neighbor_id": 2, "distance": 0.5, "neighbor_rank": 1},
+                {"query_id": 1, "neighbor_id": 3, "distance": 0.5, "neighbor_rank": 2},
+            ),
+        )
 
 
 if __name__ == "__main__":

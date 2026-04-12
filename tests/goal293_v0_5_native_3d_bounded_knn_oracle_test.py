@@ -43,13 +43,22 @@ class Goal293V05Native3DBoundedKnnOracleTest(unittest.TestCase):
         actual = rt.run_cpu(bounded_knn_rows_3d_native_goal293, **case)
         self.assertEqual(actual, expected)
 
-    def test_run_cpu_still_rejects_3d_knn_rows(self) -> None:
-        with self.assertRaisesRegex(ValueError, "run_cpu currently supports only 2D point nearest-neighbor records"):
-            rt.run_cpu(
-                knn_rows_3d_native_goal293,
-                query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
-                search_points=(rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),),
-            )
+    def test_run_cpu_matches_python_reference_for_3d_knn_rows(self) -> None:
+        case = {
+            "query_points": (
+                rt.Point3D(id=10, x=0.0, y=0.0, z=0.0),
+                rt.Point3D(id=20, x=5.0, y=0.0, z=0.0),
+            ),
+            "search_points": (
+                rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),
+                rt.Point3D(id=2, x=0.0, y=0.0, z=0.6),
+                rt.Point3D(id=3, x=0.0, y=0.8, z=0.0),
+                rt.Point3D(id=4, x=5.0, y=0.0, z=0.9),
+            ),
+        }
+        expected = rt.run_cpu_python_reference(knn_rows_3d_native_goal293, **case)
+        actual = rt.run_cpu(knn_rows_3d_native_goal293, **case)
+        self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":

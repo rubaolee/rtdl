@@ -134,6 +134,9 @@ paper-consistency milestones.
    - native 3D RTDL versus PostGIS performance on duplicate-free KITTI
      bounded-KNN workloads
 
+39. Goal 296
+   - native CPU/oracle closure for 3D `knn_rows`
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
