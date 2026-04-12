@@ -179,6 +179,13 @@ from .rtnn_baselines import rtnn_baseline_decisions
 from .rtnn_baselines import rtnn_baseline_libraries
 from .rtnn_baselines import RtnnBaselineDecision
 from .rtnn_baselines import RtnnBaselineLibrary
+from .rtnn_cunsearch import cunsearch_adapter_config
+from .rtnn_cunsearch import cunsearch_available
+from .rtnn_cunsearch import plan_cunsearch_fixed_radius_neighbors
+from .rtnn_cunsearch import resolve_cunsearch_binary
+from .rtnn_cunsearch import write_cunsearch_fixed_radius_request
+from .rtnn_cunsearch import CuNSearchAdapterConfig
+from .rtnn_cunsearch import CuNSearchInvocationPlan
 from .rtnn_matrix import rtnn_reproduction_matrix
 from .rtnn_matrix import RtnnMatrixEntry
 from .rtnn_reproduction import rtnn_dataset_families
