@@ -60,11 +60,13 @@ from .datasets import write_cdb
 from .embree_runtime import embree_version
 from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
+from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
 from .external_baselines import build_postgis_knn_rows_sql
 from .external_baselines import connect_postgis
 from .external_baselines import postgis_available
 from .external_baselines import run_postgis_fixed_radius_neighbors
 from .external_baselines import run_postgis_fixed_radius_neighbors_3d
+from .external_baselines import run_postgis_bounded_knn_rows_3d
 from .external_baselines import run_postgis_knn_rows
 from .external_baselines import run_scipy_fixed_radius_neighbors
 from .external_baselines import run_scipy_knn_rows
@@ -413,6 +415,7 @@ __all__ = [
     "download_rayjoin_sample",
     "build_postgis_fixed_radius_neighbors_sql",
     "build_postgis_fixed_radius_neighbors_3d_sql",
+    "build_postgis_bounded_knn_rows_3d_sql",
     "build_postgis_knn_rows_sql",
     "connect_postgis",
     "fixed_radius_neighbors_cpu",
@@ -539,6 +542,7 @@ __all__ = [
     "KittiDuplicateFreePair",
     "run_postgis_fixed_radius_neighbors",
     "run_postgis_fixed_radius_neighbors_3d",
+    "run_postgis_bounded_knn_rows_3d",
     "run_postgis_knn_rows",
     "run_scipy_fixed_radius_neighbors",
     "run_scipy_knn_rows",

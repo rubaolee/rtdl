@@ -130,6 +130,10 @@ paper-consistency milestones.
    - native 3D RTDL versus PostGIS performance on duplicate-free KITTI
      fixed-radius workloads
 
+38. Goal 295
+   - native 3D RTDL versus PostGIS performance on duplicate-free KITTI
+     bounded-KNN workloads
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
