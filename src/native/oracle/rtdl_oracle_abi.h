@@ -266,6 +266,17 @@ int rtdl_oracle_run_bounded_knn_rows(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_oracle_run_bounded_knn_rows_3d(
+    const RtdlPoint3D* query_points,
+    size_t query_point_count,
+    const RtdlPoint3D* search_points,
+    size_t search_point_count,
+    double radius,
+    uint32_t k_max,
+    RtdlKnnNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
 void rtdl_oracle_free_rows(void* rows);
 
 }  // extern "C"

@@ -399,13 +399,22 @@ class BoundedKnnOracleTest(unittest.TestCase):
         actual = rt.run_cpu(bounded_knn_2d_kernel, **case)
         self.assertEqual(actual, expected)
 
-    def test_run_cpu_rejects_point3d_with_clear_message(self) -> None:
-        with self.assertRaisesRegex(ValueError, "run_cpu currently supports only 2D"):
-            rt.run_cpu(
-                bounded_knn_3d_kernel,
-                query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
-                search_points=(rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),),
-            )
+    def test_run_cpu_supports_point3d_for_bounded_knn_rows(self) -> None:
+        rows = rt.run_cpu(
+            bounded_knn_3d_kernel,
+            query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
+            search_points=(
+                rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),
+                rt.Point3D(id=3, x=0.0, y=0.0, z=0.8),
+            ),
+        )
+        self.assertEqual(
+            rows,
+            (
+                {"query_id": 1, "neighbor_id": 2, "distance": 0.5, "neighbor_rank": 1},
+                {"query_id": 1, "neighbor_id": 3, "distance": 0.8, "neighbor_rank": 2},
+            ),
+        )
 
 
 # ---------------------------------------------------------------------------

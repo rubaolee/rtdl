@@ -355,7 +355,7 @@ def _validate_oracle_supported_inputs(compiled: CompiledKernel, normalized_input
     for payload in normalized_inputs.values():
         for item in payload:
             if isinstance(item, Point3D):
-                if predicate_name == "fixed_radius_neighbors":
+                if predicate_name in {"fixed_radius_neighbors", "bounded_knn_rows"}:
                     continue
                 raise ValueError(
                     "run_cpu currently supports only 2D point nearest-neighbor records; "
