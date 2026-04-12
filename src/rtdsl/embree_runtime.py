@@ -1546,36 +1546,54 @@ def _run_knn_rows_embree(compiled: CompiledKernel, normalized_inputs, library) -
     query_points = normalized_inputs[query_name]
     search_points = normalized_inputs[search_name]
     k = int(compiled.refine_op.predicate.options["k"])
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
     if (
         (query_points and isinstance(query_points[0], _CanonicalPoint3D))
         or (search_points and isinstance(search_points[0], _CanonicalPoint3D))
     ):
-        raise ValueError(
-            "Embree 3D point nearest-neighbor currently supports only fixed_radius_neighbors; "
-            "3D knn_rows is not native-online yet"
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_knn_rows_3d")
+        if call is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export rtdl_embree_run_knn_rows_3d; "
+                "rebuild the Embree backend from current main"
+            )
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = call(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
         )
-
-    query_array = (_RtdlPoint * len(query_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in query_points
-    ])
-    search_array = (_RtdlPoint * len(search_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in search_points
-    ])
-
-    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
-    row_count = ctypes.c_size_t()
-    error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_knn_rows(
-        query_array,
-        len(query_points),
-        search_array,
-        len(search_points),
-        k,
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_embree_run_knn_rows(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     try:
         return tuple(
@@ -1605,26 +1623,39 @@ def _call_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, librar
     query_points = packed_inputs[query_name]
     search_points = packed_inputs[search_name]
     k = int(compiled.refine_op.predicate.options["k"])
-    if query_points.dimension == 3:
-        raise ValueError(
-            "Embree 3D point nearest-neighbor currently supports only fixed_radius_neighbors; "
-            "3D knn_rows is not native-online yet"
-        )
-
     rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_knn_rows(
-        query_points.records,
-        query_points.count,
-        search_points.records,
-        search_points.count,
-        k,
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    if query_points.dimension == 3:
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_knn_rows_3d")
+        if call is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export rtdl_embree_run_knn_rows_3d; "
+                "rebuild the Embree backend from current main"
+            )
+        status = call(
+            query_points.records,
+            query_points.count,
+            search_points.records,
+            search_points.count,
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        status = library.rtdl_embree_run_knn_rows(
+            query_points.records,
+            query_points.count,
+            search_points.records,
+            search_points.count,
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     return EmbreeRowView(
         library=library,
@@ -1924,6 +1955,21 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_run_knn_rows.restype = ctypes.c_int
+
+    optional_knn_rows_3d = _require_optional_embree_symbol(library, "rtdl_embree_run_knn_rows_3d")
+    if optional_knn_rows_3d is not None:
+        optional_knn_rows_3d.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_knn_rows_3d.restype = ctypes.c_int
 
     return library
 

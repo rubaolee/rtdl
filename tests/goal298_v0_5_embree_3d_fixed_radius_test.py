@@ -18,15 +18,6 @@ def fixed_radius_neighbors_3d_embree_goal298():
     return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
 
 
-@rt.kernel(backend="rtdl", precision="float_approx")
-def knn_rows_3d_embree_boundary_goal298():
-    query_points = rt.input("query_points", rt.Points3D, role="probe")
-    search_points = rt.input("search_points", rt.Points3D, role="build")
-    candidates = rt.traverse(query_points, search_points, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.knn_rows(k=2))
-    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
-
-
 @unittest.skipUnless(embree_available(), "Embree runtime is not available")
 class Goal298V05Embree3DFixedRadiusTest(unittest.TestCase):
     def _case(self) -> dict[str, tuple[rt.Point3D, ...]]:
@@ -67,15 +58,6 @@ class Goal298V05Embree3DFixedRadiusTest(unittest.TestCase):
             self.assertEqual(len(rows), len(rt.run_cpu_python_reference(fixed_radius_neighbors_3d_embree_goal298, **self._case())))
         finally:
             rows.close()
-
-    def test_run_embree_still_blocks_3d_knn_rows(self) -> None:
-        with self.assertRaisesRegex(ValueError, "Embree 3D point nearest-neighbor currently supports only fixed_radius_neighbors"):
-            rt.run_embree(
-                knn_rows_3d_embree_boundary_goal298,
-                query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
-                search_points=(rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),),
-            )
-
 
 if __name__ == "__main__":
     unittest.main()
