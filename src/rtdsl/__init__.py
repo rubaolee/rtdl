@@ -186,6 +186,9 @@ from .rtnn_cunsearch import resolve_cunsearch_binary
 from .rtnn_cunsearch import write_cunsearch_fixed_radius_request
 from .rtnn_cunsearch import CuNSearchAdapterConfig
 from .rtnn_cunsearch import CuNSearchInvocationPlan
+from .rtnn_manifests import rtnn_bounded_dataset_manifests
+from .rtnn_manifests import write_rtnn_bounded_dataset_manifest
+from .rtnn_manifests import RtnnBoundedDatasetManifest
 from .rtnn_matrix import rtnn_reproduction_matrix
 from .rtnn_matrix import RtnnMatrixEntry
 from .rtnn_reproduction import rtnn_dataset_families
