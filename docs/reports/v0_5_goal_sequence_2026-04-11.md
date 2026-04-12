@@ -1,6 +1,7 @@
 # v0.5 Goal Sequence
 
 Date: 2026-04-11
+Last Updated: 2026-04-12
 Status: active
 
 ## Purpose
@@ -29,12 +30,18 @@ paper-consistency milestones.
    - decide and document the paper-consistent bounded-radius KNN public contract
 
 6. Goal 263
-   - dataset packaging / acquisition flow for the RTNN-aligned benchmark set
+   - implement the additive `bounded_knn_rows` public surface
 
 7. Goal 264
-   - baseline-library harness decisions and first adapters
+   - close the 2D CPU/oracle truth path for `bounded_knn_rows`
 
 8. Goal 265
+   - add an RTNN dataset-family registry and acquisition-plan layer
+
+9. Goal 266
+   - baseline-library harness decisions and first adapters
+
+10. Goal 267
    - first labeled reproduction matrix:
      - exact reproduction
      - bounded reproduction
