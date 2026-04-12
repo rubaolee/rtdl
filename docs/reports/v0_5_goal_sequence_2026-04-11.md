@@ -95,6 +95,9 @@ paper-consistency milestones.
 26. Goal 283
    - first three-way KITTI performance result across RTDL, cuNSearch CUDA, and PostGIS 3D
 
+27. Goal 284
+   - bounded KITTI three-way scaling sweep and first cuNSearch correctness boundary capture
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

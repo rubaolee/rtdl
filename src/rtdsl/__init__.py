@@ -198,6 +198,8 @@ from .rtnn_cunsearch_live import CuNSearchBuildConfig
 from .rtnn_comparison import compare_bounded_fixed_radius_from_packages
 from .rtnn_comparison import compare_bounded_fixed_radius_live_cunsearch
 from .rtnn_comparison import RtnnBoundedComparisonResult
+from .rtnn_perf_audit import FixedRadiusMismatchSummary
+from .rtnn_perf_audit import summarize_fixed_radius_mismatch
 from .rtnn_kitti import discover_kitti_velodyne_frames
 from .rtnn_kitti import kitti_source_config
 from .rtnn_kitti import load_kitti_bounded_points_from_manifest
@@ -522,6 +524,7 @@ __all__ = [
     "run_cpu_python_reference",
     "compile_cunsearch_fixed_radius_request_driver",
     "execute_compiled_cunsearch_fixed_radius_driver",
+    "FixedRadiusMismatchSummary",
     "run_postgis_fixed_radius_neighbors",
     "run_postgis_fixed_radius_neighbors_3d",
     "run_postgis_knn_rows",
@@ -546,6 +549,7 @@ __all__ = [
     "monuseg_drive_file_id",
     "tile_polygon_set",
     "summarize_baseline_benchmark",
+    "summarize_fixed_radius_mismatch",
     "slice_cdb_dataset",
     "traverse",
     "write_cdb",
