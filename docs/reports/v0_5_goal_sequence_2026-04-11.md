@@ -98,6 +98,9 @@ paper-consistency milestones.
 27. Goal 284
    - bounded KITTI three-way scaling sweep and first cuNSearch correctness boundary capture
 
+28. Goal 285
+   - minimal real KITTI duplicate-point reproducer for the cuNSearch correctness boundary
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

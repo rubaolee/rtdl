@@ -198,6 +198,8 @@ from .rtnn_cunsearch_live import CuNSearchBuildConfig
 from .rtnn_comparison import compare_bounded_fixed_radius_from_packages
 from .rtnn_comparison import compare_bounded_fixed_radius_live_cunsearch
 from .rtnn_comparison import RtnnBoundedComparisonResult
+from .rtnn_duplicate_audit import ExactCrossPackageMatch
+from .rtnn_duplicate_audit import find_exact_cross_package_matches
 from .rtnn_perf_audit import FixedRadiusMismatchSummary
 from .rtnn_perf_audit import summarize_fixed_radius_mismatch
 from .rtnn_kitti import discover_kitti_velodyne_frames
@@ -524,7 +526,9 @@ __all__ = [
     "run_cpu_python_reference",
     "compile_cunsearch_fixed_radius_request_driver",
     "execute_compiled_cunsearch_fixed_radius_driver",
+    "ExactCrossPackageMatch",
     "FixedRadiusMismatchSummary",
+    "find_exact_cross_package_matches",
     "run_postgis_fixed_radius_neighbors",
     "run_postgis_fixed_radius_neighbors_3d",
     "run_postgis_knn_rows",
