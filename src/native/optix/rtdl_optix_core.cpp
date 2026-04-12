@@ -1514,6 +1514,73 @@ extern "C" __global__ void fixed_radius_neighbors(
 }
 )CUDA";
 
+static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+extern "C" __global__ void fixed_radius_neighbors_3d(
+        const GpuPoint3D* query_points,
+        uint32_t          query_count,
+        const GpuPoint3D* search_points,
+        uint32_t          search_count,
+        float             radius,
+        uint32_t          k_max,
+        FrnRecord*        output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    FrnRecord* query_out = output + static_cast<size_t>(qidx) * static_cast<size_t>(k_max);
+    for (uint32_t slot = 0; slot < k_max; ++slot) {
+        query_out[slot].query_id = query_points[qidx].id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+
+    const float px = query_points[qidx].x;
+    const float py = query_points[qidx].y;
+    const float pz = query_points[qidx].z;
+    const float radius_sq = radius * radius;
+
+    for (uint32_t sidx = 0; sidx < search_count; ++sidx) {
+        const float dx = search_points[sidx].x - px;
+        const float dy = search_points[sidx].y - py;
+        const float dz = search_points[sidx].z - pz;
+        const float distance_sq = dx * dx + dy * dy + dz * dz;
+        if (distance_sq > radius_sq) {
+            continue;
+        }
+        const float distance = sqrtf(distance_sq);
+        const uint32_t neighbor_id = search_points[sidx].id;
+
+        uint32_t insert_at = k_max;
+        for (uint32_t slot = 0; slot < k_max; ++slot) {
+            const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+            const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+            const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+            const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+            if (empty || better_distance || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k_max) {
+            continue;
+        }
+        for (uint32_t slot = k_max - 1; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1];
+        }
+        query_out[insert_at].query_id = query_points[qidx].id;
+        query_out[insert_at].neighbor_id = neighbor_id;
+        query_out[insert_at].distance = distance;
+    }
+}
+)CUDA";
+
 static const char* kKnnRowsKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -1547,6 +1614,74 @@ extern "C" __global__ void knn_rows(
         const float dx = search_points[sidx].x - px;
         const float dy = search_points[sidx].y - py;
         const float distance = sqrtf(dx * dx + dy * dy);
+        const uint32_t neighbor_id = search_points[sidx].id;
+
+        uint32_t insert_at = k;
+        for (uint32_t slot = 0; slot < k; ++slot) {
+            const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+            const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+            const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+            const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+            if (empty || better_distance || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k) {
+            continue;
+        }
+        for (uint32_t slot = k - 1; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1];
+        }
+        query_out[insert_at].query_id = query_points[qidx].id;
+        query_out[insert_at].neighbor_id = neighbor_id;
+        query_out[insert_at].distance = distance;
+    }
+
+    for (uint32_t slot = 0; slot < k; ++slot) {
+        if (query_out[slot].neighbor_id == 0xffffffffu) {
+            break;
+        }
+        query_out[slot].neighbor_rank = slot + 1;
+    }
+}
+)CUDA";
+
+static const char* kKnnRows3DKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct KnnRecord { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; };
+
+extern "C" __global__ void knn_rows_3d(
+        const GpuPoint3D* query_points,
+        uint32_t          query_count,
+        const GpuPoint3D* search_points,
+        uint32_t          search_count,
+        uint32_t          k,
+        KnnRecord*        output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    KnnRecord* query_out = output + static_cast<size_t>(qidx) * static_cast<size_t>(k);
+    for (uint32_t slot = 0; slot < k; ++slot) {
+        query_out[slot].query_id = query_points[qidx].id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+        query_out[slot].neighbor_rank = 0u;
+    }
+
+    const float px = query_points[qidx].x;
+    const float py = query_points[qidx].y;
+    const float pz = query_points[qidx].z;
+    for (uint32_t sidx = 0; sidx < search_count; ++sidx) {
+        const float dx = search_points[sidx].x - px;
+        const float dy = search_points[sidx].y - py;
+        const float dz = search_points[sidx].z - pz;
+        const float distance = sqrtf(dx * dx + dy * dy + dz * dz);
         const uint32_t neighbor_id = search_points[sidx].id;
 
         uint32_t insert_at = k;
@@ -1647,6 +1782,7 @@ static KnnCuFunction      g_knn;
 #pragma pack(push, 1)
 struct GpuSegment   { float x0, y0, x1, y1; uint32_t id; };
 struct GpuPoint     { float x, y;           uint32_t id; };
+struct GpuPoint3DHost { float x, y, z;      uint32_t id; };
 struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };
 struct GpuTriangle  { float x0, y0, x1, y1, x2, y2; uint32_t id; };
 struct GpuRay       { float ox, oy, dx, dy, tmax; uint32_t id; };

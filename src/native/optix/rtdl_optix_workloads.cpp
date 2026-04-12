@@ -1196,6 +1196,143 @@ static void run_fixed_radius_neighbors_cuda(
     *row_count_out = rows.size();
 }
 
+static void run_fixed_radius_neighbors_cuda_3d(
+        const RtdlPoint3D* query_points, size_t query_count,
+        const RtdlPoint3D* search_points, size_t search_count,
+        double radius,
+        size_t k_max,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
+{
+    (void)get_optix_context();
+    std::call_once(g_frn.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DKernelSrc, "frn3d_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_frn.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(&g_frn.fn, g_frn.module, "fixed_radius_neighbors_3d"));
+    });
+
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    constexpr size_t kFixedRadiusSlack = 8;
+
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    std::vector<GpuPoint3DHost> gpu_search(search_count);
+    for (size_t i = 0; i < query_count; ++i)
+        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, (float)query_points[i].z, query_points[i].id};
+    for (size_t i = 0; i < search_count; ++i)
+        gpu_search[i] = {(float)search_points[i].x, (float)search_points[i].y, (float)search_points[i].z, search_points[i].id};
+
+    const size_t capped_k_max = std::min(k_max, search_count);
+    const size_t candidate_slack = std::min(
+        kFixedRadiusSlack,
+        search_count > capped_k_max ? search_count - capped_k_max : size_t{0});
+    const size_t kernel_k_max = capped_k_max + candidate_slack;
+    if (query_count != 0 && kernel_k_max > ((std::numeric_limits<size_t>::max)() / query_count)) {
+        throw std::runtime_error("fixed_radius_neighbors output_capacity overflows size_t");
+    }
+    const size_t output_capacity = query_count * kernel_k_max;
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    DevPtr d_search(sizeof(GpuPoint3DHost) * search_count);
+    DevPtr d_output(sizeof(GpuFrnRecord) * output_capacity);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    upload(d_search.ptr, gpu_search.data(), search_count);
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t sc = static_cast<uint32_t>(search_count);
+    float radius_f = static_cast<float>(radius + kFixedRadiusCandidateEps);
+    uint32_t k_max_u32 = static_cast<uint32_t>(kernel_k_max);
+    void* args[] = {
+        &d_queries.ptr,
+        &qc,
+        &d_search.ptr,
+        &sc,
+        &radius_f,
+        &k_max_u32,
+        &d_output.ptr,
+    };
+
+    unsigned block = 256;
+    unsigned grid = (qc + block - 1) / block;
+    CU_CHECK(cuLaunchKernel(g_frn.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    std::vector<GpuFrnRecord> gpu_rows(output_capacity);
+    download(gpu_rows.data(), d_output.ptr, output_capacity);
+
+    std::unordered_map<uint32_t, const RtdlPoint3D*> query_by_id;
+    std::unordered_map<uint32_t, const RtdlPoint3D*> search_by_id;
+    query_by_id.reserve(query_count);
+    search_by_id.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        query_by_id.emplace(query_points[i].id, query_points + i);
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+        search_by_id.emplace(search_points[i].id, search_points + i);
+    }
+
+    std::vector<RtdlFixedRadiusNeighborRow> exact_rows;
+    exact_rows.reserve(output_capacity);
+    for (size_t i = 0; i < output_capacity; ++i) {
+        if (gpu_rows[i].neighbor_id == UINT32_MAX) {
+            continue;
+        }
+        auto query_it = query_by_id.find(gpu_rows[i].query_id);
+        auto search_it = search_by_id.find(gpu_rows[i].neighbor_id);
+        if (query_it == query_by_id.end() || search_it == search_by_id.end()) {
+            continue;
+        }
+        double dx = search_it->second->x - query_it->second->x;
+        double dy = search_it->second->y - query_it->second->y;
+        double dz = search_it->second->z - query_it->second->z;
+        double exact_distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (exact_distance <= radius) {
+            exact_rows.push_back({
+                gpu_rows[i].query_id,
+                gpu_rows[i].neighbor_id,
+                exact_distance,
+            });
+        }
+    }
+
+    std::stable_sort(exact_rows.begin(), exact_rows.end(), [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+        if (left.query_id != right.query_id) {
+            return left.query_id < right.query_id;
+        }
+        if (left.distance < right.distance - 1.0e-12) {
+            return true;
+        }
+        if (right.distance < left.distance - 1.0e-12) {
+            return false;
+        }
+        return left.neighbor_id < right.neighbor_id;
+    });
+
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    rows.reserve(exact_rows.size());
+    uint32_t current_query_id = 0;
+    size_t current_count = 0;
+    bool have_query = false;
+    for (const auto& row : exact_rows) {
+        if (!have_query || row.query_id != current_query_id) {
+            current_query_id = row.query_id;
+            current_count = 0;
+            have_query = true;
+        }
+        if (current_count >= k_max) {
+            continue;
+        }
+        rows.push_back(row);
+        current_count += 1;
+    }
+
+    auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
 static void run_knn_rows_cuda(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,
@@ -1262,7 +1399,10 @@ static void run_knn_rows_cuda(
         });
     }
     std::stable_sort(rows.begin(), rows.end(), [](const RtdlKnnNeighborRow& left, const RtdlKnnNeighborRow& right) {
-        return left.query_id < right.query_id;
+        if (left.query_id != right.query_id) {
+            return left.query_id < right.query_id;
+        }
+        return left.neighbor_rank < right.neighbor_rank;
     });
 
     auto* out = static_cast<RtdlKnnNeighborRow*>(
@@ -1273,4 +1413,133 @@ static void run_knn_rows_cuda(
     }
     *rows_out = out;
     *row_count_out = rows.size();
+}
+
+static void run_knn_rows_cuda_3d(
+        const RtdlPoint3D* query_points, size_t query_count,
+        const RtdlPoint3D* search_points, size_t search_count,
+        size_t k,
+        RtdlKnnNeighborRow** rows_out, size_t* row_count_out)
+{
+    (void)get_optix_context();
+    std::call_once(g_knn.init, [&]() {
+        std::string ptx = compile_to_ptx(kKnnRows3DKernelSrc, "knn3d_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_knn.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(&g_knn.fn, g_knn.module, "knn_rows_3d"));
+    });
+
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    std::vector<GpuPoint3DHost> gpu_search(search_count);
+    for (size_t i = 0; i < query_count; ++i)
+        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, (float)query_points[i].z, query_points[i].id};
+    for (size_t i = 0; i < search_count; ++i)
+        gpu_search[i] = {(float)search_points[i].x, (float)search_points[i].y, (float)search_points[i].z, search_points[i].id};
+
+    const size_t capped_k = std::min(k, search_count);
+    const size_t candidate_slack = std::min(
+        static_cast<size_t>(8),
+        search_count > capped_k ? search_count - capped_k : static_cast<size_t>(0));
+    const size_t kernel_k = capped_k + candidate_slack;
+
+    if (query_count != 0 && kernel_k > ((std::numeric_limits<size_t>::max)() / query_count)) {
+        throw std::runtime_error("knn_rows output_capacity overflows size_t");
+    }
+    const size_t output_capacity = query_count * kernel_k;
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    DevPtr d_search(sizeof(GpuPoint3DHost) * search_count);
+    DevPtr d_output(sizeof(GpuKnnRecord) * output_capacity);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    upload(d_search.ptr, gpu_search.data(), search_count);
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t sc = static_cast<uint32_t>(search_count);
+    uint32_t k_u32 = static_cast<uint32_t>(kernel_k);
+    void* args[] = {
+        &d_queries.ptr,
+        &qc,
+        &d_search.ptr,
+        &sc,
+        &k_u32,
+        &d_output.ptr,
+    };
+
+    unsigned block = 256;
+    unsigned grid = (qc + block - 1) / block;
+    CU_CHECK(cuLaunchKernel(g_knn.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
+    CU_CHECK(cuStreamSynchronize(nullptr));
+
+    std::vector<GpuKnnRecord> gpu_rows(output_capacity);
+    download(gpu_rows.data(), d_output.ptr, output_capacity);
+
+    std::unordered_map<uint32_t, const RtdlPoint3D*> query_by_id;
+    std::unordered_map<uint32_t, const RtdlPoint3D*> search_by_id;
+    query_by_id.reserve(query_count);
+    search_by_id.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        query_by_id.emplace(query_points[i].id, query_points + i);
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+        search_by_id.emplace(search_points[i].id, search_points + i);
+    }
+
+    std::vector<RtdlKnnNeighborRow> rows;
+    rows.reserve(output_capacity);
+    for (size_t i = 0; i < output_capacity; ++i) {
+        if (gpu_rows[i].neighbor_id == UINT32_MAX) {
+            continue;
+        }
+        auto query_it = query_by_id.find(gpu_rows[i].query_id);
+        auto search_it = search_by_id.find(gpu_rows[i].neighbor_id);
+        if (query_it == query_by_id.end() || search_it == search_by_id.end()) {
+            continue;
+        }
+        double dx = search_it->second->x - query_it->second->x;
+        double dy = search_it->second->y - query_it->second->y;
+        double dz = search_it->second->z - query_it->second->z;
+        double exact_distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+        rows.push_back({
+            gpu_rows[i].query_id,
+            gpu_rows[i].neighbor_id,
+            exact_distance,
+            0u,
+        });
+    }
+    std::stable_sort(rows.begin(), rows.end(), [](const RtdlKnnNeighborRow& left, const RtdlKnnNeighborRow& right) {
+        if (left.query_id != right.query_id) {
+            return left.query_id < right.query_id;
+        }
+        if (left.distance < right.distance - 1.0e-12) {
+            return true;
+        }
+        if (right.distance < left.distance - 1.0e-12) {
+            return false;
+        }
+        return left.neighbor_id < right.neighbor_id;
+    });
+    std::vector<RtdlKnnNeighborRow> trimmed_rows;
+    trimmed_rows.reserve(query_count * capped_k);
+    size_t index = 0;
+    while (index < rows.size()) {
+        const uint32_t query_id = rows[index].query_id;
+        size_t end = index;
+        while (end < rows.size() && rows[end].query_id == query_id) {
+            ++end;
+        }
+        const size_t keep = std::min(capped_k, end - index);
+        for (size_t offset = 0; offset < keep; ++offset) {
+            auto row = rows[index + offset];
+            row.neighbor_rank = static_cast<uint32_t>(offset + 1);
+            trimmed_rows.push_back(row);
+        }
+        index = end;
+    }
+
+    auto* out = static_cast<RtdlKnnNeighborRow*>(
+        std::malloc(sizeof(RtdlKnnNeighborRow) * trimmed_rows.size()));
+    if (!out && !trimmed_rows.empty()) throw std::bad_alloc();
+    if (!trimmed_rows.empty()) {
+        std::memcpy(out, trimmed_rows.data(), sizeof(RtdlKnnNeighborRow) * trimmed_rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = trimmed_rows.size();
 }

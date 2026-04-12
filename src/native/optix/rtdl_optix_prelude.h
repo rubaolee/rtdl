@@ -90,6 +90,11 @@ struct RtdlPoint {
     double x, y;
 };
 
+struct RtdlPoint3D {
+    uint32_t id;
+    double x, y, z;
+};
+
 struct RtdlPolygonRef {
     uint32_t id;
     uint32_t vertex_offset;
@@ -214,9 +219,22 @@ int  rtdl_optix_run_fixed_radius_neighbors(
          size_t k_max,
          RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_run_fixed_radius_neighbors_3d(
+         const RtdlPoint3D* query_points, size_t query_count,
+         const RtdlPoint3D* search_points, size_t search_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_knn_rows(
          const RtdlPoint* query_points, size_t query_count,
          const RtdlPoint* search_points, size_t search_count,
+         size_t k,
+         RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_knn_rows_3d(
+         const RtdlPoint3D* query_points, size_t query_count,
+         const RtdlPoint3D* search_points, size_t search_count,
          size_t k,
          RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);

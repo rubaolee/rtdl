@@ -154,6 +154,13 @@ paper-consistency milestones.
    - first Linux large-scale Embree nearest-neighbor performance and KNN
      optimization closure on duplicate-free KITTI
 
+45. Goal 311
+   - Linux OptiX 3D nearest-neighbor closure
+
+46. Goal 312
+   - first Linux large-scale native-vs-Embree-vs-OptiX nearest-neighbor
+     benchmark on duplicate-free KITTI
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
