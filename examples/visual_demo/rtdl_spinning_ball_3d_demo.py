@@ -585,7 +585,7 @@ def _write_ppm(path: Path, image: Any) -> None:
             data = image.astype("uint8")
         with path.open("wb") as handle:
             handle.write(f"P6\n{width} {height}\n255\n".encode("ascii"))
-            handle.write(data.tobytes())
+            handle.write(memoryview(data))
         return
 
     height = len(image)

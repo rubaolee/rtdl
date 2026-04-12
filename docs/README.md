@@ -20,7 +20,7 @@ Quick environment facts before you start:
 RTDL’s primary target is non-graphical geometric-query work. The visual demo is
 best read as a proof-of-capability application built on the same core:
 
-- [Watch The Public Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
+- [Watch The Public 4K Demo Video](https://youtu.be/d3yJB7AmCLM)
 - [Project Front Page](../README.md)
 
 ## Start Here
@@ -122,7 +122,9 @@ Keep these current facts in mind while reading:
 - the primary preserved source for the v0.3 visual demo line is:
   - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 - the public-facing entry point for that visual line is:
-  - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
+  - [RTDL 4K Visual Demo Video](https://youtu.be/d3yJB7AmCLM)
+- the saved work report for that 4K artifact is:
+  - [Hidden-Star 4K Render Work Report](reports/hidden_star_4k_render_work_report_2026-04-11.md)
 - there are two important performance stories preserved in the repo history:
   - the v0.1 exact-source `county_zipcode` positive-hit `pip` trust-anchor
   - the v0.2 Linux/PostGIS-backed segment/polygon large-row surface

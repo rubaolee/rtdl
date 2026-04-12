@@ -25,6 +25,7 @@ If you are new to RTDL, use these files first:
 - `rtdl_road_hazard_screening.py`
 - `visual_demo/rtdl_lit_ball_demo.py`
 - `visual_demo/rtdl_hidden_star_stable_ball_demo.py`
+- `visual_demo/render_hidden_star_chunked_video.py`
 
 ## Reference Material
 

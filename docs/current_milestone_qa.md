@@ -34,7 +34,9 @@ For the new application-story proof, the strongest current v0.3 result is:
   - `optix`
   - `vulkan`
 - a public video entry point for that demo line:
-  - [RTDL Visual Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
+  - [RTDL 4K Visual Demo Video](https://youtu.be/d3yJB7AmCLM)
+- a saved work report for that 4K artifact:
+  - [Hidden-Star 4K Render Work Report](reports/hidden_star_4k_render_work_report_2026-04-11.md)
 - the repo’s primary preserved source artifact for that line:
   - [rtdl_hidden_star_stable_ball_demo.py](../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
 - the earlier Linux OptiX and Vulkan smooth-camera support artifacts remain preserved as secondary comparison/support material, not as the primary hidden-star demo outputs

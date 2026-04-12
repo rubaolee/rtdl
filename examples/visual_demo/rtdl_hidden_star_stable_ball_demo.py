@@ -37,9 +37,10 @@ _STABLE_WORKER_STATE: dict[str, object] = {}
 _STABLE_MIDNIGHT = (0.03, 0.08, 0.24)
 _STABLE_DEEP_BLUE = (0.06, 0.19, 0.54)
 _STABLE_STEEL = (0.10, 0.24, 0.60)
+_SHADOW_RAY_BATCH_SIZE = 100_000
 
 
-def _frame_light(phase: float) -> dict[str, object]:
+def _primary_yellow_light(phase: float) -> dict[str, object]:
     x = 68.0 - 136.0 * phase
     return {
         "position": (
@@ -50,6 +51,34 @@ def _frame_light(phase: float) -> dict[str, object]:
         "color": (1.0, 0.86, 0.30),
         "intensity": 2.95,
     }
+
+
+def _secondary_red_vertical_light(phase: float) -> dict[str, object]:
+    y = 68.0 - 136.0 * phase
+    return {
+        "position": (
+            -36.0,
+            y,
+            12.4,
+        ),
+        "color": (1.0, 0.34, 0.18),
+        "intensity": 1.15,
+    }
+
+
+def _frame_light(phase: float) -> dict[str, object]:
+    return _primary_yellow_light(phase)
+
+
+def _scene_lights(scene: str, phase: float) -> tuple[dict[str, object], ...]:
+    if scene == "single_hidden":
+        return (_primary_yellow_light(phase),)
+    if scene == "crossed_dual_hidden":
+        return (
+            _primary_yellow_light(phase),
+            _secondary_red_vertical_light(phase),
+        )
+    raise ValueError(f"unsupported hidden-star scene: {scene}")
 
 
 def _orbit_surface_color(normal: tuple[float, float, float]) -> tuple[float, float, float]:
@@ -71,8 +100,8 @@ def _stable_shade_hit(
     hit_point: tuple[float, float, float],
     *,
     center: tuple[float, float, float],
-    light: dict[str, object],
-    visibility: float = 1.0,
+    lights: tuple[dict[str, object], ...],
+    visibilities: tuple[float, ...],
 ) -> tuple[int, int, int]:
     nx, ny, nz = _normalize3(
         hit_point[0] - center[0],
@@ -85,20 +114,24 @@ def _stable_shade_hit(
     upper_glow = _clamp01((ny + 0.55) / 1.55)
     lower_cool = _clamp01((0.15 - ny) / 1.15)
 
-    lx, ly, lz = light["position"]  # type: ignore[index]
-    ldx, ldy, ldz = _normalize3(lx - hit_point[0], ly - hit_point[1], lz - hit_point[2])
-    lambert = max(0.0, _dot3(nx, ny, nz, ldx, ldy, ldz)) * visibility
-    lr, lg, lb = light["color"]  # type: ignore[index]
-    intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
-
-    half_x, half_y, half_z = _normalize3(ldx + view[0], ldy + view[1], ldz + view[2])
-    specular = intensity * (max(0.0, _dot3(nx, ny, nz, half_x, half_y, half_z)) ** 52.0)
-
-    light_rgb = [
-        0.10 + lambert * float(lr) * 1.08 * intensity,
-        0.11 + lambert * float(lg) * 1.08 * intensity,
-        0.15 + lambert * float(lb) * 1.08 * intensity,
-    ]
+    light_rgb = [0.10, 0.11, 0.15]
+    specular = 0.0
+    for light_index, light in enumerate(lights):
+        visibility = visibilities[light_index] if light_index < len(visibilities) else 1.0
+        if visibility <= 0.0:
+            continue
+        lx, ly, lz = light["position"]  # type: ignore[index]
+        ldx, ldy, ldz = _normalize3(lx - hit_point[0], ly - hit_point[1], lz - hit_point[2])
+        lambert = max(0.0, _dot3(nx, ny, nz, ldx, ldy, ldz)) * visibility
+        if lambert <= 0.0:
+            continue
+        lr, lg, lb = light["color"]  # type: ignore[index]
+        intensity = float(light.get("intensity", 1.0))  # type: ignore[call-arg]
+        half_x, half_y, half_z = _normalize3(ldx + view[0], ldy + view[1], ldz + view[2])
+        specular += intensity * (max(0.0, _dot3(nx, ny, nz, half_x, half_y, half_z)) ** 52.0)
+        light_rgb[0] += lambert * float(lr) * 1.08 * intensity
+        light_rgb[1] += lambert * float(lg) * 1.08 * intensity
+        light_rgb[2] += lambert * float(lb) * 1.08 * intensity
 
     final = []
     for index in range(3):
@@ -177,7 +210,7 @@ def _init_stable_worker(state: dict[str, object]) -> None:
 def _render_stable_frame(task: tuple[int, float]) -> dict[str, object]:
     frame_index, phase = task
     state = _STABLE_WORKER_STATE
-    light = _frame_light(phase)
+    lights = _scene_lights(str(state["scene"]), phase)  # type: ignore[index]
     source_image = state["background_image"]  # type: ignore[index]
     if np is not None and hasattr(source_image, "shape"):
         image = source_image.copy()
@@ -189,28 +222,42 @@ def _render_stable_frame(task: tuple[int, float]) -> dict[str, object]:
     backend = str(state["backend"])  # type: ignore[index]
     triangles = state["triangles"]  # type: ignore[assignment]
 
-    shadow_rays: list[rt.Ray3D] = []
-    shadow_lookup: dict[int, int] = {}
-    shadow_candidates: dict[int, float] = {}
+    shadow_batch: list[rt.Ray3D] = []
+    shadowed_ids: set[int] = set()
     shadow_query_seconds = 0.0
+    shadow_ray_count = 0
+    light_count = len(lights)
+
+    def _flush_shadow_batch() -> None:
+        nonlocal shadow_query_seconds, shadow_batch
+        if not shadow_batch:
+            return
+        shadow_started = time.perf_counter()
+        shadow_rows = _run_backend_rows(backend, rays=tuple(shadow_batch), triangles=triangles)
+        shadow_query_seconds += time.perf_counter() - shadow_started
+        for row in shadow_rows:
+            if int(row["hit_count"]) > 0:
+                shadowed_ids.add(int(row["ray_id"]))
+        shadow_batch.clear()
+
     if shadow_mode == "rtdl_light_to_surface":
         for _, _, ray, hit_point in pending_hits:
-            facing = _light_facing_visibility(hit_point=hit_point, center=center, light=light)
-            shadow_candidates[ray.id] = facing
-            if facing <= 0.0:
-                continue
-            shadow_rays.append(
-                _make_light_to_surface_shadow_ray(
-                    ray_id=ray.id,
-                    hit_point=hit_point,
-                    light=light,
+            for light_index, light in enumerate(lights):
+                shadow_id = ray.id * light_count + light_index
+                facing = _light_facing_visibility(hit_point=hit_point, center=center, light=light)
+                if facing <= 0.0:
+                    continue
+                shadow_ray_count += 1
+                shadow_batch.append(
+                    _make_light_to_surface_shadow_ray(
+                        ray_id=shadow_id,
+                        hit_point=hit_point,
+                        light=light,
+                    )
                 )
-            )
-        if shadow_rays:
-            shadow_started = time.perf_counter()
-            shadow_rows = _run_backend_rows(backend, rays=tuple(shadow_rays), triangles=triangles)
-            shadow_query_seconds = time.perf_counter() - shadow_started
-            shadow_lookup = {int(row["ray_id"]): int(row["hit_count"]) for row in shadow_rows}
+                if len(shadow_batch) >= _SHADOW_RAY_BATCH_SIZE:
+                    _flush_shadow_batch()
+        _flush_shadow_batch()
 
     shading_started = time.perf_counter()
     if np is not None and hasattr(image, "shape"):
@@ -220,17 +267,39 @@ def _render_stable_frame(task: tuple[int, float]) -> dict[str, object]:
         for index, (row, col, ray, hit_point) in enumerate(pending_hits):
             py[index] = row
             px[index] = col
-            visibility = 1.0
-            if shadow_mode == "rtdl_light_to_surface":
-                visibility = 0.0 if shadow_lookup.get(ray.id, 0) > 0 else (1.0 if shadow_candidates.get(ray.id, 0.0) > 0.0 else 0.0)
-            colors[index] = _stable_shade_hit(ray, hit_point, center=center, light=light, visibility=visibility)
+            visibilities = []
+            for light_index, light in enumerate(lights):
+                visibility = 1.0
+                if shadow_mode == "rtdl_light_to_surface":
+                    shadow_id = ray.id * light_count + light_index
+                    facing = _light_facing_visibility(hit_point=hit_point, center=center, light=light)
+                    visibility = 0.0 if facing <= 0.0 else (0.0 if shadow_id in shadowed_ids else 1.0)
+                visibilities.append(visibility)
+            colors[index] = _stable_shade_hit(
+                ray,
+                hit_point,
+                center=center,
+                lights=lights,
+                visibilities=tuple(visibilities),
+            )
         image[py, px] = colors
     else:
         for py, px, ray, hit_point in pending_hits:
-            visibility = 1.0
-            if shadow_mode == "rtdl_light_to_surface":
-                visibility = 0.0 if shadow_lookup.get(ray.id, 0) > 0 else (1.0 if shadow_candidates.get(ray.id, 0.0) > 0.0 else 0.0)
-            image[py][px] = _stable_shade_hit(ray, hit_point, center=center, light=light, visibility=visibility)
+            visibilities = []
+            for light_index, light in enumerate(lights):
+                visibility = 1.0
+                if shadow_mode == "rtdl_light_to_surface":
+                    shadow_id = ray.id * light_count + light_index
+                    facing = _light_facing_visibility(hit_point=hit_point, center=center, light=light)
+                    visibility = 0.0 if facing <= 0.0 else (0.0 if shadow_id in shadowed_ids else 1.0)
+                visibilities.append(visibility)
+            image[py][px] = _stable_shade_hit(
+                ray,
+                hit_point,
+                center=center,
+                lights=lights,
+                visibilities=tuple(visibilities),
+            )
 
     projected_center = state["projected_center"]  # type: ignore[assignment]
     width = int(state["width"])  # type: ignore[arg-type]
@@ -266,7 +335,7 @@ def _render_stable_frame(task: tuple[int, float]) -> dict[str, object]:
         "shadow_query_seconds": shadow_query_seconds,
         "shading_seconds": shading_seconds,
         "rt_rows": int(state["rt_rows"]),  # type: ignore[arg-type]
-        "shadow_rays": len(shadow_rays),
+        "shadow_rays": shadow_ray_count,
         "hit_pixels": int(state["hit_pixels"]),  # type: ignore[arg-type]
         "compare_backend": state["compare_summary"] if frame_index == 0 else None,  # type: ignore[index]
     }
@@ -284,6 +353,10 @@ def render_hidden_star_stable_ball_frames(
     output_dir: Path,
     jobs: int = 1,
     shadow_mode: str = "analytic",
+    scene: str = "single_hidden",
+    frame_number_offset: int = 0,
+    phase_index_start: int = 0,
+    phase_index_total: int | None = None,
 ) -> dict[str, object]:
     wall_started = time.perf_counter()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -359,9 +432,17 @@ def render_hidden_star_stable_ball_frames(
         "hit_pixels": hit_pixels,
         "compare_summary": compare_summary,
         "shadow_mode": shadow_mode,
+        "scene": scene,
         "triangles": triangles,
     }
-    tasks = [(frame_index, frame_index / max(1, frame_count - 1)) for frame_index in range(frame_count)]
+    global_total = frame_count if phase_index_total is None else phase_index_total
+    tasks = [
+        (
+            frame_number_offset + frame_index,
+            (phase_index_start + frame_index) / max(1, global_total - 1),
+        )
+        for frame_index in range(frame_count)
+    ]
     if jobs <= 1:
         _init_stable_worker(worker_state)
         summary_frames = [_render_stable_frame(task) for task in tasks]
@@ -372,16 +453,21 @@ def render_hidden_star_stable_ball_frames(
 
     total_shading_seconds = sum(float(row["shading_seconds"]) for row in summary_frames)
     total_shadow_query_seconds = sum(float(row["shadow_query_seconds"]) for row in summary_frames)
-    light_layout = "single_analytic" if shadow_mode == "analytic" else "single_rtdl_light_to_surface_shadow"
+    light_count = len(_scene_lights(scene, 0.0))
+    if scene == "single_hidden":
+        light_layout = "single_analytic" if shadow_mode == "analytic" else "single_rtdl_light_to_surface_shadow"
+    else:
+        light_layout = "crossed_dual_analytic" if shadow_mode == "analytic" else "crossed_dual_rtdl_light_to_surface_shadow"
     summary = {
         "backend": backend,
         "image_width": width,
         "image_height": height,
         "frame_count": frame_count,
         "jobs": jobs,
-        "light_count": 1,
+        "light_count": light_count,
         "light_layout": light_layout,
         "shadow_mode": shadow_mode,
+        "scene": scene,
         "numpy_fast_path": np is not None,
         "show_light_source": False,
         "phase_mode": "uniform",
@@ -411,6 +497,7 @@ def render_hidden_star_stable_ball_vulkan_frames(
     frame_count: int = 96,
     jobs: int = 1,
     shadow_mode: str = "rtdl_light_to_surface",
+    scene: str = "single_hidden",
 ) -> dict[str, object]:
     return render_hidden_star_stable_ball_frames(
         backend="vulkan",
@@ -423,6 +510,7 @@ def render_hidden_star_stable_ball_vulkan_frames(
         output_dir=output_dir,
         jobs=jobs,
         shadow_mode=shadow_mode,
+        scene=scene,
     )
 
 
@@ -437,6 +525,7 @@ def render_hidden_star_stable_ball_optix_frames(
     frame_count: int = 96,
     jobs: int = 1,
     shadow_mode: str = "rtdl_light_to_surface",
+    scene: str = "single_hidden",
 ) -> dict[str, object]:
     return render_hidden_star_stable_ball_frames(
         backend="optix",
@@ -449,6 +538,7 @@ def render_hidden_star_stable_ball_optix_frames(
         output_dir=output_dir,
         jobs=jobs,
         shadow_mode=shadow_mode,
+        scene=scene,
     )
 
 
@@ -463,6 +553,10 @@ def main() -> None:
     parser.add_argument("--frames", type=int, default=320)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--shadow-mode", choices=("analytic", "rtdl_light_to_surface"), default="analytic")
+    parser.add_argument("--scene", choices=("single_hidden", "crossed_dual_hidden"), default="single_hidden")
+    parser.add_argument("--frame-number-offset", type=int, default=0)
+    parser.add_argument("--phase-index-start", type=int, default=0)
+    parser.add_argument("--phase-index-total", type=int, default=None)
     parser.add_argument("--output-dir", type=Path, default=Path("build/win_embree_hidden_star_earth_stable"))
     args = parser.parse_args()
 
@@ -477,6 +571,10 @@ def main() -> None:
         output_dir=args.output_dir,
         jobs=args.jobs,
         shadow_mode=args.shadow_mode,
+        scene=args.scene,
+        frame_number_offset=args.frame_number_offset,
+        phase_index_start=args.phase_index_start,
+        phase_index_total=args.phase_index_total,
     )
     print(json.dumps(summary, indent=2, sort_keys=True))
 

@@ -111,6 +111,9 @@ What Python handles:
 Source file:
 
 - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](../../examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+- [examples/visual_demo/render_hidden_star_chunked_video.py](../../examples/visual_demo/render_hidden_star_chunked_video.py)
+- [Hidden-Star 4K Render Work Report](../reports/hidden_star_4k_render_work_report_2026-04-11.md)
+- [RTDL 4K demo video](https://youtu.be/d3yJB7AmCLM)
 
 ---
 

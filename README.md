@@ -22,7 +22,7 @@ core can power a bounded Python application.
 
 Primary front-door links:
 
-- [Watch The Public Demo Video](https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes)
+- [Watch The Public 4K Demo Video](https://youtu.be/d3yJB7AmCLM)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Tutorials](docs/tutorials/README.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
@@ -32,7 +32,7 @@ Primary front-door links:
 Demo preview:
 
 <p>
-  <a href="https://www.youtube.com/watch?v=VnzVWAPln3k">
+  <a href="https://www.youtube.com/watch?v=d3yJB7AmCLM">
     <img
       src="docs/assets/rtdl_visual_demo_thumb.png"
       alt="RTDL demo video thumbnail"
@@ -42,7 +42,7 @@ Demo preview:
 </p>
 
 <p>
-  <a href="https://www.youtube.com/watch?v=VnzVWAPln3k"><strong>Open the RTDL demo video on YouTube</strong></a>
+  <a href="https://www.youtube.com/watch?v=d3yJB7AmCLM"><strong>Open the RTDL 4K demo video on YouTube</strong></a>
 </p>
 
 ## Start In Two Minutes
@@ -118,6 +118,8 @@ If you want the application/demo side:
 
 - [examples/visual_demo/rtdl_lit_ball_demo.py](examples/visual_demo/rtdl_lit_ball_demo.py)
 - [examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py](examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py)
+- [examples/visual_demo/render_hidden_star_chunked_video.py](examples/visual_demo/render_hidden_star_chunked_video.py)
+- [Hidden-Star 4K Render Work Report](docs/reports/hidden_star_4k_render_work_report_2026-04-11.md)
 
 ## Current Release State
 
@@ -139,6 +141,10 @@ Release layers inside the current repository:
 - `v0.2.0`: stable released segment/polygon and overlap workload family
 - `v0.3.0`: released proof-of-capability demo/application layer on the same RTDL core
 - `v0.4.0`: released nearest-neighbor workload expansion
+
+Current public demo artifact:
+
+- [RTDL 4K hidden-star demo video](https://youtu.be/d3yJB7AmCLM)
 
 For exact backend/workload status, use:
 
