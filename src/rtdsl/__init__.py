@@ -175,6 +175,10 @@ from .paper_reproduction import dataset_families
 from .paper_reproduction import local_profiles
 from .paper_reproduction import PaperTarget
 from .paper_reproduction import RAYJOIN_PAPER_TARGETS
+from .rtnn_baselines import rtnn_baseline_decisions
+from .rtnn_baselines import rtnn_baseline_libraries
+from .rtnn_baselines import RtnnBaselineDecision
+from .rtnn_baselines import RtnnBaselineLibrary
 from .rtnn_reproduction import rtnn_dataset_families
 from .rtnn_reproduction import rtnn_experiment_targets
 from .rtnn_reproduction import rtnn_local_profiles
