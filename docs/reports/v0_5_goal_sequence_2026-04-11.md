@@ -116,6 +116,10 @@ paper-consistency milestones.
 33. Goal 290
    - duplicate-free KITTI continuation at `8192` points
 
+34. Goal 291
+   - duplicate-free KITTI continuation at `16384` points with widened search
+     window
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
