@@ -864,6 +864,10 @@ def _pack_for_geometry(geometry_input, payload):
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
+        if expected_dimension == 3:
+            raise ValueError(
+                "the current prepared Vulkan path does not support 3D point nearest-neighbor inputs yet"
+            )
         cached = getattr(payload, "_rtdl_packed_points", None)
         if isinstance(cached, PackedPoints):
             return cached

@@ -55,6 +55,7 @@ from .runtime import _validate_kernel_for_cpu
 from .runtime import _identity_cache_token
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
+from .reference import Point3D as _CanonicalPoint3D
 from .reference import Polygon as _CanonicalPolygon
 from .reference import Triangle as _CanonicalTriangle
 from .reference import Triangle3D as _CanonicalTriangle3D
@@ -466,6 +467,11 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None)
 def pack_points(records=None, *, ids=None, x=None, y=None) -> PackedPoints:
     if records is not None:
         norm = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalPoint) for item in records) else _normalize_records("points", "points", records)
+        if any(isinstance(item, _CanonicalPoint3D) for item in norm):
+            raise ValueError(
+                "OptiX point packing currently supports only 2D points; "
+                "the v0.5 3D point nearest-neighbor line is not native-online yet"
+            )
         arr  = (_RtdlPoint * len(norm))(*[_RtdlPoint(r.id, r.x, r.y) for r in norm])
         return PackedPoints(records=arr, count=len(norm))
     ids_l = _coerce_list("ids", ids)
@@ -1089,6 +1095,10 @@ def _pack_for_geometry(geometry_input, payload):
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
+        if expected_dimension == 3:
+            raise ValueError(
+                "the current prepared OptiX path does not support 3D point nearest-neighbor inputs yet"
+            )
         cached = getattr(payload, "_rtdl_packed_points", None)
         if isinstance(cached, PackedPoints):
             return cached
