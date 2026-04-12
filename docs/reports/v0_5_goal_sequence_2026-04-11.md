@@ -62,6 +62,18 @@ paper-consistency milestones.
 15. Goal 272
    - portable KITTI bounded point-package materialization
 
+16. Goal 273
+   - bounded cuNSearch fixed-radius response parser
+
+17. Goal 274
+   - bounded offline RTDL-vs-external fixed-radius comparison harness
+
+18. Goal 275
+   - live Linux cuNSearch fixed-radius driver from RTDL request JSON
+
+19. Goal 276
+   - first live bounded Linux RTDL-vs-cuNSearch comparison on portable 3D packages
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

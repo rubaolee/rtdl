@@ -188,7 +188,11 @@ from .rtnn_cunsearch import write_cunsearch_fixed_radius_request
 from .rtnn_cunsearch import CuNSearchAdapterConfig
 from .rtnn_cunsearch import CuNSearchFixedRadiusResult
 from .rtnn_cunsearch import CuNSearchInvocationPlan
+from .rtnn_cunsearch_live import resolve_cunsearch_build_config
+from .rtnn_cunsearch_live import run_cunsearch_fixed_radius_request_live
+from .rtnn_cunsearch_live import CuNSearchBuildConfig
 from .rtnn_comparison import compare_bounded_fixed_radius_from_packages
+from .rtnn_comparison import compare_bounded_fixed_radius_live_cunsearch
 from .rtnn_comparison import RtnnBoundedComparisonResult
 from .rtnn_kitti import discover_kitti_velodyne_frames
 from .rtnn_kitti import kitti_source_config
