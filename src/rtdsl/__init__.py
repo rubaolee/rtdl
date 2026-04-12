@@ -186,6 +186,13 @@ from .rtnn_cunsearch import resolve_cunsearch_binary
 from .rtnn_cunsearch import write_cunsearch_fixed_radius_request
 from .rtnn_cunsearch import CuNSearchAdapterConfig
 from .rtnn_cunsearch import CuNSearchInvocationPlan
+from .rtnn_kitti import discover_kitti_velodyne_frames
+from .rtnn_kitti import kitti_source_config
+from .rtnn_kitti import resolve_kitti_source_root
+from .rtnn_kitti import select_kitti_bounded_frames
+from .rtnn_kitti import write_kitti_bounded_package_manifest
+from .rtnn_kitti import KittiFrameRecord
+from .rtnn_kitti import KittiSourceConfig
 from .rtnn_manifests import rtnn_bounded_dataset_manifests
 from .rtnn_manifests import write_rtnn_bounded_dataset_manifest
 from .rtnn_manifests import RtnnBoundedDatasetManifest
