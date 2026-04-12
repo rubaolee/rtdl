@@ -104,6 +104,12 @@ paper-consistency milestones.
 29. Goal 286
    - duplicate-point preflight guard for the live cuNSearch strict-parity comparison path
 
+30. Goal 287
+   - duplicate-free KITTI frame-pair selector for strict cuNSearch comparisons
+
+31. Goal 288
+   - duplicate-free KITTI three-way rerun beyond the blocked duplicate-point case
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

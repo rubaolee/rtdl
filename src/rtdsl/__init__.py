@@ -218,6 +218,8 @@ from .rtnn_kitti import KittiSourceConfig
 from .rtnn_kitti_ready import inspect_kitti_linux_source_root
 from .rtnn_kitti_ready import write_kitti_linux_ready_report
 from .rtnn_kitti_ready import KittiLinuxReadyReport
+from .rtnn_kitti_selector import find_duplicate_free_kitti_pair
+from .rtnn_kitti_selector import KittiDuplicateFreePair
 from .rtnn_manifests import rtnn_bounded_dataset_manifests
 from .rtnn_manifests import write_rtnn_bounded_dataset_manifest
 from .rtnn_manifests import RtnnBoundedDatasetManifest
@@ -533,6 +535,8 @@ __all__ = [
     "assess_cunsearch_duplicate_point_guard",
     "FixedRadiusMismatchSummary",
     "find_exact_cross_package_matches",
+    "find_duplicate_free_kitti_pair",
+    "KittiDuplicateFreePair",
     "run_postgis_fixed_radius_neighbors",
     "run_postgis_fixed_radius_neighbors_3d",
     "run_postgis_knn_rows",
