@@ -234,6 +234,37 @@ def knn_rows_cpu(
     return tuple(rows)
 
 
+def bounded_knn_rows_cpu(
+    query_points: tuple[Point | Point3D, ...],
+    search_points: tuple[Point | Point3D, ...],
+    *,
+    radius: float,
+    k_max: int,
+) -> tuple[dict[str, float | int], ...]:
+    rows = []
+    radius_sq = radius * radius
+    for query_point in query_points:
+        candidates = []
+        for search_point in search_points:
+            distance_sq = _point_distance_sq(query_point, search_point)
+            if distance_sq > radius_sq:
+                continue
+            candidates.append((math.sqrt(distance_sq), search_point.id))
+
+        candidates.sort(key=lambda item: (item[0], item[1]))
+        for rank, (distance, neighbor_id) in enumerate(candidates[:k_max], start=1):
+            rows.append(
+                {
+                    "query_id": query_point.id,
+                    "neighbor_id": neighbor_id,
+                    "distance": distance,
+                    "neighbor_rank": rank,
+                }
+            )
+    rows.sort(key=lambda row: row["query_id"])
+    return tuple(rows)
+
+
 def segment_polygon_hitcount_cpu(
     segments: tuple[Segment, ...],
     polygons: tuple[Polygon, ...],

@@ -173,6 +173,17 @@ def knn_rows(*, k: int) -> Predicate:
     )
 
 
+def bounded_knn_rows(*, radius: float, k_max: int) -> Predicate:
+    if radius < 0.0:
+        raise ValueError("bounded_knn_rows radius must be non-negative")
+    if k_max <= 0:
+        raise ValueError("bounded_knn_rows k_max must be positive")
+    return Predicate(
+        name="bounded_knn_rows",
+        options={"radius": float(radius), "k_max": int(k_max)},
+    )
+
+
 def contains(
     *,
     exact: bool = False,

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from .api import bounded_knn_rows
 from .api import compile_kernel
 from .api import contains
 from .api import emit
@@ -174,6 +175,7 @@ from .paper_reproduction import dataset_families
 from .paper_reproduction import local_profiles
 from .paper_reproduction import PaperTarget
 from .paper_reproduction import RAYJOIN_PAPER_TARGETS
+from .reference import bounded_knn_rows_cpu
 from .reference import fixed_radius_neighbors_cpu
 from .reference import knn_rows_cpu
 from .reference import lsi_cpu
@@ -286,6 +288,8 @@ __all__ = [
     "BASELINE_PRECISION_MODE",
     "BASELINE_WORKLOAD_ORDER",
     "BASELINE_WORKLOADS",
+    "bounded_knn_rows",
+    "bounded_knn_rows_cpu",
     "CandidateSet",
     "CompiledKernel",
     "contains",
