@@ -636,6 +636,93 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors_3d(
+    const RtdlPoint3D* query_points,
+    size_t query_count,
+    const RtdlPoint3D* search_points,
+    size_t search_count,
+    double radius,
+    size_t k_max,
+    RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (radius < 0.0) {
+      throw std::runtime_error("fixed_radius_neighbors radius must be non-negative");
+    }
+    if (k_max == 0) {
+      throw std::runtime_error("fixed_radius_neighbors k_max must be positive");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Point3D> query_values;
+    std::vector<Point3D> search_values;
+    query_values.reserve(query_count);
+    search_values.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y, query_points[i].z}});
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+      search_values.push_back({search_points[i].id, {search_points[i].x, search_points[i].y, search_points[i].z}});
+    }
+
+    EmbreeDevice device;
+    PointSceneData3D data {&search_values};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(search_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, point_bounds_3d, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect_3d);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    for (const Point3D& query : query_values) {
+      std::vector<RtdlFixedRadiusNeighborRow> query_rows;
+      std::unordered_set<uint32_t> seen_neighbor_ids;
+      FixedRadiusNeighborsQueryState3D state {&query, &search_values, radius, &query_rows, &seen_neighbor_ids};
+      RTCPointQuery point_query;
+      point_query.x = static_cast<float>(query.p.x);
+      point_query.y = static_cast<float>(query.p.y);
+      point_query.z = static_cast<float>(query.p.z);
+      point_query.time = 0.0f;
+      point_query.radius = static_cast<float>(radius + kFixedRadiusCandidateEps);
+      RTCPointQueryContext context;
+      rtcInitPointQueryContext(&context);
+      g_query_kind = QueryKind::kFixedRadiusNeighbors3D;
+      rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect_3d, &state);
+      g_query_kind = QueryKind::kNone;
+      std::sort(query_rows.begin(), query_rows.end(), [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+        if (left.distance < right.distance - 1.0e-12) {
+          return true;
+        }
+        if (right.distance < left.distance - 1.0e-12) {
+          return false;
+        }
+        return left.neighbor_id < right.neighbor_id;
+      });
+      if (query_rows.size() > k_max) {
+        query_rows.resize(k_max);
+      }
+      rows.insert(rows.end(), query_rows.begin(), query_rows.end());
+    }
+    std::stable_sort(rows.begin(), rows.end(), [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+      return left.query_id < right.query_id;
+    });
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(
     const RtdlPoint* query_points,
     size_t query_count,

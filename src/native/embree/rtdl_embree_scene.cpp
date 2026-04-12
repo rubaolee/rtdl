@@ -42,6 +42,7 @@ enum class QueryKind {
   kRayHitCount,
   kSegmentPolygonHitCount,
   kFixedRadiusNeighbors,
+  kFixedRadiusNeighbors3D,
   kKnnRows,
 };
 
@@ -55,6 +56,10 @@ struct PolygonSceneData {
 
 struct PointSceneData {
   const std::vector<Point2D>* points;
+};
+
+struct PointSceneData3D {
+  const std::vector<Point3D>* points;
 };
 
 struct TriangleSceneData {
@@ -105,6 +110,14 @@ struct SegmentPolygonHitCountState {
 struct FixedRadiusNeighborsQueryState {
   const Point2D* query;
   const std::vector<Point2D>* search_points;
+  double radius;
+  std::vector<RtdlFixedRadiusNeighborRow>* rows;
+  std::unordered_set<uint32_t>* seen_neighbor_ids;
+};
+
+struct FixedRadiusNeighborsQueryState3D {
+  const Point3D* query;
+  const std::vector<Point3D>* search_points;
   double radius;
   std::vector<RtdlFixedRadiusNeighborRow>* rows;
   std::unordered_set<uint32_t>* seen_neighbor_ids;
@@ -195,6 +208,17 @@ void point_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_x = point.p.x + kEps;
   args->bounds_o->upper_y = point.p.y + kEps;
   args->bounds_o->upper_z = kEps;
+}
+
+void point_bounds_3d(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<PointSceneData3D*>(args->geometryUserPtr);
+  const Point3D& point = (*data->points)[args->primID];
+  args->bounds_o->lower_x = point.p.x - kEps;
+  args->bounds_o->lower_y = point.p.y - kEps;
+  args->bounds_o->lower_z = point.p.z - kEps;
+  args->bounds_o->upper_x = point.p.x + kEps;
+  args->bounds_o->upper_y = point.p.y + kEps;
+  args->bounds_o->upper_z = point.p.z + kEps;
 }
 
 void triangle_bounds(const RTCBoundsFunctionArguments* args) {
@@ -333,6 +357,26 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   double distance = std::sqrt(dx * dx + dy * dy);
   state->seen_neighbor_ids->insert(search_point.id);
   state->rows->push_back({state->query->id, search_point.id, distance, 0u});
+  return false;
+}
+
+bool point_point_query_collect_3d(RTCPointQueryFunctionArguments* args) {
+  if (args == nullptr || args->userPtr == nullptr || g_query_kind != QueryKind::kFixedRadiusNeighbors3D) {
+    return false;
+  }
+  auto* state = static_cast<FixedRadiusNeighborsQueryState3D*>(args->userPtr);
+  const Point3D& search_point = (*state->search_points)[args->primID];
+  if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
+    return false;
+  }
+  double dx = search_point.p.x - state->query->p.x;
+  double dy = search_point.p.y - state->query->p.y;
+  double dz = search_point.p.z - state->query->p.z;
+  double distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+  if (distance <= state->radius) {
+    state->seen_neighbor_ids->insert(search_point.id);
+    state->rows->push_back({state->query->id, search_point.id, distance});
+  }
   return false;
 }
 

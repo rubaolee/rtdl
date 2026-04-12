@@ -33,6 +33,11 @@ struct Point2D {
   Vec2 p;
 };
 
+struct Point3D {
+  uint32_t id;
+  Vec3 p;
+};
+
 struct Polygon2D {
   uint32_t id;
   std::vector<Vec2> vertices;

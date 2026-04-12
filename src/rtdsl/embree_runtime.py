@@ -91,6 +91,15 @@ class _RtdlPoint(ctypes.Structure):
     ]
 
 
+class _RtdlPoint3D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+        ("z", ctypes.c_double),
+    ]
+
+
 class _RtdlPolygonRef(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -235,6 +244,7 @@ class PackedSegments:
 class PackedPoints:
     records: object
     count: int
+    dimension: int = 2
 
 
 @dataclass(frozen=True)
@@ -267,11 +277,13 @@ class EmbreeRowView:
     row_type: object
     field_names: tuple[str, ...]
     _closed: bool = False
+    _free_on_close: bool = True
+    _owner: object | None = None
 
     def close(self) -> None:
-        if not self._closed:
+        if not self._closed and self._free_on_close and self.library is not None:
             self.library.rtdl_embree_free_rows(self.rows_ptr)
-            self._closed = True
+        self._closed = True
 
     def __len__(self) -> int:
         return self.row_count
@@ -315,6 +327,7 @@ class PreparedEmbreeKernel:
             "segment_polygon_anyhit_rows",
             "point_nearest_segment",
             "fixed_radius_neighbors",
+            "bounded_knn_rows",
             "knn_rows",
         }:
             raise ValueError(
@@ -364,6 +377,8 @@ class PreparedEmbreeExecution:
             return _call_point_nearest_segment_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "fixed_radius_neighbors":
             return _call_fixed_radius_neighbors_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "bounded_knn_rows":
+            return _call_bounded_knn_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "knn_rows":
             return _call_knn_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
@@ -405,28 +420,53 @@ def pack_segments(records=None, *, ids=None, x0=None, y0=None, x1=None, y1=None)
     return PackedSegments(records=array, count=count)
 
 
-def pack_points(records=None, *, ids=None, x=None, y=None) -> PackedPoints:
+def pack_points(records=None, *, ids=None, x=None, y=None, z=None, dimension: int | None = None) -> PackedPoints:
     if records is not None:
-        normalized = records if isinstance(records, tuple) and all(isinstance(item, _CanonicalPoint) for item in records) else _normalize_records("points", "points", records)
+        normalized = (
+            records
+            if isinstance(records, tuple) and all(isinstance(item, (_CanonicalPoint, _CanonicalPoint3D)) for item in records)
+            else _normalize_records("points", "points", records)
+        )
+        if dimension not in {None, 2, 3}:
+            raise ValueError("points dimension must be one of: 2, 3")
+        inferred_dimension = dimension
+        if inferred_dimension is None:
+            inferred_dimension = 3 if normalized and all(isinstance(item, _CanonicalPoint3D) for item in normalized) else 2
+        if inferred_dimension == 3:
+            if any(not isinstance(item, _CanonicalPoint3D) for item in normalized):
+                if normalized:
+                    raise ValueError("points packed for a 3D layout must provide 3D point records")
+            array = (_RtdlPoint3D * len(normalized))(*[
+                _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in normalized
+            ])
+            return PackedPoints(records=array, count=len(normalized), dimension=3)
         if any(isinstance(item, _CanonicalPoint3D) for item in normalized):
-            raise ValueError(
-                "Embree point packing currently supports only 2D points; "
-                "the v0.5 3D point nearest-neighbor line is not native-online yet"
-            )
+            if normalized:
+                raise ValueError("points packed for a 2D layout must provide 2D point records")
         array = (_RtdlPoint * len(normalized))(*[
             _RtdlPoint(item.id, item.x, item.y) for item in normalized
         ])
-        return PackedPoints(records=array, count=len(normalized))
+        return PackedPoints(records=array, count=len(normalized), dimension=2)
 
     ids_list = _coerce_list("ids", ids)
     x_list = _coerce_list("x", x)
     y_list = _coerce_list("y", y)
+    if dimension not in {None, 2, 3}:
+        raise ValueError("points dimension must be one of: 2, 3")
+    if dimension == 3 or z is not None:
+        z_list = _coerce_list("z", z)
+        count = _validate_equal_lengths("points", ids_list, x_list, y_list, z_list)
+        array = (_RtdlPoint3D * count)(*[
+            _RtdlPoint3D(int(ids_list[i]), float(x_list[i]), float(y_list[i]), float(z_list[i]))
+            for i in range(count)
+        ])
+        return PackedPoints(records=array, count=count, dimension=3)
     count = _validate_equal_lengths("points", ids_list, x_list, y_list)
     array = (_RtdlPoint * count)(*[
         _RtdlPoint(int(ids_list[i]), float(x_list[i]), float(y_list[i]))
         for i in range(count)
     ])
-    return PackedPoints(records=array, count=count)
+    return PackedPoints(records=array, count=count, dimension=2)
 
 
 def pack_polygons(
@@ -1295,28 +1335,56 @@ def _run_fixed_radius_neighbors_embree(compiled: CompiledKernel, normalized_inpu
     radius = float(compiled.refine_op.predicate.options["radius"])
     k_max = int(compiled.refine_op.predicate.options["k_max"])
 
-    query_array = (_RtdlPoint * len(query_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in query_points
-    ])
-    search_array = (_RtdlPoint * len(search_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in search_points
-    ])
-
     rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_fixed_radius_neighbors(
-        query_array,
-        len(query_points),
-        search_array,
-        len(search_points),
-        radius,
-        k_max,
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    if (
+        (query_points and isinstance(query_points[0], _CanonicalPoint3D))
+        or (search_points and isinstance(search_points[0], _CanonicalPoint3D))
+    ):
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_fixed_radius_neighbors_3d")
+        if call is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export rtdl_embree_run_fixed_radius_neighbors_3d; "
+                "rebuild the Embree backend from current main"
+            )
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = call(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_embree_run_fixed_radius_neighbors(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     try:
         return tuple(
@@ -1339,6 +1407,86 @@ def _run_fixed_radius_neighbors_embree_packed(compiled: CompiledKernel, packed_i
         rows.close()
 
 
+def _rank_fixed_radius_rows(fixed_radius_rows) -> tuple[dict[str, object], ...]:
+    ranked_rows = []
+    current_query_id = None
+    current_rank = 0
+    for row in fixed_radius_rows:
+        query_id = row["query_id"]
+        if query_id != current_query_id:
+            current_query_id = query_id
+            current_rank = 1
+        else:
+            current_rank += 1
+        ranked_rows.append(
+            {
+                "query_id": query_id,
+                "neighbor_id": row["neighbor_id"],
+                "distance": row["distance"],
+                "neighbor_rank": current_rank,
+            }
+        )
+    return tuple(ranked_rows)
+
+
+def _make_owned_row_view(row_type, rows, field_names: tuple[str, ...]) -> EmbreeRowView:
+    array = (row_type * len(rows))(*rows)
+    rows_ptr = ctypes.cast(array, ctypes.POINTER(row_type))
+    return EmbreeRowView(
+        library=None,
+        rows_ptr=rows_ptr,
+        row_count=len(rows),
+        row_type=row_type,
+        field_names=field_names,
+        _free_on_close=False,
+        _owner=array,
+    )
+
+
+def _run_bounded_knn_rows_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    fixed_radius_rows = _run_fixed_radius_neighbors_embree(compiled, normalized_inputs, library)
+    return _rank_fixed_radius_rows(fixed_radius_rows)
+
+
+def _run_bounded_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> tuple[dict[str, object], ...]:
+    rows = _call_bounded_knn_rows_embree_packed(compiled, packed_inputs, library)
+    try:
+        return rows.to_dict_rows()
+    finally:
+        rows.close()
+
+
+def _call_bounded_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    fixed_radius_rows = _call_fixed_radius_neighbors_embree_packed(compiled, packed_inputs, library)
+    try:
+        ranked_rows = []
+        current_query_id = None
+        current_rank = 0
+        for index in range(len(fixed_radius_rows)):
+            row = fixed_radius_rows.rows_ptr[index]
+            query_id = row.query_id
+            if query_id != current_query_id:
+                current_query_id = query_id
+                current_rank = 1
+            else:
+                current_rank += 1
+            ranked_rows.append(
+                _RtdlKnnNeighborRow(
+                    row.query_id,
+                    row.neighbor_id,
+                    row.distance,
+                    current_rank,
+                )
+            )
+    finally:
+        fixed_radius_rows.close()
+    return _make_owned_row_view(
+        _RtdlKnnNeighborRow,
+        ranked_rows,
+        ("query_id", "neighbor_id", "distance", "neighbor_rank"),
+    )
+
+
 def _call_fixed_radius_neighbors_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
     query_name = compiled.candidates.left.name
     search_name = compiled.candidates.right.name
@@ -1350,18 +1498,38 @@ def _call_fixed_radius_neighbors_embree_packed(compiled: CompiledKernel, packed_
     rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_embree_run_fixed_radius_neighbors(
-        query_points.records,
-        query_points.count,
-        search_points.records,
-        search_points.count,
-        radius,
-        k_max,
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    if query_points.dimension == 3:
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_fixed_radius_neighbors_3d")
+        if call is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export rtdl_embree_run_fixed_radius_neighbors_3d; "
+                "rebuild the Embree backend from current main"
+            )
+        status = call(
+            query_points.records,
+            query_points.count,
+            search_points.records,
+            search_points.count,
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        status = library.rtdl_embree_run_fixed_radius_neighbors(
+            query_points.records,
+            query_points.count,
+            search_points.records,
+            search_points.count,
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     return EmbreeRowView(
         library=library,
@@ -1378,6 +1546,14 @@ def _run_knn_rows_embree(compiled: CompiledKernel, normalized_inputs, library) -
     query_points = normalized_inputs[query_name]
     search_points = normalized_inputs[search_name]
     k = int(compiled.refine_op.predicate.options["k"])
+    if (
+        (query_points and isinstance(query_points[0], _CanonicalPoint3D))
+        or (search_points and isinstance(search_points[0], _CanonicalPoint3D))
+    ):
+        raise ValueError(
+            "Embree 3D point nearest-neighbor currently supports only fixed_radius_neighbors; "
+            "3D knn_rows is not native-online yet"
+        )
 
     query_array = (_RtdlPoint * len(query_points))(*[
         _RtdlPoint(item.id, item.x, item.y) for item in query_points
@@ -1429,6 +1605,11 @@ def _call_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, librar
     query_points = packed_inputs[query_name]
     search_points = packed_inputs[search_name]
     k = int(compiled.refine_op.predicate.options["k"])
+    if query_points.dimension == 3:
+        raise ValueError(
+            "Embree 3D point nearest-neighbor currently supports only fixed_radius_neighbors; "
+            "3D knn_rows is not native-online yet"
+        )
 
     rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
     row_count = ctypes.c_size_t()
@@ -1495,14 +1676,20 @@ def _pack_for_geometry(geometry_input, payload):
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments) else pack_segments(records=payload)
     if geometry_name == "points":
-        if expected_dimension == 3:
-            raise ValueError(
-                "the current prepared Embree path does not support 3D point nearest-neighbor inputs yet"
-            )
         cached = getattr(payload, "_rtdl_packed_points", None)
         if isinstance(cached, PackedPoints):
+            if cached.dimension != expected_dimension:
+                raise ValueError(
+                    "packed points payload dimension does not match the kernel input layout"
+                )
             return cached
-        return payload if isinstance(payload, PackedPoints) else pack_points(records=payload)
+        if isinstance(payload, PackedPoints):
+            if payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed points payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_points(records=payload, dimension=expected_dimension)
     if geometry_name == "polygons":
         cached = getattr(payload, "_rtdl_packed_polygons", None)
         if isinstance(cached, PackedPolygons):
@@ -1708,6 +1895,22 @@ def _load_embree_library():
         ctypes.c_size_t,
     ]
     library.rtdl_embree_run_fixed_radius_neighbors.restype = ctypes.c_int
+
+    optional_fixed_radius_3d = _require_optional_embree_symbol(library, "rtdl_embree_run_fixed_radius_neighbors_3d")
+    if optional_fixed_radius_3d is not None:
+        optional_fixed_radius_3d.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_fixed_radius_3d.restype = ctypes.c_int
 
     library.rtdl_embree_run_knn_rows.argtypes = [
         ctypes.POINTER(_RtdlPoint),
