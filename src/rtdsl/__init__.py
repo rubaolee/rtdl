@@ -62,12 +62,14 @@ from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
 from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
 from .external_baselines import build_postgis_knn_rows_sql
+from .external_baselines import build_postgis_knn_rows_3d_sql
 from .external_baselines import connect_postgis
 from .external_baselines import postgis_available
 from .external_baselines import run_postgis_fixed_radius_neighbors
 from .external_baselines import run_postgis_fixed_radius_neighbors_3d
 from .external_baselines import run_postgis_bounded_knn_rows_3d
 from .external_baselines import run_postgis_knn_rows
+from .external_baselines import run_postgis_knn_rows_3d
 from .external_baselines import run_scipy_fixed_radius_neighbors
 from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
@@ -417,6 +419,7 @@ __all__ = [
     "build_postgis_fixed_radius_neighbors_3d_sql",
     "build_postgis_bounded_knn_rows_3d_sql",
     "build_postgis_knn_rows_sql",
+    "build_postgis_knn_rows_3d_sql",
     "connect_postgis",
     "fixed_radius_neighbors_cpu",
     "knn_rows_cpu",
@@ -544,6 +547,7 @@ __all__ = [
     "run_postgis_fixed_radius_neighbors_3d",
     "run_postgis_bounded_knn_rows_3d",
     "run_postgis_knn_rows",
+    "run_postgis_knn_rows_3d",
     "run_scipy_fixed_radius_neighbors",
     "run_scipy_knn_rows",
     "run_section_5_6",

@@ -211,6 +211,40 @@ ORDER BY query_id, neighbor_rank
 """.strip()
 
 
+def build_postgis_knn_rows_3d_sql(
+    *,
+    query_table: str = "rtdl_query_points3d_tmp",
+    search_table: str = "rtdl_search_points3d_tmp",
+) -> str:
+    return f"""
+SELECT
+    q.id AS query_id,
+    ranked.neighbor_id,
+    ranked.distance,
+    ranked.neighbor_rank
+FROM {query_table} AS q
+CROSS JOIN LATERAL (
+    SELECT
+        ranked_inner.neighbor_id,
+        ranked_inner.distance,
+        ranked_inner.neighbor_rank
+    FROM (
+        SELECT
+            s.id AS neighbor_id,
+            ST_3DDistance(q.geom, s.geom) AS distance,
+            ROW_NUMBER() OVER (
+                ORDER BY ST_3DDistance(q.geom, s.geom), s.id
+            ) AS neighbor_rank
+        FROM {search_table} AS s
+        ORDER BY ST_3DDistance(q.geom, s.geom), s.id
+        LIMIT %s
+    ) AS ranked_inner
+    ORDER BY ranked_inner.neighbor_rank
+) AS ranked
+ORDER BY query_id, neighbor_rank
+""".strip()
+
+
 def build_postgis_bounded_knn_rows_3d_sql(
     *,
     query_table: str = "rtdl_query_points3d_tmp",
@@ -442,6 +476,60 @@ def query_postgis_knn_rows(
     try:
         cursor.execute(
             build_postgis_knn_rows_sql(
+                query_table=query_table,
+                search_table=search_table,
+            ),
+            (k,),
+        )
+        rows = cursor.fetchall()
+        return tuple(
+            {
+                "query_id": int(query_id),
+                "neighbor_id": int(neighbor_id),
+                "distance": float(distance),
+                "neighbor_rank": int(neighbor_rank),
+            }
+            for query_id, neighbor_id, distance, neighbor_rank in rows
+        )
+    finally:
+        cursor.close()
+
+
+def run_postgis_knn_rows_3d(
+    connection,
+    query_points: tuple[Point3D, ...],
+    search_points: tuple[Point3D, ...],
+    *,
+    k: int,
+    query_table: str = "rtdl_query_points3d_tmp",
+    search_table: str = "rtdl_search_points3d_tmp",
+) -> tuple[dict[str, float | int], ...]:
+    prepare_postgis_point3d_tables(
+        connection,
+        query_points,
+        search_points,
+        query_table=query_table,
+        search_table=search_table,
+    )
+    return query_postgis_knn_rows_3d(
+        connection,
+        k=k,
+        query_table=query_table,
+        search_table=search_table,
+    )
+
+
+def query_postgis_knn_rows_3d(
+    connection,
+    *,
+    k: int,
+    query_table: str = "rtdl_query_points3d_tmp",
+    search_table: str = "rtdl_search_points3d_tmp",
+) -> tuple[dict[str, float | int], ...]:
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            build_postgis_knn_rows_3d_sql(
                 query_table=query_table,
                 search_table=search_table,
             ),
