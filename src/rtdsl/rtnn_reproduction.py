@@ -125,6 +125,15 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         current_status="planned",
         notes="Preserves the distinction between paper-faithful work and RTDL-specific extensions.",
     ),
+    RtnnExperimentTarget(
+        artifact="comparison_matrix",
+        paper_label="Bounded external comparison matrix",
+        workload="fixed_radius_neighbors|knn_rows|bounded_knn_rows",
+        dataset_handle="kitti_velodyne_point_sets",
+        reproduction_tier="bounded_reproduction",
+        current_status="planned",
+        notes="Dedicated artifact for bounded non-paper comparison rows such as SciPy-style baselines.",
+    ),
 )
 
 

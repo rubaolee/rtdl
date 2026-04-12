@@ -179,6 +179,8 @@ from .rtnn_baselines import rtnn_baseline_decisions
 from .rtnn_baselines import rtnn_baseline_libraries
 from .rtnn_baselines import RtnnBaselineDecision
 from .rtnn_baselines import RtnnBaselineLibrary
+from .rtnn_matrix import rtnn_reproduction_matrix
+from .rtnn_matrix import RtnnMatrixEntry
 from .rtnn_reproduction import rtnn_dataset_families
 from .rtnn_reproduction import rtnn_experiment_targets
 from .rtnn_reproduction import rtnn_local_profiles
