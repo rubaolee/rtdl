@@ -26,6 +26,12 @@ class CuNSearchInvocationPlan:
     notes: str
 
 
+@dataclass(frozen=True)
+class CuNSearchFixedRadiusResult:
+    row_count: int
+    rows: tuple[dict[str, float | int], ...]
+
+
 def resolve_cunsearch_binary(binary_path: str | Path | None = None) -> Path | None:
     candidate = binary_path or os.environ.get("RTDL_CUNSEARCH_BIN")
     if not candidate:
@@ -133,3 +139,29 @@ def write_cunsearch_fixed_radius_request(
     }
     destination.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return destination
+
+
+def load_cunsearch_fixed_radius_response(response_path: str | Path) -> CuNSearchFixedRadiusResult:
+    response_path = Path(response_path)
+    payload = json.loads(response_path.read_text(encoding="utf-8"))
+    if payload.get("adapter") != "cunsearch":
+        raise ValueError("unsupported cuNSearch response adapter")
+    if payload.get("response_format") != "json_rows_v1":
+        raise ValueError("unsupported cuNSearch response format")
+    if payload.get("workload") != "fixed_radius_neighbors":
+        raise ValueError("unsupported cuNSearch response workload")
+
+    rows = []
+    for row in payload.get("rows", ()):
+        rows.append(
+            {
+                "query_id": int(row["query_id"]),
+                "neighbor_id": int(row["neighbor_id"]),
+                "distance": float(row["distance"]),
+            }
+        )
+    rows.sort(key=lambda row: (row["query_id"], row["distance"], row["neighbor_id"]))
+    return CuNSearchFixedRadiusResult(
+        row_count=len(rows),
+        rows=tuple(rows),
+    )

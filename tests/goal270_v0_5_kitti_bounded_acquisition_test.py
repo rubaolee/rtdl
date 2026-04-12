@@ -20,7 +20,7 @@ class Goal270V05KittiBoundedAcquisitionTest(unittest.TestCase):
             velodyne = root / sequence / "velodyne"
             velodyne.mkdir(parents=True, exist_ok=True)
             for frame_id in frames:
-                (velodyne / f"{frame_id}.bin").write_bytes(b"\x00\x01")
+                (velodyne / f"{frame_id}.bin").write_bytes(b"\x00" * 16)
 
     def test_source_config_reports_planned_when_unconfigured(self) -> None:
         old = os.environ.pop("RTDL_KITTI_SOURCE_ROOT", None)
@@ -54,7 +54,7 @@ class Goal270V05KittiBoundedAcquisitionTest(unittest.TestCase):
                 (("0001", "000000"), ("0001", "000002")),
             )
 
-    def test_manifest_writer_emits_selected_frames(self) -> None:
+    def test_manifest_writer_emits_selected_frames_and_point_caps(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "source"
             self._make_kitti_tree(root)
@@ -64,11 +64,15 @@ class Goal270V05KittiBoundedAcquisitionTest(unittest.TestCase):
                 source_root=root,
                 max_frames=3,
                 stride=1,
+                max_points_per_frame=128,
+                max_total_points=1024,
             )
             payload = json.loads(written.read_text(encoding="utf-8"))
             self.assertEqual(payload["manifest_kind"], "kitti_bounded_package_manifest_v1")
             self.assertEqual(payload["selected_frame_count"], 3)
             self.assertEqual(payload["frames"][0]["sequence"], "0001")
+            self.assertEqual(payload["max_points_per_frame"], 128)
+            self.assertEqual(payload["max_total_points"], 1024)
 
     def test_unconfigured_source_root_fails_honestly(self) -> None:
         old = os.environ.pop("RTDL_KITTI_SOURCE_ROOT", None)

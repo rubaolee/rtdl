@@ -47,6 +47,21 @@ paper-consistency milestones.
      - bounded reproduction
      - RTDL extension
 
+11. Goal 268
+   - bounded dataset manifests for the RTNN family set
+
+12. Goal 269
+   - first external baseline adapter skeleton for cuNSearch
+
+13. Goal 270
+   - deterministic bounded KITTI frame acquisition helper
+
+14. Goal 271
+   - executable KITTI bounded point loader from saved manifests
+
+15. Goal 272
+   - portable KITTI bounded point-package materialization
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
