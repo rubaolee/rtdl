@@ -8,6 +8,7 @@ from .reference import fixed_radius_neighbors_cpu
 from .rtnn_cunsearch import load_cunsearch_fixed_radius_response
 from .rtnn_cunsearch import write_cunsearch_fixed_radius_request
 from .rtnn_cunsearch_live import run_cunsearch_fixed_radius_request_live
+from .rtnn_duplicate_audit import assess_cunsearch_duplicate_point_guard
 from .rtnn_kitti import load_kitti_bounded_point_package
 
 
@@ -73,6 +74,31 @@ def compare_bounded_fixed_radius_live_cunsearch(
 ) -> RtnnBoundedComparisonResult:
     query_package = load_kitti_bounded_point_package(query_package_path)
     search_package = load_kitti_bounded_point_package(search_package_path)
+    duplicate_guard = assess_cunsearch_duplicate_point_guard(
+        query_package.points,
+        search_package.points,
+    )
+    if not duplicate_guard.strict_comparison_allowed:
+        first_duplicate = duplicate_guard.first_duplicate
+        duplicate_note = ""
+        if first_duplicate is not None:
+            duplicate_note = (
+                f" First duplicate pair: query {first_duplicate.query_id}, "
+                f"search {first_duplicate.search_id}."
+            )
+        return RtnnBoundedComparisonResult(
+            workload="fixed_radius_neighbors",
+            query_point_count=len(query_package.points),
+            search_point_count=len(search_package.points),
+            reference_row_count=0,
+            external_row_count=0,
+            parity_ok=False,
+            notes=(
+                "Strict live cuNSearch comparison was blocked because the package contains exact "
+                "cross-package duplicate points, which are outside the current validated cuNSearch "
+                f"parity contract.{duplicate_note}"
+            ),
+        )
     write_cunsearch_fixed_radius_request(
         request_path,
         query_package.points,

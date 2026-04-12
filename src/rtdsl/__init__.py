@@ -198,6 +198,8 @@ from .rtnn_cunsearch_live import CuNSearchBuildConfig
 from .rtnn_comparison import compare_bounded_fixed_radius_from_packages
 from .rtnn_comparison import compare_bounded_fixed_radius_live_cunsearch
 from .rtnn_comparison import RtnnBoundedComparisonResult
+from .rtnn_duplicate_audit import assess_cunsearch_duplicate_point_guard
+from .rtnn_duplicate_audit import CuNSearchDuplicatePointGuardResult
 from .rtnn_duplicate_audit import ExactCrossPackageMatch
 from .rtnn_duplicate_audit import find_exact_cross_package_matches
 from .rtnn_perf_audit import FixedRadiusMismatchSummary
@@ -525,8 +527,10 @@ __all__ = [
     "run_cpu",
     "run_cpu_python_reference",
     "compile_cunsearch_fixed_radius_request_driver",
+    "CuNSearchDuplicatePointGuardResult",
     "execute_compiled_cunsearch_fixed_radius_driver",
     "ExactCrossPackageMatch",
+    "assess_cunsearch_duplicate_point_guard",
     "FixedRadiusMismatchSummary",
     "find_exact_cross_package_matches",
     "run_postgis_fixed_radius_neighbors",

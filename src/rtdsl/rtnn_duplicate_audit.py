@@ -14,6 +14,14 @@ class ExactCrossPackageMatch:
     z: float
 
 
+@dataclass(frozen=True)
+class CuNSearchDuplicatePointGuardResult:
+    strict_comparison_allowed: bool
+    duplicate_match_count: int
+    first_duplicate: ExactCrossPackageMatch | None
+    notes: str
+
+
 def find_exact_cross_package_matches(
     query_points: tuple[Point3D, ...],
     search_points: tuple[Point3D, ...],
@@ -38,3 +46,29 @@ def find_exact_cross_package_matches(
             )
     matches.sort(key=lambda item: (item.query_id, item.search_id))
     return tuple(matches)
+
+
+def assess_cunsearch_duplicate_point_guard(
+    query_points: tuple[Point3D, ...],
+    search_points: tuple[Point3D, ...],
+) -> CuNSearchDuplicatePointGuardResult:
+    matches = find_exact_cross_package_matches(query_points, search_points)
+    if not matches:
+        return CuNSearchDuplicatePointGuardResult(
+            strict_comparison_allowed=True,
+            duplicate_match_count=0,
+            first_duplicate=None,
+            notes=(
+                "No exact cross-package duplicate points were found; the current cuNSearch "
+                "strict-comparison path may proceed."
+            ),
+        )
+    return CuNSearchDuplicatePointGuardResult(
+        strict_comparison_allowed=False,
+        duplicate_match_count=len(matches),
+        first_duplicate=matches[0],
+        notes=(
+            "Exact cross-package duplicate points were found; the current live cuNSearch path "
+            "is not eligible for strict RTDL parity comparison on this package."
+        ),
+    )

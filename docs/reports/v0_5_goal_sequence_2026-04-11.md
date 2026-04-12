@@ -101,6 +101,9 @@ paper-consistency milestones.
 28. Goal 285
    - minimal real KITTI duplicate-point reproducer for the cuNSearch correctness boundary
 
+29. Goal 286
+   - duplicate-point preflight guard for the live cuNSearch strict-parity comparison path
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
