@@ -231,6 +231,8 @@ def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, o
         return _run_fixed_radius_neighbors_oracle(compiled, normalized_inputs, library)
     if predicate_name == "knn_rows":
         return _run_knn_rows_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "bounded_knn_rows":
+        return _run_bounded_knn_rows_oracle(compiled, normalized_inputs, library)
     raise ValueError(f"unsupported RTDL native oracle predicate: {predicate_name}")
 
 
@@ -668,6 +670,47 @@ def _run_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -
         library.rtdl_oracle_free_rows(rows_ptr)
 
 
+def _run_bounded_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = normalized_inputs[query_name]
+    search_points = normalized_inputs[search_name]
+    query_array = (_RtdlPoint * len(query_points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in query_points
+    ])
+    search_array = (_RtdlPoint * len(search_points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in search_points
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_bounded_knn_rows(
+        query_array,
+        len(query_points),
+        search_array,
+        len(search_points),
+        ctypes.c_double(float(compiled.refine_op.predicate.options["radius"])),
+        ctypes.c_uint32(int(compiled.refine_op.predicate.options["k_max"])),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "query_id": rows_ptr[index].query_id,
+                "neighbor_id": rows_ptr[index].neighbor_id,
+                "distance": rows_ptr[index].distance,
+                "neighbor_rank": rows_ptr[index].neighbor_rank,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
 def _encode_polygons(polygons):
     refs = []
     vertices = []
@@ -904,6 +947,19 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_knn_rows.restype = ctypes.c_int
+    library.rtdl_oracle_run_bounded_knn_rows.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_bounded_knn_rows.restype = ctypes.c_int
     return library
 
 
