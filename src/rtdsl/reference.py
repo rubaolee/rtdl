@@ -701,6 +701,8 @@ def _point_segment_distance(point: Point, segment: Segment) -> float:
 
 
 def _point_distance_sq(left: Point | Point3D, right: Point | Point3D) -> float:
+    # Internal helper: 2D point records are treated as z=0.0 when reused by the
+    # additive 3D nearest-neighbor line.
     dx = right.x - left.x
     dy = right.y - left.y
     left_z = getattr(left, "z", 0.0)

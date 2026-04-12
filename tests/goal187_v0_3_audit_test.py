@@ -9,7 +9,7 @@ import unittest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
-SHORTS_URL = "https://youtube.com/shorts/VnzVWAPln3k?si=O1iet-3uFm2gpPes"
+VIDEO_URL = "https://youtu.be/d3yJB7AmCLM"
 
 
 class Goal187V03AuditTest(unittest.TestCase):
@@ -21,7 +21,7 @@ class Goal187V03AuditTest(unittest.TestCase):
         ]
         for path in targets:
             text = path.read_text(encoding="utf-8")
-            self.assertIn(SHORTS_URL, text, msg=str(path))
+            self.assertIn(VIDEO_URL, text, msg=str(path))
 
     def test_live_docs_point_to_hidden_star_primary_demo(self) -> None:
         docs = {
