@@ -340,10 +340,10 @@ VALUES (%s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s, %s), 0))
             [(point.id, point.x, point.y, point.z, point.x, point.y, point.z) for point in search_points],
         )
         cursor.execute(
-            f"CREATE INDEX {query_table}_geom_gist ON {query_table} USING GIST (geom)"
+            f"CREATE INDEX {query_table}_geom_gist ON {query_table} USING GIST (geom gist_geometry_ops_nd)"
         )
         cursor.execute(
-            f"CREATE INDEX {search_table}_geom_gist ON {search_table} USING GIST (geom)"
+            f"CREATE INDEX {search_table}_geom_gist ON {search_table} USING GIST (geom gist_geometry_ops_nd)"
         )
         cursor.execute(f"ANALYZE {query_table}")
         cursor.execute(f"ANALYZE {search_table}")

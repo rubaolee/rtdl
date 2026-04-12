@@ -192,6 +192,8 @@ from .rtnn_cunsearch import CuNSearchFixedRadiusResult
 from .rtnn_cunsearch import CuNSearchInvocationPlan
 from .rtnn_cunsearch_live import resolve_cunsearch_build_config
 from .rtnn_cunsearch_live import run_cunsearch_fixed_radius_request_live
+from .rtnn_cunsearch_live import compile_cunsearch_fixed_radius_request_driver
+from .rtnn_cunsearch_live import execute_compiled_cunsearch_fixed_radius_driver
 from .rtnn_cunsearch_live import CuNSearchBuildConfig
 from .rtnn_comparison import compare_bounded_fixed_radius_from_packages
 from .rtnn_comparison import compare_bounded_fixed_radius_live_cunsearch
@@ -518,6 +520,8 @@ __all__ = [
     "run_goal23_reproduction",
     "run_cpu",
     "run_cpu_python_reference",
+    "compile_cunsearch_fixed_radius_request_driver",
+    "execute_compiled_cunsearch_fixed_radius_driver",
     "run_postgis_fixed_radius_neighbors",
     "run_postgis_fixed_radius_neighbors_3d",
     "run_postgis_knn_rows",

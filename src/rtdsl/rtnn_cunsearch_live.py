@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -119,6 +120,88 @@ def run_cunsearch_fixed_radius_request_live(
         response_path.parent.mkdir(parents=True, exist_ok=True)
         response_path.write_text(response_tmp.read_text(encoding="utf-8"), encoding="utf-8")
     return response_path
+
+
+def compile_cunsearch_fixed_radius_request_driver(
+    request_path: str | Path,
+    response_path: str | Path,
+    output_dir: str | Path,
+    *,
+    source_root: str | Path,
+    build_root: str | Path,
+    nvcc_path: str | Path = "nvcc",
+) -> Path:
+    config = resolve_cunsearch_build_config(
+        source_root=source_root,
+        build_root=build_root,
+        nvcc_path=nvcc_path,
+    )
+    if config.current_status != "ready":
+        raise RuntimeError(config.notes)
+
+    request_path = Path(request_path)
+    response_path = Path(response_path)
+    output_dir = Path(output_dir)
+    payload = json.loads(request_path.read_text(encoding="utf-8"))
+    if payload.get("adapter") != "cunsearch":
+        raise ValueError("unsupported cuNSearch request adapter")
+    if payload.get("workload") != "fixed_radius_neighbors":
+        raise ValueError("unsupported cuNSearch request workload")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    source_file = output_dir / "driver.cu"
+    binary_file = output_dir / "driver"
+    source_file.write_text(
+        _render_cunsearch_driver_source(payload, response_path, precision_mode=config.precision_mode),
+        encoding="utf-8",
+    )
+    compile_proc = subprocess.run(
+        [
+            str(config.nvcc_path),
+            "-std=c++14",
+            "-O2",
+            *(_precision_compile_flags(config.precision_mode)),
+            "-I",
+            config.include_dir,
+            str(source_file),
+            config.library_path,
+            "-o",
+            str(binary_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if compile_proc.returncode != 0:
+        raise RuntimeError(
+            "cuNSearch live driver compilation failed.\n"
+            f"stdout:\n{compile_proc.stdout}\n"
+            f"stderr:\n{compile_proc.stderr}"
+        )
+    return binary_file
+
+
+def execute_compiled_cunsearch_fixed_radius_driver(
+    binary_path: str | Path,
+    *,
+    response_path: str | Path | None = None,
+) -> float:
+    binary_path = Path(binary_path)
+    start = time.perf_counter()
+    run_proc = subprocess.run(
+        [str(binary_path)],
+        capture_output=True,
+        text=True,
+    )
+    elapsed = time.perf_counter() - start
+    if run_proc.returncode != 0:
+        raise RuntimeError(
+            "cuNSearch live driver execution failed.\n"
+            f"stdout:\n{run_proc.stdout}\n"
+            f"stderr:\n{run_proc.stderr}"
+        )
+    if response_path is not None and not Path(response_path).is_file():
+        raise RuntimeError("cuNSearch live driver completed without producing the expected response file")
+    return elapsed
 
 
 def _render_cunsearch_driver_source(

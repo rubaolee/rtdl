@@ -107,6 +107,7 @@ class Goal281Postgis3DFixedRadiusBaselineTest(unittest.TestCase):
         )
         self.assertEqual(rows, python_rows)
         self.assertTrue(any("geometry(PointZ, 0)" in sql for sql in connection.executed_sql))
+        self.assertTrue(any("gist_geometry_ops_nd" in sql for sql in connection.executed_sql))
         self.assertTrue(any("CREATE INDEX rtdl_query_points3d_tmp_geom_gist" in sql for sql in connection.executed_sql))
         self.assertTrue(any("CREATE INDEX rtdl_search_points3d_tmp_geom_gist" in sql for sql in connection.executed_sql))
 

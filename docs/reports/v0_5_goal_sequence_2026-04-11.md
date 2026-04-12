@@ -86,6 +86,15 @@ paper-consistency milestones.
 23. Goal 280
    - live cuNSearch output-precision hardening for larger-radius real KITTI parity
 
+24. Goal 281
+   - bounded 3D PostGIS fixed-radius support
+
+25. Goal 282
+   - PostGIS 3D n-D index hardening and live plan audit
+
+26. Goal 283
+   - first three-way KITTI performance result across RTDL, cuNSearch CUDA, and PostGIS 3D
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
