@@ -7,8 +7,8 @@ Status: released as `v0.4.0`
 
 RTDL `v0.4` is the nearest-neighbor release line for the repository.
 
-It returns the project focus to non-graphical spatial-query workloads and adds
-two new workload families to the public RTDL surface:
+It extends the public RTDL surface with two new workload families while keeping
+the broader language/runtime goal intact:
 
 - `fixed_radius_neighbors`
 - `knn_rows`

@@ -1,6 +1,6 @@
 # Tutorial: RTDL Plus Python Rendering
 
-RTDL is not a rendering engine. But it can act as the geometric-query core
+RTDL is not a rendering engine. But it can act as the accelerated compute/query core
 inside one:
 
 - RTDL handles ray/triangle-style query work
@@ -70,7 +70,7 @@ Python receives the rows and then handles:
 - frame assembly
 - file writing
 
-That is the honest boundary: RTDL is the query core; Python is the application
+That is the honest boundary: RTDL is the accelerated core; Python is the application
 layer.
 
 Source file:
@@ -147,7 +147,7 @@ RTDL kernel
 ```
 
 RTDL is not a renderer. The demos still belong in the repo because they show
-RTDL acting as a real geometry-query core inside larger Python applications.
+RTDL acting as a real accelerated compute/query core inside larger Python applications.
 
 ---
 

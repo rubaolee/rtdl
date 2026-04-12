@@ -17,8 +17,10 @@ Quick environment facts before you start:
 - Python `3.10+` is the expected floor
 - `numpy` is recommended for the smoother demo/application examples
 
-RTDL’s primary target is non-graphical geometric-query work. The visual demo is
-best read as a proof-of-capability application built on the same core:
+RTDL’s current released surface is strongest on geometric and nearest-neighbor
+workloads, but the language/runtime goal is broader than those workloads
+alone. The visual demo is best read as a proof-of-capability application built
+on the same core:
 
 - [Watch The Public 4K Demo Video](https://youtu.be/d3yJB7AmCLM)
 - [Project Front Page](../README.md)
@@ -110,7 +112,7 @@ Keep these current facts in mind while reading:
   same released core, not a replacement for the bounded `v0.2.0` workload surface
 - RTDL should not be read only as a fixed workload list:
   - users can also write RTDL-plus-Python applications where RTDL provides the
-    geometry-query core and Python handles surrounding logic
+    accelerated compute/query core and Python handles surrounding logic
 - the public example tree is now organized as:
   - top-level release-facing examples
   - `examples/reference/`
