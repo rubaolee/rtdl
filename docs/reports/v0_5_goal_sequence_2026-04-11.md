@@ -110,6 +110,12 @@ paper-consistency milestones.
 31. Goal 288
    - duplicate-free KITTI three-way rerun beyond the blocked duplicate-point case
 
+32. Goal 289
+   - first large duplicate-free KITTI boundary at `4096` points
+
+33. Goal 290
+   - duplicate-free KITTI continuation at `8192` points
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
