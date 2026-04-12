@@ -578,6 +578,69 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_fixed_radius_neighbors(
   }, error_out, error_size);
 }
 
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_fixed_radius_neighbors_3d(
+    const RtdlPoint3D* query_points,
+    size_t query_point_count,
+    const RtdlPoint3D* search_points,
+    size_t search_point_count,
+    double radius,
+    uint32_t k_max,
+    RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<rtdl::oracle::Point3D> query_values = rtdl::oracle::decode_points3d(query_points, query_point_count);
+    std::vector<rtdl::oracle::Point3D> search_values = rtdl::oracle::decode_points3d(search_points, search_point_count);
+    const double radius_sq = radius * radius;
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    for (const rtdl::oracle::Point3D& query_point : query_values) {
+      std::vector<RtdlFixedRadiusNeighborRow> query_rows;
+      for (const rtdl::oracle::Point3D& search_point : search_values) {
+        const double dx = search_point.p.x - query_point.p.x;
+        const double dy = search_point.p.y - query_point.p.y;
+        const double dz = search_point.p.z - query_point.p.z;
+        const double distance_sq = dx * dx + dy * dy + dz * dz;
+        if (distance_sq > radius_sq) {
+          continue;
+        }
+        query_rows.push_back({query_point.id, search_point.id, std::sqrt(distance_sq)});
+      }
+      std::sort(
+          query_rows.begin(),
+          query_rows.end(),
+          [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+            if (left.distance < right.distance - rtdl::oracle::kPointEps) {
+              return true;
+            }
+            if (right.distance < left.distance - rtdl::oracle::kPointEps) {
+              return false;
+            }
+            return left.neighbor_id < right.neighbor_id;
+          });
+      if (query_rows.size() > static_cast<size_t>(k_max)) {
+        query_rows.resize(static_cast<size_t>(k_max));
+      }
+      rows.insert(rows.end(), query_rows.begin(), query_rows.end());
+    }
+    std::stable_sort(
+        rows.begin(),
+        rows.end(),
+        [](const RtdlFixedRadiusNeighborRow& left, const RtdlFixedRadiusNeighborRow& right) {
+          return left.query_id < right.query_id;
+        });
+
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_ORACLE_EXPORT int rtdl_oracle_run_knn_rows(
     const RtdlPoint* query_points,
     size_t query_point_count,

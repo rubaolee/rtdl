@@ -64,7 +64,7 @@ def run_cpu(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ...]:
         name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
         for name, payload in inputs.items()
     }
-    _validate_oracle_supported_inputs(normalized_inputs)
+    _validate_oracle_supported_inputs(compiled, normalized_inputs)
 
     return _project_rows(compiled, run_oracle(compiled, normalized_inputs))
 
@@ -350,10 +350,13 @@ def _record_has_fields(record, field_names: tuple[str, ...]) -> bool:
     return False
 
 
-def _validate_oracle_supported_inputs(normalized_inputs: Mapping[str, tuple[object, ...]]) -> None:
+def _validate_oracle_supported_inputs(compiled: CompiledKernel, normalized_inputs: Mapping[str, tuple[object, ...]]) -> None:
+    predicate_name = compiled.refine_op.predicate.name
     for payload in normalized_inputs.values():
         for item in payload:
             if isinstance(item, Point3D):
+                if predicate_name == "fixed_radius_neighbors":
+                    continue
                 raise ValueError(
                     "run_cpu currently supports only 2D point nearest-neighbor records; "
                     "use run_cpu_python_reference for the experimental 3D point path"

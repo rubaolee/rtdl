@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import NoReturn
 
 from .ir import CompiledKernel
+from .reference import Point3D
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:
@@ -70,6 +71,15 @@ class _RtdlPoint(ctypes.Structure):
         ("id", ctypes.c_uint32),
         ("x", ctypes.c_double),
         ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlPoint3D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+        ("z", ctypes.c_double),
     ]
 
 
@@ -595,27 +605,49 @@ def _run_fixed_radius_neighbors_oracle(compiled: CompiledKernel, normalized_inpu
     search_name = compiled.candidates.right.name
     query_points = normalized_inputs[query_name]
     search_points = normalized_inputs[search_name]
-    query_array = (_RtdlPoint * len(query_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in query_points
-    ])
-    search_array = (_RtdlPoint * len(search_points))(*[
-        _RtdlPoint(item.id, item.x, item.y) for item in search_points
-    ])
     rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_run_fixed_radius_neighbors(
-        query_array,
-        len(query_points),
-        search_array,
-        len(search_points),
-        ctypes.c_double(float(compiled.refine_op.predicate.options["radius"])),
-        ctypes.c_uint32(int(compiled.refine_op.predicate.options["k_max"])),
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
+    radius = ctypes.c_double(float(compiled.refine_op.predicate.options["radius"]))
+    k_max = ctypes.c_uint32(int(compiled.refine_op.predicate.options["k_max"]))
+    if query_points and isinstance(query_points[0], Point3D):
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_fixed_radius_neighbors_3d(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_fixed_radius_neighbors(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
     _check_status(status, error)
     try:
         return tuple(
@@ -935,6 +967,19 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_fixed_radius_neighbors.restype = ctypes.c_int
+    library.rtdl_oracle_run_fixed_radius_neighbors_3d.argtypes = [
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_fixed_radius_neighbors_3d.restype = ctypes.c_int
     library.rtdl_oracle_run_knn_rows.argtypes = [
         ctypes.POINTER(_RtdlPoint),
         ctypes.c_size_t,

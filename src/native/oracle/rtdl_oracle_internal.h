@@ -80,6 +80,17 @@ struct Point2D {
   Vec2 p;
 };
 
+struct Vec3 {
+  double x;
+  double y;
+  double z;
+};
+
+struct Point3D {
+  uint32_t id;
+  Vec3 p;
+};
+
 struct Polygon2D {
   uint32_t id;
   std::vector<Vec2> vertices;
@@ -117,6 +128,7 @@ double cross(const Vec2& a, const Vec2& b);
 
 std::vector<Segment2D> decode_segments(const RtdlSegment* records, size_t count);
 std::vector<Point2D> decode_points(const RtdlPoint* records, size_t count);
+std::vector<Point3D> decode_points3d(const RtdlPoint3D* records, size_t count);
 std::vector<Triangle2D> decode_triangles(const RtdlTriangle* records, size_t count);
 std::vector<RayQuery2D> decode_rays(const RtdlRay2D* records, size_t count);
 std::vector<Polygon2D> decode_polygons(

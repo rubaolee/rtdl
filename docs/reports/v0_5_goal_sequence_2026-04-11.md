@@ -120,6 +120,9 @@ paper-consistency milestones.
    - duplicate-free KITTI continuation at `16384` points with widened search
      window
 
+35. Goal 292
+   - native CPU/oracle closure for 3D `fixed_radius_neighbors`
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

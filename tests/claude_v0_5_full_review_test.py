@@ -829,7 +829,7 @@ class NewPublicExportsTest(unittest.TestCase):
 
 class Point3DOracleRejectionTest(unittest.TestCase):
 
-    def test_run_cpu_fixed_radius_rejects_point3d(self) -> None:
+    def test_run_cpu_fixed_radius_supports_point3d(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")
         def frn_3d_k():
             qp = rt.input("query_points", rt.Points3D, role="probe")
@@ -838,12 +838,13 @@ class Point3DOracleRejectionTest(unittest.TestCase):
             hits = rt.refine(c, predicate=rt.fixed_radius_neighbors(radius=1.0, k_max=3))
             return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
 
-        with self.assertRaisesRegex(ValueError, "2D"):
-            rt.run_cpu(
-                frn_3d_k,
-                query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
-                search_points=(rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),),
-            )
+        rows = rt.run_cpu(
+            frn_3d_k,
+            query_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
+            search_points=(
+                rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),),
+        )
+        self.assertEqual(rows, ({"query_id": 1, "neighbor_id": 2, "distance": 0.5},))
 
     def test_run_cpu_knn_rows_rejects_point3d(self) -> None:
         @rt.kernel(backend="rtdl", precision="float_approx")

@@ -82,13 +82,16 @@ class Goal260V05Point3DSurfaceTest(unittest.TestCase):
         )
         self.assertEqual(tuple(row["neighbor_id"] for row in rows), (1, 2))
 
-    def test_run_cpu_rejects_points3d_honestly(self) -> None:
-        with self.assertRaisesRegex(ValueError, "run_cpu currently supports only 2D point nearest-neighbor records"):
-            rt.run_cpu(
-                fixed_radius_neighbors_3d_reference,
-                query_points=(rt.Point3D(id=10, x=0.0, y=0.0, z=0.0),),
-                search_points=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),),
-            )
+    def test_run_cpu_supports_points3d_for_fixed_radius_neighbors(self) -> None:
+        rows = rt.run_cpu(
+            fixed_radius_neighbors_3d_reference,
+            query_points=(rt.Point3D(id=10, x=0.0, y=0.0, z=0.0),),
+            search_points=(
+                rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),
+                rt.Point3D(id=2, x=0.0, y=0.0, z=0.5),
+            ),
+        )
+        self.assertEqual(tuple(row["neighbor_id"] for row in rows), (1, 2))
 
     def test_run_cpu_python_reference_supports_knn_rows_points3d(self) -> None:
         rows = rt.run_cpu_python_reference(

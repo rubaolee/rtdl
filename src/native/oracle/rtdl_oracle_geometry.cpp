@@ -143,6 +143,15 @@ std::vector<Point2D> decode_points(const RtdlPoint* records, size_t count) {
   return values;
 }
 
+std::vector<Point3D> decode_points3d(const RtdlPoint3D* records, size_t count) {
+  std::vector<Point3D> values;
+  values.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    values.push_back({records[i].id, {records[i].x, records[i].y, records[i].z}});
+  }
+  return values;
+}
+
 std::vector<Triangle2D> decode_triangles(const RtdlTriangle* records, size_t count) {
   std::vector<Triangle2D> values;
   values.reserve(count);
