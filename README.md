@@ -177,7 +177,7 @@ The public examples are organized as:
 
 The visual demo shows the correct RTDL application boundary:
 
-- RTDL handles the geometric-query core
+- RTDL handles the accelerated compute/query core
 - Python handles scene setup, animation, shading, and output
 
 That is why the demo belongs here. It is not a product pivot toward graphics.
@@ -186,9 +186,10 @@ application.
 
 ## Why RTDL Exists
 
-Ray-tracing hardware and software are very good at hierarchical geometric
-search. RTDL uses that machinery for non-graphical spatial work rather than for
-image rendering alone.
+Ray-tracing hardware and software are very good at hierarchical traversal,
+intersection, and search-style computation. RTDL uses that machinery for
+accelerated workloads beyond image rendering alone, with the current released
+surface strongest on geometric and nearest-neighbor work.
 
 The motivating research target in this repository is:
 
@@ -198,9 +199,9 @@ The motivating research target in this repository is:
   (ICS 2024),
   DOI: [10.1145/3650200.3656610](https://dl.acm.org/doi/10.1145/3650200.3656610)
 
-RTDL asks the next question: can these workloads be expressed through a
-programmable language/runtime surface while staying correct across multiple
-backends?
+RTDL asks the next question: can these accelerated workloads be expressed
+through a programmable language/runtime surface while staying correct across
+multiple backends?
 
 For broader context:
 
@@ -211,7 +212,7 @@ For broader context:
 
 Important honesty boundaries:
 
-- RTDL is for non-graphical geometric-query workloads first
+- the current released surface is strongest on geometric and nearest-neighbor workloads
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform
