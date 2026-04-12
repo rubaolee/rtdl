@@ -76,6 +76,7 @@ extern "C" {
 
 struct RtdlSegment    { uint32_t id; double x0, y0, x1, y1; };
 struct RtdlPoint      { uint32_t id; double x, y; };
+struct RtdlPoint3D    { uint32_t id; double x, y, z; };
 struct RtdlPolygonRef { uint32_t id, vertex_offset, vertex_count; };
 struct RtdlTriangle   { uint32_t id; double x0, y0, x1, y1, x2, y2; };
 #pragma pack(push, 1)
@@ -150,9 +151,22 @@ int  rtdl_vulkan_run_fixed_radius_neighbors(
          size_t k_max,
          RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_vulkan_run_fixed_radius_neighbors_3d(
+         const RtdlPoint3D* query_points, size_t query_count,
+         const RtdlPoint3D* search_points, size_t search_count,
+         double radius,
+         size_t k_max,
+         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_vulkan_run_knn_rows(
          const RtdlPoint* query_points, size_t query_count,
          const RtdlPoint* search_points, size_t search_count,
+         size_t k,
+         RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_run_knn_rows_3d(
+         const RtdlPoint3D* query_points, size_t query_count,
+         const RtdlPoint3D* search_points, size_t search_count,
          size_t k,
          RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);

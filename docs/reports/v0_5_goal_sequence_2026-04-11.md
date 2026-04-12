@@ -169,6 +169,18 @@ paper-consistency milestones.
    - with Vulkan explicitly excluded from 3D point nearest-neighbor claims
      until that backend line is actually closed
 
+48. Goal 315
+   - Vulkan 3D nearest-neighbor closure on Linux for:
+     - `fixed_radius_neighbors`
+     - `bounded_knn_rows`
+     - `knn_rows`
+
+49. Goal 316
+   - first Linux large-scale accelerated backend table at `32768 x 32768` for:
+     - Embree
+     - OptiX
+     - Vulkan
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

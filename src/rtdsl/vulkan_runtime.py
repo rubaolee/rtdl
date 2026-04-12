@@ -9,7 +9,7 @@ Current Vulkan-native workload surface:
   segment_intersection, point_in_polygon, overlay_compose,
   ray_triangle_hit_count, segment_polygon_hitcount,
   segment_polygon_anyhit_rows, point_nearest_segment,
-  fixed_radius_neighbors
+  fixed_radius_neighbors, bounded_knn_rows, knn_rows
 
 Additional accepted public Vulkan surface:
   polygon_pair_overlap_area_rows, polygon_set_jaccard
@@ -38,6 +38,7 @@ from pathlib import Path
 
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
+from .embree_runtime import _RtdlPoint3D
 from .embree_runtime import _RtdlPolygonRef
 from .embree_runtime import _RtdlTriangle
 from .embree_runtime import _RtdlTriangle3D
@@ -148,10 +149,13 @@ class VulkanRowView:
     row_type: object
     field_names: tuple
     _closed: bool = False
+    _free_on_close: bool = True
+    _owner: object | None = None
 
     def close(self) -> None:
         if not self._closed:
-            self.library.rtdl_vulkan_free_rows(self.rows_ptr)
+            if self._free_on_close:
+                self.library.rtdl_vulkan_free_rows(self.rows_ptr)
             self._closed = True
 
     def __len__(self) -> int:
@@ -192,6 +196,7 @@ class PreparedVulkanKernel:
         "segment_polygon_anyhit_rows",
         "point_nearest_segment",
         "fixed_radius_neighbors",
+        "bounded_knn_rows",
         "knn_rows",
     }
 
@@ -242,6 +247,7 @@ class PreparedVulkanExecution:
             "segment_polygon_anyhit_rows": _call_segment_polygon_anyhit_rows_vulkan_packed,
             "point_nearest_segment":  _call_point_nearest_segment_vulkan_packed,
             "fixed_radius_neighbors": _call_fixed_radius_neighbors_vulkan_packed,
+            "bounded_knn_rows": _call_bounded_knn_rows_vulkan_packed,
             "knn_rows": _call_knn_rows_vulkan_packed,
         }
         fn = dispatch.get(pred)
@@ -595,17 +601,62 @@ def _call_fixed_radius_neighbors_vulkan_packed(compiled: CompiledKernel, packed,
     rows_ptr  = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
     row_count = ctypes.c_size_t()
     error     = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_fixed_radius_neighbors(
-        query_points.records, query_points.count,
-        search_points.records, search_points.count,
-        radius, k_max,
-        ctypes.byref(rows_ptr), ctypes.byref(row_count),
-        error, len(error))
+    if query_points.dimension == 3:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_fixed_radius_neighbors_3d")
+        if symbol is None:
+            raise RuntimeError(
+                "loaded Vulkan backend library does not export rtdl_vulkan_run_fixed_radius_neighbors_3d; "
+                "rebuild the Vulkan backend from current main"
+            )
+        status = symbol(
+            query_points.records, query_points.count,
+            search_points.records, search_points.count,
+            radius, k_max,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    else:
+        status = lib.rtdl_vulkan_run_fixed_radius_neighbors(
+            query_points.records, query_points.count,
+            search_points.records, search_points.count,
+            radius, k_max,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
     _check_status(status, error)
     return VulkanRowView(
         library=lib, rows_ptr=rows_ptr,
         row_count=row_count.value, row_type=_RtdlFixedRadiusNeighborRow,
         field_names=("query_id", "neighbor_id", "distance"))
+
+
+def _call_bounded_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
+    fixed_radius_rows = _call_fixed_radius_neighbors_vulkan_packed(compiled, packed, lib)
+    try:
+        ranked_rows = []
+        current_query_id = None
+        current_rank = 0
+        for index in range(len(fixed_radius_rows)):
+            row = fixed_radius_rows.rows_ptr[index]
+            query_id = row.query_id
+            if query_id != current_query_id:
+                current_query_id = query_id
+                current_rank = 1
+            else:
+                current_rank += 1
+            ranked_rows.append(
+                _RtdlKnnNeighborRow(
+                    row.query_id,
+                    row.neighbor_id,
+                    row.distance,
+                    current_rank,
+                )
+            )
+    finally:
+        fixed_radius_rows.close()
+    return _make_owned_row_view(
+        _RtdlKnnNeighborRow,
+        ranked_rows,
+        ("query_id", "neighbor_id", "distance", "neighbor_rank"),
+    )
 
 
 def _call_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
@@ -615,12 +666,26 @@ def _call_knn_rows_vulkan_packed(compiled: CompiledKernel, packed, lib) -> Vulka
     rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
     row_count = ctypes.c_size_t()
     error = ctypes.create_string_buffer(4096)
-    status = lib.rtdl_vulkan_run_knn_rows(
-        query_points.records, query_points.count,
-        search_points.records, search_points.count,
-        k,
-        ctypes.byref(rows_ptr), ctypes.byref(row_count),
-        error, len(error))
+    if query_points.dimension == 3:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_knn_rows_3d")
+        if symbol is None:
+            raise RuntimeError(
+                "loaded Vulkan backend library does not export rtdl_vulkan_run_knn_rows_3d; "
+                "rebuild the Vulkan backend from current main"
+            )
+        status = symbol(
+            query_points.records, query_points.count,
+            search_points.records, search_points.count,
+            k,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    else:
+        status = lib.rtdl_vulkan_run_knn_rows(
+            query_points.records, query_points.count,
+            search_points.records, search_points.count,
+            k,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
     _check_status(status, error)
     return VulkanRowView(
         library=lib, rows_ptr=rows_ptr,
@@ -770,6 +835,18 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_vulkan_run_fixed_radius_neighbors.restype = ctypes.c_int
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_fixed_radius_neighbors_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_vulkan_run_knn_rows").argtypes = [
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
@@ -780,6 +857,17 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p, ctypes.c_size_t,
     ]
     lib.rtdl_vulkan_run_knn_rows.restype = ctypes.c_int
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_knn_rows_3d")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
 
 
 def _require_backend_symbol(lib, symbol_name: str):
@@ -864,14 +952,20 @@ def _pack_for_geometry(geometry_input, payload):
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
-        if expected_dimension == 3:
-            raise ValueError(
-                "the current prepared Vulkan path does not support 3D point nearest-neighbor inputs yet"
-            )
         cached = getattr(payload, "_rtdl_packed_points", None)
         if isinstance(cached, PackedPoints):
+            if expected_dimension is not None and cached.dimension != expected_dimension:
+                raise ValueError(
+                    "cached packed points payload dimension does not match the kernel input layout"
+                )
             return cached
-        return payload if isinstance(payload, PackedPoints)    else pack_points(records=payload)
+        if isinstance(payload, PackedPoints):
+            if expected_dimension is not None and payload.dimension != expected_dimension:
+                raise ValueError(
+                    "packed points payload dimension does not match the kernel input layout"
+                )
+            return payload
+        return pack_points(records=payload, dimension=expected_dimension)
     if geometry_name == "polygons":
         cached = getattr(payload, "_rtdl_packed_polygons", None)
         if isinstance(cached, PackedPolygons):
@@ -908,3 +1002,17 @@ def _is_packed_for_geometry(geometry_name: str, payload) -> bool:
     if geometry_name == "rays":
         return isinstance(payload, PackedRays)
     raise ValueError(f"unsupported geometry type for Vulkan backend: {geometry_name!r}")
+
+
+def _make_owned_row_view(row_type, rows, field_names: tuple[str, ...]) -> VulkanRowView:
+    array = (row_type * len(rows))(*rows)
+    rows_ptr = ctypes.cast(array, ctypes.POINTER(row_type))
+    return VulkanRowView(
+        library=None,
+        rows_ptr=rows_ptr,
+        row_count=len(rows),
+        row_type=row_type,
+        field_names=field_names,
+        _free_on_close=False,
+        _owner=array,
+    )

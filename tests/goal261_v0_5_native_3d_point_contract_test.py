@@ -10,6 +10,7 @@ from rtdsl.embree_runtime import pack_points as embree_pack_points
 from rtdsl.optix_runtime import _pack_for_geometry as optix_pack_for_geometry
 from rtdsl.optix_runtime import pack_points as optix_pack_points
 from rtdsl.vulkan_runtime import _pack_for_geometry as vulkan_pack_for_geometry
+from rtdsl.vulkan_runtime import PackedPoints as VulkanPackedPoints
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -27,14 +28,17 @@ class Goal261V05Native3DPointContractTest(unittest.TestCase):
         self.assertEqual(packed.count, 1)
         self.assertEqual(packed.dimension, 3)
 
-    def test_optix_pack_points_rejects_point3d(self) -> None:
-        with self.assertRaisesRegex(ValueError, "OptiX point packing currently supports only 2D points"):
-            optix_pack_points(records=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),))
+    def test_optix_pack_points_supports_point3d_records(self) -> None:
+        packed = optix_pack_points(records=(rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),))
+        self.assertEqual(packed.count, 1)
+        self.assertEqual(packed.dimension, 3)
 
-    def test_vulkan_prepared_path_rejects_points3d(self) -> None:
+    def test_vulkan_prepared_path_supports_points3d(self) -> None:
         compiled = rt.compile_kernel(fixed_radius_neighbors_3d_native_boundary_kernel)
-        with self.assertRaisesRegex(ValueError, "current prepared Vulkan path does not support 3D point nearest-neighbor inputs yet"):
-            vulkan_pack_for_geometry(compiled.inputs[0], (rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),))
+        packed = vulkan_pack_for_geometry(compiled.inputs[0], (rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),))
+        self.assertIsInstance(packed, VulkanPackedPoints)
+        self.assertEqual(packed.count, 1)
+        self.assertEqual(packed.dimension, 3)
 
     def test_embree_prepared_path_supports_points3d_for_fixed_radius(self) -> None:
         compiled = rt.compile_kernel(fixed_radius_neighbors_3d_native_boundary_kernel)
@@ -42,10 +46,11 @@ class Goal261V05Native3DPointContractTest(unittest.TestCase):
         self.assertEqual(packed.count, 1)
         self.assertEqual(packed.dimension, 3)
 
-    def test_optix_prepared_path_rejects_points3d(self) -> None:
+    def test_optix_prepared_path_supports_points3d(self) -> None:
         compiled = rt.compile_kernel(fixed_radius_neighbors_3d_native_boundary_kernel)
-        with self.assertRaisesRegex(ValueError, "current prepared OptiX path does not support 3D point nearest-neighbor inputs yet"):
-            optix_pack_for_geometry(compiled.inputs[0], (rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),))
+        packed = optix_pack_for_geometry(compiled.inputs[0], (rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),))
+        self.assertEqual(packed.count, 1)
+        self.assertEqual(packed.dimension, 3)
 
 
 if __name__ == "__main__":
