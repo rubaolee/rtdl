@@ -156,6 +156,7 @@ def _render_cunsearch_driver_source(
 #include <cmath>
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
@@ -189,6 +190,7 @@ int main() {{
     out << "  \\"response_format\\": \\"json_rows_v1\\",\\n";
     out << "  \\"workload\\": \\"fixed_radius_neighbors\\",\\n";
     out << "  \\"rows\\": [\\n";
+    out << std::setprecision({17 if precision_mode == "double" else 9});
 
     bool first = true;
     auto const& point_set = nsearch.point_set(query_set);

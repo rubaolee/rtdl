@@ -74,19 +74,10 @@ def discover_kitti_velodyne_frames(source_root: str | Path | None = None) -> tup
 
     records: list[KittiFrameRecord] = []
     for bin_path in sorted(resolved.rglob("*.bin")):
-        parts = bin_path.relative_to(resolved).parts
-        if "velodyne" not in parts:
+        record = _kitti_frame_record_from_bin_path(resolved, bin_path)
+        if record is None:
             continue
-        velodyne_index = parts.index("velodyne")
-        sequence = parts[velodyne_index - 1] if velodyne_index >= 1 else "unknown_sequence"
-        frame_id = Path(parts[-1]).stem
-        records.append(
-            KittiFrameRecord(
-                sequence=sequence,
-                frame_id=frame_id,
-                relative_bin_path=bin_path.relative_to(resolved).as_posix(),
-            )
-        )
+        records.append(record)
     records.sort(key=lambda record: (record.sequence, record.frame_id, record.relative_bin_path))
     return tuple(records)
 
@@ -96,15 +87,37 @@ def select_kitti_bounded_frames(
     source_root: str | Path | None = None,
     max_frames: int,
     stride: int = 1,
+    start_index: int = 0,
 ) -> tuple[KittiFrameRecord, ...]:
     if max_frames <= 0:
         raise ValueError("max_frames must be positive")
     if stride <= 0:
         raise ValueError("stride must be positive")
+    if start_index < 0:
+        raise ValueError("start_index must be non-negative")
 
     records = discover_kitti_velodyne_frames(source_root)
-    selected = records[::stride][:max_frames]
+    selected = records[start_index::stride][:max_frames]
     return tuple(selected)
+
+
+def _kitti_frame_record_from_bin_path(source_root: Path, bin_path: Path) -> KittiFrameRecord | None:
+    parts = bin_path.relative_to(source_root).parts
+    sequence = "unknown_sequence"
+    if "velodyne" in parts:
+        velodyne_index = parts.index("velodyne")
+        sequence = parts[velodyne_index - 1] if velodyne_index >= 1 else sequence
+    elif "velodyne_points" in parts:
+        velodyne_index = parts.index("velodyne_points")
+        sequence = parts[velodyne_index - 1] if velodyne_index >= 1 else sequence
+    else:
+        return None
+    frame_id = Path(parts[-1]).stem
+    return KittiFrameRecord(
+        sequence=sequence,
+        frame_id=frame_id,
+        relative_bin_path=bin_path.relative_to(source_root).as_posix(),
+    )
 
 
 def write_kitti_bounded_package_manifest(
@@ -113,6 +126,7 @@ def write_kitti_bounded_package_manifest(
     source_root: str | Path | None = None,
     max_frames: int,
     stride: int = 1,
+    start_index: int = 0,
     max_points_per_frame: int = 4096,
     max_total_points: int = 65536,
 ) -> Path:
@@ -130,12 +144,14 @@ def write_kitti_bounded_package_manifest(
         source_root=resolved,
         max_frames=max_frames,
         stride=stride,
+        start_index=start_index,
     )
     payload = {
         "manifest_kind": "kitti_bounded_package_manifest_v1",
         "source_root": str(resolved),
         "max_frames": max_frames,
         "stride": stride,
+        "start_index": start_index,
         "max_points_per_frame": max_points_per_frame,
         "max_total_points": max_total_points,
         "bounded_point_rule": (

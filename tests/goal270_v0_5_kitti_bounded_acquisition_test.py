@@ -22,6 +22,12 @@ class Goal270V05KittiBoundedAcquisitionTest(unittest.TestCase):
             for frame_id in frames:
                 (velodyne / f"{frame_id}.bin").write_bytes(b"\x00" * 16)
 
+    def _make_kitti_raw_tree(self, root: Path) -> None:
+        velodyne = root / "2011_09_26" / "2011_09_26_drive_0001_sync" / "velodyne_points" / "data"
+        velodyne.mkdir(parents=True, exist_ok=True)
+        for frame_id in ("0000000000", "0000000001"):
+            (velodyne / f"{frame_id}.bin").write_bytes(b"\x00" * 16)
+
     def test_source_config_reports_planned_when_unconfigured(self) -> None:
         old = os.environ.pop("RTDL_KITTI_SOURCE_ROOT", None)
         try:
@@ -54,6 +60,30 @@ class Goal270V05KittiBoundedAcquisitionTest(unittest.TestCase):
                 (("0001", "000000"), ("0001", "000002")),
             )
 
+    def test_bounded_selection_obeys_start_index(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            self._make_kitti_tree(root)
+            selected = rt.select_kitti_bounded_frames(
+                source_root=root,
+                max_frames=2,
+                stride=1,
+                start_index=1,
+            )
+            self.assertEqual(
+                tuple((record.sequence, record.frame_id) for record in selected),
+                (("0001", "000001"), ("0001", "000002")),
+            )
+
+    def test_discover_frames_supports_real_kitti_raw_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            self._make_kitti_raw_tree(root)
+            records = rt.discover_kitti_velodyne_frames(root)
+            self.assertEqual(len(records), 2)
+            self.assertEqual(records[0].sequence, "2011_09_26_drive_0001_sync")
+            self.assertEqual(records[0].frame_id, "0000000000")
+
     def test_manifest_writer_emits_selected_frames_and_point_caps(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "source"
@@ -64,13 +94,15 @@ class Goal270V05KittiBoundedAcquisitionTest(unittest.TestCase):
                 source_root=root,
                 max_frames=3,
                 stride=1,
+                start_index=1,
                 max_points_per_frame=128,
                 max_total_points=1024,
             )
             payload = json.loads(written.read_text(encoding="utf-8"))
             self.assertEqual(payload["manifest_kind"], "kitti_bounded_package_manifest_v1")
             self.assertEqual(payload["selected_frame_count"], 3)
-            self.assertEqual(payload["frames"][0]["sequence"], "0001")
+            self.assertEqual(payload["start_index"], 1)
+            self.assertEqual(payload["frames"][0]["frame_id"], "000001")
             self.assertEqual(payload["max_points_per_frame"], 128)
             self.assertEqual(payload["max_total_points"], 1024)
 

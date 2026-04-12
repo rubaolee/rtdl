@@ -40,6 +40,17 @@ class Goal277V05KittiLinuxReadyTest(unittest.TestCase):
             self.assertEqual(report.velodyne_bin_count, 2)
             self.assertIn("0001/velodyne", report.sample_velodyne_dirs)
 
+    def test_existing_root_with_kitti_raw_velodyne_points_reports_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "kitti"
+            velodyne = root / "2011_09_26" / "2011_09_26_drive_0001_sync" / "velodyne_points" / "data"
+            velodyne.mkdir(parents=True, exist_ok=True)
+            (velodyne / "0000000000.bin").write_bytes(b"\x00" * 16)
+            report = rt.inspect_kitti_linux_source_root(root)
+            self.assertEqual(report.current_status, "ready")
+            self.assertEqual(report.velodyne_bin_count, 1)
+            self.assertIn("2011_09_26/2011_09_26_drive_0001_sync/velodyne_points", report.sample_velodyne_dirs)
+
     def test_writer_emits_json_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "kitti"

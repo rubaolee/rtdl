@@ -32,9 +32,15 @@ def inspect_kitti_linux_source_root(source_root: str | Path) -> KittiLinuxReadyR
             notes="KITTI source root does not exist yet on Linux.",
         )
 
-    velodyne_dirs = sorted(path for path in root.rglob("velodyne") if path.is_dir())
+    velodyne_dirs = sorted(
+        path
+        for path in root.rglob("*")
+        if path.is_dir() and path.name in {"velodyne", "velodyne_points"}
+    )
     bin_files = sorted(
-        path for path in root.rglob("*.bin") if "velodyne" in path.relative_to(root).parts
+        path
+        for path in root.rglob("*.bin")
+        if {"velodyne", "velodyne_points"} & set(path.relative_to(root).parts)
     )
     status = "ready" if bin_files else "empty"
     notes = (

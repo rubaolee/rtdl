@@ -80,6 +80,7 @@ class Goal275V05CuNSearchLiveDriverTest(unittest.TestCase):
         self.assertIn('search_ids = { 2 }', source)
         self.assertIn("{0.0f, 0.0f, 0.0f}", source)
         self.assertIn("static_cast<double>(q[0]) - static_cast<double>(s[0])", source)
+        self.assertIn("std::setprecision(9);", source)
 
     def test_driver_source_uses_double_literals_when_build_is_double(self) -> None:
         payload = {
@@ -94,6 +95,7 @@ class Goal275V05CuNSearchLiveDriverTest(unittest.TestCase):
         self.assertIn("{1.25, 2.5, 3.75}", source)
         self.assertIn("NeighborhoodSearch nsearch(static_cast<Real>(0.5));", source)
         self.assertIn("std::min<std::size_t>(neighbors.size(), static_cast<std::size_t>(3))", source)
+        self.assertIn("std::setprecision(17);", source)
 
     def test_precision_detection_defaults_to_double_without_cache(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

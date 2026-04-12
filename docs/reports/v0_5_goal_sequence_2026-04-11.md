@@ -74,6 +74,18 @@ paper-consistency milestones.
 19. Goal 276
    - first live bounded Linux RTDL-vs-cuNSearch comparison on portable 3D packages
 
+20. Goal 277
+   - Linux KITTI acquisition prep and readiness gate
+
+21. Goal 278
+   - real KITTI raw-layout support and bounded frame offsets
+
+22. Goal 279
+   - first real KITTI bounded live RTDL-vs-cuNSearch comparison on Linux
+
+23. Goal 280
+   - live cuNSearch output-precision hardening for larger-radius real KITTI parity
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
