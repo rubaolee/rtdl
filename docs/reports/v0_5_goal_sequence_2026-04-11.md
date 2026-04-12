@@ -123,6 +123,13 @@ paper-consistency milestones.
 35. Goal 292
    - native CPU/oracle closure for 3D `fixed_radius_neighbors`
 
+36. Goal 293
+   - native CPU/oracle closure for 3D `bounded_knn_rows`
+
+37. Goal 294
+   - native 3D RTDL versus PostGIS performance on duplicate-free KITTI
+     fixed-radius workloads
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
