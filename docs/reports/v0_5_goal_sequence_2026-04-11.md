@@ -161,6 +161,14 @@ paper-consistency milestones.
    - first Linux large-scale native-vs-Embree-vs-OptiX nearest-neighbor
      benchmark on duplicate-free KITTI
 
+47. Goal 313
+   - same-scale Linux backend table on expanded KITTI data for:
+     - PostGIS
+     - Embree
+     - OptiX
+   - with Vulkan explicitly excluded from 3D point nearest-neighbor claims
+     until that backend line is actually closed
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
