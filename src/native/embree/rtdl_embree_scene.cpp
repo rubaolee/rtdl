@@ -127,6 +127,7 @@ struct FixedRadiusNeighborsQueryState3D {
 struct KnnRowsQueryState {
   const Point2D* query;
   const std::vector<Point2D>* search_points;
+  size_t k;
   std::vector<RtdlKnnNeighborRow>* rows;
   std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
@@ -134,12 +135,69 @@ struct KnnRowsQueryState {
 struct KnnRowsQueryState3D {
   const Point3D* query;
   const std::vector<Point3D>* search_points;
+  size_t k;
   std::vector<RtdlKnnNeighborRow>* rows;
   std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
 thread_local QueryKind g_query_kind = QueryKind::kNone;
 thread_local void* g_query_state = nullptr;
+
+bool knn_row_is_better(const RtdlKnnNeighborRow& candidate, const RtdlKnnNeighborRow& current) {
+  if (candidate.distance < current.distance - 1.0e-12) {
+    return true;
+  }
+  if (current.distance < candidate.distance - 1.0e-12) {
+    return false;
+  }
+  return candidate.neighbor_id < current.neighbor_id;
+}
+
+size_t knn_worst_index(const std::vector<RtdlKnnNeighborRow>& rows) {
+  size_t worst_index = 0;
+  for (size_t index = 1; index < rows.size(); ++index) {
+    if (knn_row_is_better(rows[worst_index], rows[index])) {
+      worst_index = index;
+    }
+  }
+  return worst_index;
+}
+
+void tighten_knn_query_radius(
+    RTCPointQuery* query,
+    const std::vector<RtdlKnnNeighborRow>& rows,
+    size_t k) {
+  if (query == nullptr || rows.size() < k || rows.empty()) {
+    return;
+  }
+  const size_t worst_index = knn_worst_index(rows);
+  query->radius = static_cast<float>(rows[worst_index].distance + 1.0e-6);
+}
+
+void append_knn_candidate(
+    RTCPointQueryFunctionArguments* args,
+    std::vector<RtdlKnnNeighborRow>* rows,
+    std::unordered_set<uint32_t>* seen_neighbor_ids,
+    size_t k,
+    const RtdlKnnNeighborRow& candidate) {
+  if (seen_neighbor_ids->find(candidate.neighbor_id) != seen_neighbor_ids->end()) {
+    return;
+  }
+  if (rows->size() < k) {
+    rows->push_back(candidate);
+    seen_neighbor_ids->insert(candidate.neighbor_id);
+    tighten_knn_query_radius(args != nullptr ? args->query : nullptr, *rows, k);
+    return;
+  }
+  const size_t worst_index = knn_worst_index(*rows);
+  if (!knn_row_is_better(candidate, (*rows)[worst_index])) {
+    return;
+  }
+  seen_neighbor_ids->erase((*rows)[worst_index].neighbor_id);
+  (*rows)[worst_index] = candidate;
+  seen_neighbor_ids->insert(candidate.neighbor_id);
+  tighten_knn_query_radius(args != nullptr ? args->query : nullptr, *rows, k);
+}
 
 void set_ray(RTCRayHit* rayhit, const Vec2& origin, const Vec2& direction, float tmax) {
   std::memset(rayhit, 0, sizeof(RTCRayHit));
@@ -357,14 +415,15 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   }
   auto* state = static_cast<KnnRowsQueryState*>(args->userPtr);
   const Point2D& search_point = (*state->search_points)[args->primID];
-  if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
-    return false;
-  }
   double dx = search_point.p.x - state->query->p.x;
   double dy = search_point.p.y - state->query->p.y;
   double distance = std::sqrt(dx * dx + dy * dy);
-  state->seen_neighbor_ids->insert(search_point.id);
-  state->rows->push_back({state->query->id, search_point.id, distance, 0u});
+  append_knn_candidate(
+      args,
+      state->rows,
+      state->seen_neighbor_ids,
+      state->k,
+      {state->query->id, search_point.id, distance, 0u});
   return false;
 }
 
@@ -391,15 +450,16 @@ bool point_point_query_collect_3d(RTCPointQueryFunctionArguments* args) {
   if (g_query_kind == QueryKind::kKnnRows3D) {
     auto* state = static_cast<KnnRowsQueryState3D*>(args->userPtr);
     const Point3D& search_point = (*state->search_points)[args->primID];
-    if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
-      return false;
-    }
     double dx = search_point.p.x - state->query->p.x;
     double dy = search_point.p.y - state->query->p.y;
     double dz = search_point.p.z - state->query->p.z;
     double distance = std::sqrt(dx * dx + dy * dy + dz * dz);
-    state->seen_neighbor_ids->insert(search_point.id);
-    state->rows->push_back({state->query->id, search_point.id, distance, 0u});
+    append_knn_candidate(
+        args,
+        state->rows,
+        state->seen_neighbor_ids,
+        state->k,
+        {state->query->id, search_point.id, distance, 0u});
     return false;
   }
   return false;

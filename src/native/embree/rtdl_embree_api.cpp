@@ -770,7 +770,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(
     for (const Point2D& query : query_values) {
       std::vector<RtdlKnnNeighborRow> query_rows;
       std::unordered_set<uint32_t> seen_neighbor_ids;
-      KnnRowsQueryState state {&query, &search_values, &query_rows, &seen_neighbor_ids};
+      KnnRowsQueryState state {&query, &search_values, k, &query_rows, &seen_neighbor_ids};
       RTCPointQuery point_query;
       point_query.x = static_cast<float>(query.p.x);
       point_query.y = static_cast<float>(query.p.y);
@@ -855,7 +855,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows_3d(
     for (const Point3D& query : query_values) {
       std::vector<RtdlKnnNeighborRow> query_rows;
       std::unordered_set<uint32_t> seen_neighbor_ids;
-      KnnRowsQueryState3D state {&query, &search_values, &query_rows, &seen_neighbor_ids};
+      KnnRowsQueryState3D state {&query, &search_values, k, &query_rows, &seen_neighbor_ids};
       RTCPointQuery point_query;
       point_query.x = static_cast<float>(query.p.x);
       point_query.y = static_cast<float>(query.p.y);

@@ -141,6 +141,19 @@ paper-consistency milestones.
    - native 3D RTDL versus PostGIS performance on duplicate-free KITTI
      `knn_rows` workloads
 
+41. Goal 298
+   - Embree 3D `fixed_radius_neighbors` closure
+
+42. Goal 299
+   - Embree 3D `bounded_knn_rows` closure
+
+43. Goal 300
+   - Embree 3D `knn_rows` closure
+
+44. Goal 310
+   - first Linux large-scale Embree nearest-neighbor performance and KNN
+     optimization closure on duplicate-free KITTI
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
