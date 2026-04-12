@@ -1,0 +1,16 @@
+### Verdict
+Yes, Goal 259 is the correct first concrete v0.5 design goal. It is technically honest, accurately reflects the 2D-first constraints of the current codebase, and proposes a highly logical sequence that prevents premature backend implementation on an unstable front-end contract.
+
+### Findings
+*   **Aligned with Codebase Reality:** The codebase is demonstrably 2D-centric for point operations. Files like `src/rtdsl/types.py` only define `Point2DLayout` and `Points`, while `src/rtdsl/reference.py` hardcodes `Point(id, x, y)` and uses 2D math (e.g., `math.hypot(search_point.x - query_point.x, ...)`) for `fixed_radius_neighbors_cpu` and `knn_rows_cpu`. `src/rtdsl/runtime.py` similarly expects only 2D coordinates in `_coerce_point`.
+*   **Proper Sequencing:** The proposed implementation order (Public Types -> Reference/Correctness Path -> Runtime/Normalization -> Backend Bring-up) is the only safe approach. Attempting to build Embree or OptiX 3D kernels before the Python oracle and normalization layers support `z` coordinates would lead to untestable and orphaned backends.
+*   **Technical Honesty:** The goal deliberately avoids conflating dimensionality support (3D points) with semantic changes (bounded-radius KNN semantics required by the RTNN paper). By treating these as separate questions, it prevents scope creep and ensures the claims made about the new surface remain accurate.
+*   **Protects Existing Workloads:** The commitment to keeping the released 2D line stable (Goal 259 Design Requirement 1) is essential, as the `v0.4.0` line relies heavily on the current 2D-centric assumptions for testing and benchmarking.
+
+### Risks
+*   **Naming Confusion:** The design suggests keeping workload names stable (`knn_rows`, `fixed_radius_neighbors`) unless the contract changes materially. When the bounded-radius KNN semantics are eventually introduced (as required by the gap summary), distinguishing between the 3D version of the old `knn_rows` contract and the new paper-consistent contract could cause API confusion if not documented meticulously.
+*   **Coercion and Normalization Complexity:** `src/rtdsl/runtime.py` currently handles input coercion cleanly for 2D. Adding 3D points will require careful handling in `_normalize_records` and `_coerce_point` to ensure that 2D records aren't accidentally coerced into 3D (or vice versa) and that the CPU simulator cleanly routes to the correct reference functions without performance regression for 2D paths. 
+*   **Simulator Divergence:** `run_cpu` currently prevents 3D execution for rays and triangles, redirecting them to `run_cpu_python_reference`. The 3D point implementations must navigate this existing split carefully so they are testable within the oracle framework.
+
+### Conclusion
+Goal 259 is a highly mature and necessary prerequisite for the v0.5 line. By confronting the 2D-first reality of the codebase and mandating a complete, end-to-end surface and reference design before authorizing GPU backend work, it establishes a solid architectural foundation. It is the ideal next step to close the gaps identified in the RTNN reproduction charter while preserving the stability of the current `v0.4.0` release.
