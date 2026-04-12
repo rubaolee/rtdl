@@ -79,6 +79,14 @@ Point2DLayout = layout(
     field("id", u32),
 )
 
+Point3DLayout = layout(
+    "Point3D",
+    field("x", f32),
+    field("y", f32),
+    field("z", f32),
+    field("id", u32),
+)
+
 Polygon2DLayout = layout(
     "Polygon2DRef",
     field("vertex_offset", u32),
@@ -144,6 +152,12 @@ Points = GeometryType(
     dimension=0,
     default_layout=Point2DLayout,
     required_fields=("x", "y", "id"),
+)
+Points3D = GeometryType(
+    name="points",
+    dimension=0,
+    default_layout=Point3DLayout,
+    required_fields=("x", "y", "z", "id"),
 )
 Polygons = GeometryType(
     name="polygons",

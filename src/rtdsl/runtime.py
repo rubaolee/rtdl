@@ -13,6 +13,7 @@ from .reference import lsi_cpu
 from .reference import overlay_compose_cpu
 from .reference import pip_cpu
 from .reference import Point
+from .reference import Point3D
 from .reference import point_nearest_segment_cpu
 from .reference import Polygon
 from .reference import polygon_pair_overlap_area_rows_cpu
@@ -33,7 +34,7 @@ def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | N
 
     expected_type = {
         "segments": Segment,
-        "points": Point,
+        "points": (Point, Point3D),
         "polygons": Polygon,
         "triangles": (Triangle, Triangle3D),
         "rays": (Ray2D, Ray3D),
@@ -199,9 +200,19 @@ def _coerce_segment(input_name: str, record) -> Segment:
     )
 
 
-def _coerce_point(input_name: str, record) -> Point:
+def _coerce_point(input_name: str, record) -> Point | Point3D:
+    if isinstance(record, Point3D):
+        return record
     if isinstance(record, Point):
         return record
+    if _record_has_fields(record, ("id", "x", "y", "z")):
+        data = _extract_record_fields(input_name, record, ("id", "x", "y", "z"))
+        return Point3D(
+            id=int(data["id"]),
+            x=float(data["x"]),
+            y=float(data["y"]),
+            z=float(data["z"]),
+        )
     data = _extract_record_fields(input_name, record, ("id", "x", "y"))
     return Point(
         id=int(data["id"]),
@@ -334,6 +345,11 @@ def _record_has_fields(record, field_names: tuple[str, ...]) -> bool:
 def _validate_oracle_supported_inputs(normalized_inputs: Mapping[str, tuple[object, ...]]) -> None:
     for payload in normalized_inputs.values():
         for item in payload:
+            if isinstance(item, Point3D):
+                raise ValueError(
+                    "run_cpu currently supports only 2D point nearest-neighbor records; "
+                    "use run_cpu_python_reference for the experimental 3D point path"
+                )
             if isinstance(item, (Triangle3D, Ray3D)):
                 raise ValueError(
                     "run_cpu currently supports only 2D ray/triangle records; "

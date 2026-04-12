@@ -181,6 +181,7 @@ from .reference import overlay_compose_cpu
 from .reference import point_nearest_segment_cpu
 from .reference import pip_cpu
 from .reference import Point
+from .reference import Point3D
 from .reference import Polygon
 from .reference import polygon_pair_overlap_area_rows_cpu
 from .reference import polygon_set_jaccard_cpu
@@ -207,6 +208,8 @@ from .types import layout
 from .types import Layout
 from .types import Points
 from .types import Point2DLayout
+from .types import Point3DLayout
+from .types import Points3D
 from .types import Polygons
 from .types import Polygon2DLayout
 from .types import Rays

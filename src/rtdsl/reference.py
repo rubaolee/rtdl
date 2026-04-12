@@ -21,6 +21,14 @@ class Point:
 
 
 @dataclass(frozen=True)
+class Point3D:
+    id: int
+    x: float
+    y: float
+    z: float
+
+
+@dataclass(frozen=True)
 class Polygon:
     id: int
     vertices: tuple[tuple[float, float], ...]
@@ -170,8 +178,8 @@ def ray_triangle_hit_count_cpu(
 
 
 def fixed_radius_neighbors_cpu(
-    query_points: tuple[Point, ...],
-    search_points: tuple[Point, ...],
+    query_points: tuple[Point | Point3D, ...],
+    search_points: tuple[Point | Point3D, ...],
     *,
     radius: float,
     k_max: int,
@@ -181,9 +189,7 @@ def fixed_radius_neighbors_cpu(
     for query_point in query_points:
         candidates = []
         for search_point in search_points:
-            dx = search_point.x - query_point.x
-            dy = search_point.y - query_point.y
-            distance_sq = dx * dx + dy * dy
+            distance_sq = _point_distance_sq(query_point, search_point)
             if distance_sq > radius_sq:
                 continue
             candidates.append((math.sqrt(distance_sq), search_point.id))
@@ -202,8 +208,8 @@ def fixed_radius_neighbors_cpu(
 
 
 def knn_rows_cpu(
-    query_points: tuple[Point, ...],
-    search_points: tuple[Point, ...],
+    query_points: tuple[Point | Point3D, ...],
+    search_points: tuple[Point | Point3D, ...],
     *,
     k: int,
 ) -> tuple[dict[str, float | int], ...]:
@@ -211,7 +217,7 @@ def knn_rows_cpu(
     for query_point in query_points:
         candidates = []
         for search_point in search_points:
-            distance = math.hypot(search_point.x - query_point.x, search_point.y - query_point.y)
+            distance = math.sqrt(_point_distance_sq(query_point, search_point))
             candidates.append((distance, search_point.id))
 
         candidates.sort(key=lambda item: (item[0], item[1]))
@@ -661,6 +667,15 @@ def _point_segment_distance(point: Point, segment: Segment) -> float:
     dx = point.x - px
     dy = point.y - py
     return (dx * dx + dy * dy) ** 0.5
+
+
+def _point_distance_sq(left: Point | Point3D, right: Point | Point3D) -> float:
+    dx = right.x - left.x
+    dy = right.y - left.y
+    left_z = getattr(left, "z", 0.0)
+    right_z = getattr(right, "z", 0.0)
+    dz = right_z - left_z
+    return dx * dx + dy * dy + dz * dz
 
 
 def _point_in_triangle(x: float, y: float, vertices: tuple[tuple[float, float], ...]) -> bool:
