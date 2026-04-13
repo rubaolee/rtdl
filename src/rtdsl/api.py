@@ -9,8 +9,8 @@ from .ir import EmitOp
 from .ir import GeometryInput
 from .ir import Predicate
 from .ir import RefineOp
-from .types import GeometryType
-from .types import Layout
+from .layout_types import GeometryType
+from .layout_types import Layout
 
 
 @dataclass

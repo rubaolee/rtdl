@@ -231,6 +231,10 @@ paper-consistency milestones.
 60. Goal 327
    - adopt the full Gemini `v0.5` repo audit as a bounded audit artifact
 
+61. Goal 328
+   - remove the `rtdsl.types` stdlib-collision risk by renaming the module and
+     preserving the public layout/type import surface
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

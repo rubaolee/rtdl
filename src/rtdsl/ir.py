@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .types import GeometryType
-from .types import Layout
+from .layout_types import GeometryType
+from .layout_types import Layout
 
 RTDL_PLAN_SCHEMA_ID = "https://rtdl.dev/schemas/rtdl-plan-v1alpha1.json"
 

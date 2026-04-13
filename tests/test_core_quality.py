@@ -2,7 +2,7 @@
 tests/test_core_quality.py
 
 Comprehensive quality tests covering gaps in:
-  - types.py:     Layout/Field validation and serialization
+  - layout_types.py: Layout/Field validation and serialization
   - ir.py:        to_dict() and format() on all IR nodes
   - api.py:       predicate factory options, out-of-context errors, layout validation
   - lowering.py:  all error paths, role resolution, each _lower_* predicate
