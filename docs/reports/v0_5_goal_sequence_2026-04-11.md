@@ -239,6 +239,18 @@ paper-consistency milestones.
    - complete the `layout_types` collision fix by actually removing the stale
      tracked `src/rtdsl/types.py` file from the repo
 
+63. Goal 330
+   - create the explicit `v0.5` pre-release package covering:
+     - docs
+     - code test
+     - audit
+     - external review
+     - final release-making steps
+
+64. Goal 331
+   - run the explicit `v0.5` pre-release code-test sweep and save the result as
+     a release-gate artifact
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
