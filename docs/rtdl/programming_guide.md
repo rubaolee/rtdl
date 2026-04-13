@@ -177,6 +177,46 @@ oracle_rows = rt.run_cpu(kernel_fn, **inputs)
 optix_rows = rt.run_optix(kernel_fn, **inputs)
 ```
 
+## 6.5 Runtime Input Shapes
+
+The most common authoring mistake is not DSL syntax. It is passing the wrong
+host-side Python data shape into the runtime.
+
+Current practical rule:
+
+- each `rt.input("name", ...)` expects one Python object under the same keyword
+- for first-run examples, that object is usually a tuple of dict rows
+- each dict uses the field names implied by the geometry layout or public
+  example
+
+Minimal nearest-neighbor example:
+
+```python
+query_points = (
+    {"point_id": 100, "x": 0.0, "y": 0.0},
+    {"point_id": 101, "x": 1.0, "y": 0.0},
+)
+
+search_points = (
+    {"point_id": 1, "x": 0.0, "y": 0.0},
+    {"point_id": 2, "x": 1.2, "y": 0.0},
+)
+
+rows = rt.run_cpu_python_reference(
+    fixed_radius_neighbors_kernel,
+    query_points=query_points,
+    search_points=search_points,
+)
+```
+
+Why this matters:
+
+- the kernel grammar alone does not define the Python container shape
+- the public examples are the current source of truth for concrete input row
+  shape
+- if you are unsure, start from the nearest public example and copy its input
+  style before generalizing
+
 ## 7. Current Authoring Boundaries
 
 RTDL is not currently:

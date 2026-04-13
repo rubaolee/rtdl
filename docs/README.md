@@ -1,97 +1,67 @@
 # Docs Index
 
-This directory has two kinds of material:
+This directory contains both live docs and preserved history.
 
-- **live docs**: the current project story
-- **reference/archive docs**: preserved reports, plans, and detailed history
+If you are new to RTDL, do not start by browsing everything here. Start with
+the current live path only.
 
-If you are new to RTDL, read the live docs first.
+## New User Path
 
-Quick environment facts before you start:
+Read these in order:
 
-- this checkout currently identifies itself as `v0.4.0`
-- the live released surface on `main` is now the `v0.4` nearest-neighbor line
-- clone the repo as `rtdl`
-- the local Python package imported by the examples is `rtdsl`
-- `PYTHONPATH=src:.` is what makes `src/rtdsl/` importable from the checkout
+1. [Project Front Page](../README.md)
+2. [Quick Tutorial](quick_tutorial.md)
+3. [RTDL Tutorials](tutorials/README.md)
+4. [Release-Facing Examples](release_facing_examples.md)
+5. [v0.5 Preview Support Matrix](release_reports/v0_5_preview/support_matrix.md)
+6. [v0.4 Release Statement](release_reports/v0_4/release_statement.md)
+
+That is the intended public reading path.
+
+## Environment Facts
+
+- the checkout root is expected to be the current working directory for example
+  commands
+- the local Python package imported by examples is `rtdsl`
+- Bash/zsh examples use `PYTHONPATH=src:. python ...`
+- Windows `cmd.exe` examples use `set PYTHONPATH=src;.` before `python ...`
+- Windows PowerShell examples use:
+  - `$env:PYTHONPATH = "src;."`
+  - then `python ...`
 - Python `3.10+` is the expected floor
-- `numpy` is recommended for the smoother demo/application examples
 
-RTDL’s current released surface is strongest on geometric and nearest-neighbor
-workloads, but the language/runtime goal is broader than those workloads
-alone. The visual demo is best read as a proof-of-capability application built
-on the same core:
+## Live Documentation
 
-- [Watch The Public 4K Demo Video](https://youtu.be/d3yJB7AmCLM)
-- [Project Front Page](../README.md)
+- [Quick Tutorial](quick_tutorial.md)
+- [RTDL Tutorials](tutorials/README.md)
+- [Release-Facing Examples](release_facing_examples.md)
+- [v0.4 Application Examples](v0_4_application_examples.md)
+- [RTDL Language Docs Index](rtdl/README.md)
+- [Feature Homes](features/README.md)
+- [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
+- [Workloads And Research Foundations](workloads_and_research_foundations.md)
+- [v0.5 Preview Support Matrix](release_reports/v0_5_preview/support_matrix.md)
+- [v0.4 Release Package](release_reports/v0_4/README.md)
+- [v0.4 Release Statement](release_reports/v0_4/release_statement.md)
+- [v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
 
-## Start Here
+## Release Packages
 
-Project-level front door:
+- [v0.5 Preview Package](release_reports/v0_5_preview/README.md)
+- [v0.4 Release Package](release_reports/v0_4/README.md)
+- [v0.3 Release Package](release_reports/v0_3/README.md)
+- [v0.2 Release Package](release_reports/v0_2/README.md)
+- [v0.1 Release Package](release_reports/v0_1/README.md)
 
-1. [Quick Tutorial](quick_tutorial.md)
-2. [Tutorials](tutorials/README.md)
-3. [RTDL v0.2 User Guide](v0_2_user_guide.md)
-4. [Release-Facing Examples](release_facing_examples.md)
-5. [v0.4 Application Examples](v0_4_application_examples.md)
-6. [Feature Homes](features/README.md)
-7. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
-8. [Workloads And Research Foundations](workloads_and_research_foundations.md)
-9. [RTDL v0.3 Release Reports](release_reports/v0_3/README.md)
-10. [RTDL v0.3 Release Statement](release_reports/v0_3/release_statement.md)
-11. [RTDL v0.3 Support Matrix](release_reports/v0_3/support_matrix.md)
-12. [RTDL v0.4 Release Package](release_reports/v0_4/README.md)
-13. [RTDL v0.4 Release Statement](release_reports/v0_4/release_statement.md)
-14. [RTDL v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
-15. [RTDL v0.4 Preview Package](release_reports/v0_4_preview/README.md)
-16. [RTDL v0.4 Preview Release Statement](release_reports/v0_4_preview/release_statement.md)
-17. [RTDL v0.4 Preview Support Matrix](release_reports/v0_4_preview/support_matrix.md)
-18. [RTDL v0.2 Release Statement](release_reports/v0_2/release_statement.md)
-19. [RTDL v0.2 Support Matrix](release_reports/v0_2/support_matrix.md)
-20. [RTDL v0.2 Release Reports](release_reports/v0_2/README.md)
-21. [Future Ray-Tracing Directions](future_ray_tracing_directions.md)
-22. [v0.1 Release Notes](v0_1_release_notes.md)
-23. [v0.1 Reproduction And Verification](v0_1_reproduction_and_verification.md)
-24. [v0.1 Support Matrix](v0_1_support_matrix.md)
-25. [v0.1 Release Reports](release_reports/v0_1/README.md)
-26. [RTDL v0.1 Archive](archive/v0_1/README.md)
-27. [RayJoin Target](rayjoin_target.md)
+## Historical And Maintainer Material
 
-Broader background:
+Use these only when you need deeper history, audit trails, or process detail:
 
-1. [v0.1 Plan](v0_1_final_plan.md)
-2. [Vision](vision.md)
-3. [Dataset Summary](rayjoin_datasets.md)
-4. [Public Dataset Sources](rayjoin_public_dataset_sources.md)
-
-Language-level:
-
-1. [RTDL Language Docs Index](rtdl/README.md)
-2. [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
-3. [Feature Guide](rtdl_feature_guide.md)
-4. [Release-Facing Examples](release_facing_examples.md)
-5. [Feature Homes](features/README.md)
-
-Process-level:
-
-1. [Development Reliability Process](development_reliability_process.md)
-2. [AI Collaboration Workflow](ai_collaboration_workflow.md)
-3. [Audit Flow](audit_flow.md)
-
-Historical and maintainer-facing context:
-
-1. [v0.4 GPU Status Refresh](goal_220_v0_4_gpu_status_refresh.md)
-2. [Archived Milestone Q/A](current_milestone_qa.md)
-3. [RayJoin Reproduction Performance Report](reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md)
-
-Imported historical artifacts:
-
-1. [History Capture And External Artifact Import (2026-04-10)](reports/history_capture_external_artifacts_2026-04-10.md)
-2. [External Gemini v0.3 Final Audit Report](reports/RTDL_v0_3_Final_Audit_Report_2026-04-09_external.md)
-3. [External Gemini Wiki Generation Report](reports/RTDL_Wiki_Generation_Report_2026-04-09_external.md)
-4. [External Claude v0.4 Code Audit](reports/rtdl_v0_4_code_audit_2026-04-10_external.md)
-5. [External Raw Reports](reports/external_raw/README.md)
-6. [Preserved Wiki Drafts](wiki_drafts/README.md)
+- [Process Docs](ai_collaboration_workflow.md)
+- [Audit Flow](audit_flow.md)
+- [Historical Reports](reports/)
+- [Older Release Archives](archive/v0_1/README.md)
+- [Preserved Wiki Drafts](wiki_drafts/README.md)
 
 ## Live State Summary
 
@@ -151,6 +121,7 @@ These are still useful, but they are not the primary current-state narrative:
 
 - `docs/goal_*.md`
 - `docs/reports/`
-- preserved reproduction matrices and older plan docs
+- older release packages
+- preserved historical artifacts
 
 Use them when you need detailed historical or goal-specific context.

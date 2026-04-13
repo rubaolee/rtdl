@@ -10,6 +10,10 @@ Command convention used below:
 
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
+- Bash/zsh examples use inline `PYTHONPATH=src:.`
+- Windows PowerShell uses:
+  - `$env:PYTHONPATH = "src;."`
+  - then `python ...`
 
 ---
 
@@ -32,6 +36,13 @@ Windows `cmd.exe`:
 ```bat
 set PYTHONPATH=src;.
 python examples\rtdl_hello_world.py
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/rtdl_hello_world.py
 ```
 
 ---
@@ -89,6 +100,15 @@ Then try:
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend embree
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/rtdl_hello_world_backends.py --backend cpu_python_reference
+python examples/rtdl_hello_world_backends.py --backend cpu
+python examples/rtdl_hello_world_backends.py --backend embree
 ```
 
 If your machine is configured for GPU backends:

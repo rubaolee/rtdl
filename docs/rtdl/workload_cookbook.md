@@ -17,6 +17,10 @@ Command convention used below:
 
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
+- every command assumes you are already at the repo root
+- Windows PowerShell uses:
+  - `$env:PYTHONPATH = "src;."`
+  - then `python ...`
 
 For feature-by-feature usage guidance, see:
 
@@ -119,7 +123,6 @@ def road_polygon_touch_counts():
 Quick run:
 
 ```bash
-cd rtdl
 python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
@@ -137,7 +140,6 @@ Notes:
 App-style run:
 
 ```bash
-cd rtdl
 python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
 ```
 
@@ -165,7 +167,6 @@ def road_polygon_hits():
 Quick run:
 
 ```bash
-cd rtdl
 python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16
 ```
 
@@ -200,8 +201,14 @@ def polygon_set_similarity():
 Quick run:
 
 ```bash
-cd rtdl
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+```
+
+Windows PowerShell quick-run pattern:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/rtdl_polygon_set_jaccard.py
 ```
 
 Notes:

@@ -220,6 +220,17 @@ paper-consistency milestones.
    - adopt the final preview-session audit summary as a bounded sign-off
      artifact for the `Goals 258-323` slice
 
+58. Goal 325
+   - harden the `v0.5 preview` newcomer docs from the external aggressive-user
+     Windows audit findings
+
+59. Goal 326
+   - adopt the external aggressive-user Windows audit as a bounded preview
+     feedback artifact
+
+60. Goal 327
+   - adopt the full Gemini `v0.5` repo audit as a bounded audit artifact
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

@@ -11,6 +11,9 @@ Command convention used below:
 
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
+- Windows PowerShell uses:
+  - `$env:PYTHONPATH = "src;."`
+  - then `python ...`
 
 ---
 
@@ -31,6 +34,13 @@ Windows `cmd.exe`:
 ```bat
 set PYTHONPATH=src;.
 python examples\rtdl_hello_world.py
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/rtdl_hello_world.py
 ```
 
 ---

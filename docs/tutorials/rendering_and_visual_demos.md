@@ -12,6 +12,9 @@ Command convention used below:
 
 - use `python`
 - if your shell only provides `python3`, substitute `python3`
+- Windows PowerShell uses:
+  - `$env:PYTHONPATH = "src;."`
+  - then `python ...`
 
 ---
 
@@ -33,6 +36,15 @@ Windows `cmd.exe`:
 set PYTHONPATH=src;.
 python examples\visual_demo\rtdl_lit_ball_demo.py ^
     --backend cpu_python_reference --compare-backend none ^
+    --width 48 --height 24 --triangles 128 --output NUL
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/visual_demo/rtdl_lit_ball_demo.py `
+    --backend cpu_python_reference --compare-backend none `
     --width 48 --height 24 --triangles 128 --output NUL
 ```
 

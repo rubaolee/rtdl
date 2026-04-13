@@ -19,6 +19,15 @@ Before running any command below:
 - commands below use `python` as the public convention
 - if your shell only provides `python3`, substitute `python3` for `python`
 
+Windows shell note:
+
+- `cmd.exe`:
+  - `set PYTHONPATH=src;.`
+- PowerShell:
+  - `$env:PYTHONPATH = "src;."`
+
+Then run the same `python ...` command from the repo root.
+
 ## v0.4 nearest-neighbor examples
 
 These are the current release-facing examples for the released `v0.4` line.
@@ -81,6 +90,15 @@ Important boundary:
 - the public top-level nearest-neighbor example CLIs do not expose `optix` or
   `vulkan` backend flags yet
 - use the CPU truth path or Embree through these public example scripts today
+
+Windows PowerShell example:
+
+```powershell
+$env:PYTHONPATH = "src;."
+python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference
+python examples/rtdl_fixed_radius_neighbors.py --backend cpu
+python examples/rtdl_fixed_radius_neighbors.py --backend embree
+```
 
 ## Core examples
 
@@ -202,5 +220,6 @@ the main first-run entry points for new users.
 - these are the release-facing examples for the frozen v0.2 scope
 - if you cloned the repo as `rtdl`, every command above is intended to work
   from that clone root
+- do not prepend another `cd rtdl` after you are already at the checkout root
 - older demos and exploratory examples still exist in the repo, but they are
   not the primary release-facing entry points
