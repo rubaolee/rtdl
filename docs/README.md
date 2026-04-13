@@ -13,8 +13,8 @@ Read these in order:
 2. [Quick Tutorial](quick_tutorial.md)
 3. [RTDL Tutorials](tutorials/README.md)
 4. [Release-Facing Examples](release_facing_examples.md)
-5. [v0.5 Preview Support Matrix](release_reports/v0_5_preview/support_matrix.md)
-6. [v0.4 Release Statement](release_reports/v0_4/release_statement.md)
+5. [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
+6. [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -40,13 +40,16 @@ That is the intended public reading path.
 - [Feature Homes](features/README.md)
 - [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
 - [Workloads And Research Foundations](workloads_and_research_foundations.md)
-- [v0.5 Preview Support Matrix](release_reports/v0_5_preview/support_matrix.md)
+- [v0.5 Release Package](release_reports/v0_5/README.md)
+- [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
+- [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
 - [v0.4 Release Statement](release_reports/v0_4/release_statement.md)
 - [v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
 
 ## Release Packages
 
+- [v0.5 Release Package](release_reports/v0_5/README.md)
 - [v0.5 Preview Package](release_reports/v0_5_preview/README.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
 - [v0.3 Release Package](release_reports/v0_3/README.md)
@@ -67,17 +70,17 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.4.0`
-- current `main` carries the active `v0.5 preview` line
+- current released version is `v0.5.0`
+- current `main` carries the released `v0.5.0` line
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
   - `polygon_pair_overlap_area_rows`
   - `polygon_set_jaccard`
-- the live released engineering line on `main` is now the `v0.4` nearest-neighbor surface:
+- the earlier released engineering line on `main` was the `v0.4` nearest-neighbor surface:
   - `fixed_radius_neighbors`
   - `knn_rows`
-- the active preview-only additions on `main` are:
+- the released `v0.5.0` additions on `main` are:
   - `bounded_knn_rows`
   - 3D point nearest-neighbor support
   - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan

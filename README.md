@@ -20,21 +20,22 @@ core can power a bounded Python application.
 
 ## Version Status At A Glance
 
-- current released version: `v0.4.0`
-- current active development line in this repo: `v0.5 preview`
-- released NN surface today:
+- current released version: `v0.5.0`
+- current released NN surface today:
   - `fixed_radius_neighbors`
+  - `bounded_knn_rows`
   - `knn_rows`
-- current `v0.5 preview` additions:
+- current `v0.5.0` additions over `v0.4.0`:
   - `bounded_knn_rows`
   - 3D point nearest-neighbor support
   - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
 
 For exact status:
 
+- [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
+- [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
 - [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
-- [RTDL v0.5 Preview Support Matrix](docs/release_reports/v0_5_preview/support_matrix.md)
 
 ## Backend Names In Plain English
 
@@ -54,7 +55,7 @@ RTDL uses several backends behind one public kernel surface:
 - `Vulkan`:
   - the Vulkan ray-tracing GPU backend
   - portable GPU path
-  - current validated `v0.5 preview` performance story for this backend is
+  - current validated `v0.5.0` performance story for this backend is
     Linux-primary
 - `PostGIS`:
   - not an RTDL backend
@@ -68,18 +69,18 @@ Current honest platform story:
   - primary validation platform
   - current large-scale nearest-neighbor performance claims are made here
 - `Windows`:
-  - bounded support in the current `v0.5 preview` line
+  - bounded support in the current `v0.5.0` line
   - Embree correctness is verified
   - no current large-scale NN performance claim
 - `local macOS`:
-  - bounded support in the current `v0.5 preview` line
+  - bounded support in the current `v0.5.0` line
   - Embree correctness is verified
   - no current large-scale NN performance claim
 
 If you want the exact current boundary instead of the short front-page summary,
 use:
 
-- [RTDL v0.5 Preview Support Matrix](docs/release_reports/v0_5_preview/support_matrix.md)
+- [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
 ## See It Quickly
 
@@ -174,8 +175,8 @@ If you want the released core workloads:
 If you want the newest released nearest-neighbor line:
 
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
-- [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
-- [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
+- [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
+- [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
 If you want the application/demo side:
 
@@ -188,11 +189,7 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.4.0`
-
-Current development preview in this repo:
-
-- `v0.5 preview`
+- `v0.5.0`
 
 Released workload surface:
 
@@ -201,6 +198,7 @@ Released workload surface:
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
 - `fixed_radius_neighbors`
+- `bounded_knn_rows`
 - `knn_rows`
 
 Release and preview layers inside the current repository:
@@ -208,8 +206,7 @@ Release and preview layers inside the current repository:
 - `v0.2.0`: stable released segment/polygon and overlap workload family
 - `v0.3.0`: released proof-of-capability demo/application layer on the same RTDL core
 - `v0.4.0`: released nearest-neighbor workload expansion
-- `v0.5 preview`: 3D nearest-neighbor and multi-backend expansion under active
-  validation
+- `v0.5.0`: released 3D nearest-neighbor and multi-backend expansion
 
 Current public demo artifact:
 
@@ -219,7 +216,8 @@ For exact backend/workload status, use:
 
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
 - [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
-- [RTDL v0.5 Preview Support Matrix](docs/release_reports/v0_5_preview/support_matrix.md)
+- [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
+- [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
 ## What RTDL Contains
 
