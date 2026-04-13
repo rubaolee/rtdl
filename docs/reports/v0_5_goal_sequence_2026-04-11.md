@@ -208,6 +208,10 @@ paper-consistency milestones.
    - frontpage clarity pass for version state, backend names, and platform
      support boundaries
 
+55. Goal 322
+   - adopt the rewritten comprehensive transition audit as the canonical
+     `Goals 241-320` whole-slice audit artifact
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
