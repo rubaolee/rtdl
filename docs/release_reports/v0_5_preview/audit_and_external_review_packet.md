@@ -1,7 +1,7 @@
 # RTDL v0.5 Audit And External Review Packet
 
-Date: 2026-04-12
-Status: pre-release review packet
+Date: 2026-04-13
+Status: final bounded external-review packet for `v0.5 preview`
 
 Use this packet for the next bounded external review round.
 
@@ -12,9 +12,11 @@ Use this packet for the next bounded external review round.
 - [v0.5 Preview Support Matrix](support_matrix.md)
 - [v0.5 Call For Test](call_for_test.md)
 - [Preview Readiness Audit](../../reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md)
-- [Comprehensive Transition Audit](../../reports/comprehensive_v0_5_transition_audit_report_2026-04-12.md)
+- [Comprehensive Transition Audit](../../history/audits/comprehensive_v0_5_transition_audit_report_2026-04-12.md)
 - [Final Preview Session Audit Summary](../../reports/final_v0_5_preview_session_audit_summary_2026-04-12.md)
-- [Full Repo Audit Review](../../reports/gemini_v0_5_full_repo_audit_review_2026-04-12.md)
+- [Final Pre-Release Session Summary](../../reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md)
+- [Collaborator Pre-Release Review](../../reports/gemini_v0_5_collaborator_pre_release_review_2026-04-13.md)
+- [Full Repo Audit Review](../../history/audits/gemini_v0_5_full_repo_audit_review_2026-04-12.md)
 - [External Aggressive User Audit](../../reports/v0_5_external_aggressive_user_audit_2026-04-12.md)
 
 ## What Reviewers Should Check
@@ -24,6 +26,8 @@ Use this packet for the next bounded external review round.
 3. Are the backend/platform claims honest and bounded?
 4. Does the newcomer path still have obvious copy-paste or shell traps?
 5. Are there any remaining release blockers at the language/runtime level?
+6. Do the current packet docs agree that `v0.5` is ready for final external
+   review but not yet final release?
 
 ## What This Packet Is Not
 
@@ -36,5 +40,6 @@ Use this packet for the next bounded external review round.
 - concrete findings
 - concrete release blockers, if any
 - concrete wording/packaging issues, if any
-- explicit statement of whether `v0.5` looks pre-release-ready for final
-  packaging
+- explicit statement of whether `v0.5` is ready for the final external review
+  round
+- explicit statement of what still must happen before final release packaging

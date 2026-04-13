@@ -67,7 +67,8 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current `main` is now the released `v0.4.0` branch state
+- current released version is `v0.4.0`
+- current `main` carries the active `v0.5 preview` line
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
@@ -76,6 +77,10 @@ Keep these current facts in mind while reading:
 - the live released engineering line on `main` is now the `v0.4` nearest-neighbor surface:
   - `fixed_radius_neighbors`
   - `knn_rows`
+- the active preview-only additions on `main` are:
+  - `bounded_knn_rows`
+  - 3D point nearest-neighbor support
+  - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that

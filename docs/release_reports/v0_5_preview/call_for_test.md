@@ -104,14 +104,14 @@ Please do check whether the repo says those boundaries clearly enough.
 
 Start here:
 
-- [README.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/README.md)
-- [support_matrix.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/support_matrix.md)
-- [goal320_v0_5_preview_readiness_audit_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md)
-- [comprehensive_v0_5_transition_audit_report_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/comprehensive_v0_5_transition_audit_report_2026-04-12.md)
+- [README.md](../../../README.md)
+- [support_matrix.md](support_matrix.md)
+- [v0.5 preview package README.md](README.md)
+- [goal320_v0_5_preview_readiness_audit_2026-04-12.md](../../reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md)
 
 If you want the current Linux backend picture:
 
-- [goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md)
+- [goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md](../../reports/goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md)
 
 ## Quick Start
 
@@ -235,11 +235,11 @@ Questions:
 If you have a Linux host with the relevant backends available, use the current
 reports as the benchmark reference rather than guessing expected results:
 
-- [goal310_v0_5_linux_large_scale_embree_nn_perf_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal310_v0_5_linux_large_scale_embree_nn_perf_2026-04-12.md)
-- [goal312_v0_5_linux_large_scale_native_embree_optix_perf_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal312_v0_5_linux_large_scale_native_embree_optix_perf_2026-04-12.md)
-- [goal313_v0_5_linux_32768_backend_table_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal313_v0_5_linux_32768_backend_table_2026-04-12.md)
-- [goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_2026-04-12.md)
-- [goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md)
+- [goal310_v0_5_linux_large_scale_embree_nn_perf_2026-04-12.md](../../reports/goal310_v0_5_linux_large_scale_embree_nn_perf_2026-04-12.md)
+- [goal312_v0_5_linux_large_scale_native_embree_optix_perf_2026-04-12.md](../../reports/goal312_v0_5_linux_large_scale_native_embree_optix_perf_2026-04-12.md)
+- [goal313_v0_5_linux_32768_backend_table_2026-04-12.md](../../reports/goal313_v0_5_linux_32768_backend_table_2026-04-12.md)
+- [goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_2026-04-12.md](../../reports/goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_2026-04-12.md)
+- [goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md](../../reports/goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md)
 
 Questions:
 

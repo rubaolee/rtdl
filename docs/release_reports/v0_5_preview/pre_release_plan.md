@@ -1,6 +1,6 @@
 # RTDL v0.5 Pre-Release Plan
 
-Date: 2026-04-12
+Date: 2026-04-13
 Status: active pre-release work plan
 
 This document defines the next pre-release phase for `v0.5`.
@@ -25,10 +25,9 @@ Before final release, the repo should have:
 
 Current status:
 
-- mostly ready
-- main recent hardening work is complete
-- remaining doc work should now be release-facing polish, not more archive
-  expansion
+- materially complete for the current preview package
+- remaining doc work should now be bounded public-surface correction only
+- no major archive expansion should happen before final release packaging
 
 ## 2. Code Test
 
@@ -41,8 +40,8 @@ Before final release, the repo should have:
 Current status:
 
 - broad regression coverage is strong
-- the final pre-release test gate should now be written down and rerun as one
-  intentional slice
+- the explicit pre-release test gate now exists and has been saved
+- further test work before final release should be bounded reruns only
 
 ## 3. Audit
 
@@ -55,7 +54,7 @@ Before final release, the repo should have:
 Current status:
 
 - multiple strong audits already exist
-- the remaining work is final synthesis, not first discovery
+- the remaining work is final synthesis and external validation, not first discovery
 
 ## 4. External Review
 
@@ -68,7 +67,7 @@ Before final release, the repo should have:
 Current status:
 
 - external audits exist
-- the next pass should be a final pre-release review round, not open-ended
+- the next pass should be a final bounded external review round, not open-ended
   exploration
 
 ## 5. Final Release-Making
@@ -92,6 +91,6 @@ Current status:
 The pre-release phase is now:
 
 - tighten the docs
-- rerun the intended release-gate tests
-- run the final audits and external review
+- preserve the intended release-gate tests
+- run the final bounded external review round
 - then publish the final release package

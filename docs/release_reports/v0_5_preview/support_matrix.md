@@ -5,7 +5,7 @@ Status: current development-state preview, not final release sign-off
 
 Related preview-facing docs:
 
-- [RTDL v0.5 Preview Call For Test](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/call_for_test.md)
+- [RTDL v0.5 Preview Call For Test](call_for_test.md)
 
 ## Reading Guide
 
@@ -35,7 +35,7 @@ Status wording used below:
 | PostGIS | external correctness and timing anchor | supporting baseline |
 | Embree | accelerated CPU backend | accepted |
 | OptiX | accelerated GPU backend | accepted |
-| Vulkan | accelerated GPU backend | accepted, bounded |
+| Vulkan | accelerated GPU backend; current validated performance story is Linux-primary | accepted, bounded |
 | cuNSearch | external research comparison path with explicit duplicate/large-set boundaries | accepted, bounded |
 
 ## Current Workload Surface

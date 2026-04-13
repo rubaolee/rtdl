@@ -10,6 +10,7 @@ This is the intended code-test surface for the `v0.5` pre-release phase.
 Run:
 
 ```bash
+cd <repo-root>
 python3 -m unittest tests.claude_v0_5_full_review_test
 ```
 
@@ -22,6 +23,7 @@ Purpose:
 Run:
 
 ```bash
+cd <repo-root>
 python3 -m unittest \
   tests.goal292_v0_5_native_3d_fixed_radius_oracle_test \
   tests.goal293_v0_5_native_3d_bounded_knn_oracle_test \
@@ -50,3 +52,5 @@ The final pre-release test slice should save:
 - commands used
 - pass/fail result
 - any bounded exclusions
+- whether the commands were executed from the repo root
+- what `<repo-root>` was on the machine that ran the gate

@@ -7,7 +7,7 @@
 - [Audit And External Review Packet](audit_and_external_review_packet.md)
 
 This package is the canonical entry point for the current `v0.5 preview`
-pre-release phase.
+pre-release and final external-review phase.
 
 Current state:
 
@@ -18,7 +18,7 @@ What this package is for:
 
 - tightening the release-facing docs
 - running the intended code/regression checks
-- running the final audit and external review pass
+- running the final bounded external review pass
 - preparing the final `v0.5` release-making slice
 
 Honesty boundary:

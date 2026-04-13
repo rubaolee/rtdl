@@ -53,7 +53,9 @@ RTDL uses several backends behind one public kernel surface:
   - current fastest Linux backend on the large 3D NN line
 - `Vulkan`:
   - the Vulkan ray-tracing GPU backend
-  - portable GPU path, currently accepted on Linux in the `v0.5 preview` line
+  - portable GPU path
+  - current validated `v0.5 preview` performance story for this backend is
+    Linux-primary
 - `PostGIS`:
   - not an RTDL backend
   - used as an external correctness/timing anchor for some workloads
