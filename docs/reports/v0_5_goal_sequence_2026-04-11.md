@@ -235,6 +235,10 @@ paper-consistency milestones.
    - remove the `rtdsl.types` stdlib-collision risk by renaming the module and
      preserving the public layout/type import surface
 
+62. Goal 329
+   - complete the `layout_types` collision fix by actually removing the stale
+     tracked `src/rtdsl/types.py` file from the repo
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
