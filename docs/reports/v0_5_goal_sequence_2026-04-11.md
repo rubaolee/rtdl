@@ -181,6 +181,24 @@ paper-consistency milestones.
      - OptiX
      - Vulkan
 
+50. Goal 317
+   - consolidated Linux four-backend nearest-neighbor performance report for:
+     - PostGIS
+     - Embree
+     - OptiX
+     - Vulkan
+
+51. Goal 318
+   - first release-facing `v0.5` preview support matrix with explicit Linux,
+     local macOS, and Windows boundaries
+
+52. Goal 319
+   - bounded cross-platform Embree correctness matrix for the 3D
+     nearest-neighbor trio on:
+     - Linux
+     - local macOS
+     - Windows
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
