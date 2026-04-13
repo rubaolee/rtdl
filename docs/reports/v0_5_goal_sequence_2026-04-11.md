@@ -251,6 +251,10 @@ paper-consistency milestones.
    - run the explicit `v0.5` pre-release code-test sweep and save the result as
      a release-gate artifact
 
+65. Goal 332
+   - run the bounded `v0.5` pre-release audit pass across the front door, docs
+     index, support matrix, and pre-release package
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
