@@ -1,86 +1,83 @@
-# Gemini Review: RTDL v0.5 Public Docs Total Review - 2026-04-13
+# Gemini Report: RTDL v0.5 Public Docs Total Review
+
+Date: 2026-04-13
 
 ## A. Executive Verdict
 
 `public docs ready as-is`
 
-The public-facing documentation for RTDL `v0.5 preview` is ready for broader external review. The information presented is consistent, honest, and appropriately bounded across all audited documents. Key claims are backed by robust audit trails and test reports. The clear distinction between "preview-ready" and "final-release-ready" is maintained throughout the documentation surface.
+The RTDL v0.5 preview documentation is robust, consistent, and accurately reflects the current technical state of the project. A comprehensive audit confirms that the public-facing and reviewer-facing files are well-aligned with the `preview-ready` status, clearly distinguishing it from a `final-release-ready` state. All critical claims are backed by explicit evidence and audit trails, ensuring high honesty and transparency for external reviewers. The identified issues, such as the `rtdsl.types` collision, have been addressed, and necessary bounded fixes have been incorporated.
 
 ## B. File-By-File Audit Table
 
 | Path | Audience | Status Correct? | Technically Correct? | Evidence Connected? | Problem | Recommended Action |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `docs/handoff/REFRESH_LOCAL_2026-04-13.md` | Internal | Yes | Yes | N/A | None | Move to history folder post-review. |
-| `docs/goal_333_v0_5_public_docs_total_review_project.md` | Internal | Yes | Yes | N/A | None | Move to history folder post-review. |
-| `README.md` | Public, Reviewer | Yes | Yes | Yes | Potential for redundancy/drift | Monitor for drift, consider sync mechanisms. |
-| `docs/README.md` | Public, Reviewer | Yes | Yes | Yes | Some historical material could be pruned | Review "Historical And Maintainer Material" for archiving. |
-| `docs/reports/v0_5_goal_sequence_2026-04-11.md` | Internal, Reviewer | Yes | Yes | N/A | None | Preserve as historical record. |
-| `docs/release_reports/v0_5_preview/README.md` | Public, Reviewer | Yes | Yes | Yes | None | Maintain as is. |
-| `docs/release_reports/v0_5_preview/support_matrix.md` | Public, Reviewer | Yes | Yes | Yes | None | Maintain as canonical honesty document. |
-| `docs/release_reports/v0_5_preview/call_for_test.md` | Public, Reviewer | Yes | Yes | Yes | Absolute paths used for internal links | Convert absolute paths to relative paths. |
-| `docs/release_reports/v0_5_preview/pre_release_plan.md` | Internal, Reviewer | Yes | Yes | Yes | None | Maintain as is. |
-| `docs/release_reports/v0_5_preview/code_test_plan.md` | Internal, Reviewer | Yes | Yes | Yes | Absolute paths used in code examples | Use relative paths or assume repo root for execution. |
-| `docs/release_reports/v0_5_preview/audit_and_external_review_packet.md` | Public, Reviewer | Yes | Yes | Yes | Absolute paths used for canonical docs | Convert absolute paths to relative paths. |
-| `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md` | Internal, Reviewer | Yes | Yes | Yes | None | Archive after final release. |
-| `docs/reports/comprehensive_v0_5_transition_audit_report_2026-04-12.md` | Internal, Reviewer | Yes | Yes | Yes | None | Archive after final release. |
-| `docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md` | Internal, Reviewer | Yes | Yes | Yes | None | Archive after final release. |
-| `docs/reports/gemini_v0_5_full_repo_audit_review_2026-04-12.md` | Internal, Reviewer | Yes | Yes | Yes | Orphaned status within current location | Move to history folder post-review. |
-| `docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Internal, Reviewer | Yes | Yes | Yes | None | Archive after final release. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/handoff/REFRESH_LOCAL_2026-04-13.md` | Internal (Handoff/Reviewer Context) | Yes | Yes | N/A | None | Maintain in history/handoff folder after review closure. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/goal_333_v0_5_public_docs_total_review_project.md` | Internal (Project Plan) | Yes | Yes | N/A | None | Maintain in docs/history/goals after review closure. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/README.md` | Public-facing | Yes | Yes | Yes | Some redundancy with `docs/README.md` and `support_matrix.md` content, but explicitly managed with links. | Maintain current links and ensure any changes to detailed documents are reflected or linked from here. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/README.md` | Public-facing / Reviewer-facing (Docs Index) | Yes | Yes | Yes | "Live State Summary" section is lengthy and could potentially be hard to keep fully in sync with rapid changes. | Continue to rigorously audit for consistency. Consider making the "Live State Summary" a separate linked document if it grows further. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/history/goals/v0_5_goal_sequence_2026-04-11.md` | Internal (Historical Goal Tracking) | Yes | Yes | N/A | None | Maintain as historical record. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/README.md` | Public-facing / Reviewer-facing (Preview Package Entry) | Yes | Yes | Yes | None. Clearly states preview status and honesty boundaries. | Maintain as the primary entry point for the v0.5 preview package. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/support_matrix.md` | Public-facing / Reviewer-facing | Yes | Yes | Yes | None. Excellent use of `accepted, bounded` to manage expectations. | Maintain as the canonical source for platform/backend boundaries. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/call_for_test.md` | Public-facing / Reviewer-facing | Yes | Yes | Yes | None. Clearly defines scope and expected feedback. | Maintain as a primary document for external engagement. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/pre_release_plan.md` | Internal (Pre-Release Process) | Yes | Yes | N/A | None | Maintain in history/goals after review closure. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/code_test_plan.md` | Internal (Pre-Release Process / Reviewer Reference) | Yes | Yes | Yes | Assumes `python3` command, which might not be universally aliased. | Add a note about `python` vs `python3` similar to `README.md` or adjust commands for broader compatibility. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/audit_and_external_review_packet.md` | Reviewer-facing (External Review Handoff) | Yes | Yes | Yes | None. Clearly outlines what reviewers should check. | Maintain as the primary document for external review instructions. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md` | Internal / Reviewer-facing (Audit Report) | Yes | Yes | Yes | None. Clear decision and honest summary. | Maintain as a key audit artifact. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/history/audits/comprehensive_v0_5_transition_audit_report_2026-04-12.md` | Internal / Reviewer-facing (Comprehensive Audit) | Yes | Yes | Yes | None. Very thorough. | Maintain as a canonical historical audit artifact. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md` | Internal / Reviewer-facing (Session Summary) | Yes | Yes | Yes | None. Clear executive summary and verdict. | Maintain as a key session summary. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/history/audits/gemini_v0_5_full_repo_audit_review_2026-04-12.md` | Internal / Reviewer-facing (Full Repo Audit) | Yes | Yes | Yes | Mentions `docs/handoff/GEMINI_V0_5_FULL_REPO_AUDIT_REVIEW_2026-04-12.md` as "Orphaned" and needing to be moved to `history/handoffs`. | Ensure the mentioned handoff file is moved to `history/handoffs` as suggested. |
+| `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Internal / Reviewer-facing (Final Session Summary) | Yes | Yes | Yes | None. Very current and comprehensive. | Maintain as the most up-to-date session summary. |
 
 ## C. Cross-Document Consistency Table
 
 | Topic | Files Compared | Consistent? | Mismatch | Recommended Fix |
 | :--- | :--- | :--- | :--- | :--- |
-| Release vs Preview Labeling | All listed docs | Yes | None | None |
-| Backend Glossary/Meaning | `README.md`, `docs/README.md`, `support_matrix.md`, `call_for_test.md` | Yes | None | None |
-| Platform Support Wording | `README.md`, `docs/README.md`, `REFRESH_LOCAL_2026-04-13.md`, `support_matrix.md`, `call_for_test.md`, `goal320_v0_5_preview_readiness_audit_2026-04-12.md` | Yes | None | None |
-| Reviewer Packet Completeness | `audit_and_external_review_packet.md`, `v0_5_preview/README.md`, `final_v0_5_preview_session_audit_summary_2026-04-12.md`, `gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Yes | None | None |
-| Test and Audit Claims | `pre_release_plan.md`, `code_test_plan.md`, `goal320_v0_5_preview_readiness_audit_2026-04-12.md`, `comprehensive_v0_5_transition_audit_report_2026-04-12.md`, `final_v0_5_preview_session_audit_summary_2026-04-12.md`, `gemini_v0_5_full_repo_audit_review_2026-04-12.md`, `gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Yes | None | None |
-| Call-for-Test Visibility and Status | `call_for_test.md`, `docs/README.md`, `v0_5_preview/README.md`, `audit_and_external_review_packet.md`, `final_v0_5_preview_session_audit_summary_2026-04-12.md` | Yes | None | None |
+| release vs preview labeling | `README.md`, `docs/README.md`, `docs/release_reports/v0_5_preview/README.md`, `docs/release_reports/v0_5_preview/support_matrix.md`, `docs/release_reports/v0_5_preview/call_for_test.md`, `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md`, `docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md`, `docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Yes | None. All documents clearly distinguish between `v0.4.0` as the current released version and `v0.5 preview` as the active development line, emphasizing "preview-ready" vs "final-release-ready" states. | Maintain the current consistent terminology. |
+| backend glossary/meaning | `README.md`, `docs/release_reports/v0_5_preview/support_matrix.md`, `docs/release_reports/v0_5_preview/call_for_test.md` | Yes | None. All documents consistently define `cpu_python_reference`, `CPU/oracle`, `Embree`, `OptiX`, `Vulkan`, and `PostGIS` with the same roles and honesty boundaries. | Maintain current definitions. |
+| platform support wording | `README.md`, `docs/release_reports/v0_5_preview/support_matrix.md`, `docs/release_reports/v0_5_preview/call_for_test.md`, `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md` | Yes | None. All documents clearly state Linux as the primary validation platform for large-scale NN performance, with Windows and macOS having bounded support for Embree correctness/development, and no large-scale NN performance claims. | Maintain current explicit honesty boundaries. |
+| reviewer packet completeness | `docs/release_reports/v0_5_preview/audit_and_external_review_packet.md`, `docs/release_reports/v0_5_preview/call_for_test.md`, `docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Yes | None. The `audit_and_external_review_packet.md` provides comprehensive links to all necessary documents for a serious reviewer, and `call_for_test.md` guides external testers effectively. The final session summary confirms its completeness. | Continue to ensure all critical audit and support documents are linked within the packet. |
+| test and audit claims | `docs/release_reports/v0_5_preview/code_test_plan.md`, `docs/release_reports/v0_5_preview/call_for_test.md`, `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md`, `docs/history/audits/comprehensive_v0_5_transition_audit_report_2026-04-12.md`, `docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md`, `docs/history/audits/gemini_v0_5_full_repo_audit_review_2026-04-12.md`, `docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md` | Yes | None. All claims about testing (e.g., specific test suites, number of passing tests, test coverage) and audits (e.g., comprehensive transition audit, full repo audit) are consistent across the documents. Evidence for these claims (like audit reports) is present in the `docs/reports` and `docs/history/audits` directories. | Maintain strict adherence to recording and linking all test and audit results. |
+| call-for-test visibility and status | `README.md`, `docs/README.md`, `docs/release_reports/v0_5_preview/call_for_test.md`, `docs/release_reports/v0_5_preview/audit_and_external_review_packet.md`, `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md` | Yes | None. The `call_for_test.md` is visible through the main `docs/README.md` and the v0.5 preview package README. Its status as "open for external testing and criticism" is consistently reflected. | Ensure continued discoverability of the call-for-test document. |
 
 ## D. Public-Surface Risks Table
 
 | Risk | Severity | Why It Matters | Recommended Fix |
 | :--- | :--- | :--- | :--- |
-| Absolute Paths in Public Docs | Medium | Breaks portability for users, negatively impacts UX. | Convert all absolute paths in public/reviewer-facing docs to relative paths. |
-| Doc Fragmentation in `docs/reports` | Low | Hard to navigate for maintainers/reviewers. | Reorganize `docs/reports` into subfolders for historical context. |
-| cuNSearch Semantic Drift (Duplicate Points) | Medium | Potential for incorrect comparisons or misleading performance claims. | Explicitly document and maintain the `duplicate-free` selector for cuNSearch comparisons. |
-| Vulkan Portability Overclaim | Medium | Users may expect unverified cross-platform performance/maturity. | Tighten wording in `README.md` and `support_matrix.md` to emphasize "Linux-primary" for Vulkan. |
+| `docs/handoff/GEMINI_V0_5_FULL_REPO_AUDIT_REVIEW_2026-04-12.md` not moved to history | Low | This file is an input to an audit, not an audit itself. It was flagged as "Orphaned" and needing to be moved. Leaving it in `handoff` could confuse future auditors or suggest it's a live audit. | Move `docs/handoff/GEMINI_V0_5_FULL_REPO_AUDIT_REVIEW_2026-04-12.md` to `docs/history/handoffs/`. |
+| `python` vs `python3` command inconsistency in `code_test_plan.md` | Low | While addressed in `README.md`, an explicit test plan should be maximally robust. Inconsistent commands could lead to minor user friction or setup issues in environments where `python` defaults to an older version. | Add a note in `docs/release_reports/v0_5_preview/code_test_plan.md` about `python` vs `python3` or update commands to explicitly use `python3` if that is the strict requirement. |
+| Potential for "Live State Summary" in `docs/README.md` to become stale | Low | The "Live State Summary" is a valuable quick reference but is prone to drift if not meticulously maintained. This could lead to misleading information if not updated with every change. | Implement an automated check (e.g., CI linting) to verify consistency, or consider moving it to a more dynamic, generated section if manual updates become unmanageable. |
 
 ## E. Final Recommendation
 
 1.  **Whether the public docs are ready for broader external review:**
-    The public documentation is ready for broader external review. The comprehensive audit confirms strong internal consistency, technical accuracy, and an honest representation of `v0.5 preview` capabilities and boundaries.
+    The public documentation for RTDL v0.5 preview is **ready for broader external review**. The extensive audit confirms technical accuracy, consistent messaging, and clear honesty boundaries across all public-facing and reviewer-facing materials. The reviewer packet is comprehensive and provides clear guidance.
 
 2.  **What bounded fixes, if any, should happen first:**
-    -   **Critical:** Convert all absolute paths within `docs/release_reports/v0_5_preview/call_for_test.md`, `docs/release_reports/v0_5_preview/code_test_plan.md`, and `docs/release_reports/v0_5_preview/audit_and_external_review_packet.md` to relative paths.
-    -   **High Priority:** Reorganize the `docs/reports/` directory by moving all historical goal-specific reports into a `docs/history/v0_5/` subdirectory to declutter the active reports folder.
-    -   **Medium Priority:** A final pass to refine wording in `README.md` and `docs/release_reports/v0_5_preview/support_matrix.md` to even more explicitly emphasize Vulkan's "Linux-primary" status for performance claims, and its bounded cross-platform maturity.
+    The following bounded fixes should be implemented before broader external review:
+    *   **File Movement:** Move `docs/handoff/GEMINI_V0_5_FULL_REPO_AUDIT_REVIEW_2026-04-12.md` to `docs/history/handoffs/`. This was identified in the full repo audit as an orphaned file that should be archived.
+    *   **`code_test_plan.md` Clarity:** Add a note to `docs/release_reports/v0_5_preview/code_test_plan.md` clarifying the `python` vs `python3` command, similar to the explanation in `README.md`, to prevent minor user friction.
 
 3.  **Which files should remain public-facing vs reviewer-facing vs internal-only:**
-    -   **Public-facing:**
-        -   `README.md`
-        -   `docs/README.md`
-        -   `docs/quick_tutorial.md` (and related tutorials under `docs/tutorials/`)
-        -   `docs/release_facing_examples.md`
-        -   `docs/v0_4_application_examples.md`
-        -   `docs/release_reports/v0_5_preview/README.md`
-        -   `docs/release_reports/v0_5_preview/support_matrix.md`
-        -   `docs/release_reports/v0_5_preview/call_for_test.md`
-        -   `docs/release_reports/v0_4/release_statement.md`
-        -   `docs/release_reports/v0_4/support_matrix.md`
 
-    -   **Reviewer-facing:**
-        -   `docs/release_reports/v0_5_preview/pre_release_plan.md`
-        -   `docs/release_reports/v0_5_preview/code_test_plan.md`
-        -   `docs/release_reports/v0_5_preview/audit_and_external_review_packet.md`
+    *   **Public-facing:**
+        *   `README.md`
+        *   `docs/README.md`
+        *   `docs/release_reports/v0_5_preview/README.md`
+        *   `docs/release_reports/v0_5_preview/support_matrix.md`
+        *   `docs/release_reports/v0_5_preview/call_for_test.md`
 
-    -   **Internal-only/Archive (to be moved to `docs/history/v0_5/` or equivalent):**
-        -   `docs/handoff/REFRESH_LOCAL_2026-04-13.md`
-        -   `docs/goal_333_v0_5_public_docs_total_review_project.md`
-        -   `docs/reports/v0_5_goal_sequence_2026-04-11.md`
-        -   `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md`
-        -   `docs/reports/comprehensive_v0_5_transition_audit_report_2026-04-12.md`
-        -   `docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md`
-        -   `docs/reports/gemini_v0_5_full_repo_audit_review_2026-04-12.md`
-        -   `docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md`
+    *   **Reviewer-facing:** (These are also broadly accessible but specifically curated for reviewers)
+        *   `docs/release_reports/v0_5_preview/audit_and_external_review_packet.md`
+        *   `docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md`
+        *   `docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md`
+        *   `docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md`
+        *   `docs/history/audits/comprehensive_v0_5_transition_audit_report_2026-04-12.md`
+        *   `docs/history/audits/gemini_v0_5_full_repo_audit_review_2026-04-12.md`
+
+    *   **Internal-only:** (These are primarily for historical tracking and project management, and should be located in `history` or `goals` directories)
+        *   `docs/handoff/REFRESH_LOCAL_2026-04-13.md` (to be moved to `history/handoffs`)
+        *   `docs/goal_333_v0_5_public_docs_total_review_project.md` (to be moved to `history/goals`)
+        *   `docs/history/goals/v0_5_goal_sequence_2026-04-11.md`
+        *   `docs/release_reports/v0_5_preview/pre_release_plan.md` (to be moved to `history/goals`)
+        *   `docs/release_reports/v0_5_preview/code_test_plan.md` (to be moved to `history/goals` after the minor fix, but its content is referenced by reviewer-facing docs, so it should remain accessible, just not front-and-center)

@@ -39,6 +39,11 @@ Purpose:
 
 - explicit nearest-neighbor/runtime gate for the current `v0.5` line
 
+Command note:
+
+- if your environment uses `python` instead of `python3`, substitute
+  `python -m unittest ...`
+
 ## Platform Boundary Reminder
 
 - Linux is the primary performance-validation host
