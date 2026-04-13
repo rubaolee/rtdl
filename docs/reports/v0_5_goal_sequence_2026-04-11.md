@@ -212,6 +212,14 @@ paper-consistency milestones.
    - adopt the rewritten comprehensive transition audit as the canonical
      `Goals 241-320` whole-slice audit artifact
 
+56. Goal 323
+   - publish the `v0.5 preview` call-for-test document through the preview
+     support package and stable repo path
+
+57. Goal 324
+   - adopt the final preview-session audit summary as a bounded sign-off
+     artifact for the `Goals 258-323` slice
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty

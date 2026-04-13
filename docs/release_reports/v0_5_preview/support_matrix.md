@@ -3,6 +3,10 @@
 Date: 2026-04-12
 Status: current development-state preview, not final release sign-off
 
+Related preview-facing docs:
+
+- [RTDL v0.5 Preview Call For Test](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/release_reports/v0_5_preview/call_for_test.md)
+
 ## Reading Guide
 
 Status wording used below:
