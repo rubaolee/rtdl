@@ -199,6 +199,11 @@ paper-consistency milestones.
      - local macOS
      - Windows
 
+53. Goal 320
+   - preview-level readiness audit for the current `v0.5` line, separating:
+     - preview-ready
+     - final-release-ready
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
