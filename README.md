@@ -18,6 +18,67 @@ RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.
 
+## Version Status At A Glance
+
+- current released version: `v0.4.0`
+- current active development line in this repo: `v0.5 preview`
+- released NN surface today:
+  - `fixed_radius_neighbors`
+  - `knn_rows`
+- current `v0.5 preview` additions:
+  - `bounded_knn_rows`
+  - 3D point nearest-neighbor support
+  - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
+
+For exact status:
+
+- [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
+- [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
+- [RTDL v0.5 Preview Support Matrix](docs/release_reports/v0_5_preview/support_matrix.md)
+
+## Backend Names In Plain English
+
+RTDL uses several backends behind one public kernel surface:
+
+- `cpu_python_reference`:
+  - the slowest but clearest Python truth path
+- `CPU/oracle`:
+  - RTDL's compiled C/C++ correctness baseline
+  - this is what "oracle" means in this repo
+- `Embree`:
+  - the Intel CPU ray-tracing backend
+  - current accelerated CPU backend
+- `OptiX`:
+  - the NVIDIA GPU ray-tracing backend
+  - current fastest Linux backend on the large 3D NN line
+- `Vulkan`:
+  - the Vulkan ray-tracing GPU backend
+  - portable GPU path, currently accepted on Linux in the `v0.5 preview` line
+- `PostGIS`:
+  - not an RTDL backend
+  - used as an external correctness/timing anchor for some workloads
+
+## OS Support At A Glance
+
+Current honest platform story:
+
+- `Linux`:
+  - primary validation platform
+  - current large-scale nearest-neighbor performance claims are made here
+- `Windows`:
+  - bounded support in the current `v0.5 preview` line
+  - Embree correctness is verified
+  - no current large-scale NN performance claim
+- `local macOS`:
+  - bounded support in the current `v0.5 preview` line
+  - Embree correctness is verified
+  - no current large-scale NN performance claim
+
+If you want the exact current boundary instead of the short front-page summary,
+use:
+
+- [RTDL v0.5 Preview Support Matrix](docs/release_reports/v0_5_preview/support_matrix.md)
+
 ## See It Quickly
 
 Primary front-door links:
@@ -127,6 +188,10 @@ Current release:
 
 - `v0.4.0`
 
+Current development preview in this repo:
+
+- `v0.5 preview`
+
 Released workload surface:
 
 - `segment_polygon_hitcount`
@@ -136,11 +201,13 @@ Released workload surface:
 - `fixed_radius_neighbors`
 - `knn_rows`
 
-Release layers inside the current repository:
+Release and preview layers inside the current repository:
 
 - `v0.2.0`: stable released segment/polygon and overlap workload family
 - `v0.3.0`: released proof-of-capability demo/application layer on the same RTDL core
 - `v0.4.0`: released nearest-neighbor workload expansion
+- `v0.5 preview`: 3D nearest-neighbor and multi-backend expansion under active
+  validation
 
 Current public demo artifact:
 
@@ -150,6 +217,7 @@ For exact backend/workload status, use:
 
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
 - [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
+- [RTDL v0.5 Preview Support Matrix](docs/release_reports/v0_5_preview/support_matrix.md)
 
 ## What RTDL Contains
 
@@ -159,10 +227,10 @@ The repository currently includes:
 - compiler/lowering code
 - released workload primitives
 - native runtime layers for:
-  - CPU/oracle
-  - Embree
-  - OptiX
-  - Vulkan
+  - CPU/oracle: compiled C/C++ correctness baseline
+  - Embree: Intel CPU ray-tracing backend
+  - OptiX: NVIDIA GPU ray-tracing backend
+  - Vulkan: Vulkan ray-tracing GPU backend
 - examples ranging from smallest first-run scripts to RTDL-plus-Python demos
 
 The public examples are organized as:

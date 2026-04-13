@@ -204,6 +204,10 @@ paper-consistency milestones.
      - preview-ready
      - final-release-ready
 
+54. Goal 321
+   - frontpage clarity pass for version state, backend names, and platform
+     support boundaries
+
 ## Discipline
 
 Each goal must stay bounded, save its review trail, and preserve the honesty
