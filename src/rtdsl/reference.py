@@ -1,7 +1,7 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
 import math
+from typing import Optional, Union, Tuple, List, Dict
 
 
 @dataclass(frozen=True)
@@ -81,7 +81,7 @@ class Ray3D:
     tmax: float
 
 
-def lsi_cpu(left: tuple[Segment, ...], right: tuple[Segment, ...]) -> tuple[dict[str, float | int], ...]:
+def lsi_cpu(left: Tuple[Segment, ...], right: Tuple[Segment, ...]) -> Tuple[Dict[str, Union[float, int]], ...]:
     hits = []
     for left_seg in left:
         for right_seg in right:
@@ -164,9 +164,9 @@ def overlay_compose_cpu(
 
 
 def ray_triangle_hit_count_cpu(
-    rays: tuple[Ray2D | Ray3D, ...],
-    triangles: tuple[Triangle | Triangle3D, ...],
-) -> tuple[dict[str, int], ...]:
+    rays: Tuple[Union[Ray2D, Ray3D], ...],
+    triangles: Tuple[Union[Triangle, Triangle3D], ...],
+) -> Tuple[Dict[str, int], ...]:
     results = []
     for ray in rays:
         hit_count = 0
@@ -178,12 +178,12 @@ def ray_triangle_hit_count_cpu(
 
 
 def fixed_radius_neighbors_cpu(
-    query_points: tuple[Point | Point3D, ...],
-    search_points: tuple[Point | Point3D, ...],
+    query_points: Tuple[Union[Point, Point3D], ...],
+    search_points: Tuple[Union[Point, Point3D], ...],
     *,
     radius: float,
     k_max: int,
-) -> tuple[dict[str, float | int], ...]:
+) -> Tuple[Dict[str, Union[float, int]], ...]:
     rows = []
     radius_sq = radius * radius
     for query_point in query_points:
@@ -208,11 +208,11 @@ def fixed_radius_neighbors_cpu(
 
 
 def knn_rows_cpu(
-    query_points: tuple[Point | Point3D, ...],
-    search_points: tuple[Point | Point3D, ...],
+    query_points: Tuple[Union[Point, Point3D], ...],
+    search_points: Tuple[Union[Point, Point3D], ...],
     *,
     k: int,
-) -> tuple[dict[str, float | int], ...]:
+) -> Tuple[Dict[str, Union[float, int]], ...]:
     rows = []
     for query_point in query_points:
         candidates = []
@@ -235,12 +235,12 @@ def knn_rows_cpu(
 
 
 def bounded_knn_rows_cpu(
-    query_points: tuple[Point | Point3D, ...],
-    search_points: tuple[Point | Point3D, ...],
+    query_points: Tuple[Union[Point, Point3D], ...],
+    search_points: Tuple[Union[Point, Point3D], ...],
     *,
     radius: float,
     k_max: int,
-) -> tuple[dict[str, float | int], ...]:
+) -> Tuple[Dict[str, Union[float, int]], ...]:
     rows = []
     radius_sq = radius * radius
     for query_point in query_points:
@@ -343,9 +343,9 @@ def polygon_pair_overlap_area_rows_cpu(
 
 
 def polygon_set_jaccard_cpu(
-    left_polygons: tuple[Polygon, ...],
-    right_polygons: tuple[Polygon, ...],
-) -> tuple[dict[str, float | int], ...]:
+    left_polygons: Tuple[Polygon, ...],
+    right_polygons: Tuple[Polygon, ...],
+) -> Tuple[Dict[str, Union[float, int]], ...]:
     left_cells = _polygon_set_unit_cells(left_polygons)
     right_cells = _polygon_set_unit_cells(right_polygons)
     intersection_area = len(left_cells & right_cells)
@@ -365,9 +365,9 @@ def polygon_set_jaccard_cpu(
 
 
 def point_nearest_segment_cpu(
-    points: tuple[Point, ...],
-    segments: tuple[Segment, ...],
-) -> tuple[dict[str, float | int], ...]:
+    points: Tuple[Point, ...],
+    segments: Tuple[Segment, ...],
+) -> Tuple[Dict[str, Union[float, int]], ...]:
     rows = []
     for point in points:
         best_segment = None
@@ -521,7 +521,7 @@ def _candidate_polygon_indexes(
     return tuple(candidates)
 
 
-def _segment_intersection(left: Segment, right: Segment) -> tuple[float, float] | None:
+def _segment_intersection(left: Segment, right: Segment) -> Optional[Tuple[float, float]]:
     px = left.x0
     py = left.y0
     rx = left.x1 - left.x0
@@ -599,7 +599,7 @@ def _point_on_segment(
     return True
 
 
-def _finite_ray_hits_triangle(ray: Ray2D | Ray3D, triangle: Triangle | Triangle3D) -> bool:
+def _finite_ray_hits_triangle(ray: Union[Ray2D, Ray3D], triangle: Union[Triangle, Triangle3D]) -> bool:
     if isinstance(ray, Ray3D) or isinstance(triangle, Triangle3D):
         if not isinstance(ray, Ray3D) or not isinstance(triangle, Triangle3D):
             raise ValueError("ray_triangle_hit_count_cpu requires rays and triangles to both be 2D or both be 3D")
@@ -700,7 +700,7 @@ def _point_segment_distance(point: Point, segment: Segment) -> float:
     return (dx * dx + dy * dy) ** 0.5
 
 
-def _point_distance_sq(left: Point | Point3D, right: Point | Point3D) -> float:
+def _point_distance_sq(left: Union[Point, Point3D], right: Union[Point, Point3D]) -> float:
     # Internal helper: 2D point records are treated as z=0.0 when reused by the
     # additive 3D nearest-neighbor line.
     dx = right.x - left.x

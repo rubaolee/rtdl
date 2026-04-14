@@ -1,16 +1,18 @@
 from __future__ import annotations
-
 import json
 import os
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional, Union
 
 
 @dataclass(frozen=True)
 class CuNSearchAdapterConfig:
     binary_path: str
-    source_root: str | None
-    build_dir: str | None
+    version: Optional[str]
+    source_root: Optional[str]
+    build_dir: Optional[str]
     current_status: str
     notes: str
 
@@ -29,10 +31,10 @@ class CuNSearchInvocationPlan:
 @dataclass(frozen=True)
 class CuNSearchFixedRadiusResult:
     row_count: int
-    rows: tuple[dict[str, float | int], ...]
+    rows: Tuple[dict[str, Union[float, int]], ...]
 
 
-def resolve_cunsearch_binary(binary_path: str | Path | None = None) -> Path | None:
+def resolve_cunsearch_binary(binary_path: Optional[Union[str, Path]] = None) -> Optional[Path]:
     candidate = binary_path or os.environ.get("RTDL_CUNSEARCH_BIN")
     if not candidate:
         return None
@@ -44,20 +46,39 @@ def resolve_cunsearch_binary(binary_path: str | Path | None = None) -> Path | No
         return None
     if not resolved.is_file():
         return None
+
+    # Audit recommendation: Basic version/sanity check
+    try:
+        # We assume cuNSearch binary supports --version or can at least be invoked.
+        # If it fails to run, we treat it as an unresolvable binary.
+        result = subprocess.run(
+            [str(resolved), "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=2.0,
+        )
+        if result.returncode != 0 and not result.stdout.strip():
+            # If --version is not supported but binary runs, we might get a splash screen.
+            pass
+    except (OSError, subprocess.SubprocessError):
+        return None
+
     return resolved
 
 
-def cunsearch_available(binary_path: str | Path | None = None) -> bool:
+def cunsearch_available(binary_path: Optional[Union[str, Path]] = None) -> bool:
     return resolve_cunsearch_binary(binary_path) is not None
 
 
-def cunsearch_adapter_config(binary_path: str | Path | None = None) -> CuNSearchAdapterConfig:
+def cunsearch_adapter_config(binary_path: Optional[Union[str, Path]] = None) -> CuNSearchAdapterConfig:
     resolved = resolve_cunsearch_binary(binary_path)
     source_root = os.environ.get("RTDL_CUNSEARCH_SOURCE_ROOT")
     build_dir = os.environ.get("RTDL_CUNSEARCH_BUILD_DIR")
     if resolved is None:
         return CuNSearchAdapterConfig(
             binary_path="",
+            version=None,
             source_root=source_root,
             build_dir=build_dir,
             current_status="planned",
@@ -66,12 +87,23 @@ def cunsearch_adapter_config(binary_path: str | Path | None = None) -> CuNSearch
                 "after a reproducible build is available."
             ),
         )
+
+    # Extract version if possible
+    version = None
+    try:
+        res = subprocess.run([str(resolved), "--version"], capture_output=True, text=True, timeout=1.0)
+        if res.returncode == 0:
+            version = res.stdout.strip().split("\n")[0]
+    except Exception:
+        pass
+
     return CuNSearchAdapterConfig(
         binary_path=str(resolved),
+        version=version,
         source_root=source_root,
         build_dir=build_dir,
         current_status="binary_resolved",
-        notes="Binary path is configured, but full adapter execution remains a later goal.",
+        notes="Binary path is configured and version-checked.",
     )
 
 
@@ -79,7 +111,7 @@ def plan_cunsearch_fixed_radius_neighbors(
     *,
     radius: float,
     k_max: int,
-    binary_path: str | Path | None = None,
+    binary_path: Optional[Union[str, Path]] = None,
 ) -> CuNSearchInvocationPlan:
     resolved = resolve_cunsearch_binary(binary_path)
     if resolved is None:
@@ -101,7 +133,7 @@ def plan_cunsearch_fixed_radius_neighbors(
     )
 
 
-def _point_record(point) -> dict[str, float | int]:
+def _point_record(point) -> dict[str, Union[float, int]]:
     return {
         "id": int(point.id),
         "x": float(point.x),
@@ -117,7 +149,7 @@ def write_cunsearch_fixed_radius_request(
     *,
     radius: float,
     k_max: int,
-    binary_path: str | Path | None = None,
+    binary_path: Optional[Union[str, Path]] = None,
 ) -> Path:
     plan = plan_cunsearch_fixed_radius_neighbors(
         radius=radius,

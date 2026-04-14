@@ -1,11 +1,11 @@
 from __future__ import annotations
-
 import json
 import statistics
 import time
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, Dict, List, Union
 
 from .baseline_benchmark import benchmark_workload
 from .baseline_runner import load_representative_case
@@ -80,10 +80,10 @@ TABLE4_EXECUTED_CASES = (
 
 def generate_goal23_artifacts(
     *,
-    output_dir: str | Path | None = None,
+    output_dir: Optional[Union[str, Path]] = None,
     publish_docs: bool = True,
-    config: dict[str, object] | None = None,
-) -> dict[str, Path]:
+    config: Optional[Dict[str, object]] = None,
+) -> Dict[str, Path]:
     output_root = Path(output_dir or ROOT / "build" / "goal23_reproduction")
     output_root.mkdir(parents=True, exist_ok=True)
     figures_dir = output_root / "figures"
@@ -136,7 +136,7 @@ def generate_goal23_artifacts(
     return artifacts
 
 
-def run_goal23_reproduction(*, config: dict[str, object] | None = None) -> dict[str, object]:
+def run_goal23_reproduction(*, config: Optional[Dict[str, object]] = None) -> Dict[str, object]:
     from examples.reference.rtdl_language_reference import county_soil_overlay_reference
     from examples.reference.rtdl_language_reference import county_zip_join_reference
     from examples.reference.rtdl_language_reference import point_in_counties_reference

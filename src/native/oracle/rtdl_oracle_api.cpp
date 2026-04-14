@@ -895,6 +895,53 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows_3d(
   }, error_out, error_size);
 }
 
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_levels(
+    uint32_t vertex_count,
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    uint32_t source_id,
+    RtdlBfsLevelRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    const rtdl::oracle::CsrGraph graph =
+        rtdl::oracle::decode_csr_graph(vertex_count, row_offsets, row_offset_count, column_indices, column_index_count);
+    std::vector<RtdlBfsLevelRow> rows = rtdl::oracle::oracle_bfs_levels(graph, source_id);
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_count(
+    uint32_t vertex_count,
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    uint64_t* triangle_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (triangle_count_out == nullptr) {
+      throw std::runtime_error("triangle_count output pointer must not be null");
+    }
+    *triangle_count_out = 0U;
+
+    const rtdl::oracle::CsrGraph graph =
+        rtdl::oracle::decode_csr_graph(vertex_count, row_offsets, row_offset_count, column_indices, column_index_count);
+    *triangle_count_out = rtdl::oracle::oracle_triangle_count(graph);
+  }, error_out, error_size);
+}
+
 RTDL_ORACLE_EXPORT void rtdl_oracle_free_rows(void* rows) {
   std::free(rows);
 }

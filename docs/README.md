@@ -13,8 +13,9 @@ Read these in order:
 2. [Quick Tutorial](quick_tutorial.md)
 3. [RTDL Tutorials](tutorials/README.md)
 4. [Release-Facing Examples](release_facing_examples.md)
-5. [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
-6. [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
+5. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+6. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+7. [v0.6 Release Package](release_reports/v0_6/README.md)
 
 That is the intended public reading path.
 
@@ -43,6 +44,9 @@ That is the intended public reading path.
 - [v0.5 Release Package](release_reports/v0_5/README.md)
 - [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
 - [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
+- [v0.6 Release Package](release_reports/v0_6/README.md)
+- [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+- [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
 - [v0.4 Release Statement](release_reports/v0_4/release_statement.md)
 - [v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
@@ -50,6 +54,7 @@ That is the intended public reading path.
 ## Release Packages
 
 - [v0.5 Release Package](release_reports/v0_5/README.md)
+- [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.5 Preview Package](release_reports/v0_5_preview/README.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
 - [v0.3 Release Package](release_reports/v0_3/README.md)
@@ -70,8 +75,9 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.5.0`
-- current `main` carries the released `v0.5.0` line
+- current released version is `v0.6.0`
+- the current graph-workload release line is `v0.6`
+- current `main` carries the released `v0.6.0` line
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
@@ -84,6 +90,10 @@ Keep these current facts in mind while reading:
   - `bounded_knn_rows`
   - 3D point nearest-neighbor support
   - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
+- the released `v0.6.0` line adds bounded graph workloads:
+  - `bfs`
+  - `triangle_count`
+  - Python/oracle/PostgreSQL bounded graph evaluation on Linux
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that

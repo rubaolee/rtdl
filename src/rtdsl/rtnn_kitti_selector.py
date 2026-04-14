@@ -1,7 +1,7 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Union
 
 from .rtnn_duplicate_audit import find_exact_cross_package_matches
 from .rtnn_kitti import KittiFrameRecord
@@ -23,13 +23,13 @@ class KittiDuplicateFreePair:
 
 def find_duplicate_free_kitti_pair(
     *,
-    source_root: str | Path,
+    source_root: Union[str, Path],
     candidate_records: tuple[KittiFrameRecord, ...],
     query_start_index: int,
     max_search_offset: int,
     max_points_per_frame: int,
     max_total_points: int,
-    work_dir: str | Path,
+    work_dir: Union[str, Path],
 ) -> KittiDuplicateFreePair:
     work_dir = Path(work_dir)
     work_dir.mkdir(parents=True, exist_ok=True)

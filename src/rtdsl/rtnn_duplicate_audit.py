@@ -1,6 +1,6 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
+from typing import Optional, Tuple
 
 from .reference import Point3D
 
@@ -18,7 +18,7 @@ class ExactCrossPackageMatch:
 class CuNSearchDuplicatePointGuardResult:
     strict_comparison_allowed: bool
     duplicate_match_count: int
-    first_duplicate: ExactCrossPackageMatch | None
+    first_duplicate: Optional[ExactCrossPackageMatch]
     notes: str
 
 

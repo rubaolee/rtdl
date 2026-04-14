@@ -20,7 +20,8 @@ core can power a bounded Python application.
 
 ## Version Status At A Glance
 
-- current released version: `v0.5.0`
+- current released version: `v0.6.0`
+- current active development line after release: next version not yet packaged
 - current released NN surface today:
   - `fixed_radius_neighbors`
   - `bounded_knn_rows`
@@ -30,8 +31,17 @@ core can power a bounded Python application.
   - 3D point nearest-neighbor support
   - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
 
+- current `v0.6.0` graph additions:
+  - `bfs`
+  - `triangle_count`
+  - Python/oracle/PostgreSQL bounded graph line
+  - bounded Linux real-data evaluation on `wiki-Talk` and `cit-Patents`
+
 For exact status:
 
+- [RTDL v0.6 Release Package](docs/release_reports/v0_6/README.md)
+- [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
@@ -178,6 +188,12 @@ If you want the newest released nearest-neighbor line:
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
+If you want the current released graph-workload line:
+
+- [RTDL v0.6 Release Package](docs/release_reports/v0_6/README.md)
+- [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
+
 If you want the application/demo side:
 
 - [examples/visual_demo/rtdl_lit_ball_demo.py](examples/visual_demo/rtdl_lit_ball_demo.py)
@@ -189,7 +205,7 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.5.0`
+- `v0.6.0`
 
 Released workload surface:
 
@@ -207,6 +223,7 @@ Release and preview layers inside the current repository:
 - `v0.3.0`: released proof-of-capability demo/application layer on the same RTDL core
 - `v0.4.0`: released nearest-neighbor workload expansion
 - `v0.5.0`: released 3D nearest-neighbor and multi-backend expansion
+- `v0.6.0`: released graph-workload expansion line
 
 Current public demo artifact:
 
@@ -218,6 +235,8 @@ For exact backend/workload status, use:
 - [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
+- [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 
 ## What RTDL Contains
 

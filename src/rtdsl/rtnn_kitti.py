@@ -1,11 +1,15 @@
 from __future__ import annotations
-
 import json
 import os
 import struct
+try:
+    import numpy as np
+except ImportError:
+    np = None
 from dataclasses import asdict
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional, Union, Tuple
 
 from .reference import Point3D
 
@@ -33,7 +37,7 @@ class KittiBoundedPointPackage:
     max_total_points: int
 
 
-def resolve_kitti_source_root(source_root: str | Path | None = None) -> Path | None:
+def resolve_kitti_source_root(source_root: Optional[Union[str, Path]] = None) -> Optional[Path]:
     candidate = source_root or os.environ.get("RTDL_KITTI_SOURCE_ROOT")
     if not candidate:
         return None
@@ -46,7 +50,7 @@ def resolve_kitti_source_root(source_root: str | Path | None = None) -> Path | N
     return resolved
 
 
-def kitti_source_config(source_root: str | Path | None = None) -> KittiSourceConfig:
+def kitti_source_config(source_root: Optional[Union[str, Path]] = None) -> KittiSourceConfig:
     resolved = resolve_kitti_source_root(source_root)
     if resolved is None:
         return KittiSourceConfig(
@@ -64,7 +68,7 @@ def kitti_source_config(source_root: str | Path | None = None) -> KittiSourceCon
     )
 
 
-def discover_kitti_velodyne_frames(source_root: str | Path | None = None) -> tuple[KittiFrameRecord, ...]:
+def discover_kitti_velodyne_frames(source_root: Optional[Union[str, Path]] = None) -> tuple[KittiFrameRecord, ...]:
     resolved = resolve_kitti_source_root(source_root)
     if resolved is None:
         raise RuntimeError(
@@ -84,7 +88,7 @@ def discover_kitti_velodyne_frames(source_root: str | Path | None = None) -> tup
 
 def select_kitti_bounded_frames(
     *,
-    source_root: str | Path | None = None,
+    source_root: Optional[Union[str, Path]] = None,
     max_frames: int,
     stride: int = 1,
     start_index: int = 0,
@@ -101,7 +105,7 @@ def select_kitti_bounded_frames(
     return tuple(selected)
 
 
-def _kitti_frame_record_from_bin_path(source_root: Path, bin_path: Path) -> KittiFrameRecord | None:
+def _kitti_frame_record_from_bin_path(source_root: Path, bin_path: Path) -> Optional[KittiFrameRecord]:
     parts = bin_path.relative_to(source_root).parts
     sequence = "unknown_sequence"
     if "velodyne" in parts:
@@ -121,9 +125,9 @@ def _kitti_frame_record_from_bin_path(source_root: Path, bin_path: Path) -> Kitt
 
 
 def write_kitti_bounded_package_manifest(
-    destination: str | Path,
+    destination: Union[str, Path],
     *,
-    source_root: str | Path | None = None,
+    source_root: Optional[Union[str, Path]] = None,
     max_frames: int,
     stride: int = 1,
     start_index: int = 0,
@@ -168,7 +172,7 @@ def write_kitti_bounded_package_manifest(
 
 
 def load_kitti_bounded_points_from_manifest(
-    manifest_path: str | Path,
+    manifest_path: Union[str, Path],
     *,
     point_id_start: int = 1,
 ) -> KittiBoundedPointPackage:
@@ -210,8 +214,8 @@ def load_kitti_bounded_points_from_manifest(
 
 
 def write_kitti_bounded_point_package(
-    destination: str | Path,
-    manifest_path: str | Path,
+    destination: Union[str, Path],
+    manifest_path: Union[str, Path],
     *,
     point_id_start: int = 1,
 ) -> Path:
@@ -242,7 +246,7 @@ def write_kitti_bounded_point_package(
     return destination
 
 
-def load_kitti_bounded_point_package(package_path: str | Path) -> KittiBoundedPointPackage:
+def load_kitti_bounded_point_package(package_path: Union[str, Path]) -> KittiBoundedPointPackage:
     package_path = Path(package_path)
     payload = json.loads(package_path.read_text(encoding="utf-8"))
     if payload.get("package_kind") != "kitti_bounded_point_package_v1":
@@ -268,6 +272,13 @@ def load_kitti_bounded_point_package(package_path: str | Path) -> KittiBoundedPo
 def _read_kitti_frame_points(bin_path: Path) -> tuple[tuple[float, float, float], ...]:
     if not bin_path.exists():
         raise RuntimeError(f"KITTI frame file is missing: {bin_path}")
+    
+    # Audit recommendation: Optional numpy.fromfile path for performance
+    if np is not None:
+        # KITTI .bin files are [x, y, z, intensity] as float32
+        data = np.fromfile(bin_path, dtype=np.float32).reshape(-1, 4)
+        return tuple(map(tuple, data[:, :3]))
+
     payload = bin_path.read_bytes()
     if len(payload) % 16 != 0:
         raise RuntimeError(

@@ -9,6 +9,8 @@ import tempfile
 from pathlib import Path
 from typing import NoReturn
 
+from .graph_reference import CSRGraph
+from .graph_reference import validate_csr_graph
 from .ir import CompiledKernel
 from .reference import Point3D
 
@@ -35,7 +37,15 @@ def _geos_pkg_config_flags(option: str) -> list[str]:
     flags = _pkg_config_flags("geos_c", option)
     if flags:
         return flags
-    return ["-lgeos_c"] if option == "--libs" else []
+
+    if option == "--cflags":
+        if Path("/opt/homebrew/include").exists():
+            return ["-I/opt/homebrew/include"]
+    if option == "--libs":
+        if Path("/opt/homebrew/lib").exists():
+            return ["-L/opt/homebrew/lib", "-lgeos_c"]
+        return ["-lgeos_c"]
+    return []
 
 
 def _run_windows_compile(command: list[str], *, vcvars: Path, cwd: Path) -> None:
@@ -207,6 +217,13 @@ class _RtdlKnnNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlBfsLevelRow(ctypes.Structure):
+    _fields_ = [
+        ("vertex_id", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
 def oracle_version() -> tuple[int, int, int]:
     library = _load_oracle_library()
     major = ctypes.c_int()
@@ -214,6 +231,60 @@ def oracle_version() -> tuple[int, int, int]:
     patch = ctypes.c_int()
     _check_status(library.rtdl_oracle_get_version(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)))
     return major.value, minor.value, patch.value
+
+
+def bfs_levels_oracle(graph: CSRGraph, *, source_id: int) -> tuple[dict[str, int], ...]:
+    validate_csr_graph(graph)
+    library = _load_oracle_library()
+    row_offsets_array = (ctypes.c_uint32 * len(graph.row_offsets))(*graph.row_offsets)
+    column_indices_array = (ctypes.c_uint32 * len(graph.column_indices))(*graph.column_indices)
+    rows_ptr = ctypes.POINTER(_RtdlBfsLevelRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_bfs_levels(
+        ctypes.c_uint32(graph.vertex_count),
+        row_offsets_array,
+        len(graph.row_offsets),
+        column_indices_array,
+        len(graph.column_indices),
+        ctypes.c_uint32(int(source_id)),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "vertex_id": int(rows_ptr[index].vertex_id),
+                "level": int(rows_ptr[index].level),
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def triangle_count_oracle(graph: CSRGraph) -> int:
+    validate_csr_graph(graph)
+    library = _load_oracle_library()
+    row_offsets_array = (ctypes.c_uint32 * len(graph.row_offsets))(*graph.row_offsets)
+    column_indices_array = (ctypes.c_uint32 * len(graph.column_indices))(*graph.column_indices)
+    triangle_count = ctypes.c_uint64()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_triangle_count(
+        ctypes.c_uint32(graph.vertex_count),
+        row_offsets_array,
+        len(graph.row_offsets),
+        column_indices_array,
+        len(graph.column_indices),
+        ctypes.byref(triangle_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return int(triangle_count.value)
 
 
 def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, object], ...]:
@@ -1072,6 +1143,30 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_bounded_knn_rows_3d.restype = ctypes.c_int
+    library.rtdl_oracle_run_bfs_levels.argtypes = [
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlBfsLevelRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_bfs_levels.restype = ctypes.c_int
+    library.rtdl_oracle_run_triangle_count.argtypes = [
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_triangle_count.restype = ctypes.c_int
     return library
 
 

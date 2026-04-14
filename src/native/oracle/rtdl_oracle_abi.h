@@ -122,6 +122,11 @@ struct RtdlKnnNeighborRow {
   uint32_t neighbor_rank;
 };
 
+struct RtdlBfsLevelRow {
+  uint32_t vertex_id;
+  uint32_t level;
+};
+
 int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patch_out);
 int rtdl_oracle_run_lsi(
     const RtdlSegment* left,
@@ -285,6 +290,26 @@ int rtdl_oracle_run_bounded_knn_rows_3d(
     uint32_t k_max,
     RtdlKnnNeighborRow** rows_out,
     size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_bfs_levels(
+    uint32_t vertex_count,
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    uint32_t source_id,
+    RtdlBfsLevelRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_triangle_count(
+    uint32_t vertex_count,
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    uint64_t* triangle_count_out,
     char* error_out,
     size_t error_size);
 void rtdl_oracle_free_rows(void* rows);

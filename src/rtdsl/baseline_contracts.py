@@ -1,7 +1,7 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
 from math import isclose
+from typing import Optional, List, Dict, Union, Tuple
 
 from .ir import CompiledKernel
 
@@ -409,8 +409,13 @@ def compare_baseline_rows(
     workload: str,
     cpu_rows: tuple[dict[str, object], ...],
     embree_rows: tuple[dict[str, object], ...],
+    *,
+    abs_tol: Optional[float] = None,
+    rel_tol: Optional[float] = None,
 ) -> bool:
     contract = BASELINE_WORKLOADS[workload]
+    actual_abs_tol = abs_tol if abs_tol is not None else BASELINE_FLOAT_ABS_TOL
+    actual_rel_tol = rel_tol if rel_tol is not None else BASELINE_FLOAT_REL_TOL
     cpu_sorted = tuple(sorted(cpu_rows, key=_row_sort_key))
     embree_sorted = tuple(sorted(embree_rows, key=_row_sort_key))
     if len(cpu_sorted) != len(embree_sorted):
@@ -429,8 +434,8 @@ def compare_baseline_rows(
                 if not isclose(
                     float(left),
                     float(right),
-                    rel_tol=BASELINE_FLOAT_REL_TOL,
-                    abs_tol=BASELINE_FLOAT_ABS_TOL,
+                    rel_tol=actual_rel_tol,
+                    abs_tol=actual_abs_tol,
                 ):
                     return False
             elif left != right:

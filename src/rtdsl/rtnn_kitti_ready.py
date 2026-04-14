@@ -1,9 +1,9 @@
 from __future__ import annotations
-
 import json
 from dataclasses import asdict
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Union
 
 
 @dataclass(frozen=True)
@@ -18,7 +18,7 @@ class KittiLinuxReadyReport:
     notes: str
 
 
-def inspect_kitti_linux_source_root(source_root: str | Path) -> KittiLinuxReadyReport:
+def inspect_kitti_linux_source_root(source_root: Union[str, Path]) -> KittiLinuxReadyReport:
     root = Path(source_root).expanduser().resolve()
     if not root.exists() or not root.is_dir():
         return KittiLinuxReadyReport(
@@ -61,8 +61,8 @@ def inspect_kitti_linux_source_root(source_root: str | Path) -> KittiLinuxReadyR
 
 
 def write_kitti_linux_ready_report(
-    source_root: str | Path,
-    destination: str | Path,
+    source_root: Union[str, Path],
+    destination: Union[str, Path],
 ) -> Path:
     report = inspect_kitti_linux_source_root(source_root)
     destination = Path(destination)

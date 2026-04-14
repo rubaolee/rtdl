@@ -1,11 +1,11 @@
 from __future__ import annotations
-
 import json
 import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Optional, Union
 
 
 @dataclass(frozen=True)
@@ -20,9 +20,9 @@ class CuNSearchBuildConfig:
 
 def resolve_cunsearch_build_config(
     *,
-    source_root: str | Path,
-    build_root: str | Path,
-    nvcc_path: str | Path = "nvcc",
+    source_root: Union[str, Path],
+    build_root: Union[str, Path],
+    nvcc_path: Union[str, Path] = "nvcc",
 ) -> CuNSearchBuildConfig:
     source_root = Path(source_root).expanduser().resolve()
     build_root = Path(build_root).expanduser().resolve()
@@ -52,12 +52,12 @@ def resolve_cunsearch_build_config(
 
 
 def run_cunsearch_fixed_radius_request_live(
-    request_path: str | Path,
-    response_path: str | Path,
+    request_path: Union[str, Path],
+    response_path: Union[str, Path],
     *,
-    source_root: str | Path,
-    build_root: str | Path,
-    nvcc_path: str | Path = "nvcc",
+    source_root: Union[str, Path],
+    build_root: Union[str, Path],
+    nvcc_path: Union[str, Path] = "nvcc",
 ) -> Path:
     config = resolve_cunsearch_build_config(
         source_root=source_root,
@@ -123,13 +123,13 @@ def run_cunsearch_fixed_radius_request_live(
 
 
 def compile_cunsearch_fixed_radius_request_driver(
-    request_path: str | Path,
-    response_path: str | Path,
-    output_dir: str | Path,
+    request_path: Union[str, Path],
+    response_path: Union[str, Path],
+    output_dir: Union[str, Path],
     *,
-    source_root: str | Path,
-    build_root: str | Path,
-    nvcc_path: str | Path = "nvcc",
+    source_root: Union[str, Path],
+    build_root: Union[str, Path],
+    nvcc_path: Union[str, Path] = "nvcc",
 ) -> Path:
     config = resolve_cunsearch_build_config(
         source_root=source_root,
@@ -181,9 +181,9 @@ def compile_cunsearch_fixed_radius_request_driver(
 
 
 def execute_compiled_cunsearch_fixed_radius_driver(
-    binary_path: str | Path,
+    binary_path: Union[str, Path],
     *,
-    response_path: str | Path | None = None,
+    response_path: Optional[Union[str, Path]] = None,
 ) -> float:
     binary_path = Path(binary_path)
     start = time.perf_counter()

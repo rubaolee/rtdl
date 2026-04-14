@@ -1,6 +1,6 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
+from typing import Optional, Tuple, Dict
 
 
 @dataclass(frozen=True)
@@ -10,10 +10,10 @@ class FixedRadiusMismatchSummary:
     candidate_row_count: int
     missing_pair_count: int
     extra_pair_count: int
-    first_missing_pair: tuple[int, int] | None
-    first_extra_pair: tuple[int, int] | None
-    first_reference_row: dict[str, object] | None
-    first_candidate_row: dict[str, object] | None
+    first_missing_pair: Optional[Tuple[int, int]]
+    first_extra_pair: Optional[Tuple[int, int]]
+    first_reference_row: Optional[Dict[str, object]]
+    first_candidate_row: Optional[Dict[str, object]]
 
 
 def summarize_fixed_radius_mismatch(

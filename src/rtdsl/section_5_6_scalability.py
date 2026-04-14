@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import argparse
 import json
 import math
@@ -10,6 +9,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, Union, Dict, List, Tuple
 
 from .reference import Point
 from .reference import Polygon
@@ -55,10 +55,10 @@ def _published_2026_03_31_command() -> str:
 
 def generate_section_5_6_artifacts(
     *,
-    output_dir: str | Path | None = None,
-    config: ScalabilityConfig | None = None,
+    output_dir: Optional[Union[str, Path]] = None,
+    config: Optional[ScalabilityConfig] = None,
     publish_docs: bool = False,
-) -> dict[str, Path]:
+) -> Dict[str, Path]:
     cfg = config or ScalabilityConfig()
     output_root = Path(output_dir or ROOT / "build" / "section_5_6_scalability")
     output_root.mkdir(parents=True, exist_ok=True)
@@ -104,7 +104,7 @@ def generate_section_5_6_artifacts(
     return artifacts
 
 
-def run_section_5_6(config: ScalabilityConfig) -> dict[str, object]:
+def run_section_5_6(config: ScalabilityConfig) -> Dict[str, object]:
     from examples.reference.rtdl_language_reference import county_zip_join_reference
     from examples.reference.rtdl_language_reference import point_in_counties_reference
 
@@ -765,7 +765,7 @@ def _pdf_escape(text: str) -> str:
     )
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Run the RTDL Embree analogue of RayJoin Section 5.6 scalability tests.")
     parser.add_argument("--output-dir", default=str(ROOT / "build" / "section_5_6_scalability"))
     parser.add_argument("--build-polygons", type=int, default=FIXED_BUILD_POLYGONS)

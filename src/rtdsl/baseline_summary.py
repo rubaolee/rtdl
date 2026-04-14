@@ -1,8 +1,8 @@
 from __future__ import annotations
-
 import argparse
 import json
 from pathlib import Path
+from typing import Optional, List
 
 
 def summarize_benchmark(payload: dict[str, object]) -> str:
@@ -33,7 +33,7 @@ def summarize_benchmark(payload: dict[str, object]) -> str:
     return "\n".join(lines).rstrip()
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Summarize RTDL Embree baseline benchmark JSON.")
     parser.add_argument("benchmark_json")
     args = parser.parse_args(argv)

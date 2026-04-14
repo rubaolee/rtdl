@@ -26,7 +26,6 @@ Library search order (first found wins):
 """
 
 from __future__ import annotations
-
 import ctypes
 import ctypes.util
 import functools
@@ -35,6 +34,7 @@ import platform
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional, Union, Tuple, Dict, Any, List
 
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
@@ -150,7 +150,7 @@ class VulkanRowView:
     field_names: tuple
     _closed: bool = False
     _free_on_close: bool = True
-    _owner: object | None = None
+    _owner: Optional[object] = None
 
     def close(self) -> None:
         if not self._closed:
@@ -353,7 +353,7 @@ def _get_or_bind_prepared_vulkan_execution(compiled: CompiledKernel, expected_in
     return prepared
 
 
-def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inputs) -> tuple[object, ...] | None:
+def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inputs) -> Optional[Tuple[object, ...]]:
     identity_tokens = []
     for name in sorted(expected_inputs):
         geometry_name = expected_inputs[name].geometry.name

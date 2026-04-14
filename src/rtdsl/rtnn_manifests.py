@@ -1,8 +1,9 @@
 from __future__ import annotations
-
+import hashlib
 import json
 from dataclasses import asdict
 from dataclasses import dataclass
+from typing import Optional, Tuple
 from pathlib import Path
 
 from .rtnn_reproduction import rtnn_dataset_families
@@ -73,7 +74,7 @@ RTNN_BOUNDED_DATASET_MANIFESTS: tuple[RtnnBoundedDatasetManifest, ...] = (
 
 
 def rtnn_bounded_dataset_manifests(
-    *, dataset_handle: str | None = None
+    *, dataset_handle: Optional[str] = None
 ) -> tuple[RtnnBoundedDatasetManifest, ...]:
     manifests = RTNN_BOUNDED_DATASET_MANIFESTS
     if dataset_handle is not None:
@@ -83,7 +84,7 @@ def rtnn_bounded_dataset_manifests(
 
 def write_rtnn_bounded_dataset_manifest(
     dataset_handle: str,
-    destination: str | Path,
+    destination: Union[str, Path],
 ) -> Path:
     dataset_map = {family.handle: family for family in rtnn_dataset_families()}
     profile_map = {profile.profile_id: profile for profile in rtnn_local_profiles(artifact="dataset_packaging")}
@@ -101,6 +102,11 @@ def write_rtnn_bounded_dataset_manifest(
         "bounded_manifest": asdict(manifest),
         "local_profile": asdict(profile),
     }
+
+    # Audit recommendation: Data integrity hashing
+    serialized = json.dumps(payload, indent=2, sort_keys=True)
+    payload["sha256"] = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")

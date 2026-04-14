@@ -63,13 +63,22 @@ from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
 from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
 from .external_baselines import build_postgis_knn_rows_sql
 from .external_baselines import build_postgis_knn_rows_3d_sql
+from .external_baselines import build_postgresql_bfs_levels_sql
+from .external_baselines import build_postgresql_triangle_count_sql
 from .external_baselines import connect_postgis
+from .external_baselines import connect_postgresql
 from .external_baselines import postgis_available
+from .external_baselines import postgresql_available
+from .external_baselines import prepare_postgresql_graph_edges_table
+from .external_baselines import query_postgresql_bfs_levels
+from .external_baselines import query_postgresql_triangle_count
 from .external_baselines import run_postgis_fixed_radius_neighbors
 from .external_baselines import run_postgis_fixed_radius_neighbors_3d
 from .external_baselines import run_postgis_bounded_knn_rows_3d
 from .external_baselines import run_postgis_knn_rows
 from .external_baselines import run_postgis_knn_rows_3d
+from .external_baselines import run_postgresql_bfs_levels
+from .external_baselines import run_postgresql_triangle_count
 from .external_baselines import run_scipy_fixed_radius_neighbors
 from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
@@ -106,6 +115,23 @@ from .generate_only import generate_python_program
 from .generate_only import generate_handoff_bundle
 from .generate_only import GenerateOnlyRequest
 from .generate_only import render_python_program
+from .graph_datasets import graph_dataset_candidates
+from .graph_datasets import graph_dataset_spec
+from .graph_datasets import GraphDatasetSpec
+from .graph_datasets import load_snap_simple_undirected_graph
+from .graph_reference import bfs_levels_cpu
+from .graph_eval import bfs_baseline_evaluation
+from .graph_eval import binary_tree_graph
+from .graph_eval import clique_graph
+from .graph_reference import CSRGraph
+from .graph_reference import csr_graph
+from .graph_eval import csr_graph_from_neighbors
+from .graph_eval import cycle_graph
+from .graph_eval import grid_graph
+from .graph_datasets import load_snap_edge_list_graph
+from .graph_reference import triangle_count_cpu
+from .graph_eval import triangle_count_baseline_evaluation
+from .graph_reference import validate_csr_graph
 from .goal23_reproduction import generate_goal23_artifacts
 from .goal23_reproduction import run_goal23_reproduction
 from .goal112_segment_polygon_perf import render_goal112_markdown
@@ -173,6 +199,8 @@ from .ir import RefineOp
 from .lowering import lower_to_execution_plan
 from .lowering import lower_to_rayjoin
 from .oracle_runtime import oracle_version
+from .oracle_runtime import bfs_levels_oracle
+from .oracle_runtime import triangle_count_oracle
 from .plan_schema import load_plan_schema
 from .plan_schema import schema_path
 from .plan_schema import validate_plan_dict
@@ -348,6 +376,7 @@ __all__ = [
     "BASELINE_PRECISION_MODE",
     "BASELINE_WORKLOAD_ORDER",
     "BASELINE_WORKLOADS",
+    "bfs_levels_cpu",
     "bounded_knn_rows",
     "bounded_knn_rows_cpu",
     "CandidateSet",
@@ -357,6 +386,7 @@ __all__ = [
     "GeometryInput",
     "GeometryType",
     "GenerateOnlyRequest",
+    "GraphDatasetSpec",
     "InputContract",
     "LaunchParam",
     "Layout",
@@ -401,6 +431,8 @@ __all__ = [
     "Triangle3DLayout",
     "Triangles3D",
     "compile_kernel",
+    "CSRGraph",
+    "csr_graph",
     "dataset_families",
     "compare_baseline_rows",
     "evaluation_entries",
@@ -420,7 +452,10 @@ __all__ = [
     "build_postgis_bounded_knn_rows_3d_sql",
     "build_postgis_knn_rows_sql",
     "build_postgis_knn_rows_3d_sql",
+    "build_postgresql_bfs_levels_sql",
+    "build_postgresql_triangle_count_sql",
     "connect_postgis",
+    "connect_postgresql",
     "fixed_radius_neighbors_cpu",
     "knn_rows_cpu",
     "EmbreeRowView",
@@ -477,6 +512,8 @@ __all__ = [
     "run_goal116_segment_polygon_backend_audit",
     "generate_handoff_bundle",
     "generate_python_program",
+    "graph_dataset_candidates",
+    "graph_dataset_spec",
     "render_python_program",
     "input",
     "kernel",
@@ -486,6 +523,7 @@ __all__ = [
     "load_cdb",
     "load_natural_earth_populated_places_geojson",
     "load_overpass_elements",
+    "load_snap_edge_list_graph",
     "local_profiles",
     "overpass_elements_stats",
     "overpass_elements_to_cdb",
@@ -502,6 +540,7 @@ __all__ = [
     "overlay_compose_cpu",
     "parse_cdb_text",
     "postgis_available",
+    "postgresql_available",
     "pip_cpu",
     "Point",
     "point_nearest_segment_cpu",
@@ -548,6 +587,11 @@ __all__ = [
     "run_postgis_bounded_knn_rows_3d",
     "run_postgis_knn_rows",
     "run_postgis_knn_rows_3d",
+    "prepare_postgresql_graph_edges_table",
+    "query_postgresql_bfs_levels",
+    "query_postgresql_triangle_count",
+    "run_postgresql_bfs_levels",
+    "run_postgresql_triangle_count",
     "run_scipy_fixed_radius_neighbors",
     "run_scipy_knn_rows",
     "run_section_5_6",
@@ -572,9 +616,11 @@ __all__ = [
     "summarize_fixed_radius_mismatch",
     "slice_cdb_dataset",
     "traverse",
+    "triangle_count_cpu",
     "write_cdb",
     "u32",
     "validate_compiled_kernel_against_baseline",
+    "validate_csr_graph",
     "validate_plan_dict",
     "write_baseline_benchmark_json",
     "write_goal112_artifacts",

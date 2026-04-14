@@ -1,10 +1,11 @@
 from __future__ import annotations
-
 from dataclasses import dataclass
+from typing import Optional, Tuple
 
 from .rtnn_baselines import rtnn_baseline_libraries
 from .rtnn_reproduction import rtnn_dataset_families
 from .rtnn_reproduction import rtnn_experiment_targets
+from .rtnn_reproduction import RtnnReproductionTier
 
 
 @dataclass(frozen=True)
@@ -13,24 +14,24 @@ class RtnnMatrixEntry:
     dataset_handle: str
     dataset_label: str
     workload: str
-    reproduction_tier: str
+    reproduction_tier: RtnnReproductionTier
     baseline_handle: str
     baseline_label: str
     matrix_status: str
     notes: str
 
 
-def _matrix_status_for(*, reproduction_tier: str, baseline_handle: str) -> str:
+def _matrix_status_for(*, reproduction_tier: RtnnReproductionTier, baseline_handle: str) -> str:
     if baseline_handle in {"postgis", "scipy_ckdtree"}:
         return "nonpaper_comparison_only"
-    if reproduction_tier == "bounded_reproduction":
+    if reproduction_tier == RtnnReproductionTier.BOUNDED_REPRODUCTION:
         return "planned_bounded_matrix"
-    if reproduction_tier == "exact_reproduction_candidate":
+    if reproduction_tier == RtnnReproductionTier.EXACT_REPRODUCTION_CANDIDATE:
         return "blocked_on_exact_dataset_and_adapter"
     return "planned_rtdl_extension"
 
 
-def rtnn_reproduction_matrix(*, artifact: str | None = None) -> tuple[RtnnMatrixEntry, ...]:
+def rtnn_reproduction_matrix(*, artifact: Optional[str] = None) -> Tuple[RtnnMatrixEntry, ...]:
     datasets_by_handle = {family.handle: family for family in rtnn_dataset_families()}
     libraries = rtnn_baseline_libraries()
     entries: list[RtnnMatrixEntry] = []
@@ -63,4 +64,14 @@ def rtnn_reproduction_matrix(*, artifact: str | None = None) -> tuple[RtnnMatrix
                         notes=target.notes,
                     )
                 )
+
+    # Deterministic sorting (tier -> workload -> dataset -> baseline)
+    entries.sort(
+        key=lambda e: (
+            str(e.reproduction_tier),
+            e.workload,
+            e.dataset_handle,
+            e.baseline_handle,
+        )
+    )
     return tuple(entries)

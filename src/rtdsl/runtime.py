@@ -29,7 +29,7 @@ from .reference import Triangle
 from .reference import Triangle3D
 
 
-def _identity_cache_token(geometry_name: str, payload) -> tuple[object, ...] | None:
+def _identity_cache_token(geometry_name: str, payload) -> Optional[Tuple[object, ...]]:
     if not isinstance(payload, tuple):
         return None
 
@@ -208,7 +208,7 @@ def _coerce_segment(input_name: str, record) -> Segment:
     )
 
 
-def _coerce_point(input_name: str, record) -> Point | Point3D:
+def _coerce_point(input_name: str, record) -> Union[Point, Point3D]:
     if isinstance(record, Point3D):
         return record
     if isinstance(record, Point):
@@ -322,7 +322,7 @@ def _extract_record_fields(
     record,
     field_names: tuple[str, ...],
     *,
-    hint: str | None = None,
+    hint: Optional[str] = None,
 ) -> dict[str, object]:
     if isinstance(record, Mapping):
         missing = [name for name in field_names if name not in record]

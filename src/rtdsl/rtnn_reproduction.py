@@ -1,6 +1,13 @@
 from __future__ import annotations
-
+from enum import Enum
 from dataclasses import dataclass
+from typing import Optional
+
+
+class RtnnReproductionTier(Enum):
+    BOUNDED_REPRODUCTION = "bounded_reproduction"
+    EXACT_REPRODUCTION_CANDIDATE = "exact_reproduction_candidate"
+    RTDL_EXTENSION = "rtdl_extension"
 
 
 @dataclass(frozen=True)
@@ -21,7 +28,7 @@ class RtnnExperimentTarget:
     paper_label: str
     workload: str
     dataset_handle: str
-    reproduction_tier: str
+    reproduction_tier: RtnnReproductionTier
     current_status: str
     notes: str
 
@@ -85,7 +92,7 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         paper_label="KITTI bounded local package",
         workload="fixed_radius_neighbors|bounded_knn_rows",
         dataset_handle="kitti_velodyne_point_sets",
-        reproduction_tier="bounded_reproduction",
+        reproduction_tier=RtnnReproductionTier.BOUNDED_REPRODUCTION,
         current_status="planned",
         notes="First reproducible local package for Linux/macOS development loops.",
     ),
@@ -94,7 +101,7 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         paper_label="Stanford bounded local package",
         workload="fixed_radius_neighbors|bounded_knn_rows",
         dataset_handle="stanford_3d_scan_point_sets",
-        reproduction_tier="bounded_reproduction",
+        reproduction_tier=RtnnReproductionTier.BOUNDED_REPRODUCTION,
         current_status="planned",
         notes="Needs a deterministic scan list and point-sample rule before performance claims.",
     ),
@@ -103,7 +110,7 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         paper_label="N-body bounded local package",
         workload="fixed_radius_neighbors|bounded_knn_rows",
         dataset_handle="nbody_or_millennium_snapshots",
-        reproduction_tier="bounded_reproduction",
+        reproduction_tier=RtnnReproductionTier.BOUNDED_REPRODUCTION,
         current_status="planned",
         notes="Keeps the particle-snapshot family explicit in the first dataset layer.",
     ),
@@ -112,7 +119,7 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         paper_label="RTNN exact reproduction candidates",
         workload="fixed_radius_neighbors|bounded_knn_rows",
         dataset_handle="kitti_velodyne_point_sets",
-        reproduction_tier="exact_reproduction_candidate",
+        reproduction_tier=RtnnReproductionTier.EXACT_REPRODUCTION_CANDIDATE,
         current_status="planned",
         notes="Can only move to exact reproduction after exact dataset handles and baseline-library adapters exist.",
     ),
@@ -121,7 +128,7 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         paper_label="RTDL extension matrix",
         workload="fixed_radius_neighbors|knn_rows|bounded_knn_rows",
         dataset_handle="nbody_or_millennium_snapshots",
-        reproduction_tier="rtdl_extension",
+        reproduction_tier=RtnnReproductionTier.RTDL_EXTENSION,
         current_status="planned",
         notes="Preserves the distinction between paper-faithful work and RTDL-specific extensions.",
     ),
@@ -130,7 +137,7 @@ RTNN_EXPERIMENT_TARGETS: tuple[RtnnExperimentTarget, ...] = (
         paper_label="Bounded external comparison matrix",
         workload="fixed_radius_neighbors|knn_rows|bounded_knn_rows",
         dataset_handle="kitti_velodyne_point_sets",
-        reproduction_tier="bounded_reproduction",
+        reproduction_tier=RtnnReproductionTier.BOUNDED_REPRODUCTION,
         current_status="planned",
         notes="Dedicated artifact for bounded non-paper comparison rows such as SciPy-style baselines.",
     ),
@@ -165,7 +172,7 @@ RTNN_LOCAL_PROFILES: tuple[RtnnLocalProfile, ...] = (
 )
 
 
-def rtnn_dataset_families(*, handle: str | None = None) -> tuple[RtnnDatasetFamily, ...]:
+def rtnn_dataset_families(*, handle: Optional[str] = None) -> tuple[RtnnDatasetFamily, ...]:
     families = RTNN_DATASET_FAMILIES
     if handle is not None:
         families = tuple(family for family in families if family.handle == handle)
@@ -173,7 +180,7 @@ def rtnn_dataset_families(*, handle: str | None = None) -> tuple[RtnnDatasetFami
 
 
 def rtnn_experiment_targets(
-    *, artifact: str | None = None, reproduction_tier: str | None = None
+    *, artifact: Optional[str] = None, reproduction_tier: Optional[RtnnReproductionTier] = None
 ) -> tuple[RtnnExperimentTarget, ...]:
     targets = RTNN_EXPERIMENT_TARGETS
     if artifact is not None:
@@ -183,7 +190,7 @@ def rtnn_experiment_targets(
     return targets
 
 
-def rtnn_local_profiles(*, artifact: str | None = None, workload: str | None = None) -> tuple[RtnnLocalProfile, ...]:
+def rtnn_local_profiles(*, artifact: Optional[str] = None, workload: Optional[str] = None) -> tuple[RtnnLocalProfile, ...]:
     profiles = RTNN_LOCAL_PROFILES
     if artifact is not None:
         profiles = tuple(profile for profile in profiles if artifact in profile.artifact.split("|"))

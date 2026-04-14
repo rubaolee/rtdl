@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <unordered_set>
 
 #if defined(__has_include)
 #  if __has_include(<geos_c.h>)
@@ -91,6 +92,12 @@ struct Point3D {
   Vec3 p;
 };
 
+struct CsrGraph {
+  uint32_t vertex_count;
+  std::vector<uint32_t> row_offsets;
+  std::vector<uint32_t> column_indices;
+};
+
 struct Polygon2D {
   uint32_t id;
   std::vector<Vec2> vertices;
@@ -162,5 +169,13 @@ bool point_in_triangle(double x, double y, const Triangle2D& triangle);
 bool finite_ray_hits_triangle(const RayQuery2D& ray, const Triangle2D& triangle);
 bool segment_hits_polygon(const Segment2D& segment, const Polygon2D& polygon);
 double point_segment_distance(const Point2D& point, const Segment2D& segment);
+CsrGraph decode_csr_graph(
+    uint32_t vertex_count,
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count);
+std::vector<RtdlBfsLevelRow> oracle_bfs_levels(const CsrGraph& graph, uint32_t source_id);
+uint64_t oracle_triangle_count(const CsrGraph& graph);
 
 }  // namespace rtdl::oracle
