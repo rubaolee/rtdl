@@ -17,7 +17,8 @@ longer tutorials.
 | 2 | [Sorting Demo](sorting_demo.md) | RTDL inside a compact Python program |
 | 3 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Released `v0.2.0` workload families |
 | 4 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Released `v0.4.0` nearest-neighbor workloads |
-| 5 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
+| 5 | [Graph Workloads](graph_workloads.md) | Released `v0.6.1` RT graph workloads |
+| 6 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
 
 ---
 
@@ -45,6 +46,9 @@ Learn the released workload families, what they emit, and when to choose each.
 - [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md)
   - `fixed_radius_neighbors`
   - `knn_rows`
+- [Graph Workloads](graph_workloads.md)
+  - `bfs`
+  - `triangle_count`
 
 ### Track 3: Application demos
 

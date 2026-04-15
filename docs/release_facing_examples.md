@@ -7,9 +7,7 @@ It currently covers:
 
 - the released `v0.2.0` geometry workloads
 - the released `v0.4.0` nearest-neighbor line
-- the released `v0.6.1` RT graph line, where graph reference surfaces are
-  currently documented through the release package and validated kernel/test
-  paths rather than a top-level `examples/rtdl_*.py` CLI
+- the released `v0.6.1` RT graph line
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -22,6 +20,20 @@ Before running any command below:
 
 - clone the repo with `git clone https://github.com/rubaolee/rtdl.git`
 - enter the checkout with `cd rtdl`
+- create a virtual environment and install requirements once:
+  - macOS/Linux:
+    - `python3 -m venv .venv`
+    - `source .venv/bin/activate`
+  - Windows:
+    - `py -3 -m venv .venv`
+    - `.venv\Scripts\activate` in `cmd.exe`
+    - `.venv\Scripts\Activate.ps1` in PowerShell
+  - then:
+    - `python -m pip install --upgrade pip`
+    - `python -m pip install -r requirements.txt`
+- on Debian/Ubuntu, if `python3 -m venv` fails because `ensurepip` is
+  unavailable, install `python3-venv` first:
+  - `sudo apt install python3-venv`
 - keep the `PYTHONPATH=src:.` prefix so Python imports the local `rtdsl`
   package from `src/rtdsl/`
 - commands below use `python` as the public convention
@@ -84,21 +96,47 @@ The released `v0.6.1` graph workloads are:
 - `bfs`
 - `triangle_count`
 
-Important current boundary:
-
-- the graph line is released and validated
-- but it does **not** yet have a dedicated top-level release-facing CLI example
-  under `examples/`
-- the current release-facing entry points for that line are the release package
-  and the validated kernel/test surfaces
-
-Start here for the released graph line:
+Graph docs and package:
 
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 - [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
-Reference kernel/test surfaces:
+Release-facing graph examples:
+
+- [rtdl_graph_bfs.py](../examples/rtdl_graph_bfs.py)
+- [rtdl_graph_triangle_count.py](../examples/rtdl_graph_triangle_count.py)
+
+Run:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu
+
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu
+```
+
+If Embree is available:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend embree
+```
+
+On Linux hosts with the GPU stack enabled:
+
+```bash
+make build-optix
+make build-vulkan
+
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend vulkan
+```
+
+Reference validation/report surfaces:
 
 - [goal389_v0_6_rt_graph_bfs_truth_path_test.py](../tests/goal389_v0_6_rt_graph_bfs_truth_path_test.py)
 - [goal390_v0_6_rt_graph_triangle_truth_path_test.py](../tests/goal390_v0_6_rt_graph_triangle_truth_path_test.py)

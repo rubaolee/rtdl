@@ -92,6 +92,10 @@ mis-scoped graph-runtime line.
 25. Goal 409
     - repo-wide file-by-file status audit with checker / verifier / final-proof AI chain
 
+26. Goal 410
+    - tutorial and release-facing example cross-platform check across macOS,
+      Linux, and Windows
+
 ## Discipline
 
 Each goal must stay bounded, preserve the RTDL-kernel identity, and save the

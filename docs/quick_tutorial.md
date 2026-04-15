@@ -15,6 +15,55 @@ Command convention used below:
   - `$env:PYTHONPATH = "src;."`
   - then `python ...`
 
+One-time setup for a fresh checkout:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+Windows `cmd.exe`:
+
+```bat
+py -3 -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+Windows PowerShell:
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+If `python3 -m venv` fails on Debian/Ubuntu because `ensurepip` is missing,
+install the OS package first:
+
+```bash
+sudo apt install python3-venv
+```
+
+Backend note:
+
+- `cpu_python_reference` is pure Python and should run on every OS
+- `cpu` auto-builds the native C oracle library on first use
+- `embree` runs when the Embree backend is available on the host
+- on Linux with a configured GPU stack, `optix` and `vulkan` can run too
+
+On Linux GPU hosts, build the GPU backend libraries once before using the
+`optix` and `vulkan` commands:
+
+```bash
+make build-optix
+make build-vulkan
+```
+
 ---
 
 ## Step 1: First run
@@ -171,7 +220,8 @@ Follow this order to learn progressively:
 2. [Sorting Demo](tutorials/sorting_demo.md)
 3. [Segment And Polygon Workloads](tutorials/segment_polygon_workloads.md)
 4. [Nearest-Neighbor Workloads](tutorials/nearest_neighbor_workloads.md)
-5. [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
+5. [Graph Workloads](tutorials/graph_workloads.md)
+6. [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
 
 Or jump directly to the full hub:
 

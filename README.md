@@ -116,10 +116,38 @@ git clone https://github.com/rubaolee/rtdl.git
 cd rtdl
 ```
 
-Install the basic Python requirements:
+Create a local virtual environment and install the basic Python requirements:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+```
+
+Windows `cmd.exe`:
+
+```bat
+py -3 -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+PowerShell:
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+If `python3 -m venv` fails on Debian/Ubuntu because `ensurepip` is unavailable,
+install the OS package first:
+
+```bash
+sudo apt install python3-venv
 ```
 
 Run the smallest example:
@@ -134,12 +162,21 @@ Then run one released workload:
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 ```
 
+Then try the released graph line:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+```
+
 Windows `cmd.exe`:
 
 ```bat
 set PYTHONPATH=src;.
 python examples\rtdl_hello_world.py
 python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+python examples\rtdl_graph_bfs.py --backend cpu_python_reference
+python examples\rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
 PowerShell:
@@ -148,6 +185,8 @@ PowerShell:
 $env:PYTHONPATH="src;."
 python examples/rtdl_hello_world.py
 python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+python examples/rtdl_graph_bfs.py --backend cpu_python_reference
+python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
 Notes:
@@ -156,6 +195,16 @@ Notes:
 - local package name: `rtdsl`
 - if your shell only provides `python3`, substitute `python3`
 - `PYTHONPATH=src:.` is what makes the local `src/rtdsl/` package importable
+- `cpu` auto-builds the native C oracle library on first use
+- `embree` runs when the Embree backend is present
+- on Linux with a configured GPU stack, `optix` and `vulkan` can run after the backend libraries are available
+
+Optional Linux GPU backend build step:
+
+```bash
+make build-optix
+make build-vulkan
+```
 
 ## Choose Your Path
 
