@@ -67,7 +67,7 @@ validated across:
 ### Additional implemented workload families in the broader codebase
 
 These exist in the repo as real workload/runtime families, but they are not all
-part of the current released headline surface:
+part of the currently released public workload surface:
 
 - `lsi`
 - `pip`
@@ -145,7 +145,7 @@ Primary foundation:
 
 Why it matters:
 
-- this is the main direct research foundation for the active `v0.4`
+- this is the main direct research foundation for the released `v0.4.0`
   nearest-neighbor line
 - it supports the choice that produced the released `v0.4.0`
   nearest-neighbor surface

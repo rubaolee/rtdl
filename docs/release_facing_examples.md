@@ -38,7 +38,7 @@ Then run the same `python ...` command from the repo root.
 
 ## v0.4 nearest-neighbor examples
 
-These are the current release-facing examples for the released `v0.4` line.
+These are the release-facing examples for the released `v0.4.0` nearest-neighbor line.
 They are correctness-first nearest-neighbor examples, not a benchmark claim.
 
 ### Fixed-Radius Neighbors
