@@ -29,21 +29,40 @@ It is intentionally narrower than the full repo history:
 
 ## Current Supported Workloads
 
-### Released v0.2.0 workload surface
+### Released v0.2.0 geometry workload surface
 
-These are the accepted public workloads in the released `v0.2.0` package:
+These are the accepted geometry workloads in the released `v0.2.0` package:
 
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
 
-### Active v0.4 preview workload surface
+### Released v0.4.0 nearest-neighbor workload surface
 
-These are implemented in the active nearest-neighbor preview line (currently running across CPU/Oracle, Embree, OptiX, and Vulkan backends), but are not released yet:
+These are the accepted nearest-neighbor workloads in the released `v0.4.0`
+line:
 
 - `fixed_radius_neighbors`
 - `knn_rows`
+
+### Released v0.6.1 RT-graph workload surface
+
+These are the accepted RT-kernel graph workloads in the released `v0.6.1`
+line:
+
+- `bfs`
+- `triangle_count`
+
+These are the workloads added by the corrected RT graph release. They are
+validated across:
+
+- Python truth path
+- native/oracle
+- Embree
+- OptiX
+- Vulkan
+- PostgreSQL as the external correctness anchor
 
 ### Additional implemented workload families in the broader codebase
 
@@ -128,8 +147,23 @@ Why it matters:
 
 - this is the main direct research foundation for the active `v0.4`
   nearest-neighbor line
-- it supports the choice to make nearest-neighbor search the next core
-  non-graphical workload family after `v0.3.0`
+- it supports the choice that produced the released `v0.4.0`
+  nearest-neighbor surface
+
+### `bfs`, `triangle_count`
+
+Primary foundation:
+
+- the SIGMETRICS 2025 RT-graph paper direction referenced by the corrected
+  `v0.6.1` planning and release materials
+
+Why it matters:
+
+- this is the research direction behind the released `v0.6.1` graph line
+- the graph workloads are intentionally expressed through the RTDL kernel model
+  rather than as a detached non-RT runtime
+- this line is where RTDL expands from geometry and nearest-neighbor workloads
+  into RT-style graph execution
 
 ### Hausdorff-distance direction
 
@@ -179,8 +213,10 @@ These matter because they show that RTDL is part of a coherent research line:
 ## Honest Summary
 
 - RTDL’s earliest and strongest workload foundation is RayJoin
-- the active `v0.4` line is founded on nearest-neighbor research rather than
-  an ad hoc feature choice
+- the released `v0.4.0` nearest-neighbor line is founded on nearest-neighbor
+  research rather than an ad hoc feature choice
+- the released `v0.6.1` graph line is now part of the public workload story
+  through RT-kernel `bfs` and `triangle_count`
 - the overlap-area and Jaccard line now has a named pathology-image
   cross-comparison paper anchor rather than only a loose research association
 - the project’s workload growth should keep following named research targets,

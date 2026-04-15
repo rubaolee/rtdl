@@ -1,7 +1,15 @@
 # Release-Facing Examples
 
-This page is the canonical example index for the frozen RTDL `v0.2` surface
-and the released RTDL `v0.4` nearest-neighbor line.
+This page is the canonical example index for the release-facing `examples/`
+surface.
+
+It currently covers:
+
+- the released `v0.2.0` geometry workloads
+- the released `v0.4.0` nearest-neighbor line
+- the released `v0.6.1` RT graph line, where graph reference surfaces are
+  currently documented through the release package and validated kernel/test
+  paths rather than a top-level `examples/rtdl_*.py` CLI
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -68,6 +76,33 @@ PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend cpu_pyt
 ```
 
 See [v0.4 Application Examples](v0_4_application_examples.md) for full descriptions and SQL comparisons.
+
+## v0.6.1 RT graph line
+
+The released `v0.6.1` graph workloads are:
+
+- `bfs`
+- `triangle_count`
+
+Important current boundary:
+
+- the graph line is released and validated
+- but it does **not** yet have a dedicated top-level release-facing CLI example
+  under `examples/`
+- the current release-facing entry points for that line are the release package
+  and the validated kernel/test surfaces
+
+Start here for the released graph line:
+
+- [v0.6 Release Package](release_reports/v0_6/README.md)
+- [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+- [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+
+Reference kernel/test surfaces:
+
+- [goal389_v0_6_rt_graph_bfs_truth_path_test.py](../tests/goal389_v0_6_rt_graph_bfs_truth_path_test.py)
+- [goal390_v0_6_rt_graph_triangle_truth_path_test.py](../tests/goal390_v0_6_rt_graph_triangle_truth_path_test.py)
+- [graph_rt_validation_and_perf_report_2026-04-14.md](graph_rt_validation_and_perf_report_2026-04-14.md)
 
 ### Public CLI Backend Selection
 
@@ -217,7 +252,7 @@ the main first-run entry points for new users.
 
 ## Notes
 
-- these are the release-facing examples for the frozen v0.2 scope
+- these are the release-facing examples for the current released RTDL line
 - if you cloned the repo as `rtdl`, every command above is intended to work
   from that clone root
 - do not prepend another `cd rtdl` after you are already at the checkout root
