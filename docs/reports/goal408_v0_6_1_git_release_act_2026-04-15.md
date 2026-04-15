@@ -16,3 +16,24 @@ Expected result:
 
 This release uses `v0.6.1` because `v0.6.0` was already consumed by the earlier
 mis-scoped line and is intentionally not overwritten.
+
+## Actual result
+
+Published:
+
+- branch:
+  - `codex/v0_6_rt_rebuild`
+- release commit:
+  - `e4f3532f64933433ede26852e3f794fa22f22ca6`
+- tag:
+  - `v0.6.1`
+
+Remote refs:
+
+- `refs/heads/codex/v0_6_rt_rebuild -> e4f3532f64933433ede26852e3f794fa22f22ca6`
+- `refs/tags/v0.6.1`
+
+Release boundary:
+
+- the corrected RT graph line is now published by branch and tag
+- `main` was not moved as part of this release act
