@@ -89,6 +89,9 @@ mis-scoped graph-runtime line.
 24. Goal 408
     - git release act for `v0.6.1`
 
+25. Goal 409
+    - repo-wide file-by-file status audit with checker / verifier / final-proof AI chain
+
 ## Discipline
 
 Each goal must stay bounded, preserve the RTDL-kernel identity, and save the
