@@ -65,19 +65,60 @@ machines.
 Local proof of automation wiring:
 
 - the new guard test locks the portable minimum and Linux-only GPU markings
+- `PYTHONPATH=src:. python3 -m unittest tests.goal411_public_surface_ci_automation_test`
+  passed locally
 - the public harness remains the shared source of truth between Goal 410 manual
   validation and Goal 411 automation
 
 Hosted workflow evidence:
 
-- once the workflow is pushed, the expected artifact is:
-  - `build/goal411/public_surface_ci_report.json`
-- if the hosted run is visible from the repo environment, it should be checked
-  and recorded as the next update to this report
+- workflow:
+  - `Public Surface`
+- workflow file:
+  - [public-surface.yml](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/.github/workflows/public-surface.yml)
+- successful hosted run:
+  - run id `24455519225`
+  - branch `main`
+  - conclusion `success`
+  - job duration about `37s`
+- uploaded artifact copied into the repo:
+  - [goal411_github_actions_public_surface_report_2026-04-15.json](/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal411_github_actions_public_surface_report_2026-04-15.json)
+
+Hosted report summary:
+
+- machine label: `github-actions-ubuntu`
+- result:
+  - `24` passed
+  - `0` failed
+  - `11` skipped
+- backend availability:
+  - `cpu_python_reference = True`
+  - `cpu = True`
+  - `embree = False`
+  - `optix = False`
+  - `vulkan = False`
+
+Skip story on the hosted runner:
+
+- Embree cases skipped because Embree is not installed on the hosted runner
+- OptiX and Vulkan cases skipped because the hosted runner is not the Linux GPU
+  maintainer host
+
+Non-blocking hosted-run note:
+
+- GitHub Actions emitted a platform annotation that the currently referenced
+  official actions will eventually need Node 24-compatible versions
+- the run still succeeded, so this is maintenance debt, not a Goal 411 blocker
 
 ## Current status
 
-Goal 411 is implementation-ready once the workflow is pushed.
+Goal 411 is accepted as the first honest repository-hosted automation gate for
+the public RTDL surface.
 
-If the hosted run succeeds, the repo will have a continuous public first-run
-gate for the portable RTDL surface.
+The repo now has a continuous public first-run gate for:
+
+- `cpu_python_reference`
+- `cpu`
+
+with optional accelerated backends recorded when available rather than
+pretended.
