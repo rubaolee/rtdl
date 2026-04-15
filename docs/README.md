@@ -13,8 +13,8 @@ Read these in order:
 2. [Quick Tutorial](quick_tutorial.md)
 3. [RTDL Tutorials](tutorials/README.md)
 4. [Release-Facing Examples](release_facing_examples.md)
-5. [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
-6. [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
+5. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+6. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -40,6 +40,9 @@ That is the intended public reading path.
 - [Feature Homes](features/README.md)
 - [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
 - [Workloads And Research Foundations](workloads_and_research_foundations.md)
+- [v0.6 Release Package](release_reports/v0_6/README.md)
+- [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+- [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 - [v0.5 Release Package](release_reports/v0_5/README.md)
 - [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
 - [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
@@ -49,6 +52,7 @@ That is the intended public reading path.
 
 ## Release Packages
 
+- [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.5 Release Package](release_reports/v0_5/README.md)
 - [v0.5 Preview Package](release_reports/v0_5_preview/README.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
@@ -70,8 +74,8 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.5.0`
-- current `main` carries the released `v0.5.0` line
+- current released version is `v0.6.1`
+- current `main` carries the released `v0.6.1` line
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
@@ -80,10 +84,11 @@ Keep these current facts in mind while reading:
 - the earlier released engineering line on `main` was the `v0.4` nearest-neighbor surface:
   - `fixed_radius_neighbors`
   - `knn_rows`
-- the released `v0.5.0` additions on `main` are:
-  - `bounded_knn_rows`
-  - 3D point nearest-neighbor support
-  - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
+- the released `v0.6.1` additions on `main` are:
+  - `bfs`
+  - `triangle_count`
+  - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
+  - PostgreSQL-backed graph correctness anchoring
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that
@@ -116,7 +121,8 @@ Keep these current facts in mind while reading:
   - `vulkan`
 - Linux is the primary validation platform
 - macOS is only a limited local platform
-- PostGIS remains the external indexed comparison baseline
+- PostgreSQL remains the main external correctness baseline for the graph line
+- PostGIS remains part of the earlier non-graph release history
 - the motivating application target is RayJoin:
   - Liang Geng, Rubao Lee, and Xiaodong Zhang,
     *RayJoin: Fast and Precise Spatial Join*,

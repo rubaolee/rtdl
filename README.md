@@ -11,8 +11,8 @@ It gives you:
 - multiple execution backends behind one public surface
 - a clean model where RTDL owns the heavy accelerated work and Python owns the surrounding application logic
 
-The current released surface is strongest on geometric and nearest-neighbor
-workloads, but the language goal is broader than spatial workloads alone.
+The current released surface now spans geometric, nearest-neighbor, and graph
+workloads, but the language goal is broader than any one workload family alone.
 
 RTDL is not a general-purpose renderer or graphics engine.  
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -20,18 +20,19 @@ core can power a bounded Python application.
 
 ## Version Status At A Glance
 
-- current released version: `v0.5.0`
-- current released NN surface today:
-  - `fixed_radius_neighbors`
-  - `bounded_knn_rows`
-  - `knn_rows`
-- current `v0.5.0` additions over `v0.4.0`:
-  - `bounded_knn_rows`
-  - 3D point nearest-neighbor support
-  - Linux backend closure across CPU/oracle, Embree, OptiX, and Vulkan
+- current released version: `v0.6.1`
+- current released graph surface today:
+  - `bfs`
+  - `triangle_count`
+- current `v0.6.1` additions over `v0.5.0`:
+  - the first released RTDL graph workload family
+  - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
+  - PostgreSQL-backed graph correctness anchoring
 
 For exact status:
 
+- [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
@@ -51,15 +52,14 @@ RTDL uses several backends behind one public kernel surface:
   - current accelerated CPU backend
 - `OptiX`:
   - the NVIDIA GPU ray-tracing backend
-  - current fastest Linux backend on the large 3D NN line
+  - one of the main high-performance graph backends in `v0.6.1`
 - `Vulkan`:
   - the Vulkan ray-tracing GPU backend
   - portable GPU path
-  - current validated `v0.5.0` performance story for this backend is
-    Linux-primary
-- `PostGIS`:
-  - not an RTDL backend
-  - used as an external correctness/timing anchor for some workloads
+  - one of the main high-performance graph backends in `v0.6.1`
+- `PostGIS` / `PostgreSQL`:
+  - not RTDL backends
+  - used as external correctness/timing anchors for some workload families
 
 ## OS Support At A Glance
 
@@ -67,20 +67,18 @@ Current honest platform story:
 
 - `Linux`:
   - primary validation platform
-  - current large-scale nearest-neighbor performance claims are made here
+  - current graph correctness/performance claims are made here
 - `Windows`:
-  - bounded support in the current `v0.5.0` line
-  - Embree correctness is verified
-  - no current large-scale NN performance claim
+  - bounded support in the current `v0.6.1` line
+  - graph validation is part of the bounded support story
 - `local macOS`:
-  - bounded support in the current `v0.5.0` line
-  - Embree correctness is verified
-  - no current large-scale NN performance claim
+  - bounded support in the current `v0.6.1` line
+  - focused regression and local checks
 
 If you want the exact current boundary instead of the short front-page summary,
 use:
 
-- [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 
 ## See It Quickly
 
@@ -172,7 +170,12 @@ If you want the released core workloads:
 - [RTDL v0.2 User Guide](docs/v0_2_user_guide.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 
-If you want the newest released nearest-neighbor line:
+If you want the newest released graph line:
+
+- [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
+
+If you want the earlier released nearest-neighbor line:
 
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
@@ -189,17 +192,12 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.5.0`
+- `v0.6.1`
 
 Released workload surface:
 
-- `segment_polygon_hitcount`
-- `segment_polygon_anyhit_rows`
-- `polygon_pair_overlap_area_rows`
-- `polygon_set_jaccard`
-- `fixed_radius_neighbors`
-- `bounded_knn_rows`
-- `knn_rows`
+- `bfs`
+- `triangle_count`
 
 Release and preview layers inside the current repository:
 
@@ -207,6 +205,7 @@ Release and preview layers inside the current repository:
 - `v0.3.0`: released proof-of-capability demo/application layer on the same RTDL core
 - `v0.4.0`: released nearest-neighbor workload expansion
 - `v0.5.0`: released 3D nearest-neighbor and multi-backend expansion
+- `v0.6.1`: released corrected RT graph line
 
 Current public demo artifact:
 
@@ -214,8 +213,8 @@ Current public demo artifact:
 
 For exact backend/workload status, use:
 
-- [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
-- [RTDL v0.4 Support Matrix](docs/release_reports/v0_4/support_matrix.md)
+- [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
+- [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
