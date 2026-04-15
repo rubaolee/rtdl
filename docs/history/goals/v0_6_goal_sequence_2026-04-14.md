@@ -96,6 +96,10 @@ mis-scoped graph-runtime line.
     - tutorial and release-facing example cross-platform check across macOS,
       Linux, and Windows
 
+27. Goal 411
+    - automate the public tutorial/example first-run check with an honest CI
+      boundary
+
 ## Discipline
 
 Each goal must stay bounded, preserve the RTDL-kernel identity, and save the

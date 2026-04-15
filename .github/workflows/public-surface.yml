@@ -1,0 +1,46 @@
+name: Public Surface
+
+on:
+  push:
+    branches:
+      - main
+      - codex/**
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  public-surface:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-dev pkg-config
+
+      - name: Install Python requirements
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run public surface harness
+        run: |
+          PYTHONPATH=src:. python scripts/goal410_tutorial_example_check.py \
+            --machine github-actions-ubuntu \
+            --output build/goal411/public_surface_ci_report.json
+
+      - name: Upload public surface report
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-surface-report
+          path: build/goal411/public_surface_ci_report.json
