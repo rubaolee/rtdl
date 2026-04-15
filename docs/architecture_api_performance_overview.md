@@ -9,8 +9,8 @@ Current source of truth:
 
 - [README.md](../README.md)
 - [docs/README.md](README.md)
-- [docs/release_reports/v0_4/release_statement.md](release_reports/v0_4/release_statement.md)
-- [docs/release_reports/v0_4/support_matrix.md](release_reports/v0_4/support_matrix.md)
+- [docs/release_reports/v0_6/release_statement.md](release_reports/v0_6/release_statement.md)
+- [docs/release_reports/v0_6/support_matrix.md](release_reports/v0_6/support_matrix.md)
 
 
 ## What RTDL is

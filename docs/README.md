@@ -35,20 +35,12 @@ That is the intended public reading path.
 - [Quick Tutorial](quick_tutorial.md)
 - [RTDL Tutorials](tutorials/README.md)
 - [Release-Facing Examples](release_facing_examples.md)
-- [v0.4 Application Examples](v0_4_application_examples.md)
 - [RTDL Language Docs Index](rtdl/README.md)
 - [Feature Homes](features/README.md)
-- [Architecture, API, And Performance Overview](architecture_api_performance_overview.md)
 - [Workloads And Research Foundations](workloads_and_research_foundations.md)
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 - [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
-- [v0.5 Release Package](release_reports/v0_5/README.md)
-- [v0.5 Release Statement](release_reports/v0_5/release_statement.md)
-- [v0.5 Support Matrix](release_reports/v0_5/support_matrix.md)
-- [v0.4 Release Package](release_reports/v0_4/README.md)
-- [v0.4 Release Statement](release_reports/v0_4/release_statement.md)
-- [v0.4 Support Matrix](release_reports/v0_4/support_matrix.md)
 
 ## Release Packages
 
@@ -66,8 +58,14 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 - [Process Docs](ai_collaboration_workflow.md)
 - [Audit Flow](audit_flow.md)
+- [Historical Architecture Overview](architecture_api_performance_overview.md)
+- [Historical v0.4 Application Examples](v0_4_application_examples.md)
 - [Historical Reports](reports/)
+- [Historical Goal Records](history/goals/v0_6_goal_sequence_2026-04-14.md)
+- [Historical Docs Tree](history/)
 - [Older Release Archives](archive/v0_1/README.md)
+- [Archive Index](archive/README.md)
+- [Historical Engineering Handoffs](engineering/handoffs/V0_4_FINAL_RELEASE_HANDOFF_HUB.md)
 - [Preserved Wiki Drafts](wiki_drafts/README.md)
 
 ## Live State Summary

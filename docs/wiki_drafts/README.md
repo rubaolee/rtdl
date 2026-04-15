@@ -20,5 +20,5 @@ Use these files for:
 Do **not** treat them as the primary onboarding path. For current docs, use:
 - [Docs Index](../README.md)
 - [Quick Tutorial](../quick_tutorial.md)
-- [RTDL v0.3 Release Reports](../release_reports/v0_3/README.md)
-- [RTDL v0.4 Release Package](../release_reports/v0_4/README.md)
+- [RTDL v0.6 Release Package](../release_reports/v0_6/README.md)
+- [RTDL v0.6 Release Statement](../release_reports/v0_6/release_statement.md)
