@@ -120,6 +120,215 @@ static void run_seg_poly_anyhit_rows_optix_host_indexed(
     *row_count_out = out_rows.size();
 }
 
+static void run_bfs_expand_optix_host_indexed(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count,
+        const RtdlFrontierVertex* frontier, size_t frontier_count,
+        const uint32_t* visited_vertices, size_t visited_count,
+        uint32_t dedupe,
+        RtdlBfsExpandRow** rows_out, size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (!row_offsets || row_offset_count == 0) {
+        throw std::runtime_error("graph row_offsets must not be empty");
+    }
+    const uint64_t vertex_count = static_cast<uint64_t>(row_offset_count - 1);
+    if (vertex_count > static_cast<uint64_t>(UINT32_MAX) + 1ULL) {
+        throw std::runtime_error("graph vertex count exceeds uint32 limit");
+    }
+    if (frontier_count == 0) {
+        return;
+    }
+    if (!column_indices && column_index_count != 0) {
+        throw std::runtime_error("graph column_indices pointer must not be null when edge count is non-zero");
+    }
+
+    for (size_t vertex = 0; vertex + 1 < row_offset_count; ++vertex) {
+        const uint32_t start = row_offsets[vertex];
+        const uint32_t end = row_offsets[vertex + 1];
+        if (start > end) {
+            throw std::runtime_error("graph row_offsets must be non-decreasing");
+        }
+        if (end > column_index_count) {
+            throw std::runtime_error("graph row_offsets exceed column_indices length");
+        }
+    }
+    for (size_t edge_index = 0; edge_index < column_index_count; ++edge_index) {
+        if (column_indices[edge_index] >= vertex_count) {
+            throw std::runtime_error("graph column_indices must reference valid graph vertices");
+        }
+    }
+
+    std::vector<uint8_t> visited_flags(static_cast<size_t>(vertex_count), 0);
+    for (size_t i = 0; i < visited_count; ++i) {
+        if (visited_vertices[i] >= vertex_count) {
+            throw std::runtime_error("visited vertex_id must be a valid graph vertex");
+        }
+        visited_flags[visited_vertices[i]] = 1;
+    }
+
+    std::vector<uint8_t> discovered_flags(static_cast<size_t>(vertex_count), 0);
+    std::vector<RtdlBfsExpandRow> rows;
+    rows.reserve(column_index_count);
+
+    for (size_t i = 0; i < frontier_count; ++i) {
+        const uint32_t src = frontier[i].vertex_id;
+        if (src >= vertex_count) {
+            throw std::runtime_error("frontier vertex_id must be a valid graph vertex");
+        }
+        const uint32_t start = row_offsets[src];
+        const uint32_t end = row_offsets[src + 1];
+        for (uint32_t edge_index = start; edge_index < end; ++edge_index) {
+            const uint32_t dst = column_indices[edge_index];
+            if (visited_flags[dst]) {
+                continue;
+            }
+            if (dedupe && discovered_flags[dst]) {
+                continue;
+            }
+            if (dedupe) {
+                discovered_flags[dst] = 1;
+            }
+            rows.push_back(RtdlBfsExpandRow{src, dst, frontier[i].level + 1U});
+        }
+    }
+
+    std::sort(rows.begin(), rows.end(), [](const RtdlBfsExpandRow& left, const RtdlBfsExpandRow& right) {
+        if (left.level != right.level) {
+            return left.level < right.level;
+        }
+        if (left.dst_vertex != right.dst_vertex) {
+            return left.dst_vertex < right.dst_vertex;
+        }
+        return left.src_vertex < right.src_vertex;
+    });
+
+    auto* out = static_cast<RtdlBfsExpandRow*>(std::malloc(sizeof(RtdlBfsExpandRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlBfsExpandRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_triangle_probe_optix_host_indexed(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count,
+        const RtdlEdgeSeed* seeds, size_t seed_count,
+        uint32_t enforce_id_ascending,
+        uint32_t unique,
+        RtdlTriangleRow** rows_out, size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (!row_offsets || row_offset_count == 0) {
+        throw std::runtime_error("CSR graph row_offsets must not be empty");
+    }
+    if (column_index_count > 0 && !column_indices) {
+        throw std::runtime_error("CSR graph column_indices pointer must not be null");
+    }
+    if (seed_count > 0 && !seeds) {
+        throw std::runtime_error("edge seed pointer must not be null when seed_count > 0");
+    }
+    if (row_offsets[0] != 0u) {
+        throw std::runtime_error("CSR graph row_offsets must start at 0");
+    }
+    if (row_offsets[row_offset_count - 1] != column_index_count) {
+        throw std::runtime_error("CSR graph final row_offset must equal edge_count");
+    }
+
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    for (size_t index = 1; index < row_offset_count; ++index) {
+        if (row_offsets[index] < row_offsets[index - 1]) {
+            throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
+        }
+    }
+    for (size_t index = 0; index < column_index_count; ++index) {
+        if (column_indices[index] >= vertex_count) {
+            throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
+        }
+    }
+
+    std::vector<uint32_t> neighbor_marks(vertex_count, 0u);
+    uint32_t stamp = 1u;
+    std::vector<RtdlTriangleRow> rows;
+
+    for (size_t seed_index = 0; seed_index < seed_count; ++seed_index) {
+        const uint32_t u = seeds[seed_index].u;
+        const uint32_t v = seeds[seed_index].v;
+        if (u >= vertex_count || v >= vertex_count) {
+            throw std::runtime_error("edge seed vertices must be valid graph vertex IDs");
+        }
+        if (u == v) {
+            continue;
+        }
+        if (enforce_id_ascending != 0u && !(u < v)) {
+            continue;
+        }
+
+        const size_t u_start = row_offsets[u];
+        const size_t u_end = row_offsets[u + 1];
+        const size_t v_start = row_offsets[v];
+        const size_t v_end = row_offsets[v + 1];
+
+        for (size_t offset = u_start; offset < u_end; ++offset) {
+            neighbor_marks[column_indices[offset]] = stamp;
+        }
+
+        std::vector<uint32_t> common_neighbors;
+        for (size_t offset = v_start; offset < v_end; ++offset) {
+            const uint32_t w = column_indices[offset];
+            if (neighbor_marks[w] != stamp) {
+                continue;
+            }
+            if (enforce_id_ascending != 0u && !(v < w)) {
+                continue;
+            }
+            common_neighbors.push_back(w);
+        }
+        std::sort(common_neighbors.begin(), common_neighbors.end());
+
+        for (uint32_t w : common_neighbors) {
+            if (unique != 0u) {
+                const bool already_seen = std::any_of(
+                    rows.begin(),
+                    rows.end(),
+                    [&](const RtdlTriangleRow& row) { return row.u == u && row.v == v && row.w == w; });
+                if (already_seen) {
+                    continue;
+                }
+            }
+            rows.push_back({u, v, w});
+        }
+
+        stamp += 1u;
+        if (stamp == 0u) {
+            std::fill(neighbor_marks.begin(), neighbor_marks.end(), 0u);
+            stamp = 1u;
+        }
+    }
+
+    auto* out = static_cast<RtdlTriangleRow*>(std::malloc(sizeof(RtdlTriangleRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlTriangleRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Workload implementations
 // ──────────────────────────────────────────────────────────────────────────────

@@ -141,6 +141,29 @@ Ray3DLayout = layout(
     field("id", u32),
 )
 
+GraphCSRLayout = layout(
+    "GraphCSR",
+    field("vertex_count", u32),
+    field("edge_count", u32),
+)
+
+VertexFrontierLayout = layout(
+    "VertexFrontier",
+    field("vertex_id", u32),
+    field("level", u32),
+)
+
+VertexSetLayout = layout(
+    "VertexSet",
+    field("vertex_id", u32),
+)
+
+EdgeSetLayout = layout(
+    "EdgeSet",
+    field("u", u32),
+    field("v", u32),
+)
+
 Segments = GeometryType(
     name="segments",
     dimension=1,
@@ -188,4 +211,28 @@ Rays3D = GeometryType(
     dimension=1,
     default_layout=Ray3DLayout,
     required_fields=("ox", "oy", "oz", "dx", "dy", "dz", "tmax", "id"),
+)
+GraphCSR = GeometryType(
+    name="graph_csr",
+    dimension=0,
+    default_layout=GraphCSRLayout,
+    required_fields=("vertex_count", "edge_count"),
+)
+VertexFrontier = GeometryType(
+    name="vertex_frontier",
+    dimension=0,
+    default_layout=VertexFrontierLayout,
+    required_fields=("vertex_id", "level"),
+)
+VertexSet = GeometryType(
+    name="vertex_set",
+    dimension=0,
+    default_layout=VertexSetLayout,
+    required_fields=("vertex_id",),
+)
+EdgeSet = GeometryType(
+    name="edge_set",
+    dimension=1,
+    default_layout=EdgeSetLayout,
+    required_fields=("u", "v"),
 )

@@ -41,6 +41,8 @@ enum class QueryKind {
   kOverlay,
   kRayHitCount,
   kSegmentPolygonHitCount,
+  kGraphBfsExpand,
+  kGraphTriangleProbe,
   kFixedRadiusNeighbors,
   kFixedRadiusNeighbors3D,
   kKnnRows,
@@ -61,6 +63,16 @@ struct PointSceneData {
 
 struct PointSceneData3D {
   const std::vector<Point3D>* points;
+};
+
+struct GraphEdgePoint {
+  uint32_t src_vertex;
+  uint32_t dst_vertex;
+  Vec2 p;
+};
+
+struct GraphEdgePointSceneData {
+  const std::vector<GraphEdgePoint>* points;
 };
 
 struct TriangleSceneData {
@@ -106,6 +118,22 @@ struct RayHitCountState3D {
 struct SegmentPolygonHitCountState {
   const Segment2D* segment;
   uint32_t* hit_count;
+};
+
+struct GraphBfsExpandQueryState {
+  const RtdlFrontierVertex* frontier_vertex;
+  const std::vector<GraphEdgePoint>* edge_points;
+  const std::vector<uint8_t>* visited_flags;
+  std::vector<uint8_t>* discovered_flags;
+  uint32_t dedupe;
+  std::vector<RtdlBfsExpandRow>* rows;
+};
+
+struct GraphTriangleProbeQueryState {
+  const std::vector<GraphEdgePoint>* edge_points;
+  std::vector<uint32_t>* neighbor_marks;
+  uint32_t mark;
+  std::vector<uint32_t>* neighbors;
 };
 
 struct FixedRadiusNeighborsQueryState {
@@ -287,6 +315,17 @@ void point_bounds_3d(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_z = point.p.z + kEps;
 }
 
+void graph_edge_point_bounds(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<GraphEdgePointSceneData*>(args->geometryUserPtr);
+  const GraphEdgePoint& point = (*data->points)[args->primID];
+  args->bounds_o->lower_x = point.p.x - kEps;
+  args->bounds_o->lower_y = point.p.y - kEps;
+  args->bounds_o->lower_z = -kEps;
+  args->bounds_o->upper_x = point.p.x + kEps;
+  args->bounds_o->upper_y = point.p.y + kEps;
+  args->bounds_o->upper_z = kEps;
+}
+
 void triangle_bounds(const RTCBoundsFunctionArguments* args) {
   auto* data = static_cast<TriangleSceneData*>(args->geometryUserPtr);
   const Triangle2D& triangle = (*data->triangles)[args->primID];
@@ -396,6 +435,30 @@ bool polygon_point_query_collect(RTCPointQueryFunctionArguments* args) {
 
 bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   if (args == nullptr || args->userPtr == nullptr) {
+    return false;
+  }
+  if (g_query_kind == QueryKind::kGraphBfsExpand) {
+    auto* state = static_cast<GraphBfsExpandQueryState*>(args->userPtr);
+    const GraphEdgePoint& edge_point = (*state->edge_points)[args->primID];
+    if ((*state->visited_flags)[edge_point.dst_vertex] != 0u) {
+      return false;
+    }
+    if (state->dedupe != 0u && (*state->discovered_flags)[edge_point.dst_vertex] != 0u) {
+      return false;
+    }
+    (*state->discovered_flags)[edge_point.dst_vertex] = 1u;
+    state->rows->push_back(
+        {state->frontier_vertex->vertex_id, edge_point.dst_vertex, state->frontier_vertex->level + 1u});
+    return false;
+  }
+  if (g_query_kind == QueryKind::kGraphTriangleProbe) {
+    auto* state = static_cast<GraphTriangleProbeQueryState*>(args->userPtr);
+    const GraphEdgePoint& edge_point = (*state->edge_points)[args->primID];
+    if ((*state->neighbor_marks)[edge_point.dst_vertex] == state->mark) {
+      return false;
+    }
+    (*state->neighbor_marks)[edge_point.dst_vertex] = state->mark;
+    state->neighbors->push_back(edge_point.dst_vertex);
     return false;
   }
   if (g_query_kind == QueryKind::kFixedRadiusNeighbors) {

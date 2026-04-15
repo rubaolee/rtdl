@@ -207,6 +207,36 @@ class _RtdlKnnNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlFrontierVertex(ctypes.Structure):
+    _fields_ = [
+        ("vertex_id", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlBfsExpandRow(ctypes.Structure):
+    _fields_ = [
+        ("src_vertex", ctypes.c_uint32),
+        ("dst_vertex", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlEdgeSeed(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+    ]
+
+
+class _RtdlTriangleRow(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+        ("w", ctypes.c_uint32),
+    ]
+
+
 def oracle_version() -> tuple[int, int, int]:
     library = _load_oracle_library()
     major = ctypes.c_int()
@@ -219,6 +249,10 @@ def oracle_version() -> tuple[int, int, int]:
 def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, object], ...]:
     library = _load_oracle_library()
     predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "bfs_discover":
+        return _run_bfs_expand_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "triangle_match":
+        return _run_triangle_probe_oracle(compiled, normalized_inputs, library)
     if predicate_name == "segment_intersection":
         return _run_lsi_oracle(compiled, normalized_inputs, library)
     if predicate_name == "point_in_polygon":
@@ -244,6 +278,94 @@ def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, o
     if predicate_name == "bounded_knn_rows":
         return _run_bounded_knn_rows_oracle(compiled, normalized_inputs, library)
     raise ValueError(f"unsupported RTDL native oracle predicate: {predicate_name}")
+
+
+def _run_bfs_expand_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    frontier_name = compiled.candidates.left.name
+    graph_name = compiled.candidates.right.name
+    visited_name = str(compiled.refine_op.predicate.options["visited_input"])
+    frontier = normalized_inputs[frontier_name]
+    graph = normalized_inputs[graph_name]
+    visited = normalized_inputs[visited_name]
+
+    row_offsets = (ctypes.c_uint32 * len(graph.row_offsets))(*graph.row_offsets)
+    column_indices = (ctypes.c_uint32 * len(graph.column_indices))(*graph.column_indices)
+    frontier_array = (_RtdlFrontierVertex * len(frontier))(*[
+        _RtdlFrontierVertex(item.vertex_id, item.level) for item in frontier
+    ])
+    visited_array = (ctypes.c_uint32 * len(visited))(*visited)
+    rows_ptr = ctypes.POINTER(_RtdlBfsExpandRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_bfs_expand(
+        row_offsets,
+        len(graph.row_offsets),
+        column_indices,
+        len(graph.column_indices),
+        frontier_array,
+        len(frontier),
+        visited_array,
+        len(visited),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("dedupe", True) else 0),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "src_vertex": rows_ptr[index].src_vertex,
+                "dst_vertex": rows_ptr[index].dst_vertex,
+                "level": rows_ptr[index].level,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_triangle_probe_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    seeds_name = compiled.candidates.left.name
+    graph_name = compiled.candidates.right.name
+    seeds = normalized_inputs[seeds_name]
+    graph = normalized_inputs[graph_name]
+
+    row_offsets = (ctypes.c_uint32 * len(graph.row_offsets))(*graph.row_offsets)
+    column_indices = (ctypes.c_uint32 * len(graph.column_indices))(*graph.column_indices)
+    seed_array = (_RtdlEdgeSeed * len(seeds))(*[
+        _RtdlEdgeSeed(item.u, item.v) for item in seeds
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_triangle_probe(
+        row_offsets,
+        len(graph.row_offsets),
+        column_indices,
+        len(graph.column_indices),
+        seed_array,
+        len(seeds),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order", "id_ascending") == "id_ascending" else 0),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("unique", True) else 0),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "u": rows_ptr[index].u,
+                "v": rows_ptr[index].v,
+                "w": rows_ptr[index].w,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
 
 
 def _run_lsi_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
@@ -1072,6 +1194,37 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_bounded_knn_rows_3d.restype = ctypes.c_int
+    library.rtdl_oracle_run_bfs_expand.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlFrontierVertex),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlBfsExpandRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_bfs_expand.restype = ctypes.c_int
+    library.rtdl_oracle_run_triangle_probe.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlEdgeSeed),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlTriangleRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_triangle_probe.restype = ctypes.c_int
     return library
 
 

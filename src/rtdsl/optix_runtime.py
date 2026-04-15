@@ -44,11 +44,19 @@ from .embree_runtime import _RtdlTriangle
 from .embree_runtime import _RtdlTriangle3D
 from .embree_runtime import _RtdlRay2D
 from .embree_runtime import _RtdlRay3D
+from .embree_runtime import _RtdlFrontierVertex
+from .embree_runtime import _RtdlBfsExpandRow
+from .embree_runtime import _RtdlEdgeSeed
+from .embree_runtime import _RtdlTriangleRow
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
+from .embree_runtime import PackedGraphCSR
+from .embree_runtime import PackedVertexFrontier
+from .embree_runtime import PackedVertexSet
+from .embree_runtime import PackedEdgeSet
 from .ir import CompiledKernel
 from .runtime import _normalize_records
 from .runtime import _resolve_kernel
@@ -62,6 +70,12 @@ from .reference import Triangle as _CanonicalTriangle
 from .reference import Triangle3D as _CanonicalTriangle3D
 from .reference import Ray2D as _CanonicalRay2D
 from .reference import Ray3D as _CanonicalRay3D
+from .graph_reference import CSRGraph
+from .graph_reference import EdgeSeed
+from .graph_reference import FrontierVertex
+from .graph_reference import normalize_edge_set
+from .graph_reference import normalize_frontier
+from .graph_reference import normalize_vertex_set
 
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
@@ -207,6 +221,8 @@ class PreparedOptixKernel:
         "fixed_radius_neighbors",
         "bounded_knn_rows",
         "knn_rows",
+        "bfs_discover",
+        "triangle_match",
     }
 
     def __init__(self, kernel_fn_or_compiled):
@@ -275,6 +291,8 @@ class PreparedOptixExecution:
             "fixed_radius_neighbors": _call_fixed_radius_neighbors_optix_packed,
             "bounded_knn_rows": _call_bounded_knn_rows_optix_packed,
             "knn_rows": _call_knn_rows_optix_packed,
+            "bfs_discover": _call_bfs_expand_optix_packed,
+            "triangle_match": _call_triangle_probe_optix_packed,
         }
         fn = dispatch.get(pred)
         if fn is None:
@@ -951,6 +969,60 @@ def _call_knn_rows_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixR
         field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"))
 
 
+def _call_bfs_expand_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
+    symbol = _require_optix_graph_symbol(lib, "rtdl_optix_run_bfs_expand")
+    frontier = packed[compiled.candidates.left.name]
+    graph = packed[compiled.candidates.right.name]
+    visited_name = str(compiled.refine_op.predicate.options["visited_input"])
+    visited = packed[visited_name]
+    rows_ptr = ctypes.POINTER(_RtdlBfsExpandRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        graph.row_offsets, graph.row_offset_count,
+        graph.column_indices, graph.column_index_count,
+        frontier.records, frontier.count,
+        visited.records, visited.count,
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("dedupe", True) else 0),
+        ctypes.byref(rows_ptr), ctypes.byref(row_count),
+        error, len(error),
+    )
+    _check_status(status, error)
+    return OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlBfsExpandRow,
+        field_names=("src_vertex", "dst_vertex", "level"),
+    )
+
+
+def _call_triangle_probe_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
+    symbol = _require_optix_graph_symbol(lib, "rtdl_optix_run_triangle_probe")
+    seeds = packed[compiled.candidates.left.name]
+    graph = packed[compiled.candidates.right.name]
+    rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        graph.row_offsets, graph.row_offset_count,
+        graph.column_indices, graph.column_index_count,
+        seeds.records, seeds.count,
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order") == "id_ascending" else 0),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("unique", True) else 0),
+        ctypes.byref(rows_ptr), ctypes.byref(row_count),
+        error, len(error),
+    )
+    _check_status(status, error)
+    return OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlTriangleRow,
+        field_names=("u", "v", "w"),
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Library loading
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1129,6 +1201,33 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_bfs_expand")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFrontierVertex), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlBfsExpandRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_triangle_probe")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlEdgeSeed), ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlTriangleRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
 
 def _require_backend_symbol(lib, symbol_name: str):
     try:
@@ -1147,6 +1246,17 @@ def _find_optional_backend_symbol(lib, symbol_name: str):
         return getattr(lib, symbol_name)
     except AttributeError:
         return None
+
+
+def _require_optix_graph_symbol(lib, symbol_name: str):
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        path = getattr(lib, "_rtdl_library_path", "<unknown>")
+        raise RuntimeError(
+            f"Loaded OptiX library {path!r} does not export {symbol_name!r}. "
+            "Rebuild it with 'make build-optix' from the current checkout before running RT graph kernels on OptiX."
+        )
+    return symbol
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1205,6 +1315,40 @@ def _pack_for_geometry(geometry_input, payload):
     else:
         geometry_name = geometry_input.geometry.name
         expected_dimension = _geometry_layout_dimension(geometry_input)
+    if geometry_name == "graph_csr":
+        if isinstance(payload, PackedGraphCSR):
+            return payload
+        normalized = payload if isinstance(payload, CSRGraph) else _normalize_records(geometry_input.name, geometry_name, payload)
+        row_offsets = (ctypes.c_uint32 * len(normalized.row_offsets))(*normalized.row_offsets)
+        column_indices = (ctypes.c_uint32 * len(normalized.column_indices))(*normalized.column_indices)
+        return PackedGraphCSR(
+            row_offsets=row_offsets,
+            row_offset_count=len(normalized.row_offsets),
+            column_indices=column_indices,
+            column_index_count=len(normalized.column_indices),
+        )
+    if geometry_name == "vertex_frontier":
+        if isinstance(payload, PackedVertexFrontier):
+            return payload
+        normalized = payload if isinstance(payload, tuple) and all(isinstance(item, FrontierVertex) for item in payload) else normalize_frontier(payload)
+        records = (_RtdlFrontierVertex * len(normalized))(*[
+            _RtdlFrontierVertex(item.vertex_id, item.level) for item in normalized
+        ])
+        return PackedVertexFrontier(records=records, count=len(normalized))
+    if geometry_name == "vertex_set":
+        if isinstance(payload, PackedVertexSet):
+            return payload
+        normalized = normalize_vertex_set(payload)
+        records = (ctypes.c_uint32 * len(normalized))(*normalized)
+        return PackedVertexSet(records=records, count=len(normalized))
+    if geometry_name == "edge_set":
+        if isinstance(payload, PackedEdgeSet):
+            return payload
+        normalized = payload if isinstance(payload, tuple) and all(isinstance(item, EdgeSeed) for item in payload) else normalize_edge_set(payload)
+        records = (_RtdlEdgeSeed * len(normalized))(*[
+            _RtdlEdgeSeed(item.u, item.v) for item in normalized
+        ])
+        return PackedEdgeSet(records=records, count=len(normalized))
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments)  else pack_segments(records=payload)
     if geometry_name == "points":
@@ -1262,6 +1406,14 @@ def _make_owned_row_view(row_type, rows, field_names: tuple[str, ...]) -> OptixR
 
 
 def _is_packed_for_geometry(geometry_name: str, payload) -> bool:
+    if geometry_name == "graph_csr":
+        return isinstance(payload, PackedGraphCSR)
+    if geometry_name == "vertex_frontier":
+        return isinstance(payload, PackedVertexFrontier)
+    if geometry_name == "vertex_set":
+        return isinstance(payload, PackedVertexSet)
+    if geometry_name == "edge_set":
+        return isinstance(payload, PackedEdgeSet)
     if geometry_name == "segments":
         return isinstance(payload, PackedSegments)
     if geometry_name == "points":

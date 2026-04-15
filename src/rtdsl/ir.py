@@ -30,6 +30,7 @@ class CandidateSet:
     left: GeometryInput
     right: GeometryInput
     accel: str
+    mode: str | None = None
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,20 @@
+**Verdict: Acceptable with minor gaps**
+
+---
+
+**Finding 1 — Paper alignment is asserted, not anchored.**
+The report repeatedly invokes "paper consistency" and "SIGMETRICS 2025" as the governing rule, but never cites a specific paper claim, equation, or figure. For BFS this is low-risk (frontier-expand is standard), but for triangle count the phrase "set-intersection-style formulation" needs at least one sentence tying it to the paper's actual algorithm. Without that, reviewers can't confirm the encoding direction is faithful.
+
+**Finding 2 — Host-vs-kernel boundary is the strongest section.**
+The split is stated clearly and consistently: host owns outer loops, level counters, frontier state, seed batching, and aggregation; the kernel owns one bounded step (expand or probe). This is exactly the boundary that matters for paper faithfulness and it is expressed without ambiguity.
+
+**Finding 3 — RT traversal role is stated but the mechanism is underspecified.**
+"`traverse` issues RT queries → candidate hits" is clear as a role statement. What is missing is a one-sentence invariant: *what makes a hit a candidate*? For BFS, RT hits are neighbor relations; for triangle count, hits are common-neighbor or relation-match candidates. These are written but the distinction between the two `mode=` values (`graph_expand` vs `graph_intersect`) is never explained in terms of what the RT structure encodes differently. This is the biggest gap in the traversal role description.
+
+**Finding 4 — `rt.bfs_discover` and `rt.triangle_match` are named but not placed.**
+The `refine` section uses these as if they are API calls (`rt.bfs_discover(...)`, `rt.triangle_match(...)`), but Goal 386's kernel surface design did not surface them by those names. Either the names should match Goal 386 exactly, or this report should note they are workload-specific specializations. As written, they look like novel API surface introduced without acknowledgment.
+
+---
+
+**Final Decision: Accept with two targeted additions.**
+The document is coherent and the host/kernel split is the clearest statement in the v0.6 graph design so far. Ship it, but before closing Goal 387 add: (1) one sentence per workload anchoring the traversal mode to a specific paper claim or figure, and (2) a note clarifying whether `rt.bfs_discover` / `rt.triangle_match` are the Goal 386 kernel-surface names or internal lowering aliases. Neither requires a full rewrite.

@@ -262,6 +262,54 @@ extern "C" int rtdl_optix_run_knn_rows_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_bfs_expand(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count,
+        const RtdlFrontierVertex* frontier, size_t frontier_count,
+        const uint32_t* visited_vertices, size_t visited_count,
+        uint32_t dedupe,
+        RtdlBfsExpandRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (frontier_count == 0) return;
+        run_bfs_expand_optix_host_indexed(
+            row_offsets, row_offset_count,
+            column_indices, column_index_count,
+            frontier, frontier_count,
+            visited_vertices, visited_count,
+            dedupe,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_triangle_probe(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count,
+        const RtdlEdgeSeed* seeds, size_t seed_count,
+        uint32_t enforce_id_ascending,
+        uint32_t unique,
+        RtdlTriangleRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (seed_count == 0) return;
+        run_triangle_probe_optix_host_indexed(
+            row_offsets, row_offset_count,
+            column_indices, column_index_count,
+            seeds, seed_count,
+            enforce_id_ascending,
+            unique,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_free_rows(void* rows) {
     std::free(rows);
 }

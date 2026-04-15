@@ -5,6 +5,13 @@ from collections.abc import Mapping
 from dataclasses import is_dataclass
 
 from .api import compile_kernel
+from .graph_reference import bfs_expand_cpu
+from .graph_reference import CSRGraph
+from .graph_reference import normalize_edge_set
+from .graph_reference import normalize_frontier
+from .graph_reference import triangle_probe_cpu
+from .graph_reference import normalize_vertex_set
+from .graph_reference import validate_csr_graph
 from .ir import CompiledKernel
 from .oracle_runtime import run_oracle
 from .reference import bounded_knn_rows_cpu
@@ -109,7 +116,22 @@ def _run_cpu_python_reference_from_normalized(
     left_name = compiled.candidates.left.name
     right_name = compiled.candidates.right.name
 
-    if predicate_name == "segment_intersection":
+    if predicate_name == "bfs_discover":
+        visited_name = str(compiled.refine_op.predicate.options["visited_input"])
+        rows = bfs_expand_cpu(
+            normalized_inputs[right_name],
+            normalized_inputs[left_name],
+            normalized_inputs[visited_name],
+            dedupe=bool(compiled.refine_op.predicate.options.get("dedupe", True)),
+        )
+    elif predicate_name == "triangle_match":
+        rows = triangle_probe_cpu(
+            normalized_inputs[right_name],
+            normalized_inputs[left_name],
+            order=str(compiled.refine_op.predicate.options.get("order", "id_ascending")),
+            unique=bool(compiled.refine_op.predicate.options.get("unique", True)),
+        )
+    elif predicate_name == "segment_intersection":
         rows = lsi_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "point_in_polygon":
         rows = pip_cpu(
@@ -178,7 +200,26 @@ def _project_rows(compiled: CompiledKernel, rows) -> tuple[dict[str, object], ..
     return tuple(projected_rows)
 
 
-def _normalize_records(name: str, geometry_name: str, payload) -> tuple[object, ...]:
+def _normalize_records(name: str, geometry_name: str, payload):
+    if geometry_name == "graph_csr":
+        if isinstance(payload, CSRGraph):
+            validate_csr_graph(payload)
+            return payload
+        if isinstance(payload, Mapping):
+            graph = CSRGraph(
+                row_offsets=tuple(int(value) for value in payload["row_offsets"]),
+                column_indices=tuple(int(value) for value in payload["column_indices"]),
+                vertex_count=int(payload.get("vertex_count", len(payload["row_offsets"]) - 1)),
+            )
+            validate_csr_graph(graph)
+            return graph
+        raise ValueError(f"simulator input `{name}` must be a CSRGraph or mapping")
+    if geometry_name == "vertex_frontier":
+        return normalize_frontier(payload)
+    if geometry_name == "vertex_set":
+        return normalize_vertex_set(payload)
+    if geometry_name == "edge_set":
+        return normalize_edge_set(payload)
     if isinstance(payload, (str, bytes)) or not isinstance(payload, Iterable):
         raise ValueError(f"simulator input `{name}` must be an iterable of records")
 
@@ -350,8 +391,10 @@ def _record_has_fields(record, field_names: tuple[str, ...]) -> bool:
     return False
 
 
-def _validate_oracle_supported_inputs(compiled: CompiledKernel, normalized_inputs: Mapping[str, tuple[object, ...]]) -> None:
+def _validate_oracle_supported_inputs(compiled: CompiledKernel, normalized_inputs: Mapping[str, object]) -> None:
     predicate_name = compiled.refine_op.predicate.name
+    if predicate_name in {"bfs_discover", "triangle_match"}:
+        return
     for payload in normalized_inputs.values():
         for item in payload:
             if isinstance(item, Point3D):

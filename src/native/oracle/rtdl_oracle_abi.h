@@ -122,6 +122,28 @@ struct RtdlKnnNeighborRow {
   uint32_t neighbor_rank;
 };
 
+struct RtdlFrontierVertex {
+  uint32_t vertex_id;
+  uint32_t level;
+};
+
+struct RtdlBfsExpandRow {
+  uint32_t src_vertex;
+  uint32_t dst_vertex;
+  uint32_t level;
+};
+
+struct RtdlEdgeSeed {
+  uint32_t u;
+  uint32_t v;
+};
+
+struct RtdlTriangleRow {
+  uint32_t u;
+  uint32_t v;
+  uint32_t w;
+};
+
 int rtdl_oracle_get_version(int* major_out, int* minor_out, int* patch_out);
 int rtdl_oracle_run_lsi(
     const RtdlSegment* left,
@@ -284,6 +306,33 @@ int rtdl_oracle_run_bounded_knn_rows_3d(
     double radius,
     uint32_t k_max,
     RtdlKnnNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_bfs_expand(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    const RtdlFrontierVertex* frontier,
+    size_t frontier_count,
+    const uint32_t* visited,
+    size_t visited_count,
+    uint32_t dedupe,
+    RtdlBfsExpandRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_run_triangle_probe(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    uint32_t enforce_id_ascending,
+    uint32_t unique,
+    RtdlTriangleRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);

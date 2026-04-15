@@ -1,5 +1,6 @@
 from __future__ import annotations
 from .api import bounded_knn_rows
+from .api import bfs_discover
 from .api import compile_kernel
 from .api import contains
 from .api import emit
@@ -17,6 +18,7 @@ from .api import refine
 from .api import segment_intersection
 from .api import segment_polygon_anyhit_rows
 from .api import segment_polygon_hitcount
+from .api import triangle_match
 from .api import traverse
 from .baseline_contracts import BASELINE_FLOAT_ABS_TOL
 from .baseline_contracts import BASELINE_FLOAT_REL_TOL
@@ -255,6 +257,29 @@ from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 from .reference import Triangle3D
+from .graph_reference import bfs_expand_cpu
+from .graph_reference import csr_graph
+from .graph_reference import CSRGraph
+from .graph_postgresql import build_postgresql_bfs_expand_sql
+from .graph_postgresql import build_postgresql_triangle_probe_sql
+from .graph_postgresql import connect_postgresql
+from .graph_postgresql import postgresql_available
+from .graph_postgresql import prepare_postgresql_bfs_inputs
+from .graph_postgresql import prepare_postgresql_graph_tables
+from .graph_postgresql import prepare_postgresql_triangle_inputs
+from .graph_postgresql import query_postgresql_bfs_expand
+from .graph_postgresql import query_postgresql_triangle_probe
+from .graph_postgresql import run_postgresql_bfs_expand
+from .graph_postgresql import run_postgresql_triangle_probe
+from .graph_datasets import graph_dataset_candidates
+from .graph_datasets import graph_dataset_spec
+from .graph_datasets import GraphDatasetSpec
+from .graph_datasets import load_snap_edge_list_graph
+from .graph_datasets import load_snap_simple_undirected_graph
+from .graph_reference import EdgeSeed
+from .graph_reference import FrontierVertex
+from .graph_reference import triangle_probe_cpu
+from .graph_reference import validate_csr_graph
 from .section_5_6_scalability import generate_section_5_6_artifacts
 from .section_5_6_scalability import generate_synthetic_polygons
 from .section_5_6_scalability import polygon_probe_points
@@ -264,7 +289,11 @@ from .section_5_6_scalability import ScalabilityConfig
 from .runtime import run_cpu
 from .runtime import run_cpu_python_reference
 from .layout_types import f32
+from .layout_types import EdgeSet
+from .layout_types import EdgeSetLayout
 from .layout_types import field
+from .layout_types import GraphCSR
+from .layout_types import GraphCSRLayout
 from .layout_types import GeometryType
 from .layout_types import layout
 from .layout_types import Layout
@@ -285,6 +314,10 @@ from .layout_types import Triangles
 from .layout_types import Triangle3DLayout
 from .layout_types import Triangles3D
 from .layout_types import u32
+from .layout_types import VertexFrontier
+from .layout_types import VertexFrontierLayout
+from .layout_types import VertexSet
+from .layout_types import VertexSetLayout
 
 
 def infer_workload(kernel_fn_or_compiled):
@@ -350,10 +383,21 @@ __all__ = [
     "BASELINE_WORKLOADS",
     "bounded_knn_rows",
     "bounded_knn_rows_cpu",
+    "bfs_discover",
+    "bfs_expand_cpu",
     "CandidateSet",
     "CompiledKernel",
     "contains",
+    "csr_graph",
+    "CSRGraph",
+    "EdgeSeed",
+    "EdgeSet",
+    "EdgeSetLayout",
     "EmitOp",
+    "FrontierVertex",
+    "GraphCSR",
+    "GraphCSRLayout",
+    "GraphDatasetSpec",
     "GeometryInput",
     "GeometryType",
     "GenerateOnlyRequest",
@@ -394,12 +438,19 @@ __all__ = [
     "RefineOp",
     "Segment2DLayout",
     "Segments",
+    "triangle_match",
+    "triangle_probe_cpu",
     "Triangles",
     "Triangle",
     "Triangle2DLayout",
     "Triangle3D",
     "Triangle3DLayout",
     "Triangles3D",
+    "validate_csr_graph",
+    "VertexFrontier",
+    "VertexFrontierLayout",
+    "VertexSet",
+    "VertexSetLayout",
     "compile_kernel",
     "dataset_families",
     "compare_baseline_rows",
@@ -477,6 +528,8 @@ __all__ = [
     "run_goal116_segment_polygon_backend_audit",
     "generate_handoff_bundle",
     "generate_python_program",
+    "graph_dataset_candidates",
+    "graph_dataset_spec",
     "render_python_program",
     "input",
     "kernel",
@@ -485,6 +538,8 @@ __all__ = [
     "load_arcgis_feature_pages",
     "load_cdb",
     "load_natural_earth_populated_places_geojson",
+    "load_snap_edge_list_graph",
+    "load_snap_simple_undirected_graph",
     "load_overpass_elements",
     "local_profiles",
     "overpass_elements_stats",

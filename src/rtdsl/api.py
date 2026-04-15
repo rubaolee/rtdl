@@ -100,9 +100,17 @@ def input(
     return node
 
 
-def traverse(left: GeometryInput, right: GeometryInput, *, accel: str = "bvh") -> CandidateSet:
+def traverse(
+    left: GeometryInput,
+    right: GeometryInput,
+    *,
+    accel: str = "bvh",
+    mode: str | None = None,
+) -> CandidateSet:
     context = _current_context()
-    node = CandidateSet(left=left, right=right, accel=accel)
+    if mode is not None and mode not in {"graph_expand", "graph_intersect"}:
+        raise ValueError("traverse mode must be one of: graph_expand, graph_intersect")
+    node = CandidateSet(left=left, right=right, accel=accel, mode=mode)
     context.candidates = node
     return node
 
@@ -181,6 +189,25 @@ def bounded_knn_rows(*, radius: float, k_max: int) -> Predicate:
     return Predicate(
         name="bounded_knn_rows",
         options={"radius": float(radius), "k_max": int(k_max)},
+    )
+
+
+def bfs_discover(*, visited, dedupe: bool = True) -> Predicate:
+    visited_name = visited.name if hasattr(visited, "name") else str(visited)
+    if not visited_name:
+        raise ValueError("bfs_discover requires a visited input reference")
+    return Predicate(
+        name="bfs_discover",
+        options={"visited_input": visited_name, "dedupe": bool(dedupe)},
+    )
+
+
+def triangle_match(*, order: str = "id_ascending", unique: bool = True) -> Predicate:
+    if order not in {"id_ascending"}:
+        raise ValueError("triangle_match order must be 'id_ascending'")
+    return Predicate(
+        name="triangle_match",
+        options={"order": order, "unique": bool(unique)},
     )
 
 

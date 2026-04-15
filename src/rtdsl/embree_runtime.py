@@ -16,6 +16,12 @@ from .runtime import _normalize_records
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 from .runtime import _identity_cache_token
+from .graph_reference import CSRGraph
+from .graph_reference import EdgeSeed
+from .graph_reference import FrontierVertex
+from .graph_reference import normalize_edge_set
+from .graph_reference import normalize_frontier
+from .graph_reference import normalize_vertex_set
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Point3D as _CanonicalPoint3D
@@ -234,6 +240,36 @@ class _RtdlKnnNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlFrontierVertex(ctypes.Structure):
+    _fields_ = [
+        ("vertex_id", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlBfsExpandRow(ctypes.Structure):
+    _fields_ = [
+        ("src_vertex", ctypes.c_uint32),
+        ("dst_vertex", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlEdgeSeed(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+    ]
+
+
+class _RtdlTriangleRow(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+        ("w", ctypes.c_uint32),
+    ]
+
+
 @dataclass(frozen=True)
 class PackedSegments:
     records: object
@@ -267,6 +303,32 @@ class PackedRays:
     records: object
     count: int
     dimension: int = 2
+
+
+@dataclass(frozen=True)
+class PackedGraphCSR:
+    row_offsets: object
+    row_offset_count: int
+    column_indices: object
+    column_index_count: int
+
+
+@dataclass(frozen=True)
+class PackedVertexFrontier:
+    records: object
+    count: int
+
+
+@dataclass(frozen=True)
+class PackedVertexSet:
+    records: object
+    count: int
+
+
+@dataclass(frozen=True)
+class PackedEdgeSet:
+    records: object
+    count: int
 
 
 @dataclass
@@ -329,6 +391,8 @@ class PreparedEmbreeKernel:
             "fixed_radius_neighbors",
             "bounded_knn_rows",
             "knn_rows",
+            "bfs_discover",
+            "triangle_match",
         }:
             raise ValueError(
                 "the current prepared Embree path supports only Embree-backed local workloads"
@@ -381,6 +445,10 @@ class PreparedEmbreeExecution:
             return _call_bounded_knn_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "knn_rows":
             return _call_knn_rows_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "bfs_discover":
+            return _call_bfs_expand_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "triangle_match":
+            return _call_triangle_probe_embree_packed(self.compiled, self.packed_inputs, self.library)
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
 
     def run(self) -> tuple[dict[str, object], ...]:
@@ -1666,6 +1734,73 @@ def _call_knn_rows_embree_packed(compiled: CompiledKernel, packed_inputs, librar
     )
 
 
+def _call_bfs_expand_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    frontier_name = compiled.candidates.left.name
+    graph_name = compiled.candidates.right.name
+    visited_name = str(compiled.refine_op.predicate.options["visited_input"])
+    frontier = packed_inputs[frontier_name]
+    graph = packed_inputs[graph_name]
+    visited = packed_inputs[visited_name]
+    rows_ptr = ctypes.POINTER(_RtdlBfsExpandRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_bfs_expand(
+        graph.row_offsets,
+        graph.row_offset_count,
+        graph.column_indices,
+        graph.column_index_count,
+        frontier.records,
+        frontier.count,
+        visited.records,
+        visited.count,
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("dedupe", True) else 0),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlBfsExpandRow,
+        field_names=("src_vertex", "dst_vertex", "level"),
+    )
+
+
+def _call_triangle_probe_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    seeds_name = compiled.candidates.left.name
+    graph_name = compiled.candidates.right.name
+    seeds = packed_inputs[seeds_name]
+    graph = packed_inputs[graph_name]
+    rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_embree_run_triangle_probe(
+        graph.row_offsets,
+        graph.row_offset_count,
+        graph.column_indices,
+        graph.column_index_count,
+        seeds.records,
+        seeds.count,
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order") == "id_ascending" else 0),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("unique", True) else 0),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlTriangleRow,
+        field_names=("u", "v", "w"),
+    )
+
+
 def _encode_polygons(polygons):
     refs = []
     vertices = []
@@ -1704,6 +1839,40 @@ def _geometry_layout_dimension(geometry_input) -> int:
 def _pack_for_geometry(geometry_input, payload):
     geometry_name = geometry_input.geometry.name
     expected_dimension = _geometry_layout_dimension(geometry_input)
+    if geometry_name == "graph_csr":
+        if isinstance(payload, PackedGraphCSR):
+            return payload
+        normalized = payload if isinstance(payload, CSRGraph) else _normalize_records(geometry_input.name, geometry_name, payload)
+        row_offsets = (ctypes.c_uint32 * len(normalized.row_offsets))(*normalized.row_offsets)
+        column_indices = (ctypes.c_uint32 * len(normalized.column_indices))(*normalized.column_indices)
+        return PackedGraphCSR(
+            row_offsets=row_offsets,
+            row_offset_count=len(normalized.row_offsets),
+            column_indices=column_indices,
+            column_index_count=len(normalized.column_indices),
+        )
+    if geometry_name == "vertex_frontier":
+        if isinstance(payload, PackedVertexFrontier):
+            return payload
+        normalized = payload if isinstance(payload, tuple) and all(isinstance(item, FrontierVertex) for item in payload) else normalize_frontier(payload)
+        records = (_RtdlFrontierVertex * len(normalized))(*[
+            _RtdlFrontierVertex(item.vertex_id, item.level) for item in normalized
+        ])
+        return PackedVertexFrontier(records=records, count=len(normalized))
+    if geometry_name == "vertex_set":
+        if isinstance(payload, PackedVertexSet):
+            return payload
+        normalized = normalize_vertex_set(payload)
+        records = (ctypes.c_uint32 * len(normalized))(*normalized)
+        return PackedVertexSet(records=records, count=len(normalized))
+    if geometry_name == "edge_set":
+        if isinstance(payload, PackedEdgeSet):
+            return payload
+        normalized = payload if isinstance(payload, tuple) and all(isinstance(item, EdgeSeed) for item in payload) else normalize_edge_set(payload)
+        records = (_RtdlEdgeSeed * len(normalized))(*[
+            _RtdlEdgeSeed(item.u, item.v) for item in normalized
+        ])
+        return PackedEdgeSet(records=records, count=len(normalized))
     if geometry_name == "segments":
         return payload if isinstance(payload, PackedSegments) else pack_segments(records=payload)
     if geometry_name == "points":
@@ -1747,7 +1916,11 @@ def _pack_for_geometry(geometry_input, payload):
 
 def _is_packed_for_geometry(geometry_name: str, payload) -> bool:
     return (
-        (geometry_name == "segments" and isinstance(payload, PackedSegments))
+        (geometry_name == "graph_csr" and isinstance(payload, PackedGraphCSR))
+        or (geometry_name == "vertex_frontier" and isinstance(payload, PackedVertexFrontier))
+        or (geometry_name == "vertex_set" and isinstance(payload, PackedVertexSet))
+        or (geometry_name == "edge_set" and isinstance(payload, PackedEdgeSet))
+        or (geometry_name == "segments" and isinstance(payload, PackedSegments))
         or (geometry_name == "points" and isinstance(payload, PackedPoints))
         or (geometry_name == "polygons" and isinstance(payload, PackedPolygons))
         or (geometry_name == "triangles" and isinstance(payload, PackedTriangles))
@@ -1970,6 +2143,43 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_knn_rows_3d.restype = ctypes.c_int
+
+    optional_bfs_expand = _require_optional_embree_symbol(library, "rtdl_embree_run_bfs_expand")
+    if optional_bfs_expand is not None:
+        optional_bfs_expand.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlFrontierVertex),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlBfsExpandRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_bfs_expand.restype = ctypes.c_int
+
+    optional_triangle_probe = _require_optional_embree_symbol(library, "rtdl_embree_run_triangle_probe")
+    if optional_triangle_probe is not None:
+        optional_triangle_probe.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlEdgeSeed),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlTriangleRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_triangle_probe.restype = ctypes.c_int
 
     return library
 

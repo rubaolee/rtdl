@@ -893,6 +893,308 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows_3d(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    const RtdlFrontierVertex* frontier,
+    size_t frontier_count,
+    const uint32_t* visited,
+    size_t visited_count,
+    uint32_t dedupe,
+    RtdlBfsExpandRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    if (row_offset_count == 0) {
+      throw std::runtime_error("CSR graph row_offsets must not be empty");
+    }
+    if (row_offsets == nullptr) {
+      throw std::runtime_error("CSR graph row_offsets pointer must not be null");
+    }
+    if (column_index_count > 0 && column_indices == nullptr) {
+      throw std::runtime_error("CSR graph column_indices pointer must not be null");
+    }
+    if (frontier_count > 0 && frontier == nullptr) {
+      throw std::runtime_error("frontier pointer must not be null when frontier_count > 0");
+    }
+    if (visited_count > 0 && visited == nullptr) {
+      throw std::runtime_error("visited pointer must not be null when visited_count > 0");
+    }
+    if (row_offsets[0] != 0u) {
+      throw std::runtime_error("CSR graph row_offsets must start at 0");
+    }
+    if (row_offsets[row_offset_count - 1] != column_index_count) {
+      throw std::runtime_error("CSR graph final row_offset must equal edge_count");
+    }
+
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    for (size_t index = 1; index < row_offset_count; ++index) {
+      if (row_offsets[index] < row_offsets[index - 1]) {
+        throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
+      }
+    }
+    for (size_t index = 0; index < column_index_count; ++index) {
+      if (column_indices[index] >= vertex_count) {
+        throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
+      }
+    }
+
+    std::vector<uint8_t> visited_flags(vertex_count, 0u);
+    for (size_t index = 0; index < visited_count; ++index) {
+      if (visited[index] >= vertex_count) {
+        throw std::runtime_error("visited vertex_id must be a valid graph vertex");
+      }
+      visited_flags[visited[index]] = 1u;
+    }
+
+    std::vector<GraphEdgePoint> edge_points;
+    edge_points.reserve(column_index_count);
+    for (uint32_t src_vertex = 0; src_vertex < vertex_count; ++src_vertex) {
+      const size_t start = row_offsets[src_vertex];
+      const size_t end = row_offsets[src_vertex + 1];
+      for (size_t offset = start; offset < end; ++offset) {
+        const uint32_t dst_vertex = column_indices[offset];
+        edge_points.push_back({src_vertex, dst_vertex, {static_cast<double>(src_vertex), 0.0}});
+      }
+    }
+
+    EmbreeDevice device;
+    GraphEdgePointSceneData data {&edge_points};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(edge_points.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, graph_edge_point_bounds, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<uint8_t> discovered_flags(vertex_count, 0u);
+    std::vector<RtdlBfsExpandRow> rows;
+    for (size_t index = 0; index < frontier_count; ++index) {
+      const RtdlFrontierVertex frontier_vertex = frontier[index];
+      if (frontier_vertex.vertex_id >= vertex_count) {
+        throw std::runtime_error("frontier vertex_id must be a valid graph vertex");
+      }
+      GraphBfsExpandQueryState state {
+          &frontier_vertex,
+          &edge_points,
+          &visited_flags,
+          &discovered_flags,
+          dedupe,
+          &rows,
+      };
+      RTCPointQuery point_query;
+      point_query.x = static_cast<float>(frontier_vertex.vertex_id);
+      point_query.y = 0.0f;
+      point_query.z = 0.0f;
+      point_query.time = 0.0f;
+      point_query.radius = static_cast<float>(kEps * 2.0);
+      RTCPointQueryContext context;
+      rtcInitPointQueryContext(&context);
+      g_query_kind = QueryKind::kGraphBfsExpand;
+      rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
+      g_query_kind = QueryKind::kNone;
+    }
+
+    std::sort(
+        rows.begin(),
+        rows.end(),
+        [](const RtdlBfsExpandRow& left, const RtdlBfsExpandRow& right) {
+          if (left.level != right.level) {
+            return left.level < right.level;
+          }
+          if (left.dst_vertex != right.dst_vertex) {
+            return left.dst_vertex < right.dst_vertex;
+          }
+          return left.src_vertex < right.src_vertex;
+        });
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t column_index_count,
+    const RtdlEdgeSeed* seeds,
+    size_t seed_count,
+    uint32_t enforce_id_ascending,
+    uint32_t unique,
+    RtdlTriangleRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    if (row_offset_count == 0) {
+      throw std::runtime_error("CSR graph row_offsets must not be empty");
+    }
+    if (row_offsets == nullptr) {
+      throw std::runtime_error("CSR graph row_offsets pointer must not be null");
+    }
+    if (column_index_count > 0 && column_indices == nullptr) {
+      throw std::runtime_error("CSR graph column_indices pointer must not be null");
+    }
+    if (seed_count > 0 && seeds == nullptr) {
+      throw std::runtime_error("edge seed pointer must not be null when seed_count > 0");
+    }
+    if (row_offsets[0] != 0u) {
+      throw std::runtime_error("CSR graph row_offsets must start at 0");
+    }
+    if (row_offsets[row_offset_count - 1] != column_index_count) {
+      throw std::runtime_error("CSR graph final row_offset must equal edge_count");
+    }
+
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    for (size_t index = 1; index < row_offset_count; ++index) {
+      if (row_offsets[index] < row_offsets[index - 1]) {
+        throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
+      }
+    }
+    for (size_t index = 0; index < column_index_count; ++index) {
+      if (column_indices[index] >= vertex_count) {
+        throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
+      }
+    }
+
+    std::vector<GraphEdgePoint> edge_points;
+    edge_points.reserve(column_index_count);
+    for (uint32_t src_vertex = 0; src_vertex < vertex_count; ++src_vertex) {
+      const size_t start = row_offsets[src_vertex];
+      const size_t end = row_offsets[src_vertex + 1];
+      for (size_t offset = start; offset < end; ++offset) {
+        const uint32_t dst_vertex = column_indices[offset];
+        edge_points.push_back({src_vertex, dst_vertex, {static_cast<double>(src_vertex), 0.0}});
+      }
+    }
+
+    EmbreeDevice device;
+    GraphEdgePointSceneData data {&edge_points};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(edge_points.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, graph_edge_point_bounds, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<uint32_t> u_neighbor_marks(vertex_count, 0u);
+    std::vector<uint32_t> v_neighbor_marks(vertex_count, 0u);
+    uint32_t stamp = 1u;
+    std::vector<RtdlTriangleRow> rows;
+
+    for (size_t seed_index = 0; seed_index < seed_count; ++seed_index) {
+      const uint32_t u = seeds[seed_index].u;
+      const uint32_t v = seeds[seed_index].v;
+      if (u >= vertex_count || v >= vertex_count) {
+        throw std::runtime_error("edge seed vertices must be valid graph vertex IDs");
+      }
+      if (u == v) {
+        continue;
+      }
+      if (enforce_id_ascending != 0u && !(u < v)) {
+        continue;
+      }
+
+      std::vector<uint32_t> u_neighbors;
+      GraphTriangleProbeQueryState u_state {
+          &edge_points,
+          &u_neighbor_marks,
+          stamp,
+          &u_neighbors,
+      };
+      RTCPointQuery u_query;
+      u_query.x = static_cast<float>(u);
+      u_query.y = 0.0f;
+      u_query.z = 0.0f;
+      u_query.time = 0.0f;
+      u_query.radius = static_cast<float>(kEps * 2.0);
+      RTCPointQueryContext u_context;
+      rtcInitPointQueryContext(&u_context);
+      g_query_kind = QueryKind::kGraphTriangleProbe;
+      rtcPointQuery(holder.scene, &u_query, &u_context, point_point_query_collect, &u_state);
+
+      std::vector<uint32_t> v_neighbors;
+      GraphTriangleProbeQueryState v_state {
+          &edge_points,
+          &v_neighbor_marks,
+          stamp,
+          &v_neighbors,
+      };
+      RTCPointQuery v_query;
+      v_query.x = static_cast<float>(v);
+      v_query.y = 0.0f;
+      v_query.z = 0.0f;
+      v_query.time = 0.0f;
+      v_query.radius = static_cast<float>(kEps * 2.0);
+      RTCPointQueryContext v_context;
+      rtcInitPointQueryContext(&v_context);
+      rtcPointQuery(holder.scene, &v_query, &v_context, point_point_query_collect, &v_state);
+      g_query_kind = QueryKind::kNone;
+
+      const std::vector<uint32_t>& smaller = (u_neighbors.size() <= v_neighbors.size()) ? u_neighbors : v_neighbors;
+      const std::vector<uint32_t>& other_neighbor_marks =
+          (u_neighbors.size() <= v_neighbors.size()) ? v_neighbor_marks : u_neighbor_marks;
+      std::vector<uint32_t> common_neighbors;
+      common_neighbors.reserve(smaller.size());
+      for (uint32_t w : smaller) {
+        if (other_neighbor_marks[w] != stamp) {
+          continue;
+        }
+        if (enforce_id_ascending != 0u && !(v < w)) {
+          continue;
+        }
+        common_neighbors.push_back(w);
+      }
+      std::sort(common_neighbors.begin(), common_neighbors.end());
+
+      for (uint32_t w : common_neighbors) {
+        if (unique != 0u) {
+          const bool already_seen = std::any_of(
+              rows.begin(),
+              rows.end(),
+              [&](const RtdlTriangleRow& row) { return row.u == u && row.v == v && row.w == w; });
+          if (already_seen) {
+            continue;
+          }
+        }
+        rows.push_back({u, v, w});
+      }
+
+      stamp += 1u;
+      if (stamp == 0u) {
+        std::fill(u_neighbor_marks.begin(), u_neighbor_marks.end(), 0u);
+        std::fill(v_neighbor_marks.begin(), v_neighbor_marks.end(), 0u);
+        stamp = 1u;
+      }
+    }
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT void rtdl_embree_free_rows(void* rows) {
   std::free(rows);
 }
