@@ -33,6 +33,10 @@ Remote refs:
 - `refs/heads/codex/v0_6_rt_rebuild -> e4f3532f64933433ede26852e3f794fa22f22ca6`
 - `refs/tags/v0.6.1`
 
+Pull request:
+
+- `https://github.com/rubaolee/rtdl/pull/1`
+
 Release boundary:
 
 - the corrected RT graph line is now published by branch and tag
