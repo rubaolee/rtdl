@@ -14,6 +14,10 @@ Current correctness anchors:
 - Python truth path on every OS
 - native oracle `run_cpu(...)` for the first bounded family
 - PostgreSQL on Linux as the external correctness baseline
+- real RT backends for the first bounded family:
+  - `embree`
+  - `optix`
+  - `vulkan`
 
 Important boundary:
 
@@ -28,6 +32,14 @@ Run:
 ```bash
 python3 examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 python3 examples/rtdl_db_conjunctive_scan.py --backend cpu
+python3 examples/rtdl_db_conjunctive_scan.py --backend embree
+```
+
+On Linux GPU hosts with the backend libraries built:
+
+```bash
+python3 examples/rtdl_db_conjunctive_scan.py --backend optix
+python3 examples/rtdl_db_conjunctive_scan.py --backend vulkan
 ```
 
 What happens:
@@ -43,6 +55,14 @@ Run:
 ```bash
 python3 examples/rtdl_db_grouped_count.py --backend cpu_python_reference
 python3 examples/rtdl_db_grouped_count.py --backend cpu
+python3 examples/rtdl_db_grouped_count.py --backend embree
+```
+
+On Linux GPU hosts with the backend libraries built:
+
+```bash
+python3 examples/rtdl_db_grouped_count.py --backend optix
+python3 examples/rtdl_db_grouped_count.py --backend vulkan
 ```
 
 What happens:
@@ -58,6 +78,14 @@ Run:
 ```bash
 python3 examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
 python3 examples/rtdl_db_grouped_sum.py --backend cpu
+python3 examples/rtdl_db_grouped_sum.py --backend embree
+```
+
+On Linux GPU hosts with the backend libraries built:
+
+```bash
+python3 examples/rtdl_db_grouped_sum.py --backend optix
+python3 examples/rtdl_db_grouped_sum.py --backend vulkan
 ```
 
 What happens:
@@ -66,7 +94,24 @@ What happens:
 - a single group key partitions the surviving rows
 - RTDL emits grouped numeric sums
 
-## 4. PostgreSQL Correctness On Linux
+## 4. App-Style DB Demo
+
+Run:
+
+```bash
+python3 examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
+python3 examples/rtdl_sales_risk_screening.py --backend cpu
+python3 examples/rtdl_sales_risk_screening.py --backend embree
+```
+
+On Linux GPU hosts with the backend libraries built:
+
+```bash
+python3 examples/rtdl_sales_risk_screening.py --backend optix
+python3 examples/rtdl_sales_risk_screening.py --backend vulkan
+```
+
+## 5. PostgreSQL Correctness On Linux
 
 If you are on the Linux validation host with PostgreSQL available:
 
@@ -82,16 +127,16 @@ RTDL_POSTGRESQL_DSN="dbname=postgres" python3 -m unittest \
 That is the current strongest bounded correctness gate for the first DB kernel
 family.
 
-## 5. What Is Still Missing
+## 6. What Is Still Missing
 
 Not closed yet for the DB line:
 
-- Embree / OptiX / Vulkan DB kernels
 - multi-group-key native grouped kernels
-- release-facing `v0.7` packaging
+- final tag/release decision for the `v0.7` branch line
 
 So the current correct claim is:
 
 - RTDL now supports a first bounded analytical DB kernel family
 - correctness is anchored against PostgreSQL on Linux
-- the RT backend path for DB workloads is still future work
+- the first RT backend path for DB workloads is real across Embree, OptiX, and Vulkan
+- the current branch is still a bounded `v0.7` line, not the repository's last tagged mainline release

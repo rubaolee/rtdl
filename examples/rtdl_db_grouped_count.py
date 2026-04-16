@@ -43,6 +43,12 @@ def run_backend(backend: str) -> dict[str, object]:
         rows = rt.run_cpu_python_reference(sales_grouped_count_reference, **case)
     elif backend == "cpu":
         rows = rt.run_cpu(sales_grouped_count_reference, **case)
+    elif backend == "embree":
+        rows = rt.run_embree(sales_grouped_count_reference, **case)
+    elif backend == "optix":
+        rows = rt.run_optix(sales_grouped_count_reference, **case)
+    elif backend == "vulkan":
+        rows = rt.run_vulkan(sales_grouped_count_reference, **case)
     else:
         raise ValueError(f"unsupported backend: {backend}")
     return {
@@ -55,7 +61,11 @@ def run_backend(backend: str) -> dict[str, object]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Bounded RTDL v0.7 grouped-count example.")
-    parser.add_argument("--backend", default="cpu_python_reference", choices=("cpu_python_reference", "cpu"))
+    parser.add_argument(
+        "--backend",
+        default="cpu_python_reference",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
+    )
     args = parser.parse_args(argv)
     print(json.dumps(run_backend(args.backend), indent=2, sort_keys=True))
     return 0

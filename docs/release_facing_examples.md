@@ -169,18 +169,41 @@ PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu
 
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend embree
 
 PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend embree
+```
+
+On Linux hosts with the GPU stack enabled:
+
+```bash
+make build-optix
+make build-vulkan
+
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend vulkan
 ```
 
 Current honesty boundary:
 
-- the public DB example surface currently exposes:
+- the public DB example surface now exposes:
   - `cpu_python_reference`
   - `cpu`
+  - `embree`
+  - `optix`
+  - `vulkan`
 - PostgreSQL is the Linux correctness anchor, not a public example backend flag
-- Embree / OptiX / Vulkan DB kernels are not yet released
+- this is still the active `v0.7` branch line, not the last tagged mainline release
 
 ### Public CLI Backend Selection
 

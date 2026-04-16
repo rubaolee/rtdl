@@ -16,6 +16,11 @@ Read these in order:
 5. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 6. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
+If you are specifically working on the current DB branch line, also read:
+
+7. [v0.7 Branch Statement](release_reports/v0_7/release_statement.md)
+8. [v0.7 Branch Support Matrix](release_reports/v0_7/support_matrix.md)
+
 That is the intended public reading path.
 
 ## Environment Facts
@@ -41,10 +46,14 @@ That is the intended public reading path.
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 - [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+- [v0.7 Branch Package](release_reports/v0_7/README.md)
+- [v0.7 Branch Statement](release_reports/v0_7/release_statement.md)
+- [v0.7 Branch Support Matrix](release_reports/v0_7/support_matrix.md)
 
 ## Release Packages
 
 - [v0.6 Release Package](release_reports/v0_6/README.md)
+- [v0.7 Branch Package](release_reports/v0_7/README.md)
 - [v0.5 Release Package](release_reports/v0_5/README.md)
 - [v0.5 Preview Package](release_reports/v0_5_preview/README.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
@@ -74,6 +83,7 @@ Keep these current facts in mind while reading:
 
 - current released version is `v0.6.1`
 - current `main` carries the released `v0.6.1` line
+- the current working branch may also carry the bounded `v0.7` DB line
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
@@ -87,6 +97,12 @@ Keep these current facts in mind while reading:
   - `triangle_count`
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
   - PostgreSQL-backed graph correctness anchoring
+- the bounded `v0.7` DB branch line adds:
+  - `conjunctive_scan`
+  - `grouped_count`
+  - `grouped_sum`
+  - Embree / OptiX / Vulkan RT backends for that first bounded DB family
+  - PostgreSQL-backed cross-engine correctness on Linux
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that

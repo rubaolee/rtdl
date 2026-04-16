@@ -14,6 +14,10 @@ It gives you:
 The current released surface now spans geometric, nearest-neighbor, and graph
 workloads, but the language goal is broader than any one workload family alone.
 
+This branch also carries a bounded `v0.7` development line for DB-style
+analytical workloads. That `v0.7` line is not the current tagged release on
+`main`.
+
 RTDL is not a general-purpose renderer or graphics engine.  
 The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.
@@ -21,9 +25,14 @@ core can power a bounded Python application.
 ## Version Status At A Glance
 
 - current released version: `v0.6.1`
+- current active branch line here: bounded `v0.7` RT DB work
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
+- current bounded `v0.7` DB branch surface:
+  - `conjunctive_scan`
+  - `grouped_count`
+  - `grouped_sum`
 - current `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -33,6 +42,8 @@ For exact status:
 
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
+- [RTDL v0.7 Branch Statement](docs/release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Branch Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
@@ -224,6 +235,11 @@ If you want the newest released graph line:
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 
+If you want the current bounded DB branch line:
+
+- [RTDL v0.7 Branch Statement](docs/release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Branch Support Matrix](docs/release_reports/v0_7/support_matrix.md)
+
 If you want the earlier released nearest-neighbor line:
 
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
@@ -243,6 +259,10 @@ Current release:
 
 - `v0.6.1`
 
+Current active branch line:
+
+- bounded `v0.7` RT DB work
+
 Released workload surface:
 
 - `bfs`
@@ -255,6 +275,7 @@ Release and preview layers inside the current repository:
 - `v0.4.0`: released nearest-neighbor workload expansion
 - `v0.5.0`: released 3D nearest-neighbor and multi-backend expansion
 - `v0.6.1`: released corrected RT graph line
+- `v0.7`: active bounded DB branch line, not yet tagged as the new mainline release
 
 Current public demo artifact:
 

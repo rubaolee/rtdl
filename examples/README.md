@@ -56,3 +56,14 @@ For release-facing examples and commands, prefer the docs entry points:
 - `../docs/quick_tutorial.md`
 - `../docs/tutorials/README.md`
 - `../docs/release_facing_examples.md`
+
+Current DB example boundary:
+
+- examples expose:
+  - `cpu_python_reference`
+  - `cpu`
+  - `embree`
+  - `optix`
+  - `vulkan`
+- PostgreSQL remains a Linux correctness/performance anchor, not a public
+  example backend flag

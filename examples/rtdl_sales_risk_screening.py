@@ -69,19 +69,31 @@ def _run_scan_rows(backend: str, case: dict[str, object]) -> tuple[dict[str, obj
         return tuple(rt.run_cpu_python_reference(risky_order_scan, **case))
     if backend == "cpu":
         return tuple(rt.run_cpu(risky_order_scan, **case))
+    if backend == "embree":
+        return tuple(rt.run_embree(risky_order_scan, **case))
+    if backend == "optix":
+        return tuple(rt.run_optix(risky_order_scan, **case))
+    if backend == "vulkan":
+        return tuple(rt.run_vulkan(risky_order_scan, **case))
     raise ValueError(f"unsupported backend: {backend}")
 
 
 def _run_grouped_count_rows(backend: str, case: dict[str, object]) -> tuple[dict[str, object], ...]:
+    adjusted = dict(case)
+    adjusted["query"] = {
+        "predicates": case["query"]["predicates"],
+        "group_keys": case["query"]["group_keys"],
+    }
     if backend == "cpu_python_reference":
-        return tuple(rt.run_cpu_python_reference(risky_order_count_by_region, **case))
+        return tuple(rt.run_cpu_python_reference(risky_order_count_by_region, **adjusted))
     if backend == "cpu":
-        adjusted = dict(case)
-        adjusted["query"] = {
-            "predicates": case["query"]["predicates"],
-            "group_keys": case["query"]["group_keys"],
-        }
         return tuple(rt.run_cpu(risky_order_count_by_region, **adjusted))
+    if backend == "embree":
+        return tuple(rt.run_embree(risky_order_count_by_region, **adjusted))
+    if backend == "optix":
+        return tuple(rt.run_optix(risky_order_count_by_region, **adjusted))
+    if backend == "vulkan":
+        return tuple(rt.run_vulkan(risky_order_count_by_region, **adjusted))
     raise ValueError(f"unsupported backend: {backend}")
 
 
@@ -90,6 +102,12 @@ def _run_grouped_sum_rows(backend: str, case: dict[str, object]) -> tuple[dict[s
         return tuple(rt.run_cpu_python_reference(risky_order_revenue_by_region, **case))
     if backend == "cpu":
         return tuple(rt.run_cpu(risky_order_revenue_by_region, **case))
+    if backend == "embree":
+        return tuple(rt.run_embree(risky_order_revenue_by_region, **case))
+    if backend == "optix":
+        return tuple(rt.run_optix(risky_order_revenue_by_region, **case))
+    if backend == "vulkan":
+        return tuple(rt.run_vulkan(risky_order_revenue_by_region, **case))
     raise ValueError(f"unsupported backend: {backend}")
 
 
@@ -124,7 +142,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="App-style RTDL v0.7 demo: scan risky orders and summarize counts and revenue by region."
     )
-    parser.add_argument("--backend", default="cpu_python_reference", choices=("cpu_python_reference", "cpu"))
+    parser.add_argument(
+        "--backend",
+        default="cpu_python_reference",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
+    )
     args = parser.parse_args(argv)
     print(json.dumps(run_case(args.backend), indent=2, sort_keys=True))
     return 0
