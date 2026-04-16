@@ -1,0 +1,106 @@
+{
+  "conjunctive_scan": {
+    "embree_seconds_median": 2.5943751810118556,
+    "embree_seconds_samples": [
+      2.5943751810118556,
+      2.6077472739852965,
+      2.5791268489556387
+    ],
+    "optix_seconds_median": 2.632824824890122,
+    "optix_seconds_samples": [
+      2.63500800402835,
+      2.4368627929361537,
+      2.632824824890122
+    ],
+    "postgresql_query_seconds_median": 0.025718672084622085,
+    "postgresql_query_seconds_samples": [
+      0.025705102016218007,
+      0.025718672084622085,
+      0.0261109130224213
+    ],
+    "postgresql_setup_seconds_median": 10.286432837950997,
+    "postgresql_setup_seconds_samples": [
+      10.286432837950997,
+      10.245468104956672,
+      10.758163418038748
+    ],
+    "row_count": 22268,
+    "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+    "vulkan_seconds_median": 2.6243219019379467,
+    "vulkan_seconds_samples": [
+      2.6243219019379467,
+      2.4519549269462004,
+      2.6582631210330874
+    ]
+  },
+  "grouped_count": {
+    "embree_seconds_median": 2.6454045509453863,
+    "embree_seconds_samples": [
+      2.6454045509453863,
+      2.5242472380632535,
+      2.655928505002521
+    ],
+    "optix_seconds_median": 2.5444675909820944,
+    "optix_seconds_samples": [
+      2.4469555009854957,
+      2.564223413937725,
+      2.5444675909820944
+    ],
+    "postgresql_query_seconds_median": 0.021073796902783215,
+    "postgresql_query_seconds_samples": [
+      0.021073796902783215,
+      0.021203504991717637,
+      0.020769973983988166
+    ],
+    "postgresql_setup_seconds_median": 11.103791243978776,
+    "postgresql_setup_seconds_samples": [
+      10.888772263075225,
+      11.103791243978776,
+      11.409986636950634
+    ],
+    "row_count": 8,
+    "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+    "vulkan_seconds_median": 2.50834080693312,
+    "vulkan_seconds_samples": [
+      2.439326011110097,
+      2.6407489490229636,
+      2.50834080693312
+    ]
+  },
+  "grouped_sum": {
+    "embree_seconds_median": 2.59804848395288,
+    "embree_seconds_samples": [
+      2.687949660932645,
+      2.59804848395288,
+      2.5071187790017575
+    ],
+    "optix_seconds_median": 2.565604893025011,
+    "optix_seconds_samples": [
+      2.522581316996366,
+      2.652901139925234,
+      2.565604893025011
+    ],
+    "postgresql_query_seconds_median": 0.03567218501120806,
+    "postgresql_query_seconds_samples": [
+      0.03617532993666828,
+      0.03564421192277223,
+      0.03567218501120806
+    ],
+    "postgresql_setup_seconds_median": 11.171692413976416,
+    "postgresql_setup_seconds_samples": [
+      11.171692413976416,
+      11.943103366997093,
+      10.283758929930627
+    ],
+    "row_count": 8,
+    "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+    "vulkan_seconds_median": 2.546736808028072,
+    "vulkan_seconds_samples": [
+      2.520739994943142,
+      2.546736808028072,
+      2.6469512559706345
+    ]
+  },
+  "repeats": 3,
+  "row_count": 200000
+}

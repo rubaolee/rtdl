@@ -48,6 +48,13 @@ from .embree_runtime import _RtdlFrontierVertex
 from .embree_runtime import _RtdlBfsExpandRow
 from .embree_runtime import _RtdlEdgeSeed
 from .embree_runtime import _RtdlTriangleRow
+from .oracle_runtime import _decode_db_group_key
+from .oracle_runtime import _RtdlDbField
+from .oracle_runtime import _RtdlDbGroupedCountRow
+from .oracle_runtime import _RtdlDbRowIdRow
+from .oracle_runtime import _encode_db_clauses
+from .oracle_runtime import _encode_db_table
+from .oracle_runtime import _encode_db_text_fields
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
@@ -80,6 +87,7 @@ from .graph_reference import normalize_vertex_set
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_optix_execution_cache: OrderedDict[tuple[object, ...], "PreparedOptixExecution"] = OrderedDict()
+_DB_MAX_ROWS_PER_JOB = 1_000_000
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -157,6 +165,13 @@ class _RtdlPointNearestSegmentRow(ctypes.Structure):
         ("point_id",   ctypes.c_uint32),
         ("segment_id", ctypes.c_uint32),
         ("distance",   ctypes.c_double),
+    ]
+
+
+class _RtdlDbGroupedSumRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("sum", ctypes.c_int64),
     ]
 
 
@@ -363,6 +378,17 @@ def run_optix(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
 
         return run_cpu(compiled, **inputs)
 
+    if compiled.refine_op.predicate.name in {
+        "conjunctive_scan",
+        "grouped_count",
+        "grouped_sum",
+    }:
+        normalized_inputs = {
+            name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
+            for name, payload in inputs.items()
+        }
+        return _run_db_optix(compiled, normalized_inputs, _load_optix_library(), result_mode=result_mode)
+
     prepared = _get_or_bind_prepared_optix_execution(compiled, expected_inputs, inputs)
     return prepared.run_raw() if result_mode == "raw" else prepared.run()
 
@@ -461,6 +487,149 @@ def optix_version() -> tuple:
     _check_status(lib.rtdl_optix_get_version(
         ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)))
     return major.value, minor.value, patch.value
+
+
+def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mode: str):
+    predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "conjunctive_scan":
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_conjunctive_scan")
+        if symbol is None:
+            raise ValueError("current OptiX backend does not yet export DB conjunctive_scan support")
+        predicates_name = compiled.candidates.left.name
+        table_name = compiled.candidates.right.name
+        table_rows = normalized_inputs[table_name]
+        if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+            raise ValueError("first-wave OptiX DB lowering supports at most 1000000 rows per RT job")
+        predicates = normalized_inputs[predicates_name]
+        fields_array, row_values_array, row_count = _encode_db_table(table_rows)
+        clauses_array = _encode_db_clauses(predicates.clauses)
+        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            fields_array,
+            ctypes.c_size_t(len(fields_array)),
+            row_values_array,
+            ctypes.c_size_t(row_count),
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        row_view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbRowIdRow,
+            field_names=("row_id",),
+        )
+        return row_view if result_mode == "raw" else row_view.to_dict_rows()
+
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    table_rows = normalized_inputs[table_name]
+    if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+        raise ValueError("first-wave OptiX DB lowering supports at most 1000000 rows per RT job")
+    query = normalized_inputs[query_name]
+    if len(query.group_keys) != 1:
+        raise ValueError("first-wave OptiX DB grouped kernels support exactly one group key")
+    extra_fields = [query.group_keys[0]]
+    if predicate_name == "grouped_sum" and query.value_field:
+        extra_fields.append(query.value_field)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=tuple(extra_fields),
+    )
+    fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    group_key_field = query.group_keys[0].encode("utf-8")
+    error = ctypes.create_string_buffer(4096)
+
+    if predicate_name == "grouped_count":
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_count")
+        if symbol is None:
+            raise ValueError("current OptiX backend does not yet export DB grouped_count support")
+        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        row_count_out = ctypes.c_size_t()
+        status = symbol(
+            fields_array,
+            ctypes.c_size_t(len(fields_array)),
+            row_values_array,
+            ctypes.c_size_t(row_count),
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            group_key_field,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        row_view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbGroupedCountRow,
+            field_names=("group_key", "count"),
+        )
+        if result_mode == "raw":
+            return row_view
+        try:
+            reverse_map = reverse_maps.get(query.group_keys[0])
+            return tuple(
+                {
+                    query.group_keys[0]: _decode_db_group_key(reverse_map, row_view.rows_ptr[index].group_key),
+                    "count": row_view.rows_ptr[index].count,
+                }
+                for index in range(row_view.row_count)
+            )
+        finally:
+            row_view.close()
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_sum")
+    if symbol is None:
+        raise ValueError("current OptiX backend does not yet export DB grouped_sum support")
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    row_count_out = ctypes.c_size_t()
+    status = symbol(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+        query.value_field.encode("utf-8"),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    row_view = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_RtdlDbGroupedSumRow,
+        field_names=("group_key", "sum"),
+    )
+    if result_mode == "raw":
+        return row_view
+    try:
+        reverse_map = reverse_maps.get(query.group_keys[0])
+        return tuple(
+            {
+                query.group_keys[0]: _decode_db_group_key(reverse_map, row_view.rows_ptr[index].group_key),
+                "sum": int(row_view.rows_ptr[index].sum),
+            }
+            for index in range(row_view.row_count)
+        )
+    finally:
+        row_view.close()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1225,6 +1394,57 @@ def _register_argtypes(lib) -> None:
             ctypes.POINTER(ctypes.POINTER(_RtdlTriangleRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_conjunctive_scan")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_count")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_grouped_sum")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
 

@@ -1,3 +1,536 @@
+constexpr uint32_t kDbKindInt64 = 1u;
+constexpr uint32_t kDbKindFloat64 = 2u;
+constexpr uint32_t kDbKindBool = 3u;
+constexpr uint32_t kDbKindText = 4u;
+
+constexpr uint32_t kDbOpEq = 1u;
+constexpr uint32_t kDbOpLt = 2u;
+constexpr uint32_t kDbOpLe = 3u;
+constexpr uint32_t kDbOpGt = 4u;
+constexpr uint32_t kDbOpGe = 5u;
+constexpr uint32_t kDbOpBetween = 6u;
+
+constexpr size_t kDbMaxRowsPerJob = 1000000;
+constexpr size_t kDbMaxCandidateRowsPerJob = 250000;
+constexpr size_t kDbMaxGroupsPerJob = 65536;
+constexpr float kDbBoxPad = 1.0e-3f;
+
+struct DbPrimaryAxis {
+    size_t field_index;
+    std::vector<double> sorted_values;
+    int64_t encoded_lo;
+    int64_t encoded_hi;
+};
+
+struct DbRowMeta {
+    size_t row_index;
+    uint32_t row_id;
+};
+
+struct DbScanLaunchParams {
+    OptixTraversableHandle traversable;
+    uint32_t* hit_words;
+    uint32_t hit_word_count;
+    uint32_t x_lo;
+    uint32_t y_lo;
+    uint32_t z_lo;
+    uint32_t z_hi;
+    uint32_t x_count;
+    uint32_t y_count;
+};
+
+static size_t db_find_field_index_or_throw(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const char* name)
+{
+    if (!name) {
+        throw std::runtime_error("DB field name must not be null");
+    }
+    for (size_t index = 0; index < field_count; ++index) {
+        if (fields[index].name && std::strcmp(fields[index].name, name) == 0) {
+            return index;
+        }
+    }
+    throw std::runtime_error(std::string("unknown DB field: ") + name);
+}
+
+static const RtdlDbScalar& db_row_value(
+        const RtdlDbScalar* row_values,
+        size_t row_index,
+        size_t field_count,
+        size_t field_index)
+{
+    return row_values[row_index * field_count + field_index];
+}
+
+static bool db_scalar_is_numeric(const RtdlDbScalar& value)
+{
+    return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
+}
+
+static double db_scalar_as_double(const RtdlDbScalar& value)
+{
+    if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
+        return static_cast<double>(value.int_value);
+    }
+    if (value.kind == kDbKindFloat64) {
+        return value.double_value;
+    }
+    throw std::runtime_error("DB scalar is not numeric");
+}
+
+static int db_compare_scalar(const RtdlDbScalar& left, const RtdlDbScalar& right)
+{
+    if (left.kind != right.kind) {
+        const double lhs = db_scalar_as_double(left);
+        const double rhs = db_scalar_as_double(right);
+        if (lhs < rhs) return -1;
+        if (lhs > rhs) return 1;
+        return 0;
+    }
+    switch (left.kind) {
+        case kDbKindInt64:
+        case kDbKindBool:
+            if (left.int_value < right.int_value) return -1;
+            if (left.int_value > right.int_value) return 1;
+            return 0;
+        case kDbKindFloat64:
+            if (left.double_value < right.double_value) return -1;
+            if (left.double_value > right.double_value) return 1;
+            return 0;
+        case kDbKindText: {
+            const char* lhs = left.string_value ? left.string_value : "";
+            const char* rhs = right.string_value ? right.string_value : "";
+            const int cmp = std::strcmp(lhs, rhs);
+            if (cmp < 0) return -1;
+            if (cmp > 0) return 1;
+            return 0;
+        }
+        default:
+            throw std::runtime_error("unsupported DB scalar kind");
+    }
+}
+
+static bool db_clause_matches_scalar(const RtdlDbClause& clause, const RtdlDbScalar& candidate)
+{
+    const int cmp_lo = db_compare_scalar(candidate, clause.value);
+    switch (clause.op) {
+        case kDbOpEq:
+            return cmp_lo == 0;
+        case kDbOpLt:
+            return cmp_lo < 0;
+        case kDbOpLe:
+            return cmp_lo <= 0;
+        case kDbOpGt:
+            return cmp_lo > 0;
+        case kDbOpGe:
+            return cmp_lo >= 0;
+        case kDbOpBetween:
+            return cmp_lo >= 0 && db_compare_scalar(candidate, clause.value_hi) <= 0;
+        default:
+            throw std::runtime_error("unsupported DB clause op");
+    }
+}
+
+static bool db_row_matches_all_clauses(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_index,
+        const RtdlDbClause* clauses,
+        size_t clause_count)
+{
+    for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+        const size_t field_index = db_find_field_index_or_throw(fields, field_count, clauses[clause_index].field);
+        const RtdlDbScalar& candidate = db_row_value(row_values, row_index, field_count, field_index);
+        if (!db_clause_matches_scalar(clauses[clause_index], candidate)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static std::vector<double> db_sorted_distinct_numeric_values(
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        size_t field_count,
+        size_t field_index)
+{
+    std::vector<double> values;
+    values.reserve(row_count);
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+        const RtdlDbScalar& value = db_row_value(row_values, row_index, field_count, field_index);
+        if (!db_scalar_is_numeric(value)) {
+            throw std::runtime_error("first-wave OptiX DB lowering requires numeric primary scan clauses");
+        }
+        values.push_back(db_scalar_as_double(value));
+    }
+    std::sort(values.begin(), values.end());
+    values.erase(std::unique(values.begin(), values.end()), values.end());
+    return values;
+}
+
+static bool db_clause_matches_numeric_value(const RtdlDbClause& clause, double value)
+{
+    const double lo = db_scalar_as_double(clause.value);
+    switch (clause.op) {
+        case kDbOpEq:
+            return value == lo;
+        case kDbOpLt:
+            return value < lo;
+        case kDbOpLe:
+            return value <= lo;
+        case kDbOpGt:
+            return value > lo;
+        case kDbOpGe:
+            return value >= lo;
+        case kDbOpBetween:
+            return value >= lo && value <= db_scalar_as_double(clause.value_hi);
+        default:
+            throw std::runtime_error("unsupported DB clause op");
+    }
+}
+
+static DbPrimaryAxis db_make_primary_axis(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const RtdlDbClause& clause)
+{
+    const size_t field_index = db_find_field_index_or_throw(fields, field_count, clause.field);
+    const std::vector<double> sorted_values =
+        db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+    int64_t encoded_lo = -1;
+    int64_t encoded_hi = -1;
+    for (size_t index = 0; index < sorted_values.size(); ++index) {
+        if (!db_clause_matches_numeric_value(clause, sorted_values[index])) {
+            continue;
+        }
+        const int64_t encoded = static_cast<int64_t>(index + 1);
+        if (encoded_lo < 0) {
+            encoded_lo = encoded;
+        }
+        encoded_hi = encoded;
+    }
+    if (encoded_lo < 0 || encoded_hi < 0) {
+        return {field_index, sorted_values, 1, 0};
+    }
+    return {field_index, sorted_values, encoded_lo, encoded_hi};
+}
+
+static int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScalar& value)
+{
+    const double needle = db_scalar_as_double(value);
+    const auto it = std::lower_bound(axis.sorted_values.begin(), axis.sorted_values.end(), needle);
+    if (it == axis.sorted_values.end() || *it != needle) {
+        throw std::runtime_error("failed to encode OptiX DB primary-axis value");
+    }
+    return static_cast<int64_t>(std::distance(axis.sorted_values.begin(), it) + 1);
+}
+
+static std::vector<DbRowMeta> db_build_row_metas(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count)
+{
+    const size_t row_id_index = db_find_field_index_or_throw(fields, field_count, "row_id");
+    std::vector<DbRowMeta> metas;
+    metas.reserve(row_count);
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+        const RtdlDbScalar& row_id_value = db_row_value(row_values, row_index, field_count, row_id_index);
+        metas.push_back({row_index, static_cast<uint32_t>(row_id_value.int_value)});
+    }
+    return metas;
+}
+
+static std::vector<OptixAabb> db_build_row_aabbs(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const std::vector<DbPrimaryAxis>& axes)
+{
+    std::vector<OptixAabb> aabbs;
+    aabbs.reserve(row_count);
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+        const float x = axes.size() >= 1
+            ? static_cast<float>(db_encode_axis_value(axes[0], db_row_value(row_values, row_index, field_count, axes[0].field_index)))
+            : 1.0f;
+        const float y = axes.size() >= 2
+            ? static_cast<float>(db_encode_axis_value(axes[1], db_row_value(row_values, row_index, field_count, axes[1].field_index)))
+            : 1.0f;
+        const float z = axes.size() >= 3
+            ? static_cast<float>(db_encode_axis_value(axes[2], db_row_value(row_values, row_index, field_count, axes[2].field_index)))
+            : 1.0f;
+        OptixAabb aabb;
+        aabb.minX = x - kDbBoxPad;
+        aabb.minY = y - kDbBoxPad;
+        aabb.minZ = z - kDbBoxPad;
+        aabb.maxX = x + kDbBoxPad;
+        aabb.maxY = y + kDbBoxPad;
+        aabb.maxZ = z + kDbBoxPad;
+        aabbs.push_back(aabb);
+    }
+    return aabbs;
+}
+
+static std::vector<size_t> db_collect_candidate_row_indices_optix(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count)
+{
+    std::vector<DbPrimaryAxis> axes;
+    axes.reserve(std::min<size_t>(clause_count, 3));
+    for (size_t i = 0; i < clause_count && i < 3; ++i) {
+        axes.push_back(db_make_primary_axis(fields, field_count, row_values, row_count, clauses[i]));
+    }
+    const std::vector<OptixAabb> aabbs = db_build_row_aabbs(fields, field_count, row_values, row_count, axes);
+
+    const uint32_t x_lo = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_lo) : 1u;
+    const uint32_t x_hi = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_hi) : 1u;
+    const uint32_t y_lo = axes.size() >= 2 ? static_cast<uint32_t>(axes[1].encoded_lo) : 1u;
+    const uint32_t y_hi = axes.size() >= 2 ? static_cast<uint32_t>(axes[1].encoded_hi) : 1u;
+    const uint32_t z_lo = axes.size() >= 3 ? static_cast<uint32_t>(axes[2].encoded_lo) : 1u;
+    const uint32_t z_hi = axes.size() >= 3 ? static_cast<uint32_t>(axes[2].encoded_hi) : 1u;
+
+    if (x_lo > x_hi || y_lo > y_hi || z_lo > z_hi) {
+        return {};
+    }
+
+    std::call_once(g_dbscan.init, [&]() {
+        std::string ptx = compile_to_ptx(kDbScanKernelSrc, "db_scan_kernel.cu");
+        g_dbscan.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__db_scan_probe",
+            "__miss__db_scan_miss",
+            "__intersection__db_scan_isect",
+            "__anyhit__db_scan_anyhit",
+            nullptr,
+            0).release();
+    });
+
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    const uint32_t hit_word_count = static_cast<uint32_t>((row_count + 31u) / 32u);
+    DevPtr d_hit_words(sizeof(uint32_t) * hit_word_count);
+    CU_CHECK(cuMemsetD8(d_hit_words.ptr, 0, sizeof(uint32_t) * hit_word_count));
+
+    const uint32_t x_count = x_hi - x_lo + 1u;
+    const uint32_t y_count = y_hi - y_lo + 1u;
+    DbScanLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.hit_words = reinterpret_cast<uint32_t*>(d_hit_words.ptr);
+    lp.hit_word_count = hit_word_count;
+    lp.x_lo = x_lo;
+    lp.y_lo = y_lo;
+    lp.z_lo = z_lo;
+    lp.z_hi = z_hi;
+    lp.x_count = x_count;
+    lp.y_count = y_count;
+
+    DevPtr d_params(sizeof(DbScanLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(
+        g_dbscan.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(DbScanLaunchParams),
+        &g_dbscan.pipe->sbt,
+        x_count,
+        y_count,
+        1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<uint32_t> hit_words(hit_word_count, 0u);
+    if (hit_word_count > 0) {
+        download(hit_words.data(), d_hit_words.ptr, hit_word_count);
+    }
+
+    std::vector<size_t> row_indices;
+    row_indices.reserve(std::min(row_count, kDbMaxCandidateRowsPerJob));
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+        const uint32_t word = static_cast<uint32_t>(row_index >> 5);
+        const uint32_t bit = 1u << (row_index & 31u);
+        if ((hit_words[word] & bit) == 0u) {
+            continue;
+        }
+        if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
+            throw std::runtime_error("first-wave OptiX DB lowering exceeded the 250000-candidate ceiling");
+        }
+        if (!db_row_matches_all_clauses(fields, field_count, row_values, row_index, clauses, clause_count)) {
+            continue;
+        }
+        row_indices.push_back(row_index);
+    }
+    return row_indices;
+}
+
+static void run_db_conjunctive_scan_optix(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        RtdlDbRowIdRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (!fields || field_count == 0 || !row_values) {
+        throw std::runtime_error("DB table inputs must not be null");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    if (row_count > kDbMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    }
+    const std::vector<DbRowMeta> row_metas = db_build_row_metas(fields, field_count, row_values, row_count);
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
+    std::vector<RtdlDbRowIdRow> rows;
+    rows.reserve(candidate_row_indices.size());
+    for (size_t row_index : candidate_row_indices) {
+        rows.push_back({row_metas[row_index].row_id});
+    }
+
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+        return left.row_id < right.row_id;
+    });
+
+    auto* out = static_cast<RtdlDbRowIdRow*>(std::malloc(sizeof(RtdlDbRowIdRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbRowIdRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_db_grouped_count_optix(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        RtdlDbGroupedCountRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (!fields || field_count == 0 || !row_values || !group_key_field) {
+        throw std::runtime_error("DB grouped_count inputs must not be null");
+    }
+    if (row_count > kDbMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    }
+    const size_t group_field_index = db_find_field_index_or_throw(fields, field_count, group_key_field);
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
+    std::unordered_map<int64_t, int64_t> counts;
+    for (size_t row_index : candidate_row_indices) {
+        const RtdlDbScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
+        counts[group_value.int_value] += 1;
+        if (counts.size() > kDbMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
+        }
+    }
+    std::vector<RtdlDbGroupedCountRow> rows;
+    rows.reserve(counts.size());
+    for (const auto& entry : counts) {
+        rows.push_back({entry.first, entry.second});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+        return left.group_key < right.group_key;
+    });
+    auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedCountRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_db_grouped_sum_optix(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        RtdlDbGroupedSumRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (!fields || field_count == 0 || !row_values || !group_key_field || !value_field) {
+        throw std::runtime_error("DB grouped_sum inputs must not be null");
+    }
+    if (row_count > kDbMaxRowsPerJob) {
+        throw std::runtime_error("first-wave OptiX DB lowering supports at most 1000000 rows per RT job");
+    }
+    const size_t group_field_index = db_find_field_index_or_throw(fields, field_count, group_key_field);
+    const size_t value_field_index = db_find_field_index_or_throw(fields, field_count, value_field);
+    if (fields[value_field_index].kind != kDbKindInt64 && fields[value_field_index].kind != kDbKindBool) {
+        throw std::runtime_error("first-wave OptiX grouped_sum supports integer-compatible value fields only");
+    }
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_optix(fields, field_count, row_values, row_count, clauses, clause_count);
+    std::unordered_map<int64_t, int64_t> sums;
+    for (size_t row_index : candidate_row_indices) {
+        const RtdlDbScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
+        const RtdlDbScalar& sum_value = db_row_value(row_values, row_index, field_count, value_field_index);
+        sums[group_value.int_value] += sum_value.int_value;
+        if (sums.size() > kDbMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave OptiX DB grouped kernels exceeded the 65536-group ceiling");
+        }
+    }
+    std::vector<RtdlDbGroupedSumRow> rows;
+    rows.reserve(sums.size());
+    for (const auto& entry : sums) {
+        rows.push_back({entry.first, entry.second});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+        return left.group_key < right.group_key;
+    });
+    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    if (!out && !rows.empty()) {
+        throw std::bad_alloc();
+    }
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
 static void run_seg_poly_hitcount_optix_host_indexed(
         const RtdlSegment*    segments,  size_t segment_count,
         const RtdlPolygonRef* polygons,  size_t polygon_count,

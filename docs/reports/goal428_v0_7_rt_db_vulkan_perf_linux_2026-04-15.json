@@ -1,0 +1,88 @@
+{
+  "conjunctive_scan": {
+    "cpu_seconds_median": 2.5395150979747996,
+    "cpu_seconds_samples": [
+      2.5369371339911595,
+      2.5395150979747996,
+      2.571875562076457
+    ],
+    "postgresql_query_seconds_median": 0.0259762080386281,
+    "postgresql_query_seconds_samples": [
+      0.0259762080386281,
+      0.025620511965826154,
+      0.02665135799907148
+    ],
+    "postgresql_setup_seconds_median": 10.261677992995828,
+    "postgresql_setup_seconds_samples": [
+      10.737169606029056,
+      10.261677992995828,
+      10.105975416023284
+    ],
+    "row_count": 22268,
+    "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+    "vulkan_seconds_median": 2.5735781480325386,
+    "vulkan_seconds_samples": [
+      2.5735781480325386,
+      2.590597382048145,
+      2.5555695190560073
+    ]
+  },
+  "grouped_count": {
+    "cpu_seconds_median": 2.49923472199589,
+    "cpu_seconds_samples": [
+      2.50859366892837,
+      2.49923472199589,
+      2.3960759120527655
+    ],
+    "postgresql_query_seconds_median": 0.02106147399172187,
+    "postgresql_query_seconds_samples": [
+      0.02099374495446682,
+      0.02106147399172187,
+      0.02126749698072672
+    ],
+    "postgresql_setup_seconds_median": 10.423957252991386,
+    "postgresql_setup_seconds_samples": [
+      10.070726659963839,
+      10.423957252991386,
+      10.470511781983078
+    ],
+    "row_count": 8,
+    "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+    "vulkan_seconds_median": 2.596547247027047,
+    "vulkan_seconds_samples": [
+      2.566650262917392,
+      2.6863839119905606,
+      2.596547247027047
+    ]
+  },
+  "grouped_sum": {
+    "cpu_seconds_median": 2.463552105007693,
+    "cpu_seconds_samples": [
+      2.463552105007693,
+      2.4554642470320687,
+      2.5910995999583974
+    ],
+    "postgresql_query_seconds_median": 0.03613246604800224,
+    "postgresql_query_seconds_samples": [
+      0.03624563803896308,
+      0.03613246604800224,
+      0.03581873304210603
+    ],
+    "postgresql_setup_seconds_median": 11.44679408101365,
+    "postgresql_setup_seconds_samples": [
+      11.687797776074149,
+      10.006742855999619,
+      11.44679408101365
+    ],
+    "row_count": 8,
+    "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+    "vulkan_seconds_median": 2.5631359349936247,
+    "vulkan_seconds_samples": [
+      2.5776988560101017,
+      2.5631359349936247,
+      2.464543977053836
+    ]
+  },
+  "repeats": 3,
+  "row_count": 200000
+}

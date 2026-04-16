@@ -47,6 +47,9 @@ enum class QueryKind {
   kFixedRadiusNeighbors3D,
   kKnnRows,
   kKnnRows3D,
+  kDbScanRay,
+  kDbGroupedCountRay,
+  kDbGroupedSumRay,
 };
 
 struct SegmentSceneData {
@@ -73,6 +76,18 @@ struct GraphEdgePoint {
 
 struct GraphEdgePointSceneData {
   const std::vector<GraphEdgePoint>* points;
+};
+
+struct DbRowBox {
+  size_t row_index;
+  uint32_t row_id;
+  double x;
+  double y;
+  double z;
+};
+
+struct DbRowBoxSceneData {
+  const std::vector<DbRowBox>* boxes;
 };
 
 struct TriangleSceneData {
@@ -168,8 +183,73 @@ struct KnnRowsQueryState3D {
   std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
+struct DbScanRayQueryState {
+  const RtdlDbField* fields;
+  size_t field_count;
+  const RtdlDbScalar* row_values;
+  size_t row_count;
+  const RtdlDbClause* clauses;
+  size_t clause_count;
+  size_t max_candidate_rows;
+  std::unordered_set<uint32_t>* seen_row_ids;
+  std::vector<RtdlDbRowIdRow>* rows;
+};
+
+struct DbGroupedCountRayQueryState {
+  const RtdlDbField* fields;
+  size_t field_count;
+  const RtdlDbScalar* row_values;
+  size_t row_count;
+  const RtdlDbClause* clauses;
+  size_t clause_count;
+  size_t group_field_index;
+  size_t max_candidate_rows;
+  size_t max_groups;
+  std::unordered_set<uint32_t>* seen_row_ids;
+  std::unordered_map<int64_t, int64_t>* counts;
+};
+
+struct DbGroupedSumRayQueryState {
+  const RtdlDbField* fields;
+  size_t field_count;
+  const RtdlDbScalar* row_values;
+  size_t row_count;
+  const RtdlDbClause* clauses;
+  size_t clause_count;
+  size_t group_field_index;
+  size_t value_field_index;
+  size_t max_candidate_rows;
+  size_t max_groups;
+  std::unordered_set<uint32_t>* seen_row_ids;
+  std::unordered_map<int64_t, int64_t>* sums;
+};
+
 thread_local QueryKind g_query_kind = QueryKind::kNone;
 thread_local void* g_query_state = nullptr;
+thread_local bool g_db_limit_error = false;
+thread_local std::string g_db_limit_error_message;
+
+constexpr uint32_t kDbKindInt64 = 1u;
+constexpr uint32_t kDbKindFloat64 = 2u;
+constexpr uint32_t kDbKindBool = 3u;
+constexpr uint32_t kDbKindText = 4u;
+
+constexpr uint32_t kDbOpEq = 1u;
+constexpr uint32_t kDbOpLt = 2u;
+constexpr uint32_t kDbOpLe = 3u;
+constexpr uint32_t kDbOpGt = 4u;
+constexpr uint32_t kDbOpGe = 5u;
+constexpr uint32_t kDbOpBetween = 6u;
+
+void db_set_limit_error(const char* message) {
+  g_db_limit_error = true;
+  g_db_limit_error_message = message;
+}
+
+void db_clear_limit_error() {
+  g_db_limit_error = false;
+  g_db_limit_error_message.clear();
+}
 
 bool knn_row_is_better(const RtdlKnnNeighborRow& candidate, const RtdlKnnNeighborRow& current) {
   if (candidate.distance < current.distance - 1.0e-12) {
@@ -269,6 +349,139 @@ void set_ray_3d(RTCRayHit* rayhit, const Vec3& origin, const Vec3& direction, fl
   }
 }
 
+bool db_scalar_is_numeric(const RtdlDbScalar& value) {
+  return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
+}
+
+double db_scalar_as_double(const RtdlDbScalar& value) {
+  if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
+    return static_cast<double>(value.int_value);
+  }
+  if (value.kind == kDbKindFloat64) {
+    return value.double_value;
+  }
+  throw std::runtime_error("DB scalar is not numeric");
+}
+
+int db_scalar_compare(const RtdlDbScalar& left, const RtdlDbScalar& right) {
+  if (left.kind == kDbKindText || right.kind == kDbKindText) {
+    const char* left_text = left.string_value == nullptr ? "" : left.string_value;
+    const char* right_text = right.string_value == nullptr ? "" : right.string_value;
+    const int cmp = std::strcmp(left_text, right_text);
+    if (cmp < 0) {
+      return -1;
+    }
+    if (cmp > 0) {
+      return 1;
+    }
+    return 0;
+  }
+  const double left_value = db_scalar_as_double(left);
+  const double right_value = db_scalar_as_double(right);
+  if (left_value < right_value) {
+    return -1;
+  }
+  if (left_value > right_value) {
+    return 1;
+  }
+  return 0;
+}
+
+size_t db_find_field_index(const RtdlDbField* fields, size_t field_count, const char* name) {
+  for (size_t index = 0; index < field_count; ++index) {
+    if (std::strcmp(fields[index].name, name) == 0) {
+      return index;
+    }
+  }
+  throw std::runtime_error(std::string("unknown DB field: ") + name);
+}
+
+const RtdlDbScalar& db_row_value(
+    const RtdlDbScalar* row_values,
+    size_t row_index,
+    size_t field_count,
+    size_t field_index) {
+  return row_values[row_index * field_count + field_index];
+}
+
+bool db_row_matches_clause(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_index,
+    const RtdlDbClause& clause) {
+  const size_t field_index = db_find_field_index(fields, field_count, clause.field);
+  const RtdlDbScalar& row_value = db_row_value(row_values, row_index, field_count, field_index);
+  const int cmp_lo = db_scalar_compare(row_value, clause.value);
+  switch (clause.op) {
+    case kDbOpEq:
+      return cmp_lo == 0;
+    case kDbOpLt:
+      return cmp_lo < 0;
+    case kDbOpLe:
+      return cmp_lo <= 0;
+    case kDbOpGt:
+      return cmp_lo > 0;
+    case kDbOpGe:
+      return cmp_lo >= 0;
+    case kDbOpBetween:
+      return cmp_lo >= 0 && db_scalar_compare(row_value, clause.value_hi) <= 0;
+    default:
+      throw std::runtime_error("unsupported DB clause op");
+  }
+}
+
+bool db_row_matches_all_clauses(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_index,
+    const RtdlDbClause* clauses,
+    size_t clause_count) {
+  for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+    if (!db_row_matches_clause(fields, field_count, row_values, row_index, clauses[clause_index])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ray_hits_db_box(const RTCRay& ray, const DbRowBox& box) {
+  const double half = 0.45;
+  const double min_x = box.x - half;
+  const double max_x = box.x + half;
+  const double min_y = box.y - half;
+  const double max_y = box.y + half;
+  const double min_z = box.z - half;
+  const double max_z = box.z + half;
+  double tmin = ray.tnear;
+  double tmax = ray.tfar;
+  const double org[3] = {ray.org_x, ray.org_y, ray.org_z};
+  const double dir[3] = {ray.dir_x, ray.dir_y, ray.dir_z};
+  const double mins[3] = {min_x, min_y, min_z};
+  const double maxs[3] = {max_x, max_y, max_z};
+  for (int axis = 0; axis < 3; ++axis) {
+    if (std::abs(dir[axis]) < 1.0e-12) {
+      if (org[axis] < mins[axis] || org[axis] > maxs[axis]) {
+        return false;
+      }
+      continue;
+    }
+    const double inv_dir = 1.0 / dir[axis];
+    double t0 = (mins[axis] - org[axis]) * inv_dir;
+    double t1 = (maxs[axis] - org[axis]) * inv_dir;
+    if (t0 > t1) {
+      std::swap(t0, t1);
+    }
+    tmin = std::max(tmin, t0);
+    tmax = std::min(tmax, t1);
+    if (tmin > tmax) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void segment_bounds(const RTCBoundsFunctionArguments* args) {
   auto* data = static_cast<SegmentSceneData*>(args->geometryUserPtr);
   const Segment2D& segment = (*data->segments)[args->primID];
@@ -324,6 +537,18 @@ void graph_edge_point_bounds(const RTCBoundsFunctionArguments* args) {
   args->bounds_o->upper_x = point.p.x + kEps;
   args->bounds_o->upper_y = point.p.y + kEps;
   args->bounds_o->upper_z = kEps;
+}
+
+void db_row_box_bounds(const RTCBoundsFunctionArguments* args) {
+  auto* data = static_cast<DbRowBoxSceneData*>(args->geometryUserPtr);
+  const DbRowBox& box = (*data->boxes)[args->primID];
+  const float half = 0.45f;
+  args->bounds_o->lower_x = static_cast<float>(box.x) - half;
+  args->bounds_o->lower_y = static_cast<float>(box.y) - half;
+  args->bounds_o->lower_z = static_cast<float>(box.z) - half;
+  args->bounds_o->upper_x = static_cast<float>(box.x) + half;
+  args->bounds_o->upper_y = static_cast<float>(box.y) + half;
+  args->bounds_o->upper_z = static_cast<float>(box.z) + half;
 }
 
 void triangle_bounds(const RTCBoundsFunctionArguments* args) {
@@ -557,6 +782,114 @@ void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
   if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
     state->seen_triangle_ids->insert(triangle.id);
     *state->hit_count += 1;
+  }
+}
+
+void db_row_box_intersect(const RTCIntersectFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
+    return;
+  }
+  if (g_db_limit_error) {
+    return;
+  }
+  if (g_query_kind != QueryKind::kDbScanRay
+      && g_query_kind != QueryKind::kDbGroupedCountRay
+      && g_query_kind != QueryKind::kDbGroupedSumRay) {
+    return;
+  }
+  auto* data = static_cast<DbRowBoxSceneData*>(args->geometryUserPtr);
+  const DbRowBox& box = (*data->boxes)[args->primID];
+  const auto* rayhit = reinterpret_cast<const RTCRayHit*>(args->rayhit);
+  if (!ray_hits_db_box(rayhit->ray, box)) {
+    return;
+  }
+  if (g_query_kind == QueryKind::kDbScanRay) {
+    auto* state = static_cast<DbScanRayQueryState*>(g_query_state);
+    if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
+      return;
+    }
+    if (!db_row_matches_all_clauses(
+            state->fields,
+            state->field_count,
+            state->row_values,
+            box.row_index,
+            state->clauses,
+            state->clause_count)) {
+      return;
+    }
+    state->seen_row_ids->insert(box.row_id);
+    if (state->seen_row_ids->size() > state->max_candidate_rows) {
+      db_set_limit_error("first-wave Embree DB lowering exceeded the 250000-candidate ceiling");
+      return;
+    }
+    state->rows->push_back({box.row_id});
+    return;
+  }
+  if (g_query_kind == QueryKind::kDbGroupedCountRay) {
+    auto* state = static_cast<DbGroupedCountRayQueryState*>(g_query_state);
+    if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
+      return;
+    }
+    if (!db_row_matches_all_clauses(
+            state->fields,
+            state->field_count,
+            state->row_values,
+            box.row_index,
+            state->clauses,
+            state->clause_count)) {
+      return;
+    }
+    state->seen_row_ids->insert(box.row_id);
+    if (state->seen_row_ids->size() > state->max_candidate_rows) {
+      db_set_limit_error("first-wave Embree DB lowering exceeded the 250000-candidate ceiling");
+      return;
+    }
+    const RtdlDbScalar& group_value = db_row_value(
+        state->row_values,
+        box.row_index,
+        state->field_count,
+        state->group_field_index);
+    (*state->counts)[group_value.int_value] += 1;
+    if (state->counts->size() > state->max_groups) {
+      db_set_limit_error("first-wave Embree DB grouped kernels exceeded the 65536-group ceiling");
+    }
+    return;
+  }
+  auto* state = static_cast<DbGroupedSumRayQueryState*>(g_query_state);
+  if (state->seen_row_ids->find(box.row_id) != state->seen_row_ids->end()) {
+    return;
+  }
+  if (!db_row_matches_all_clauses(
+          state->fields,
+          state->field_count,
+          state->row_values,
+          box.row_index,
+          state->clauses,
+          state->clause_count)) {
+    return;
+  }
+  state->seen_row_ids->insert(box.row_id);
+  if (state->seen_row_ids->size() > state->max_candidate_rows) {
+    db_set_limit_error("first-wave Embree DB lowering exceeded the 250000-candidate ceiling");
+    return;
+  }
+  const RtdlDbScalar& group_value = db_row_value(
+      state->row_values,
+      box.row_index,
+      state->field_count,
+      state->group_field_index);
+  const RtdlDbScalar& sum_value = db_row_value(
+      state->row_values,
+      box.row_index,
+      state->field_count,
+      state->value_field_index);
+  if (sum_value.kind != kDbKindInt64 && sum_value.kind != kDbKindBool) {
+    db_set_limit_error("first-wave Embree grouped_sum supports integer-compatible value fields only");
+    return;
+  }
+  (*state->sums)[group_value.int_value] += sum_value.int_value;
+  if (state->sums->size() > state->max_groups) {
+    db_set_limit_error("first-wave Embree DB grouped kernels exceeded the 65536-group ceiling");
   }
 }
 

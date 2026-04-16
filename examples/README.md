@@ -17,6 +17,10 @@ If you are new to RTDL, use these files first:
 - `rtdl_knn_rows.py`
 - `rtdl_graph_bfs.py`
 - `rtdl_graph_triangle_count.py`
+- `rtdl_db_conjunctive_scan.py`
+- `rtdl_db_grouped_count.py`
+- `rtdl_db_grouped_sum.py`
+- `rtdl_sales_risk_screening.py`
 - `rtdl_service_coverage_gaps.py`
 - `rtdl_event_hotspot_screening.py`
 - `rtdl_facility_knn_assignment.py`

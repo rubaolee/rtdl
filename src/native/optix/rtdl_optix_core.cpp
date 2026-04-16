@@ -1647,6 +1647,67 @@ extern "C" __global__ void knn_rows(
 }
 )CUDA";
 
+// ---------- DB conjunctive_scan kernel --------------------------------------
+
+static const char* kDbScanKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct DbScanParams {
+    OptixTraversableHandle traversable;
+    uint32_t* hit_words;
+    uint32_t hit_word_count;
+    uint32_t x_lo;
+    uint32_t y_lo;
+    uint32_t z_lo;
+    uint32_t z_hi;
+    uint32_t x_count;
+    uint32_t y_count;
+};
+
+extern "C" {
+__constant__ DbScanParams params;
+}
+
+extern "C" __global__ void __raygen__db_scan_probe() {
+    const uint32_t x_index = optixGetLaunchIndex().x;
+    const uint32_t y_index = optixGetLaunchIndex().y;
+    if (x_index >= params.x_count || y_index >= params.y_count) {
+        return;
+    }
+    const float origin_x = static_cast<float>(params.x_lo + x_index);
+    const float origin_y = static_cast<float>(params.y_lo + y_index);
+    const float origin_z = static_cast<float>(params.z_lo) - 1.0f;
+    const float tmax = static_cast<float>((params.z_hi - params.z_lo) + 2u);
+    optixTrace(
+        params.traversable,
+        make_float3(origin_x, origin_y, origin_z),
+        make_float3(0.0f, 0.0f, 1.0f),
+        0.0f,
+        tmax,
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0);
+}
+
+extern "C" __global__ void __miss__db_scan_miss() {}
+
+extern "C" __global__ void __intersection__db_scan_isect() {
+    optixReportIntersection(0.5f, 0u);
+}
+
+extern "C" __global__ void __anyhit__db_scan_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t word = prim >> 5;
+    if (word < params.hit_word_count) {
+        const uint32_t bit = 1u << (prim & 31u);
+        atomicOr(params.hit_words + word, bit);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kKnnRows3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -1749,6 +1810,11 @@ struct RayHitCount3DPipeline {
     std::once_flag   init;
 };
 
+struct DbScanPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag init;
+};
+
 struct PnsCuFunction {
     CUmodule   module   = nullptr;
     CUfunction fn       = nullptr;
@@ -1773,6 +1839,7 @@ static OverlayPipeline     g_overlay;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
 static SegPolyPipeline     g_segpoly;
+static DbScanPipeline      g_dbscan;
 static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static KnnCuFunction      g_knn;

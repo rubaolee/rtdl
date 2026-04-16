@@ -9,7 +9,11 @@ import tempfile
 from pathlib import Path
 from typing import NoReturn
 
+from .db_reference import GroupedAggregateQuery
+from .db_reference import PredicateClause
 from .ir import CompiledKernel
+from .db_reference import grouped_count_cpu
+from .db_reference import grouped_sum_cpu
 from .reference import Point3D
 
 
@@ -237,6 +241,51 @@ class _RtdlTriangleRow(ctypes.Structure):
     ]
 
 
+class _RtdlDbField(ctypes.Structure):
+    _fields_ = [
+        ("name", ctypes.c_char_p),
+        ("kind", ctypes.c_uint32),
+    ]
+
+
+class _RtdlDbScalar(ctypes.Structure):
+    _fields_ = [
+        ("kind", ctypes.c_uint32),
+        ("int_value", ctypes.c_int64),
+        ("double_value", ctypes.c_double),
+        ("string_value", ctypes.c_char_p),
+    ]
+
+
+class _RtdlDbClause(ctypes.Structure):
+    _fields_ = [
+        ("field", ctypes.c_char_p),
+        ("op", ctypes.c_uint32),
+        ("value", _RtdlDbScalar),
+        ("value_hi", _RtdlDbScalar),
+    ]
+
+
+class _RtdlDbRowIdRow(ctypes.Structure):
+    _fields_ = [
+        ("row_id", ctypes.c_uint32),
+    ]
+
+
+class _RtdlDbGroupedCountRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("count", ctypes.c_int64),
+    ]
+
+
+class _RtdlDbGroupedSumRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("sum", ctypes.c_double),
+    ]
+
+
 def oracle_version() -> tuple[int, int, int]:
     library = _load_oracle_library()
     major = ctypes.c_int()
@@ -247,8 +296,17 @@ def oracle_version() -> tuple[int, int, int]:
 
 
 def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, object], ...]:
-    library = _load_oracle_library()
     predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "conjunctive_scan":
+        library = _load_oracle_library()
+        return _run_conjunctive_scan_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "grouped_count":
+        library = _load_oracle_library()
+        return _run_grouped_count_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "grouped_sum":
+        library = _load_oracle_library()
+        return _run_grouped_sum_oracle(compiled, normalized_inputs, library)
+    library = _load_oracle_library()
     if predicate_name == "bfs_discover":
         return _run_bfs_expand_oracle(compiled, normalized_inputs, library)
     if predicate_name == "triangle_match":
@@ -278,6 +336,243 @@ def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, o
     if predicate_name == "bounded_knn_rows":
         return _run_bounded_knn_rows_oracle(compiled, normalized_inputs, library)
     raise ValueError(f"unsupported RTDL native oracle predicate: {predicate_name}")
+
+
+def _run_conjunctive_scan_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    predicates_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    table_rows = normalized_inputs[table_name]
+    predicates = normalized_inputs[predicates_name]
+    fields_array, row_values_array, row_count = _encode_db_table(table_rows)
+    clauses_array = _encode_db_clauses(predicates.clauses)
+    rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_conjunctive_scan(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    try:
+        row_count_value = row_count_out.value
+        return tuple({"row_id": int(rows_ptr[index].row_id)} for index in range(row_count_value))
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_grouped_count_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    query = normalized_inputs[query_name]
+    table_rows = normalized_inputs[table_name]
+    if len(query.group_keys) != 1:
+        return grouped_count_cpu(table_rows, query)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=query.group_keys,
+    )
+    fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    group_field = query.group_keys[0]
+    status = library.rtdl_oracle_run_grouped_count(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_field.encode("utf-8"),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    try:
+        reverse_map = reverse_maps.get(group_field)
+        rows = []
+        for index in range(row_count_out.value):
+            group_key = _decode_db_group_key(reverse_map, int(rows_ptr[index].group_key))
+            rows.append({group_field: group_key, "count": int(rows_ptr[index].count)})
+        return tuple(rows)
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_grouped_sum_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    query = normalized_inputs[query_name]
+    table_rows = normalized_inputs[table_name]
+    if len(query.group_keys) != 1:
+        return grouped_sum_cpu(table_rows, query)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=query.group_keys,
+    )
+    fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    group_field = query.group_keys[0]
+    status = library.rtdl_oracle_run_grouped_sum(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_field.encode("utf-8"),
+        str(query.value_field).encode("utf-8"),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    try:
+        reverse_map = reverse_maps.get(group_field)
+        rows = []
+        for index in range(row_count_out.value):
+            group_key = _decode_db_group_key(reverse_map, int(rows_ptr[index].group_key))
+            total = float(rows_ptr[index].sum)
+            rows.append({group_field: group_key, "sum": int(total) if float(total).is_integer() else total})
+        return tuple(rows)
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+_DB_KIND_INT64 = 1
+_DB_KIND_FLOAT64 = 2
+_DB_KIND_BOOL = 3
+_DB_KIND_TEXT = 4
+
+_DB_OP_EQ = 1
+_DB_OP_LT = 2
+_DB_OP_LE = 3
+_DB_OP_GT = 4
+_DB_OP_GE = 5
+_DB_OP_BETWEEN = 6
+
+
+def _encode_db_scalar(value) -> _RtdlDbScalar:
+    if isinstance(value, bool):
+        return _RtdlDbScalar(kind=_DB_KIND_BOOL, int_value=1 if value else 0)
+    if isinstance(value, int) and not isinstance(value, bool):
+        return _RtdlDbScalar(kind=_DB_KIND_INT64, int_value=int(value))
+    if isinstance(value, float):
+        return _RtdlDbScalar(kind=_DB_KIND_FLOAT64, double_value=float(value))
+    return _RtdlDbScalar(kind=_DB_KIND_TEXT, string_value=str(value).encode("utf-8"))
+
+
+def _encode_db_field_kind(value) -> int:
+    if isinstance(value, bool):
+        return _DB_KIND_BOOL
+    if isinstance(value, int) and not isinstance(value, bool):
+        return _DB_KIND_INT64
+    if isinstance(value, float):
+        return _DB_KIND_FLOAT64
+    return _DB_KIND_TEXT
+
+
+def _encode_db_table(table_rows) -> tuple[object, object, int]:
+    if not table_rows:
+        raise ValueError("native oracle DB path requires at least one denormalized table row")
+    field_names = tuple(str(name) for name in table_rows[0].keys())
+    if "row_id" not in field_names:
+        raise ValueError("native oracle DB path requires a `row_id` field")
+    for index, row in enumerate(table_rows):
+        if tuple(str(name) for name in row.keys()) != field_names:
+            raise ValueError(f"denorm table row {index} does not match the first-row schema")
+    field_records = [_RtdlDbField(name=name.encode("utf-8"), kind=_encode_db_field_kind(table_rows[0][name])) for name in field_names]
+    fields_array = (_RtdlDbField * len(field_records))(*field_records)
+    scalar_records = []
+    for row in table_rows:
+        for name in field_names:
+            scalar_records.append(_encode_db_scalar(row[name]))
+    row_values_array = (_RtdlDbScalar * len(scalar_records))(*scalar_records)
+    return fields_array, row_values_array, len(table_rows)
+
+
+def _encode_db_text_fields(table_rows, clauses, *, extra_fields=()):
+    encode_fields: set[str] = set()
+    all_fields = set(extra_fields)
+    all_fields.update(str(clause.field) for clause in clauses)
+    for field in all_fields:
+        values = [row[field] for row in table_rows if field in row]
+        if any(isinstance(value, str) for value in values):
+            encode_fields.add(field)
+        for clause in clauses:
+            if str(clause.field) != field:
+                continue
+            if isinstance(clause.value, str) or isinstance(clause.value_hi, str):
+                encode_fields.add(field)
+    reverse_maps: dict[str, dict[int, object]] = {}
+    field_maps: dict[str, dict[object, int]] = {}
+    for field in sorted(encode_fields):
+        unique_values = sorted({row[field] for row in table_rows})
+        encode_map = {value: index + 1 for index, value in enumerate(unique_values)}
+        field_maps[field] = encode_map
+        reverse_maps[field] = {code: value for value, code in encode_map.items()}
+    encoded_rows = []
+    for row in table_rows:
+        encoded = dict(row)
+        for field, encode_map in field_maps.items():
+            encoded[field] = encode_map[row[field]]
+        encoded_rows.append(encoded)
+    encoded_clauses = []
+    for clause in clauses:
+        field = str(clause.field)
+        if field in field_maps:
+            encode_map = field_maps[field]
+            value = encode_map[clause.value]
+            value_hi = encode_map[clause.value_hi] if clause.value_hi is not None else None
+            encoded_clauses.append(PredicateClause(field=field, op=clause.op, value=value, value_hi=value_hi))
+        else:
+            encoded_clauses.append(clause)
+    return tuple(encoded_rows), tuple(encoded_clauses), reverse_maps
+
+
+def _decode_db_group_key(reverse_map, encoded_value: int):
+    if reverse_map is None:
+        return encoded_value
+    return reverse_map[encoded_value]
+
+
+def _encode_db_clause(clause) -> _RtdlDbClause:
+    op_map = {
+        "eq": _DB_OP_EQ,
+        "lt": _DB_OP_LT,
+        "le": _DB_OP_LE,
+        "gt": _DB_OP_GT,
+        "ge": _DB_OP_GE,
+        "between": _DB_OP_BETWEEN,
+    }
+    return _RtdlDbClause(
+        field=str(clause.field).encode("utf-8"),
+        op=op_map[str(clause.op)],
+        value=_encode_db_scalar(clause.value),
+        value_hi=_encode_db_scalar(clause.value_hi),
+    )
+
+
+def _encode_db_clauses(clauses) -> object:
+    records = [_encode_db_clause(clause) for clause in clauses]
+    return (_RtdlDbClause * len(records))(*records)
 
 
 def _run_bfs_expand_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
@@ -1225,6 +1520,48 @@ def _load_oracle_library():
         ctypes.c_size_t,
     ]
     library.rtdl_oracle_run_triangle_probe.restype = ctypes.c_int
+    library.rtdl_oracle_run_conjunctive_scan.argtypes = [
+        ctypes.POINTER(_RtdlDbField),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbScalar),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbClause),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_conjunctive_scan.restype = ctypes.c_int
+    library.rtdl_oracle_run_grouped_count.argtypes = [
+        ctypes.POINTER(_RtdlDbField),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbScalar),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbClause),
+        ctypes.c_size_t,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_grouped_count.restype = ctypes.c_int
+    library.rtdl_oracle_run_grouped_sum.argtypes = [
+        ctypes.POINTER(_RtdlDbField),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbScalar),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbClause),
+        ctypes.c_size_t,
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_grouped_sum.restype = ctypes.c_int
     return library
 
 

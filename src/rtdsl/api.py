@@ -108,8 +108,8 @@ def traverse(
     mode: str | None = None,
 ) -> CandidateSet:
     context = _current_context()
-    if mode is not None and mode not in {"graph_expand", "graph_intersect"}:
-        raise ValueError("traverse mode must be one of: graph_expand, graph_intersect")
+    if mode is not None and mode not in {"graph_expand", "graph_intersect", "db_scan", "db_group"}:
+        raise ValueError("traverse mode must be one of: graph_expand, graph_intersect, db_scan, db_group")
     node = CandidateSet(left=left, right=right, accel=accel, mode=mode)
     context.candidates = node
     return node
@@ -208,6 +208,36 @@ def triangle_match(*, order: str = "id_ascending", unique: bool = True) -> Predi
     return Predicate(
         name="triangle_match",
         options={"order": order, "unique": bool(unique)},
+    )
+
+
+def conjunctive_scan(*, exact: bool = True) -> Predicate:
+    return Predicate(
+        name="conjunctive_scan",
+        options={"exact": bool(exact)},
+    )
+
+
+def grouped_count(*, group_keys: tuple[str, ...]) -> Predicate:
+    if not group_keys:
+        raise ValueError("grouped_count requires at least one group key")
+    return Predicate(
+        name="grouped_count",
+        options={"group_keys": tuple(str(value) for value in group_keys)},
+    )
+
+
+def grouped_sum(*, group_keys: tuple[str, ...], value_field: str) -> Predicate:
+    if not group_keys:
+        raise ValueError("grouped_sum requires at least one group key")
+    if not value_field:
+        raise ValueError("grouped_sum requires a value_field")
+    return Predicate(
+        name="grouped_sum",
+        options={
+            "group_keys": tuple(str(value) for value in group_keys),
+            "value_field": str(value_field),
+        },
     )
 
 

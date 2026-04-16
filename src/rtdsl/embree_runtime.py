@@ -22,6 +22,13 @@ from .graph_reference import FrontierVertex
 from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
+from .oracle_runtime import _decode_db_group_key
+from .oracle_runtime import _RtdlDbField
+from .oracle_runtime import _RtdlDbGroupedCountRow
+from .oracle_runtime import _RtdlDbRowIdRow
+from .oracle_runtime import _encode_db_clauses
+from .oracle_runtime import _encode_db_table
+from .oracle_runtime import _encode_db_text_fields
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Point3D as _CanonicalPoint3D
@@ -34,6 +41,7 @@ from .reference import Ray3D as _CanonicalRay3D
 
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_embree_execution_cache: OrderedDict[tuple[object, ...], "PreparedEmbreeExecution"] = OrderedDict()
+_DB_MAX_ROWS_PER_JOB = 1_000_000
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:
@@ -139,6 +147,13 @@ class _RtdlTriangle3D(ctypes.Structure):
         ("x2", ctypes.c_double),
         ("y2", ctypes.c_double),
         ("z2", ctypes.c_double),
+    ]
+
+
+class _EmbreeRtdlDbGroupedSumRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("sum", ctypes.c_int64),
     ]
 
 
@@ -732,6 +747,14 @@ def run_embree(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     if result_mode not in {"dict", "raw"}:
         raise ValueError("Embree result_mode must be one of: dict, raw")
 
+    if compiled.refine_op.predicate.name in {"conjunctive_scan", "grouped_count", "grouped_sum"}:
+        normalized_inputs = {
+            name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
+            for name, payload in inputs.items()
+        }
+        rows = _run_db_embree(compiled, normalized_inputs, _load_embree_library(), result_mode=result_mode)
+        return rows
+
     # Current accepted honesty boundary:
     # the Jaccard workloads are closed on Python/native CPU today, but not as
     # Embree-native kernels. The public Embree run surface accepts them through
@@ -842,6 +865,147 @@ def embree_version() -> tuple[int, int, int]:
     patch = ctypes.c_int()
     _check_status(library.rtdl_embree_get_version(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)))
     return major.value, minor.value, patch.value
+
+
+def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, result_mode: str):
+    predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "conjunctive_scan":
+        predicates_name = compiled.candidates.left.name
+        table_name = compiled.candidates.right.name
+        table_rows = normalized_inputs[table_name]
+        if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+            raise ValueError("first-wave Embree DB lowering supports at most 1000000 rows per RT job")
+        predicates = normalized_inputs[predicates_name]
+        fields_array, row_values_array, row_count = _encode_db_table(table_rows)
+        clauses_array = _encode_db_clauses(predicates.clauses)
+        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = library.rtdl_embree_run_conjunctive_scan(
+            fields_array,
+            ctypes.c_size_t(len(fields_array)),
+            row_values_array,
+            ctypes.c_size_t(row_count),
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        row_view = EmbreeRowView(
+            library=library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbRowIdRow,
+            field_names=("row_id",),
+        )
+        return row_view if result_mode == "raw" else row_view.to_dict_rows()
+
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    table_rows = normalized_inputs[table_name]
+    if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+        raise ValueError("first-wave Embree DB lowering supports at most 1000000 rows per RT job")
+    query = normalized_inputs[query_name]
+    if len(query.group_keys) != 1:
+        raise ValueError("first-wave Embree DB grouped kernels support exactly one group key")
+    extra_fields = [query.group_keys[0]]
+    if predicate_name == "grouped_sum" and query.value_field:
+        extra_fields.append(query.value_field)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=tuple(extra_fields),
+    )
+    fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    group_key_field = query.group_keys[0].encode("utf-8")
+    error = ctypes.create_string_buffer(4096)
+
+    if predicate_name == "grouped_count":
+        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        row_count_out = ctypes.c_size_t()
+        status = library.rtdl_embree_run_grouped_count(
+            fields_array,
+            ctypes.c_size_t(len(fields_array)),
+            row_values_array,
+            ctypes.c_size_t(row_count),
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            group_key_field,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        row_view = EmbreeRowView(
+            library=library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbGroupedCountRow,
+            field_names=("group_key", "count"),
+        )
+        if result_mode == "raw":
+            return row_view
+        try:
+            reverse_map = reverse_maps.get(query.group_keys[0])
+            rows = []
+            for index in range(row_view.row_count):
+                row = row_view.rows_ptr[index]
+                rows.append(
+                    {
+                        query.group_keys[0]: _decode_db_group_key(reverse_map, row.group_key),
+                        "count": row.count,
+                    }
+                )
+            return tuple(rows)
+        finally:
+            row_view.close()
+
+    rows_ptr = ctypes.POINTER(_EmbreeRtdlDbGroupedSumRow)()
+    row_count_out = ctypes.c_size_t()
+    status = library.rtdl_embree_run_grouped_sum(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_key_field,
+        query.value_field.encode("utf-8"),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    row_view = EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count_out.value,
+        row_type=_EmbreeRtdlDbGroupedSumRow,
+        field_names=("group_key", "sum"),
+    )
+    if result_mode == "raw":
+        return row_view
+    try:
+        reverse_map = reverse_maps.get(query.group_keys[0])
+        rows = []
+        for index in range(row_view.row_count):
+            row = row_view.rows_ptr[index]
+            total = row.sum
+            rows.append(
+                {
+                    query.group_keys[0]: _decode_db_group_key(reverse_map, row.group_key),
+                    "sum": int(total),
+                }
+            )
+        return tuple(rows)
+    finally:
+        row_view.close()
 
 
 def _run_lsi_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
@@ -2180,6 +2344,57 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_triangle_probe.restype = ctypes.c_int
+
+    optional_db_conjunctive_scan = _require_optional_embree_symbol(library, "rtdl_embree_run_conjunctive_scan")
+    if optional_db_conjunctive_scan is not None:
+        optional_db_conjunctive_scan.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_conjunctive_scan.restype = ctypes.c_int
+
+    optional_db_grouped_count = _require_optional_embree_symbol(library, "rtdl_embree_run_grouped_count")
+    if optional_db_grouped_count is not None:
+        optional_db_grouped_count.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_grouped_count.restype = ctypes.c_int
+
+    optional_db_grouped_sum = _require_optional_embree_symbol(library, "rtdl_embree_run_grouped_sum")
+    if optional_db_grouped_sum is not None:
+        optional_db_grouped_sum.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_EmbreeRtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_grouped_sum.restype = ctypes.c_int
 
     return library
 

@@ -8,6 +8,7 @@ It currently covers:
 - the released `v0.2.0` geometry workloads
 - the released `v0.4.0` nearest-neighbor line
 - the released `v0.6.1` RT graph line
+- the active `v0.7` bounded DB development line
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -141,6 +142,45 @@ Reference validation/report surfaces:
 - [goal389_v0_6_rt_graph_bfs_truth_path_test.py](../tests/goal389_v0_6_rt_graph_bfs_truth_path_test.py)
 - [goal390_v0_6_rt_graph_triangle_truth_path_test.py](../tests/goal390_v0_6_rt_graph_triangle_truth_path_test.py)
 - [graph_rt_validation_and_perf_report_2026-04-14.md](graph_rt_validation_and_perf_report_2026-04-14.md)
+
+## v0.7 bounded DB line
+
+The active `v0.7` DB work is still a development line, but the first bounded
+examples are already runnable.
+
+Kernel examples:
+
+- [rtdl_db_conjunctive_scan.py](../examples/rtdl_db_conjunctive_scan.py)
+- [rtdl_db_grouped_count.py](../examples/rtdl_db_grouped_count.py)
+- [rtdl_db_grouped_sum.py](../examples/rtdl_db_grouped_sum.py)
+
+App-style example:
+
+- [rtdl_sales_risk_screening.py](../examples/rtdl_sales_risk_screening.py)
+
+Run:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu
+
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu
+
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu
+
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu
+```
+
+Current honesty boundary:
+
+- the public DB example surface currently exposes:
+  - `cpu_python_reference`
+  - `cpu`
+- PostgreSQL is the Linux correctness anchor, not a public example backend flag
+- Embree / OptiX / Vulkan DB kernels are not yet released
 
 ### Public CLI Backend Selection
 

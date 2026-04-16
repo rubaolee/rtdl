@@ -1,5 +1,7 @@
 #include "rtdl_oracle_internal.h"
 
+#include <map>
+
 #if defined(_WIN32)
 #  define RTDL_ORACLE_EXPORT extern "C" __declspec(dllexport)
 #else
@@ -7,6 +9,119 @@
 #endif
 
 namespace rtdl::oracle {
+
+namespace {
+
+constexpr uint32_t kDbKindInt64 = 1;
+constexpr uint32_t kDbKindFloat64 = 2;
+constexpr uint32_t kDbKindBool = 3;
+constexpr uint32_t kDbKindText = 4;
+
+constexpr uint32_t kDbOpEq = 1;
+constexpr uint32_t kDbOpLt = 2;
+constexpr uint32_t kDbOpLe = 3;
+constexpr uint32_t kDbOpGt = 4;
+constexpr uint32_t kDbOpGe = 5;
+constexpr uint32_t kDbOpBetween = 6;
+
+bool db_scalar_is_numeric(const RtdlDbScalar& value) {
+  return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
+}
+
+double db_scalar_as_double(const RtdlDbScalar& value) {
+  if (value.kind == kDbKindInt64) {
+    return static_cast<double>(value.int_value);
+  }
+  if (value.kind == kDbKindFloat64) {
+    return value.double_value;
+  }
+  if (value.kind == kDbKindBool) {
+    return value.int_value != 0 ? 1.0 : 0.0;
+  }
+  throw std::runtime_error("non-numeric DB scalar cannot be used in numeric comparison");
+}
+
+const char* db_scalar_text(const RtdlDbScalar& value) {
+  return value.string_value == nullptr ? "" : value.string_value;
+}
+
+int db_scalar_compare(const RtdlDbScalar& left, const RtdlDbScalar& right) {
+  if (db_scalar_is_numeric(left) && db_scalar_is_numeric(right)) {
+    double left_value = db_scalar_as_double(left);
+    double right_value = db_scalar_as_double(right);
+    if (left_value < right_value) {
+      return -1;
+    }
+    if (left_value > right_value) {
+      return 1;
+    }
+    return 0;
+  }
+  if (left.kind == kDbKindText && right.kind == kDbKindText) {
+    int cmp = std::strcmp(db_scalar_text(left), db_scalar_text(right));
+    if (cmp < 0) {
+      return -1;
+    }
+    if (cmp > 0) {
+      return 1;
+    }
+    return 0;
+  }
+  throw std::runtime_error("DB scalar comparison kind mismatch");
+}
+
+size_t db_find_field_index(const RtdlDbField* fields, size_t field_count, const char* name) {
+  if (name == nullptr) {
+    throw std::runtime_error("DB clause field name must not be null");
+  }
+  for (size_t index = 0; index < field_count; ++index) {
+    const char* candidate = fields[index].name == nullptr ? "" : fields[index].name;
+    if (std::strcmp(candidate, name) == 0) {
+      return index;
+    }
+  }
+  throw std::runtime_error(std::string("unknown DB field: ") + name);
+}
+
+const RtdlDbScalar& db_row_value(
+    const RtdlDbScalar* row_values,
+    size_t row_index,
+    size_t field_count,
+    size_t field_index) {
+  return row_values[row_index * field_count + field_index];
+}
+
+bool db_row_matches(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_index,
+    const RtdlDbClause& clause) {
+  size_t field_index = db_find_field_index(fields, field_count, clause.field);
+  const RtdlDbScalar& row_value = db_row_value(row_values, row_index, field_count, field_index);
+  if (clause.op == kDbOpEq) {
+    return db_scalar_compare(row_value, clause.value) == 0;
+  }
+  if (clause.op == kDbOpLt) {
+    return db_scalar_compare(row_value, clause.value) < 0;
+  }
+  if (clause.op == kDbOpLe) {
+    return db_scalar_compare(row_value, clause.value) <= 0;
+  }
+  if (clause.op == kDbOpGt) {
+    return db_scalar_compare(row_value, clause.value) > 0;
+  }
+  if (clause.op == kDbOpGe) {
+    return db_scalar_compare(row_value, clause.value) >= 0;
+  }
+  if (clause.op == kDbOpBetween) {
+    return db_scalar_compare(row_value, clause.value) >= 0 &&
+           db_scalar_compare(row_value, clause.value_hi) <= 0;
+  }
+  throw std::runtime_error("unsupported DB predicate operator");
+}
+
+}  // namespace
 
 }  // namespace rtdl::oracle
 
@@ -1109,6 +1224,181 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
       }
     }
 
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_conjunctive_scan(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    RtdlDbRowIdRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (field_count == 0) {
+      throw std::runtime_error("DB conjunctive scan requires at least one field");
+    }
+    if (row_count > 0 && row_values == nullptr) {
+      throw std::runtime_error("DB conjunctive scan row_values must not be null when row_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    size_t row_id_index = rtdl::oracle::db_find_field_index(fields, field_count, "row_id");
+    std::vector<RtdlDbRowIdRow> rows;
+    rows.reserve(row_count);
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+      bool matched = true;
+      for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+        if (!rtdl::oracle::db_row_matches(fields, field_count, row_values, row_index, clauses[clause_index])) {
+          matched = false;
+          break;
+        }
+      }
+      if (!matched) {
+        continue;
+      }
+      const RtdlDbScalar& row_id_value =
+          rtdl::oracle::db_row_value(row_values, row_index, field_count, row_id_index);
+      if (!rtdl::oracle::db_scalar_is_numeric(row_id_value)) {
+        throw std::runtime_error("DB conjunctive scan requires numeric row_id values");
+      }
+      rows.push_back({static_cast<uint32_t>(rtdl::oracle::db_scalar_as_double(row_id_value))});
+    }
+
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+      return left.row_id < right.row_id;
+    });
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_grouped_count(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    const char* group_field,
+    RtdlDbGroupedCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (field_count == 0) {
+      throw std::runtime_error("DB grouped count requires at least one field");
+    }
+    if (group_field == nullptr) {
+      throw std::runtime_error("DB grouped count requires a group field");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    size_t group_index = rtdl::oracle::db_find_field_index(fields, field_count, group_field);
+    std::map<int64_t, int64_t> counts;
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+      bool matched = true;
+      for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+        if (!rtdl::oracle::db_row_matches(fields, field_count, row_values, row_index, clauses[clause_index])) {
+          matched = false;
+          break;
+        }
+      }
+      if (!matched) {
+        continue;
+      }
+      const RtdlDbScalar& group_value =
+          rtdl::oracle::db_row_value(row_values, row_index, field_count, group_index);
+      if (!rtdl::oracle::db_scalar_is_numeric(group_value)) {
+        throw std::runtime_error("DB grouped count native path requires numeric-coded group keys");
+      }
+      int64_t key = static_cast<int64_t>(rtdl::oracle::db_scalar_as_double(group_value));
+      counts[key] += 1;
+    }
+
+    std::vector<RtdlDbGroupedCountRow> rows;
+    rows.reserve(counts.size());
+    for (const auto& [key, count] : counts) {
+      rows.push_back({key, count});
+    }
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_run_grouped_sum(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    const char* group_field,
+    const char* value_field,
+    RtdlDbGroupedSumRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (field_count == 0) {
+      throw std::runtime_error("DB grouped sum requires at least one field");
+    }
+    if (group_field == nullptr || value_field == nullptr) {
+      throw std::runtime_error("DB grouped sum requires group_field and value_field");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    size_t group_index = rtdl::oracle::db_find_field_index(fields, field_count, group_field);
+    size_t value_index = rtdl::oracle::db_find_field_index(fields, field_count, value_field);
+    std::map<int64_t, double> sums;
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+      bool matched = true;
+      for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+        if (!rtdl::oracle::db_row_matches(fields, field_count, row_values, row_index, clauses[clause_index])) {
+          matched = false;
+          break;
+        }
+      }
+      if (!matched) {
+        continue;
+      }
+      const RtdlDbScalar& group_value =
+          rtdl::oracle::db_row_value(row_values, row_index, field_count, group_index);
+      const RtdlDbScalar& sum_value =
+          rtdl::oracle::db_row_value(row_values, row_index, field_count, value_index);
+      if (!rtdl::oracle::db_scalar_is_numeric(group_value)) {
+        throw std::runtime_error("DB grouped sum native path requires numeric-coded group keys");
+      }
+      if (!rtdl::oracle::db_scalar_is_numeric(sum_value)) {
+        throw std::runtime_error("DB grouped sum native path requires numeric value fields");
+      }
+      int64_t key = static_cast<int64_t>(rtdl::oracle::db_scalar_as_double(group_value));
+      sums[key] += rtdl::oracle::db_scalar_as_double(sum_value);
+    }
+
+    std::vector<RtdlDbGroupedSumRow> rows;
+    rows.reserve(sums.size());
+    for (const auto& [key, sum] : sums) {
+      rows.push_back({key, sum});
+    }
     *rows_out = rtdl::oracle::copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);

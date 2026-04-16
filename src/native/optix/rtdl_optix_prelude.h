@@ -187,6 +187,39 @@ struct RtdlTriangleRow {
     uint32_t w;
 };
 
+struct RtdlDbField {
+    const char* name;
+    uint32_t kind;
+};
+
+struct RtdlDbScalar {
+    uint32_t kind;
+    int64_t int_value;
+    double double_value;
+    const char* string_value;
+};
+
+struct RtdlDbClause {
+    const char* field;
+    uint32_t op;
+    RtdlDbScalar value;
+    RtdlDbScalar value_hi;
+};
+
+struct RtdlDbRowIdRow {
+    uint32_t row_id;
+};
+
+struct RtdlDbGroupedCountRow {
+    int64_t group_key;
+    int64_t count;
+};
+
+struct RtdlDbGroupedSumRow {
+    int64_t group_key;
+    int64_t sum;
+};
+
 int  rtdl_optix_get_version(int* major_out, int* minor_out, int* patch_out);
 int  rtdl_optix_run_lsi(
          const RtdlSegment* left,  size_t left_count,
@@ -275,6 +308,27 @@ int  rtdl_optix_run_triangle_probe(
          uint32_t enforce_id_ascending,
          uint32_t unique,
          RtdlTriangleRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_conjunctive_scan(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_grouped_count(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_grouped_sum(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_free_rows(void* rows);
 

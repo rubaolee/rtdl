@@ -164,6 +164,21 @@ EdgeSetLayout = layout(
     field("v", u32),
 )
 
+DenormTableLayout = layout(
+    "DenormTable",
+    field("row_count", u32),
+)
+
+PredicateSetLayout = layout(
+    "PredicateSet",
+    field("predicate_count", u32),
+)
+
+GroupedQueryLayout = layout(
+    "GroupedQuery",
+    field("group_key_count", u32),
+)
+
 Segments = GeometryType(
     name="segments",
     dimension=1,
@@ -235,4 +250,22 @@ EdgeSet = GeometryType(
     dimension=1,
     default_layout=EdgeSetLayout,
     required_fields=("u", "v"),
+)
+DenormTable = GeometryType(
+    name="denorm_table",
+    dimension=0,
+    default_layout=DenormTableLayout,
+    required_fields=("row_count",),
+)
+PredicateSet = GeometryType(
+    name="predicate_set",
+    dimension=0,
+    default_layout=PredicateSetLayout,
+    required_fields=("predicate_count",),
+)
+GroupedQuery = GeometryType(
+    name="grouped_query",
+    dimension=0,
+    default_layout=GroupedQueryLayout,
+    required_fields=("group_key_count",),
 )

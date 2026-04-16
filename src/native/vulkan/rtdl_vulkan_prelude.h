@@ -100,6 +100,12 @@ struct RtdlFrontierVertex            { uint32_t vertex_id, level; };
 struct RtdlBfsExpandRow              { uint32_t src_vertex, dst_vertex, level; };
 struct RtdlEdgeSeed                  { uint32_t u, v; };
 struct RtdlTriangleRow               { uint32_t u, v, w; };
+struct RtdlDbField                   { const char* name; uint32_t kind; };
+struct RtdlDbScalar                  { uint32_t kind; int64_t int_value; double double_value; const char* string_value; };
+struct RtdlDbClause                  { const char* field; uint32_t op; RtdlDbScalar value; RtdlDbScalar value_hi; };
+struct RtdlDbRowIdRow                { uint32_t row_id; };
+struct RtdlDbGroupedCountRow         { int64_t group_key; int64_t count; };
+struct RtdlDbGroupedSumRow           { int64_t group_key; int64_t sum; };
 
 int  rtdl_vulkan_get_version(int* major_out, int* minor_out, int* patch_out);
 int  rtdl_vulkan_run_lsi(
@@ -189,6 +195,27 @@ int  rtdl_vulkan_run_triangle_probe(
          uint32_t enforce_id_ascending,
          uint32_t unique,
          RtdlTriangleRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_run_conjunctive_scan(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_run_grouped_count(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_run_grouped_sum(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 void rtdl_vulkan_free_rows(void* rows);
 

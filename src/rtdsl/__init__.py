@@ -3,8 +3,11 @@ from .api import bounded_knn_rows
 from .api import bfs_discover
 from .api import compile_kernel
 from .api import contains
+from .api import conjunctive_scan
 from .api import emit
 from .api import fixed_radius_neighbors
+from .api import grouped_count
+from .api import grouped_sum
 from .api import input
 from .api import kernel
 from .api import knn_rows
@@ -258,6 +261,15 @@ from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 from .reference import Triangle3D
 from .graph_reference import bfs_expand_cpu
+from .db_reference import conjunctive_scan_cpu
+from .db_reference import grouped_count_cpu
+from .db_reference import grouped_sum_cpu
+from .db_reference import GroupedAggregateQuery
+from .db_reference import normalize_denorm_table
+from .db_reference import normalize_grouped_query
+from .db_reference import normalize_predicate_bundle
+from .db_reference import PredicateBundle
+from .db_reference import PredicateClause
 from .graph_reference import csr_graph
 from .graph_reference import CSRGraph
 from .graph_postgresql import build_postgresql_bfs_expand_sql
@@ -271,6 +283,17 @@ from .graph_postgresql import query_postgresql_bfs_expand
 from .graph_postgresql import query_postgresql_triangle_probe
 from .graph_postgresql import run_postgresql_bfs_expand
 from .graph_postgresql import run_postgresql_triangle_probe
+from .db_postgresql import build_postgresql_conjunctive_scan_sql
+from .db_postgresql import build_postgresql_grouped_count_sql
+from .db_postgresql import build_postgresql_grouped_sum_sql
+from .db_postgresql import FakePostgresqlConnection
+from .db_postgresql import prepare_postgresql_denorm_table
+from .db_postgresql import query_postgresql_conjunctive_scan
+from .db_postgresql import query_postgresql_grouped_count
+from .db_postgresql import query_postgresql_grouped_sum
+from .db_postgresql import run_postgresql_conjunctive_scan
+from .db_postgresql import run_postgresql_grouped_count
+from .db_postgresql import run_postgresql_grouped_sum
 from .graph_datasets import graph_dataset_candidates
 from .graph_datasets import graph_dataset_spec
 from .graph_datasets import GraphDatasetSpec
@@ -289,12 +312,16 @@ from .section_5_6_scalability import ScalabilityConfig
 from .runtime import run_cpu
 from .runtime import run_cpu_python_reference
 from .layout_types import f32
+from .layout_types import DenormTable
+from .layout_types import DenormTableLayout
 from .layout_types import EdgeSet
 from .layout_types import EdgeSetLayout
 from .layout_types import field
 from .layout_types import GraphCSR
 from .layout_types import GraphCSRLayout
 from .layout_types import GeometryType
+from .layout_types import GroupedQuery
+from .layout_types import GroupedQueryLayout
 from .layout_types import layout
 from .layout_types import Layout
 from .layout_types import Points
@@ -314,6 +341,8 @@ from .layout_types import Triangles
 from .layout_types import Triangle3DLayout
 from .layout_types import Triangles3D
 from .layout_types import u32
+from .layout_types import PredicateSet
+from .layout_types import PredicateSetLayout
 from .layout_types import VertexFrontier
 from .layout_types import VertexFrontierLayout
 from .layout_types import VertexSet
@@ -388,8 +417,12 @@ __all__ = [
     "CandidateSet",
     "CompiledKernel",
     "contains",
+    "conjunctive_scan",
+    "conjunctive_scan_cpu",
     "csr_graph",
     "CSRGraph",
+    "DenormTable",
+    "DenormTableLayout",
     "EdgeSeed",
     "EdgeSet",
     "EdgeSetLayout",
@@ -401,6 +434,13 @@ __all__ = [
     "GeometryInput",
     "GeometryType",
     "GenerateOnlyRequest",
+    "GroupedAggregateQuery",
+    "GroupedQuery",
+    "GroupedQueryLayout",
+    "grouped_count",
+    "grouped_count_cpu",
+    "grouped_sum",
+    "grouped_sum_cpu",
     "InputContract",
     "LaunchParam",
     "Layout",
@@ -420,10 +460,15 @@ __all__ = [
     "PayloadRegister",
     "Points",
     "Point2DLayout",
+    "Point3DLayout",
     "Polygons",
     "Polygon2DLayout",
     "point_in_polygon",
     "Predicate",
+    "PredicateBundle",
+    "PredicateClause",
+    "PredicateSet",
+    "PredicateSetLayout",
     "Rays",
     "Ray2D",
     "Ray2DLayout",
@@ -471,7 +516,12 @@ __all__ = [
     "build_postgis_bounded_knn_rows_3d_sql",
     "build_postgis_knn_rows_sql",
     "build_postgis_knn_rows_3d_sql",
+    "build_postgresql_conjunctive_scan_sql",
+    "build_postgresql_grouped_count_sql",
+    "build_postgresql_grouped_sum_sql",
     "connect_postgis",
+    "connect_postgresql",
+    "FakePostgresqlConnection",
     "fixed_radius_neighbors_cpu",
     "knn_rows_cpu",
     "EmbreeRowView",
@@ -557,6 +607,7 @@ __all__ = [
     "overlay_compose_cpu",
     "parse_cdb_text",
     "postgis_available",
+    "postgresql_available",
     "pip_cpu",
     "Point",
     "point_nearest_segment_cpu",
@@ -572,6 +623,7 @@ __all__ = [
     "download_monuseg_training_zip",
     "build_goal141_public_case",
     "prepare_embree",
+    "prepare_postgresql_denorm_table",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
     "public_pathology_datasets",
@@ -603,6 +655,16 @@ __all__ = [
     "run_postgis_bounded_knn_rows_3d",
     "run_postgis_knn_rows",
     "run_postgis_knn_rows_3d",
+    "query_postgresql_bfs_expand",
+    "query_postgresql_conjunctive_scan",
+    "query_postgresql_grouped_count",
+    "query_postgresql_grouped_sum",
+    "query_postgresql_triangle_probe",
+    "run_postgresql_bfs_expand",
+    "run_postgresql_conjunctive_scan",
+    "run_postgresql_grouped_count",
+    "run_postgresql_grouped_sum",
+    "run_postgresql_triangle_probe",
     "run_scipy_fixed_radius_neighbors",
     "run_scipy_knn_rows",
     "run_section_5_6",

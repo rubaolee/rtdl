@@ -5,6 +5,14 @@ from collections.abc import Mapping
 from dataclasses import is_dataclass
 
 from .api import compile_kernel
+from .db_reference import conjunctive_scan_cpu
+from .db_reference import grouped_count_cpu
+from .db_reference import GroupedAggregateQuery
+from .db_reference import grouped_sum_cpu
+from .db_reference import normalize_denorm_table
+from .db_reference import normalize_grouped_query
+from .db_reference import normalize_predicate_bundle
+from .db_reference import PredicateBundle
 from .graph_reference import bfs_expand_cpu
 from .graph_reference import CSRGraph
 from .graph_reference import normalize_edge_set
@@ -131,6 +139,21 @@ def _run_cpu_python_reference_from_normalized(
             order=str(compiled.refine_op.predicate.options.get("order", "id_ascending")),
             unique=bool(compiled.refine_op.predicate.options.get("unique", True)),
         )
+    elif predicate_name == "conjunctive_scan":
+        rows = conjunctive_scan_cpu(
+            normalized_inputs[right_name],
+            normalized_inputs[left_name],
+        )
+    elif predicate_name == "grouped_count":
+        rows = grouped_count_cpu(
+            normalized_inputs[right_name],
+            normalized_inputs[left_name],
+        )
+    elif predicate_name == "grouped_sum":
+        rows = grouped_sum_cpu(
+            normalized_inputs[right_name],
+            normalized_inputs[left_name],
+        )
     elif predicate_name == "segment_intersection":
         rows = lsi_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "point_in_polygon":
@@ -214,6 +237,12 @@ def _normalize_records(name: str, geometry_name: str, payload):
             validate_csr_graph(graph)
             return graph
         raise ValueError(f"simulator input `{name}` must be a CSRGraph or mapping")
+    if geometry_name == "denorm_table":
+        return normalize_denorm_table(payload)
+    if geometry_name == "predicate_set":
+        return normalize_predicate_bundle(payload)
+    if geometry_name == "grouped_query":
+        return normalize_grouped_query(payload)
     if geometry_name == "vertex_frontier":
         return normalize_frontier(payload)
     if geometry_name == "vertex_set":
@@ -393,7 +422,13 @@ def _record_has_fields(record, field_names: tuple[str, ...]) -> bool:
 
 def _validate_oracle_supported_inputs(compiled: CompiledKernel, normalized_inputs: Mapping[str, object]) -> None:
     predicate_name = compiled.refine_op.predicate.name
-    if predicate_name in {"bfs_discover", "triangle_match"}:
+    if predicate_name in {
+        "bfs_discover",
+        "triangle_match",
+        "conjunctive_scan",
+        "grouped_count",
+        "grouped_sum",
+    }:
         return
     for payload in normalized_inputs.values():
         for item in payload:

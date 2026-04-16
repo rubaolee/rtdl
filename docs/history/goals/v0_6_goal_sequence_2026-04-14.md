@@ -100,6 +100,10 @@ mis-scoped graph-runtime line.
     - automate the public tutorial/example first-run check with an honest CI
       boundary
 
+28. Goal 412
+    - analyze RT-friendly database workloads from RTScan and RayDB and define
+      the bounded RTDL next-version DB-workload scope
+
 ## Discipline
 
 Each goal must stay bounded, preserve the RTDL-kernel identity, and save the

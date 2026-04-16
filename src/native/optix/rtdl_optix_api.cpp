@@ -310,6 +310,75 @@ extern "C" int rtdl_optix_run_triangle_probe(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_conjunctive_scan(
+        const RtdlDbField* fields, size_t field_count,
+        const RtdlDbScalar* row_values, size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_db_conjunctive_scan_optix(
+            fields, field_count,
+            row_values, row_count,
+            clauses, clause_count,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_grouped_count(
+        const RtdlDbField* fields, size_t field_count,
+        const RtdlDbScalar* row_values, size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_db_grouped_count_optix(
+            fields, field_count,
+            row_values, row_count,
+            clauses, clause_count,
+            group_key_field,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_grouped_sum(
+        const RtdlDbField* fields, size_t field_count,
+        const RtdlDbScalar* row_values, size_t row_count,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_db_grouped_sum_optix(
+            fields, field_count,
+            row_values, row_count,
+            clauses, clause_count,
+            group_key_field,
+            value_field,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_free_rows(void* rows) {
     std::free(rows);
 }
