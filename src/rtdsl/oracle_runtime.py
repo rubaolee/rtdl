@@ -6,11 +6,14 @@ import os
 import platform
 import subprocess
 import tempfile
+from bisect import bisect_left
+from bisect import bisect_right
 from pathlib import Path
 from typing import NoReturn
 
 from .db_reference import GroupedAggregateQuery
 from .db_reference import PredicateClause
+from .db_reference import UINT32_MAX
 from .ir import CompiledKernel
 from .db_reference import grouped_count_cpu
 from .db_reference import grouped_sum_cpu
@@ -476,6 +479,8 @@ _DB_OP_BETWEEN = 6
 
 
 def _encode_db_scalar(value) -> _RtdlDbScalar:
+    if value is None:
+        return _RtdlDbScalar()
     if isinstance(value, bool):
         return _RtdlDbScalar(kind=_DB_KIND_BOOL, int_value=1 if value else 0)
     if isinstance(value, int) and not isinstance(value, bool):
@@ -501,9 +506,13 @@ def _encode_db_table(table_rows) -> tuple[object, object, int]:
     field_names = tuple(str(name) for name in table_rows[0].keys())
     if "row_id" not in field_names:
         raise ValueError("native oracle DB path requires a `row_id` field")
+    field_set = set(field_names)
     for index, row in enumerate(table_rows):
-        if tuple(str(name) for name in row.keys()) != field_names:
+        if set(str(name) for name in row.keys()) != field_set:
             raise ValueError(f"denorm table row {index} does not match the first-row schema")
+        row_id = row["row_id"]
+        if not isinstance(row_id, int) or isinstance(row_id, bool) or row_id < 0 or row_id > UINT32_MAX:
+            raise ValueError(f"denorm table row {index} has row_id outside uint32 range")
     field_records = [_RtdlDbField(name=name.encode("utf-8"), kind=_encode_db_field_kind(table_rows[0][name])) for name in field_names]
     fields_array = (_RtdlDbField * len(field_records))(*field_records)
     scalar_records = []
@@ -534,7 +543,15 @@ def _encode_db_text_fields(table_rows, clauses, *, extra_fields=()):
     reverse_maps: dict[str, dict[int, object]] = {}
     field_maps: dict[str, dict[object, int]] = {}
     for field in sorted(encode_fields):
-        unique_values = sorted({row[field] for row in table_rows})
+        unique_value_set = {row[field] for row in table_rows}
+        for clause in clauses:
+            if str(clause.field) != field:
+                continue
+            if isinstance(clause.value, str):
+                unique_value_set.add(clause.value)
+            if isinstance(clause.value_hi, str):
+                unique_value_set.add(clause.value_hi)
+        unique_values = sorted(unique_value_set)
         encode_map = {value: index + 1 for index, value in enumerate(unique_values)}
         field_maps[field] = encode_map
         reverse_maps[field] = {code: value for value, code in encode_map.items()}
@@ -549,12 +566,25 @@ def _encode_db_text_fields(table_rows, clauses, *, extra_fields=()):
         field = str(clause.field)
         if field in field_maps:
             encode_map = field_maps[field]
-            value = encode_map[clause.value]
-            value_hi = encode_map[clause.value_hi] if clause.value_hi is not None else None
+            value, value_hi = _encode_db_text_clause_values(clause, encode_map)
             encoded_clauses.append(PredicateClause(field=field, op=clause.op, value=value, value_hi=value_hi))
         else:
             encoded_clauses.append(clause)
     return tuple(encoded_rows), tuple(encoded_clauses), reverse_maps
+
+
+def _encode_db_text_clause_values(clause: PredicateClause, encode_map: dict[object, int]) -> tuple[int, int | None]:
+    values = sorted(encode_map)
+    op = str(clause.op)
+    if op == "eq":
+        return int(encode_map.get(clause.value, 0)), None
+    if op in {"lt", "ge"}:
+        return bisect_left(values, clause.value) + 1, None
+    if op in {"le", "gt"}:
+        return bisect_right(values, clause.value), None
+    if op == "between":
+        return bisect_left(values, clause.value) + 1, bisect_right(values, clause.value_hi)
+    raise ValueError(f"unsupported predicate operator: {clause.op}")
 
 
 def _decode_db_group_key(reverse_map, encoded_value: int):

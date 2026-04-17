@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 75
-- Archived files: 827
-- External reports: 185
-- Project snapshots: 642
+- Revision rounds: 76
+- Archived files: 832
+- External reports: 186
+- Project snapshots: 646
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.7.0 | 2026-04-17 | complete-consensus | Goal501 v0.7 DB Comprehensive Attack Response | Claude accepted all seven reported DB attack defects as fixed or bounded | Codex ingested the comprehensive attack report, fixed normalization and encoding defects, added regression coverage, and recorded consensus | COMPLETE | `43580fdd4d8861dbcbb5f3230a4f3b09547da293` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
 | v0.7.0 | 2026-04-17 | complete-consensus | Goal500 v0.7 DB Expert Attack Audit Intake | Claude accepted the audit intake response and error-contract fix | Codex preserved the external report, corrected stale/overbroad claims, fixed missing-field ValueError consistency, and recorded consensus | COMPLETE | `62734347a17198326acc85c46ae2537eae56b12f` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal499 Paper Workload Feasibility | Claude and Gemini Flash accepted the uploaded-paper workload classification | Codex classified paper workloads, verified nearest-neighbor API surface, and recorded consensus | COMPLETE | `02e4f6c815ddd4a686262a2570c71303c3066512` | `2026-04-16-goal499-paper-workload-feasibility` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal498 Feature Quickstart Cookbook | Claude accepted Goal498 | added runnable all-feature cookbook tutorial and example | COMPLETE | `HEAD` | `2026-04-16-goal498-feature-quickstart-cookbook` |

@@ -56,6 +56,7 @@ from .oracle_runtime import _RtdlDbGroupedCountRow
 from .oracle_runtime import _RtdlDbRowIdRow
 from .oracle_runtime import _encode_db_clauses
 from .oracle_runtime import _encode_db_table
+from .oracle_runtime import _encode_db_text_clause_values
 from .oracle_runtime import _encode_db_text_fields
 from .embree_runtime import PackedPoints
 from .embree_runtime import PackedPolygons
@@ -932,8 +933,7 @@ class PreparedOptixDbDataset:
                 encoded.append(clause)
                 continue
             encode_map = self._field_maps[clause.field]
-            value = encode_map[clause.value]
-            value_hi = encode_map[clause.value_hi] if clause.value_hi is not None else None
+            value, value_hi = _encode_db_text_clause_values(clause, encode_map)
             encoded.append(PredicateClause(field=clause.field, op=clause.op, value=value, value_hi=value_hi))
         return tuple(encoded)
 

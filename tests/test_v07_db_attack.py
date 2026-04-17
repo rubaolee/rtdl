@@ -46,6 +46,11 @@ from rtdsl.db_postgresql import (
     run_postgresql_grouped_count,
     run_postgresql_grouped_sum,
 )
+from rtdsl.oracle_runtime import _DB_KIND_TEXT
+from rtdsl.oracle_runtime import _encode_db_clause
+from rtdsl.oracle_runtime import _encode_db_scalar
+from rtdsl.oracle_runtime import _encode_db_table
+from rtdsl.oracle_runtime import _encode_db_text_fields
 
 
 # ---------------------------------------------------------------------------
@@ -251,6 +256,10 @@ class TestPredicateNormalization(unittest.TestCase):
         b = normalize_predicate_bundle(())
         self.assertEqual(len(b.clauses), 0)
 
+    def test_flat_predicate_dict_rejected_instead_of_match_all(self):
+        with self.assertRaises(ValueError):
+            normalize_predicate_bundle({"field": "region", "op": "eq", "value": "east"})
+
     def test_invalid_operator_rejected(self):
         with self.assertRaises(ValueError, msg="unsupported predicate operator"):
             normalize_predicate_bundle((("x", "!=", 5),))
@@ -273,6 +282,14 @@ class TestPredicateNormalization(unittest.TestCase):
         with self.assertRaises(ValueError):
             normalize_denorm_table(((1, 2, 3),))
 
+    def test_denorm_table_non_numeric_row_id_rejected(self):
+        with self.assertRaises(ValueError):
+            normalize_denorm_table(({"row_id": "abc", "ship_date": 10},))
+
+    def test_denorm_table_large_row_id_rejected_before_native_overflow(self):
+        with self.assertRaises(ValueError):
+            normalize_denorm_table(({"row_id": 2**32, "ship_date": 10},))
+
     def test_grouped_query_from_dict(self):
         q = normalize_grouped_query({
             "predicates": (("ship_date", "ge", 11),),
@@ -294,6 +311,46 @@ class TestPredicateNormalization(unittest.TestCase):
     def test_grouped_query_non_mapping_rejected(self):
         with self.assertRaises(ValueError):
             normalize_grouped_query("bad")
+
+    def test_grouped_query_empty_group_keys_rejected_at_normalization(self):
+        with self.assertRaises(ValueError):
+            normalize_grouped_query({"predicates": (), "group_keys": ()})
+
+
+# ===========================================================================
+# 2.5 Native DB encoding boundary
+# ===========================================================================
+
+class TestNativeDbEncodingBoundary(unittest.TestCase):
+    def test_encode_db_scalar_none_is_null_not_text_none(self):
+        scalar = _encode_db_scalar(None)
+        self.assertNotEqual(scalar.kind, _DB_KIND_TEXT)
+
+    def test_encode_db_clause_eq_value_hi_is_null_not_text_none(self):
+        encoded = _encode_db_clause(PredicateClause(field="x", op="eq", value=1))
+        self.assertNotEqual(encoded.value_hi.kind, _DB_KIND_TEXT)
+
+    def test_encode_db_table_accepts_same_schema_different_key_order(self):
+        rows = (
+            {"row_id": 1, "value": 10},
+            {"value": 20, "row_id": 2},
+        )
+        _, _, row_count = _encode_db_table(rows)
+        self.assertEqual(row_count, 2)
+
+    def test_encode_db_text_fields_absent_eq_value_encodes_no_match_sentinel(self):
+        rows = ({"row_id": 1, "region": "east"}, {"row_id": 2, "region": "west"})
+        clauses = (PredicateClause(field="region", op="eq", value="south"),)
+        encoded_rows, encoded_clauses, _ = _encode_db_text_fields(rows, clauses, extra_fields=("region",))
+        row_codes = {row["region"] for row in encoded_rows}
+        self.assertNotIn(encoded_clauses[0].value, row_codes)
+
+    def test_encode_db_text_fields_absent_between_bounds_preserve_order(self):
+        rows = ({"row_id": 1, "region": "east"}, {"row_id": 2, "region": "west"})
+        clauses = (PredicateClause(field="region", op="between", value="south", value_hi="zzzz"),)
+        _, encoded_clauses, _ = _encode_db_text_fields(rows, clauses, extra_fields=("region",))
+        self.assertGreaterEqual(encoded_clauses[0].value, 1)
+        self.assertGreaterEqual(encoded_clauses[0].value_hi, encoded_clauses[0].value)
 
 
 # ===========================================================================
@@ -930,6 +987,27 @@ class TestCpuAgreementAllWorkloads(unittest.TestCase):
         ref_map = {r["region"]: r["sum"] for r in ref}
         cpu_map = {r["region"]: r["sum"] for r in cpu}
         self.assertEqual(ref_map, cpu_map)
+
+    def test_count_text_predicate_absent_value_returns_empty_like_reference(self):
+        query = {"predicates": (("region", "eq", "south"),), "group_keys": ("region",)}
+        ref = rt.run_cpu_python_reference(count_kernel, query=query, table=SALES_TABLE)
+        cpu = rt.run_cpu(count_kernel, query=query, table=SALES_TABLE)
+        self.assertEqual(ref, ())
+        self.assertEqual(cpu, ref)
+
+    def test_sum_text_predicate_absent_value_returns_empty_like_reference(self):
+        query = {"predicates": (("region", "eq", "south"),), "group_keys": ("region",), "value_field": "revenue"}
+        ref = rt.run_cpu_python_reference(sum_kernel, query=query, table=SALES_TABLE)
+        cpu = rt.run_cpu(sum_kernel, query=query, table=SALES_TABLE)
+        self.assertEqual(ref, ())
+        self.assertEqual(cpu, ref)
+
+    def test_scan_rejects_large_row_id_before_native_overflow(self):
+        table = ({"row_id": 2**32, "value": 42},)
+        with self.assertRaises(ValueError):
+            rt.run_cpu_python_reference(scan_kernel, predicates=(("value", "eq", 42),), table=table)
+        with self.assertRaises(ValueError):
+            rt.run_cpu(scan_kernel, predicates=(("value", "eq", 42),), table=table)
 
 
 # ===========================================================================

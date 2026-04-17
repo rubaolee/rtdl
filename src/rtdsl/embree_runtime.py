@@ -33,6 +33,7 @@ from .oracle_runtime import _RtdlDbRowIdRow
 from .oracle_runtime import _encode_db_clauses
 from .oracle_runtime import _encode_db_field_kind
 from .oracle_runtime import _encode_db_table
+from .oracle_runtime import _encode_db_text_clause_values
 from .oracle_runtime import _encode_db_text_fields
 from .db_reference import PredicateClause
 from .db_reference import normalize_denorm_table
@@ -1345,8 +1346,7 @@ class PreparedEmbreeDbDataset:
                 encoded.append(clause)
                 continue
             encode_map = self._field_maps[clause.field]
-            value = encode_map[clause.value]
-            value_hi = encode_map[clause.value_hi] if clause.value_hi is not None else None
+            value, value_hi = _encode_db_text_clause_values(clause, encode_map)
             encoded.append(PredicateClause(field=clause.field, op=clause.op, value=value, value_hi=value_hi))
         return tuple(encoded)
 
@@ -1388,8 +1388,9 @@ def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ..
     field_names = tuple(str(name) for name in table_rows[0].keys())
     if "row_id" not in field_names:
         raise ValueError("Embree columnar DB path requires a `row_id` field")
+    field_set = set(field_names)
     for index, row in enumerate(table_rows):
-        if tuple(str(name) for name in row.keys()) != field_names:
+        if set(str(name) for name in row.keys()) != field_set:
             raise ValueError(f"denorm table row {index} does not match the first-row schema")
 
     columns = []

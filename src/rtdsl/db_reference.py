@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
 
+UINT32_MAX = 0xFFFFFFFF
+
 
 @dataclass(frozen=True)
 class PredicateClause:
@@ -30,7 +32,9 @@ def normalize_predicate_bundle(payload) -> PredicateBundle:
         _validate_predicate_bundle(payload)
         return payload
     if isinstance(payload, dict):
-        payload = payload.get("clauses", ())
+        if "clauses" not in payload:
+            raise ValueError("predicate bundle mapping must contain a `clauses` key")
+        payload = payload["clauses"]
     clauses = tuple(_normalize_predicate_clause(item) for item in payload)
     bundle = PredicateBundle(clauses=clauses)
     _validate_predicate_bundle(bundle)
@@ -39,6 +43,7 @@ def normalize_predicate_bundle(payload) -> PredicateBundle:
 
 def normalize_grouped_query(payload) -> GroupedAggregateQuery:
     if isinstance(payload, GroupedAggregateQuery):
+        _validate_grouped_query(payload)
         return payload
     if not isinstance(payload, dict):
         raise ValueError("grouped query input must be a mapping or GroupedAggregateQuery")
@@ -47,11 +52,13 @@ def normalize_grouped_query(payload) -> GroupedAggregateQuery:
     value_field = payload.get("value_field")
     if value_field is not None:
         value_field = str(value_field)
-    return GroupedAggregateQuery(
+    query = GroupedAggregateQuery(
         predicates=predicates,
         group_keys=group_keys,
         value_field=value_field,
     )
+    _validate_grouped_query(query)
+    return query
 
 
 def normalize_denorm_table(payload) -> tuple[dict[str, Any], ...]:
@@ -64,6 +71,7 @@ def normalize_denorm_table(payload) -> tuple[dict[str, Any], ...]:
         normalized = {str(key): value for key, value in record.items()}
         if "row_id" not in normalized:
             raise ValueError(f"denorm table row {index} is missing required field `row_id`")
+        _validate_row_id(normalized["row_id"], index)
         rows.append(normalized)
     return tuple(rows)
 
@@ -75,7 +83,7 @@ def conjunctive_scan_cpu(
     matched = []
     for row in table_rows:
         if all(_row_matches_clause(row, clause) for clause in predicates.clauses):
-            matched.append({"row_id": int(row["row_id"])})
+            matched.append({"row_id": _coerce_row_id(row["row_id"])})
     return tuple(matched)
 
 
@@ -150,6 +158,11 @@ def _validate_predicate_bundle(bundle: PredicateBundle) -> None:
             raise ValueError("between predicate requires value_hi")
 
 
+def _validate_grouped_query(query: GroupedAggregateQuery) -> None:
+    if not query.group_keys:
+        raise ValueError("grouped query requires at least one group key")
+
+
 def _row_matches_clause(row: dict[str, Any], clause: PredicateClause) -> bool:
     if clause.field not in row:
         raise ValueError(f"row is missing predicate field `{clause.field}`")
@@ -173,3 +186,17 @@ def _require_row_field(row: dict[str, Any], field: str, role: str) -> Any:
     if field not in row:
         raise ValueError(f"row is missing {role} field `{field}`")
     return row[field]
+
+
+def _validate_row_id(value: Any, index: int) -> None:
+    _coerce_row_id(value, index=index)
+
+
+def _coerce_row_id(value: Any, *, index: int | None = None) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        where = "" if index is None else f" in denorm table row {index}"
+        raise ValueError(f"row_id{where} must be an integer in uint32 range")
+    if value < 0 or value > UINT32_MAX:
+        where = "" if index is None else f" in denorm table row {index}"
+        raise ValueError(f"row_id{where} must be in uint32 range [0, {UINT32_MAX}]")
+    return int(value)

@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `75`
-- Archived files in `history/history.db`: `827`
-- External report snapshots: `185`
-- Project snapshots: `642`
-- Tracked `docs/reports/` artifacts: `1456`
-- Tracked `history/ad_hoc_reviews/` artifacts: `662`
-- Tracked AI handoff files: `377`
+- Structured revision rounds: `76`
+- Archived files in `history/history.db`: `832`
+- External report snapshots: `186`
+- Project snapshots: `646`
+- Tracked `docs/reports/` artifacts: `1459`
+- Tracked `history/ad_hoc_reviews/` artifacts: `663`
+- Tracked AI handoff files: `378`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal501 v0.7 DB Comprehensive Attack Response | `COMPLETE` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal500 v0.7 DB Expert Attack Audit Intake | `COMPLETE` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `released` | v0.7.0 Release Action | `RELEASED` | `2026-04-16-v0-7-release-action` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | v0.7 Goals 488-492 Release-Readiness Catch-up | `COMPLETE` | `2026-04-16-v0-7-goals488-492-catchup` |
 | `v0.7` | 2026-04-16 | `active-hold` | v0.7 Current Release-Hold State | `HOLD` | `2026-04-16-v0-7-current-hold` |
-| `v0.6.1` | 2026-04-15 | `complete` | v0.6.1 Closure Catch-up | `COMPLETE` | `2026-04-15-v0-6-closure` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 662 |
-| `ai_handoff` | 377 |
+| `ad_hoc_review_or_consensus` | 663 |
+| `ai_handoff` | 378 |
 | `example` | 67 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,10 +82,10 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1456 |
+| `report_or_review` | 1459 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1267 |
+| `structured_history_archive` | 1273 |
 | `test` | 199 |
 | `tutorial` | 10 |
 
