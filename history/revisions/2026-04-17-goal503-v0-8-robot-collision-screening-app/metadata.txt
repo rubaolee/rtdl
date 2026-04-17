@@ -1,0 +1,11 @@
+slug: 2026-04-17-goal503-v0-8-robot-collision-screening-app
+title: Goal503 v0.8 Robot Collision Screening App
+version: v0.8.0
+status: complete-consensus
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: d2004b391644a2d644c8f9cbd7b77995c57972c5
+gemini_review: Claude and Gemini Flash accepted the bounded robot collision screening app
+codex_revision: Codex implemented the second Goal499 paper-derived app using RTDL ray/triangle hit-count rows plus Python pose aggregation
+final_result: COMPLETE
+summary: Implemented the bounded robot collision screening app as a v0.8 app-building workload over existing RTDL ray/triangle features.

@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `77`
-- Archived files in `history/history.db`: `845`
-- External report snapshots: `187`
-- Project snapshots: `658`
-- Tracked `docs/reports/` artifacts: `1462`
-- Tracked `history/ad_hoc_reviews/` artifacts: `664`
-- Tracked AI handoff files: `379`
+- Structured revision rounds: `78`
+- Archived files in `history/history.db`: `858`
+- External report snapshots: `188`
+- Project snapshots: `670`
+- Tracked `docs/reports/` artifacts: `1466`
+- Tracked `history/ad_hoc_reviews/` artifacts: `665`
+- Tracked AI handoff files: `380`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal503 v0.8 Robot Collision Screening App | `COMPLETE` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal502 Hausdorff Distance App | `COMPLETE` | `2026-04-17-goal502-hausdorff-distance-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal501 v0.7 DB Comprehensive Attack Response | `COMPLETE` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal500 v0.7 DB Expert Attack Audit Intake | `COMPLETE` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
@@ -66,15 +67,14 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal494 History Revisions Refresh After v0.7 Release | `COMPLETE` | `2026-04-16-goal494-history-revisions-refresh` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal493 Post-v0.7 Public Surface 3C Audit | `COMPLETE` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
 | `v0.7.0` | 2026-04-16 | `released` | v0.7.0 Release Action | `RELEASED` | `2026-04-16-v0-7-release-action` |
-| `v0.7.0` | 2026-04-16 | `complete-consensus` | v0.7 Goals 488-492 Release-Readiness Catch-up | `COMPLETE` | `2026-04-16-v0-7-goals488-492-catchup` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 664 |
-| `ai_handoff` | 379 |
-| `example` | 68 |
+| `ad_hoc_review_or_consensus` | 665 |
+| `ai_handoff` | 380 |
+| `example` | 69 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
 | `history_index` | 3 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1462 |
+| `report_or_review` | 1466 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1287 |
-| `test` | 199 |
+| `structured_history_archive` | 1301 |
+| `test` | 200 |
 | `tutorial` | 10 |
 
 ## Boundaries
