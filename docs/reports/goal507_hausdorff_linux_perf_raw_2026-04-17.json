@@ -1,0 +1,326 @@
+{
+  "backends_requested": [
+    "embree",
+    "optix",
+    "vulkan"
+  ],
+  "baseline_sources": {
+    "faiss_index_flat_l2": "FAISS IndexFlatL2 exact flat L2 search",
+    "scipy_ckdtree": "SciPy cKDTree.query exact nearest-neighbor API",
+    "sklearn_nearest_neighbors": "scikit-learn NearestNeighbors exact Euclidean query API"
+  },
+  "cases": [
+    {
+      "measurements": [
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.004043809016139436,
+            "directed_b_to_a": 0.004043809016139436,
+            "hausdorff_distance": 0.004043809016139436,
+            "row_count": 2000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.13143715297337621,
+          "median_sec": 0.11269356601405889,
+          "min_sec": 0.11263111198786646,
+          "name": "rtdl_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0040437825955450535,
+            "directed_b_to_a": 0.0040437825955450535,
+            "hausdorff_distance": 0.0040437825955450535,
+            "row_count": 2000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.4980125540168956,
+          "median_sec": 0.004199221963062882,
+          "min_sec": 0.004185114987194538,
+          "name": "rtdl_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0040437825955450535,
+            "directed_b_to_a": 0.0040437825955450535,
+            "hausdorff_distance": 0.0040437825955450535,
+            "row_count": 2000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.2605648599565029,
+          "median_sec": 0.008747698972001672,
+          "min_sec": 0.008283520000986755,
+          "name": "rtdl_vulkan",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.004043782539907557,
+            "directed_b_to_a": 0.004043782539907557,
+            "hausdorff_distance": 0.004043782539907557,
+            "row_count": 2000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.23475317598786205,
+          "median_sec": 0.0018268480198457837,
+          "min_sec": 0.0018178359605371952,
+          "name": "scipy_ckdtree",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.004043782539907557,
+            "directed_b_to_a": 0.004043782539907557,
+            "hausdorff_distance": 0.004043782539907557,
+            "row_count": 2000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.5598129540449008,
+          "median_sec": 0.0035179320257157087,
+          "min_sec": 0.0035043120151385665,
+          "name": "sklearn_nearest_neighbors",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.004048614297062159,
+            "directed_b_to_a": 0.004048614297062159,
+            "hausdorff_distance": 0.004048614297062159,
+            "row_count": 2000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.02404055604711175,
+          "median_sec": 0.0008205270860344172,
+          "min_sec": 0.0007970379665493965,
+          "name": "faiss_index_flat_l2",
+          "status": "ok"
+        }
+      ],
+      "point_count_a": 1000,
+      "point_count_b": 1000
+    },
+    {
+      "measurements": [
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0018563242629522302,
+            "directed_b_to_a": 0.0018563242629522302,
+            "hausdorff_distance": 0.0018563242629522302,
+            "row_count": 10000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 2.85639903601259,
+          "median_sec": 2.8372163249878213,
+          "min_sec": 2.8325117309577763,
+          "name": "rtdl_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0018563520861789584,
+            "directed_b_to_a": 0.0018563520861789584,
+            "hausdorff_distance": 0.0018563520861789584,
+            "row_count": 10000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.035313106956891716,
+          "median_sec": 0.0173975060461089,
+          "min_sec": 0.017337723984383047,
+          "name": "rtdl_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0018563520861789584,
+            "directed_b_to_a": 0.0018563520861789584,
+            "hausdorff_distance": 0.0018563520861789584,
+            "row_count": 10000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.04056703392416239,
+          "median_sec": 0.021787520963698626,
+          "min_sec": 0.021634322009049356,
+          "name": "rtdl_vulkan",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.001856352090705049,
+            "directed_b_to_a": 0.001856352090705049,
+            "hausdorff_distance": 0.001856352090705049,
+            "row_count": 10000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.009301877929829061,
+          "median_sec": 0.009147844044491649,
+          "min_sec": 0.009145295014604926,
+          "name": "scipy_ckdtree",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.001856352090705049,
+            "directed_b_to_a": 0.001856352090705049,
+            "hausdorff_distance": 0.001856352090705049,
+            "row_count": 10000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.014540421077981591,
+          "median_sec": 0.014204679988324642,
+          "min_sec": 0.01406580803450197,
+          "name": "sklearn_nearest_neighbors",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0018593196291476488,
+            "directed_b_to_a": 0.0018593196291476488,
+            "hausdorff_distance": 0.0018593196291476488,
+            "row_count": 10000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.00448302598670125,
+          "median_sec": 0.0044447589898481965,
+          "min_sec": 0.004405225976370275,
+          "name": "faiss_index_flat_l2",
+          "status": "ok"
+        }
+      ],
+      "point_count_a": 5000,
+      "point_count_b": 5000
+    },
+    {
+      "measurements": [
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0012995405054048376,
+            "directed_b_to_a": 0.0012995405054048376,
+            "hausdorff_distance": 0.0012995405054048376,
+            "row_count": 20000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 11.499794350005686,
+          "median_sec": 11.465857628034428,
+          "min_sec": 11.464962769998237,
+          "name": "rtdl_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.001299524214118719,
+            "directed_b_to_a": 0.001299524214118719,
+            "hausdorff_distance": 0.001299524214118719,
+            "row_count": 20000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.08813533198554069,
+          "median_sec": 0.03436404000967741,
+          "min_sec": 0.03432278905529529,
+          "name": "rtdl_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0012995240977033973,
+            "directed_b_to_a": 0.0012995240977033973,
+            "hausdorff_distance": 0.0012995240977033973,
+            "row_count": 20000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.07744619599543512,
+          "median_sec": 0.03918084700126201,
+          "min_sec": 0.03891760902479291,
+          "name": "rtdl_vulkan",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0012995241397885527,
+            "directed_b_to_a": 0.0012995241397885527,
+            "hausdorff_distance": 0.0012995241397885527,
+            "row_count": 20000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.01923000393435359,
+          "median_sec": 0.019024633103981614,
+          "min_sec": 0.018942643073387444,
+          "name": "scipy_ckdtree",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0012995241397885527,
+            "directed_b_to_a": 0.0012995241397885527,
+            "hausdorff_distance": 0.0012995241397885527,
+            "row_count": 20000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.028930736938491464,
+          "median_sec": 0.02880969096440822,
+          "min_sec": 0.028715900029055774,
+          "name": "sklearn_nearest_neighbors",
+          "status": "ok"
+        },
+        {
+          "iterations": 3,
+          "last_result": {
+            "directed_a_to_b": 0.0013147374847903848,
+            "directed_b_to_a": 0.0013147374847903848,
+            "hausdorff_distance": 0.0013147374847903848,
+            "row_count": 20000
+          },
+          "matches_reference_distance": false,
+          "max_sec": 0.011689565028063953,
+          "median_sec": 0.011657488998025656,
+          "min_sec": 0.011640133103355765,
+          "name": "faiss_index_flat_l2",
+          "status": "ok"
+        }
+      ],
+      "point_count_a": 10000,
+      "point_count_b": 10000
+    }
+  ],
+  "goal": "goal507_hausdorff_linux_perf",
+  "host": {
+    "embree_version": "(4, 3, 0)",
+    "hostname": "lx1",
+    "libraries": {
+      "faiss": "1.13.2",
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "sklearn": "1.8.0"
+    },
+    "nvidia_smi": "NVIDIA GeForce GTX 1070, 580.126.09",
+    "optix_version": "(9, 0, 0)",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3",
+    "vulkan_version": "(0, 1, 0)"
+  },
+  "iterations": 3,
+  "pid": 308032,
+  "sizes": [
+    1000,
+    5000,
+    10000
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "backends_requested": [
+    "embree",
+    "optix",
+    "vulkan"
+  ],
+  "baseline_sources": {
+    "faiss_index_flat_l2": "FAISS IndexFlatL2 exact flat L2 search",
+    "scipy_ckdtree": "SciPy cKDTree.query exact nearest-neighbor API",
+    "sklearn_nearest_neighbors": "scikit-learn NearestNeighbors exact Euclidean query API"
+  },
+  "cases": [
+    {
+      "measurements": [
+        {
+          "iterations": 1,
+          "last_result": {
+            "directed_a_to_b": 0.0009826732927742915,
+            "directed_b_to_a": 0.0009826732927742915,
+            "hausdorff_distance": 0.0009826732927742915,
+            "row_count": 40000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 45.76913196092937,
+          "median_sec": 45.76913196092937,
+          "min_sec": 45.76913196092937,
+          "name": "rtdl_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 1,
+          "last_result": {
+            "directed_a_to_b": 0.0009826880414038897,
+            "directed_b_to_a": 0.0009826880414038897,
+            "hausdorff_distance": 0.0009826880414038897,
+            "row_count": 40000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.6544429330388084,
+          "median_sec": 0.6544429330388084,
+          "min_sec": 0.6544429330388084,
+          "name": "rtdl_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 1,
+          "last_result": {
+            "directed_a_to_b": 0.0009826880414038897,
+            "directed_b_to_a": 0.0009826880414038897,
+            "hausdorff_distance": 0.0009826880414038897,
+            "row_count": 40000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.42247820692136884,
+          "median_sec": 0.42247820692136884,
+          "min_sec": 0.42247820692136884,
+          "name": "rtdl_vulkan",
+          "status": "ok"
+        },
+        {
+          "iterations": 1,
+          "last_result": {
+            "directed_a_to_b": 0.0009826881151814768,
+            "directed_b_to_a": 0.0009826881151814768,
+            "hausdorff_distance": 0.0009826881151814768,
+            "row_count": 40000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.2715089509729296,
+          "median_sec": 0.2715089509729296,
+          "min_sec": 0.2715089509729296,
+          "name": "scipy_ckdtree",
+          "status": "ok"
+        },
+        {
+          "iterations": 1,
+          "last_result": {
+            "directed_a_to_b": 0.0009826881151814768,
+            "directed_b_to_a": 0.0009826881151814768,
+            "hausdorff_distance": 0.0009826881151814768,
+            "row_count": 40000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.6487968589644879,
+          "median_sec": 0.6487968589644879,
+          "min_sec": 0.6487968589644879,
+          "name": "sklearn_nearest_neighbors",
+          "status": "ok"
+        },
+        {
+          "iterations": 1,
+          "last_result": {
+            "directed_a_to_b": 0.0009765625,
+            "directed_b_to_a": 0.0009765625,
+            "hausdorff_distance": 0.0009765625,
+            "row_count": 40000
+          },
+          "matches_reference_distance": true,
+          "max_sec": 0.0582835259847343,
+          "median_sec": 0.0582835259847343,
+          "min_sec": 0.0582835259847343,
+          "name": "faiss_index_flat_l2",
+          "status": "ok"
+        }
+      ],
+      "point_count_a": 20000,
+      "point_count_b": 20000
+    }
+  ],
+  "goal": "goal507_hausdorff_linux_perf",
+  "host": {
+    "embree_version": "(4, 3, 0)",
+    "hostname": "lx1",
+    "libraries": {
+      "faiss": "1.13.2",
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "sklearn": "1.8.0"
+    },
+    "nvidia_smi": "NVIDIA GeForce GTX 1070, 580.126.09",
+    "optix_version": "(9, 0, 0)",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3",
+    "vulkan_version": "(0, 1, 0)"
+  },
+  "iterations": 1,
+  "pid": 308255,
+  "sizes": [
+    20000
+  ]
+}

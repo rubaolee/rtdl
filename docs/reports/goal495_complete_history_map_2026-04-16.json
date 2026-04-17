@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 668,
-    "ai_handoff": 383,
+    "ad_hoc_review_or_consensus": 669,
+    "ai_handoff": 384,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1475,
-    "script": 117,
+    "report_or_review": 1480,
+    "script": 118,
     "source": 76,
-    "structured_history_archive": 1333,
-    "test": 203,
+    "structured_history_archive": 1344,
+    "test": 204,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 668,
-    "archived_files": 888,
-    "docs_reports": 1475,
-    "external_reports": 191,
-    "handoffs": 383,
-    "project_snapshots": 697,
+    "ad_hoc_reviews": 669,
+    "archived_files": 898,
+    "docs_reports": 1480,
+    "external_reports": 192,
+    "handoffs": 384,
+    "project_snapshots": 706,
     "release_tags": 8,
-    "revision_metadata_files": 82,
-    "revision_rounds": 81,
-    "tracked_files": 4948
+    "revision_metadata_files": 83,
+    "revision_rounds": 82,
+    "tracked_files": 4968
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "Codex consensus accepts the bounded Hausdorff Linux performance evidence",
+      "final_result": "COMPLETE",
+      "gemini_review": "Claude PASS and Gemini ACCEPT in docs/reports",
+      "slug": "2026-04-17-goal507-hausdorff-linux-perf",
+      "source_commit": "0612916139d13a1ce1d0f63ce693fd48e5976c34",
+      "started_on": "2026-04-17",
+      "status": "complete-consensus",
+      "summary": "Measured the v0.8 Hausdorff app on Linux across Embree, OptiX, Vulkan, SciPy, scikit-learn, and FAISS with raw JSON evidence and honest performance boundaries.",
+      "title": "Goal507 Hausdorff Linux Large-Scale Performance",
+      "version": "v0.8.0"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "Codex consensus accepts the v0.8 public-entry alignment",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Public docs now explain RTDL's authoring-burden reduction before release bookkeeping while retaining exact v0.7 boundaries.",
       "title": "Goal496 Public Docs Competing Versions",
-      "version": "v0.7.0"
-    },
-    {
-      "closed_on": "2026-04-16",
-      "codex_revision": "added visitor-facing complete repo-visible history map and inventories",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude and Gemini Flash accepted Goal495",
-      "slug": "2026-04-16-goal495-complete-history-map",
-      "source_commit": "HEAD",
-      "started_on": "2026-04-16",
-      "status": "complete-consensus",
-      "summary": "RTDL now has a public map explaining where complete repo-visible history is recorded and what is intentionally out of scope.",
-      "title": "Goal495 Complete History Map",
       "version": "v0.7.0"
     }
   ],

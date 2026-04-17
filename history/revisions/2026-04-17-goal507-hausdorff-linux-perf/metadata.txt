@@ -1,0 +1,11 @@
+slug: 2026-04-17-goal507-hausdorff-linux-perf
+title: Goal507 Hausdorff Linux Large-Scale Performance
+version: v0.8.0
+status: complete-consensus
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 0612916139d13a1ce1d0f63ce693fd48e5976c34
+gemini_review: Claude PASS and Gemini ACCEPT in docs/reports
+codex_revision: Codex consensus accepts the bounded Hausdorff Linux performance evidence
+final_result: COMPLETE
+summary: Measured the v0.8 Hausdorff app on Linux across Embree, OptiX, Vulkan, SciPy, scikit-learn, and FAISS with raw JSON evidence and honest performance boundaries.
