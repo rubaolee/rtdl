@@ -11,17 +11,18 @@ Read these in order:
 
 1. [Project Front Page](../README.md)
 2. [Current Architecture](current_architecture.md)
-3. [Quick Tutorial](quick_tutorial.md)
-4. [RTDL Tutorials](tutorials/README.md)
-5. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
-6. [Release-Facing Examples](release_facing_examples.md)
-7. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-8. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+3. [Capability Boundaries](capability_boundaries.md)
+4. [Quick Tutorial](quick_tutorial.md)
+5. [RTDL Tutorials](tutorials/README.md)
+6. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+7. [Release-Facing Examples](release_facing_examples.md)
+8. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+9. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 If you need the previous graph release line, also read:
 
-9. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-10. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+10. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+11. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -56,6 +57,7 @@ audited release claims.
 
 - [Quick Tutorial](quick_tutorial.md)
 - [Current Architecture](current_architecture.md)
+- [Capability Boundaries](capability_boundaries.md)
 - [RTDL Tutorials](tutorials/README.md)
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 - [Release-Facing Examples](release_facing_examples.md)
@@ -114,6 +116,9 @@ Keep these current facts in mind while reading:
 - the earlier released engineering line on `main` was the `v0.4` nearest-neighbor surface:
   - `fixed_radius_neighbors`
   - `knn_rows`
+- the released `v0.5` nearest-neighbor expansion added:
+  - `bounded_knn_rows`
+  - 3D nearest-neighbor support across the accepted backend matrix
 - the released `v0.6.1` additions on `main` are:
   - `bfs`
   - `triangle_count`

@@ -18,6 +18,7 @@ PUBLIC_DOCS = [
     "README.md",
     "docs/README.md",
     "docs/current_architecture.md",
+    "docs/capability_boundaries.md",
     "docs/quick_tutorial.md",
     "docs/tutorials/feature_quickstart_cookbook.md",
     "docs/release_facing_examples.md",
@@ -91,6 +92,12 @@ REQUIRED_PHRASES = {
         "10x reduction in authoring burden",
         "This is not a blanket performance claim",
         "RTDL is still not a DBMS",
+    ],
+    "docs/capability_boundaries.md": [
+        "Can do and intended",
+        "Can do but not intended as RTDL's role",
+        "Cannot do yet",
+        "RTDL is not a DBMS",
     ],
     "docs/quick_tutorial.md": [
         "input -> traverse -> refine -> emit",

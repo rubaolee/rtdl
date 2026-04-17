@@ -125,6 +125,7 @@ Primary front-door links:
 
 - [Watch The Public 4K Demo Video](https://youtu.be/d3yJB7AmCLM)
 - [Current Architecture](docs/current_architecture.md)
+- [Capability Boundaries](docs/capability_boundaries.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Tutorials](docs/tutorials/README.md)
 - [Feature Quickstart Cookbook](docs/tutorials/feature_quickstart_cookbook.md)
