@@ -1,0 +1,11 @@
+slug: 2026-04-16-v0-7-release-action
+title: v0.7.0 Release Action
+version: v0.7.0
+status: released
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: a63a1d1
+gemini_review: release action followed prior Claude and Gemini accepted gates
+codex_revision: registered final v0.7.0 tag/main release action
+final_result: RELEASED
+summary: v0.7.0 was tagged, pushed, and fast-forwarded to main after explicit user authorization.

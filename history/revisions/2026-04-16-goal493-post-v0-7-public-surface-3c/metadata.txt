@@ -1,0 +1,11 @@
+slug: 2026-04-16-goal493-post-v0-7-public-surface-3c
+title: Goal493 Post-v0.7 Public Surface 3C Audit
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: ca37a4b
+gemini_review: Claude and Gemini Flash accepted Goal493
+codex_revision: registered post-release public docs/tutorials/examples 3C closure
+final_result: COMPLETE
+summary: Front page, docs, tutorials, examples, feature docs, and v0.7 release package refreshed and audited after v0.7.0 release.

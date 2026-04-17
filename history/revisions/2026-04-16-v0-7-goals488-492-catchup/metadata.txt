@@ -1,0 +1,11 @@
+slug: 2026-04-16-v0-7-goals488-492-catchup
+title: v0.7 Goals 488-492 Release-Readiness Catch-up
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: ca37a4b
+gemini_review: Claude and Gemini reviews accepted for Goals 488-492
+codex_revision: registered missing v0.7 release-readiness history after stale revisions report
+final_result: COMPLETE
+summary: Public-doc, history-sync, pre-stage, release-hold, and ready-for-explicit-authorization evidence through Goal492.

@@ -1,0 +1,451 @@
+{
+  "date": "2026-04-16",
+  "example_execution_checks": [
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_hello_world.py",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "hello, world\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_hello_world_backends.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"backend\": \"cpu_python_reference\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 4",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": " \"hit_count\": 1,\n      \"segment_id\": 34\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 35\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 36\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 37\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 38\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 39\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 40\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "on_id\": 7,\n      \"segment_id\": 34\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 35\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 36\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 37\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 38\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 39\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 40\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "[\n  {\n    \"intersection_area\": 4,\n    \"left_area\": 9,\n    \"left_polygon_id\": 1,\n    \"right_area\": 9,\n    \"right_polygon_id\": 10,\n    \"union_area\": 14\n  },\n  {\n    \"intersection_area\": 1,\n    \"left_area\": 4,\n    \"left_polygon_id\": 2,\n    \"right_area\": 2,\n    \"right_polygon_id\": 11,\n    \"union_area\": 5\n  }\n]\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "[\n  {\n    \"intersection_area\": 5,\n    \"jaccard_similarity\": 0.2631578947368421,\n    \"left_area\": 13,\n    \"right_area\": 11,\n    \"union_area\": 19\n  }\n]\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_knn_rows.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.7,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_graph_bfs.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "pu_python_reference\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"cpu_python_reference\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"cpu_python_reference\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": " \"app\": \"db_grouped_count\",\n  \"backend\": \"cpu_python_reference\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"cpu_python_reference\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_v0_7_db_app_demo.py --backend auto",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "   \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"promo_order_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"web_revenue_by_region\": [\n      {\n        \"region\": \"east\",\n        \"sum\": 180\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 240\n      }\n    ]\n  }\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "    \"two_predicate_campaign_window_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 6\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"web_revenue_by_region\": [\n      {\n        \"region\": \"east\",\n        \"sum\": 180\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 240\n      }\n    ]\n  }\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_sales_risk_screening.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "    {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "stance\": 0.22360679774997913\n      }\n    ]\n  },\n  \"radius\": 0.85,\n  \"rows\": [\n    {\n      \"distance\": 0.14142135623730953,\n      \"neighbor_id\": 10,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.5,\n      \"neighbor_id\": 10,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.22360679774997913,\n      \"neighbor_id\": 11,\n      \"query_id\": 3\n    }\n  ],\n  \"uncovered_household_ids\": [\n    4\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_event_hotspot_screening.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "\": 3\n    },\n    {\n      \"distance\": 0.36400549446402586,\n      \"neighbor_id\": 4,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.20615528128088306,\n      \"neighbor_id\": 2,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.36400549446402586,\n      \"neighbor_id\": 3,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.4272001872658766,\n      \"neighbor_id\": 1,\n      \"query_id\": 4\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_facility_knn_assignment.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "3,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.4472135954999578,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 1,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.140175425099138,\n      \"neighbor_id\": 13,\n      \"neighbor_rank\": 2,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.9235384061671343,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 3,\n      \"query_id\": 4\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 examples/rtdl_road_hazard_screening.py --backend cpu_python_reference",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"app\": \"road_hazard_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"priority_segments\": [\n    1\n  ],\n  \"row_count\": 3,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    }\n  ]\n}\n",
+      "valid": true
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/rtdl_sorting_demo.py --backend cpu_python_reference 3 1 4 1 5 0 2 5",
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": " 4,\n    5,\n    5\n  ],\n  \"descending_sorted_reference\": [\n    5,\n    5,\n    4,\n    3,\n    2,\n    1,\n    1,\n    0\n  ],\n  \"ascending_quicksort_reference\": [\n    0,\n    1,\n    1,\n    2,\n    3,\n    4,\n    5,\n    5\n  ],\n  \"descending_quicksort_reference\": [\n    5,\n    5,\n    4,\n    3,\n    2,\n    1,\n    1,\n    0\n  ],\n  \"expected_hit_counts\": [\n    4,\n    7,\n    3,\n    7,\n    2,\n    8,\n    5,\n    2\n  ]\n}\n",
+      "valid": true
+    }
+  ],
+  "git_diff_check": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "",
+    "valid": true
+  },
+  "goal": 493,
+  "invalid_example_execution_checks": [],
+  "invalid_public_files": [],
+  "public_files": [
+    {
+      "category": "front_page",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "README.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "doc_index",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/README.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/quick_tutorial.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "doc_index",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/release_facing_examples.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/README.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/hello_world.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/sorting_demo.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/nearest_neighbor_workloads.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/graph_workloads.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/db_workloads.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "tutorial",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/tutorials/rendering_and_visual_demos.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "feature_doc",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/features/README.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "feature_doc",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/features/db_workloads/README.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "doc_index",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/rtdl_feature_guide.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "doc_index",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/current_milestone_qa.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "release_report",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/release_reports/v0_7/README.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "release_report",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/release_reports/v0_7/release_statement.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "release_report",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/release_reports/v0_7/support_matrix.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "release_report",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/release_reports/v0_7/audit_report.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "release_report",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "docs/release_reports/v0_7/tag_preparation.md",
+      "stale_patterns": [],
+      "valid": true
+    },
+    {
+      "category": "example_index",
+      "comprehensive": true,
+      "consistent": true,
+      "correct": true,
+      "exists": true,
+      "missing_command_paths": [],
+      "missing_links": [],
+      "missing_required_tokens": [],
+      "path": "examples/README.md",
+      "stale_patterns": [],
+      "valid": true
+    }
+  ],
+  "repo_root": "/Users/rl2025/rtdl_python_only",
+  "valid": true
+}

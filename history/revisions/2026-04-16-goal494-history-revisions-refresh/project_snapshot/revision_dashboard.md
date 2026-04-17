@@ -5,15 +5,15 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 ## Summary
 
 - Revision rounds: 69
-- Archived files: 774
+- Archived files: 767
 - External reports: 180
-- Project snapshots: 594
+- Project snapshots: 587
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| v0.7.0 | 2026-04-16 | complete-consensus | Goal494 History Revisions Refresh After v0.7 Release | Claude and Gemini Flash accepted Goal494 | registered missing post-v0.7 history rounds and regenerated dashboards | COMPLETE | `HEAD` | `2026-04-16-goal494-history-revisions-refresh` |
+| v0.7.0 | 2026-04-16 | complete | Goal494 History Revisions Refresh After v0.7 Release | user identified stale GitHub history/revisions page | registered missing post-v0.7 history rounds and regenerated dashboards | COMPLETE | `HEAD` | `2026-04-16-goal494-history-revisions-refresh` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal493 Post-v0.7 Public Surface 3C Audit | Claude and Gemini Flash accepted Goal493 | registered post-release public docs/tutorials/examples 3C closure | COMPLETE | `ca37a4b` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
 | v0.7.0 | 2026-04-16 | released | v0.7.0 Release Action | release action followed prior Claude and Gemini accepted gates | registered final v0.7.0 tag/main release action | RELEASED | `a63a1d1` | `2026-04-16-v0-7-release-action` |
 | v0.7.0 | 2026-04-16 | complete-consensus | v0.7 Goals 488-492 Release-Readiness Catch-up | Claude and Gemini reviews accepted for Goals 488-492 | registered missing v0.7 release-readiness history after stale revisions report | COMPLETE | `ca37a4b` | `2026-04-16-v0-7-goals488-492-catchup` |

@@ -1,0 +1,11 @@
+slug: 2026-04-16-goal494-history-revisions-refresh
+title: Goal494 History Revisions Refresh After v0.7 Release
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: HEAD
+gemini_review: Claude and Gemini Flash accepted Goal494
+codex_revision: registered missing post-v0.7 history rounds and regenerated dashboards
+final_result: COMPLETE
+summary: History revisions, database, and dashboards now include post-Goal487 progress through Goal494.
