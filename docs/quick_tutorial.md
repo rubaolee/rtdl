@@ -236,7 +236,7 @@ Follow this order to learn progressively:
 6. [Database Workloads](tutorials/db_workloads.md)
 7. [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
 
-Optional bounded `v0.7` DB branch examples:
+Optional bounded `v0.7.0` DB release examples:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference

@@ -2,9 +2,11 @@
 
 This page is preserved historical context for maintainers.
 
-It is not part of the primary `v0.6.1` user-learning path and should not be
+It is not part of the primary `v0.7.0` user-learning path and should not be
 read as the front-door release summary. For current public status, use:
 
+- [RTDL v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 - [RTDL v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 - [Quick Tutorial](quick_tutorial.md)

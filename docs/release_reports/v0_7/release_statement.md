@@ -5,8 +5,8 @@ Status: released bounded DB line
 
 ## Statement
 
-RTDL `v0.7.0` is the bounded DB-style analytical workload release on the
-`codex/v0_7_rt_db` branch.
+RTDL `v0.7.0` is the bounded DB-style analytical workload release now carried
+on `main`. The release was prepared on `codex/v0_7_rt_db`.
 
 It adds the first bounded RTDL database-kernel family:
 
@@ -72,10 +72,10 @@ The bounded `v0.7` line now has:
 - external tester report response after Goal 467:
   - macOS user-perspective correctness report recorded 179/179 PASS across the
     public workload surface on available backends
-  - older Windows v0.6 snapshot blocker was fixed in the current branch by
+  - older Windows v0.6 snapshot blocker was fixed in the release line by
     rejecting stale/incomplete Embree DLLs, adding an explicit
     `make build-embree` probe, and locking graph public API exports
-  - fresh Windows current-branch sync verified `rt.csr_graph`, built/probed
+  - fresh Windows release-line sync verified `rt.csr_graph`, built/probed
     `build/librtdl_embree.dll`, confirmed 22/22 required Embree exports, and
     ran graph Embree examples
 - external DB attack-report response after Goal 469:
@@ -107,7 +107,7 @@ The bounded `v0.7` line now has:
 - Goal 479 release-candidate audit after Goal478:
   - verifies Goal477 and Goal478 Codex/Claude/Gemini ACCEPT evidence
   - verifies invalid Gemini Flash placeholder attempts are quarantined
-  - verifies current release reports preserve hold/no-release boundaries
+  - verifies the then-current release reports preserved hold/no-release boundaries
   - verifies no active retired non-release metrics task references remain in
     the release path
   - Goal 479 has Claude and Gemini external-review acceptance and is not release
@@ -122,7 +122,7 @@ The bounded `v0.7` line now has:
   - Goal 482 has Claude and Gemini external-review acceptance and is not
     staging or release authorization
 - Goal 483 release-report refresh after Goal482:
-  - updates the audit report, branch statement, support matrix, and
+  - updates the audit report, release statement, support matrix, and
     tag-preparation report with Goal482 evidence
   - preserves hold/no-release/no-tag/no-merge boundaries
   - Goal 483 has Claude and Gemini external-review acceptance and is not
@@ -181,7 +181,7 @@ The bounded `v0.7` line now has:
   - query-only results against best-tested PostgreSQL are mixed
   - setup-plus-10-query total time favors RTDL in the measured Linux evidence
 - Goal 464 as the canonical fresh-checkout validation:
-  - the current branch package was synced to Linux, brought up from source,
+  - the release package was synced to Linux, brought up from source,
     and validated with PostgreSQL included
   - the Linux GPU used for that run is a GTX 1070, so the run validates backend
     functionality and bounded performance, not RT-core hardware acceleration
@@ -189,7 +189,7 @@ The bounded `v0.7` line now has:
   Windows audit reports:
   - macOS user-correctness evidence is positive
   - the older Windows stale-DLL/API blocker is fixed and retested from a fresh
-    current-branch sync
+    release-line sync
   - Windows remains a bounded local/runtime surface, not the primary v0.7
     PostgreSQL/GPU performance-validation platform
 - Goal 469 as the canonical response to the external v0.7 DB attack report:
@@ -199,8 +199,8 @@ The bounded `v0.7` line now has:
 - Goal 470 as the current pre-release test/doc/audit checkpoint:
   - macOS full unittest discovery and Linux focused backend/PostgreSQL testing
     are recorded
-  - docs and audit reports are refreshed through the current branch state
-  - this is still a hold checkpoint, not release authorization
+  - docs and audit reports were refreshed through that pre-release branch state
+  - this was a hold checkpoint, not release authorization by itself
   - RTDL is not a DBMS and this checkpoint does not change that boundary
 - Goal 471 as the current external v0.6.1 Windows attack-suite intake:
   - the Windows Embree graph/geometry stress evidence is positive
@@ -222,21 +222,22 @@ The bounded `v0.7` line now has:
   - this evidence has Claude and Gemini external-review acceptance
 - Goal 483 as the earlier release-report refresh after Goal482:
   - release-facing reports include Goal482 evidence
-  - hold/no-release/no-tag/no-merge boundaries remain explicit
+  - hold/no-release/no-tag/no-merge boundaries remained explicit before final
+    authorization
   - this evidence has Claude and Gemini external-review acceptance
 - Goal 486 as the post-disk-cleanup artifact-integrity audit:
   - artifact integrity and disk safety are rechecked after the home Git fix
   - this evidence has Claude and Gemini external-review acceptance
 - Goal 487 as the current release-hold stability audit:
-  - the branch remains stable after Goal486 and still has no stage/tag/merge/release action
+  - the branch remained stable after Goal486 and still had no stage/tag/merge/release action at that checkpoint
   - this evidence has Claude and Gemini external-review acceptance
 - Goal 488 as the current public-doc consistency audit:
-  - front page, tutorials, examples, and release reports are refreshed through
-    the current hold state
+  - front page, tutorials, examples, and release reports were refreshed through
+    that hold state
   - this evidence has Claude and Gemini external-review acceptance
 - Goal 489 as the current history synchronization audit:
-  - docs/history and root history chronology are synchronized through the
-    current hold state
+  - docs/history and root history chronology were synchronized through the
+    then-current hold state
   - this evidence has Claude and Gemini external-review acceptance
 - Goal 490 as the current pre-stage ledger refresh:
   - the current dirty-tree package is mechanically classified after Goal489
@@ -256,8 +257,7 @@ The `v0.7` line does not claim:
 - that RTDL beats fully tuned PostgreSQL in general
 - that RTDL provides PostgreSQL-level durability, concurrency, indexing,
   optimizer behavior, transactions, or arbitrary SQL
-- that the current branch line has already replaced the repository's last tagged
-  mainline release
+- unbounded database-system behavior outside the v0.7 support matrix
 
 ## Relationship To Earlier Releases
 
@@ -268,7 +268,7 @@ Read the repo now as:
 - `v0.4.0`: released nearest-neighbor workload expansion
 - `v0.5.0`: released 3D nearest-neighbor and bounded multi-backend expansion
 - `v0.6.1`: released corrected RT graph line
-- `v0.7`: active bounded DB branch line
+- `v0.7.0`: released bounded DB line
 
 ## Current Honest Boundary
 
@@ -315,7 +315,8 @@ Read the repo now as:
 - Goal 488 confirms the public front page/tutorial/example/release-doc surface
   is current and has Claude and Gemini external-review acceptance
 - Goal 489 confirms the history system is synchronized through the current hold
-  state and has Claude and Gemini external-review acceptance
+  state used before final release authorization and has Claude and Gemini
+  external-review acceptance
 - Goal 490 confirms the post-Goal489 dirty tree has a current advisory
   pre-stage ledger, with no staging or release action performed
 - Linux carries the main correctness/performance validation story for this line

@@ -1,6 +1,6 @@
 # Database Workloads
 
-Status: active bounded `v0.7` branch line, not the last tagged mainline release.
+Status: released bounded `v0.7.0` line on `main`.
 
 RTDL's first database-style workload family is a bounded analytical kernel
 surface over denormalized rows:

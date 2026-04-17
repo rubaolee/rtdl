@@ -18,7 +18,7 @@ longer tutorials.
 | 3 | [Segment And Polygon Workloads](segment_polygon_workloads.md) | Released `v0.2.0` workload families |
 | 4 | [Nearest-Neighbor Workloads](nearest_neighbor_workloads.md) | Released `v0.4.0` nearest-neighbor workloads |
 | 5 | [Graph Workloads](graph_workloads.md) | Released `v0.6.1` RT graph workloads |
-| 6 | [Database Workloads](db_workloads.md) | `v0.7` development-line bounded DB kernels |
+| 6 | [Database Workloads](db_workloads.md) | Released `v0.7.0` bounded DB kernels |
 | 7 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
 
 ---

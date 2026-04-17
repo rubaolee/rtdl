@@ -8,7 +8,7 @@ It currently covers:
 - the released `v0.2.0` geometry workloads
 - the released `v0.4.0` nearest-neighbor line
 - the released `v0.6.1` RT graph line
-- the active `v0.7` bounded DB development line
+- the released bounded `v0.7.0` DB line
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -148,10 +148,10 @@ Reference validation/report surfaces:
 - [goal390_v0_6_rt_graph_triangle_truth_path_test.py](../tests/goal390_v0_6_rt_graph_triangle_truth_path_test.py)
 - [graph_rt_validation_and_perf_report_2026-04-14.md](graph_rt_validation_and_perf_report_2026-04-14.md)
 
-## v0.7 bounded DB line
+## v0.7.0 bounded DB line
 
-The active `v0.7` DB work is still a development line, but the first bounded
-examples are already runnable.
+The released `v0.7.0` DB line provides the first bounded database-style RTDL
+kernel family. These examples are runnable release-facing entry points.
 
 Kernel examples:
 
@@ -221,9 +221,10 @@ Current honesty boundary:
   query-only results are mixed against the best PostgreSQL modes tested so far,
   while setup-plus-10-query total time favors RTDL in the measured Linux
   evidence
-- Goal 492 is the final release-readiness hold before explicit `v0.7.0`
+- Goal 492 records the final release-readiness hold before explicit `v0.7.0`
   release authorization
-- this is still the active `v0.7` branch line, not the last tagged mainline release
+- `v0.7.0` is now the current tagged mainline release; claims remain bounded by
+  the v0.7 release reports and support matrix
 
 ### Public CLI Backend Selection
 

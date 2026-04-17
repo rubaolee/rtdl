@@ -1,7 +1,7 @@
-# RTDL Database Workloads (`v0.7` Development Line)
+# RTDL Database Workloads (`v0.7.0` Release Line)
 
 This tutorial covers the first bounded database-style workload family in RTDL's
-`v0.7` development line.
+`v0.7.0` release line.
 
 Current bounded kernels:
 
@@ -36,16 +36,16 @@ Important boundary:
 Run:
 
 ```bash
-python3 examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
-python3 examples/rtdl_db_conjunctive_scan.py --backend cpu
-python3 examples/rtdl_db_conjunctive_scan.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-python3 examples/rtdl_db_conjunctive_scan.py --backend optix
-python3 examples/rtdl_db_conjunctive_scan.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend vulkan
 ```
 
 What happens:
@@ -59,16 +59,16 @@ What happens:
 Run:
 
 ```bash
-python3 examples/rtdl_db_grouped_count.py --backend cpu_python_reference
-python3 examples/rtdl_db_grouped_count.py --backend cpu
-python3 examples/rtdl_db_grouped_count.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-python3 examples/rtdl_db_grouped_count.py --backend optix
-python3 examples/rtdl_db_grouped_count.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend vulkan
 ```
 
 What happens:
@@ -82,16 +82,16 @@ What happens:
 Run:
 
 ```bash
-python3 examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
-python3 examples/rtdl_db_grouped_sum.py --backend cpu
-python3 examples/rtdl_db_grouped_sum.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-python3 examples/rtdl_db_grouped_sum.py --backend optix
-python3 examples/rtdl_db_grouped_sum.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend vulkan
 ```
 
 What happens:
@@ -105,18 +105,18 @@ What happens:
 Run:
 
 ```bash
-python3 examples/rtdl_v0_7_db_app_demo.py --backend auto
-python3 examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
-python3 examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
-python3 examples/rtdl_sales_risk_screening.py --backend cpu
-python3 examples/rtdl_sales_risk_screening.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-python3 examples/rtdl_sales_risk_screening.py --backend optix
-python3 examples/rtdl_sales_risk_screening.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend vulkan
 ```
 
 The app demo shows a denormalized order table becoming matched row IDs,
@@ -128,7 +128,7 @@ grouped counts, and grouped sums. The kernel-form demo shows the corresponding
 If you are on the Linux validation host with PostgreSQL available:
 
 ```bash
-RTDL_POSTGRESQL_DSN="dbname=postgres" python3 -m unittest \
+RTDL_POSTGRESQL_DSN="dbname=postgres" PYTHONPATH=src:. python -m unittest \
   tests.goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_test \
   tests.goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_test \
   tests.goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_test \
@@ -139,14 +139,13 @@ RTDL_POSTGRESQL_DSN="dbname=postgres" python3 -m unittest \
 That is the current strongest bounded correctness gate for the first DB kernel
 family.
 
-## 6. What Is Still Missing
+## 6. Current Limits
 
-Not closed yet for the DB line:
+The `v0.7.0` DB line is intentionally bounded. It does not yet include:
 
 - multi-group-key native grouped kernels
 - PostgreSQL-style storage, indexing, transactions, optimizer behavior, and
   arbitrary SQL
-- final tag/release decision for the `v0.7` branch line
 
 So the current correct claim is:
 
@@ -160,6 +159,7 @@ So the current correct claim is:
 - the current Linux 200k-row Goal 452 comparison shows all three RT backends
   winning setup-plus-10-query total time against the best PostgreSQL modes
   tested so far, while query-only results are mixed
-- Goal 492 is the final release-readiness hold before explicit `v0.7.0`
+- Goal 492 records the final release-readiness hold before explicit `v0.7.0`
   release authorization
-- the current branch is still a bounded `v0.7` line, not the repository's last tagged mainline release
+- `v0.7.0` is now the current tagged mainline release; claims remain bounded by
+  the v0.7 release reports and support matrix

@@ -13,7 +13,7 @@ This guide is intentionally lighter than the documents in `docs/rtdl/`.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current live branch state is the released `v0.2.0` package.
+The current live branch state is the released bounded `v0.7.0` package.
 
 Today it includes:
 
@@ -22,9 +22,8 @@ Today it includes:
 - a native C/C++ oracle
 - a controlled Embree backend
 - a controlled OptiX backend
-- a Vulkan backend that is now hardware-validated and parity-clean on the
-  accepted long exact-source `county_zipcode` positive-hit `pip` surface, but
-  slower than PostGIS, OptiX, and Embree there
+- a Vulkan backend for supported workload families, with the current performance
+  story depending on workload and host configuration
 
 Current supported workload families:
 
@@ -37,30 +36,38 @@ Current supported workload families:
 - `segment_polygon_anyhit_rows`
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
+- `bfs`
+- `triangle_count`
+- `conjunctive_scan`
+- `grouped_count`
+- `grouped_sum`
 
-Accepted frozen v0.2 release-shaping surface:
+Current release layers:
 
-- `segment_polygon_hitcount`
-- `segment_polygon_anyhit_rows`
-- `polygon_pair_overlap_area_rows`
-- `polygon_set_jaccard`
+- `v0.2.0`: segment/polygon and overlap workload family
+- `v0.4.0`: nearest-neighbor workload line
+- `v0.5.0`: 3D nearest-neighbor and multi-backend expansion
+- `v0.6.1`: corrected RT graph line
+- `v0.7.0`: bounded database-style analytical kernel line
 
 Plus:
 
-- narrow generate-only
 - feature-home docs
-- Linux-backed evidence
-- Linux-primary / Mac-limited platform split
+- Linux-backed evidence, including PostgreSQL-backed DB correctness and
+  repeated-query performance baselines for `v0.7.0`
+- Linux-primary validation, with bounded macOS and Windows support depending on
+  backend availability
 - explicit fallback-vs-native backend boundaries
 
 Current user-programming note:
 
 - RTDL should not be understood only as a fixed workload catalog
 - users can already combine RTDL kernels with Python application logic
-- the current small demo of that pattern is:
+- current examples of that pattern include:
   - [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
-- RTDL provides the geometry-query core there, while Python handles brightness
-  reconstruction and image output
+  - [rtdl_v0_7_db_app_demo.py](../examples/rtdl_v0_7_db_app_demo.py)
+- RTDL provides the query core there, while Python handles application logic and
+  output
 
 Current workload-maturity note:
 
@@ -100,11 +107,13 @@ The current repo can:
 
 - author kernels in a constrained Python DSL
 - compile and lower them
-- run them through the native oracle
-- run them on Embree
-- run accepted long exact-source `county_zipcode` positive-hit `pip` workloads
-  on OptiX and Embree with exact parity and accepted performance wins against
-  PostGIS on the prepared/repeated boundaries
+- run them through the native CPU/oracle path
+- run supported workloads on Embree
+- run supported graph and bounded DB workloads on OptiX and Vulkan where the
+  host GPU stack and backend libraries are available
+- run the released graph workloads `bfs` and `triangle_count`
+- run the released bounded DB workloads `conjunctive_scan`, `grouped_count`,
+  and `grouped_sum`
 - run the current narrow Jaccard line on Python/native CPU with PostGIS-backed
   checking on accepted packages
 - run the current narrow Jaccard line through the public `embree`, `optix`,
@@ -113,10 +122,11 @@ The current repo can:
   keeping Vulkan as the slower portable backend
 - support user-authored RTDL-plus-Python applications where RTDL handles the
   geometry-query core and Python handles surrounding application logic
-- compare accepted workloads against indexed PostGIS ground-truth queries on the Linux host
+- compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
+  queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
 - support a RayJoin-oriented experiment/reporting workflow
-- preserve a bounded accepted v0.1 reproduction package as the current trust anchor
+- preserve bounded older release packages and reports as historical evidence
 
 ## What RTDL Cannot Yet Claim
 
@@ -131,3 +141,4 @@ RTDL does not yet claim:
 - full polygon overlay materialization (`overlay` is still a seed analogue)
 - generic continuous polygon Jaccard or generic continuous overlap-area closure
 - native Embree/OptiX/Vulkan Jaccard maturity
+- arbitrary SQL execution or DBMS behavior in the `v0.7.0` DB line

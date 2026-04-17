@@ -67,10 +67,10 @@ Compatibility path:
 - `Windows`
   - bounded local/runtime surface for non-PostgreSQL work
   - external v0.6 Windows audit found a stale/missing Embree DLL in an older
-    snapshot; current branch handling requires either a matching
+    snapshot; the release-line loader requires either a matching
     `build/librtdl_embree.dll` from this checkout or first-use rebuild from
     source, and the loader rejects stale DLLs missing required exports
-  - Goal 467 fresh current-branch sync on `lestat-win` verified `rt.csr_graph`,
+  - Goal 467 fresh release-line sync on `lestat-win` verified `rt.csr_graph`,
     `rt.embree_version()`, `build\librtdl_embree.dll`, all 22 required Embree
     exports, and the public graph Embree examples
 - `local macOS`
@@ -100,7 +100,7 @@ against the original single-column indexed PostgreSQL baseline.
 
 ## Linux Fresh-Checkout Validation
 
-Goal 464 validates the current branch package from a clean synced checkout on
+Goal 464 validates the release package from a clean synced checkout on
 `lestat-lx1`:
 
 - `rtdsl` imports from the fresh checkout
@@ -129,14 +129,14 @@ Goal 467 triaged the two newest external report families:
 - Windows v0.6 audit:
   - older snapshot had stale/missing Embree DLL deployment and stale public API
     exposure
-  - current branch now rejects stale/incomplete Embree libraries before use,
+  - the release line now rejects stale/incomplete Embree libraries before use,
     exposes `make build-embree`, and locks `csr_graph`/`validate_csr_graph`
     public exports with regression coverage
-  - fresh Windows current-branch sync verified the bounded graph/API/Embree
+  - fresh Windows release-line sync verified the bounded graph/API/Embree
     deployment surface
 
 This does not make Windows the canonical v0.7 DB performance platform.
-PostgreSQL and GPU performance validation remain Linux-centered for this branch
+PostgreSQL and GPU performance validation remain Linux-centered for this release
 line.
 
 Goal 471 also preserves a newer external Windows v0.6.1 Expert Attack Suite

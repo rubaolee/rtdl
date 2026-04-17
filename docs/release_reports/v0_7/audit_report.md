@@ -5,11 +5,11 @@ Status: released bounded DB package
 
 ## Audit Scope
 
-This audit checks the bounded `v0.7` DB branch package for:
+This audit checks the bounded `v0.7.0` DB release package for:
 
 - code/test/performance wording closure through Goal 470
 - public doc/example/tutorial consistency
-- honest branch-versus-release framing
+- honest release framing and historical branch-boundary framing
 - native prepared DB dataset and repeated-query performance claim consistency
 - external tester report response and Windows stale-binary blocker handling
 - external DB attack-report response
@@ -87,12 +87,12 @@ The fifth branch pass handled newer external tester reports:
 - Windows v0.6 audit:
   - identified a real stale/missing Embree DLL and public API mismatch in an
     older snapshot
-  - current branch now checks required Embree exports before assigning ctypes
+  - the release line now checks required Embree exports before assigning ctypes
     signatures
   - stale or incomplete Embree libraries fail with an actionable rebuild
     message instead of raw `AttributeError`
   - `make build-embree` is documented as a public build/probe target
-  - fresh Windows current-branch sync verified `rt.csr_graph`,
+  - fresh Windows release-line sync verified `rt.csr_graph`,
     `rt.embree_version()`, `build\librtdl_embree.dll`, 22/22 required Embree
     exports, and the public graph Embree examples
 
@@ -240,7 +240,7 @@ Goal 490 refreshed the pre-stage ledger after Goal489:
 
 ## Remaining Honest Boundary
 
-The branch package is coherent, but still bounded:
+The release package is coherent, but still bounded:
 
 - this is not a DBMS release
 - PostgreSQL remains an external baseline, not an RTDL backend
@@ -284,5 +284,5 @@ The branch package is coherent, but still bounded:
 
 ## Audit Result
 
-The `v0.7` DB branch package is internally coherent and honestly documented
+The `v0.7.0` DB release package is internally coherent and honestly documented
 after the public-surface cleanup above.

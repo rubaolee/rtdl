@@ -13,13 +13,13 @@ Read these in order:
 2. [Quick Tutorial](quick_tutorial.md)
 3. [RTDL Tutorials](tutorials/README.md)
 4. [Release-Facing Examples](release_facing_examples.md)
-5. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-6. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+5. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+6. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
-If you are specifically working on the current DB branch line, also read:
+If you need the previous graph release line, also read:
 
-7. [v0.7 Branch Statement](release_reports/v0_7/release_statement.md)
-8. [v0.7 Branch Support Matrix](release_reports/v0_7/support_matrix.md)
+7. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+8. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -46,14 +46,14 @@ That is the intended public reading path.
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
 - [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
-- [v0.7 Branch Package](release_reports/v0_7/README.md)
-- [v0.7 Branch Statement](release_reports/v0_7/release_statement.md)
-- [v0.7 Branch Support Matrix](release_reports/v0_7/support_matrix.md)
+- [v0.7 Release Package](release_reports/v0_7/README.md)
+- [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+- [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 ## Release Packages
 
 - [v0.6 Release Package](release_reports/v0_6/README.md)
-- [v0.7 Branch Package](release_reports/v0_7/README.md)
+- [v0.7 Release Package](release_reports/v0_7/README.md)
 - [v0.5 Release Package](release_reports/v0_5/README.md)
 - [v0.5 Preview Package](release_reports/v0_5_preview/README.md)
 - [v0.4 Release Package](release_reports/v0_4/README.md)
@@ -83,8 +83,8 @@ Use these only when you need deeper history, audit trails, or process detail:
 Keep these current facts in mind while reading:
 
 - current released version is `v0.7.0`
-- current `main` carries the released `v0.6.1` line
-- the current working branch may also carry the bounded `v0.7` DB line
+- current `main` carries the released bounded `v0.7.0` DB line
+- the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
   - `segment_polygon_anyhit_rows`
@@ -98,7 +98,7 @@ Keep these current facts in mind while reading:
   - `triangle_count`
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
   - PostgreSQL-backed graph correctness anchoring
-- the bounded `v0.7` DB branch line adds:
+- the bounded `v0.7.0` DB release line adds:
   - `conjunctive_scan`
   - `grouped_count`
   - `grouped_sum`
@@ -108,8 +108,9 @@ Keep these current facts in mind while reading:
   - PostgreSQL-inclusive repeated-query performance gates on Linux
   - app-level and kernel-form v0.7 DB demos
   - release-readiness and staging-authorization evidence through Goal 492
-- the released `v0.2.0` surface remains the stable workload/documentation
-  baseline on `main`
+  - the final `v0.7.0` release action recorded after explicit user authorization
+- the released `v0.2.0` surface remains a stable historical
+  workload/documentation baseline
 - the released `v0.3.0` line is an application-style demo layer on top of that
   same released core, not a replacement for the bounded `v0.2.0` workload surface
 - RTDL should not be read only as a fixed workload list:
@@ -141,7 +142,7 @@ Keep these current facts in mind while reading:
 - Linux is the primary validation platform
 - macOS is only a limited local platform
 - PostgreSQL remains the main external correctness baseline for the graph line
-  and the bounded `v0.7` DB branch line
+  and the bounded `v0.7.0` DB release line
 - the current bounded v0.7 line is released as `v0.7.0`; claims remain bounded
   by the v0.7 release reports
 - PostGIS remains part of the earlier non-graph release history

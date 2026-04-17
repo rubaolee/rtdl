@@ -5,14 +5,15 @@ Status: release authorized
 
 ## Current Decision
 
-Tag `v0.7.0` from the current `codex/v0_7_rt_db` release commit.
+Tag `v0.7.0` was created from the `codex/v0_7_rt_db` release commit and the
+resulting release commit has been fast-forwarded to `main`.
 
 ## Why
 
 - the bounded DB line is now release-gated through Goal 470
 - Goals 431 and 438 package the branch surface honestly
 - Goal 467 handled the newer external correctness and Windows audit reports,
-  including a fresh Windows current-branch retest for the stale Embree DLL/API
+  including a fresh Windows release-line retest for the stale Embree DLL/API
   blocker
 - Goal 469 handled the external v0.7 DB attack report and closed actionable
   local edge-case gaps
@@ -96,5 +97,5 @@ but is not RT-core hardware-speedup evidence.
 
 ## Release Condition
 
-Release as `v0.7.0` with the documented bounded DB scope. Do not merge to
-`main` unless separately instructed.
+Released as `v0.7.0` with the documented bounded DB scope and current `main`
+state.

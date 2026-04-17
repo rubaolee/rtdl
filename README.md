@@ -11,11 +11,12 @@ It gives you:
 - multiple execution backends behind one public surface
 - a clean model where RTDL owns the heavy accelerated work and Python owns the surrounding application logic
 
-The current released surface now spans geometric, nearest-neighbor, and graph
-workloads, but the language goal is broader than any one workload family alone.
+The current released surface now spans geometric, nearest-neighbor, graph, and
+bounded database-style analytical workloads, but the language goal is broader
+than any one workload family alone.
 
-This branch carries the bounded `v0.7.0` release line for DB-style analytical
-workloads.
+The current `main` branch carries the bounded `v0.7.0` release line for
+DB-style analytical workloads.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -24,18 +25,18 @@ core can power a bounded Python application.
 ## Version Status At A Glance
 
 - current released version: `v0.7.0`
-- current active release line here: bounded `v0.7.0` RT DB work
+- current mainline release here: bounded `v0.7.0` RT DB work
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
-- current bounded `v0.7` DB branch surface:
+- current bounded `v0.7.0` DB release surface:
   - `conjunctive_scan`
   - `grouped_count`
   - `grouped_sum`
   - native prepared DB dataset reuse on Embree, OptiX, and Vulkan
   - app-level and kernel-form DB demos
   - release-readiness and staging-authorization evidence through Goal 492
-- current `v0.6.1` additions over `v0.5.0`:
+- previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
   - PostgreSQL-backed graph correctness anchoring
@@ -44,8 +45,8 @@ For exact status:
 
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
-- [RTDL v0.7 Branch Statement](docs/release_reports/v0_7/release_statement.md)
-- [RTDL v0.7 Branch Support Matrix](docs/release_reports/v0_7/support_matrix.md)
+- [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 - [RTDL v0.4 Release Statement](docs/release_reports/v0_4/release_statement.md)
@@ -73,7 +74,7 @@ RTDL uses several backends behind one public kernel surface:
 - `PostGIS` / `PostgreSQL`:
   - not RTDL backends
   - used as external correctness/timing anchors for some workload families
-  - for the `v0.7` DB branch, PostgreSQL is the Linux correctness and
+  - for the `v0.7.0` DB release, PostgreSQL is the Linux correctness and
     repeated-query performance baseline
 
 ## OS Support At A Glance
@@ -84,10 +85,10 @@ Current honest platform story:
   - primary validation platform
   - current graph correctness/performance claims are made here
 - `Windows`:
-  - bounded support in the current `v0.6.1` line
+  - bounded support for the released graph/API/Embree surface
   - graph validation is part of the bounded support story
 - `local macOS`:
-  - bounded support in the current `v0.6.1` line
+  - bounded local support for portable Python/native paths
   - focused regression and local checks
 
 If you want the exact current boundary instead of the short front-page summary,
@@ -184,7 +185,7 @@ PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_referenc
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
-Then try the bounded `v0.7` DB branch line:
+Then try the bounded `v0.7.0` DB release line:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
@@ -273,10 +274,10 @@ If you want the newest released graph line:
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 
-If you want the current bounded DB branch line:
+If you want the current bounded DB release line:
 
-- [RTDL v0.7 Branch Statement](docs/release_reports/v0_7/release_statement.md)
-- [RTDL v0.7 Branch Support Matrix](docs/release_reports/v0_7/support_matrix.md)
+- [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 
 If you want the earlier released nearest-neighbor line:
 
@@ -295,13 +296,13 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.6.1`
+- `v0.7.0`
 
-Current active branch line:
+Current mainline release line:
 
-- bounded `v0.7` RT DB work
+- bounded `v0.7.0` RT DB work
 
-Released workload surface:
+Newest released graph workload surface:
 
 - `bfs`
 - `triangle_count`
@@ -313,7 +314,7 @@ Release and preview layers inside the current repository:
 - `v0.4.0`: released nearest-neighbor workload expansion
 - `v0.5.0`: released 3D nearest-neighbor and multi-backend expansion
 - `v0.6.1`: released corrected RT graph line
-- `v0.7.0`: released bounded DB branch line
+- `v0.7.0`: released bounded DB line
   - current native prepared DB dataset work is validated on Linux across
     Embree, OptiX, Vulkan, and PostgreSQL for bounded synthetic repeated-query
     gates
@@ -332,8 +333,8 @@ For exact backend/workload status, use:
 
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
-- [RTDL v0.7 Branch Statement](docs/release_reports/v0_7/release_statement.md)
-- [RTDL v0.7 Branch Support Matrix](docs/release_reports/v0_7/support_matrix.md)
+- [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
@@ -403,7 +404,7 @@ Important honesty boundaries:
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform
 - PostGIS is an external indexed comparison baseline, not an RTDL backend
-- PostgreSQL is the external baseline for the bounded `v0.7` DB branch; RTDL is
+- PostgreSQL is the external baseline for the bounded `v0.7.0` DB release; RTDL is
   still not a DBMS and does not execute arbitrary SQL
 - RTDL is not a DBMS
 - `v0.7` DB performance claims are bounded to the tested Linux synthetic
@@ -430,4 +431,4 @@ Best next pages:
 - [Documentation Index](docs/README.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Feature Homes](docs/features/README.md)
-- [RTDL v0.7 Branch Package](docs/release_reports/v0_7/README.md)
+- [RTDL v0.7 Release Package](docs/release_reports/v0_7/README.md)
