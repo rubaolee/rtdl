@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 80
-- Archived files: 879
-- External reports: 190
-- Project snapshots: 689
+- Revision rounds: 81
+- Archived files: 888
+- External reports: 191
+- Project snapshots: 697
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8.0 | 2026-04-17 | complete-consensus | Goal506 v0.8 Public Entry Alignment | Claude PASS and Gemini ACCEPT in docs/reports | Codex consensus accepts the v0.8 public-entry alignment | COMPLETE | `d541c2358044d09477c8f8ceba6b52d608c136e7` | `2026-04-17-goal506-v0-8-public-entry-alignment` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal505 v0.8 App Suite Consolidation | Claude PASS and Gemini Flash ACCEPT in docs/reports | Codex consensus accepts the v0.8 app-suite consolidation | COMPLETE | `3de43bcc8a9169ff2c2f383d1a143aa1c69b0261` | `2026-04-17-goal505-v0-8-app-suite-consolidation` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal504 v0.8 Barnes-Hut Force App | Claude accepted; Gemini Flash review attempt capacity-blocked | Codex implemented the third Goal499 paper-derived app using RTDL body-to-node candidate rows plus Python opening-rule and force reduction | COMPLETE | `896c25f67a230373dca13d91c79838c59b1e037f` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal503 v0.8 Robot Collision Screening App | Claude and Gemini Flash accepted the bounded robot collision screening app | Codex implemented the second Goal499 paper-derived app using RTDL ray/triangle hit-count rows plus Python pose aggregation | COMPLETE | `d2004b391644a2d644c8f9cbd7b77995c57972c5` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |

@@ -1,0 +1,11 @@
+slug: 2026-04-17-goal506-v0-8-public-entry-alignment
+title: Goal506 v0.8 Public Entry Alignment
+version: v0.8.0
+status: complete-consensus
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: d541c2358044d09477c8f8ceba6b52d608c136e7
+gemini_review: Claude PASS and Gemini ACCEPT in docs/reports
+codex_revision: Codex consensus accepts the v0.8 public-entry alignment
+final_result: COMPLETE
+summary: Aligned README, docs index, and current architecture with the accepted v0.8 app-building line while preserving v0.7 release boundaries.

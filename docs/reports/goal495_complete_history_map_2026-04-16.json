@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 667,
-    "ai_handoff": 382,
+    "ad_hoc_review_or_consensus": 668,
+    "ai_handoff": 383,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1472,
+    "report_or_review": 1475,
     "script": 117,
     "source": 76,
-    "structured_history_archive": 1324,
-    "test": 202,
+    "structured_history_archive": 1333,
+    "test": 203,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 667,
-    "archived_files": 879,
-    "docs_reports": 1472,
-    "external_reports": 190,
-    "handoffs": 382,
-    "project_snapshots": 689,
+    "ad_hoc_reviews": 668,
+    "archived_files": 888,
+    "docs_reports": 1475,
+    "external_reports": 191,
+    "handoffs": 383,
+    "project_snapshots": 697,
     "release_tags": 8,
-    "revision_metadata_files": 81,
-    "revision_rounds": 80,
-    "tracked_files": 4933
+    "revision_metadata_files": 82,
+    "revision_rounds": 81,
+    "tracked_files": 4948
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "Codex consensus accepts the v0.8 public-entry alignment",
+      "final_result": "COMPLETE",
+      "gemini_review": "Claude PASS and Gemini ACCEPT in docs/reports",
+      "slug": "2026-04-17-goal506-v0-8-public-entry-alignment",
+      "source_commit": "d541c2358044d09477c8f8ceba6b52d608c136e7",
+      "started_on": "2026-04-17",
+      "status": "complete-consensus",
+      "summary": "Aligned README, docs index, and current architecture with the accepted v0.8 app-building line while preserving v0.7 release boundaries.",
+      "title": "Goal506 v0.8 Public Entry Alignment",
+      "version": "v0.8.0"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "Codex consensus accepts the v0.8 app-suite consolidation",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "RTDL now has a public map explaining where complete repo-visible history is recorded and what is intentionally out of scope.",
       "title": "Goal495 Complete History Map",
-      "version": "v0.7.0"
-    },
-    {
-      "closed_on": "2026-04-16",
-      "codex_revision": "registered missing post-v0.7 history rounds and regenerated dashboards",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude and Gemini Flash accepted Goal494",
-      "slug": "2026-04-16-goal494-history-revisions-refresh",
-      "source_commit": "HEAD",
-      "started_on": "2026-04-16",
-      "status": "complete-consensus",
-      "summary": "History revisions, database, and dashboards now include post-Goal487 progress through Goal494.",
-      "title": "Goal494 History Revisions Refresh After v0.7 Release",
       "version": "v0.7.0"
     }
   ],

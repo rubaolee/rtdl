@@ -15,8 +15,9 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current `main` branch carries the bounded `v0.7.0` release line for
-DB-style analytical workloads.
+The current released version is `v0.7.0`. The current `main` branch also
+carries accepted `v0.8` app-building work that uses the existing RTDL surface
+without claiming a new released language/backend line yet.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -47,7 +48,8 @@ bounded DB-style analytical workloads.
 ## Version Status At A Glance
 
 - current released version: `v0.7.0`
-- current mainline release here: bounded `v0.7.0` RT DB work
+- current mainline release here: bounded `v0.7.0` RT DB work plus accepted
+  `v0.8` app-building examples over existing RTDL features
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -58,6 +60,14 @@ bounded DB-style analytical workloads.
   - native prepared DB dataset reuse on Embree, OptiX, and Vulkan
   - app-level and kernel-form DB demos
   - release-readiness and staging-authorization evidence through Goal 492
+- current accepted `v0.8` app-building work on `main`:
+  - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
+  - robot collision screening app using `ray_triangle_hit_count` plus Python
+    pose/link aggregation
+  - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus
+    Python quadtree/opening-rule/force reduction
+  - tutorial and suite consolidation that records missing future language
+    pressure instead of claiming new internals
 - previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -129,6 +139,7 @@ Primary front-door links:
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Tutorials](docs/tutorials/README.md)
 - [Feature Quickstart Cookbook](docs/tutorials/feature_quickstart_cookbook.md)
+- [v0.8 App Building](docs/tutorials/v0_8_app_building.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
 - [Documentation Index](docs/README.md)
@@ -228,6 +239,16 @@ PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
 PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 ```
 
+Then try the accepted `v0.8` app-building line. These apps use existing RTDL
+features and Python-owned application logic; they are not a new released
+backend/language claim:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
+```
+
 Windows `cmd.exe`:
 
 ```bat
@@ -241,6 +262,9 @@ python examples\rtdl_db_grouped_count.py --backend cpu_python_reference
 python examples\rtdl_db_grouped_sum.py --backend cpu_python_reference
 python examples\rtdl_v0_7_db_app_demo.py --backend auto
 python examples\rtdl_v0_7_db_kernel_app_demo.py --backend auto
+python examples\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples\rtdl_robot_collision_screening_app.py --backend cpu_python_reference
+python examples\rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
 
 PowerShell:
@@ -256,6 +280,9 @@ python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
 python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
 python examples/rtdl_v0_7_db_app_demo.py --backend auto
 python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
+python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
+python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
 
 Notes:
@@ -312,6 +339,11 @@ If you want the current bounded DB release line:
 - [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
 - [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 
+If you want the current app-building line on `main`:
+
+- [v0.8 App Building](docs/tutorials/v0_8_app_building.md)
+- [Release-Facing Examples](docs/release_facing_examples.md)
+
 If you want the earlier released nearest-neighbor line:
 
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
@@ -333,7 +365,8 @@ Current release:
 
 Current mainline release line:
 
-- bounded `v0.7.0` RT DB work
+- bounded `v0.7.0` RT DB work, with accepted `v0.8` app-building examples on
+  `main`
 
 Newest released graph workload surface:
 
@@ -357,6 +390,11 @@ Release and preview layers inside the current repository:
   - release-readiness evidence is Goal 492: the package was held until explicit
     release authorization, with `rtdsl_current.tar.gz` as the only default
     staging exclusion
+- `v0.8`: active app-building line on top of the released `v0.7.0` surface
+  - apps added so far: Hausdorff distance, robot collision screening, and
+    Barnes-Hut force approximation
+  - the current claim is "RTDL rows plus Python app logic," not a new released
+    backend/language surface
 
 Current public demo artifact:
 
@@ -384,6 +422,7 @@ The repository currently includes:
   - OptiX: NVIDIA GPU ray-tracing backend
   - Vulkan: Vulkan ray-tracing GPU backend
 - examples ranging from smallest first-run scripts to RTDL-plus-Python demos
+- accepted v0.8 app-building examples that show RTDL rows inside Python apps
 
 The public examples are organized as:
 
@@ -433,6 +472,8 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
+- the current v0.8 app-building line is accepted development work on `main`,
+  not a new released support-matrix claim
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform

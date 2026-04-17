@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `80`
-- Archived files in `history/history.db`: `879`
-- External report snapshots: `190`
-- Project snapshots: `689`
-- Tracked `docs/reports/` artifacts: `1472`
-- Tracked `history/ad_hoc_reviews/` artifacts: `667`
-- Tracked AI handoff files: `382`
+- Structured revision rounds: `81`
+- Archived files in `history/history.db`: `888`
+- External report snapshots: `191`
+- Project snapshots: `697`
+- Tracked `docs/reports/` artifacts: `1475`
+- Tracked `history/ad_hoc_reviews/` artifacts: `668`
+- Tracked AI handoff files: `383`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal506 v0.8 Public Entry Alignment | `COMPLETE` | `2026-04-17-goal506-v0-8-public-entry-alignment` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal505 v0.8 App Suite Consolidation | `COMPLETE` | `2026-04-17-goal505-v0-8-app-suite-consolidation` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal504 v0.8 Barnes-Hut Force App | `COMPLETE` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal503 v0.8 Robot Collision Screening App | `COMPLETE` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal497 Public Entry Smoke Check | `COMPLETE` | `2026-04-16-goal497-public-entry-smoke` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal496 Public Docs Competing Versions | `COMPLETE` | `2026-04-16-goal496-public-docs-competing-versions` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal495 Complete History Map | `COMPLETE` | `2026-04-16-goal495-complete-history-map` |
-| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal494 History Revisions Refresh After v0.7 Release | `COMPLETE` | `2026-04-16-goal494-history-revisions-refresh` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 667 |
-| `ai_handoff` | 382 |
+| `ad_hoc_review_or_consensus` | 668 |
+| `ai_handoff` | 383 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1472 |
+| `report_or_review` | 1475 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1324 |
-| `test` | 202 |
+| `structured_history_archive` | 1333 |
+| `test` | 203 |
 | `tutorial` | 11 |
 
 ## Boundaries
