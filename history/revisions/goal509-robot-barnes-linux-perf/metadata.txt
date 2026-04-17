@@ -1,0 +1,11 @@
+slug: goal509-robot-barnes-linux-perf
+title: Goal509 robot and Barnes-Hut Linux performance evidence
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: fad7f91617b6649682231deafba0ac42ef556e16
+gemini_review: docs/reports/goal509_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal509-robot-barnes-linux-perf.md
+final_result: docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md
+summary: Correctness-gated Linux performance evidence for the two remaining v0.8 apps, with robot Vulkan rejected and Barnes-Hut phase split documented.

@@ -1,0 +1,462 @@
+{
+  "barnes_cases": [
+    {
+      "body_count": 64,
+      "candidate_measurements": [
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.0005278389435261488,
+          "median_sec": 0.0005161699373275042,
+          "min_sec": 0.0005045009311288595,
+          "name": "barnes_candidate_cpu",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.0009064790792763233,
+          "median_sec": 0.0008303215145133436,
+          "min_sec": 0.0007541639497503638,
+          "name": "barnes_candidate_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.3138023359933868,
+          "median_sec": 0.15718826645752415,
+          "min_sec": 0.0005741969216614962,
+          "name": "barnes_candidate_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.0913426709594205,
+          "median_sec": 0.047104817524086684,
+          "min_sec": 0.002866964088752866,
+          "name": "barnes_candidate_vulkan",
+          "status": "ok"
+        }
+      ],
+      "full_measurements": [
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 72,
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "exact_body_total": 2880,
+            "force_row_count": 64,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.00177861494012177,
+          "median_sec": 0.001760971441399306,
+          "min_sec": 0.0017433279426768422,
+          "name": "barnes_full_app_cpu",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 72,
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "exact_body_total": 2880,
+            "force_row_count": 64,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.0020840390352532268,
+          "median_sec": 0.002073100535199046,
+          "min_sec": 0.0020621620351448655,
+          "name": "barnes_full_app_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 72,
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "exact_body_total": 2880,
+            "force_row_count": 64,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.0018250979483127594,
+          "median_sec": 0.0018249459681101143,
+          "min_sec": 0.0018247939879074693,
+          "name": "barnes_full_app_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 72,
+            "body_count_with_candidates": 64,
+            "candidate_row_count": 256,
+            "exact_body_total": 2880,
+            "force_row_count": 64,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.004267064970918,
+          "median_sec": 0.004222498508170247,
+          "min_sec": 0.004177932045422494,
+          "name": "barnes_full_app_vulkan",
+          "status": "ok"
+        }
+      ],
+      "full_reference_summary": {
+        "accepted_node_total": 72,
+        "body_count_with_candidates": 64,
+        "candidate_row_count": 256,
+        "exact_body_total": 2880,
+        "force_row_count": 64,
+        "max_relative_error": 0.021011925451884683,
+        "node_count_seen": 4
+      },
+      "node_count": 4,
+      "oracle_candidate_summary": {
+        "body_count_with_candidates": 64,
+        "candidate_row_count": 256,
+        "node_count_seen": 4
+      }
+    },
+    {
+      "body_count": 256,
+      "candidate_measurements": [
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.001579092931933701,
+          "median_sec": 0.0015740249655209482,
+          "min_sec": 0.0015689569991081953,
+          "name": "barnes_candidate_cpu",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.0018574499990791082,
+          "median_sec": 0.0017186750192195177,
+          "min_sec": 0.0015799000393599272,
+          "name": "barnes_candidate_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.001491258037276566,
+          "median_sec": 0.001351438055280596,
+          "min_sec": 0.001211618073284626,
+          "name": "barnes_candidate_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "node_count_seen": 4
+          },
+          "matches_oracle": true,
+          "max_sec": 0.003875821945257485,
+          "median_sec": 0.0037725010188296437,
+          "min_sec": 0.0036691800924018025,
+          "name": "barnes_candidate_vulkan",
+          "status": "ok"
+        }
+      ],
+      "full_measurements": [
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 216,
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "exact_body_total": 51456,
+            "force_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.020651803934015334,
+          "median_sec": 0.020618388429284096,
+          "min_sec": 0.020584972924552858,
+          "name": "barnes_full_app_cpu",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 216,
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "exact_body_total": 51456,
+            "force_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.021243578987196088,
+          "median_sec": 0.02107466198503971,
+          "min_sec": 0.020905744982883334,
+          "name": "barnes_full_app_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 216,
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "exact_body_total": 51456,
+            "force_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.020442805951461196,
+          "median_sec": 0.020280863507650793,
+          "min_sec": 0.02011892106384039,
+          "name": "barnes_full_app_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "accepted_node_total": 216,
+            "body_count_with_candidates": 256,
+            "candidate_row_count": 1024,
+            "exact_body_total": 51456,
+            "force_row_count": 256,
+            "node_count_seen": 4
+          },
+          "matches_reference_reduction": true,
+          "max_sec": 0.022787494934163988,
+          "median_sec": 0.02277037751628086,
+          "min_sec": 0.022753260098397732,
+          "name": "barnes_full_app_vulkan",
+          "status": "ok"
+        }
+      ],
+      "full_reference_summary": {
+        "accepted_node_total": 216,
+        "body_count_with_candidates": 256,
+        "candidate_row_count": 1024,
+        "exact_body_total": 51456,
+        "force_row_count": 256,
+        "max_relative_error": 0.01808063642287055,
+        "node_count_seen": 4
+      },
+      "node_count": 4,
+      "oracle_candidate_summary": {
+        "body_count_with_candidates": 256,
+        "candidate_row_count": 1024,
+        "node_count_seen": 4
+      }
+    }
+  ],
+  "fairness_contract": {
+    "barnes_candidate": "all backends run the same fixed_radius_neighbors body-to-node candidate kernel on identical one-level quadtree nodes",
+    "barnes_full_app": "full timing includes Python opening-rule and force reduction; report candidate timing separately to avoid claiming RTDL owns Python reduction work",
+    "robot": "all backends run the same ray/triangle hit-count kernel on identical rays and triangles; CPU ray_triangle_hit_count_cpu defines correctness"
+  },
+  "goal": "goal509_v0_8_robot_barnes_perf",
+  "host": {
+    "embree_version": "(4, 3, 0)",
+    "hostname": "lx1",
+    "nvidia_smi": "NVIDIA GeForce GTX 1070, 580.126.09",
+    "optix_version": "(9, 0, 0)",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3",
+    "vulkan_version": "(0, 1, 0)"
+  },
+  "iterations": 2,
+  "pid": 309104,
+  "robot_cases": [
+    {
+      "edge_ray_count": 400,
+      "measurements": [
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 87,
+            "hit_rows": 261,
+            "row_count": 400,
+            "total_hits": 435
+          },
+          "matches_oracle": true,
+          "max_sec": 0.012540476978756487,
+          "median_sec": 0.008717274467926472,
+          "min_sec": 0.0048940719570964575,
+          "name": "robot_cpu",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 87,
+            "hit_rows": 261,
+            "row_count": 400,
+            "total_hits": 435
+          },
+          "matches_oracle": true,
+          "max_sec": 0.002569154021330178,
+          "median_sec": 0.00180307705886662,
+          "min_sec": 0.0010370000964030623,
+          "name": "robot_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 87,
+            "hit_rows": 261,
+            "row_count": 400,
+            "total_hits": 435
+          },
+          "matches_oracle": true,
+          "max_sec": 0.30317968293093145,
+          "median_sec": 0.15269024850567803,
+          "min_sec": 0.002200814080424607,
+          "name": "robot_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 87,
+            "hit_rows": 174,
+            "row_count": 400,
+            "total_hits": 344
+          },
+          "matches_oracle": false,
+          "max_sec": 0.476389795076102,
+          "median_sec": 0.2412008650135249,
+          "min_sec": 0.0060119349509477615,
+          "name": "robot_vulkan",
+          "status": "ok"
+        }
+      ],
+      "obstacle_triangle_count": 128,
+      "oracle": {
+        "colliding_pose_count": 87,
+        "hit_rows": 261,
+        "row_count": 400,
+        "total_hits": 435
+      },
+      "pose_count": 100
+    },
+    {
+      "edge_ray_count": 2000,
+      "measurements": [
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 437,
+            "hit_rows": 1311,
+            "row_count": 2000,
+            "total_hits": 2185
+          },
+          "matches_oracle": true,
+          "max_sec": 0.02208016801159829,
+          "median_sec": 0.02200666698627174,
+          "min_sec": 0.02193316596094519,
+          "name": "robot_cpu",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 437,
+            "hit_rows": 1311,
+            "row_count": 2000,
+            "total_hits": 2185
+          },
+          "matches_oracle": true,
+          "max_sec": 0.00484671606682241,
+          "median_sec": 0.0037753210635855794,
+          "min_sec": 0.002703926060348749,
+          "name": "robot_embree",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 437,
+            "hit_rows": 1311,
+            "row_count": 2000,
+            "total_hits": 2185
+          },
+          "matches_oracle": true,
+          "max_sec": 0.010575069929473102,
+          "median_sec": 0.009428176970686764,
+          "min_sec": 0.008281284011900425,
+          "name": "robot_optix",
+          "status": "ok"
+        },
+        {
+          "iterations": 2,
+          "last_result": {
+            "colliding_pose_count": 437,
+            "hit_rows": 874,
+            "row_count": 2000,
+            "total_hits": 1725
+          },
+          "matches_oracle": false,
+          "max_sec": 0.009607659070752561,
+          "median_sec": 0.008458548050839454,
+          "min_sec": 0.007309437030926347,
+          "name": "robot_vulkan",
+          "status": "ok"
+        }
+      ],
+      "obstacle_triangle_count": 128,
+      "oracle": {
+        "colliding_pose_count": 437,
+        "hit_rows": 1311,
+        "row_count": 2000,
+        "total_hits": 2185
+      },
+      "pose_count": 500
+    }
+  ]
+}

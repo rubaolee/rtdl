@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `83`
-- Archived files in `history/history.db`: `909`
+- Structured revision rounds: `84`
+- Archived files in `history/history.db`: `920`
 - External report snapshots: `193`
-- Project snapshots: `716`
-- Tracked `docs/reports/` artifacts: `1483`
-- Tracked `history/ad_hoc_reviews/` artifacts: `670`
-- Tracked AI handoff files: `385`
+- Project snapshots: `727`
+- Tracked `docs/reports/` artifacts: `1488`
+- Tracked `history/ad_hoc_reviews/` artifacts: `671`
+- Tracked AI handoff files: `386`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal509 robot and Barnes-Hut Linux performance evidence | `docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md` | `goal509-robot-barnes-linux-perf` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal508 Hausdorff Performance Public Doc Refresh | `COMPLETE` | `2026-04-17-goal508-hausdorff-perf-public-doc-refresh` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal507 Hausdorff Linux Large-Scale Performance | `COMPLETE` | `2026-04-17-goal507-hausdorff-linux-perf` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal506 v0.8 Public Entry Alignment | `COMPLETE` | `2026-04-17-goal506-v0-8-public-entry-alignment` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal500 v0.7 DB Expert Attack Audit Intake | `COMPLETE` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
-| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal497 Public Entry Smoke Check | `COMPLETE` | `2026-04-16-goal497-public-entry-smoke` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 670 |
-| `ai_handoff` | 385 |
+| `ad_hoc_review_or_consensus` | 671 |
+| `ai_handoff` | 386 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1483 |
-| `script` | 118 |
+| `report_or_review` | 1488 |
+| `script` | 119 |
 | `source` | 76 |
-| `structured_history_archive` | 1356 |
-| `test` | 205 |
+| `structured_history_archive` | 1368 |
+| `test` | 206 |
 | `tutorial` | 11 |
 
 ## Boundaries
