@@ -1,0 +1,11 @@
+slug: 2026-04-17-goal500-v0-7-db-expert-attack-audit-intake
+title: Goal500 v0.7 DB Expert Attack Audit Intake
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 62734347a17198326acc85c46ae2537eae56b12f
+gemini_review: Claude accepted the audit intake response and error-contract fix
+codex_revision: Codex preserved the external report, corrected stale/overbroad claims, fixed missing-field ValueError consistency, and recorded consensus
+final_result: COMPLETE
+summary: Ingested the 2026-04-17 external v0.7 DB expert attack audit, fixed the remaining grouped-field error-surface gap, and preserved the bounded response record.

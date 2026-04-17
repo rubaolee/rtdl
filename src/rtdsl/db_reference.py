@@ -88,7 +88,7 @@ def grouped_count_cpu(
     counts: dict[tuple[Any, ...], int] = {}
     for row in table_rows:
         if all(_row_matches_clause(row, clause) for clause in query.predicates):
-            key = tuple(row[group_key] for group_key in query.group_keys)
+            key = tuple(_require_row_field(row, group_key, "group key") for group_key in query.group_keys)
             counts[key] = counts.get(key, 0) + 1
     rows = []
     for key in sorted(counts):
@@ -109,8 +109,8 @@ def grouped_sum_cpu(
     sums: dict[tuple[Any, ...], float] = {}
     for row in table_rows:
         if all(_row_matches_clause(row, clause) for clause in query.predicates):
-            key = tuple(row[group_key] for group_key in query.group_keys)
-            sums[key] = sums.get(key, 0.0) + float(row[query.value_field])
+            key = tuple(_require_row_field(row, group_key, "group key") for group_key in query.group_keys)
+            sums[key] = sums.get(key, 0.0) + float(_require_row_field(row, query.value_field, "sum value"))
     rows = []
     for key in sorted(sums):
         result = {group_key: key[index] for index, group_key in enumerate(query.group_keys)}
@@ -167,3 +167,9 @@ def _row_matches_clause(row: dict[str, Any], clause: PredicateClause) -> bool:
     if clause.op == "between":
         return clause.value <= value <= clause.value_hi
     raise ValueError(f"unsupported predicate operator: {clause.op}")
+
+
+def _require_row_field(row: dict[str, Any], field: str, role: str) -> Any:
+    if field not in row:
+        raise ValueError(f"row is missing {role} field `{field}`")
+    return row[field]

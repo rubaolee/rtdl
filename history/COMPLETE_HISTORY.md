@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `74`
-- Archived files in `history/history.db`: `822`
-- External report snapshots: `184`
-- Project snapshots: `638`
-- Tracked `docs/reports/` artifacts: `1453`
-- Tracked `history/ad_hoc_reviews/` artifacts: `661`
-- Tracked AI handoff files: `376`
+- Structured revision rounds: `75`
+- Archived files in `history/history.db`: `827`
+- External report snapshots: `185`
+- Project snapshots: `642`
+- Tracked `docs/reports/` artifacts: `1456`
+- Tracked `history/ad_hoc_reviews/` artifacts: `662`
+- Tracked AI handoff files: `377`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal500 v0.7 DB Expert Attack Audit Intake | `COMPLETE` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal497 Public Entry Smoke Check | `COMPLETE` | `2026-04-16-goal497-public-entry-smoke` |
@@ -66,26 +67,25 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | v0.7 Goals 488-492 Release-Readiness Catch-up | `COMPLETE` | `2026-04-16-v0-7-goals488-492-catchup` |
 | `v0.7` | 2026-04-16 | `active-hold` | v0.7 Current Release-Hold State | `HOLD` | `2026-04-16-v0-7-current-hold` |
 | `v0.6.1` | 2026-04-15 | `complete` | v0.6.1 Closure Catch-up | `COMPLETE` | `2026-04-15-v0-6-closure` |
-| `v0.5` | 2026-04-14 | `complete` | v0.5 Closure Catch-up | `COMPLETE` | `2026-04-14-v0-5-closure` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 661 |
-| `ai_handoff` | 376 |
+| `ad_hoc_review_or_consensus` | 662 |
+| `ai_handoff` | 377 |
 | `example` | 67 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
 | `history_index` | 3 |
 | `history_support` | 4 |
 | `live_goal_doc` | 61 |
-| `other` | 480 |
+| `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1453 |
+| `report_or_review` | 1456 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1261 |
+| `structured_history_archive` | 1267 |
 | `test` | 199 |
 | `tutorial` | 10 |
 

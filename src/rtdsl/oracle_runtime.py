@@ -518,8 +518,12 @@ def _encode_db_text_fields(table_rows, clauses, *, extra_fields=()):
     encode_fields: set[str] = set()
     all_fields = set(extra_fields)
     all_fields.update(str(clause.field) for clause in clauses)
+    for index, row in enumerate(table_rows):
+        for field in sorted(all_fields):
+            if field not in row:
+                raise ValueError(f"denorm table row {index} is missing DB field `{field}`")
     for field in all_fields:
-        values = [row[field] for row in table_rows if field in row]
+        values = [row[field] for row in table_rows]
         if any(isinstance(value, str) for value in values):
             encode_fields.add(field)
         for clause in clauses:

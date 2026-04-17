@@ -420,7 +420,7 @@ class TestConjunctiveScanEdgeCases(unittest.TestCase):
 
     def test_row_missing_predicate_field_raises(self):
         table = ({"row_id": 1, "quantity": 10},)  # missing "discount"
-        with self.assertRaises((ValueError, KeyError)):
+        with self.assertRaises(ValueError):
             _run_scan((("discount", "eq", 6),), table=table)
 
     def test_dict_wrapped_table_rows_accepted(self):
@@ -658,7 +658,12 @@ class TestGroupedSum(unittest.TestCase):
 
     def test_missing_value_field_in_row_raises(self):
         table = ({"row_id": 1, "region": "x"},)  # no "revenue"
-        with self.assertRaises((ValueError, KeyError)):
+        with self.assertRaises(ValueError):
+            _run_sum(self._query(), table=table)
+
+    def test_missing_group_key_in_row_raises_value_error(self):
+        table = ({"row_id": 1, "revenue": 5},)  # no "region"
+        with self.assertRaises(ValueError):
             _run_sum(self._query(), table=table)
 
 
@@ -705,6 +710,16 @@ class TestDbReferenceCpuDirect(unittest.TestCase):
         q = GroupedAggregateQuery(predicates=(), group_keys=("region",), value_field=None)
         with self.assertRaises(ValueError):
             grouped_sum_cpu(table, q)
+
+    def test_grouped_count_missing_group_key_raises_value_error(self):
+        q = GroupedAggregateQuery(predicates=(), group_keys=("region",), value_field=None)
+        with self.assertRaises(ValueError):
+            grouped_count_cpu(({"row_id": 1},), q)
+
+    def test_grouped_sum_missing_value_field_in_row_raises_value_error(self):
+        q = GroupedAggregateQuery(predicates=(), group_keys=("region",), value_field="revenue")
+        with self.assertRaises(ValueError):
+            grouped_sum_cpu(({"row_id": 1, "region": "x"},), q)
 
 
 # ===========================================================================
