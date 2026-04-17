@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `70`
-- Archived files in `history/history.db`: `788`
-- External report snapshots: `180`
-- Project snapshots: `608`
-- Tracked `docs/reports/` artifacts: `1443`
-- Tracked `history/ad_hoc_reviews/` artifacts: `657`
-- Tracked AI handoff files: `372`
+- Structured revision rounds: `71`
+- Archived files in `history/history.db`: `803`
+- External report snapshots: `181`
+- Project snapshots: `622`
+- Tracked `docs/reports/` artifacts: `1446`
+- Tracked `history/ad_hoc_reviews/` artifacts: `658`
+- Tracked AI handoff files: `373`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal496 Public Docs Competing Versions | `COMPLETE` | `2026-04-16-goal496-public-docs-competing-versions` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal495 Complete History Map | `COMPLETE` | `2026-04-16-goal495-complete-history-map` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal494 History Revisions Refresh After v0.7 Release | `COMPLETE` | `2026-04-16-goal494-history-revisions-refresh` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal493 Post-v0.7 Public Surface 3C Audit | `COMPLETE` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
@@ -66,26 +67,25 @@ Use these layers together:
 | `v0.4` | 2026-04-12 | `complete` | v0.4 Closure Catch-up | `COMPLETE` | `2026-04-12-v0-4-closure` |
 | `v0.3` | 2026-04-09 | `complete` | v0.2/v0.3 Closure Catch-up | `COMPLETE` | `2026-04-09-v0-2-v0-3-closure` |
 | `v0.1` | 2026-04-04 | `complete-consensus` | Goal 65 Vulkan OptiX Linux Comparison | `Goal 65 accepted under Codex+Gemini consensus: Vulkan runs on Linux but remains provisional; OptiX stays the accepted GPU backend` | `2026-04-04-goal-65-vulkan-optix-linux-comparison` |
-| `v0.1` | 2026-04-04 | `complete-consensus` | Goal 64 Submission-Ready Paper Package | `Goal 64 accepted under Codex+Gemini fallback because Claude was unavailable` | `2026-04-04-goal-64-submission-ready-paper-package` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 657 |
-| `ai_handoff` | 372 |
+| `ad_hoc_review_or_consensus` | 658 |
+| `ai_handoff` | 373 |
 | `example` | 66 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
 | `history_index` | 3 |
 | `history_support` | 4 |
 | `live_goal_doc` | 61 |
-| `other` | 479 |
+| `other` | 480 |
 | `release_report` | 49 |
-| `report_or_review` | 1443 |
+| `report_or_review` | 1446 |
 | `script` | 116 |
 | `source` | 76 |
-| `structured_history_archive` | 1229 |
+| `structured_history_archive` | 1241 |
 | `test` | 199 |
 | `tutorial` | 9 |
 

@@ -6,6 +6,11 @@ If you are brand new, read [Quick Tutorial](../quick_tutorial.md) first. It gets
 you a working program immediately and explains the kernel shape before the
 longer tutorials.
 
+The tutorial ladder is organized around the main RTDL value proposition: write a
+small workload kernel once, keep application logic in Python, and avoid
+hand-maintaining separate ray-tracing backend implementations for every modern
+RT stack.
+
 ---
 
 ## Tutorial Ladder
@@ -68,6 +73,7 @@ application.
 
 Once you finish the ladder, the next useful destinations are:
 
+- [Current Architecture](../current_architecture.md)
 - [Release-Facing Examples](../release_facing_examples.md)
 - [Feature Homes](../features/README.md)
 - [RTDL Language Docs](../rtdl/README.md)

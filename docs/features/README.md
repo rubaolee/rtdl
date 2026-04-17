@@ -13,6 +13,21 @@ Use these feature homes when you want to answer practical questions quickly:
 - what to try and what not to try
 - current limitations
 
+## Choose By Workload Shape
+
+| Workload shape | Feature home |
+| --- | --- |
+| nearest neighbors within a radius | [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) |
+| top-k nearest neighbors | [KNN Rows](knn_rows/README.md) |
+| segment/polygon candidate search | [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md) |
+| segment/polygon row materialization | [Segment/Polygon Any-Hit Rows](segment_polygon_anyhit_rows/README.md) |
+| bounded overlap/Jaccard cases | [Polygon-Pair Overlap Area Rows](polygon_pair_overlap_area_rows/README.md) and [Polygon-Set Jaccard](polygon_set_jaccard/README.md) |
+| bounded DB-style filtering and aggregation | [Database Workloads](db_workloads/README.md) |
+
+Across these features, the intended RTDL benefit is the same: write the
+workload contract once, then let RTDL handle traversal/refinement/backend
+plumbing inside documented release limits.
+
 Current feature homes:
 
 - [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) (released in `v0.4.0`)

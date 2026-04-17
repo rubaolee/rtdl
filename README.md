@@ -22,6 +22,28 @@ RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.
 
+## Why RTDL Is Useful
+
+Modern ray-tracing workloads usually require the same hard plumbing before the
+real idea appears: shape data into backend buffers, build acceleration
+structures, launch backend-specific kernels, refine candidate hits, normalize
+result rows, and keep CPU/GPU/RT-backend variants consistent.
+
+RTDL's authoring target is a **10x reduction in workload-writing burden**. That
+is an engineering-productivity target, not an unbounded speedup claim: you write
+one compact kernel shape, keep application logic in Python, and let RTDL own the
+accelerated traversal/refinement path across the supported backends.
+
+The recurring mental model is:
+
+1. declare `probe` and `build` inputs
+2. run `traverse(..., accel="bvh")`
+3. run `refine(...)` for exact workload semantics
+4. `emit(...)` stable application rows
+
+That same shape now covers released geometry, nearest-neighbor, graph, and
+bounded DB-style analytical workloads.
+
 ## Version Status At A Glance
 
 - current released version: `v0.7.0`
@@ -95,12 +117,14 @@ If you want the exact current boundary instead of the short front-page summary,
 use:
 
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
+- [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 
 ## See It Quickly
 
 Primary front-door links:
 
 - [Watch The Public 4K Demo Video](https://youtu.be/d3yJB7AmCLM)
+- [Current Architecture](docs/current_architecture.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Tutorials](docs/tutorials/README.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
@@ -371,7 +395,7 @@ That is why the demo belongs here. It is not a product pivot toward graphics.
 It is a proof that RTDL can act as the query engine inside a larger Python
 application.
 
-## Why RTDL Exists
+## Research Context
 
 Ray-tracing hardware and software are very good at hierarchical traversal,
 intersection, and search-style computation. RTDL uses that machinery for
@@ -429,6 +453,7 @@ Key locations:
 Best next pages:
 
 - [Documentation Index](docs/README.md)
+- [Current Architecture](docs/current_architecture.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Feature Homes](docs/features/README.md)
 - [RTDL v0.7 Release Package](docs/release_reports/v0_7/README.md)

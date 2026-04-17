@@ -1,0 +1,11 @@
+slug: 2026-04-16-goal496-public-docs-competing-versions
+title: Goal496 Public Docs Competing Versions
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: HEAD
+gemini_review: Claude accepted; Gemini Flash attempted but produced no valid verdict
+codex_revision: selected user-value-first public docs with bounded release claims preserved
+final_result: COMPLETE
+summary: Public docs now explain RTDL's authoring-burden reduction before release bookkeeping while retaining exact v0.7 boundaries.

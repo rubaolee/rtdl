@@ -1,0 +1,1 @@
+Review Goal 496 public documentation updates for README, docs index, current architecture, tutorials, examples, and feature guide, and verify that the chosen user-value-first wording improves RTDL usefulness/attractiveness/comprehensiveness while preserving v0.7 honesty boundaries and not making unsupported performance claims.

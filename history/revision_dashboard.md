@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 70
-- Archived files: 788
-- External reports: 180
-- Project snapshots: 608
+- Revision rounds: 71
+- Archived files: 803
+- External reports: 181
+- Project snapshots: 622
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.7.0 | 2026-04-16 | complete-consensus | Goal496 Public Docs Competing Versions | Claude accepted; Gemini Flash attempted but produced no valid verdict | selected user-value-first public docs with bounded release claims preserved | COMPLETE | `HEAD` | `2026-04-16-goal496-public-docs-competing-versions` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal495 Complete History Map | Claude and Gemini Flash accepted Goal495 | added visitor-facing complete repo-visible history map and inventories | COMPLETE | `HEAD` | `2026-04-16-goal495-complete-history-map` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal494 History Revisions Refresh After v0.7 Release | Claude and Gemini Flash accepted Goal494 | registered missing post-v0.7 history rounds and regenerated dashboards | COMPLETE | `HEAD` | `2026-04-16-goal494-history-revisions-refresh` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal493 Post-v0.7 Public Surface 3C Audit | Claude and Gemini Flash accepted Goal493 | registered post-release public docs/tutorials/examples 3C closure | COMPLETE | `ca37a4b` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
