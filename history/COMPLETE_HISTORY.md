@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `76`
-- Archived files in `history/history.db`: `832`
-- External report snapshots: `186`
-- Project snapshots: `646`
-- Tracked `docs/reports/` artifacts: `1459`
-- Tracked `history/ad_hoc_reviews/` artifacts: `663`
-- Tracked AI handoff files: `378`
+- Structured revision rounds: `77`
+- Archived files in `history/history.db`: `845`
+- External report snapshots: `187`
+- Project snapshots: `658`
+- Tracked `docs/reports/` artifacts: `1462`
+- Tracked `history/ad_hoc_reviews/` artifacts: `664`
+- Tracked AI handoff files: `379`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal502 Hausdorff Distance App | `COMPLETE` | `2026-04-17-goal502-hausdorff-distance-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal501 v0.7 DB Comprehensive Attack Response | `COMPLETE` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal500 v0.7 DB Expert Attack Audit Intake | `COMPLETE` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
@@ -66,15 +67,14 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal493 Post-v0.7 Public Surface 3C Audit | `COMPLETE` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
 | `v0.7.0` | 2026-04-16 | `released` | v0.7.0 Release Action | `RELEASED` | `2026-04-16-v0-7-release-action` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | v0.7 Goals 488-492 Release-Readiness Catch-up | `COMPLETE` | `2026-04-16-v0-7-goals488-492-catchup` |
-| `v0.7` | 2026-04-16 | `active-hold` | v0.7 Current Release-Hold State | `HOLD` | `2026-04-16-v0-7-current-hold` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 663 |
-| `ai_handoff` | 378 |
-| `example` | 67 |
+| `ad_hoc_review_or_consensus` | 664 |
+| `ai_handoff` | 379 |
+| `example` | 68 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
 | `history_index` | 3 |
@@ -82,10 +82,10 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1459 |
+| `report_or_review` | 1462 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1273 |
+| `structured_history_archive` | 1287 |
 | `test` | 199 |
 | `tutorial` | 10 |
 

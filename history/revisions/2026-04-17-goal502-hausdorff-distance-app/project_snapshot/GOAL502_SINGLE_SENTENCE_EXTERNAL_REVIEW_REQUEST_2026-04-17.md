@@ -1,0 +1,1 @@
+Review Goal502 and verify whether `/Users/rl2025/rtdl_python_only/examples/rtdl_hausdorff_distance_app.py`, its tests, and its public-doc updates correctly implement the Goal499 Hausdorff app recommendation as RTDL nearest-neighbor rows plus Python reduction without overstating X-HD paper-level performance.
