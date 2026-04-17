@@ -1,0 +1,1 @@
+Review Goal505 and verify whether `/Users/rl2025/rtdl_python_only/docs/tutorials/v0_8_app_building.md`, `/Users/rl2025/rtdl_python_only/tests/goal505_v0_8_app_suite_test.py`, and the release-example/tutorial-index updates correctly consolidate Goals 502-504 into a coherent v0.8 app-building story without claiming new RTDL language internals or backend capabilities.

@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `79`
-- Archived files in `history/history.db`: `870`
-- External report snapshots: `189`
-- Project snapshots: `681`
-- Tracked `docs/reports/` artifacts: `1469`
-- Tracked `history/ad_hoc_reviews/` artifacts: `666`
-- Tracked AI handoff files: `381`
+- Structured revision rounds: `80`
+- Archived files in `history/history.db`: `879`
+- External report snapshots: `190`
+- Project snapshots: `689`
+- Tracked `docs/reports/` artifacts: `1472`
+- Tracked `history/ad_hoc_reviews/` artifacts: `667`
+- Tracked AI handoff files: `382`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal505 v0.8 App Suite Consolidation | `COMPLETE` | `2026-04-17-goal505-v0-8-app-suite-consolidation` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal504 v0.8 Barnes-Hut Force App | `COMPLETE` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal503 v0.8 Robot Collision Screening App | `COMPLETE` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal502 Hausdorff Distance App | `COMPLETE` | `2026-04-17-goal502-hausdorff-distance-app` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal496 Public Docs Competing Versions | `COMPLETE` | `2026-04-16-goal496-public-docs-competing-versions` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal495 Complete History Map | `COMPLETE` | `2026-04-16-goal495-complete-history-map` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal494 History Revisions Refresh After v0.7 Release | `COMPLETE` | `2026-04-16-goal494-history-revisions-refresh` |
-| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal493 Post-v0.7 Public Surface 3C Audit | `COMPLETE` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 666 |
-| `ai_handoff` | 381 |
+| `ad_hoc_review_or_consensus` | 667 |
+| `ai_handoff` | 382 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,12 +82,12 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1469 |
+| `report_or_review` | 1472 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1314 |
-| `test` | 201 |
-| `tutorial` | 10 |
+| `structured_history_archive` | 1324 |
+| `test` | 202 |
+| `tutorial` | 11 |
 
 ## Boundaries
 

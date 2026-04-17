@@ -1,0 +1,11 @@
+slug: 2026-04-17-goal505-v0-8-app-suite-consolidation
+title: Goal505 v0.8 App Suite Consolidation
+version: v0.8.0
+status: complete-consensus
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 3de43bcc8a9169ff2c2f383d1a143aa1c69b0261
+gemini_review: Claude PASS and Gemini Flash ACCEPT in docs/reports
+codex_revision: Codex consensus accepts the v0.8 app-suite consolidation
+final_result: COMPLETE
+summary: Consolidated the v0.8 app-building line across tutorials, release examples, suite tests, AI reviews, and history.
