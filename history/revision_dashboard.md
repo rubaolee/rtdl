@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 82
-- Archived files: 898
-- External reports: 192
-- Project snapshots: 706
+- Revision rounds: 83
+- Archived files: 909
+- External reports: 193
+- Project snapshots: 716
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8.0 | 2026-04-17 | complete-consensus | Goal508 Hausdorff Performance Public Doc Refresh | Claude PASS and Gemini ACCEPT in docs/reports | Codex consensus accepts the Goal507 public documentation refresh | COMPLETE | `8ac79888aa58fe19b8cdf5b7d1011124edb1dd10` | `2026-04-17-goal508-hausdorff-perf-public-doc-refresh` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal507 Hausdorff Linux Large-Scale Performance | Claude PASS and Gemini ACCEPT in docs/reports | Codex consensus accepts the bounded Hausdorff Linux performance evidence | COMPLETE | `0612916139d13a1ce1d0f63ce693fd48e5976c34` | `2026-04-17-goal507-hausdorff-linux-perf` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal506 v0.8 Public Entry Alignment | Claude PASS and Gemini ACCEPT in docs/reports | Codex consensus accepts the v0.8 public-entry alignment | COMPLETE | `d541c2358044d09477c8f8ceba6b52d608c136e7` | `2026-04-17-goal506-v0-8-public-entry-alignment` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal505 v0.8 App Suite Consolidation | Claude PASS and Gemini Flash ACCEPT in docs/reports | Codex consensus accepts the v0.8 app-suite consolidation | COMPLETE | `3de43bcc8a9169ff2c2f383d1a143aa1c69b0261` | `2026-04-17-goal505-v0-8-app-suite-consolidation` |

@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 669,
-    "ai_handoff": 384,
+    "ad_hoc_review_or_consensus": 670,
+    "ai_handoff": 385,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1480,
+    "report_or_review": 1483,
     "script": 118,
     "source": 76,
-    "structured_history_archive": 1344,
-    "test": 204,
+    "structured_history_archive": 1356,
+    "test": 205,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 669,
-    "archived_files": 898,
-    "docs_reports": 1480,
-    "external_reports": 192,
-    "handoffs": 384,
-    "project_snapshots": 706,
+    "ad_hoc_reviews": 670,
+    "archived_files": 909,
+    "docs_reports": 1483,
+    "external_reports": 193,
+    "handoffs": 385,
+    "project_snapshots": 716,
     "release_tags": 8,
-    "revision_metadata_files": 83,
-    "revision_rounds": 82,
-    "tracked_files": 4968
+    "revision_metadata_files": 84,
+    "revision_rounds": 83,
+    "tracked_files": 4986
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "Codex consensus accepts the Goal507 public documentation refresh",
+      "final_result": "COMPLETE",
+      "gemini_review": "Claude PASS and Gemini ACCEPT in docs/reports",
+      "slug": "2026-04-17-goal508-hausdorff-perf-public-doc-refresh",
+      "source_commit": "8ac79888aa58fe19b8cdf5b7d1011124edb1dd10",
+      "started_on": "2026-04-17",
+      "status": "complete-consensus",
+      "summary": "Refreshed public docs after Goal507 so the Hausdorff Linux performance evidence is discoverable and bounded.",
+      "title": "Goal508 Hausdorff Performance Public Doc Refresh",
+      "version": "v0.8.0"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "Codex consensus accepts the bounded Hausdorff Linux performance evidence",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Public docs and examples pass a local new-user smoke check after Goal496.",
       "title": "Goal497 Public Entry Smoke Check",
-      "version": "v0.7.0"
-    },
-    {
-      "closed_on": "2026-04-16",
-      "codex_revision": "selected user-value-first public docs with bounded release claims preserved",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude accepted; Gemini Flash attempted but produced no valid verdict",
-      "slug": "2026-04-16-goal496-public-docs-competing-versions",
-      "source_commit": "HEAD",
-      "started_on": "2026-04-16",
-      "status": "complete-consensus",
-      "summary": "Public docs now explain RTDL's authoring-burden reduction before release bookkeeping while retaining exact v0.7 boundaries.",
-      "title": "Goal496 Public Docs Competing Versions",
       "version": "v0.7.0"
     }
   ],

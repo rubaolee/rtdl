@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `82`
-- Archived files in `history/history.db`: `898`
-- External report snapshots: `192`
-- Project snapshots: `706`
-- Tracked `docs/reports/` artifacts: `1480`
-- Tracked `history/ad_hoc_reviews/` artifacts: `669`
-- Tracked AI handoff files: `384`
+- Structured revision rounds: `83`
+- Archived files in `history/history.db`: `909`
+- External report snapshots: `193`
+- Project snapshots: `716`
+- Tracked `docs/reports/` artifacts: `1483`
+- Tracked `history/ad_hoc_reviews/` artifacts: `670`
+- Tracked AI handoff files: `385`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal508 Hausdorff Performance Public Doc Refresh | `COMPLETE` | `2026-04-17-goal508-hausdorff-perf-public-doc-refresh` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal507 Hausdorff Linux Large-Scale Performance | `COMPLETE` | `2026-04-17-goal507-hausdorff-linux-perf` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal506 v0.8 Public Entry Alignment | `COMPLETE` | `2026-04-17-goal506-v0-8-public-entry-alignment` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal505 v0.8 App Suite Consolidation | `COMPLETE` | `2026-04-17-goal505-v0-8-app-suite-consolidation` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal497 Public Entry Smoke Check | `COMPLETE` | `2026-04-16-goal497-public-entry-smoke` |
-| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal496 Public Docs Competing Versions | `COMPLETE` | `2026-04-16-goal496-public-docs-competing-versions` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 669 |
-| `ai_handoff` | 384 |
+| `ad_hoc_review_or_consensus` | 670 |
+| `ai_handoff` | 385 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1480 |
+| `report_or_review` | 1483 |
 | `script` | 118 |
 | `source` | 76 |
-| `structured_history_archive` | 1344 |
-| `test` | 204 |
+| `structured_history_archive` | 1356 |
+| `test` | 205 |
 | `tutorial` | 11 |
 
 ## Boundaries

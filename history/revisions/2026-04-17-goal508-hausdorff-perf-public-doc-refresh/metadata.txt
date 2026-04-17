@@ -1,0 +1,11 @@
+slug: 2026-04-17-goal508-hausdorff-perf-public-doc-refresh
+title: Goal508 Hausdorff Performance Public Doc Refresh
+version: v0.8.0
+status: complete-consensus
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 8ac79888aa58fe19b8cdf5b7d1011124edb1dd10
+gemini_review: Claude PASS and Gemini ACCEPT in docs/reports
+codex_revision: Codex consensus accepts the Goal507 public documentation refresh
+final_result: COMPLETE
+summary: Refreshed public docs after Goal507 so the Hausdorff Linux performance evidence is discoverable and bounded.
