@@ -6,6 +6,10 @@ You write a kernel, a small function that describes what query to run, and then
 call an RTDL runner to execute it. Python owns everything around the kernel:
 data loading, post-processing, presentation, and output.
 
+If you first need the boundary between "RTDL can do this" and "RTDL is not
+intended to become this whole system", read
+[RTDL Capability Boundaries](capability_boundaries.md).
+
 The point is to avoid writing the same ray-tracing workload plumbing again for
 each backend. A typical RT workload needs acceleration-structure setup,
 candidate traversal, exact candidate refinement, output row normalization, and

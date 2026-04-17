@@ -4,6 +4,10 @@ This is the current public architecture page for users evaluating RTDL.
 Historical architecture reports are preserved elsewhere, but this page explains
 the live `v0.7.0` design.
 
+For a direct capability boundary, including what RTDL can do, can help with but
+should not become, and cannot do yet, read
+[RTDL Capability Boundaries](capability_boundaries.md).
+
 ## The User Contract
 
 RTDL is a Python-hosted language/runtime for workloads that can be expressed as
@@ -113,6 +117,7 @@ Do not read the current system as:
 
 For exact release claims, read:
 
+- [RTDL Capability Boundaries](capability_boundaries.md)
 - [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
 - [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 - [Release-Facing Examples](release_facing_examples.md)
