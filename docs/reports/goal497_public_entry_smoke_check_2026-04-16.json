@@ -1,0 +1,88 @@
+{
+  "command_results": [
+    {
+      "cmd": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_hello_world.py"
+      ],
+      "name": "hello_world",
+      "ok": true,
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "hello, world\n"
+    },
+    {
+      "cmd": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "cpu_python_reference",
+        "--copies",
+        "16"
+      ],
+      "name": "geometry_segment_polygon",
+      "ok": true,
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"backend\": \"cpu_python_reference\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x16\",\n  \"row_count\": 160,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 10\n    },\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 11\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 12\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 13\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 14\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 15\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 16\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 17\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 18\n    },\n    {\n      \"hit_count\": 1,"
+    },
+    {
+      "cmd": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_graph_bfs.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "name": "graph_bfs",
+      "ok": true,
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"cpu_python_reference\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n"
+    },
+    {
+      "cmd": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "name": "db_conjunctive_scan",
+      "ok": true,
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"cpu_python_reference\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n"
+    },
+    {
+      "cmd": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_v0_7_db_app_demo.py",
+        "--backend",
+        "auto"
+      ],
+      "name": "db_app_auto",
+      "ok": true,
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"regional_order_dashboard\",\n  \"backend\": \"embree\",\n  \"data_flow\": [\n    \"app order rows\",\n    \"RTDL v0.7 bounded DB workload\",\n    \"prepared RT dataset over encoded row boxes\",\n    \"application-ready JSON rows\"\n  ],\n  \"fallback_note\": null,\n  \"honesty_boundary\": \"Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.\",\n  \"input_table\": {\n    \"fields\": [\n      \"channel\",\n      \"discount\",\n      \"quantity\",\n      \"region\",\n      \"revenue\",\n      \"row_id\",\n      \"ship_date\"\n    ],\n    \"row_count\": 7\n  },\n  \"prepared_dataset\": {\n    \"row_count\": 7,\n    \"transfer\": \"columnar\"\n  },\n  \"queries\": {\n    \"open_order_count_by_region\": {\n      \"meaning\": \"How many small post-window orders remain by region?\",\n      \"operation\": \"grouped_count\",\n      \"query\": {\n        \"group_keys\": [\n          \"region\"\n        ],\n        \"predicates\": [\n          [\n            \"ship_date\",\n            \"ge\",\n            12\n          ],\n          [\n            \"quantity\",\n            \"lt\",\n            20\n          ]\n        ]\n      }\n    },\n    \"promo_order_ids\": {\n      \"meaning\": \"Which discounted small-quantity orders shipped during the campaign window?\",\n      \""
+    }
+  ],
+  "goal": 497,
+  "link_failures": [],
+  "phrase_failures": [],
+  "public_docs": [
+    "README.md",
+    "docs/README.md",
+    "docs/current_architecture.md",
+    "docs/quick_tutorial.md",
+    "docs/release_facing_examples.md",
+    "examples/README.md",
+    "docs/features/README.md",
+    "docs/rtdl_feature_guide.md",
+    "docs/tutorials/README.md",
+    "docs/tutorials/db_workloads.md",
+    "docs/tutorials/graph_workloads.md",
+    "history/COMPLETE_HISTORY.md",
+    "history/revision_dashboard.md"
+  ],
+  "valid": true
+}

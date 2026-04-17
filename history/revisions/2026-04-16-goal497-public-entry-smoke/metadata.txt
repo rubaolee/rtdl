@@ -1,0 +1,11 @@
+slug: 2026-04-16-goal497-public-entry-smoke
+title: Goal497 Public Entry Smoke Check
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: HEAD
+gemini_review: external review request prepared; Codex local smoke pass accepted
+codex_revision: ran public-entry link, wording, example-command, and Markdown sanity checks
+final_result: COMPLETE
+summary: Public docs and examples pass a local new-user smoke check after Goal496.
