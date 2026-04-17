@@ -2,6 +2,15 @@
 
 This directory is the revision archive for RTDL.
 
+If you are asking whether RTDL has a full public history, start here:
+
+- [Complete History Map](COMPLETE_HISTORY.md)
+- [Revision Dashboard](revision_dashboard.md)
+
+The complete history map explains how to trace preserved evidence across
+structured revision rounds, release reports, ad hoc review notes, handoff files,
+git tags, and git commits.
+
 It is designed around two layers:
 
 1. A central SQLite database

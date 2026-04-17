@@ -49,6 +49,7 @@ That is the intended public reading path.
 - [v0.7 Release Package](release_reports/v0_7/README.md)
 - [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
 - [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+- [Complete History Map](../history/COMPLETE_HISTORY.md)
 
 ## Release Packages
 
@@ -70,6 +71,7 @@ Use these only when you need deeper history, audit trails, or process detail:
 - [Historical Architecture Overview](architecture_api_performance_overview.md)
 - [Historical v0.4 Application Examples](v0_4_application_examples.md)
 - [Historical Reports](reports/)
+- [Complete History Map](../history/COMPLETE_HISTORY.md)
 - [Current v0.7 Goal Sequence](history/goals/v0_7_goal_sequence_2026-04-15.md)
 - [Historical Goal Archive](history/goals/archive/)
 - [Historical Docs Tree](history/)

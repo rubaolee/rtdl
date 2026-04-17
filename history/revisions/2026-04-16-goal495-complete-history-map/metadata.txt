@@ -1,0 +1,11 @@
+slug: 2026-04-16-goal495-complete-history-map
+title: Goal495 Complete History Map
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: HEAD
+gemini_review: Claude and Gemini Flash accepted Goal495
+codex_revision: added visitor-facing complete repo-visible history map and inventories
+final_result: COMPLETE
+summary: RTDL now has a public map explaining where complete repo-visible history is recorded and what is intentionally out of scope.
