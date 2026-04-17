@@ -1,0 +1,1 @@
+Please review Goal 437 for v0.7 by checking the repeated-query DB performance summary script, raw JSON evidence, PostgreSQL-inclusive summary report, and Codex review under `/Users/rl2025/worktrees/rtdl_v0_4_main_publish`, then write an ACCEPT/REJECT review with any blockers to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal437_external_review_2026-04-16.md`.

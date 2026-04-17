@@ -343,6 +343,8 @@ def _run_conjunctive_scan_oracle(compiled: CompiledKernel, normalized_inputs, li
     table_name = compiled.candidates.right.name
     table_rows = normalized_inputs[table_name]
     predicates = normalized_inputs[predicates_name]
+    if not table_rows:
+        return ()
     fields_array, row_values_array, row_count = _encode_db_table(table_rows)
     clauses_array = _encode_db_clauses(predicates.clauses)
     rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
@@ -373,6 +375,8 @@ def _run_grouped_count_oracle(compiled: CompiledKernel, normalized_inputs, libra
     table_name = compiled.candidates.right.name
     query = normalized_inputs[query_name]
     table_rows = normalized_inputs[table_name]
+    if not table_rows:
+        return ()
     if len(query.group_keys) != 1:
         return grouped_count_cpu(table_rows, query)
     encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
@@ -416,6 +420,8 @@ def _run_grouped_sum_oracle(compiled: CompiledKernel, normalized_inputs, library
     table_name = compiled.candidates.right.name
     query = normalized_inputs[query_name]
     table_rows = normalized_inputs[table_name]
+    if not table_rows:
+        return ()
     if len(query.group_keys) != 1:
         return grouped_sum_cpu(table_rows, query)
     encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(

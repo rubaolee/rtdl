@@ -53,8 +53,20 @@ Backend note:
 
 - `cpu_python_reference` is pure Python and should run on every OS
 - `cpu` auto-builds the native C oracle library on first use
-- `embree` runs when the Embree backend is available on the host
+- `embree` auto-builds/probes `build/librtdl_embree.*` on first use when the
+  host has Embree headers/libraries available
 - on Linux with a configured GPU stack, `optix` and `vulkan` can run too
+
+Optional Embree backend build/probe:
+
+```bash
+make build-embree
+```
+
+On Windows, set `RTDL_EMBREE_PREFIX` to an x64 Embree prefix and set
+`RTDL_VCVARS64` if Visual Studio Build Tools are not in the default location.
+If a copied snapshot contains a stale `build/librtdl_embree.dll`, delete it and
+rerun the Embree probe so RTDL rebuilds from the current source.
 
 On Linux GPU hosts, build the GPU backend libraries once before using the
 `optix` and `vulkan` commands:
@@ -221,7 +233,25 @@ Follow this order to learn progressively:
 3. [Segment And Polygon Workloads](tutorials/segment_polygon_workloads.md)
 4. [Nearest-Neighbor Workloads](tutorials/nearest_neighbor_workloads.md)
 5. [Graph Workloads](tutorials/graph_workloads.md)
-6. [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
+6. [Database Workloads](tutorials/db_workloads.md)
+7. [RTDL Plus Python Rendering](tutorials/rendering_and_visual_demos.md)
+
+Optional bounded `v0.7` DB branch examples:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
+```
+
+These DB examples are analytical RTDL kernels over denormalized rows. They are
+not SQL execution and RTDL is not a database system.
+
+The two `rtdl_v0_7_*_demo.py` scripts show the app-level and kernel-form usage
+of the same bounded DB surface. They are release-facing examples, not a DBMS
+claim.
 
 Or jump directly to the full hub:
 

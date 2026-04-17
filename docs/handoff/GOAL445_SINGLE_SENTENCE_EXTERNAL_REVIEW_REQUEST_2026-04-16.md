@@ -1,0 +1,1 @@
+Please review Goal 445 for v0.7 by checking the high-level prepared DB kernel path now uses columnar transfer for Embree, OptiX, and Vulkan while direct prepared dataset defaults remain row-compatible, then write an ACCEPT/REJECT review with any blockers to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal445_external_review_2026-04-16.md`.

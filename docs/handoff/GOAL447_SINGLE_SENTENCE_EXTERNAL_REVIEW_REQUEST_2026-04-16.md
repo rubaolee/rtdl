@@ -1,0 +1,1 @@
+Please review Goal 447 for v0.7 by checking the DB columnar packaging-readiness audit, current dirty-tree summary, recent consensus chain, and hold conditions under `/Users/rl2025/worktrees/rtdl_v0_4_main_publish`, then write an ACCEPT/REJECT review with any blockers to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal447_external_review_2026-04-16.md`.

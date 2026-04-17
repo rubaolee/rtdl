@@ -102,10 +102,12 @@ struct RtdlEdgeSeed                  { uint32_t u, v; };
 struct RtdlTriangleRow               { uint32_t u, v, w; };
 struct RtdlDbField                   { const char* name; uint32_t kind; };
 struct RtdlDbScalar                  { uint32_t kind; int64_t int_value; double double_value; const char* string_value; };
+struct RtdlDbColumn                  { const char* name; uint32_t kind; const int64_t* int_values; const double* double_values; const char* const* string_values; };
 struct RtdlDbClause                  { const char* field; uint32_t op; RtdlDbScalar value; RtdlDbScalar value_hi; };
 struct RtdlDbRowIdRow                { uint32_t row_id; };
 struct RtdlDbGroupedCountRow         { int64_t group_key; int64_t count; };
 struct RtdlDbGroupedSumRow           { int64_t group_key; int64_t sum; };
+struct RtdlVulkanDbDataset;
 
 int  rtdl_vulkan_get_version(int* major_out, int* minor_out, int* patch_out);
 int  rtdl_vulkan_run_lsi(
@@ -212,6 +214,37 @@ int  rtdl_vulkan_run_grouped_count(
 int  rtdl_vulkan_run_grouped_sum(
          const RtdlDbField* fields, size_t field_count,
          const RtdlDbScalar* row_values, size_t row_count,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         const char* value_field,
+         RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_db_dataset_create(
+         const RtdlDbField* fields, size_t field_count,
+         const RtdlDbScalar* row_values, size_t row_count,
+         const char* const* primary_fields, size_t primary_field_count,
+         RtdlVulkanDbDataset** dataset_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_db_dataset_create_columnar(
+         const RtdlDbColumn* columns, size_t column_count,
+         size_t row_count,
+         const char* const* primary_fields, size_t primary_field_count,
+         RtdlVulkanDbDataset** dataset_out,
+         char* error_out, size_t error_size);
+void rtdl_vulkan_db_dataset_destroy(RtdlVulkanDbDataset* dataset);
+int  rtdl_vulkan_db_dataset_conjunctive_scan(
+         RtdlVulkanDbDataset* dataset,
+         const RtdlDbClause* clauses, size_t clause_count,
+         RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_db_dataset_grouped_count(
+         RtdlVulkanDbDataset* dataset,
+         const RtdlDbClause* clauses, size_t clause_count,
+         const char* group_key_field,
+         RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_db_dataset_grouped_sum(
+         RtdlVulkanDbDataset* dataset,
          const RtdlDbClause* clauses, size_t clause_count,
          const char* group_key_field,
          const char* value_field,

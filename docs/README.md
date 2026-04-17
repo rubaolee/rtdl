@@ -70,7 +70,8 @@ Use these only when you need deeper history, audit trails, or process detail:
 - [Historical Architecture Overview](architecture_api_performance_overview.md)
 - [Historical v0.4 Application Examples](v0_4_application_examples.md)
 - [Historical Reports](reports/)
-- [Historical Goal Records](history/goals/v0_6_goal_sequence_2026-04-14.md)
+- [Current v0.7 Goal Sequence](history/goals/v0_7_goal_sequence_2026-04-15.md)
+- [Historical Goal Archive](history/goals/archive/)
 - [Historical Docs Tree](history/)
 - [Older Release Archives](archive/v0_1/README.md)
 - [Archive Index](archive/README.md)
@@ -81,7 +82,7 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.6.1`
+- current released version is `v0.7.0`
 - current `main` carries the released `v0.6.1` line
 - the current working branch may also carry the bounded `v0.7` DB line
 - the accepted v0.2 workload surface is exactly:
@@ -102,7 +103,11 @@ Keep these current facts in mind while reading:
   - `grouped_count`
   - `grouped_sum`
   - Embree / OptiX / Vulkan RT backends for that first bounded DB family
+  - native prepared DB dataset reuse on Embree, OptiX, and Vulkan
   - PostgreSQL-backed cross-engine correctness on Linux
+  - PostgreSQL-inclusive repeated-query performance gates on Linux
+  - app-level and kernel-form v0.7 DB demos
+  - release-readiness and staging-authorization evidence through Goal 492
 - the released `v0.2.0` surface remains the stable workload/documentation
   baseline on `main`
 - the released `v0.3.0` line is an application-style demo layer on top of that
@@ -136,6 +141,9 @@ Keep these current facts in mind while reading:
 - Linux is the primary validation platform
 - macOS is only a limited local platform
 - PostgreSQL remains the main external correctness baseline for the graph line
+  and the bounded `v0.7` DB branch line
+- the current bounded v0.7 line is released as `v0.7.0`; claims remain bounded
+  by the v0.7 release reports
 - PostGIS remains part of the earlier non-graph release history
 - the motivating application target is RayJoin:
   - Liang Geng, Rubao Lee, and Xiaodong Zhang,

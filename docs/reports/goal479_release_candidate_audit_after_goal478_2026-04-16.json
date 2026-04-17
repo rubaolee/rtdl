@@ -1,0 +1,56 @@
+{
+  "audit_json_checks": [
+    {
+      "path": "docs/reports/goal470_pre_release_doc_audit_2026-04-16.json",
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal473_post_goal472_release_evidence_audit_2026-04-16.json",
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal475_external_input_manifest_2026-04-16.json",
+      "valid": true
+    }
+  ],
+  "goal": 479,
+  "invalid_flash_checks": [
+    {
+      "marked_invalid": true,
+      "no_raw_accept_line": true,
+      "path": "docs/reports/goal477_gemini_flash_review_2026-04-16.md"
+    },
+    {
+      "marked_invalid": true,
+      "no_raw_accept_line": true,
+      "path": "docs/reports/goal478_gemini_flash_review_2026-04-16.md"
+    }
+  ],
+  "missing_files": [],
+  "release_authorization": false,
+  "release_report_checks": {
+    "audit_not_release_authorization": true,
+    "release_statement_not_tagged": true,
+    "support_not_release_authorization": true,
+    "tag_preparation_hold": true,
+    "tag_preparation_no_tag": true
+  },
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "review_checks": [
+    {
+      "claude_accept": true,
+      "codex_accept": true,
+      "gemini_accept": true,
+      "goal": 477
+    },
+    {
+      "claude_accept": true,
+      "codex_accept": true,
+      "gemini_accept": true,
+      "goal": 478
+    }
+  ],
+  "staging_performed": false,
+  "stale_line_count_refs": [],
+  "valid": true
+}

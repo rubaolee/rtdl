@@ -1,0 +1,87 @@
+{
+  "broken_release_doc_links": [],
+  "claim_gaps": [],
+  "goal": 473,
+  "missing_artifacts": [],
+  "missing_release_docs": [],
+  "release_authorization": false,
+  "release_docs": [
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/release_statement.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/support_matrix.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/audit_report.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/tag_preparation.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_7_goal_sequence_2026-04-15.md"
+    }
+  ],
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "required_artifacts": [
+    {
+      "exists": true,
+      "path": "docs/goal_471_v0_7_external_v0_6_1_expert_attack_suite_intake.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/goal_472_v0_7_release_reports_refresh_after_goal471.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/handoff/GOAL471_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/handoff/GOAL472_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/rtdl_v0_6_1_expert_attack_suite_validation_report_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal471_v0_7_external_v0_6_1_expert_attack_suite_intake_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal471_external_review_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal472_v0_7_release_reports_refresh_after_goal471_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal472_external_review_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal471-v0_7-external-v0_6_1-expert-attack-suite-intake.md"
+    },
+    {
+      "exists": true,
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal472-v0_7-release-reports-refresh-after-goal471.md"
+    }
+  ],
+  "source_report_checks": {
+    "has_bfs_galaxy": true,
+    "has_lsi_cross": true,
+    "has_parity": true,
+    "has_pip_cloud": true,
+    "has_pressure_test": true,
+    "has_triangle_clique": true
+  },
+  "staging_performed": false,
+  "valid": true
+}

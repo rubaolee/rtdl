@@ -1,0 +1,105 @@
+{
+  "broken_release_doc_links": [],
+  "claim_gaps": [],
+  "goal": 470,
+  "missing_artifacts": [],
+  "missing_release_docs": [],
+  "release_authorization": false,
+  "release_docs": [
+    {
+      "exists": true,
+      "path": "README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/features/README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/features/db_workloads/README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/quick_tutorial.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/tutorials/db_workloads.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_facing_examples.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/release_statement.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/support_matrix.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/audit_report.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_7/tag_preparation.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_7_goal_sequence_2026-04-15.md"
+    }
+  ],
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "required_artifacts": [
+    {
+      "exists": true,
+      "path": "docs/reports/goal470_local_full_unittest_discovery_after_fix_2026-04-16.txt"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal470_linux_focused_pre_release_test_2026-04-16.txt"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal470_external_review_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal470_claude_test_review_audit_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal469_external_review_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal469_v0_7_db_attack_report_gap_closure_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/test_v07_db_attack_report_2026-04-16.md"
+    },
+    {
+      "exists": true,
+      "path": "tests/test_v07_db_attack.py"
+    },
+    {
+      "exists": true,
+      "path": "tests/goal469_v0_7_db_attack_gap_closure_test.py"
+    }
+  ],
+  "staging_performed": false,
+  "transcript_checks": {
+    "linux_155_ok": true,
+    "linux_backends_ready": true,
+    "linux_postgresql_ready": true,
+    "local_941_ok": true
+  },
+  "valid": true
+}

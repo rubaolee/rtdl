@@ -1,0 +1,1 @@
+Please review Goal477's broad unittest discovery repair report and the five narrow test edits, then write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal477_external_review_2026-04-16.md`.

@@ -1,0 +1,11 @@
+slug: 2026-04-09-v0-2-v0-3-closure
+title: v0.2/v0.3 Closure Catch-up
+version: v0.3
+status: complete
+started_on: 2026-04-09
+closed_on: 2026-04-09
+source_commit: HEAD
+gemini_review: external report reviewed by Dev AI
+codex_revision: registered historical v0.2/v0.3 closure catch-up
+final_result: COMPLETE
+summary: Closure of v0.2 workload surface and v0.3 demo/application line.

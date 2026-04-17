@@ -1,0 +1,1 @@
+Please review Goal 443 for v0.7 by checking the columnar repeated-query performance script, Linux JSON with PostgreSQL included, implementation report, and Codex review under `/Users/rl2025/worktrees/rtdl_v0_4_main_publish`, then write an ACCEPT/REJECT review with any blockers to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal443_external_review_2026-04-16.md`.

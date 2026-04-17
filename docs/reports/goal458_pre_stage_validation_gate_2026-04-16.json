@@ -1,0 +1,2268 @@
+{
+  "category_counts": {
+    "consensus_record": 27,
+    "goal_doc": 28,
+    "goal_report_or_review": 108,
+    "other": 1,
+    "other_doc": 3,
+    "release_facing_doc": 12,
+    "review_handoff": 28,
+    "runtime_source": 13,
+    "test_source": 8,
+    "validation_script": 16
+  },
+  "closed_goal_coverage": [
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-15-codex-consensus-goal432-v0_7-rt-db-phase-split-perf-clarification.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal432_external_review_2026-04-15.md"
+      ],
+      "goal": 432,
+      "goal_doc": [
+        "docs/goal_432_v0_7_rt_db_phase_split_perf_clarification.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL432_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-15.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_2026-04-15.md",
+        "docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_review_2026-04-15.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal433-v0_7-native-prepared-db-dataset-contract.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal433_external_review_2026-04-16.md"
+      ],
+      "goal": 433,
+      "goal_doc": [
+        "docs/goal_433_v0_7_native_prepared_db_dataset_contract.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL433_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_2026-04-16.md",
+        "docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal434-v0_7-embree-native-prepared-db-dataset.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal434_external_review_2026-04-16.md"
+      ],
+      "goal": 434,
+      "goal_doc": [
+        "docs/goal_434_v0_7_embree_native_prepared_db_dataset.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL434_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_2026-04-16.md",
+        "docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal435-v0_7-optix-native-prepared-db-dataset.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal435_external_review_2026-04-16.md"
+      ],
+      "goal": 435,
+      "goal_doc": [
+        "docs/goal_435_v0_7_optix_native_prepared_db_dataset.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL435_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_2026-04-16.md",
+        "docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal436-v0_7-vulkan-native-prepared-db-dataset.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal436_external_review_2026-04-16.md"
+      ],
+      "goal": 436,
+      "goal_doc": [
+        "docs/goal_436_v0_7_vulkan_native_prepared_db_dataset.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL436_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_2026-04-16.md",
+        "docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal437-v0_7-rt-db-repeated-query-perf-gate.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal437_external_review_2026-04-16.md"
+      ],
+      "goal": 437,
+      "goal_doc": [
+        "docs/goal_437_v0_7_rt_db_repeated_query_perf_gate.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL437_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_2026-04-16.md",
+        "docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal438-v0_7-release-gate-refresh-after-native-prepared-db.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal438_external_review_2026-04-16.md"
+      ],
+      "goal": 438,
+      "goal_doc": [
+        "docs/goal_438_v0_7_release_gate_refresh_after_native_prepared_db.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL438_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_2026-04-16.md",
+        "docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal440-v0_7-embree-columnar-prepared-db-dataset-transfer.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal440_external_review_2026-04-16.md"
+      ],
+      "goal": 440,
+      "goal_doc": [
+        "docs/goal_440_v0_7_embree_columnar_prepared_db_dataset_transfer.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL440_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+        "docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal441-v0_7-optix-columnar-prepared-db-dataset-transfer.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal441_external_review_2026-04-16.md"
+      ],
+      "goal": 441,
+      "goal_doc": [
+        "docs/goal_441_v0_7_optix_columnar_prepared_db_dataset_transfer.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL441_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+        "docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal442-v0_7-vulkan-columnar-prepared-db-dataset-transfer.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal442_external_review_2026-04-16.md"
+      ],
+      "goal": 442,
+      "goal_doc": [
+        "docs/goal_442_v0_7_vulkan_columnar_prepared_db_dataset_transfer.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL442_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+        "docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal443-v0_7-columnar-repeated-query-perf-gate.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal443_external_review_2026-04-16.md"
+      ],
+      "goal": 443,
+      "goal_doc": [
+        "docs/goal_443_v0_7_columnar_repeated_query_perf_gate.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL443_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_2026-04-16.md",
+        "docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal444-v0_7-release-docs-refresh-after-columnar-transfer.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal444_external_review_2026-04-16.md"
+      ],
+      "goal": 444,
+      "goal_doc": [
+        "docs/goal_444_v0_7_release_docs_refresh_after_columnar_transfer.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL444_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_2026-04-16.md",
+        "docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal445-v0_7-high-level-prepared-db-columnar-default.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal445_external_review_2026-04-16.md"
+      ],
+      "goal": 445,
+      "goal_doc": [
+        "docs/goal_445_v0_7_high_level_prepared_db_columnar_default.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL445_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_2026-04-16.md",
+        "docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal446-v0_7-post-columnar-db-regression-sweep.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal446_external_review_2026-04-16.md"
+      ],
+      "goal": 446,
+      "goal_doc": [
+        "docs/goal_446_v0_7_post_columnar_db_regression_sweep.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL446_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_2026-04-16.md",
+        "docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal447-v0_7-db-columnar-packaging-readiness-audit.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal447_external_review_2026-04-16.md"
+      ],
+      "goal": 447,
+      "goal_doc": [
+        "docs/goal_447_v0_7_db_columnar_packaging_readiness_audit.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL447_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_2026-04-16.md",
+        "docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal448-v0_7-db-columnar-packaging-manifest.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal448_external_review_2026-04-16.md"
+      ],
+      "goal": 448,
+      "goal_doc": [
+        "docs/goal_448_v0_7_db_columnar_packaging_manifest.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL448_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal448_v0_7_db_columnar_packaging_manifest_2026-04-16.md",
+        "docs/reports/goal448_v0_7_db_columnar_packaging_manifest_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal449-v0_7-packaging-manifest-validation-gate.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal449_external_review_2026-04-16.md"
+      ],
+      "goal": 449,
+      "goal_doc": [
+        "docs/goal_449_v0_7_packaging_manifest_validation_gate.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL449_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal449_v0_7_packaging_manifest_validation_gate_2026-04-16.md",
+        "docs/reports/goal449_v0_7_packaging_manifest_validation_gate_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal450-v0_7-linux-correctness-and-performance-refresh.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal450_external_review_2026-04-16.md"
+      ],
+      "goal": 450,
+      "goal_doc": [
+        "docs/goal_450_v0_7_linux_correctness_and_performance_refresh.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL450_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_2026-04-16.md",
+        "docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal451-v0_7-postgresql-baseline-index-audit.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal451_external_review_2026-04-16.md"
+      ],
+      "goal": 451,
+      "goal_doc": [
+        "docs/goal_451_v0_7_postgresql_baseline_index_audit.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL451_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal451_v0_7_postgresql_baseline_index_audit_2026-04-16.md",
+        "docs/reports/goal451_v0_7_postgresql_baseline_index_audit_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal452-v0_7-rtdl-vs-best-tested-postgresql-perf-rebase.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal452_external_review_2026-04-16.md"
+      ],
+      "goal": 452,
+      "goal_doc": [
+        "docs/goal_452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL452_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.md",
+        "docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal453-v0_7-release-facing-performance-wording-refresh.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal453_external_review_2026-04-16.md"
+      ],
+      "goal": 453,
+      "goal_doc": [
+        "docs/goal_453_v0_7_release_facing_performance_wording_refresh.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL453_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_2026-04-16.md",
+        "docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal454-v0_7-post-wording-evidence-package-validation.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal454_external_review_2026-04-16.md"
+      ],
+      "goal": 454,
+      "goal_doc": [
+        "docs/goal_454_v0_7_post_wording_evidence_package_validation.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL454_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal454_v0_7_post_wording_evidence_package_validation_2026-04-16.md",
+        "docs/reports/goal454_v0_7_post_wording_evidence_package_validation_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal455-v0_7-post-454-packaging-manifest-refresh.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal455_external_review_2026-04-16.md"
+      ],
+      "goal": 455,
+      "goal_doc": [
+        "docs/goal_455_v0_7_post_454_packaging_manifest_refresh.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL455_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_2026-04-16.md",
+        "docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal456-v0_7-pre-stage-filelist-ledger.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal456_external_review_2026-04-16.md"
+      ],
+      "goal": 456,
+      "goal_doc": [
+        "docs/goal_456_v0_7_pre_stage_filelist_ledger.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL456_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal456_v0_7_pre_stage_filelist_ledger_2026-04-16.md",
+        "docs/reports/goal456_v0_7_pre_stage_filelist_ledger_review_2026-04-16.md"
+      ],
+      "valid": true
+    },
+    {
+      "consensus": [
+        "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal457-v0_7-manual-review-path-resolution.md"
+      ],
+      "external_reviews": [
+        "docs/reports/goal457_external_review_2026-04-16.md"
+      ],
+      "goal": 457,
+      "goal_doc": [
+        "docs/goal_457_v0_7_manual_review_path_resolution.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL457_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal457_v0_7_manual_review_path_resolution_2026-04-16.md",
+        "docs/reports/goal457_v0_7_manual_review_path_resolution_review_2026-04-16.md"
+      ],
+      "valid": true
+    }
+  ],
+  "closed_goal_missing": [],
+  "decision_counts": {
+    "defer": 3,
+    "exclude": 1,
+    "include": 240
+  },
+  "defer_count": 3,
+  "deferred_paths": [
+    "docs/reports/external_independent_release_check_review_2026-04-15.md",
+    "docs/reports/rtdl_v0_6_comprehensive_test_report_dev_handoff.md",
+    "docs/reports/rtdl_v0_6_windows_audit_report_2026-04-16.md"
+  ],
+  "entries": [
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "README.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/README.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/features/README.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/history/goals/v0_7_goal_sequence_2026-04-15.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/quick_tutorial.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/release_facing_examples.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/release_reports/v0_7/audit_report.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/release_reports/v0_7/release_statement.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/release_reports/v0_7/support_matrix.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/release_reports/v0_7/tag_preparation.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "other_doc",
+      "decision": "defer",
+      "path": "docs/reports/external_independent_release_check_review_2026-04-15.md",
+      "rationale": "Goal 457 classifies this as v0.6 audit history, deferred from v0.7 DB staging by default.",
+      "status": " M"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal431_external_review_2026-04-15.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/tutorials/db_workloads.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/embree/rtdl_embree_api.cpp",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/embree/rtdl_embree_prelude.h",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/optix/rtdl_optix_api.cpp",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/optix/rtdl_optix_prelude.h",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/optix/rtdl_optix_workloads.cpp",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/vulkan/rtdl_vulkan_api.cpp",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/vulkan/rtdl_vulkan_core.cpp",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/native/vulkan/rtdl_vulkan_prelude.h",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/rtdsl/__init__.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/rtdsl/db_perf.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/rtdsl/embree_runtime.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/rtdsl/optix_runtime.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "runtime_source",
+      "decision": "include",
+      "path": "src/rtdsl/vulkan_runtime.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": " M"
+    },
+    {
+      "category": "release_facing_doc",
+      "decision": "include",
+      "path": "docs/features/db_workloads/README.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_432_v0_7_rt_db_phase_split_perf_clarification.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_433_v0_7_native_prepared_db_dataset_contract.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_434_v0_7_embree_native_prepared_db_dataset.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_435_v0_7_optix_native_prepared_db_dataset.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_436_v0_7_vulkan_native_prepared_db_dataset.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_437_v0_7_rt_db_repeated_query_perf_gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_438_v0_7_release_gate_refresh_after_native_prepared_db.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_439_v0_7_external_tester_report_intake.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_440_v0_7_embree_columnar_prepared_db_dataset_transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_441_v0_7_optix_columnar_prepared_db_dataset_transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_442_v0_7_vulkan_columnar_prepared_db_dataset_transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_443_v0_7_columnar_repeated_query_perf_gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_444_v0_7_release_docs_refresh_after_columnar_transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_445_v0_7_high_level_prepared_db_columnar_default.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_446_v0_7_post_columnar_db_regression_sweep.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_447_v0_7_db_columnar_packaging_readiness_audit.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_448_v0_7_db_columnar_packaging_manifest.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_449_v0_7_packaging_manifest_validation_gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_450_v0_7_linux_correctness_and_performance_refresh.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_451_v0_7_postgresql_baseline_index_audit.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_453_v0_7_release_facing_performance_wording_refresh.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_454_v0_7_post_wording_evidence_package_validation.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_455_v0_7_post_454_packaging_manifest_refresh.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_456_v0_7_pre_stage_filelist_ledger.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_457_v0_7_manual_review_path_resolution.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_458_v0_7_pre_stage_validation_gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_doc",
+      "decision": "include",
+      "path": "docs/goal_459_v0_7_dry_run_staging_command_plan.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL432_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-15.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL433_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL434_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL435_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL436_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL437_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL438_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL439_EXTERNAL_TESTER_REPORT_INTAKE_INSTRUCTIONS_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL440_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL441_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL442_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL443_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL444_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL445_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL446_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL447_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL448_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL449_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL450_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL451_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL452_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL453_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL454_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL455_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL456_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL457_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL458_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "review_handoff",
+      "decision": "include",
+      "path": "docs/handoff/GOAL459_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal432_db_phase_split_perf_linux_2026-04-15.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal432_external_review_2026-04-15.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_2026-04-15.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_review_2026-04-15.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal433_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal434_embree_native_prepared_db_dataset_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal434_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal435_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal435_optix_native_prepared_db_dataset_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal436_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal436_vulkan_native_prepared_db_dataset_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal437_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal437_repeated_query_db_perf_summary_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal438_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal439_external_tester_report_intake_ledger_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal439_v0_7_external_tester_report_intake_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal440_embree_columnar_transfer_perf_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal440_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal441_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal441_optix_columnar_transfer_perf_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal442_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal442_vulkan_columnar_transfer_perf_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal443_columnar_repeated_query_perf_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal443_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal444_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal445_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal445_external_review_gemini_attempt_invalid_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal445_external_review_status_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal446_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal447_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal448_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal448_v0_7_db_columnar_packaging_manifest_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal448_v0_7_db_columnar_packaging_manifest_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal449_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal449_external_review_gemini_attempt_invalid_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal449_external_review_status_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal449_packaging_manifest_validation_gate_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal449_v0_7_packaging_manifest_validation_gate_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal449_v0_7_packaging_manifest_validation_gate_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal450_columnar_repeated_query_perf_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal450_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal451_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal451_postgresql_baseline_index_audit_linux_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal451_v0_7_postgresql_baseline_index_audit_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal451_v0_7_postgresql_baseline_index_audit_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal452_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal452_external_review_gemini_attempt_overbroad_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal452_external_review_status_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal452_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal453_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal454_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal454_post_wording_evidence_package_validation_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal454_v0_7_post_wording_evidence_package_validation_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal454_v0_7_post_wording_evidence_package_validation_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal455_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal456_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal456_pre_stage_filelist_ledger_2026-04-16.csv",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal456_pre_stage_filelist_ledger_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal456_v0_7_pre_stage_filelist_ledger_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal456_v0_7_pre_stage_filelist_ledger_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal457_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal457_v0_7_manual_review_path_resolution_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal457_v0_7_manual_review_path_resolution_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal458_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal458_pre_stage_validation_gate_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal458_v0_7_pre_stage_validation_gate_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal458_v0_7_pre_stage_validation_gate_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal459_dry_run_staging_command_plan_2026-04-16.json",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal459_external_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal459_v0_7_dry_run_staging_command_plan_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "goal_report_or_review",
+      "decision": "include",
+      "path": "docs/reports/goal459_v0_7_dry_run_staging_command_plan_review_2026-04-16.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "other_doc",
+      "decision": "defer",
+      "path": "docs/reports/rtdl_v0_6_comprehensive_test_report_dev_handoff.md",
+      "rationale": "Goal 457 classifies this as v0.6 audit history, deferred from v0.7 DB staging by default.",
+      "status": "??"
+    },
+    {
+      "category": "other_doc",
+      "decision": "defer",
+      "path": "docs/reports/rtdl_v0_6_windows_audit_report_2026-04-16.md",
+      "rationale": "Goal 457 classifies this as v0.6 audit history, deferred from v0.7 DB staging by default.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-15-codex-consensus-goal432-v0_7-rt-db-phase-split-perf-clarification.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal433-v0_7-native-prepared-db-dataset-contract.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal434-v0_7-embree-native-prepared-db-dataset.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal435-v0_7-optix-native-prepared-db-dataset.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal436-v0_7-vulkan-native-prepared-db-dataset.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal437-v0_7-rt-db-repeated-query-perf-gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal438-v0_7-release-gate-refresh-after-native-prepared-db.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal440-v0_7-embree-columnar-prepared-db-dataset-transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal441-v0_7-optix-columnar-prepared-db-dataset-transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal442-v0_7-vulkan-columnar-prepared-db-dataset-transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal443-v0_7-columnar-repeated-query-perf-gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal444-v0_7-release-docs-refresh-after-columnar-transfer.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal445-v0_7-high-level-prepared-db-columnar-default.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal446-v0_7-post-columnar-db-regression-sweep.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal447-v0_7-db-columnar-packaging-readiness-audit.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal448-v0_7-db-columnar-packaging-manifest.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal449-v0_7-packaging-manifest-validation-gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal450-v0_7-linux-correctness-and-performance-refresh.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal451-v0_7-postgresql-baseline-index-audit.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal452-v0_7-rtdl-vs-best-tested-postgresql-perf-rebase.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal453-v0_7-release-facing-performance-wording-refresh.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal454-v0_7-post-wording-evidence-package-validation.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal455-v0_7-post-454-packaging-manifest-refresh.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal456-v0_7-pre-stage-filelist-ledger.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal457-v0_7-manual-review-path-resolution.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal458-v0_7-pre-stage-validation-gate.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "consensus_record",
+      "decision": "include",
+      "path": "history/ad_hoc_reviews/2026-04-16-codex-consensus-goal459-v0_7-dry-run-staging-command-plan.md",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "other",
+      "decision": "exclude",
+      "path": "rtdsl_current.tar.gz",
+      "rationale": "Archive artifact excluded from source/doc staging by default.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal432_db_phase_split_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal434_embree_native_prepared_db_dataset_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal435_optix_native_prepared_db_dataset_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal436_vulkan_native_prepared_db_dataset_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal437_repeated_query_db_perf_summary.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal440_embree_columnar_transfer_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal441_optix_columnar_transfer_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal442_vulkan_columnar_transfer_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal443_columnar_repeated_query_perf_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal449_packaging_manifest_validation_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal451_postgresql_baseline_index_audit.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal452_rtdl_vs_best_tested_postgresql_perf_rebase.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal454_post_wording_evidence_package_validation.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal456_pre_stage_filelist_ledger.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal458_pre_stage_validation_gate.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "validation_script",
+      "decision": "include",
+      "path": "scripts/goal459_dry_run_staging_command_plan.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal432_v0_7_rt_db_phase_split_perf_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal434_v0_7_embree_native_prepared_db_dataset_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal435_v0_7_optix_native_prepared_db_dataset_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal436_v0_7_vulkan_native_prepared_db_dataset_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    },
+    {
+      "category": "test_source",
+      "decision": "include",
+      "path": "tests/goal445_v0_7_high_level_prepared_db_columnar_default_test.py",
+      "rationale": "Included in the current v0.7 DB source, validation, documentation, or evidence package.",
+      "status": "??"
+    }
+  ],
+  "entry_count": 244,
+  "exclude_count": 1,
+  "excluded_paths": [
+    "rtdsl_current.tar.gz"
+  ],
+  "goal": 458,
+  "goal439_valid_open": true,
+  "include_count": 240,
+  "open_goal_coverage": [
+    {
+      "consensus": [],
+      "expected_state": "open_intake_gate_not_closed",
+      "goal": 439,
+      "goal_doc": [
+        "docs/goal_439_v0_7_external_tester_report_intake.md"
+      ],
+      "handoffs": [
+        "docs/handoff/GOAL439_EXTERNAL_TESTER_REPORT_INTAKE_INSTRUCTIONS_2026-04-16.md"
+      ],
+      "primary_reports": [
+        "docs/reports/goal439_external_tester_report_intake_ledger_2026-04-16.md",
+        "docs/reports/goal439_v0_7_external_tester_report_intake_2026-04-16.md"
+      ]
+    }
+  ],
+  "release_authorization": false,
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "staging_performed": false,
+  "unknown_includes": [],
+  "valid": true
+}

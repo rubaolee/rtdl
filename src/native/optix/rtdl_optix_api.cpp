@@ -379,6 +379,114 @@ extern "C" int rtdl_optix_run_grouped_sum(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_db_dataset_create(
+        const RtdlDbField* fields, size_t field_count,
+        const RtdlDbScalar* row_values, size_t row_count,
+        const char* const* primary_fields, size_t primary_field_count,
+        RtdlOptixDbDataset** dataset_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!dataset_out) {
+            throw std::runtime_error("dataset output pointer must not be null");
+        }
+        *dataset_out = nullptr;
+        auto* dataset = create_db_dataset_optix(
+            fields, field_count,
+            row_values, row_count,
+            primary_fields, primary_field_count);
+        *dataset_out = reinterpret_cast<RtdlOptixDbDataset*>(dataset);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_db_dataset_create_columnar(
+        const RtdlDbColumn* columns, size_t column_count,
+        size_t row_count,
+        const char* const* primary_fields, size_t primary_field_count,
+        RtdlOptixDbDataset** dataset_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!dataset_out) {
+            throw std::runtime_error("dataset output pointer must not be null");
+        }
+        *dataset_out = nullptr;
+        auto* dataset = create_db_dataset_optix_columnar(
+            columns, column_count,
+            row_count,
+            primary_fields, primary_field_count);
+        *dataset_out = reinterpret_cast<RtdlOptixDbDataset*>(dataset);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_db_dataset_destroy(RtdlOptixDbDataset* dataset)
+{
+    delete reinterpret_cast<OptixDbDatasetImpl*>(dataset);
+}
+
+extern "C" int rtdl_optix_db_dataset_conjunctive_scan(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbClause* clauses, size_t clause_count,
+        RtdlDbRowIdRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_db_conjunctive_scan_optix_prepared(
+            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            clauses, clause_count,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_db_dataset_grouped_count(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        RtdlDbGroupedCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_db_grouped_count_optix_prepared(
+            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            clauses, clause_count,
+            group_key_field,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_db_dataset_grouped_sum(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbClause* clauses, size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_db_grouped_sum_optix_prepared(
+            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            clauses, clause_count,
+            group_key_field,
+            value_field,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_free_rows(void* rows) {
     std::free(rows);
 }

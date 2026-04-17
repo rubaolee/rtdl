@@ -6,6 +6,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
+from tests._optix_support import optix_available
+from tests._vulkan_support import vulkan_available
 from rtdsl import connect_postgresql
 from rtdsl import prepare_postgresql_denorm_table
 from rtdsl import query_postgresql_conjunctive_scan
@@ -25,9 +27,9 @@ class Goal429V07RtDbCrossEnginePostgresqlCorrectnessGateTest(unittest.TestCase):
         cls.dsn = os.environ.get("RTDL_POSTGRESQL_DSN", "dbname=postgres")
         if not rt.embree_version():
             raise unittest.SkipTest("Embree runtime is not available")
-        if not rt.optix_version():
+        if not optix_available():
             raise unittest.SkipTest("OptiX runtime is not available")
-        if not rt.vulkan_version():
+        if not vulkan_available():
             raise unittest.SkipTest("Vulkan runtime is not available")
 
     def test_conjunctive_scan_all_engines_match_postgresql(self) -> None:

@@ -1,0 +1,214 @@
+{
+  "conjunctive_scan": {
+    "embree_execute_seconds_median": 0.09313489100895822,
+    "embree_execute_seconds_samples": [
+      0.0868038070620969,
+      0.09318230603821576,
+      0.09313489100895822
+    ],
+    "embree_prepare_seconds_median": 2.614434552961029,
+    "embree_prepare_seconds_samples": [
+      2.493705649045296,
+      2.614434552961029,
+      2.9597143520368263
+    ],
+    "embree_total_seconds_median": 2.70762013993226,
+    "embree_total_seconds_samples": [
+      2.5805124590406194,
+      2.70762013993226,
+      3.05285115505103
+    ],
+    "optix_execute_seconds_median": 0.06794173794332892,
+    "optix_execute_seconds_samples": [
+      0.6418619409669191,
+      0.05850256502162665,
+      0.06794173794332892
+    ],
+    "optix_prepare_seconds_median": 2.7315058269305155,
+    "optix_prepare_seconds_samples": [
+      2.4367660470306873,
+      2.7315058269305155,
+      2.9867010009475052
+    ],
+    "optix_total_seconds_median": 3.0546454859431833,
+    "optix_total_seconds_samples": [
+      3.078630235977471,
+      2.79001094494015,
+      3.0546454859431833
+    ],
+    "postgresql_query_seconds_median": 0.025794386980123818,
+    "postgresql_query_seconds_samples": [
+      0.025794386980123818,
+      0.025406959000974894,
+      0.027043946902267635
+    ],
+    "postgresql_setup_seconds_median": 10.16853365499992,
+    "postgresql_setup_seconds_samples": [
+      10.136847616056912,
+      10.19926217594184,
+      10.16853365499992
+    ],
+    "row_count": 22268,
+    "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+    "vulkan_execute_seconds_median": 0.07559837098233402,
+    "vulkan_execute_seconds_samples": [
+      0.5254941879538819,
+      0.07559837098233402,
+      0.06400815106462687
+    ],
+    "vulkan_prepare_seconds_median": 2.705949121969752,
+    "vulkan_prepare_seconds_samples": [
+      2.3434131409740075,
+      2.705949121969752,
+      2.983983629033901
+    ],
+    "vulkan_total_seconds_median": 2.8689090729458258,
+    "vulkan_total_seconds_samples": [
+      2.8689090729458258,
+      2.781550459098071,
+      3.047993815969676
+    ]
+  },
+  "grouped_count": {
+    "embree_execute_seconds_median": 0.07081818603910506,
+    "embree_execute_seconds_samples": [
+      0.0721397619927302,
+      0.07081818603910506,
+      0.06948266993276775
+    ],
+    "embree_prepare_seconds_median": 2.501069996971637,
+    "embree_prepare_seconds_samples": [
+      2.4268719269894063,
+      2.501069996971637,
+      2.5707323630340397
+    ],
+    "embree_total_seconds_median": 2.5718903860542923,
+    "embree_total_seconds_samples": [
+      2.4990135519765317,
+      2.5718903860542923,
+      2.6402174590621144
+    ],
+    "optix_execute_seconds_median": 0.04215325496625155,
+    "optix_execute_seconds_samples": [
+      0.04872950701974332,
+      0.041744992951862514,
+      0.04215325496625155
+    ],
+    "optix_prepare_seconds_median": 2.5827083190670237,
+    "optix_prepare_seconds_samples": [
+      2.382436078041792,
+      2.5827083190670237,
+      2.6543582290178165
+    ],
+    "optix_total_seconds_median": 2.6244550610426813,
+    "optix_total_seconds_samples": [
+      2.431167879025452,
+      2.6244550610426813,
+      2.6965134060010314
+    ],
+    "postgresql_query_seconds_median": 0.020747149013914168,
+    "postgresql_query_seconds_samples": [
+      0.020747149013914168,
+      0.020741358981467783,
+      0.02075078699272126
+    ],
+    "postgresql_setup_seconds_median": 10.053982713026926,
+    "postgresql_setup_seconds_samples": [
+      10.057378893950954,
+      10.028047243948095,
+      10.053982713026926
+    ],
+    "row_count": 8,
+    "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+    "vulkan_execute_seconds_median": 0.0496765139978379,
+    "vulkan_execute_seconds_samples": [
+      0.05031354899983853,
+      0.04948029306251556,
+      0.0496765139978379
+    ],
+    "vulkan_prepare_seconds_median": 2.4351195730268955,
+    "vulkan_prepare_seconds_samples": [
+      2.3335157750407234,
+      2.669580682995729,
+      2.4351195730268955
+    ],
+    "vulkan_total_seconds_median": 2.48479875002522,
+    "vulkan_total_seconds_samples": [
+      2.383831383078359,
+      2.7190633110003546,
+      2.48479875002522
+    ]
+  },
+  "grouped_sum": {
+    "embree_execute_seconds_median": 0.08203686599154025,
+    "embree_execute_seconds_samples": [
+      0.0818320990074426,
+      0.08203686599154025,
+      0.0820672009140253
+    ],
+    "embree_prepare_seconds_median": 2.552854947047308,
+    "embree_prepare_seconds_samples": [
+      2.4448605970246717,
+      2.552854947047308,
+      2.588362573995255
+    ],
+    "embree_total_seconds_median": 2.6348939610179514,
+    "embree_total_seconds_samples": [
+      2.5266950379591435,
+      2.6348939610179514,
+      2.6704320469871163
+    ],
+    "optix_execute_seconds_median": 0.046544420067220926,
+    "optix_execute_seconds_samples": [
+      0.04794501094147563,
+      0.041921842959709466,
+      0.046544420067220926
+    ],
+    "optix_prepare_seconds_median": 2.587829297990538,
+    "optix_prepare_seconds_samples": [
+      2.397979954024777,
+      2.587829297990538,
+      2.6606570639414713
+    ],
+    "optix_total_seconds_median": 2.6297533300239593,
+    "optix_total_seconds_samples": [
+      2.445926652988419,
+      2.6297533300239593,
+      2.7072032860014588
+    ],
+    "postgresql_query_seconds_median": 0.03597122896462679,
+    "postgresql_query_seconds_samples": [
+      0.03569118399173021,
+      0.03597122896462679,
+      0.036047942005097866
+    ],
+    "postgresql_setup_seconds_median": 10.02772781997919,
+    "postgresql_setup_seconds_samples": [
+      12.172507695038803,
+      10.02337805996649,
+      10.02772781997919
+    ],
+    "row_count": 8,
+    "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+    "vulkan_execute_seconds_median": 0.0499016729881987,
+    "vulkan_execute_seconds_samples": [
+      0.0499016729881987,
+      0.04929097893182188,
+      0.054595896042883396
+    ],
+    "vulkan_prepare_seconds_median": 2.597972584073432,
+    "vulkan_prepare_seconds_samples": [
+      2.337504936964251,
+      2.597972584073432,
+      2.669360783067532
+    ],
+    "vulkan_total_seconds_median": 2.6472654750104994,
+    "vulkan_total_seconds_samples": [
+      2.38740811299067,
+      2.6472654750104994,
+      2.723959274007939
+    ]
+  },
+  "repeats": 3,
+  "row_count": 200000
+}

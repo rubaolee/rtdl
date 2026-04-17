@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import math
@@ -57,6 +58,8 @@ class Goal199FixedRadiusNeighborsCpuOracleTest(unittest.TestCase):
         self.assertEqual(tuple(row["neighbor_id"] for row in payload["cpu_rows"][:3]), (1, 2, 3))
 
     def test_baseline_runner_cli_supports_fixed_radius_neighbors(self) -> None:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = "src" if not env.get("PYTHONPATH") else f"src{os.pathsep}{env['PYTHONPATH']}"
         completed = subprocess.run(
             [
                 PYTHON,
@@ -70,6 +73,7 @@ class Goal199FixedRadiusNeighborsCpuOracleTest(unittest.TestCase):
             ],
             check=True,
             cwd=REPO_ROOT,
+            env=env,
             capture_output=True,
             text=True,
         )

@@ -1,0 +1,6513 @@
+{
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "",
+    "valid": true
+  },
+  "disk_check": {
+    "free_bytes": 53287776256,
+    "min_free_bytes": 5368709120,
+    "total_bytes": 245107195904,
+    "used_bytes": 191819419648,
+    "valid": true
+  },
+  "goal": 486,
+  "goal484_check": {
+    "command": [
+      "python3",
+      "scripts/goal484_post_goal483_release_hold_audit.py"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\"audit_scripts_valid\": true, \"closed_goal_missing\": 0, \"entry_count\": 468, \"exclude_count\": 1, \"include_count\": 467, \"manual_review_count\": 0, \"md\": \"/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal484_post_goal483_release_hold_audit_generated_2026-04-16.md\", \"output\": \"/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal484_post_goal483_release_hold_audit_2026-04-16.json\", \"release_docs_valid\": true, \"valid\": true}",
+    "valid": true
+  },
+  "home_git_garbage_check": {
+    "backup_exists": true,
+    "backup_path": "/Users/rl2025/.git.home-backup-2026-04-16",
+    "count_objects": null,
+    "home_git_path": "/Users/rl2025/.git",
+    "mode": "home_git_disabled",
+    "tmp_file_count": 0,
+    "tmp_files": [],
+    "valid": true,
+    "zero_garbage": true
+  },
+  "invalid_json_artifacts": [],
+  "invalid_text_artifacts": [],
+  "json_artifact_count": 49,
+  "json_checks": [
+    {
+      "error": "",
+      "path": "docs/reports/goal167_windows_numpy_diagonal_movie_summary_2026-04-07.json",
+      "size": 130890,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal209_v0_4_bounded_scaling_note_data_2026-04-10.json",
+      "size": 5910,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal228_v0_4_heavy_nearest_neighbor_perf_summary_2026-04-10.json",
+      "size": 5526,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal410_linux_tutorial_example_check_2026-04-15.json",
+      "size": 53873,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal410_macos_tutorial_example_check_2026-04-15.json",
+      "size": 52570,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal410_windows_tutorial_example_check_2026-04-15.json",
+      "size": 55111,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal411_github_actions_public_surface_report_2026-04-15.json",
+      "size": 314,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal426_v0_7_rt_db_embree_perf_linux_2026-04-15.json",
+      "size": 2517,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal427_v0_7_rt_db_optix_perf_linux_2026-04-15.json",
+      "size": 2514,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal428_v0_7_rt_db_vulkan_perf_linux_2026-04-15.json",
+      "size": 2511,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal430_v0_7_rt_db_perf_gate_linux_2026-04-15.json",
+      "size": 3018,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal432_db_phase_split_perf_linux_2026-04-15.json",
+      "size": 6381,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal434_embree_native_prepared_db_dataset_linux_2026-04-16.json",
+      "size": 4492,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal435_optix_native_prepared_db_dataset_linux_2026-04-16.json",
+      "size": 4523,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal436_vulkan_native_prepared_db_dataset_linux_2026-04-16.json",
+      "size": 4520,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal437_repeated_query_db_perf_summary_2026-04-16.json",
+      "size": 6519,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal440_embree_columnar_transfer_perf_linux_2026-04-16.json",
+      "size": 2011,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal441_optix_columnar_transfer_perf_linux_2026-04-16.json",
+      "size": 2024,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal442_vulkan_columnar_transfer_perf_linux_2026-04-16.json",
+      "size": 2025,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal443_columnar_repeated_query_perf_linux_2026-04-16.json",
+      "size": 18407,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal449_packaging_manifest_validation_gate_2026-04-16.json",
+      "size": 5022,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal450_columnar_repeated_query_perf_linux_2026-04-16.json",
+      "size": 18395,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal451_postgresql_baseline_index_audit_linux_2026-04-16.json",
+      "size": 75383,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal452_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.json",
+      "size": 12058,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal454_post_wording_evidence_package_validation_2026-04-16.json",
+      "size": 2073,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal456_pre_stage_filelist_ledger_2026-04-16.json",
+      "size": 65742,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal458_pre_stage_validation_gate_2026-04-16.json",
+      "size": 92024,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal459_dry_run_staging_command_plan_2026-04-16.json",
+      "size": 36998,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal463_post_demo_dry_run_staging_command_plan_2026-04-16.json",
+      "size": 42048,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal463_post_demo_pre_stage_filelist_ledger_2026-04-16.json",
+      "size": 80359,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal463_post_demo_pre_stage_validation_gate_2026-04-16.json",
+      "size": 105883,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal464_linux_fresh_app_demo_output_2026-04-16.json",
+      "size": 2583,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal464_linux_fresh_columnar_repeated_query_perf_2026-04-16.json",
+      "size": 18403,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal464_linux_fresh_kernel_demo_output_2026-04-16.json",
+      "size": 2483,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal464_linux_fresh_postgresql_index_audit_2026-04-16.json",
+      "size": 75399,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal464_linux_fresh_rtdl_vs_postgresql_rebase_2026-04-16.json",
+      "size": 12058,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal465_post_linux_fresh_dry_run_staging_command_plan_2026-04-16.json",
+      "size": 43743,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal465_post_linux_fresh_pre_stage_filelist_ledger_2026-04-16.json",
+      "size": 83593,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal465_post_linux_fresh_pre_stage_validation_gate_2026-04-16.json",
+      "size": 110877,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal470_pre_release_doc_audit_2026-04-16.json",
+      "size": 2457,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal473_post_goal472_release_evidence_audit_2026-04-16.json",
+      "size": 2405,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal474_post_goal473_pre_stage_refresh_2026-04-16.json",
+      "size": 178832,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal475_external_input_manifest_2026-04-16.json",
+      "size": 78845,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal479_release_candidate_audit_after_goal478_2026-04-16.json",
+      "size": 1414,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal481_post_goal480_pre_stage_hold_ledger_2026-04-16.json",
+      "size": 208981,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal482_post_goal481_dry_run_staging_plan_2026-04-16.json",
+      "size": 176601,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal484_post_goal483_release_hold_audit_2026-04-16.json",
+      "size": 163225,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal486_post_disk_cleanup_artifact_integrity_audit_2026-04-16.json",
+      "size": 180388,
+      "valid": true
+    },
+    {
+      "error": "",
+      "path": "docs/reports/goal487_post_goal486_release_hold_stability_audit_2026-04-16.json",
+      "size": 94409,
+      "valid": true
+    }
+  ],
+  "release_authorization": false,
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "staging_performed": false,
+  "text_artifact_count": 1233,
+  "text_checks": [
+    {
+      "path": "docs/reports/Codex_Vulkan_Backend_Review_2026-04-02.md",
+      "size": 6217,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/Consensus_Vulkan_Backend_Review_2026-04-02.md",
+      "size": 1912,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/Gemini_Final_Project_Audit_2026-04-03.md",
+      "size": 2998,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/Gemini_Vulkan_Backend_Review_2026-04-02.md",
+      "size": 2996,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/RTDL_Wiki_Generation_Report_2026-04-09_external.md",
+      "size": 2207,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/RTDL_v0.3_External_Test_Report_2026-04-09.md",
+      "size": 10611,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/RTDL_v0_3_Final_Audit_Report_2026-04-09_external.md",
+      "size": 2160,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/antigravity_external_review_intake_2026-04-07.md",
+      "size": 1746,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal196_fixed_radius_neighbors_contract_review_2026-04-09.md",
+      "size": 2687,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal197_fixed_radius_neighbors_dsl_surface_review_2026-04-10.md",
+      "size": 2087,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal198_fixed_radius_neighbors_truth_path_review_2026-04-10.md",
+      "size": 3658,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal199_fixed_radius_neighbors_cpu_oracle_review_2026-04-10.md",
+      "size": 1106,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal200_fixed_radius_neighbors_embree_review_2026-04-10.md",
+      "size": 4052,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal201_fixed_radius_neighbors_external_baselines_review_2026-04-10.md",
+      "size": 3374,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal212_v0_4_full_audit_review_2026-04-10.md",
+      "size": 6627,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal215_v0_4_gpu_rework_proposal_review_2026-04-10.md",
+      "size": 3752,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal216_fixed_radius_neighbors_optix_review_2026-04-10.md",
+      "size": 10459,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal218_fixed_radius_neighbors_vulkan_implementation_2026-04-10.md",
+      "size": 4873,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal255_front_page_final_review_2026-04-11.md",
+      "size": 5170,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal255_front_page_proposal_2026-04-11.md",
+      "size": 9568,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal256_front_page_and_4k_integration_review_2026-04-11.md",
+      "size": 8639,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal257_v0_5_readiness_current_state_review_2026-04-11.md",
+      "size": 7273,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal386_v0_6_rt_graph_kernel_surface_design_review_2026-04-14.md",
+      "size": 7093,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal387_v0_6_rt_graph_execution_interpretation_review_2026-04-14.md",
+      "size": 1623,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal388_v0_6_rt_graph_lowering_runtime_contract_review_2026-04-14.md",
+      "size": 1627,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal389_v0_6_rt_kernel_bfs_python_truth_path_review_2026-04-14.md",
+      "size": 1562,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal390_v0_6_rt_kernel_triangle_python_truth_path_review_2026-04-14.md",
+      "size": 1575,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal398_v0_6_vulkan_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 6398,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal400_v0_6_postgresql_backed_all_engine_correctness_gate_review_2026-04-14.md",
+      "size": 2752,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal403_v0_6_pre_release_code_and_test_cleanup_review_2026-04-14.md",
+      "size": 4162,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal404_v0_6_pre_release_doc_check_review_2026-04-14.md",
+      "size": 5891,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal405_v0_6_pre_release_flow_audit_review_2026-04-14.md",
+      "size": 6454,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal406_v0_6_release_hold_after_internal_gates_review_2026-04-14.md",
+      "size": 6174,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal412_rt_db_workload_analysis_for_next_version_review_2026-04-15.md",
+      "size": 7079,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal414_v0_7_rt_db_kernel_surface_review_2026-04-15.md",
+      "size": 916,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal415_416_v0_7_rt_db_execution_and_lowering_review_2026-04-15.md",
+      "size": 12228,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal417_v0_7_rt_db_conjunctive_scan_python_truth_path_review_2026-04-15.md",
+      "size": 721,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal418_v0_7_rt_db_grouped_count_python_truth_path_review_2026-04-15.md",
+      "size": 811,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal419_v0_7_rt_db_grouped_sum_python_truth_path_review_2026-04-15.md",
+      "size": 744,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_review_2026-04-15.md",
+      "size": 689,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_review_2026-04-15.md",
+      "size": 521,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_review_2026-04-15.md",
+      "size": 527,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal423_v0_7_postgresql_db_correctness_review_2026-04-15.md",
+      "size": 1083,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal424_v0_7_postgresql_db_grouped_correctness_review_2026-04-15.md",
+      "size": 949,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal426_v0_7_rt_db_embree_backend_closure_review_2026-04-15.md",
+      "size": 11601,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_goal426_v0_7_rt_db_embree_backend_closure_review_fresh_2026-04-15.md",
+      "size": 1631,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_hidden_star_demo_review_2026-04-09.md",
+      "size": 5181,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_tutorial_update_review_2026-04-11.md",
+      "size": 6993,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_v0_3_release_surface_audit_review_2026-04-09.md",
+      "size": 2355,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_v0_4_direction_review_2026-04-09.md",
+      "size": 2678,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_v0_4_working_plan_review_2026-04-09.md",
+      "size": 2776,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_v0_5_post_release_review_followup_2026-04-14.md",
+      "size": 4612,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_v0_5_review_2026-04-12.md",
+      "size": 12288,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_v0_5_review_closure_2026-04-12.md",
+      "size": 877,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/claude_workloads_and_research_foundations_audit_review_2026-04-10.md",
+      "size": 6119,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/comprehensive_v0_5_transition_audit_report_2026-04-12.md",
+      "size": 438,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/duplicate_point_problem_review_closure_2026-04-12.md",
+      "size": 580,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/embree_endflicker_review_claude_2026-04-09.md",
+      "size": 4102,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/embree_endflicker_review_gemini_2026-04-09.md",
+      "size": 743,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/embree_evaluation_summary_2026-03-30.md",
+      "size": 3475,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/embree_gap_analysis_2026-03-30.md",
+      "size": 1985,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/external_independent_release_check_review_2026-04-15.md",
+      "size": 4133,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/final_v0_5_preview_session_audit_summary_2026-04-12.md",
+      "size": 3004,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/front_page_scope_correction_review_2026-04-11.md",
+      "size": 843,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/front_page_tutorial_usability_audit_2026-04-09.md",
+      "size": 3362,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/front_page_tutorial_usability_review_claude_2026-04-09.md",
+      "size": 2553,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/front_page_tutorial_usability_review_gemini_2026-04-09.md",
+      "size": 2297,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/full_rayjoin_repetition_feasibility_2026-04-02.md",
+      "size": 10648,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_duplicate_point_problem_review_2026-04-12.md",
+      "size": 3348,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_external_aggressive_user_v0_4_review_2026-04-11.md",
+      "size": 4642,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal196_fixed_radius_neighbors_contract_review_2026-04-09.md",
+      "size": 1749,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal197_fixed_radius_neighbors_dsl_surface_review_2026-04-10.md",
+      "size": 1774,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal198_fixed_radius_neighbors_truth_path_review_2026-04-10.md",
+      "size": 1618,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal199_fixed_radius_neighbors_cpu_oracle_review_2026-04-10.md",
+      "size": 1415,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal200_fixed_radius_neighbors_embree_review_2026-04-10.md",
+      "size": 459,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal201_fixed_radius_neighbors_external_baselines_review_2026-04-10.md",
+      "size": 1831,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal202_knn_rows_contract_review_2026-04-10.md",
+      "size": 1424,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal203_knn_rows_dsl_surface_review_2026-04-10.md",
+      "size": 1322,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal204_knn_rows_truth_path_review_2026-04-10.md",
+      "size": 1476,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal205_knn_rows_cpu_oracle_review_2026-04-10.md",
+      "size": 1511,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal206_knn_rows_embree_review_2026-04-10.md",
+      "size": 1595,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal207_knn_rows_external_baselines_review_2026-04-10.md",
+      "size": 2845,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal208_v0_4_public_example_chain_review_2026-04-10.md",
+      "size": 1213,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal209_v0_4_bounded_scaling_note_review_2026-04-11.md",
+      "size": 1778,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal210_v0_4_preview_release_surface_review_2026-04-11.md",
+      "size": 2206,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal211_v0_4_doc_consistency_audit_review_2026-04-11.md",
+      "size": 2568,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal212_v0_4_full_audit_review_2026-04-10.md",
+      "size": 6422,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal213_v0_4_release_packaging_prep_review_2026-04-11.md",
+      "size": 2533,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal214_v0_4_application_examples_and_sql_review_2026-04-11.md",
+      "size": 2368,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal215_v0_4_gpu_rework_proposal_review_2026-04-10.md",
+      "size": 1550,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal216_fixed_radius_neighbors_optix_review_2026-04-10.md",
+      "size": 2329,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal217_knn_rows_optix_review_2026-04-10.md",
+      "size": 2540,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal218_fixed_radius_neighbors_vulkan_review_2026-04-10.md",
+      "size": 5645,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal219_knn_rows_vulkan_review_2026-04-10.md",
+      "size": 1616,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal220_v0_4_gpu_status_refresh_review_2026-04-11.md",
+      "size": 2166,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal222_windows_harness_portability_closure_review_2026-04-10.md",
+      "size": 3221,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal223_vulkan_harness_integration_review_2026-04-10.md",
+      "size": 2498,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal224_gpu_goal_closure_pack_review_2026-04-11.md",
+      "size": 2187,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal225_live_v0_4_doc_refresh_review_2026-04-10.md",
+      "size": 3994,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal226_final_pre_performance_cleanup_review_2026-04-11.md",
+      "size": 1849,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal227_beginner_tutorial_reorganization_review_2026-04-10.md",
+      "size": 4111,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal228_v0_4_heavy_nearest_neighbor_perf_review_2026-04-10.md",
+      "size": 4051,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal229_fixed_radius_neighbors_accelerated_boundary_fix_review_2026-04-10.md",
+      "size": 2838,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal230_clean_release_prep_workspace_review_2026-04-10.md",
+      "size": 2110,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal231_release_surface_alignment_review_2026-04-10.md",
+      "size": 2100,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal232_final_pre_release_verification_review_2026-04-10.md",
+      "size": 1916,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal233_final_release_decision_package_review_2026-04-10.md",
+      "size": 2028,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal234_external_user_ux_cleanup_review_2026-04-11.md",
+      "size": 1877,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal238_v0_4_consistency_and_presentation_audit_review_2026-04-11.md",
+      "size": 2120,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal239_final_public_surface_cleanup_review_2026-04-11.md",
+      "size": 1678,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal241_system_level_audit_database_review_2026-04-11.md",
+      "size": 3228,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal242_front_page_and_tutorial_audit_pass_review_2026-04-11.md",
+      "size": 2894,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal243_release_docs_audit_pass_review_2026-04-11.md",
+      "size": 1778,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal244_examples_audit_pass_review_2026-04-11.md",
+      "size": 1920,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal245_code_surface_audit_pass_review_2026-04-11.md",
+      "size": 1943,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal246_verification_surface_audit_pass_review_2026-04-11.md",
+      "size": 1960,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal247_archive_surface_audit_pass_review_2026-04-11.md",
+      "size": 2572,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal248_follow_up_remediation_pass_review_2026-04-11.md",
+      "size": 1968,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal249_native_cpu_oracle_environment_hardening_review_2026-04-11.md",
+      "size": 1831,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal250_feature_docs_audit_pass_review_2026-04-11.md",
+      "size": 1780,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal251_architecture_process_docs_audit_pass_review_2026-04-11.md",
+      "size": 2122,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal252_archive_and_early_goal_docs_audit_pass_review_2026-04-11.md",
+      "size": 1829,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal253_v0_3_plus_goal_review_compliance_audit_review_2026-04-11.md",
+      "size": 2953,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal254_engineering_support_docs_audit_pass_review_2026-04-11.md",
+      "size": 2806,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal255_front_page_final_review_2026-04-11.md",
+      "size": 2341,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal255_front_page_proposal_2026-04-11.md",
+      "size": 4466,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal256_hidden_star_4k_artifact_integration_review_2026-04-11.md",
+      "size": 2913,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal257_v0_5_readiness_current_state_review_2026-04-11.md",
+      "size": 3563,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal258_v0_5_paper_consistency_charter_review_2026-04-11.md",
+      "size": 1729,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal259_v0_5_3d_nearest_neighbor_surface_design_review_2026-04-11.md",
+      "size": 3204,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal260_v0_5_3d_point_surface_and_reference_path_review_2026-04-11.md",
+      "size": 2939,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal261_v0_5_native_3d_point_contract_closure_review_2026-04-11.md",
+      "size": 2696,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal262_v0_5_bounded_radius_knn_contract_design_review_2026-04-11.md",
+      "size": 2812,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal263_v0_5_bounded_knn_rows_surface_review_2026-04-11.md",
+      "size": 3142,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal264_v0_5_bounded_knn_rows_cpu_oracle_review_2026-04-11.md",
+      "size": 2191,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal265_v0_5_rtnn_dataset_registry_review_2026-04-12.md",
+      "size": 2727,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal266_v0_5_rtnn_baseline_registry_review_2026-04-12.md",
+      "size": 2837,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal267_v0_5_rtnn_reproduction_matrix_review_2026-04-12.md",
+      "size": 2826,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal268_v0_5_bounded_dataset_manifests_review_2026-04-12.md",
+      "size": 3027,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal269_v0_5_cunsearch_adapter_skeleton_review_2026-04-12.md",
+      "size": 2947,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal270_v0_5_kitti_bounded_acquisition_review_2026-04-12.md",
+      "size": 3189,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal271_v0_5_kitti_bounded_loader_review_2026-04-12.md",
+      "size": 3396,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal272_v0_5_kitti_point_package_review_2026-04-12.md",
+      "size": 2145,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal273_v0_5_cunsearch_response_parser_review_2026-04-12.md",
+      "size": 1936,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal274_v0_5_bounded_fixed_radius_comparison_review_2026-04-12.md",
+      "size": 2076,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal275_v0_5_cunsearch_live_driver_review_2026-04-12.md",
+      "size": 2132,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal276_v0_5_live_bounded_linux_comparison_review_2026-04-12.md",
+      "size": 1761,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal277_v0_5_kitti_linux_acquisition_prep_review_2026-04-12.md",
+      "size": 1336,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal278_v0_5_real_kitti_layout_and_offset_support_review_2026-04-12.md",
+      "size": 2667,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal279_v0_5_first_real_kitti_live_comparison_review_2026-04-12.md",
+      "size": 2856,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal280_v0_5_cunsearch_live_precision_hardening_review_2026-04-12.md",
+      "size": 2684,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal281_v0_5_postgis_3d_fixed_radius_support_review_2026-04-12.md",
+      "size": 2464,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal282_v0_5_postgis_3d_index_hardening_and_plan_audit_review_2026-04-12.md",
+      "size": 2630,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal283_v0_5_kitti_three_way_performance_result_review_2026-04-12.md",
+      "size": 2656,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal284_v0_5_kitti_three_way_scaling_boundary_review_2026-04-12.md",
+      "size": 2259,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal285_v0_5_cunsearch_duplicate_point_boundary_review_2026-04-12.md",
+      "size": 2759,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal286_v0_5_cunsearch_duplicate_guard_review_2026-04-12.md",
+      "size": 2783,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal287_v0_5_kitti_duplicate_free_selector_review_2026-04-12.md",
+      "size": 3124,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal288_v0_5_kitti_duplicate_free_three_way_review_2026-04-12.md",
+      "size": 2394,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal289_v0_5_kitti_4096_boundary_review_2026-04-12.md",
+      "size": 1545,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal290_v0_5_kitti_8192_boundary_continuation_review_2026-04-12.md",
+      "size": 1006,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal291_v0_5_kitti_16384_boundary_continuation_review_2026-04-12.md",
+      "size": 1425,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal292_v0_5_native_3d_fixed_radius_oracle_closure_review_2026-04-12.md",
+      "size": 3055,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal293_v0_5_native_3d_bounded_knn_oracle_closure_review_2026-04-12.md",
+      "size": 1556,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal294_kitti_native_vs_postgis_performance_review_2026-04-12.md",
+      "size": 2974,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal295_kitti_bounded_knn_native_vs_postgis_performance_review_2026-04-12.md",
+      "size": 2568,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal296_v0_5_native_3d_knn_oracle_closure_review_2026-04-12.md",
+      "size": 2945,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal297_kitti_knn_native_vs_postgis_performance_review_2026-04-12.md",
+      "size": 2907,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal298_v0_5_embree_3d_fixed_radius_closure_review_2026-04-12.md",
+      "size": 2403,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal299_v0_5_embree_3d_bounded_knn_closure_review_2026-04-12.md",
+      "size": 2487,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal300_v0_5_embree_3d_knn_closure_review_2026-04-12.md",
+      "size": 2581,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal310_v0_5_linux_large_scale_embree_nn_perf_review_2026-04-12.md",
+      "size": 2831,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal311_v0_5_optix_3d_nn_closure_review_2026-04-12.md",
+      "size": 4812,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal312_v0_5_linux_large_scale_native_embree_optix_perf_review_2026-04-12.md",
+      "size": 4683,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal313_v0_5_linux_32768_backend_table_review_2026-04-12.md",
+      "size": 3789,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal314_v0_5_current_linux_nn_perf_report_review_2026-04-12.md",
+      "size": 2559,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal315_v0_5_vulkan_3d_nn_closure_review_2026-04-12.md",
+      "size": 3477,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_review_2026-04-12.md",
+      "size": 2935,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal317_v0_5_current_linux_4backend_nn_perf_report_review_2026-04-12.md",
+      "size": 2732,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal318_v0_5_preview_support_matrix_review_2026-04-12.md",
+      "size": 5071,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal319_v0_5_cross_platform_embree_correctness_review_2026-04-12.md",
+      "size": 2059,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal320_v0_5_preview_readiness_audit_review_2026-04-12.md",
+      "size": 2729,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal321_v0_5_frontpage_clarity_review_2026-04-12.md",
+      "size": 3716,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal323_v0_5_call_for_test_publish_review_2026-04-12.md",
+      "size": 4507,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal325_v0_5_newcomer_doc_hardening_review_2026-04-12.md",
+      "size": 2430,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal328_v0_5_layout_types_collision_fix_review_2026-04-12.md",
+      "size": 1577,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal329_v0_5_remove_stale_types_module_review_2026-04-12.md",
+      "size": 1363,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal330_v0_5_pre_release_package_review_2026-04-12.md",
+      "size": 2015,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal331_v0_5_pre_release_code_test_sweep_review_2026-04-12.md",
+      "size": 1966,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal332_v0_5_pre_release_audit_pass_review_2026-04-13.md",
+      "size": 1466,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal333_v0_5_public_docs_total_review_2026-04-13.md",
+      "size": 8082,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal334_v0_5_final_external_review_round_2026-04-13.md",
+      "size": 2456,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal335_v0_5_final_release_package_review_2026-04-13.md",
+      "size": 2349,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal336_v0_5_release_make_review_2026-04-13.md",
+      "size": 2005,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal385_v0_6_rt_graph_version_plan_review_2026-04-14.md",
+      "size": 1414,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal386_v0_6_rt_graph_kernel_surface_design_review_2026-04-14.md",
+      "size": 1350,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal387_v0_6_rt_graph_execution_interpretation_review_2026-04-14.md",
+      "size": 2620,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal388_v0_6_rt_graph_lowering_runtime_contract_review_2026-04-14.md",
+      "size": 1236,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal389_v0_6_rt_kernel_bfs_python_truth_path_review_2026-04-14.md",
+      "size": 2742,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal391_v0_6_rt_kernel_bfs_oracle_truth_path_review_2026-04-14.md",
+      "size": 2594,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal392_v0_6_rt_kernel_triangle_oracle_truth_path_review_2026-04-14.md",
+      "size": 2210,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal393_v0_6_embree_rt_graph_mapping_and_bfs_closure_review_2026-04-14.md",
+      "size": 2440,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal394_v0_6_optix_rt_graph_mapping_and_bfs_closure_review_2026-04-14.md",
+      "size": 2575,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal395_v0_6_vulkan_rt_graph_mapping_and_bfs_closure_review_2026-04-14.md",
+      "size": 1626,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal396_v0_6_embree_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 2310,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal397_v0_6_optix_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 2215,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal398_v0_6_vulkan_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 4718,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal399_v0_6_rt_multi_backend_correctness_and_perf_gate_review_2026-04-14.md",
+      "size": 2382,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal400_v0_6_postgresql_backed_all_engine_correctness_gate_review_2026-04-14.md",
+      "size": 2733,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal401_v0_6_large_scale_engine_perf_gate_review_2026-04-14.md",
+      "size": 1835,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal403_v0_6_pre_release_code_and_test_cleanup_review_2026-04-14.md",
+      "size": 1508,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal404_v0_6_pre_release_doc_check_review_2026-04-14.md",
+      "size": 1295,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal405_v0_6_pre_release_flow_audit_review_2026-04-14.md",
+      "size": 2071,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal406_v0_6_release_hold_after_internal_gates_review_2026-04-14.md",
+      "size": 4793,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal412_rt_db_workload_analysis_for_next_version_review_2026-04-15.md",
+      "size": 4147,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal413_v0_7_rt_db_workload_scope_and_goal_ladder_review_2026-04-15.md",
+      "size": 3395,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal414_v0_7_rt_db_kernel_surface_review_2026-04-15.md",
+      "size": 2190,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal415_416_v0_7_rt_db_execution_and_lowering_review_2026-04-15.md",
+      "size": 7197,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal417_v0_7_rt_db_conjunctive_scan_python_truth_path_review_2026-04-15.md",
+      "size": 2016,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal418_v0_7_rt_db_grouped_count_python_truth_path_review_2026-04-15.md",
+      "size": 2023,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal419_v0_7_rt_db_grouped_sum_python_truth_path_review_2026-04-15.md",
+      "size": 2025,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal423_v0_7_postgresql_db_correctness_review_2026-04-15.md",
+      "size": 2082,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal424_v0_7_postgresql_db_grouped_correctness_review_2026-04-15.md",
+      "size": 2190,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_goal426_v0_7_rt_db_embree_backend_closure_review_2026-04-15.md",
+      "size": 3878,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_nextgen_workload_review_2026-04-04.md",
+      "size": 4342,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_paper_revision_report_review_2026-04-04.md",
+      "size": 4269,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_tutorial_update_review_2026-04-11.md",
+      "size": 3044,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_3_release_surface_audit_review_2026-04-09.md",
+      "size": 2192,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_detailed_process_audit_2026-04-11.md",
+      "size": 1824,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_direction_review_2026-04-09.md",
+      "size": 1934,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_final_re_audit_report_2026-04-10.md",
+      "size": 2804,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_final_review_closure_2026-04-11.md",
+      "size": 2308,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_restart_process_audit_review_2026-04-10.md",
+      "size": 4313,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_total_code_review_2026-04-11.md",
+      "size": 1723,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_total_doc_review_2026-04-11.md",
+      "size": 1705,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_4_working_plan_review_2026-04-09.md",
+      "size": 1789,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_5_collaborator_pre_release_review_2026-04-13.md",
+      "size": 4107,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_5_final_pre_release_session_summary_2026-04-13.md",
+      "size": 2829,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_5_full_repo_audit_review_2026-04-12.md",
+      "size": 417,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_v0_5_new_work_evaluation_2026-04-12.md",
+      "size": 4144,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/gemini_workloads_and_research_foundations_audit_review_2026-04-10.md",
+      "size": 1878,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal100_release_validation_rerun_2026-04-05.md",
+      "size": 6683,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal101_hello_world_all_backend_validation_2026-04-05.md",
+      "size": 3119,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal102_full_honest_rayjoin_reproduction_2026-04-05.md",
+      "size": 7294,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal102_full_honest_rayjoin_reproduction_plan_2026-04-05.md",
+      "size": 1977,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal102_full_honest_rayjoin_reproduction_status_2026-04-05.md",
+      "size": 4754,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal103_full_honest_rayjoin_reproduction_vulkan_2026-04-05.md",
+      "size": 6559,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal103_full_honest_rayjoin_reproduction_vulkan_plan_2026-04-05.md",
+      "size": 1626,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal103_full_honest_rayjoin_reproduction_vulkan_status_2026-04-05.md",
+      "size": 1670,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal104_rayjoin_reproduction_performance_report_2026-04-05.md",
+      "size": 12389,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal105_final_release_audit_2026-04-05.md",
+      "size": 9128,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal105_final_release_audit_status_2026-04-05.md",
+      "size": 1267,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal105_final_release_review_2026-04-05.md",
+      "size": 6440,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal106_final_done_report_2026-04-05.md",
+      "size": 1384,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal106_final_summary_codex_2026-04-05.md",
+      "size": 741,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal106_repo_wide_review_and_audit_2026-04-05.md",
+      "size": 6397,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal107_123_package_review_claude_2026-04-06.md",
+      "size": 10444,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal107_123_package_review_gemini_2026-04-06.md",
+      "size": 2897,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal107_v0_2_roadmap_2026-04-05.md",
+      "size": 4107,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal107_v0_2_roadmap_critique_and_rebuttal_2026-04-05.md",
+      "size": 3684,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal108_v0_2_workload_scope_charter_2026-04-05.md",
+      "size": 1954,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal108_v0_2_workload_scope_charter_critique_2026-04-05.md",
+      "size": 1145,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal109_archive_v0_1_baseline_2026-04-05.md",
+      "size": 1157,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal109_archive_v0_1_baseline_plan_2026-04-05.md",
+      "size": 852,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal110_segment_polygon_hitcount_closure_2026-04-05.md",
+      "size": 5834,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal110_segment_polygon_hitcount_closure_progress_2026-04-05.md",
+      "size": 3820,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal110_segment_polygon_hitcount_comparison_and_significance_2026-04-05.md",
+      "size": 4640,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal110_segment_polygon_hitcount_progress_2026-04-05.md",
+      "size": 2596,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal110_v0_2_workload_family_critique_2026-04-05.md",
+      "size": 1841,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal110_v0_2_workload_family_selection_2026-04-05.md",
+      "size": 3237,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal111_v0_2_generate_only_mvp_2026-04-05.md",
+      "size": 5710,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal111_v0_2_generate_only_mvp_plan_2026-04-05.md",
+      "size": 2055,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal112_segment_polygon_performance_maturation_2026-04-05.md",
+      "size": 6261,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal112_segment_polygon_performance_maturation_critique_2026-04-05.md",
+      "size": 1397,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal112_segment_polygon_performance_maturation_plan_2026-04-05.md",
+      "size": 2069,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal113_generate_only_maturation_2026-04-05.md",
+      "size": 4315,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal113_generate_only_maturation_plan_2026-04-05.md",
+      "size": 1375,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal114_segment_polygon_postgis_large_scale_validation_2026-04-05.md",
+      "size": 5283,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal115_segment_polygon_feature_productization_2026-04-05.md",
+      "size": 2116,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal116_segment_polygon_full_backend_audit_2026-04-06.md",
+      "size": 5075,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal117_v0_2_feature_usage_surface_2026-04-06.md",
+      "size": 2243,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal118_segment_polygon_linux_large_perf_2026-04-06.md",
+      "size": 6558,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal119_segment_polygon_native_maturity_redesign_2026-04-06.md",
+      "size": 5973,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal120_optix_segment_polygon_native_promotion_2026-04-06.md",
+      "size": 4240,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal121_segment_polygon_bbox_prefilter_2026-04-06.md",
+      "size": 4381,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal122_segment_polygon_candidate_index_redesign_2026-04-06.md",
+      "size": 4397,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal123_optix_candidate_index_alignment_2026-04-06.md",
+      "size": 3849,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal124_v0_2_review_backfill_and_status_2026-04-06.md",
+      "size": 4522,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal125_v0_2_internal_backfill_and_external_review_packet_2026-04-06.md",
+      "size": 2738,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal126_second_workload_family_selection_2026-04-06.md",
+      "size": 2462,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal127_second_workload_family_anyhit_rows_closure_2026-04-06.md",
+      "size": 2261,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal128_second_workload_family_postgis_and_linux_perf_2026-04-06.md",
+      "size": 4804,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal129_generate_only_second_workload_expansion_2026-04-06.md",
+      "size": 2775,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal130_external_review_claude_2026-04-06.md",
+      "size": 5010,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal130_v0_2_test_execution_2026-04-06.md",
+      "size": 6169,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal130_v0_2_test_plan_2026-04-06.md",
+      "size": 3360,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal131_v0_2_linux_stress_audit_2026-04-06.md",
+      "size": 3149,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal132_gemini_v0_2_doc_draft_raw_2026-04-06.md",
+      "size": 5085,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal132_gemini_v0_2_doc_draft_review_2026-04-06.md",
+      "size": 1467,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal133_current_feature_execution_report_2026-04-06.md",
+      "size": 6994,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal134_gemini_v0_2_process_audit_2026-04-06.md",
+      "size": 3525,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal134_v0_2_process_audit_review_2026-04-06.md",
+      "size": 1386,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal135_external_review_claude_2026-04-06.md",
+      "size": 2718,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal135_system_midterm_check_2026-04-06.md",
+      "size": 3906,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal135_system_midterm_check_gemini_2026-04-06.md",
+      "size": 1549,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal136_external_review_claude_2026-04-06.md",
+      "size": 3458,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal136_jaccard_similarity_evaluation_2026-04-06.md",
+      "size": 9045,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal136_jaccard_similarity_review_2026-04-06.md",
+      "size": 734,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal137_138_external_review_gemini_2026-04-06.md",
+      "size": 1493,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal137_138_jaccard_primitive_review_2026-04-06.md",
+      "size": 750,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal137_jaccard_workload_charter_2026-04-06.md",
+      "size": 1394,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal138_polygon_pair_overlap_area_rows_closure_2026-04-06.md",
+      "size": 2798,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal139_public_pathology_data_acquisition_and_conversion_2026-04-06.md",
+      "size": 2596,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal139_public_pathology_data_review_2026-04-06.md",
+      "size": 649,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal140_polygon_set_jaccard_closure_2026-04-06.md",
+      "size": 3183,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal140_polygon_set_jaccard_review_2026-04-06.md",
+      "size": 966,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal141_public_jaccard_linux_audit_2026-04-06.md",
+      "size": 3656,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal141_public_jaccard_review_2026-04-06.md",
+      "size": 858,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal142_jaccard_docs_and_generate_only_2026-04-06.md",
+      "size": 1997,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal142_jaccard_docs_and_generate_only_review_2026-04-06.md",
+      "size": 929,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal143_feature_home_documentation_2026-04-07.md",
+      "size": 2725,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal144_project_memory_bootstrap_2026-04-07.md",
+      "size": 1346,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal145_external_review_claude_2026-04-07.md",
+      "size": 2116,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal145_external_review_gemini_2026-04-07.md",
+      "size": 1745,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal145_v0_2_consensus_audit_2026-04-07.md",
+      "size": 5404,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal146_external_review_claude_2026-04-07.md",
+      "size": 1668,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal146_jaccard_linux_multi_backend_stress_2026-04-07.md",
+      "size": 4260,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal146_jaccard_linux_multi_backend_stress_review_2026-04-07.md",
+      "size": 791,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal147_comprehensive_doc_review_2026-04-07.md",
+      "size": 2625,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal147_external_review_claude_2026-04-07.md",
+      "size": 2047,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal147_external_review_gemini_2026-04-07.md",
+      "size": 1641,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal148_scope_decision_claude_2026-04-07.md",
+      "size": 1079,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal148_scope_decision_gemini_2026-04-07.md",
+      "size": 955,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal148_v0_2_scope_status_package_2026-04-07.md",
+      "size": 4750,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal149_external_review_claude_2026-04-07.md",
+      "size": 1384,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal149_front_door_and_example_consistency_freeze_2026-04-07.md",
+      "size": 1566,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal149_front_door_and_example_consistency_freeze_review_2026-04-07.md",
+      "size": 548,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal150_external_review_claude_2026-04-07.md",
+      "size": 2528,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal150_v0_2_release_readiness_and_stability_2026-04-07.md",
+      "size": 5235,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal150_v0_2_release_readiness_and_stability_review_2026-04-07.md",
+      "size": 1129,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal151_external_review_claude_2026-04-07.md",
+      "size": 1515,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal151_final_front_door_status_freeze_2026-04-07.md",
+      "size": 2137,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal151_final_front_door_status_freeze_review_2026-04-07.md",
+      "size": 958,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal152_external_review_claude_2026-04-07.md",
+      "size": 1561,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal152_v0_2_release_statement_and_support_matrix_2026-04-07.md",
+      "size": 1108,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal152_v0_2_release_statement_and_support_matrix_review_2026-04-07.md",
+      "size": 852,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal153_backend_loader_robustness_2026-04-07.md",
+      "size": 1879,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal153_backend_loader_robustness_review_2026-04-07.md",
+      "size": 992,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal153_external_review_claude_2026-04-07.md",
+      "size": 1677,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal154_external_review_claude_2026-04-07.md",
+      "size": 2932,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal154_external_review_gemini_2026-04-07.md",
+      "size": 1989,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal154_final_release_audit_and_tag_preparation_2026-04-07.md",
+      "size": 2228,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal154_final_release_audit_and_tag_preparation_review_2026-04-07.md",
+      "size": 704,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal155_external_review_claude_2026-04-07.md",
+      "size": 2911,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal155_optix_linux_sdk_path_robustness_2026-04-07.md",
+      "size": 2283,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal155_optix_linux_sdk_path_robustness_review_2026-04-07.md",
+      "size": 702,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal156_external_review_claude_2026-04-07.md",
+      "size": 2201,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal156_external_review_gemini_2026-04-07.md",
+      "size": 2087,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal156_v0_2_release_refresh_after_optix_robustness_2026-04-07.md",
+      "size": 1538,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal156_v0_2_release_refresh_after_optix_robustness_review_2026-04-07.md",
+      "size": 587,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal157_external_review_claude_2026-04-07.md",
+      "size": 3290,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal157_external_review_gemini_2026-04-07.md",
+      "size": 2275,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal157_fresh_clone_external_agent_acceptance_2026-04-07.md",
+      "size": 4190,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal157_fresh_clone_external_agent_acceptance_review_2026-04-07.md",
+      "size": 664,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal157_fresh_clone_external_agent_acceptance_template_2026-04-07.md",
+      "size": 821,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal158_external_review_claude_2026-04-07.md",
+      "size": 2730,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal158_external_review_gemini_2026-04-07.md",
+      "size": 2004,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal158_rtdl_plus_python_demo_docs_2026-04-07.md",
+      "size": 2220,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal158_rtdl_plus_python_demo_docs_review_2026-04-07.md",
+      "size": 1012,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal159_external_review_claude_2026-04-07.md",
+      "size": 2299,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal159_external_review_gemini_2026-04-07.md",
+      "size": 2018,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal159_v0_2_front_surface_consensus_2026-04-07.md",
+      "size": 1633,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal159_v0_2_front_surface_consensus_review_2026-04-07.md",
+      "size": 882,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal15_cpp_embree_comparison_2026-03-31.md",
+      "size": 2086,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal160_external_review_claude_2026-04-07.md",
+      "size": 3727,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal160_external_review_gemini_2026-04-07.md",
+      "size": 4844,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal160_full_project_level_audit_2026-04-07.md",
+      "size": 5372,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal160_full_project_level_audit_review_2026-04-07.md",
+      "size": 939,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal161_external_review_claude_2026-04-07.md",
+      "size": 2416,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal161_external_review_gemini_2026-04-07.md",
+      "size": 1929,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal161_v0_3_visual_demo_charter_2026-04-07.md",
+      "size": 1749,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal161_v0_3_visual_demo_charter_review_2026-04-07.md",
+      "size": 993,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal163_external_review_claude_2026-04-07.md",
+      "size": 2394,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal163_optix_correctness_reaudit_2026-04-07.md",
+      "size": 2856,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal163_optix_correctness_reaudit_review_2026-04-07.md",
+      "size": 846,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal164_external_review_claude_2026-04-07.md",
+      "size": 1802,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal164_spinning_ball_3d_backend_closure_2026-04-07.md",
+      "size": 4749,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal164_spinning_ball_3d_backend_closure_review_2026-04-07.md",
+      "size": 717,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal165_claude_review_2026-04-07.md",
+      "size": 2317,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal165_gemini_review_2026-04-07.md",
+      "size": 1859,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal165_spinning_ball_3d_optix_animation_variants_2026-04-07.md",
+      "size": 4348,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal165_work_report_2026-04-07.md",
+      "size": 7521,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal166_current_progress_note_2026-04-07.md",
+      "size": 1912,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal166_external_review_claude_2026-04-07.md",
+      "size": 3475,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal166_external_review_gemini_2026-04-07.md",
+      "size": 1449,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal166_windows_earthlike_10s_demo_2026-04-07.md",
+      "size": 3664,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal166_windows_earthlike_10s_demo_review_2026-04-07.md",
+      "size": 1674,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal167_external_review_claude_2026-04-07.md",
+      "size": 1357,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal167_external_review_gemini_2026-04-07.md",
+      "size": 1042,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal167_numpy_diag_execution_note_2026-04-07.md",
+      "size": 2174,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal167_windows_numpy_diagonal_movie_2026-04-07.md",
+      "size": 4289,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal167_windows_numpy_diagonal_movie_review_2026-04-07.md",
+      "size": 1065,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal168_external_review_claude_2026-04-07.md",
+      "size": 1310,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal168_external_review_gemini_2026-04-07.md",
+      "size": 1290,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal168_hidden_star_demo_audit_2026-04-09.md",
+      "size": 1885,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal168_hidden_star_stable_rtdl_shadow_demo_2026-04-09.md",
+      "size": 14019,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal168_v0_3_visual_demo_status_2026-04-07.md",
+      "size": 2710,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal168_v0_3_visual_demo_status_review_2026-04-07.md",
+      "size": 1917,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal169_external_review_claude_2026-04-08.md",
+      "size": 1009,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal169_parallel_backend_monitor_gemini_2026-04-08.md",
+      "size": 6204,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal169_parallel_vulkan_optix_backend_closure_2026-04-08.md",
+      "size": 3097,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal169_parallel_vulkan_optix_backend_closure_review_2026-04-08.md",
+      "size": 1508,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal170_external_review_gemini_2026-04-08.md",
+      "size": 1390,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal170_linux_backend_small_demo_artifacts_2026-04-08.md",
+      "size": 2087,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal170_linux_backend_small_demo_artifacts_review_2026-04-08.md",
+      "size": 1106,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal171_external_review_gemini_2026-04-08.md",
+      "size": 1060,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal171_v0_3_visual_demo_front_surface_refresh_2026-04-08.md",
+      "size": 2063,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal171_v0_3_visual_demo_front_surface_refresh_review_2026-04-08.md",
+      "size": 591,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal172_external_review_gemini_2026-04-08.md",
+      "size": 1376,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal172_temporal_stability_option_2026-04-08.md",
+      "size": 2052,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal172_temporal_stability_option_review_2026-04-08.md",
+      "size": 572,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal173_4k_render_program_explanation_claude_2026-04-08.md",
+      "size": 4741,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal173_external_review_claude_2026-04-08.md",
+      "size": 1122,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal173_external_review_gemini_2026-04-08.md",
+      "size": 714,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal173_external_review_gemini_followup_2026-04-08.md",
+      "size": 1127,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal173_windows_4k_movie_acceptance_2026-04-08.md",
+      "size": 1479,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal173_windows_4k_movie_acceptance_review_2026-04-08.md",
+      "size": 723,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal174_external_review_gemini_2026-04-08.md",
+      "size": 947,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal174_front_surface_4k_refresh_2026-04-08.md",
+      "size": 1176,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal174_front_surface_4k_refresh_review_2026-04-08.md",
+      "size": 492,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal175_claude_test_draft_2026-04-08.md",
+      "size": 2779,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal175_external_review_gemini_2026-04-08.md",
+      "size": 1793,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal175_two_star_4k_variant_2026-04-08.md",
+      "size": 1862,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal175_two_star_4k_variant_review_2026-04-08.md",
+      "size": 1055,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal175_windows_render_status_2026-04-08.md",
+      "size": 1751,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal176_external_review_claude_2026-04-08.md",
+      "size": 1391,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal176_linux_gpu_backend_test_execution_2026-04-08.md",
+      "size": 2232,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal176_linux_gpu_backend_test_review_2026-04-08.md",
+      "size": 744,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal176_plan_review_claude_2026-04-08.md",
+      "size": 910,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal177_external_review_claude_2026-04-08.md",
+      "size": 1537,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal177_external_review_gemini_2026-04-08.md",
+      "size": 1667,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal177_linux_samecolor_two_star_small_artifacts_2026-04-08.md",
+      "size": 2689,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal177_linux_samecolor_two_star_small_artifacts_review_2026-04-08.md",
+      "size": 1304,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal178_179_external_review_claude_2026-04-08.md",
+      "size": 2091,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal178_claude_4k_windows_review_2026-04-08.md",
+      "size": 2053,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal178_smooth_camera_orbit_demo_2026-04-08.md",
+      "size": 3221,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal178_smooth_camera_orbit_demo_review_2026-04-08.md",
+      "size": 1662,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal179_claude_code_draft_2026-04-08.md",
+      "size": 690,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal179_linux_smooth_camera_backend_previews_2026-04-08.md",
+      "size": 2641,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal179_linux_smooth_camera_backend_previews_review_2026-04-08.md",
+      "size": 898,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal17_low_overhead_runtime_2026-03-31.md",
+      "size": 3210,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal180_external_review_claude_2026-04-08.md",
+      "size": 1779,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal180_v0_3_finish_plan_2026-04-08.md",
+      "size": 2390,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal180_v0_3_finish_plan_review_2026-04-08.md",
+      "size": 1537,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal181_external_review_claude_2026-04-08.md",
+      "size": 1529,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal181_external_review_gemini_2026-04-08.md",
+      "size": 1565,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal181_orbit_fill_claude_review_2026-04-08.md",
+      "size": 2761,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal181_smooth_camera_flagship_acceptance_2026-04-08.md",
+      "size": 5058,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal181_smooth_camera_flagship_acceptance_review_2026-04-08.md",
+      "size": 1125,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal182_external_review_claude_2026-04-08.md",
+      "size": 1587,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal182_linux_smooth_camera_supporting_package_2026-04-08.md",
+      "size": 2523,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal182_linux_smooth_camera_supporting_package_review_2026-04-08.md",
+      "size": 870,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal184_external_review_claude_2026-04-09.md",
+      "size": 1420,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal184_v0_3_final_status_package_2026-04-09.md",
+      "size": 4346,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal184_v0_3_final_status_package_review_2026-04-09.md",
+      "size": 763,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal185_external_review_claude_2026-04-08.md",
+      "size": 1469,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal185_orbit_support_star_stability_candidate_2026-04-08.md",
+      "size": 2677,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal185_orbit_support_star_stability_candidate_review_2026-04-08.md",
+      "size": 854,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal186_external_review_claude_2026-04-09.md",
+      "size": 1109,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal186_front_surface_video_refresh_2026-04-09.md",
+      "size": 772,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal186_front_surface_video_refresh_review_2026-04-09.md",
+      "size": 777,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal187_external_review_claude_2026-04-09.md",
+      "size": 1935,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal187_external_review_gemini_2026-04-09.md",
+      "size": 1566,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal187_v0_3_code_and_docs_audit_2026-04-09.md",
+      "size": 3918,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal187_v0_3_code_and_docs_audit_review_2026-04-09.md",
+      "size": 907,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal189_external_review_claude_2026-04-09.md",
+      "size": 1658,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal189_external_review_gemini_2026-04-09.md",
+      "size": 2002,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal189_native_engine_reconstruction_2026-04-09.md",
+      "size": 5813,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal189_native_engine_reconstruction_review_2026-04-09.md",
+      "size": 935,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal18_low_overhead_runtime_continuation_2026-04-01.md",
+      "size": 3555,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal190_external_review_claude_2026-04-09.md",
+      "size": 1094,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal190_external_review_gemini_2026-04-09.md",
+      "size": 1178,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal190_visual_demo_example_reorg_2026-04-09.md",
+      "size": 2983,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal190_visual_demo_example_reorg_review_2026-04-09.md",
+      "size": 1162,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal191_execution_review_claude_2026-04-09.md",
+      "size": 1851,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal191_execution_review_gemini_2026-04-09.md",
+      "size": 1450,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal191_external_review_claude_2026-04-09.md",
+      "size": 1123,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal191_external_review_gemini_2026-04-09.md",
+      "size": 1174,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal191_v0_3_comprehensive_verification_2026-04-09.md",
+      "size": 4715,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal191_v0_3_comprehensive_verification_review_2026-04-09.md",
+      "size": 1264,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal192_execution_review_claude_2026-04-09.md",
+      "size": 1802,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal192_execution_review_gemini_2026-04-09.md",
+      "size": 1465,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal192_external_review_claude_2026-04-09.md",
+      "size": 1132,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal192_external_review_gemini_2026-04-09.md",
+      "size": 1217,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal192_v0_3_comprehensive_doc_review_2026-04-09.md",
+      "size": 4867,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal192_v0_3_comprehensive_doc_review_review_2026-04-09.md",
+      "size": 1479,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal193_v0_4_direction_decision_2026-04-09.md",
+      "size": 7387,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal193_v0_4_direction_decision_review_2026-04-09.md",
+      "size": 1445,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal194_v0_4_content_package_2026-04-09.md",
+      "size": 7567,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal195_v0_4_working_plan_2026-04-09.md",
+      "size": 5281,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal195_v0_4_working_plan_review_2026-04-09.md",
+      "size": 1376,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal196_fixed_radius_neighbors_contract_2026-04-09.md",
+      "size": 2983,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal196_fixed_radius_neighbors_contract_review_2026-04-09.md",
+      "size": 1339,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal197_fixed_radius_neighbors_dsl_surface_2026-04-10.md",
+      "size": 2054,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal197_fixed_radius_neighbors_dsl_surface_review_2026-04-10.md",
+      "size": 1328,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal198_fixed_radius_neighbors_truth_path_2026-04-10.md",
+      "size": 3104,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal198_fixed_radius_neighbors_truth_path_review_2026-04-10.md",
+      "size": 1498,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal199_fixed_radius_neighbors_cpu_oracle_2026-04-10.md",
+      "size": 2500,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal199_fixed_radius_neighbors_cpu_oracle_review_2026-04-10.md",
+      "size": 1364,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal19_embree_performance_comparison_2026-04-01.md",
+      "size": 1995,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal200_fixed_radius_neighbors_embree_2026-04-10.md",
+      "size": 4208,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal200_fixed_radius_neighbors_embree_review_2026-04-10.md",
+      "size": 2166,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal201_fixed_radius_neighbors_external_baselines_2026-04-10.md",
+      "size": 2844,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal201_fixed_radius_neighbors_external_baselines_review_2026-04-10.md",
+      "size": 1425,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal202_knn_rows_contract_2026-04-10.md",
+      "size": 2684,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal202_knn_rows_contract_review_2026-04-10.md",
+      "size": 1098,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal203_knn_rows_dsl_surface_2026-04-10.md",
+      "size": 1840,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal203_knn_rows_dsl_surface_review_2026-04-10.md",
+      "size": 1149,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal204_knn_rows_truth_path_2026-04-10.md",
+      "size": 2327,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal204_knn_rows_truth_path_review_2026-04-10.md",
+      "size": 934,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal205_knn_rows_cpu_oracle_2026-04-10.md",
+      "size": 1370,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal205_knn_rows_cpu_oracle_review_2026-04-10.md",
+      "size": 892,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal206_knn_rows_embree_2026-04-10.md",
+      "size": 1047,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal206_knn_rows_embree_review_2026-04-10.md",
+      "size": 846,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal207_knn_rows_external_baselines_2026-04-10.md",
+      "size": 1194,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal207_knn_rows_external_baselines_review_2026-04-10.md",
+      "size": 507,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal208_v0_4_public_example_chain_2026-04-10.md",
+      "size": 1388,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal208_v0_4_public_example_chain_review_2026-04-10.md",
+      "size": 503,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal209_v0_4_bounded_scaling_note_2026-04-10.md",
+      "size": 3288,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal209_v0_4_bounded_scaling_note_review_2026-04-10.md",
+      "size": 432,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal210_v0_4_preview_release_surface_2026-04-10.md",
+      "size": 1074,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal210_v0_4_preview_release_surface_review_2026-04-10.md",
+      "size": 438,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal211_v0_4_doc_consistency_audit_2026-04-10.md",
+      "size": 1911,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal211_v0_4_doc_consistency_audit_review_2026-04-10.md",
+      "size": 438,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal212_v0_4_full_audit_2026-04-10.md",
+      "size": 3625,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal212_v0_4_full_audit_review_2026-04-10.md",
+      "size": 1653,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal213_v0_4_release_packaging_prep_2026-04-10.md",
+      "size": 1071,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal214_v0_4_application_examples_and_sql_2026-04-10.md",
+      "size": 6304,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal215_v0_4_gpu_rework_proposal_2026-04-10.md",
+      "size": 1634,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal215_v0_4_gpu_rework_proposal_review_2026-04-10.md",
+      "size": 1544,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal216_fixed_radius_neighbors_optix_2026-04-10.md",
+      "size": 2204,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal217_knn_rows_optix_2026-04-10.md",
+      "size": 1143,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal217_knn_rows_optix_review_2026-04-10.md",
+      "size": 920,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal218_fixed_radius_neighbors_vulkan_2026-04-10.md",
+      "size": 1248,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal218_fixed_radius_neighbors_vulkan_review_2026-04-10.md",
+      "size": 1026,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal219_knn_rows_vulkan_2026-04-10.md",
+      "size": 1252,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal219_knn_rows_vulkan_review_2026-04-10.md",
+      "size": 934,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal220_v0_4_gpu_status_refresh_2026-04-10.md",
+      "size": 1251,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal222_windows_harness_portability_closure_2026-04-10.md",
+      "size": 2295,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal222_windows_harness_portability_closure_review_2026-04-10.md",
+      "size": 1453,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal223_vulkan_harness_integration_2026-04-10.md",
+      "size": 1149,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal223_vulkan_harness_integration_review_2026-04-10.md",
+      "size": 1013,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal224_gpu_goal_closure_pack_2026-04-10.md",
+      "size": 652,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal224_gpu_goal_closure_pack_review_2026-04-10.md",
+      "size": 1426,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal225_live_v0_4_doc_refresh_2026-04-10.md",
+      "size": 1601,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal225_live_v0_4_doc_refresh_review_2026-04-10.md",
+      "size": 674,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal226_final_pre_performance_cleanup_2026-04-10.md",
+      "size": 1293,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal226_final_pre_performance_cleanup_review_2026-04-10.md",
+      "size": 526,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal227_beginner_tutorial_reorganization_2026-04-10.md",
+      "size": 2255,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal227_beginner_tutorial_reorganization_review_2026-04-10.md",
+      "size": 446,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal228_v0_4_heavy_nearest_neighbor_perf_2026-04-10.md",
+      "size": 6776,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal228_v0_4_heavy_nearest_neighbor_perf_review_2026-04-10.md",
+      "size": 1306,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal228_v0_4_heavy_nearest_neighbor_perf_summary_2026-04-10.md",
+      "size": 1840,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal229_fixed_radius_neighbors_accelerated_boundary_fix_2026-04-10.md",
+      "size": 3538,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal229_fixed_radius_neighbors_accelerated_boundary_fix_review_2026-04-10.md",
+      "size": 1178,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal230_clean_release_prep_workspace_2026-04-10.md",
+      "size": 1668,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal230_clean_release_prep_workspace_review_2026-04-10.md",
+      "size": 945,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal231_release_surface_alignment_2026-04-10.md",
+      "size": 1504,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal231_release_surface_alignment_review_2026-04-10.md",
+      "size": 859,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal232_final_pre_release_verification_2026-04-10.md",
+      "size": 1926,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal232_final_pre_release_verification_review_2026-04-10.md",
+      "size": 981,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal233_final_release_decision_package_2026-04-10.md",
+      "size": 1561,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal233_final_release_decision_package_review_2026-04-10.md",
+      "size": 813,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal234_external_user_ux_cleanup_2026-04-11.md",
+      "size": 2163,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal234_external_user_ux_cleanup_review_2026-04-11.md",
+      "size": 837,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal236_v0_4_final_release_gate_and_v0_5_direction_2026-04-11.md",
+      "size": 1727,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal237_v0_4_final_review_gate_bundle_2026-04-11.md",
+      "size": 1097,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal238_v0_4_consistency_and_presentation_audit_2026-04-11.md",
+      "size": 1008,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal239_final_public_surface_cleanup_2026-04-11.md",
+      "size": 1865,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal23_embree_reproduction_report_2026-04-01.md",
+      "size": 9046,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal23_embree_reproduction_report_2026-04-01_zh.md",
+      "size": 7994,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal240_final_release_gate_closure_2026-04-11.md",
+      "size": 1209,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal240_final_release_gate_closure_review_2026-04-11.md",
+      "size": 1588,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal241_system_level_audit_database_2026-04-11.md",
+      "size": 2732,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal242_front_page_and_tutorial_audit_pass_2026-04-11.md",
+      "size": 1469,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal243_release_docs_audit_pass_2026-04-11.md",
+      "size": 1196,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal244_examples_audit_pass_2026-04-11.md",
+      "size": 1662,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal245_code_surface_audit_pass_2026-04-11.md",
+      "size": 1478,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal246_verification_surface_audit_pass_2026-04-11.md",
+      "size": 1694,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal247_archive_surface_audit_pass_2026-04-11.md",
+      "size": 1351,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal248_follow_up_remediation_pass_2026-04-11.md",
+      "size": 1554,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal249_native_cpu_oracle_environment_hardening_2026-04-11.md",
+      "size": 1486,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal250_feature_docs_audit_pass_2026-04-11.md",
+      "size": 2323,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal251_architecture_process_docs_audit_pass_2026-04-11.md",
+      "size": 1957,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal252_archive_and_early_goal_docs_audit_pass_2026-04-11.md",
+      "size": 2035,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal253_v0_3_plus_goal_review_compliance_audit_2026-04-11.md",
+      "size": 1681,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal253_v0_3_plus_goal_review_register_2026-04-11.md",
+      "size": 15308,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal254_engineering_support_docs_audit_pass_2026-04-11.md",
+      "size": 1460,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal255_front_page_proposal_consensus_2026-04-11.md",
+      "size": 1777,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal255_front_page_rewrite_2026-04-11.md",
+      "size": 1612,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal255_front_page_rewrite_codex_proposal_2026-04-11.md",
+      "size": 1909,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal255_front_page_rewrite_review_2026-04-11.md",
+      "size": 1443,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal256_front_page_and_4k_integration_2ai_consensus_2026-04-11.md",
+      "size": 867,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal256_hidden_star_4k_artifact_integration_2026-04-11.md",
+      "size": 3647,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal256_hidden_star_4k_artifact_integration_review_2026-04-11.md",
+      "size": 731,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal257_v0_5_readiness_current_state_review_2026-04-11.md",
+      "size": 1660,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal258_v0_5_paper_consistency_charter_2026-04-11.md",
+      "size": 1649,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal258_v0_5_paper_consistency_charter_review_2026-04-11.md",
+      "size": 1128,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal259_v0_5_3d_nearest_neighbor_surface_design_2026-04-11.md",
+      "size": 1436,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal259_v0_5_3d_nearest_neighbor_surface_design_review_2026-04-11.md",
+      "size": 1108,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal260_v0_5_3d_point_surface_and_reference_path_2026-04-11.md",
+      "size": 1058,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal260_v0_5_3d_point_surface_and_reference_path_review_2026-04-11.md",
+      "size": 1075,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal261_v0_5_native_3d_point_contract_closure_2026-04-11.md",
+      "size": 962,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal261_v0_5_native_3d_point_contract_closure_review_2026-04-11.md",
+      "size": 1121,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal262_v0_5_bounded_radius_knn_contract_design_2026-04-11.md",
+      "size": 914,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal262_v0_5_bounded_radius_knn_contract_design_review_2026-04-11.md",
+      "size": 933,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal263_v0_5_bounded_knn_rows_surface_2026-04-11.md",
+      "size": 928,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal263_v0_5_bounded_knn_rows_surface_review_2026-04-11.md",
+      "size": 1013,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal264_v0_5_bounded_knn_rows_cpu_oracle_2026-04-11.md",
+      "size": 820,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal264_v0_5_bounded_knn_rows_cpu_oracle_review_2026-04-11.md",
+      "size": 958,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal265_v0_5_rtnn_dataset_registry_2026-04-12.md",
+      "size": 2381,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal265_v0_5_rtnn_dataset_registry_review_2026-04-12.md",
+      "size": 1139,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal266_v0_5_rtnn_baseline_registry_2026-04-12.md",
+      "size": 1384,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal266_v0_5_rtnn_baseline_registry_review_2026-04-12.md",
+      "size": 1355,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal267_v0_5_rtnn_reproduction_matrix_2026-04-12.md",
+      "size": 1679,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal267_v0_5_rtnn_reproduction_matrix_review_2026-04-12.md",
+      "size": 1236,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal268_v0_5_bounded_dataset_manifests_2026-04-12.md",
+      "size": 1208,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal268_v0_5_bounded_dataset_manifests_review_2026-04-12.md",
+      "size": 1235,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal269_v0_5_cunsearch_adapter_skeleton_2026-04-12.md",
+      "size": 1639,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal269_v0_5_cunsearch_adapter_skeleton_review_2026-04-12.md",
+      "size": 977,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal270_v0_5_kitti_bounded_acquisition_2026-04-12.md",
+      "size": 1328,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal270_v0_5_kitti_bounded_acquisition_review_2026-04-12.md",
+      "size": 1308,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal271_v0_5_kitti_bounded_loader_2026-04-12.md",
+      "size": 1808,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal271_v0_5_kitti_bounded_loader_review_2026-04-12.md",
+      "size": 916,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal272_v0_5_kitti_point_package_2026-04-12.md",
+      "size": 1491,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal272_v0_5_kitti_point_package_review_2026-04-12.md",
+      "size": 781,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal273_v0_5_cunsearch_response_parser_2026-04-12.md",
+      "size": 1492,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal273_v0_5_cunsearch_response_parser_review_2026-04-12.md",
+      "size": 816,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal274_v0_5_bounded_fixed_radius_comparison_2026-04-12.md",
+      "size": 1510,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal274_v0_5_bounded_fixed_radius_comparison_review_2026-04-12.md",
+      "size": 903,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal275_v0_5_cunsearch_live_driver_2026-04-12.md",
+      "size": 1694,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal275_v0_5_cunsearch_live_driver_review_2026-04-12.md",
+      "size": 684,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal276_v0_5_live_bounded_linux_comparison_2026-04-12.md",
+      "size": 1614,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal276_v0_5_live_bounded_linux_comparison_review_2026-04-12.md",
+      "size": 811,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal277_v0_5_kitti_linux_acquisition_prep_2026-04-12.md",
+      "size": 1855,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal277_v0_5_kitti_linux_acquisition_prep_review_2026-04-12.md",
+      "size": 630,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal278_v0_5_real_kitti_layout_and_offset_support_2026-04-12.md",
+      "size": 1598,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal278_v0_5_real_kitti_layout_and_offset_support_review_2026-04-12.md",
+      "size": 506,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal279_v0_5_first_real_kitti_live_comparison_2026-04-12.md",
+      "size": 1572,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal279_v0_5_first_real_kitti_live_comparison_review_2026-04-12.md",
+      "size": 491,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal280_v0_5_cunsearch_live_precision_hardening_2026-04-12.md",
+      "size": 2020,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal280_v0_5_cunsearch_live_precision_hardening_review_2026-04-12.md",
+      "size": 507,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal281_v0_5_postgis_3d_fixed_radius_support_2026-04-12.md",
+      "size": 1505,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal281_v0_5_postgis_3d_fixed_radius_support_review_2026-04-12.md",
+      "size": 476,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal282_v0_5_postgis_3d_index_hardening_and_plan_audit_2026-04-12.md",
+      "size": 1501,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal282_v0_5_postgis_3d_index_hardening_and_plan_audit_review_2026-04-12.md",
+      "size": 530,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal283_v0_5_kitti_three_way_performance_result_2026-04-12.md",
+      "size": 1771,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal283_v0_5_kitti_three_way_performance_result_review_2026-04-12.md",
+      "size": 593,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal284_v0_5_kitti_three_way_scaling_boundary_2026-04-12.md",
+      "size": 2305,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal284_v0_5_kitti_three_way_scaling_boundary_review_2026-04-12.md",
+      "size": 565,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal285_v0_5_cunsearch_duplicate_point_boundary_2026-04-12.md",
+      "size": 1693,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal285_v0_5_cunsearch_duplicate_point_boundary_review_2026-04-12.md",
+      "size": 548,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal286_v0_5_cunsearch_duplicate_guard_2026-04-12.md",
+      "size": 1743,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal286_v0_5_cunsearch_duplicate_guard_review_2026-04-12.md",
+      "size": 509,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal287_v0_5_kitti_duplicate_free_selector_2026-04-12.md",
+      "size": 951,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal287_v0_5_kitti_duplicate_free_selector_review_2026-04-12.md",
+      "size": 445,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal288_v0_5_kitti_duplicate_free_three_way_2026-04-12.md",
+      "size": 1673,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal288_v0_5_kitti_duplicate_free_three_way_review_2026-04-12.md",
+      "size": 485,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal289_v0_5_kitti_4096_boundary_2026-04-12.md",
+      "size": 1792,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal289_v0_5_kitti_4096_boundary_review_2026-04-12.md",
+      "size": 843,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal28a_linux_exact_input_feasibility_2026-04-02.md",
+      "size": 8926,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal28b_linux_uscounty_zipcode_staging_2026-04-02.md",
+      "size": 4800,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal28c_linux_county_zipcode_exact_source_execution_2026-04-02.md",
+      "size": 5980,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal28d_linux_county_zipcode_larger_execution_2026-04-02.md",
+      "size": 4626,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal290_v0_5_kitti_8192_boundary_continuation_2026-04-12.md",
+      "size": 1503,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal290_v0_5_kitti_8192_boundary_continuation_review_2026-04-12.md",
+      "size": 720,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal291_v0_5_kitti_16384_boundary_continuation_2026-04-12.md",
+      "size": 1694,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal291_v0_5_kitti_16384_boundary_continuation_review_2026-04-12.md",
+      "size": 746,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal292_v0_5_native_3d_fixed_radius_oracle_closure_2026-04-12.md",
+      "size": 1640,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal292_v0_5_native_3d_fixed_radius_oracle_closure_review_2026-04-12.md",
+      "size": 715,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal293_v0_5_native_3d_bounded_knn_oracle_closure_2026-04-12.md",
+      "size": 1470,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal293_v0_5_native_3d_bounded_knn_oracle_closure_review_2026-04-12.md",
+      "size": 439,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal294_kitti_native_vs_postgis_performance_2026-04-12.md",
+      "size": 3033,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal294_kitti_native_vs_postgis_performance_review_2026-04-12.md",
+      "size": 719,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal295_kitti_bounded_knn_native_vs_postgis_performance_2026-04-12.md",
+      "size": 3141,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal295_kitti_bounded_knn_native_vs_postgis_performance_review_2026-04-12.md",
+      "size": 483,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal296_v0_5_native_3d_knn_oracle_closure_2026-04-12.md",
+      "size": 1475,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal296_v0_5_native_3d_knn_oracle_closure_review_2026-04-12.md",
+      "size": 504,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal297_kitti_knn_native_vs_postgis_performance_2026-04-12.md",
+      "size": 3227,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal297_kitti_knn_native_vs_postgis_performance_review_2026-04-12.md",
+      "size": 482,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal298_v0_5_embree_3d_fixed_radius_closure_2026-04-12.md",
+      "size": 2890,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal298_v0_5_embree_3d_fixed_radius_closure_review_2026-04-12.md",
+      "size": 596,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal299_v0_5_embree_3d_bounded_knn_closure_2026-04-12.md",
+      "size": 2353,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal299_v0_5_embree_3d_bounded_knn_closure_review_2026-04-12.md",
+      "size": 589,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal29_lsi_mismatch_diagnosis_2026-04-02.md",
+      "size": 4807,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal300_v0_5_embree_3d_knn_closure_2026-04-12.md",
+      "size": 1851,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal300_v0_5_embree_3d_knn_closure_review_2026-04-12.md",
+      "size": 599,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal30_precision_abi_fix_2026-04-02.md",
+      "size": 2897,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal310_v0_5_linux_large_scale_embree_nn_perf_2026-04-12.md",
+      "size": 4813,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal310_v0_5_linux_large_scale_embree_nn_perf_review_2026-04-12.md",
+      "size": 989,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal311_v0_5_optix_3d_nn_closure_2026-04-12.md",
+      "size": 3023,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal311_v0_5_optix_3d_nn_closure_review_2026-04-12.md",
+      "size": 930,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal312_v0_5_linux_large_scale_native_embree_optix_perf_2026-04-12.md",
+      "size": 3491,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal312_v0_5_linux_large_scale_native_embree_optix_perf_review_2026-04-12.md",
+      "size": 1129,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal313_v0_5_linux_32768_backend_table_2026-04-12.md",
+      "size": 4775,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal313_v0_5_linux_32768_backend_table_review_2026-04-12.md",
+      "size": 1037,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal314_v0_5_current_linux_nn_perf_report_2026-04-12.md",
+      "size": 5434,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal314_v0_5_current_linux_nn_perf_report_review_2026-04-12.md",
+      "size": 1042,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal315_v0_5_vulkan_3d_nn_closure_2026-04-12.md",
+      "size": 2699,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal315_v0_5_vulkan_3d_nn_closure_review_2026-04-12.md",
+      "size": 969,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_2026-04-12.md",
+      "size": 3655,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal316_v0_5_linux_large_scale_embree_optix_vulkan_perf_review_2026-04-12.md",
+      "size": 1127,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal317_v0_5_current_linux_4backend_nn_perf_report_2026-04-12.md",
+      "size": 3823,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal317_v0_5_current_linux_4backend_nn_perf_report_review_2026-04-12.md",
+      "size": 1073,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal318_v0_5_preview_support_matrix_2026-04-12.md",
+      "size": 2673,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal318_v0_5_preview_support_matrix_review_2026-04-12.md",
+      "size": 348,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal319_v0_5_cross_platform_embree_correctness_2026-04-12.md",
+      "size": 1845,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal319_v0_5_cross_platform_embree_correctness_review_2026-04-12.md",
+      "size": 420,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal31_lsi_gap_closure_2026-04-02.md",
+      "size": 4074,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal320_v0_5_preview_readiness_audit_2026-04-12.md",
+      "size": 3350,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal320_v0_5_preview_readiness_audit_review_2026-04-12.md",
+      "size": 411,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal321_v0_5_frontpage_clarity_2026-04-12.md",
+      "size": 1210,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal321_v0_5_frontpage_clarity_review_2026-04-12.md",
+      "size": 394,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal322_v0_5_comprehensive_transition_audit_adoption_2026-04-12.md",
+      "size": 1335,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal322_v0_5_comprehensive_transition_audit_adoption_review_2026-04-12.md",
+      "size": 412,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal323_v0_5_call_for_test_publish_2026-04-12.md",
+      "size": 1092,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal323_v0_5_call_for_test_publish_review_2026-04-12.md",
+      "size": 492,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal324_v0_5_final_preview_session_audit_adoption_2026-04-12.md",
+      "size": 944,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal324_v0_5_final_preview_session_audit_adoption_review_2026-04-12.md",
+      "size": 373,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal325_v0_5_newcomer_doc_hardening_2026-04-12.md",
+      "size": 1969,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal325_v0_5_newcomer_doc_hardening_review_2026-04-12.md",
+      "size": 468,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal326_v0_5_external_aggressive_user_audit_adoption_2026-04-12.md",
+      "size": 950,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal326_v0_5_external_aggressive_user_audit_adoption_review_2026-04-12.md",
+      "size": 378,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal327_v0_5_full_repo_audit_adoption_2026-04-12.md",
+      "size": 893,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal327_v0_5_full_repo_audit_adoption_review_2026-04-12.md",
+      "size": 437,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal328_v0_5_layout_types_collision_fix_2026-04-12.md",
+      "size": 1188,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal328_v0_5_layout_types_collision_fix_review_2026-04-12.md",
+      "size": 432,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal329_v0_5_remove_stale_types_module_2026-04-12.md",
+      "size": 906,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal329_v0_5_remove_stale_types_module_review_2026-04-12.md",
+      "size": 419,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal32_local_lsi_sort_sweep_2026-04-02.md",
+      "size": 2606,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal330_v0_5_pre_release_package_2026-04-12.md",
+      "size": 1088,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal330_v0_5_pre_release_package_review_2026-04-12.md",
+      "size": 449,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal331_v0_5_pre_release_code_test_sweep_2026-04-12.md",
+      "size": 1320,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal331_v0_5_pre_release_code_test_sweep_review_2026-04-12.md",
+      "size": 423,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal332_v0_5_pre_release_audit_pass_2026-04-13.md",
+      "size": 1921,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal332_v0_5_pre_release_audit_pass_review_2026-04-13.md",
+      "size": 435,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal333_v0_5_public_docs_total_review_2026-04-13.md",
+      "size": 4387,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal333_v0_5_public_docs_total_review_review_2026-04-13.md",
+      "size": 989,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal334_v0_5_final_external_review_round_2026-04-13.md",
+      "size": 1423,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal334_v0_5_final_external_review_round_review_2026-04-13.md",
+      "size": 713,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal335_v0_5_final_release_package_2026-04-13.md",
+      "size": 1309,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal335_v0_5_final_release_package_review_2026-04-13.md",
+      "size": 656,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal336_v0_5_release_make_2026-04-13.md",
+      "size": 1481,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal336_v0_5_release_make_review_2026-04-13.md",
+      "size": 612,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal33_linux_postfix_verification_2026-04-02.md",
+      "size": 4262,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal34_linux_embree_performance_2026-04-02.md",
+      "size": 4169,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal35_blockgroup_waterbodies_linux_slice_2026-04-02.md",
+      "size": 4568,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal36_blockgroup_waterbodies_linux_performance_2026-04-02.md",
+      "size": 3737,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal37_lkau_pkau_linux_slice_2026-04-02.md",
+      "size": 2643,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal385_v0_6_rt_graph_version_plan_2026-04-14.md",
+      "size": 2044,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal385_v0_6_rt_graph_version_plan_review_2026-04-14.md",
+      "size": 1607,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal386_v0_6_rt_graph_kernel_surface_design_2026-04-14.md",
+      "size": 6634,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal386_v0_6_rt_graph_kernel_surface_design_review_2026-04-14.md",
+      "size": 1883,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal387_v0_6_rt_graph_execution_interpretation_2026-04-14.md",
+      "size": 6100,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal387_v0_6_rt_graph_execution_interpretation_review_2026-04-14.md",
+      "size": 1969,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal388_v0_6_rt_graph_lowering_runtime_contract_2026-04-14.md",
+      "size": 4357,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal388_v0_6_rt_graph_lowering_runtime_contract_review_2026-04-14.md",
+      "size": 1614,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal389_v0_6_rt_kernel_bfs_python_truth_path_2026-04-14.md",
+      "size": 2714,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal389_v0_6_rt_kernel_bfs_python_truth_path_review_2026-04-14.md",
+      "size": 1963,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal38_large_scale_embree_feasibility_2026-04-02.md",
+      "size": 4608,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal390_v0_6_rt_kernel_triangle_python_truth_path_2026-04-14.md",
+      "size": 2273,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal390_v0_6_rt_kernel_triangle_python_truth_path_review_2026-04-14.md",
+      "size": 2185,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal391_v0_6_rt_kernel_bfs_oracle_truth_path_2026-04-14.md",
+      "size": 2386,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal391_v0_6_rt_kernel_bfs_oracle_truth_path_review_2026-04-14.md",
+      "size": 2248,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal392_v0_6_rt_kernel_triangle_oracle_truth_path_2026-04-14.md",
+      "size": 2479,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal392_v0_6_rt_kernel_triangle_oracle_truth_path_review_2026-04-14.md",
+      "size": 2330,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal393_v0_6_embree_rt_graph_mapping_and_bfs_closure_2026-04-14.md",
+      "size": 2096,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal393_v0_6_embree_rt_graph_mapping_and_bfs_closure_review_2026-04-14.md",
+      "size": 1991,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal394_v0_6_optix_rt_graph_mapping_and_bfs_closure_2026-04-14.md",
+      "size": 2307,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal394_v0_6_optix_rt_graph_mapping_and_bfs_closure_review_2026-04-14.md",
+      "size": 1124,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal395_v0_6_vulkan_rt_graph_mapping_and_bfs_closure_2026-04-14.md",
+      "size": 2345,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal395_v0_6_vulkan_rt_graph_mapping_and_bfs_closure_review_2026-04-14.md",
+      "size": 1131,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal396_v0_6_embree_rt_graph_mapping_and_triangle_closure_2026-04-14.md",
+      "size": 2184,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal396_v0_6_embree_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 1147,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal397_v0_6_optix_rt_graph_mapping_and_triangle_closure_2026-04-14.md",
+      "size": 2314,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal397_v0_6_optix_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 1138,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal398_v0_6_vulkan_rt_graph_mapping_and_triangle_closure_2026-04-14.md",
+      "size": 2449,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal398_v0_6_vulkan_rt_graph_mapping_and_triangle_closure_review_2026-04-14.md",
+      "size": 1409,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal399_v0_6_rt_multi_backend_correctness_and_perf_gate_2026-04-14.md",
+      "size": 4220,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal399_v0_6_rt_multi_backend_correctness_and_perf_gate_review_2026-04-14.md",
+      "size": 1628,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal39_optix_backend_audit_2026-04-02.md",
+      "size": 10956,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal400_v0_6_postgresql_backed_all_engine_correctness_gate_2026-04-14.md",
+      "size": 4842,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal400_v0_6_postgresql_backed_all_engine_correctness_gate_review_2026-04-14.md",
+      "size": 1525,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal401_v0_6_large_scale_engine_perf_gate_2026-04-14.md",
+      "size": 6615,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal401_v0_6_large_scale_engine_perf_gate_review_2026-04-14.md",
+      "size": 1483,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal402_v0_6_rt_graph_final_correctness_and_performance_closure_2026-04-14.md",
+      "size": 4092,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal402_v0_6_rt_graph_final_correctness_and_performance_closure_review_2026-04-14.md",
+      "size": 2130,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal403_v0_6_pre_release_code_and_test_cleanup_2026-04-14.md",
+      "size": 3130,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal403_v0_6_pre_release_code_and_test_cleanup_review_2026-04-15.md",
+      "size": 1261,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal404_v0_6_pre_release_doc_check_2026-04-14.md",
+      "size": 3046,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal404_v0_6_pre_release_doc_check_review_2026-04-15.md",
+      "size": 1239,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal405_v0_6_pre_release_flow_audit_2026-04-14.md",
+      "size": 3379,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal405_v0_6_pre_release_flow_audit_review_2026-04-15.md",
+      "size": 1076,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal406_v0_6_release_hold_after_internal_gates_2026-04-14.md",
+      "size": 2920,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal406_v0_6_release_hold_after_internal_gates_review_2026-04-15.md",
+      "size": 1277,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal407_v0_6_1_release_decision_2026-04-15.md",
+      "size": 1053,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal408_v0_6_1_git_release_act_2026-04-15.md",
+      "size": 880,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal409_ai_checker_review_2026-04-15.md",
+      "size": 8790,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal409_ai_final_proof_review_2026-04-15.md",
+      "size": 3600,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal409_ai_verifier_review_2026-04-15.md",
+      "size": 3453,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal409_repo_wide_file_status_audit_2026-04-15.md",
+      "size": 4751,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal40_native_cpu_oracle_2026-04-02.md",
+      "size": 2637,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal410_ai_checker_review_2026-04-15.md",
+      "size": 6829,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal410_ai_verifier_review_2026-04-15.md",
+      "size": 6609,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal410_tutorial_and_example_cross_platform_check_2026-04-15.md",
+      "size": 4521,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal410_tutorial_and_example_cross_platform_check_review_2026-04-15.md",
+      "size": 1567,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal411_ai_checker_review_2026-04-15.md",
+      "size": 4722,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal411_ai_verifier_review_2026-04-15.md",
+      "size": 5692,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal411_public_surface_ci_automation_2026-04-15.md",
+      "size": 3482,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal411_public_surface_ci_automation_review_2026-04-15.md",
+      "size": 1720,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal412_rt_db_workload_analysis_for_next_version_2026-04-15.md",
+      "size": 9162,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal412_rt_db_workload_analysis_for_next_version_review_2026-04-15.md",
+      "size": 2059,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal413_v0_7_rt_db_workload_scope_and_goal_ladder_2026-04-15.md",
+      "size": 4166,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal413_v0_7_rt_db_workload_scope_and_goal_ladder_review_2026-04-15.md",
+      "size": 1797,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal414_v0_7_rt_db_kernel_surface_2026-04-15.md",
+      "size": 5701,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal414_v0_7_rt_db_kernel_surface_review_2026-04-15.md",
+      "size": 618,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal415_416_ai_checker_review_2026-04-15.md",
+      "size": 1617,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal415_416_ai_verifier_review_2026-04-15.md",
+      "size": 1600,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal415_v0_7_rt_db_execution_interpretation_2026-04-15.md",
+      "size": 5642,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal415_v0_7_rt_db_execution_interpretation_review_2026-04-15.md",
+      "size": 963,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal416_v0_7_rt_db_lowering_runtime_contract_2026-04-15.md",
+      "size": 8339,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal416_v0_7_rt_db_lowering_runtime_contract_review_2026-04-15.md",
+      "size": 1092,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal417_v0_7_rt_db_conjunctive_scan_python_truth_path_2026-04-15.md",
+      "size": 1571,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal417_v0_7_rt_db_conjunctive_scan_python_truth_path_review_2026-04-15.md",
+      "size": 506,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal418_v0_7_rt_db_grouped_count_python_truth_path_2026-04-15.md",
+      "size": 1687,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal418_v0_7_rt_db_grouped_count_python_truth_path_review_2026-04-15.md",
+      "size": 407,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal419_v0_7_rt_db_grouped_sum_python_truth_path_2026-04-15.md",
+      "size": 1726,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal419_v0_7_rt_db_grouped_sum_python_truth_path_review_2026-04-15.md",
+      "size": 442,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal41_cross_host_oracle_correctness_2026-04-02.md",
+      "size": 3778,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_2026-04-15.md",
+      "size": 1607,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_review_2026-04-15.md",
+      "size": 470,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_2026-04-15.md",
+      "size": 1567,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_review_2026-04-15.md",
+      "size": 459,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_2026-04-15.md",
+      "size": 1555,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_review_2026-04-15.md",
+      "size": 515,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal423_v0_7_postgresql_db_correctness_2026-04-15.md",
+      "size": 1351,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal423_v0_7_postgresql_db_correctness_review_2026-04-15.md",
+      "size": 707,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal424_v0_7_postgresql_db_grouped_correctness_2026-04-15.md",
+      "size": 1946,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal424_v0_7_postgresql_db_grouped_correctness_review_2026-04-15.md",
+      "size": 522,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal426_external_review_2026-04-15.md",
+      "size": 2645,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal426_v0_7_rt_db_embree_backend_closure_2026-04-15.md",
+      "size": 6177,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal426_v0_7_rt_db_embree_backend_closure_review_2026-04-15.md",
+      "size": 3097,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal427_external_review_2026-04-15.md",
+      "size": 2555,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal427_v0_7_rt_db_optix_backend_closure_2026-04-15.md",
+      "size": 6123,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal427_v0_7_rt_db_optix_backend_closure_review_2026-04-15.md",
+      "size": 1587,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal428_external_review_2026-04-15.md",
+      "size": 3526,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal428_v0_7_rt_db_vulkan_backend_closure_2026-04-15.md",
+      "size": 5948,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal428_v0_7_rt_db_vulkan_backend_closure_review_2026-04-15.md",
+      "size": 1668,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal429_external_review_2026-04-15.md",
+      "size": 754,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal429_v0_7_rt_db_cross_engine_postgresql_correctness_gate_2026-04-15.md",
+      "size": 2714,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal429_v0_7_rt_db_cross_engine_postgresql_correctness_gate_review_2026-04-15.md",
+      "size": 1182,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal42_pre_nvidia_readiness_review_2026-04-02.md",
+      "size": 2176,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal430_external_review_2026-04-15.md",
+      "size": 1952,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal430_v0_7_rt_db_perf_gate_2026-04-15.md",
+      "size": 4198,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal430_v0_7_rt_db_perf_gate_review_2026-04-15.md",
+      "size": 1137,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal431_external_review_2026-04-15.md",
+      "size": 1047,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal431_v0_7_rt_db_release_gates_2026-04-15.md",
+      "size": 5699,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal431_v0_7_rt_db_release_gates_review_2026-04-15.md",
+      "size": 1309,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal432_external_review_2026-04-15.md",
+      "size": 4051,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_2026-04-15.md",
+      "size": 4869,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_review_2026-04-15.md",
+      "size": 1020,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal433_external_review_2026-04-16.md",
+      "size": 2880,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_2026-04-16.md",
+      "size": 5757,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_review_2026-04-16.md",
+      "size": 1022,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal434_external_review_2026-04-16.md",
+      "size": 3563,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_2026-04-16.md",
+      "size": 3695,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_review_2026-04-16.md",
+      "size": 2014,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal435_external_review_2026-04-16.md",
+      "size": 3729,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_2026-04-16.md",
+      "size": 3751,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_review_2026-04-16.md",
+      "size": 2111,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal436_external_review_2026-04-16.md",
+      "size": 2400,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_2026-04-16.md",
+      "size": 3952,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_review_2026-04-16.md",
+      "size": 2118,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal437_external_review_2026-04-16.md",
+      "size": 1940,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_2026-04-16.md",
+      "size": 4657,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_review_2026-04-16.md",
+      "size": 1861,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal438_external_review_2026-04-16.md",
+      "size": 3545,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_2026-04-16.md",
+      "size": 2842,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_review_2026-04-16.md",
+      "size": 1992,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal439_external_tester_report_intake_ledger_2026-04-16.md",
+      "size": 7662,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal439_v0_7_external_tester_report_intake_2026-04-16.md",
+      "size": 1925,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal43_claude_audit_2026-04-02.md",
+      "size": 5700,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal43_optix_gpu_validation_2026-04-02.md",
+      "size": 3697,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal440_external_review_2026-04-16.md",
+      "size": 2031,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+      "size": 3360,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_review_2026-04-16.md",
+      "size": 1746,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal441_external_review_2026-04-16.md",
+      "size": 5045,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+      "size": 3345,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_review_2026-04-16.md",
+      "size": 1815,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal442_external_review_2026-04-16.md",
+      "size": 5106,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_2026-04-16.md",
+      "size": 3239,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_review_2026-04-16.md",
+      "size": 1816,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal443_external_review_2026-04-16.md",
+      "size": 5785,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_2026-04-16.md",
+      "size": 3887,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_review_2026-04-16.md",
+      "size": 1723,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal444_external_review_2026-04-16.md",
+      "size": 631,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_2026-04-16.md",
+      "size": 2593,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_review_2026-04-16.md",
+      "size": 1352,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal445_external_review_2026-04-16.md",
+      "size": 1147,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal445_external_review_gemini_attempt_invalid_2026-04-16.md",
+      "size": 784,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal445_external_review_status_2026-04-16.md",
+      "size": 800,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_2026-04-16.md",
+      "size": 2422,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_review_2026-04-16.md",
+      "size": 1245,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal446_external_review_2026-04-16.md",
+      "size": 794,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_2026-04-16.md",
+      "size": 2596,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_review_2026-04-16.md",
+      "size": 887,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal447_external_review_2026-04-16.md",
+      "size": 1269,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_2026-04-16.md",
+      "size": 4614,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_review_2026-04-16.md",
+      "size": 880,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal448_external_review_2026-04-16.md",
+      "size": 1400,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal448_v0_7_db_columnar_packaging_manifest_2026-04-16.md",
+      "size": 10062,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal448_v0_7_db_columnar_packaging_manifest_review_2026-04-16.md",
+      "size": 1211,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal449_external_review_2026-04-16.md",
+      "size": 1398,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal449_external_review_gemini_attempt_invalid_2026-04-16.md",
+      "size": 845,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal449_external_review_status_2026-04-16.md",
+      "size": 674,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal449_v0_7_packaging_manifest_validation_gate_2026-04-16.md",
+      "size": 2578,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal449_v0_7_packaging_manifest_validation_gate_review_2026-04-16.md",
+      "size": 936,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal44_optix_performance_2026-04-02.md",
+      "size": 2959,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal450_external_review_2026-04-16.md",
+      "size": 1750,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_2026-04-16.md",
+      "size": 4173,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_review_2026-04-16.md",
+      "size": 1263,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal451_external_review_2026-04-16.md",
+      "size": 1886,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal451_v0_7_postgresql_baseline_index_audit_2026-04-16.md",
+      "size": 4961,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal451_v0_7_postgresql_baseline_index_audit_review_2026-04-16.md",
+      "size": 1291,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal452_external_review_2026-04-16.md",
+      "size": 3143,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal452_external_review_gemini_attempt_overbroad_2026-04-16.md",
+      "size": 2026,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal452_external_review_status_2026-04-16.md",
+      "size": 739,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.md",
+      "size": 4532,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_review_2026-04-16.md",
+      "size": 1331,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal453_external_review_2026-04-16.md",
+      "size": 1528,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_2026-04-16.md",
+      "size": 3559,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_review_2026-04-16.md",
+      "size": 1294,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal454_external_review_2026-04-16.md",
+      "size": 2632,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal454_v0_7_post_wording_evidence_package_validation_2026-04-16.md",
+      "size": 2748,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal454_v0_7_post_wording_evidence_package_validation_review_2026-04-16.md",
+      "size": 1159,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal455_external_review_2026-04-16.md",
+      "size": 2774,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_2026-04-16.md",
+      "size": 9316,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_review_2026-04-16.md",
+      "size": 1087,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal456_external_review_2026-04-16.md",
+      "size": 862,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal456_v0_7_pre_stage_filelist_ledger_2026-04-16.md",
+      "size": 2109,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal456_v0_7_pre_stage_filelist_ledger_review_2026-04-16.md",
+      "size": 1930,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal457_external_review_2026-04-16.md",
+      "size": 684,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal457_v0_7_manual_review_path_resolution_2026-04-16.md",
+      "size": 3458,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal457_v0_7_manual_review_path_resolution_review_2026-04-16.md",
+      "size": 1112,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal458_external_review_2026-04-16.md",
+      "size": 271,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal458_v0_7_pre_stage_validation_gate_2026-04-16.md",
+      "size": 1270,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal458_v0_7_pre_stage_validation_gate_review_2026-04-16.md",
+      "size": 1764,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal459_external_review_2026-04-16.md",
+      "size": 1554,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal459_v0_7_dry_run_staging_command_plan_2026-04-16.md",
+      "size": 18278,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal459_v0_7_dry_run_staging_command_plan_review_2026-04-16.md",
+      "size": 1339,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal45_optix_county_zipcode_2026-04-02.md",
+      "size": 5671,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal460_external_review_2026-04-16.md",
+      "size": 227,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal460_v0_7_ready_to_stage_final_hold_2026-04-16.md",
+      "size": 2595,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal460_v0_7_ready_to_stage_final_hold_review_2026-04-16.md",
+      "size": 1192,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal461_external_review_2026-04-16.md",
+      "size": 767,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal461_v0_7_db_app_demo_2026-04-16.md",
+      "size": 2629,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal461_v0_7_db_app_demo_review_2026-04-16.md",
+      "size": 1060,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal462_external_review_2026-04-16.md",
+      "size": 2958,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal462_v0_7_db_kernel_app_demo_2026-04-16.md",
+      "size": 3449,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal462_v0_7_db_kernel_app_demo_review_2026-04-16.md",
+      "size": 1541,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_external_review_2026-04-16.md",
+      "size": 2734,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_post_demo_dry_run_staging_command_plan_generated_2026-04-16.md",
+      "size": 20291,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_post_demo_pre_stage_filelist_ledger_generated_2026-04-16.md",
+      "size": 1406,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_post_demo_pre_stage_validation_gate_generated_2026-04-16.md",
+      "size": 1280,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_v0_7_post_demo_pre_stage_refresh_2026-04-16.md",
+      "size": 3189,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_v0_7_post_demo_pre_stage_refresh_review_2026-04-16.md",
+      "size": 2073,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal464_external_review_2026-04-16.md",
+      "size": 4076,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal464_v0_7_linux_fresh_checkout_validation_2026-04-16.md",
+      "size": 7060,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal464_v0_7_linux_fresh_checkout_validation_review_2026-04-16.md",
+      "size": 2090,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_external_review_2026-04-16.md",
+      "size": 2455,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_post_linux_fresh_dry_run_staging_command_plan_generated_2026-04-16.md",
+      "size": 21085,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_post_linux_fresh_pre_stage_filelist_ledger_generated_2026-04-16.md",
+      "size": 1420,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_post_linux_fresh_pre_stage_validation_gate_generated_2026-04-16.md",
+      "size": 1287,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_v0_7_post_linux_fresh_pre_stage_refresh_2026-04-16.md",
+      "size": 3268,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_v0_7_post_linux_fresh_pre_stage_refresh_review_2026-04-16.md",
+      "size": 2103,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal466_external_review_2026-04-16.md",
+      "size": 1148,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal466_v0_7_release_reports_refresh_after_linux_fresh_2026-04-16.md",
+      "size": 2506,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal466_v0_7_release_reports_refresh_after_linux_fresh_review_2026-04-16.md",
+      "size": 1743,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal467_external_review_2026-04-16.md",
+      "size": 6399,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal467_gemini_flash_review_attempt_status_2026-04-16.md",
+      "size": 872,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal467_v0_7_external_test_report_response_2026-04-16.md",
+      "size": 6800,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal468_external_review_2026-04-16.md",
+      "size": 5132,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal468_v0_7_release_reports_refresh_after_external_response_2026-04-16.md",
+      "size": 2805,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal469_external_review_2026-04-16.md",
+      "size": 2912,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal469_v0_7_db_attack_report_gap_closure_2026-04-16.md",
+      "size": 4225,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal46_optix_county_zipcode_parity_2026-04-02.md",
+      "size": 4781,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_claude_test_review_audit_2026-04-16.md",
+      "size": 10026,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_external_review_2026-04-16.md",
+      "size": 1741,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_v0_7_pre_release_test_doc_audit_2026-04-16.md",
+      "size": 4820,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal471_external_review_2026-04-16.md",
+      "size": 4025,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal471_v0_7_external_v0_6_1_expert_attack_suite_intake_2026-04-16.md",
+      "size": 3582,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal472_external_review_2026-04-16.md",
+      "size": 3022,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal472_v0_7_release_reports_refresh_after_goal471_2026-04-16.md",
+      "size": 2137,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal473_external_review_2026-04-16.md",
+      "size": 3061,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal473_v0_7_post_goal472_release_evidence_audit_2026-04-16.md",
+      "size": 2402,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal474_external_review_2026-04-16.md",
+      "size": 4716,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal474_post_goal473_pre_stage_refresh_generated_2026-04-16.md",
+      "size": 26576,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal474_v0_7_post_goal473_pre_stage_refresh_2026-04-16.md",
+      "size": 2836,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal475_external_input_manifest_generated_2026-04-16.md",
+      "size": 1301,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal475_external_review_2026-04-16.md",
+      "size": 4384,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal475_v0_7_external_input_manifest_2026-04-16.md",
+      "size": 3735,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal477_external_review_2026-04-16.md",
+      "size": 2469,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal477_gemini_flash_review_2026-04-16.md",
+      "size": 555,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal477_gemini_review_2026-04-16.md",
+      "size": 1712,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal477_goal478_gemini_flash_invalid_attempt_2026-04-16.md",
+      "size": 784,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal477_v0_7_broad_unittest_discovery_repair_2026-04-16.md",
+      "size": 2796,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal478_external_review_2026-04-16.md",
+      "size": 2839,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal478_gemini_flash_review_2026-04-16.md",
+      "size": 555,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal478_gemini_review_2026-04-16.md",
+      "size": 1435,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal478_v0_7_release_reports_refresh_after_goal477_2026-04-16.md",
+      "size": 1226,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal479_external_review_2026-04-16.md",
+      "size": 3433,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal479_gemini_review_2026-04-16.md",
+      "size": 2957,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal479_release_candidate_audit_after_goal478_generated_2026-04-16.md",
+      "size": 689,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal479_v0_7_release_candidate_audit_after_goal478_2026-04-16.md",
+      "size": 1967,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal47_optix_goal41_large_checks_2026-04-02.md",
+      "size": 3621,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal480_external_review_2026-04-16.md",
+      "size": 3524,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal480_gemini_review_2026-04-16.md",
+      "size": 2424,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal480_v0_7_release_reports_refresh_after_goal479_2026-04-16.md",
+      "size": 1450,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal481_external_review_2026-04-16.md",
+      "size": 4546,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal481_gemini_review_2026-04-16.md",
+      "size": 2144,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal481_post_goal480_pre_stage_hold_ledger_generated_2026-04-16.md",
+      "size": 968,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal481_v0_7_post_goal480_pre_stage_hold_ledger_2026-04-16.md",
+      "size": 2471,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal482_external_review_2026-04-16.md",
+      "size": 1836,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal482_gemini_review_2026-04-16.md",
+      "size": 726,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal482_post_goal481_dry_run_staging_plan_generated_2026-04-16.md",
+      "size": 30264,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal482_v0_7_post_goal481_dry_run_staging_plan_2026-04-16.md",
+      "size": 2129,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal483_external_review_2026-04-16.md",
+      "size": 2189,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal483_gemini_review_2026-04-16.md",
+      "size": 1329,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal483_v0_7_release_reports_refresh_after_goal482_2026-04-16.md",
+      "size": 2400,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal484_external_review_2026-04-16.md",
+      "size": 1496,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal484_gemini_review_2026-04-16.md",
+      "size": 1125,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal484_post_goal483_release_hold_audit_generated_2026-04-16.md",
+      "size": 783,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal484_v0_7_post_goal483_release_hold_audit_2026-04-16.md",
+      "size": 2155,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal485_external_review_2026-04-16.md",
+      "size": 1159,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal485_gemini_review_2026-04-16.md",
+      "size": 584,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal485_v0_7_ready_for_user_staging_decision_hold_2026-04-16.md",
+      "size": 2532,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal486_external_review_2026-04-16.md",
+      "size": 1050,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal486_gemini_review_2026-04-16.md",
+      "size": 269,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal486_post_disk_cleanup_artifact_integrity_audit_generated_2026-04-16.md",
+      "size": 847,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal486_v0_7_post_disk_cleanup_artifact_integrity_audit_2026-04-16.md",
+      "size": 4478,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal487_external_review_2026-04-16.md",
+      "size": 811,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal487_gemini_pro_attempt_capacity_2026-04-16.md",
+      "size": 544,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal487_gemini_review_2026-04-16.md",
+      "size": 696,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal487_post_goal486_release_hold_stability_audit_generated_2026-04-16.md",
+      "size": 854,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal487_v0_7_post_goal486_release_hold_stability_audit_2026-04-16.md",
+      "size": 2475,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal48_full_project_audit_2026-04-02.md",
+      "size": 5962,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal49_documentation_rewrite_plan_2026-04-02.md",
+      "size": 4867,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal49_documentation_rewrite_result_2026-04-02.md",
+      "size": 2978,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal50_postgis_ground_truth_2026-04-02.md",
+      "size": 5013,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal50_postgis_status_2026-04-03.md",
+      "size": 3465,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal50_postgis_timeline_analysis_2026-04-03.md",
+      "size": 6164,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal52_rtdl_new_intake_audit_2026-04-03.md",
+      "size": 3686,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal52_rtdl_new_intake_result_2026-04-03.md",
+      "size": 2758,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal53_bounded_matrix_closure_2026-04-04.md",
+      "size": 4533,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal53_bounded_matrix_closure_plan_2026-04-04.md",
+      "size": 2527,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal54_lkau_pkau_four_system_2026-04-03.md",
+      "size": 3044,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal54_lkau_pkau_four_system_plan_2026-04-03.md",
+      "size": 1520,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal55_full_test_surface_closure_2026-04-03.md",
+      "size": 2809,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal55_full_test_surface_closure_plan_2026-04-03.md",
+      "size": 1770,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal55_test_inventory_2026-04-03.md",
+      "size": 2434,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal56_overlay_four_system_closure_2026-04-03.md",
+      "size": 4508,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal56_overlay_four_system_closure_plan_2026-04-03.md",
+      "size": 2236,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal57_status_refresh_and_parallel_research_2026-04-03.md",
+      "size": 2287,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal57_status_refresh_and_parallel_research_plan_2026-04-03.md",
+      "size": 759,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal59_bounded_v0_1_reproduction_package_2026-04-03.md",
+      "size": 5867,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal59_bounded_v0_1_reproduction_package_plan_2026-04-03.md",
+      "size": 829,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal60_full_consistency_audit_2026-04-03.md",
+      "size": 3079,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal61_rayjoin_bounded_paper_closure_2026-04-03.md",
+      "size": 3954,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal62_peer_review_paper_2026-04-03.md",
+      "size": 1875,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal62_peer_review_paper_plan_2026-04-03.md",
+      "size": 1515,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal62_peer_review_paper_status_2026-04-03.md",
+      "size": 1605,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal63_audit_flow_consensus_2026-04-04.md",
+      "size": 1104,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal63_audit_flow_consensus_plan_2026-04-04.md",
+      "size": 1074,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal64_submission_ready_paper_package_2026-04-04.md",
+      "size": 1043,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal64_submission_ready_paper_package_plan_2026-04-04.md",
+      "size": 702,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal65_vulkan_optix_linux_comparison_2026-04-04.md",
+      "size": 5722,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal65_vulkan_optix_linux_comparison_plan_2026-04-04.md",
+      "size": 1442,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal66_vulkan_correctness_closure_2026-04-04.md",
+      "size": 3726,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal66_vulkan_correctness_closure_plan_2026-04-04.md",
+      "size": 1132,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal67_vulkan_doc_repair_plan_2026-04-04.md",
+      "size": 788,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal67_vulkan_doc_repair_rebuttal_2026-04-04.md",
+      "size": 1404,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal67_vulkan_doc_repair_status_2026-04-04.md",
+      "size": 1385,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal67_vulkan_scaling_proposal_2026-04-04.md",
+      "size": 844,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal68_vulkan_scalability_design_options_2026-04-04.md",
+      "size": 2954,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal68_vulkan_scalability_problem_statement_2026-04-04.md",
+      "size": 2349,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal69_final_measured_artifact_note_2026-04-04.md",
+      "size": 1109,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal69_pip_performance_execution_update_2026-04-04.md",
+      "size": 1008,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal69_pip_performance_repair_2026-04-04.md",
+      "size": 4102,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal69_pip_performance_repair_plan_2026-04-04.md",
+      "size": 948,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal69_pip_performance_status_2026-04-04.md",
+      "size": 4907,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal70_optix_beats_postgis_2026-04-04.md",
+      "size": 4690,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal70_optix_long_county_prepared_exec_report_2026-04-04.md",
+      "size": 2549,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal71_embree_beats_postgis_2026-04-04.md",
+      "size": 3894,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal72_vulkan_long_county_prepared_exec_2026-04-04.md",
+      "size": 3409,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal73_linux_test_closure_2026-04-04.md",
+      "size": 2968,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal74_three_ai_post_goal73_audit_2026-04-04.md",
+      "size": 3233,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal75_oracle_trust_envelope_2026-04-04.md",
+      "size": 3263,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal75_oracle_trust_status_2026-04-04.md",
+      "size": 973,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal76_runtime_prepared_cache_2026-04-04.md",
+      "size": 2116,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal77_runtime_cache_measurement_2026-04-04.md",
+      "size": 3143,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal77_runtime_cache_measurement_plan_2026-04-04.md",
+      "size": 932,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal77_runtime_cache_measurement_status_2026-04-04.md",
+      "size": 1245,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_claude_plan_brief_2026-04-04.md",
+      "size": 793,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_gemini_review_claude_assessment_2026-04-04.md",
+      "size": 3636,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_review_process_summary_2026-04-04.md",
+      "size": 1213,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_vulkan_positive_hit_sparse_redesign_2026-04-04.md",
+      "size": 4395,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_vulkan_positive_hit_sparse_redesign_plan_2026-04-04.md",
+      "size": 820,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_vulkan_positive_hit_sparse_redesign_status_2026-04-04.md",
+      "size": 8083,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal79_linux_performance_reproduction_matrix_2026-04-04.md",
+      "size": 5519,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal79_linux_performance_reproduction_matrix_plan_2026-04-04.md",
+      "size": 2019,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal80_long_end_to_end_runtime_cache_win_2026-04-04.md",
+      "size": 3484,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal80_long_end_to_end_runtime_cache_win_plan_2026-04-04.md",
+      "size": 1465,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal81_optix_long_exact_raw_input_win_2026-04-04.md",
+      "size": 3943,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal82_optix_pre_embree_audit_2026-04-04.md",
+      "size": 4121,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal82_optix_pre_embree_audit_plan_2026-04-04.md",
+      "size": 848,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal83_embree_long_exact_source_diagnosis_and_proposal_2026-04-04.md",
+      "size": 7158,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal83_embree_long_exact_source_repair_2026-04-04.md",
+      "size": 3892,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal83_embree_long_exact_source_repair_status_2026-04-04.md",
+      "size": 3111,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal84_exact_source_long_backend_summary_2026-04-04.md",
+      "size": 3081,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal85_vulkan_hardware_validation_and_measurement_2026-04-04.md",
+      "size": 4656,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal86_backend_comparison_closure_2026-04-04.md",
+      "size": 3529,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal87_vulkan_long_exact_source_unblocked_2026-04-05.md",
+      "size": 4592,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal88_vulkan_long_exact_raw_input_measurement_2026-04-05.md",
+      "size": 3198,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal89_backend_comparison_refresh_2026-04-05.md",
+      "size": 2909,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal90_code_review_and_process_audit_2026-04-05.md",
+      "size": 4953,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal90_code_review_and_process_audit_plan_2026-04-05.md",
+      "size": 644,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal90_code_review_and_process_audit_status_2026-04-05.md",
+      "size": 1354,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal91_test_expansion_for_rayjoin_reproduction_2026-04-05.md",
+      "size": 2967,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal91_test_expansion_plan_2026-04-05.md",
+      "size": 597,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal91_test_expansion_status_2026-04-05.md",
+      "size": 1947,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal92_architecture_api_and_performance_docs_2026-04-05.md",
+      "size": 1493,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal92_docs_refresh_plan_2026-04-05.md",
+      "size": 438,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal92_docs_refresh_status_2026-04-05.md",
+      "size": 873,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal93_rayjoin_reproduction_release_matrix_2026-04-05.md",
+      "size": 4578,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal93_rayjoin_reproduction_release_matrix_plan_2026-04-05.md",
+      "size": 796,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal93_rayjoin_reproduction_release_matrix_status_2026-04-05.md",
+      "size": 336,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal93_reproduction_runbook_2026-04-05.md",
+      "size": 2375,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal94_v0_1_release_validation_plan_2026-04-05.md",
+      "size": 6483,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal95_v0_1_release_docs_2026-04-05.md",
+      "size": 1549,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal95_v0_1_release_docs_plan_2026-04-05.md",
+      "size": 436,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal95_v0_1_release_docs_status_2026-04-05.md",
+      "size": 319,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal96_v0_1_release_audit_plan_2026-04-05.md",
+      "size": 355,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal97_ray_hit_sorting_kernel_2026-04-05.md",
+      "size": 3315,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal97_ray_hit_sorting_kernel_plan_2026-04-05.md",
+      "size": 942,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal97_ray_hit_sorting_kernel_status_2026-04-05.md",
+      "size": 1101,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal98_optix_release_regression_code_package_2026-04-05.md",
+      "size": 1691,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal98_optix_release_regression_diagnosis_and_proposal_2026-04-05.md",
+      "size": 4661,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal98_optix_release_regression_repair_plan_2026-04-05.md",
+      "size": 1332,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal98_optix_release_regression_result_package_2026-04-05.md",
+      "size": 2229,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal99_optix_cold_prepared_run1_win_2026-04-05.md",
+      "size": 3023,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal99_optix_cold_prepared_run1_win_plan_2026-04-05.md",
+      "size": 803,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal_14_section_5_6_exact_scale_estimation_2026-03-31.md",
+      "size": 7518,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal_workloads_and_research_foundations_audit_2026-04-10.md",
+      "size": 1868,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/hidden_star_4k_render_work_report_2026-04-11.md",
+      "size": 5233,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/history_archive_backfill_2026-04-04.md",
+      "size": 1624,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/history_capture_external_artifacts_2026-04-10.md",
+      "size": 5226,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/host_192_168_1_20_embree_enablement_2026-04-02.md",
+      "size": 4576,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/live_doc_audit_status_2026-04-04.md",
+      "size": 1415,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/optix_mismatch_review_claude_2026-04-09.md",
+      "size": 1796,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/paper_professionalization_status_2026-04-04.md",
+      "size": 5940,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/paper_revision_brief_for_gemini_2026-04-04.md",
+      "size": 8383,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/postgis_performance_investigation_2026-04-04.md",
+      "size": 2847,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/postgis_performance_investigation_review_2026-04-04.md",
+      "size": 2339,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/project_and_paper_audit_2026-04-04.md",
+      "size": 1499,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/project_integrity_audit_2026-04-02.md",
+      "size": 4194,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rayjoin_vs_rtdl_embree_difference_report_2026-04-01.md",
+      "size": 12556,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/revision_report_frontdoor_cleanup_2026-04-05.md",
+      "size": 5046,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_embree_paper_report_2026-03-31.md",
+      "size": 4642,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_user_correctness_test_report_2026-04-16.md",
+      "size": 19145,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_v0_4_code_audit_2026-04-10_external.md",
+      "size": 2763,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_v0_4_full_code_audit_2026-04-10_external.md",
+      "size": 1846,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_v0_6_1_expert_attack_suite_validation_report_2026-04-16.md",
+      "size": 3991,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_v0_6_comprehensive_test_report_dev_handoff.md",
+      "size": 3214,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/rtdl_v0_6_windows_audit_report_2026-04-16.md",
+      "size": 1603,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/section_5_6_scalability_report_2026-03-31.md",
+      "size": 2703,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/test_v07_db_attack_report_2026-04-16.md",
+      "size": 19093,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/three_backend_performance_analysis_2026-04-02.md",
+      "size": 6837,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/tutorial_update_3ai_consensus_2026-04-11.md",
+      "size": 2042,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_1_closure_execution_map_2026-04-05.md",
+      "size": 3997,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_current_status_2026-04-05.md",
+      "size": 4303,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_external_review_packet_2026-04-06.md",
+      "size": 6173,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_feature_status_2026-04-06.md",
+      "size": 6533,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_jaccard_postgis_workloads_2026-04-07.md",
+      "size": 4797,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_segment_polygon_postgis_workloads_2026-04-06.md",
+      "size": 5591,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_so_far_report_2026-04-06.md",
+      "size": 3509,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_2_test_and_doc_review_claude_2026-04-06.md",
+      "size": 3777,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_code_review_claude_2026-04-08.md",
+      "size": 3627,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_docs_review_gemini_2026-04-08.md",
+      "size": 1679,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_external_release_blockers_review_gemini_2026-04-09.md",
+      "size": 2232,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_final_release_review_claude_2026-04-09.md",
+      "size": 2673,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_final_release_review_gemini_2026-04-09.md",
+      "size": 1045,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_movie_comparison_sheet_2026-04-08.md",
+      "size": 4443,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_process_review_claude_2026-04-09.md",
+      "size": 1792,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_process_review_claude_final_2026-04-09.md",
+      "size": 2056,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_process_review_gemini_final_2026-04-09.md",
+      "size": 1524,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_process_review_gemini_verified_2026-04-09.md",
+      "size": 1851,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_release_surface_audit_and_revision_2026-04-09.md",
+      "size": 16442,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_3_status_summary_2026-04-08.md",
+      "size": 4230,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_4_external_review_report.md",
+      "size": 3149,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_4_external_ux_review.md",
+      "size": 4445,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_4_goal_audit_wrap_up_2026-04-11.md",
+      "size": 1705,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_5_external_aggressive_user_audit_2026-04-12.md",
+      "size": 9295,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_5_goal_sequence_2026-04-11.md",
+      "size": 415,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_5_new_work_evaluation_review_2026-04-12.md",
+      "size": 944,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_5_rtnn_gap_summary_2026-04-11.md",
+      "size": 2891,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/v0_6_rt_graph_correctness_and_performance_report_2026-04-14.md",
+      "size": 6611,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/vulkan_backend_report.md",
+      "size": 14709,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/vulkan_postgis_remediation_decision_2026-04-03.md",
+      "size": 3044,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/vulkan_postgis_remediation_result_2026-04-03.md",
+      "size": 1911,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/windows_codex_rt_graph_benchmark_handoff_2026-04-14.md",
+      "size": 6261,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/workloads_and_research_foundations_audit_review_2026-04-10.md",
+      "size": 1867,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_doc_audit_filelist_2026-04-16.txt",
+      "size": 136110,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_linux_focused_pre_release_test_2026-04-16.txt",
+      "size": 1314,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_local_full_unittest_discovery_2026-04-16.txt",
+      "size": 167408,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal470_local_full_unittest_discovery_after_fix_2026-04-16.txt",
+      "size": 166311,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal78_vulkan_positive_hit_sparse_redesign_code_excerpt_2026-04-04.txt",
+      "size": 7837,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal409_repo_file_status_ledger_2026-04-15.csv",
+      "size": 1563276,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal456_pre_stage_filelist_ledger_2026-04-16.csv",
+      "size": 39569,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal463_post_demo_pre_stage_filelist_ledger_2026-04-16.csv",
+      "size": 48425,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal465_post_linux_fresh_pre_stage_filelist_ledger_2026-04-16.csv",
+      "size": 50454,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal474_post_goal473_pre_stage_refresh_2026-04-16.csv",
+      "size": 51903,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal475_external_input_manifest_2026-04-16.csv",
+      "size": 50678,
+      "valid": true
+    },
+    {
+      "path": "docs/reports/goal481_post_goal480_pre_stage_hold_ledger_2026-04-16.csv",
+      "size": 62542,
+      "valid": true
+    }
+  ],
+  "valid": true
+}

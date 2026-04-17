@@ -1,0 +1,1 @@
+Please review Goal487's post-Goal486 release-hold stability audit and write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal487_external_review_2026-04-16.md`.

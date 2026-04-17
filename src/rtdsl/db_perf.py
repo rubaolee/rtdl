@@ -14,6 +14,9 @@ from . import run_cpu_python_reference
 from . import run_embree
 from . import run_optix
 from . import run_vulkan
+from .embree_runtime import prepare_embree
+from .optix_runtime import prepare_optix
+from .vulkan_runtime import prepare_vulkan
 from . import run_postgresql_conjunctive_scan
 from . import run_postgresql_grouped_count
 from . import run_postgresql_grouped_sum
@@ -145,6 +148,16 @@ def _backend_runner(backend_name: str):
     raise ValueError(f"unsupported backend family {backend_name!r}")
 
 
+def _backend_preparer(backend_name: str):
+    if backend_name == "embree":
+        return prepare_embree
+    if backend_name == "optix":
+        return prepare_optix
+    if backend_name == "vulkan":
+        return prepare_vulkan
+    raise ValueError(f"unsupported backend family {backend_name!r}")
+
+
 def measure_backend_family(
     kernel_fn,
     inputs: dict[str, object],
@@ -185,6 +198,51 @@ def measure_backend_family(
         "cpu_seconds_median": median_seconds(cpu_samples),
         f"{backend_name}_seconds_samples": tuple(backend_samples),
         f"{backend_name}_seconds_median": median_seconds(backend_samples),
+    }
+
+
+def measure_backend_family_split(
+    kernel_fn,
+    inputs: dict[str, object],
+    *,
+    repeats: int = 3,
+    backend_name: str = "embree",
+) -> dict[str, object]:
+    if repeats <= 0:
+        raise ValueError("repeats must be positive")
+    backend_preparer = _backend_preparer(backend_name)
+    reference_rows = run_cpu_python_reference(kernel_fn, **inputs)
+
+    prepare_samples = []
+    execute_samples = []
+    total_samples = []
+    for _ in range(repeats):
+        total_start = time.perf_counter()
+        prepare_start = time.perf_counter()
+        prepared = backend_preparer(kernel_fn).bind(**inputs)
+        prepare_elapsed = time.perf_counter() - prepare_start
+
+        execute_start = time.perf_counter()
+        backend_rows = prepared.run()
+        execute_elapsed = time.perf_counter() - execute_start
+        total_elapsed = time.perf_counter() - total_start
+
+        if backend_rows != reference_rows:
+            raise AssertionError(f"{backend_name} rows do not match Python truth")
+
+        prepare_samples.append(prepare_elapsed)
+        execute_samples.append(execute_elapsed)
+        total_samples.append(total_elapsed)
+
+    return {
+        "row_count": len(reference_rows),
+        "row_hash": hash_rows(reference_rows),
+        f"{backend_name}_prepare_seconds_samples": tuple(prepare_samples),
+        f"{backend_name}_prepare_seconds_median": median_seconds(prepare_samples),
+        f"{backend_name}_execute_seconds_samples": tuple(execute_samples),
+        f"{backend_name}_execute_seconds_median": median_seconds(execute_samples),
+        f"{backend_name}_total_seconds_samples": tuple(total_samples),
+        f"{backend_name}_total_seconds_median": median_seconds(total_samples),
     }
 
 

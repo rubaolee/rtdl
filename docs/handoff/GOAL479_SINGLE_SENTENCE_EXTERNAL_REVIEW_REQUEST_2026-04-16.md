@@ -1,0 +1,1 @@
+Please review Goal479's v0.7 release-candidate audit after Goal478, verify the JSON/Markdown audit and current boundary language, then write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal479_external_review_2026-04-16.md`.

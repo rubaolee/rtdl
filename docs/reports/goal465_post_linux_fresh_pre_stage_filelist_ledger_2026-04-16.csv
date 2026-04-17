@@ -1,0 +1,292 @@
+status,path,decision,category,rationale
+ M,README.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/README.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/features/README.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/history/goals/v0_7_goal_sequence_2026-04-15.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/quick_tutorial.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/release_facing_examples.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/release_reports/v0_7/audit_report.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/release_reports/v0_7/release_statement.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/release_reports/v0_7/support_matrix.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/release_reports/v0_7/tag_preparation.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,docs/reports/external_independent_release_check_review_2026-04-15.md,manual_review,legacy_or_external_report,Report is outside the v0.7 DB source package core; inspect before staging.
+ M,docs/reports/goal431_external_review_2026-04-15.md,include,prior_v0_7_gate_evidence,Prior v0.7 gate evidence remains part of the release trail.
+ M,docs/tutorials/db_workloads.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+ M,examples/README.md,include,example_source,Release-facing example or examples index for the v0.7 DB package.
+ M,src/native/embree/rtdl_embree_api.cpp,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/embree/rtdl_embree_prelude.h,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/optix/rtdl_optix_api.cpp,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/optix/rtdl_optix_prelude.h,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/optix/rtdl_optix_workloads.cpp,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/vulkan/rtdl_vulkan_api.cpp,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/vulkan/rtdl_vulkan_core.cpp,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/native/vulkan/rtdl_vulkan_prelude.h,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/rtdsl/__init__.py,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/rtdsl/db_perf.py,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/rtdsl/embree_runtime.py,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/rtdsl/optix_runtime.py,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+ M,src/rtdsl/vulkan_runtime.py,include,runtime_source,Runtime/native source change in the v0.7 DB implementation package.
+??,docs/features/db_workloads/README.md,include,release_facing_doc,Release-facing documentation updated for the current v0.7 evidence boundary.
+??,docs/goal_432_v0_7_rt_db_phase_split_perf_clarification.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_433_v0_7_native_prepared_db_dataset_contract.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_434_v0_7_embree_native_prepared_db_dataset.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_435_v0_7_optix_native_prepared_db_dataset.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_436_v0_7_vulkan_native_prepared_db_dataset.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_437_v0_7_rt_db_repeated_query_perf_gate.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_438_v0_7_release_gate_refresh_after_native_prepared_db.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_439_v0_7_external_tester_report_intake.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_440_v0_7_embree_columnar_prepared_db_dataset_transfer.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_441_v0_7_optix_columnar_prepared_db_dataset_transfer.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_442_v0_7_vulkan_columnar_prepared_db_dataset_transfer.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_443_v0_7_columnar_repeated_query_perf_gate.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_444_v0_7_release_docs_refresh_after_columnar_transfer.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_445_v0_7_high_level_prepared_db_columnar_default.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_446_v0_7_post_columnar_db_regression_sweep.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_447_v0_7_db_columnar_packaging_readiness_audit.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_448_v0_7_db_columnar_packaging_manifest.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_449_v0_7_packaging_manifest_validation_gate.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_450_v0_7_linux_correctness_and_performance_refresh.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_451_v0_7_postgresql_baseline_index_audit.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_453_v0_7_release_facing_performance_wording_refresh.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_454_v0_7_post_wording_evidence_package_validation.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_455_v0_7_post_454_packaging_manifest_refresh.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_456_v0_7_pre_stage_filelist_ledger.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_457_v0_7_manual_review_path_resolution.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_458_v0_7_pre_stage_validation_gate.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_459_v0_7_dry_run_staging_command_plan.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_460_v0_7_ready_to_stage_final_hold.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_461_v0_7_db_app_demo.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_462_v0_7_db_kernel_app_demo.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_463_v0_7_post_demo_pre_stage_refresh.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/goal_464_v0_7_linux_fresh_checkout_validation.md,include,goal_doc,Goal definition and acceptance criteria belong in the evidence trail.
+??,docs/handoff/GOAL432_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-15.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL433_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL434_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL435_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL436_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL437_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL438_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL439_EXTERNAL_TESTER_REPORT_INTAKE_INSTRUCTIONS_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL440_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL441_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL442_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL443_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL444_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL445_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL446_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL447_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL448_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL449_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL450_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL451_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL452_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL453_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL454_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL455_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL456_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL457_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL458_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL459_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL460_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL461_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL462_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL463_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/handoff/GOAL464_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-16.md,include,review_handoff,External-review request trail belongs in the evidence package.
+??,docs/reports/goal432_db_phase_split_perf_linux_2026-04-15.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal432_external_review_2026-04-15.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_2026-04-15.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal432_v0_7_rt_db_phase_split_perf_clarification_review_2026-04-15.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal433_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal433_v0_7_native_prepared_db_dataset_contract_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal434_embree_native_prepared_db_dataset_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal434_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal434_v0_7_embree_native_prepared_db_dataset_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal435_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal435_optix_native_prepared_db_dataset_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal435_v0_7_optix_native_prepared_db_dataset_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal436_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal436_v0_7_vulkan_native_prepared_db_dataset_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal436_vulkan_native_prepared_db_dataset_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal437_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal437_repeated_query_db_perf_summary_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal437_v0_7_rt_db_repeated_query_perf_gate_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal438_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal438_v0_7_release_gate_refresh_after_native_prepared_db_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal439_external_tester_report_intake_ledger_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal439_v0_7_external_tester_report_intake_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal440_embree_columnar_transfer_perf_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal440_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal441_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal441_optix_columnar_transfer_perf_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal442_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal442_vulkan_columnar_transfer_perf_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal443_columnar_repeated_query_perf_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal443_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal443_v0_7_columnar_repeated_query_perf_gate_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal444_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal444_v0_7_release_docs_refresh_after_columnar_transfer_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal445_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal445_external_review_gemini_attempt_invalid_2026-04-16.md,include,invalid_review_history,Preserve as review-history evidence only; do not count as consensus.
+??,docs/reports/goal445_external_review_status_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal445_v0_7_high_level_prepared_db_columnar_default_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal446_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal446_v0_7_post_columnar_db_regression_sweep_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal447_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal447_v0_7_db_columnar_packaging_readiness_audit_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal448_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal448_v0_7_db_columnar_packaging_manifest_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal448_v0_7_db_columnar_packaging_manifest_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal449_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal449_external_review_gemini_attempt_invalid_2026-04-16.md,include,invalid_review_history,Preserve as review-history evidence only; do not count as consensus.
+??,docs/reports/goal449_external_review_status_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal449_packaging_manifest_validation_gate_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal449_v0_7_packaging_manifest_validation_gate_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal449_v0_7_packaging_manifest_validation_gate_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal450_columnar_repeated_query_perf_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal450_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal450_v0_7_linux_correctness_and_performance_refresh_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal451_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal451_postgresql_baseline_index_audit_linux_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal451_v0_7_postgresql_baseline_index_audit_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal451_v0_7_postgresql_baseline_index_audit_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal452_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal452_external_review_gemini_attempt_overbroad_2026-04-16.md,include,invalid_review_history,Preserve as review-history evidence only; do not count as consensus.
+??,docs/reports/goal452_external_review_status_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal452_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal453_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal453_v0_7_release_facing_performance_wording_refresh_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal454_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal454_post_wording_evidence_package_validation_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal454_v0_7_post_wording_evidence_package_validation_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal454_v0_7_post_wording_evidence_package_validation_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal455_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal455_v0_7_post_454_packaging_manifest_refresh_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal456_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal456_pre_stage_filelist_ledger_2026-04-16.csv,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal456_pre_stage_filelist_ledger_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal456_v0_7_pre_stage_filelist_ledger_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal456_v0_7_pre_stage_filelist_ledger_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal457_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal457_v0_7_manual_review_path_resolution_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal457_v0_7_manual_review_path_resolution_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal458_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal458_pre_stage_validation_gate_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal458_v0_7_pre_stage_validation_gate_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal458_v0_7_pre_stage_validation_gate_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal459_dry_run_staging_command_plan_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal459_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal459_v0_7_dry_run_staging_command_plan_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal459_v0_7_dry_run_staging_command_plan_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal460_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal460_v0_7_ready_to_stage_final_hold_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal460_v0_7_ready_to_stage_final_hold_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal461_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal461_v0_7_db_app_demo_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal461_v0_7_db_app_demo_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal462_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal462_v0_7_db_kernel_app_demo_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal462_v0_7_db_kernel_app_demo_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_dry_run_staging_command_plan_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_dry_run_staging_command_plan_generated_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_pre_stage_filelist_ledger_2026-04-16.csv,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_pre_stage_filelist_ledger_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_pre_stage_filelist_ledger_generated_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_pre_stage_validation_gate_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_post_demo_pre_stage_validation_gate_generated_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_v0_7_post_demo_pre_stage_refresh_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal463_v0_7_post_demo_pre_stage_refresh_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_external_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_linux_fresh_app_demo_output_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_linux_fresh_columnar_repeated_query_perf_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_linux_fresh_kernel_demo_output_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_linux_fresh_postgresql_index_audit_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_linux_fresh_rtdl_vs_postgresql_rebase_2026-04-16.json,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_v0_7_linux_fresh_checkout_validation_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/goal464_v0_7_linux_fresh_checkout_validation_review_2026-04-16.md,include,goal_report_or_review,"Goal report, review, JSON evidence, or status record belongs in the evidence package."
+??,docs/reports/rtdl_v0_6_comprehensive_test_report_dev_handoff.md,manual_review,legacy_or_external_report,Report is outside the v0.7 DB source package core; inspect before staging.
+??,docs/reports/rtdl_v0_6_windows_audit_report_2026-04-16.md,manual_review,legacy_or_external_report,Report is outside the v0.7 DB source package core; inspect before staging.
+??,examples/rtdl_v0_7_db_app_demo.py,include,example_source,Release-facing example or examples index for the v0.7 DB package.
+??,examples/rtdl_v0_7_db_kernel_app_demo.py,include,example_source,Release-facing example or examples index for the v0.7 DB package.
+??,history/ad_hoc_reviews/2026-04-15-codex-consensus-goal432-v0_7-rt-db-phase-split-perf-clarification.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal433-v0_7-native-prepared-db-dataset-contract.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal434-v0_7-embree-native-prepared-db-dataset.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal435-v0_7-optix-native-prepared-db-dataset.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal436-v0_7-vulkan-native-prepared-db-dataset.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal437-v0_7-rt-db-repeated-query-perf-gate.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal438-v0_7-release-gate-refresh-after-native-prepared-db.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal440-v0_7-embree-columnar-prepared-db-dataset-transfer.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal441-v0_7-optix-columnar-prepared-db-dataset-transfer.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal442-v0_7-vulkan-columnar-prepared-db-dataset-transfer.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal443-v0_7-columnar-repeated-query-perf-gate.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal444-v0_7-release-docs-refresh-after-columnar-transfer.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal445-v0_7-high-level-prepared-db-columnar-default.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal446-v0_7-post-columnar-db-regression-sweep.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal447-v0_7-db-columnar-packaging-readiness-audit.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal448-v0_7-db-columnar-packaging-manifest.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal449-v0_7-packaging-manifest-validation-gate.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal450-v0_7-linux-correctness-and-performance-refresh.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal451-v0_7-postgresql-baseline-index-audit.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal452-v0_7-rtdl-vs-best-tested-postgresql-perf-rebase.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal453-v0_7-release-facing-performance-wording-refresh.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal454-v0_7-post-wording-evidence-package-validation.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal455-v0_7-post-454-packaging-manifest-refresh.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal456-v0_7-pre-stage-filelist-ledger.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal457-v0_7-manual-review-path-resolution.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal458-v0_7-pre-stage-validation-gate.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal459-v0_7-dry-run-staging-command-plan.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal460-v0_7-ready-to-stage-final-hold.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal461-v0_7-db-app-demo.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal462-v0_7-db-kernel-app-demo.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal463-v0_7-post-demo-pre-stage-refresh.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,history/ad_hoc_reviews/2026-04-16-codex-consensus-goal464-v0_7-linux-fresh-checkout-validation.md,include,consensus_record,Codex consensus record belongs in the evidence package.
+??,rtdsl_current.tar.gz,exclude,archive_artifact,"Archive artifact is not source, tests, scripts, docs, or consensus evidence."
+??,scripts/goal432_db_phase_split_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal434_embree_native_prepared_db_dataset_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal435_optix_native_prepared_db_dataset_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal436_vulkan_native_prepared_db_dataset_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal437_repeated_query_db_perf_summary.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal440_embree_columnar_transfer_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal441_optix_columnar_transfer_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal442_vulkan_columnar_transfer_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal443_columnar_repeated_query_perf_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal449_packaging_manifest_validation_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal451_postgresql_baseline_index_audit.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal452_rtdl_vs_best_tested_postgresql_perf_rebase.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal454_post_wording_evidence_package_validation.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal456_pre_stage_filelist_ledger.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal458_pre_stage_validation_gate.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,scripts/goal459_dry_run_staging_command_plan.py,include,validation_script,"Validation, audit, or performance script for the v0.7 DB package."
+??,tests/goal432_v0_7_rt_db_phase_split_perf_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal434_v0_7_embree_native_prepared_db_dataset_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal435_v0_7_optix_native_prepared_db_dataset_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal436_v0_7_vulkan_native_prepared_db_dataset_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal440_v0_7_embree_columnar_prepared_db_dataset_transfer_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal442_v0_7_vulkan_columnar_prepared_db_dataset_transfer_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal445_v0_7_high_level_prepared_db_columnar_default_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal461_v0_7_db_app_demo_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.
+??,tests/goal462_v0_7_db_kernel_app_demo_test.py,include,test_source,Automated validation source for the v0.7 DB implementation package.

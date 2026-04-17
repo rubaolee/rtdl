@@ -1,0 +1,11 @@
+slug: 2026-04-16-v0-7-current-hold
+title: v0.7 Current Release-Hold State
+version: v0.7
+status: active-hold
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: HEAD
+gemini_review: Goal486/Goal487 Claude and Gemini reviews accepted
+codex_revision: registered current v0.7 release-hold state through Goal487
+final_result: HOLD
+summary: Current bounded DB line through Goal487; no staging, tagging, merging, or release performed.

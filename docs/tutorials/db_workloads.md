@@ -18,6 +18,12 @@ Current correctness anchors:
   - `embree`
   - `optix`
   - `vulkan`
+- native prepared DB datasets for repeated-query execution:
+  - `prepare_embree_db_dataset`
+  - `prepare_optix_db_dataset`
+  - `prepare_vulkan_db_dataset`
+- columnar prepared dataset transfer for Embree, OptiX, and Vulkan through
+  `transfer="columnar"`
 
 Important boundary:
 
@@ -99,6 +105,8 @@ What happens:
 Run:
 
 ```bash
+python3 examples/rtdl_v0_7_db_app_demo.py --backend auto
+python3 examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 python3 examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
 python3 examples/rtdl_sales_risk_screening.py --backend cpu
 python3 examples/rtdl_sales_risk_screening.py --backend embree
@@ -110,6 +118,10 @@ On Linux GPU hosts with the backend libraries built:
 python3 examples/rtdl_sales_risk_screening.py --backend optix
 python3 examples/rtdl_sales_risk_screening.py --backend vulkan
 ```
+
+The app demo shows a denormalized order table becoming matched row IDs,
+grouped counts, and grouped sums. The kernel-form demo shows the corresponding
+`input -> traverse -> refine -> emit` structure for the same bounded DB surface.
 
 ## 5. PostgreSQL Correctness On Linux
 
@@ -132,11 +144,22 @@ family.
 Not closed yet for the DB line:
 
 - multi-group-key native grouped kernels
+- PostgreSQL-style storage, indexing, transactions, optimizer behavior, and
+  arbitrary SQL
 - final tag/release decision for the `v0.7` branch line
 
 So the current correct claim is:
 
 - RTDL now supports a first bounded analytical DB kernel family
 - correctness is anchored against PostgreSQL on Linux
-- the first RT backend path for DB workloads is real across Embree, OptiX, and Vulkan
+- the RT backend path for DB workloads is real across Embree, OptiX, and Vulkan
+- native prepared dataset paths reuse Embree scenes, OptiX GAS/traversables, and
+  Vulkan BLAS/TLAS state for repeated queries
+- the prepared RT dataset APIs support columnar table ingestion on Embree,
+  OptiX, and Vulkan
+- the current Linux 200k-row Goal 452 comparison shows all three RT backends
+  winning setup-plus-10-query total time against the best PostgreSQL modes
+  tested so far, while query-only results are mixed
+- Goal 492 is the final release-readiness hold before explicit `v0.7.0`
+  release authorization
 - the current branch is still a bounded `v0.7` line, not the repository's last tagged mainline release

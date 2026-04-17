@@ -48,6 +48,8 @@ from .embree_runtime import _RtdlFrontierVertex
 from .embree_runtime import _RtdlBfsExpandRow
 from .embree_runtime import _RtdlEdgeSeed
 from .embree_runtime import _RtdlTriangleRow
+from .embree_runtime import _RtdlDbColumn
+from .embree_runtime import _encode_db_table_columnar
 from .oracle_runtime import _decode_db_group_key
 from .oracle_runtime import _RtdlDbField
 from .oracle_runtime import _RtdlDbGroupedCountRow
@@ -64,6 +66,11 @@ from .embree_runtime import PackedGraphCSR
 from .embree_runtime import PackedVertexFrontier
 from .embree_runtime import PackedVertexSet
 from .embree_runtime import PackedEdgeSet
+from .embree_runtime import _encode_all_db_text_columns
+from .db_reference import PredicateClause
+from .db_reference import normalize_denorm_table
+from .db_reference import normalize_grouped_query
+from .db_reference import normalize_predicate_bundle
 from .ir import CompiledKernel
 from .runtime import _identity_cache_token
 from .runtime import _normalize_records
@@ -229,6 +236,9 @@ class PreparedVulkanKernel:
         "knn_rows",
         "bfs_discover",
         "triangle_match",
+        "conjunctive_scan",
+        "grouped_count",
+        "grouped_sum",
     }
 
     def __init__(self, kernel_fn_or_compiled):
@@ -251,6 +261,12 @@ class PreparedVulkanKernel:
             raise ValueError(f"missing RTDL Vulkan inputs: {', '.join(sorted(missing))}")
         if unexpected:
             raise ValueError(f"unexpected RTDL Vulkan inputs: {', '.join(sorted(unexpected))}")
+        if self.predicate_name in {"conjunctive_scan", "grouped_count", "grouped_sum"}:
+            normalized_inputs = {
+                name: _normalize_records(name, self.expected_inputs[name].geometry.name, payload)
+                for name, payload in inputs.items()
+            }
+            return _prepare_db_vulkan_execution(self.compiled, normalized_inputs, self.library)
         packed = {
             name: _pack_for_geometry(self.expected_inputs[name], payload)
             for name, payload in inputs.items()
@@ -525,6 +541,390 @@ def _run_db_vulkan(compiled: CompiledKernel, normalized_inputs, lib, *, result_m
         return tuple(decoded)
     finally:
         rows.close()
+
+
+@dataclass(frozen=True)
+class PreparedVulkanDbExecution:
+    compiled: CompiledKernel
+    library: object
+    predicate_name: str
+    dataset: object
+    clauses_array: object
+    group_key_name: str | None = None
+    group_key_field: bytes | None = None
+    reverse_map: object | None = None
+    value_field: bytes | None = None
+
+    def run_raw(self) -> VulkanRowView:
+        if self.predicate_name == "conjunctive_scan":
+            return self.dataset.conjunctive_scan(self.clauses_array)
+
+        if self.predicate_name == "grouped_count":
+            return self.dataset.grouped_count(self.clauses_array, self.group_key_field)
+
+        return self.dataset.grouped_sum(self.clauses_array, self.group_key_field, self.value_field)
+
+    def run(self) -> tuple[dict[str, object], ...]:
+        rows = self.run_raw()
+        try:
+            if self.predicate_name == "conjunctive_scan":
+                return rows.to_dict_rows()
+            if self.predicate_name == "grouped_count":
+                return tuple(
+                    {
+                        self.group_key_name: _decode_db_group_key(self.reverse_map, rows.rows_ptr[index].group_key),
+                        "count": rows.rows_ptr[index].count,
+                    }
+                    for index in range(rows.row_count)
+                )
+            return tuple(
+                {
+                    self.group_key_name: _decode_db_group_key(self.reverse_map, rows.rows_ptr[index].group_key),
+                    "sum": rows.rows_ptr[index].sum,
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
+
+class VulkanPreparedDbDataset:
+    def __init__(
+        self,
+        lib,
+        fields_array,
+        row_values_array,
+        row_count: int,
+        *,
+        primary_fields=(),
+        columns_array=None,
+        column_count: int | None = None,
+        transfer: str = "row",
+        keepalive=(),
+    ):
+        self.library = lib
+        self.fields_array = fields_array
+        self.row_values_array = row_values_array
+        self.columns_array = columns_array
+        self.column_count = int(column_count or 0)
+        self.row_count = int(row_count)
+        self.transfer = transfer
+        self._keepalive = keepalive
+        primary_field_bytes = tuple(str(name).encode("utf-8") for name in primary_fields)
+        primary_fields_array = (
+            (ctypes.c_char_p * len(primary_field_bytes))(*primary_field_bytes)
+            if primary_field_bytes
+            else None
+        )
+        handle = ctypes.c_void_p()
+        error = ctypes.create_string_buffer(4096)
+        if transfer == "columnar":
+            if not hasattr(self.library, "rtdl_vulkan_db_dataset_create_columnar"):
+                raise RuntimeError(
+                    "loaded Vulkan backend does not export rtdl_vulkan_db_dataset_create_columnar; "
+                    "rebuild the Vulkan backend from the current checkout"
+                )
+            status = self.library.rtdl_vulkan_db_dataset_create_columnar(
+                self.columns_array,
+                ctypes.c_size_t(self.column_count),
+                ctypes.c_size_t(self.row_count),
+                primary_fields_array,
+                ctypes.c_size_t(len(primary_field_bytes)),
+                ctypes.byref(handle),
+                error,
+                len(error),
+            )
+        else:
+            status = self.library.rtdl_vulkan_db_dataset_create(
+                self.fields_array,
+                ctypes.c_size_t(len(self.fields_array)),
+                self.row_values_array,
+                ctypes.c_size_t(self.row_count),
+                primary_fields_array,
+                ctypes.c_size_t(len(primary_field_bytes)),
+                ctypes.byref(handle),
+                error,
+                len(error),
+            )
+        _check_status(status, error)
+        self.handle = handle
+        self._closed = False
+
+    def close(self) -> None:
+        if not self._closed and self.handle:
+            self.library.rtdl_vulkan_db_dataset_destroy(self.handle)
+        self._closed = True
+
+    def conjunctive_scan(self, clauses_array) -> VulkanRowView:
+        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_vulkan_db_dataset_conjunctive_scan(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return VulkanRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbRowIdRow,
+            field_names=("row_id",),
+        )
+
+    def grouped_count(self, clauses_array, group_key_field: bytes) -> VulkanRowView:
+        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_vulkan_db_dataset_grouped_count(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            group_key_field,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return VulkanRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbGroupedCountRow,
+            field_names=("group_key", "count"),
+        )
+
+    def grouped_sum(self, clauses_array, group_key_field: bytes, value_field: bytes) -> VulkanRowView:
+        rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_vulkan_db_dataset_grouped_sum(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            group_key_field,
+            value_field,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return VulkanRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbGroupedSumRow,
+            field_names=("group_key", "sum"),
+        )
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class PreparedVulkanDbDataset:
+    def __init__(self, table_rows, *, primary_fields=(), transfer: str = "row"):
+        if transfer not in {"row", "columnar"}:
+            raise ValueError("Vulkan DB dataset transfer must be 'row' or 'columnar'")
+        rows = normalize_denorm_table(table_rows)
+        if len(rows) > _DB_MAX_ROWS_PER_JOB:
+            raise ValueError("first-wave Vulkan DB lowering supports at most 1000000 rows per RT job")
+        encoded_rows, self._field_maps, self._reverse_maps = _encode_all_db_text_columns(rows)
+        if transfer == "columnar":
+            columns_array, row_count, keepalive = _encode_db_table_columnar(encoded_rows)
+            fields_array = None
+            row_values_array = None
+        else:
+            fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+            columns_array = None
+            keepalive = ()
+        self._dataset = VulkanPreparedDbDataset(
+            _load_vulkan_library(),
+            fields_array,
+            row_values_array,
+            row_count,
+            primary_fields=primary_fields,
+            columns_array=columns_array,
+            column_count=len(columns_array) if columns_array is not None else None,
+            transfer=transfer,
+            keepalive=keepalive,
+        )
+        self._fields_array = fields_array
+        self._row_values_array = row_values_array
+        self._columns_array = columns_array
+        self._transfer = transfer
+        self.row_count = row_count
+
+    def close(self) -> None:
+        self._dataset.close()
+
+    def conjunctive_scan(self, predicates) -> tuple[dict[str, object], ...]:
+        bundle = normalize_predicate_bundle(predicates)
+        clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
+        rows = self._dataset.conjunctive_scan(clauses_array)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def grouped_count(self, query) -> tuple[dict[str, object], ...]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave Vulkan DB grouped kernels support exactly one group key")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_count(clauses_array, group_key.encode("utf-8"))
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return tuple(
+                {
+                    group_key: _decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key),
+                    "count": rows.rows_ptr[index].count,
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
+    def grouped_sum(self, query) -> tuple[dict[str, object], ...]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave Vulkan DB grouped kernels support exactly one group key")
+        if not normalized_query.value_field:
+            raise ValueError("grouped_sum requires a value_field")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_sum(
+            clauses_array,
+            group_key.encode("utf-8"),
+            normalized_query.value_field.encode("utf-8"),
+        )
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return tuple(
+                {
+                    group_key: _decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key),
+                    "sum": int(rows.rows_ptr[index].sum),
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
+    def _encode_clauses(self, clauses) -> tuple[PredicateClause, ...]:
+        encoded = []
+        for clause in clauses:
+            if clause.field not in self._field_maps:
+                encoded.append(clause)
+                continue
+            encode_map = self._field_maps[clause.field]
+            value = encode_map[clause.value]
+            value_hi = encode_map[clause.value_hi] if clause.value_hi is not None else None
+            encoded.append(PredicateClause(field=clause.field, op=clause.op, value=value, value_hi=value_hi))
+        return tuple(encoded)
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_vulkan_db_dataset(table_rows, *, primary_fields=(), transfer: str = "row") -> PreparedVulkanDbDataset:
+    return PreparedVulkanDbDataset(table_rows, primary_fields=primary_fields, transfer=transfer)
+
+
+def _db_primary_fields_from_clauses(clauses) -> tuple[str, ...]:
+    fields = []
+    for clause in clauses:
+        name = str(clause.field)
+        if name not in fields:
+            fields.append(name)
+        if len(fields) == 3:
+            break
+    return tuple(fields)
+
+
+def _prepare_db_vulkan_execution(compiled: CompiledKernel, normalized_inputs, lib) -> PreparedVulkanDbExecution:
+    predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "conjunctive_scan":
+        predicates_name = compiled.candidates.left.name
+        table_name = compiled.candidates.right.name
+        table_rows = normalized_inputs[table_name]
+        if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+            raise ValueError("first-wave Vulkan DB lowering supports at most 1000000 rows per RT job")
+        predicates = normalized_inputs[predicates_name]
+        columns_array, row_count, keepalive = _encode_db_table_columnar(table_rows)
+        clauses_array = _encode_db_clauses(predicates.clauses)
+        dataset = VulkanPreparedDbDataset(
+            lib,
+            None,
+            None,
+            row_count,
+            primary_fields=_db_primary_fields_from_clauses(predicates.clauses),
+            columns_array=columns_array,
+            column_count=len(columns_array),
+            transfer="columnar",
+            keepalive=keepalive,
+        )
+        return PreparedVulkanDbExecution(
+            compiled=compiled,
+            library=lib,
+            predicate_name=predicate_name,
+            dataset=dataset,
+            clauses_array=clauses_array,
+        )
+
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    table_rows = normalized_inputs[table_name]
+    if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+        raise ValueError("first-wave Vulkan DB lowering supports at most 1000000 rows per RT job")
+    query = normalized_inputs[query_name]
+    group_keys = tuple(query.group_keys)
+    if len(group_keys) != 1:
+        raise ValueError("first-wave Vulkan DB lowering supports exactly one group key")
+    extra_fields = list(group_keys)
+    if predicate_name == "grouped_sum" and query.value_field:
+        extra_fields.append(query.value_field)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=tuple(extra_fields),
+    )
+    columns_array, row_count, keepalive = _encode_db_table_columnar(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    dataset = VulkanPreparedDbDataset(
+        lib,
+        None,
+        None,
+        row_count,
+        primary_fields=_db_primary_fields_from_clauses(encoded_predicates),
+        columns_array=columns_array,
+        column_count=len(columns_array),
+        transfer="columnar",
+        keepalive=keepalive,
+    )
+    return PreparedVulkanDbExecution(
+        compiled=compiled,
+        library=lib,
+        predicate_name=predicate_name,
+        dataset=dataset,
+        clauses_array=clauses_array,
+        group_key_name=group_keys[0],
+        group_key_field=group_keys[0].encode("utf-8"),
+        reverse_map=reverse_maps.get(group_keys[0]),
+        value_field=query.value_field.encode("utf-8") if predicate_name == "grouped_sum" else None,
+    )
 
 
 def _get_or_bind_prepared_vulkan_execution(compiled: CompiledKernel, expected_inputs, inputs) -> PreparedVulkanExecution:
@@ -1174,6 +1574,82 @@ def _register_argtypes(lib) -> None:
             ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_create")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_create_columnar")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlDbColumn),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_destroy")
+    if symbol is not None:
+        symbol.argtypes = [ctypes.c_void_p]
+        symbol.restype = None
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_conjunctive_scan")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_grouped_count")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_db_dataset_grouped_sum")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
 

@@ -4,6 +4,7 @@ BUILD_DIR := build
 #   make build
 #   make test
 #   make verify
+#   make build-embree
 #   make build-optix
 #   make build-vulkan
 #
@@ -107,13 +108,14 @@ VULKAN_CXXFLAGS := \
 
 VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK) $(GEOS_LIBS)
 
-.PHONY: help build build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
 	@echo "  build         - compile/lower the canonical kernels"
 	@echo "  test          - run the unittest suite"
 	@echo "  verify        - run the broader verification driver"
+	@echo "  build-embree  - build/probe the Embree backend library"
 	@echo "  build-optix   - build the OptiX backend library"
 	@echo "  build-vulkan  - build the Vulkan backend library"
 	@echo ""
@@ -142,6 +144,10 @@ build-optix:
 build:
 	mkdir -p $(BUILD_DIR)
 	PYTHONPATH=src:. python3 -c "import rtdsl as rt; from examples.reference.rtdl_language_reference import LANGUAGE_REFERENCE_KERNELS; from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference; from examples.reference.rtdl_workload_reference import WORKLOAD_REFERENCE_KERNELS; [rt.lower_to_execution_plan(rt.compile_kernel(kernel)) for kernel in (LANGUAGE_REFERENCE_KERNELS + (ray_triangle_hitcount_reference,) + WORKLOAD_REFERENCE_KERNELS)]"
+
+build-embree:
+	mkdir -p $(BUILD_DIR)
+	PYTHONPATH=src:. python3 -c "import rtdsl as rt; print('Embree', '.'.join(map(str, rt.embree_version())))"
 
 run: run-rtdsl-py
 

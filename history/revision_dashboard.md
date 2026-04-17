@@ -4,15 +4,20 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 60
-- Archived files: 712
+- Revision rounds: 65
+- Archived files: 722
 - External reports: 180
-- Project snapshots: 532
+- Project snapshots: 542
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.7 | 2026-04-16 | active-hold | v0.7 Current Release-Hold State | Goal486/Goal487 Claude and Gemini reviews accepted | registered current v0.7 release-hold state through Goal487 | HOLD | `HEAD` | `2026-04-16-v0-7-current-hold` |
+| v0.6.1 | 2026-04-15 | complete | v0.6.1 Closure Catch-up | external report reviewed by Dev AI | registered historical v0.6.1 graph closure catch-up | COMPLETE | `HEAD` | `2026-04-15-v0-6-closure` |
+| v0.5 | 2026-04-14 | complete | v0.5 Closure Catch-up | external report reviewed by Dev AI | registered historical v0.5 closure catch-up | COMPLETE | `HEAD` | `2026-04-14-v0-5-closure` |
+| v0.4 | 2026-04-12 | complete | v0.4 Closure Catch-up | external report reviewed by Dev AI | registered historical v0.4 closure catch-up | COMPLETE | `HEAD` | `2026-04-12-v0-4-closure` |
+| v0.3 | 2026-04-09 | complete | v0.2/v0.3 Closure Catch-up | external report reviewed by Dev AI | registered historical v0.2/v0.3 closure catch-up | COMPLETE | `HEAD` | `2026-04-09-v0-2-v0-3-closure` |
 | v0.1 | 2026-04-04 | complete-consensus | Goal 65 Vulkan OptiX Linux Comparison | approved | goal65-vulkan-optix-linux-comparison | Goal 65 accepted under Codex+Gemini consensus: Vulkan runs on Linux but remains provisional; OptiX stays the accepted GPU backend | `2e8bdaf` | `2026-04-04-goal-65-vulkan-optix-linux-comparison` |
 | v0.1 | 2026-04-04 | complete-consensus | Goal 64 Submission-Ready Paper Package | approved | goal64-submission-ready-paper-package | Goal 64 accepted under Codex+Gemini fallback because Claude was unavailable | `f54b4ed` | `2026-04-04-goal-64-submission-ready-paper-package` |
 | v0.1 | 2026-04-04 | complete-consensus | Goal 63 Audit-Flow Consensus Round | approved | goal63-audit-flow-consensus | Goal 63 accepted under Codex+Gemini fallback because Claude was unavailable | `d9bfbf4` | `2026-04-04-goal-63-audit-flow-consensus` |

@@ -1,0 +1,76 @@
+{
+  "correctness_log": {
+    "contains_error": false,
+    "contains_failed": false,
+    "contains_ok": true,
+    "contains_ran_75_tests": true
+  },
+  "goal": 454,
+  "goal450": {
+    "all_hash_match": true,
+    "postgresql_dsn": "dbname=postgres",
+    "repeated_query_count": 10,
+    "row_count": 200000
+  },
+  "goal451": {
+    "all_hash_consistent": true,
+    "hash_consistency": {
+      "conjunctive_scan": true,
+      "grouped_count": true,
+      "grouped_sum": true
+    },
+    "index_modes": [
+      "no_index",
+      "single_column",
+      "composite",
+      "covering"
+    ],
+    "postgresql_dsn": "dbname=postgres",
+    "repeated_query_count": 10,
+    "row_count": 200000
+  },
+  "goal452": {
+    "all_hash_match": true,
+    "all_total_wins": true,
+    "has_query_loss": true,
+    "min_query_speedup": 0.9223715606261387,
+    "min_total_speedup": 5.876043461301695,
+    "postgresql_dsn": "dbname=postgres",
+    "repeated_query_count": 10,
+    "row_count": 200000
+  },
+  "release_authorization": false,
+  "release_docs": {
+    "all_required_present": true,
+    "release_doc_count": 8,
+    "required_hits": {
+      "Goal 452": [
+        "README.md",
+        "docs/features/db_workloads/README.md",
+        "docs/tutorials/db_workloads.md",
+        "docs/release_facing_examples.md",
+        "docs/release_reports/v0_7/release_statement.md",
+        "docs/release_reports/v0_7/support_matrix.md",
+        "docs/release_reports/v0_7/audit_report.md",
+        "docs/release_reports/v0_7/tag_preparation.md"
+      ],
+      "query-only results are mixed": [
+        "README.md",
+        "docs/tutorials/db_workloads.md",
+        "docs/release_facing_examples.md",
+        "docs/release_reports/v0_7/release_statement.md",
+        "docs/release_reports/v0_7/audit_report.md",
+        "docs/release_reports/v0_7/tag_preparation.md"
+      ]
+    },
+    "stale_hit_count": 0,
+    "stale_hits": []
+  },
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "required_files": {
+    "missing": [],
+    "missing_count": 0,
+    "required_count": 16
+  },
+  "valid": true
+}

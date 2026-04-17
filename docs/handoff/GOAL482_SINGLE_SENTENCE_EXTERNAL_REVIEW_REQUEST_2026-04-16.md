@@ -1,0 +1,1 @@
+Please review Goal482's post-Goal481 dry-run staging command plan and write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal482_external_review_2026-04-16.md`.

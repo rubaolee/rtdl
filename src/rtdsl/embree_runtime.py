@@ -23,12 +23,21 @@ from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
 from .oracle_runtime import _decode_db_group_key
+from .oracle_runtime import _DB_KIND_BOOL
+from .oracle_runtime import _DB_KIND_FLOAT64
+from .oracle_runtime import _DB_KIND_INT64
+from .oracle_runtime import _DB_KIND_TEXT
 from .oracle_runtime import _RtdlDbField
 from .oracle_runtime import _RtdlDbGroupedCountRow
 from .oracle_runtime import _RtdlDbRowIdRow
 from .oracle_runtime import _encode_db_clauses
+from .oracle_runtime import _encode_db_field_kind
 from .oracle_runtime import _encode_db_table
 from .oracle_runtime import _encode_db_text_fields
+from .db_reference import PredicateClause
+from .db_reference import normalize_denorm_table
+from .db_reference import normalize_grouped_query
+from .db_reference import normalize_predicate_bundle
 from .reference import Segment as _CanonicalSegment
 from .reference import Point as _CanonicalPoint
 from .reference import Point3D as _CanonicalPoint3D
@@ -42,6 +51,30 @@ from .reference import Ray3D as _CanonicalRay3D
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_embree_execution_cache: OrderedDict[tuple[object, ...], "PreparedEmbreeExecution"] = OrderedDict()
 _DB_MAX_ROWS_PER_JOB = 1_000_000
+EMBREE_REQUIRED_SYMBOLS = (
+    "rtdl_embree_get_version",
+    "rtdl_embree_free_rows",
+    "rtdl_embree_run_lsi",
+    "rtdl_embree_run_pip",
+    "rtdl_embree_run_overlay",
+    "rtdl_embree_run_ray_hitcount",
+    "rtdl_embree_run_segment_polygon_hitcount",
+    "rtdl_embree_run_segment_polygon_anyhit_rows",
+    "rtdl_embree_run_point_nearest_segment",
+    "rtdl_embree_run_fixed_radius_neighbors",
+    "rtdl_embree_run_knn_rows",
+    "rtdl_embree_run_bfs_expand",
+    "rtdl_embree_run_triangle_probe",
+    "rtdl_embree_run_conjunctive_scan",
+    "rtdl_embree_run_grouped_count",
+    "rtdl_embree_run_grouped_sum",
+    "rtdl_embree_db_dataset_create",
+    "rtdl_embree_db_dataset_create_columnar",
+    "rtdl_embree_db_dataset_destroy",
+    "rtdl_embree_db_dataset_conjunctive_scan",
+    "rtdl_embree_db_dataset_grouped_count",
+    "rtdl_embree_db_dataset_grouped_sum",
+)
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:
@@ -285,6 +318,16 @@ class _RtdlTriangleRow(ctypes.Structure):
     ]
 
 
+class _RtdlDbColumn(ctypes.Structure):
+    _fields_ = [
+        ("name", ctypes.c_char_p),
+        ("kind", ctypes.c_uint32),
+        ("int_values", ctypes.POINTER(ctypes.c_int64)),
+        ("double_values", ctypes.POINTER(ctypes.c_double)),
+        ("string_values", ctypes.POINTER(ctypes.c_char_p)),
+    ]
+
+
 @dataclass(frozen=True)
 class PackedSegments:
     records: object
@@ -408,6 +451,9 @@ class PreparedEmbreeKernel:
             "knn_rows",
             "bfs_discover",
             "triangle_match",
+            "conjunctive_scan",
+            "grouped_count",
+            "grouped_sum",
         }:
             raise ValueError(
                 "the current prepared Embree path supports only Embree-backed local workloads"
@@ -421,6 +467,13 @@ class PreparedEmbreeKernel:
             raise ValueError(f"missing RTDL Embree inputs: {', '.join(sorted(missing))}")
         if unexpected:
             raise ValueError(f"unexpected RTDL Embree inputs: {', '.join(sorted(unexpected))}")
+
+        if self.predicate_name in {"conjunctive_scan", "grouped_count", "grouped_sum"}:
+            normalized_inputs = {
+                name: _normalize_records(name, self.expected_inputs[name].geometry.name, payload)
+                for name, payload in inputs.items()
+            }
+            return _prepare_db_embree_execution(self.compiled, normalized_inputs, self.library)
 
         packed_inputs = {
             name: _pack_for_geometry(self.expected_inputs[name], payload)
@@ -1006,6 +1059,463 @@ def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, resu
         return tuple(rows)
     finally:
         row_view.close()
+
+
+@dataclass(frozen=True)
+class PreparedEmbreeDbExecution:
+    compiled: CompiledKernel
+    library: object
+    predicate_name: str
+    dataset: object
+    clauses_array: object
+    group_key_name: str | None = None
+    group_key_field: bytes | None = None
+    reverse_map: object | None = None
+    value_field: bytes | None = None
+
+    def run_raw(self) -> EmbreeRowView:
+        if self.predicate_name == "conjunctive_scan":
+            return self.dataset.conjunctive_scan(self.clauses_array)
+
+        if self.predicate_name == "grouped_count":
+            return self.dataset.grouped_count(self.clauses_array, self.group_key_field)
+
+        return self.dataset.grouped_sum(self.clauses_array, self.group_key_field, self.value_field)
+
+    def run(self) -> tuple[dict[str, object], ...]:
+        rows = self.run_raw()
+        try:
+            if self.predicate_name == "conjunctive_scan":
+                return rows.to_dict_rows()
+            if self.predicate_name == "grouped_count":
+                return tuple(
+                    {
+                        self.group_key_name: _decode_db_group_key(self.reverse_map, rows.rows_ptr[index].group_key),
+                        "count": rows.rows_ptr[index].count,
+                    }
+                    for index in range(rows.row_count)
+                )
+            return tuple(
+                {
+                    self.group_key_name: _decode_db_group_key(self.reverse_map, rows.rows_ptr[index].group_key),
+                    "sum": int(rows.rows_ptr[index].sum),
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
+
+class EmbreePreparedDbDataset:
+    def __init__(
+        self,
+        library,
+        fields_array,
+        row_values_array,
+        row_count: int,
+        *,
+        primary_fields=(),
+        columns_array=None,
+        column_count: int | None = None,
+        transfer: str = "row",
+        keepalive=(),
+    ):
+        self.library = library
+        self.fields_array = fields_array
+        self.row_values_array = row_values_array
+        self.columns_array = columns_array
+        self.column_count = int(column_count or 0)
+        self.row_count = int(row_count)
+        self.transfer = transfer
+        self._keepalive = keepalive
+        primary_field_bytes = tuple(str(name).encode("utf-8") for name in primary_fields)
+        primary_fields_array = (
+            (ctypes.c_char_p * len(primary_field_bytes))(*primary_field_bytes)
+            if primary_field_bytes
+            else None
+        )
+        handle = ctypes.c_void_p()
+        error = ctypes.create_string_buffer(4096)
+        if transfer == "columnar":
+            if not hasattr(self.library, "rtdl_embree_db_dataset_create_columnar"):
+                raise RuntimeError(
+                    "loaded Embree backend does not export rtdl_embree_db_dataset_create_columnar; "
+                    "rebuild the Embree backend from the current checkout"
+                )
+            status = self.library.rtdl_embree_db_dataset_create_columnar(
+                self.columns_array,
+                ctypes.c_size_t(self.column_count),
+                ctypes.c_size_t(self.row_count),
+                primary_fields_array,
+                ctypes.c_size_t(len(primary_field_bytes)),
+                ctypes.byref(handle),
+                error,
+                len(error),
+            )
+        else:
+            status = self.library.rtdl_embree_db_dataset_create(
+                self.fields_array,
+                ctypes.c_size_t(len(self.fields_array)),
+                self.row_values_array,
+                ctypes.c_size_t(self.row_count),
+                primary_fields_array,
+                ctypes.c_size_t(len(primary_field_bytes)),
+                ctypes.byref(handle),
+                error,
+                len(error),
+            )
+        _check_status(status, error)
+        self.handle = handle
+        self._closed = False
+
+    def close(self) -> None:
+        if not self._closed and self.handle:
+            self.library.rtdl_embree_db_dataset_destroy(self.handle)
+        self._closed = True
+
+    def conjunctive_scan(self, clauses_array) -> EmbreeRowView:
+        rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_embree_db_dataset_conjunctive_scan(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return EmbreeRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbRowIdRow,
+            field_names=("row_id",),
+        )
+
+    def grouped_count(self, clauses_array, group_key_field: bytes) -> EmbreeRowView:
+        rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_embree_db_dataset_grouped_count(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            group_key_field,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return EmbreeRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_RtdlDbGroupedCountRow,
+            field_names=("group_key", "count"),
+        )
+
+    def grouped_sum(self, clauses_array, group_key_field: bytes, value_field: bytes) -> EmbreeRowView:
+        rows_ptr = ctypes.POINTER(_EmbreeRtdlDbGroupedSumRow)()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_embree_db_dataset_grouped_sum(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            group_key_field,
+            value_field,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return EmbreeRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count_out.value,
+            row_type=_EmbreeRtdlDbGroupedSumRow,
+            field_names=("group_key", "sum"),
+        )
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class PreparedEmbreeDbDataset:
+    def __init__(self, table_rows, *, primary_fields=(), transfer: str = "row"):
+        if transfer not in {"row", "columnar"}:
+            raise ValueError("Embree DB dataset transfer must be 'row' or 'columnar'")
+        rows = normalize_denorm_table(table_rows)
+        if len(rows) > _DB_MAX_ROWS_PER_JOB:
+            raise ValueError("first-wave Embree DB lowering supports at most 1000000 rows per RT job")
+        encoded_rows, self._field_maps, self._reverse_maps = _encode_all_db_text_columns(rows)
+        if transfer == "columnar":
+            columns_array, row_count, keepalive = _encode_db_table_columnar(encoded_rows)
+            fields_array = None
+            row_values_array = None
+        else:
+            fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+            columns_array = None
+            keepalive = ()
+        self._dataset = EmbreePreparedDbDataset(
+            _load_embree_library(),
+            fields_array,
+            row_values_array,
+            row_count,
+            primary_fields=primary_fields,
+            columns_array=columns_array,
+            column_count=len(columns_array) if columns_array is not None else None,
+            transfer=transfer,
+            keepalive=keepalive,
+        )
+        self._fields_array = fields_array
+        self._row_values_array = row_values_array
+        self._columns_array = columns_array
+        self._transfer = transfer
+        self.row_count = row_count
+
+    def close(self) -> None:
+        self._dataset.close()
+
+    def conjunctive_scan(self, predicates) -> tuple[dict[str, object], ...]:
+        bundle = normalize_predicate_bundle(predicates)
+        clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
+        rows = self._dataset.conjunctive_scan(clauses_array)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def grouped_count(self, query) -> tuple[dict[str, object], ...]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave Embree DB grouped kernels support exactly one group key")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_count(clauses_array, group_key.encode("utf-8"))
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return tuple(
+                {
+                    group_key: _decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key),
+                    "count": rows.rows_ptr[index].count,
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
+    def grouped_sum(self, query) -> tuple[dict[str, object], ...]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave Embree DB grouped kernels support exactly one group key")
+        if not normalized_query.value_field:
+            raise ValueError("grouped_sum requires a value_field")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_sum(
+            clauses_array,
+            group_key.encode("utf-8"),
+            normalized_query.value_field.encode("utf-8"),
+        )
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return tuple(
+                {
+                    group_key: _decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key),
+                    "sum": int(rows.rows_ptr[index].sum),
+                }
+                for index in range(rows.row_count)
+            )
+        finally:
+            rows.close()
+
+    def _encode_clauses(self, clauses) -> tuple[PredicateClause, ...]:
+        encoded = []
+        for clause in clauses:
+            if clause.field not in self._field_maps:
+                encoded.append(clause)
+                continue
+            encode_map = self._field_maps[clause.field]
+            value = encode_map[clause.value]
+            value_hi = encode_map[clause.value_hi] if clause.value_hi is not None else None
+            encoded.append(PredicateClause(field=clause.field, op=clause.op, value=value, value_hi=value_hi))
+        return tuple(encoded)
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_embree_db_dataset(table_rows, *, primary_fields=(), transfer: str = "row") -> PreparedEmbreeDbDataset:
+    return PreparedEmbreeDbDataset(table_rows, primary_fields=primary_fields, transfer=transfer)
+
+
+def _encode_all_db_text_columns(table_rows):
+    field_maps: dict[str, dict[object, int]] = {}
+    reverse_maps: dict[str, dict[int, object]] = {}
+    field_names = tuple(table_rows[0].keys()) if table_rows else ()
+    for field in field_names:
+        values = [row[field] for row in table_rows]
+        if not any(isinstance(value, str) for value in values):
+            continue
+        unique_values = sorted(set(values))
+        encode_map = {value: index + 1 for index, value in enumerate(unique_values)}
+        field_maps[field] = encode_map
+        reverse_maps[field] = {code: value for value, code in encode_map.items()}
+    encoded_rows = []
+    for row in table_rows:
+        encoded = dict(row)
+        for field, encode_map in field_maps.items():
+            encoded[field] = encode_map[row[field]]
+        encoded_rows.append(encoded)
+    return tuple(encoded_rows), field_maps, reverse_maps
+
+
+def _encode_db_table_columnar(table_rows) -> tuple[object, int, tuple[object, ...]]:
+    if not table_rows:
+        raise ValueError("Embree columnar DB path requires at least one denormalized table row")
+    field_names = tuple(str(name) for name in table_rows[0].keys())
+    if "row_id" not in field_names:
+        raise ValueError("Embree columnar DB path requires a `row_id` field")
+    for index, row in enumerate(table_rows):
+        if tuple(str(name) for name in row.keys()) != field_names:
+            raise ValueError(f"denorm table row {index} does not match the first-row schema")
+
+    columns = []
+    keepalive: list[object] = []
+    null_int_values = ctypes.POINTER(ctypes.c_int64)()
+    null_double_values = ctypes.POINTER(ctypes.c_double)()
+    null_string_values = ctypes.POINTER(ctypes.c_char_p)()
+    for name in field_names:
+        kind = _encode_db_field_kind(table_rows[0][name])
+        name_bytes = name.encode("utf-8")
+        keepalive.append(name_bytes)
+        int_values = null_int_values
+        double_values = null_double_values
+        string_values = null_string_values
+        if kind == _DB_KIND_FLOAT64:
+            values = (ctypes.c_double * len(table_rows))(*(float(row[name]) for row in table_rows))
+            keepalive.append(values)
+            double_values = values
+        elif kind == _DB_KIND_TEXT:
+            encoded_values = tuple(str(row[name]).encode("utf-8") for row in table_rows)
+            values = (ctypes.c_char_p * len(encoded_values))(*encoded_values)
+            keepalive.extend(encoded_values)
+            keepalive.append(values)
+            string_values = values
+        else:
+            values = (ctypes.c_int64 * len(table_rows))(
+                *((1 if row[name] else 0) if kind == _DB_KIND_BOOL else int(row[name]) for row in table_rows)
+            )
+            keepalive.append(values)
+            int_values = values
+        columns.append(
+            _RtdlDbColumn(
+                name=name_bytes,
+                kind=kind,
+                int_values=int_values,
+                double_values=double_values,
+                string_values=string_values,
+            )
+        )
+
+    columns_array = (_RtdlDbColumn * len(columns))(*columns)
+    keepalive.append(columns_array)
+    return columns_array, len(table_rows), tuple(keepalive)
+
+
+def _db_primary_fields_from_clauses(clauses) -> tuple[str, ...]:
+    fields = []
+    for clause in clauses:
+        name = str(clause.field)
+        if name not in fields:
+            fields.append(name)
+        if len(fields) == 3:
+            break
+    return tuple(fields)
+
+
+def _prepare_db_embree_execution(compiled: CompiledKernel, normalized_inputs, library) -> PreparedEmbreeDbExecution:
+    predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "conjunctive_scan":
+        predicates_name = compiled.candidates.left.name
+        table_name = compiled.candidates.right.name
+        table_rows = normalized_inputs[table_name]
+        if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+            raise ValueError("first-wave Embree DB lowering supports at most 1000000 rows per RT job")
+        predicates = normalized_inputs[predicates_name]
+        columns_array, row_count, keepalive = _encode_db_table_columnar(table_rows)
+        clauses_array = _encode_db_clauses(predicates.clauses)
+        dataset = EmbreePreparedDbDataset(
+            library,
+            None,
+            None,
+            row_count,
+            primary_fields=_db_primary_fields_from_clauses(predicates.clauses),
+            columns_array=columns_array,
+            column_count=len(columns_array),
+            transfer="columnar",
+            keepalive=keepalive,
+        )
+        return PreparedEmbreeDbExecution(
+            compiled=compiled,
+            library=library,
+            predicate_name=predicate_name,
+            dataset=dataset,
+            clauses_array=clauses_array,
+        )
+
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    table_rows = normalized_inputs[table_name]
+    if len(table_rows) > _DB_MAX_ROWS_PER_JOB:
+        raise ValueError("first-wave Embree DB lowering supports at most 1000000 rows per RT job")
+    query = normalized_inputs[query_name]
+    if len(query.group_keys) != 1:
+        raise ValueError("first-wave Embree DB grouped kernels support exactly one group key")
+    extra_fields = [query.group_keys[0]]
+    if predicate_name == "grouped_sum" and query.value_field:
+        extra_fields.append(query.value_field)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=tuple(extra_fields),
+    )
+    columns_array, row_count, keepalive = _encode_db_table_columnar(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    dataset = EmbreePreparedDbDataset(
+        library,
+        None,
+        None,
+        row_count,
+        primary_fields=_db_primary_fields_from_clauses(encoded_predicates),
+        columns_array=columns_array,
+        column_count=len(columns_array),
+        transfer="columnar",
+        keepalive=keepalive,
+    )
+    return PreparedEmbreeDbExecution(
+        compiled=compiled,
+        library=library,
+        predicate_name=predicate_name,
+        dataset=dataset,
+        clauses_array=clauses_array,
+        group_key_name=query.group_keys[0],
+        group_key_field=query.group_keys[0].encode("utf-8"),
+        reverse_map=reverse_maps.get(query.group_keys[0]),
+        value_field=query.value_field.encode("utf-8") if predicate_name == "grouped_sum" else None,
+    )
 
 
 def _run_lsi_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
@@ -2132,6 +2642,7 @@ def _load_embree_library():
             if candidate.exists():
                 os.add_dll_directory(str(candidate))
     library = ctypes.CDLL(str(library_path))
+    _require_embree_symbols(library, library_path)
     library.rtdl_embree_get_version.argtypes = [
         ctypes.POINTER(ctypes.c_int),
         ctypes.POINTER(ctypes.c_int),
@@ -2396,6 +2907,90 @@ def _load_embree_library():
         ]
         optional_db_grouped_sum.restype = ctypes.c_int
 
+    optional_db_dataset_create = _require_optional_embree_symbol(library, "rtdl_embree_db_dataset_create")
+    if optional_db_dataset_create is not None:
+        optional_db_dataset_create.argtypes = [
+            ctypes.POINTER(_RtdlDbField),
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_dataset_create.restype = ctypes.c_int
+
+    optional_db_dataset_create_columnar = _require_optional_embree_symbol(
+        library, "rtdl_embree_db_dataset_create_columnar"
+    )
+    if optional_db_dataset_create_columnar is not None:
+        optional_db_dataset_create_columnar.argtypes = [
+            ctypes.POINTER(_RtdlDbColumn),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_dataset_create_columnar.restype = ctypes.c_int
+
+    optional_db_dataset_destroy = _require_optional_embree_symbol(library, "rtdl_embree_db_dataset_destroy")
+    if optional_db_dataset_destroy is not None:
+        optional_db_dataset_destroy.argtypes = [ctypes.c_void_p]
+        optional_db_dataset_destroy.restype = None
+
+    optional_db_dataset_conjunctive_scan = _require_optional_embree_symbol(
+        library, "rtdl_embree_db_dataset_conjunctive_scan"
+    )
+    if optional_db_dataset_conjunctive_scan is not None:
+        optional_db_dataset_conjunctive_scan.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_dataset_conjunctive_scan.restype = ctypes.c_int
+
+    optional_db_dataset_grouped_count = _require_optional_embree_symbol(
+        library, "rtdl_embree_db_dataset_grouped_count"
+    )
+    if optional_db_dataset_grouped_count is not None:
+        optional_db_dataset_grouped_count.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_dataset_grouped_count.restype = ctypes.c_int
+
+    optional_db_dataset_grouped_sum = _require_optional_embree_symbol(
+        library, "rtdl_embree_db_dataset_grouped_sum"
+    )
+    if optional_db_dataset_grouped_sum is not None:
+        optional_db_dataset_grouped_sum.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.POINTER(_EmbreeRtdlDbGroupedSumRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_db_dataset_grouped_sum.restype = ctypes.c_int
+
     return library
 
 
@@ -2404,6 +2999,22 @@ def _require_optional_embree_symbol(library, symbol_name: str):
         return getattr(library, symbol_name)
     except AttributeError:
         return None
+
+
+def _require_embree_symbols(library, library_path: Path) -> None:
+    missing = [symbol for symbol in EMBREE_REQUIRED_SYMBOLS if not hasattr(library, symbol)]
+    if not missing:
+        return
+    missing_text = ", ".join(missing)
+    raise RuntimeError(
+        "loaded Embree backend library is stale or incomplete: "
+        f"{library_path} is missing required export(s): {missing_text}. "
+        "Rebuild the Embree backend from this checkout. On Unix-like hosts run "
+        "`make build-embree`; on Windows ensure RTDL_EMBREE_PREFIX points to an "
+        "Embree prefix with include/ and lib/, ensure RTDL_VCVARS64 points to "
+        "vcvars64.bat, remove the stale build/librtdl_embree.dll if present, "
+        "then run `python -c \"import rtdsl as rt; print(rt.embree_version())\"`."
+    )
 
 
 def _ensure_embree_library() -> Path:
@@ -2446,7 +3057,8 @@ def _ensure_embree_library() -> Path:
         )
 
     newest_source_mtime = max(path.stat().st_mtime for path in source_paths)
-    needs_build = not library_path.exists() or library_path.stat().st_mtime < newest_source_mtime
+    force_build = os.environ.get("RTDL_FORCE_EMBREE_REBUILD", "").lower() in {"1", "true", "yes"}
+    needs_build = force_build or not library_path.exists() or library_path.stat().st_mtime < newest_source_mtime
     if needs_build:
         command = [
             compiler,

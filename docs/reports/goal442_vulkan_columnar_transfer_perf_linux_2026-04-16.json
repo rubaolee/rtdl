@@ -1,0 +1,68 @@
+{
+  "conjunctive_scan": {
+    "columnar_prepare_seconds_median": 0.8206842869985849,
+    "columnar_prepare_seconds_samples": [
+      0.8193618529476225,
+      0.8206842869985849,
+      0.8192718379432335,
+      0.8410227410495281,
+      0.8411222349386662
+    ],
+    "columnar_prepare_speedup_vs_row": 3.364629497238178,
+    "row_count": 22268,
+    "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+    "row_prepare_seconds_median": 2.7612985599553213,
+    "row_prepare_seconds_samples": [
+      2.7612985599553213,
+      2.8481020469916984,
+      2.6079020630568266,
+      2.7095979269361123,
+      2.8370784720173106
+    ]
+  },
+  "goal": 442,
+  "grouped_count": {
+    "columnar_prepare_seconds_median": 0.8460765769705176,
+    "columnar_prepare_seconds_samples": [
+      0.8460765769705176,
+      0.8492666590027511,
+      0.8483044840395451,
+      0.8426253359066322,
+      0.8438178340438753
+    ],
+    "columnar_prepare_speedup_vs_row": 3.2001700373682036,
+    "row_count": 8,
+    "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+    "row_prepare_seconds_median": 2.7075889109401032,
+    "row_prepare_seconds_samples": [
+      2.6220227159792557,
+      2.7075889109401032,
+      2.7342500840313733,
+      2.8165481759933755,
+      2.6205372950062156
+    ]
+  },
+  "grouped_sum": {
+    "columnar_prepare_seconds_median": 0.8523792360210791,
+    "columnar_prepare_seconds_samples": [
+      0.8589986430015415,
+      0.8523792360210791,
+      0.8564225140726194,
+      0.8433149340562522,
+      0.8452599779702723
+    ],
+    "columnar_prepare_speedup_vs_row": 3.077658544610625,
+    "row_count": 8,
+    "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+    "row_prepare_seconds_median": 2.623332238988951,
+    "row_prepare_seconds_samples": [
+      2.5060111309867352,
+      2.948672386002727,
+      2.623332238988951,
+      2.817854644032195,
+      2.615666316007264
+    ]
+  },
+  "input_row_count": 200000,
+  "prepare_repeats": 5
+}

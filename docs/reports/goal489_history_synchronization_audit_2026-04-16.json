@@ -1,0 +1,71 @@
+{
+  "archive_goal_count": 352,
+  "commit_performed": false,
+  "dashboard_valid": true,
+  "db_check": {
+    "missing_slugs": [],
+    "round_count": 65,
+    "valid": true
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "",
+    "valid": true
+  },
+  "external_report_exists": true,
+  "goal": 489,
+  "merge_performed": false,
+  "push_performed": false,
+  "release_authorization": false,
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "root_goal_count": 60,
+  "root_goal_max": 492,
+  "root_goal_min": 432,
+  "root_goal_valid": true,
+  "sequence_checks": [
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_1_goal_sequence_2026-04-16.md",
+      "valid": true
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_2_goal_sequence_2026-04-16.md",
+      "valid": true
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_3_goal_sequence_2026-04-16.md",
+      "valid": true
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_4_goal_sequence_2026-04-16.md",
+      "valid": true
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_5_final_goal_sequence_2026-04-16.md",
+      "valid": true
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_6_goal_sequence_2026-04-14.md",
+      "valid": true
+    },
+    {
+      "exists": true,
+      "path": "docs/history/goals/v0_7_goal_sequence_2026-04-15.md",
+      "valid": true
+    }
+  ],
+  "staging_performed": false,
+  "tag_performed": false,
+  "valid": true
+}

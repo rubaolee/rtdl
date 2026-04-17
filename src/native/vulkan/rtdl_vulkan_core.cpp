@@ -458,6 +458,19 @@ struct DbRowMeta {
     uint32_t row_id;
 };
 
+struct VulkanDbDatasetImpl {
+    std::vector<std::string> field_names;
+    std::vector<RtdlDbField> fields;
+    std::vector<std::string> scalar_strings;
+    std::vector<RtdlDbScalar> row_values;
+    size_t row_count = 0;
+    std::vector<DbPrimaryAxis> primary_axes;
+    std::vector<DbRowMeta> row_metas;
+    std::vector<GpuAabb> aabbs;
+    AccelResult blas;
+    AccelResult tlas;
+};
+
 static GpuAabb aabb_for_segment(float x0, float y0, float x1, float y1) {
     return { std::min(x0,x1) - kAabbEps, std::min(y0,y1) - kAabbEps, -0.5f,
              std::max(x0,x1) + kAabbEps, std::max(y0,y1) + kAabbEps,  0.5f };
@@ -2741,6 +2754,11 @@ static bool db_scalar_is_numeric(const RtdlDbScalar& value)
     return value.kind == kDbKindInt64 || value.kind == kDbKindFloat64 || value.kind == kDbKindBool;
 }
 
+static bool db_field_kind_is_numeric(uint32_t kind)
+{
+    return kind == kDbKindInt64 || kind == kDbKindFloat64 || kind == kDbKindBool;
+}
+
 static double db_scalar_as_double(const RtdlDbScalar& value)
 {
     if (value.kind == kDbKindInt64 || value.kind == kDbKindBool) {
@@ -2892,6 +2910,46 @@ static DbPrimaryAxis db_make_primary_axis(
     return {field_index, sorted_values, encoded_lo, encoded_hi};
 }
 
+static DbPrimaryAxis db_make_full_primary_axis(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const char* field_name)
+{
+    const size_t field_index = db_find_field_index_or_throw(fields, field_count, field_name);
+    if (!db_field_kind_is_numeric(fields[field_index].kind)) {
+        throw std::runtime_error("first-wave Vulkan prepared DB datasets require numeric primary RT axes");
+    }
+    const std::vector<double> sorted_values =
+        db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+    return {
+        field_index,
+        sorted_values,
+        1,
+        sorted_values.empty() ? 0 : static_cast<int64_t>(sorted_values.size())};
+}
+
+static DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlDbClause& clause)
+{
+    DbPrimaryAxis ranged = axis;
+    int64_t encoded_lo = -1;
+    int64_t encoded_hi = -1;
+    for (size_t index = 0; index < axis.sorted_values.size(); ++index) {
+        if (!db_clause_matches_numeric_value(clause, axis.sorted_values[index])) {
+            continue;
+        }
+        const int64_t encoded = static_cast<int64_t>(index + 1);
+        if (encoded_lo < 0) {
+            encoded_lo = encoded;
+        }
+        encoded_hi = encoded;
+    }
+    ranged.encoded_lo = encoded_lo < 0 ? 1 : encoded_lo;
+    ranged.encoded_hi = encoded_hi < 0 ? 0 : encoded_hi;
+    return ranged;
+}
+
 static int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScalar& value)
 {
     const double needle = db_scalar_as_double(value);
@@ -2940,6 +2998,169 @@ static std::vector<GpuAabb> db_build_row_aabbs(
         aabbs.push_back({x - kDbBoxPad, y - kDbBoxPad, z - kDbBoxPad, x + kDbBoxPad, y + kDbBoxPad, z + kDbBoxPad});
     }
     return aabbs;
+}
+
+static std::vector<DbPrimaryAxis> db_dataset_query_axes(
+        const VulkanDbDatasetImpl& dataset,
+        const RtdlDbClause* clauses,
+        size_t clause_count)
+{
+    std::vector<DbPrimaryAxis> axes = dataset.primary_axes;
+    for (DbPrimaryAxis& axis : axes) {
+        const char* axis_field = dataset.fields[axis.field_index].name;
+        for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+            if (std::strcmp(axis_field, clauses[clause_index].field) != 0) {
+                continue;
+            }
+            axis = db_axis_with_clause_range(axis, clauses[clause_index]);
+            break;
+        }
+    }
+    return axes;
+}
+
+static std::vector<const char*> db_default_primary_fields(const RtdlDbField* fields, size_t field_count)
+{
+    std::vector<const char*> names;
+    for (size_t index = 0; index < field_count && names.size() < 3; ++index) {
+        if (std::strcmp(fields[index].name, "row_id") == 0) {
+            continue;
+        }
+        if (db_field_kind_is_numeric(fields[index].kind)) {
+            names.push_back(fields[index].name);
+        }
+    }
+    return names;
+}
+
+static size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t scalar_count)
+{
+    size_t count = 0;
+    for (size_t index = 0; index < scalar_count; ++index) {
+        if (row_values[index].kind == kDbKindText && row_values[index].string_value) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+static void db_copy_dataset_table(
+        VulkanDbDatasetImpl& dataset,
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count)
+{
+    dataset.field_names.reserve(field_count);
+    for (size_t index = 0; index < field_count; ++index) {
+        dataset.field_names.emplace_back(fields[index].name ? fields[index].name : "");
+    }
+    dataset.fields.reserve(field_count);
+    for (size_t index = 0; index < field_count; ++index) {
+        dataset.fields.push_back({dataset.field_names[index].c_str(), fields[index].kind});
+    }
+
+    const size_t scalar_count = row_count * field_count;
+    dataset.scalar_strings.reserve(db_count_scalar_strings(row_values, scalar_count));
+    dataset.row_values.reserve(scalar_count);
+    for (size_t index = 0; index < scalar_count; ++index) {
+        RtdlDbScalar copied = row_values[index];
+        if (copied.kind == kDbKindText && copied.string_value) {
+            dataset.scalar_strings.emplace_back(copied.string_value);
+            copied.string_value = dataset.scalar_strings.back().c_str();
+        }
+        dataset.row_values.push_back(copied);
+    }
+    dataset.row_count = row_count;
+}
+
+static void db_validate_columnar_inputs(
+        const RtdlDbColumn* columns,
+        size_t column_count,
+        size_t row_count)
+{
+    if (!columns || column_count == 0) {
+        throw std::runtime_error("DB columnar inputs must not be null");
+    }
+    if (row_count > kDbMaxRowsPerJob) {
+        throw std::runtime_error("first-wave Vulkan DB lowering supports at most 1000000 rows per RT job");
+    }
+    for (size_t column_index = 0; column_index < column_count; ++column_index) {
+        const RtdlDbColumn& column = columns[column_index];
+        if (!column.name) {
+            throw std::runtime_error("DB column name must not be null");
+        }
+        if (column.kind == kDbKindText) {
+            if (!column.string_values) {
+                throw std::runtime_error("DB text column values must not be null");
+            }
+        } else if (db_field_kind_is_numeric(column.kind)) {
+            if (!column.int_values && !column.double_values) {
+                throw std::runtime_error("DB numeric column values must not be null");
+            }
+        } else {
+            throw std::runtime_error("unsupported DB column kind");
+        }
+    }
+}
+
+static void db_copy_dataset_columnar_table(
+        VulkanDbDatasetImpl& dataset,
+        const RtdlDbColumn* columns,
+        size_t column_count,
+        size_t row_count)
+{
+    dataset.field_names.reserve(column_count);
+    for (size_t index = 0; index < column_count; ++index) {
+        dataset.field_names.emplace_back(columns[index].name ? columns[index].name : "");
+    }
+    dataset.fields.reserve(column_count);
+    for (size_t index = 0; index < column_count; ++index) {
+        dataset.fields.push_back({dataset.field_names[index].c_str(), columns[index].kind});
+    }
+
+    dataset.row_values.reserve(row_count * column_count);
+    for (size_t row_index = 0; row_index < row_count; ++row_index) {
+        for (size_t column_index = 0; column_index < column_count; ++column_index) {
+            const RtdlDbColumn& column = columns[column_index];
+            RtdlDbScalar copied{};
+            copied.kind = column.kind;
+            if (column.kind == kDbKindText) {
+                const char* value = column.string_values[row_index];
+                if (value) {
+                    dataset.scalar_strings.emplace_back(value);
+                    copied.string_value = dataset.scalar_strings.back().c_str();
+                }
+            } else if (column.double_values) {
+                copied.double_value = column.double_values[row_index];
+                copied.int_value = static_cast<int64_t>(copied.double_value);
+            } else {
+                copied.int_value = column.int_values[row_index];
+                copied.double_value = static_cast<double>(copied.int_value);
+            }
+            dataset.row_values.push_back(copied);
+        }
+    }
+    dataset.row_count = row_count;
+}
+
+static void db_validate_db_inputs(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const RtdlDbClause* clauses,
+        size_t clause_count)
+{
+    if (!fields || field_count == 0 || !row_values) {
+        throw std::runtime_error("DB table inputs must not be null");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    if (row_count > kDbMaxRowsPerJob) {
+        throw std::runtime_error("first-wave Vulkan DB lowering supports at most 1000000 rows per RT job");
+    }
 }
 
 static std::vector<size_t> db_collect_candidate_row_indices_vulkan(
@@ -3035,6 +3256,98 @@ static std::vector<size_t> db_collect_candidate_row_indices_vulkan(
             throw std::runtime_error("first-wave Vulkan DB lowering exceeded the 250000-candidate ceiling");
         }
         if (!db_row_matches_all_clauses(fields, field_count, row_values, row_index, clauses, clause_count)) {
+            continue;
+        }
+        row_indices.push_back(row_index);
+    }
+    return row_indices;
+}
+
+static std::vector<size_t> db_collect_candidate_row_indices_vulkan_prepared(
+        const VulkanDbDatasetImpl& dataset,
+        const RtdlDbClause* clauses,
+        size_t clause_count)
+{
+    VkContext* ctx = get_context();
+    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(dataset, clauses, clause_count);
+    const uint32_t x_lo = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_lo) : 1u;
+    const uint32_t x_hi = axes.size() >= 1 ? static_cast<uint32_t>(axes[0].encoded_hi) : 1u;
+    const uint32_t y_lo = axes.size() >= 2 ? static_cast<uint32_t>(axes[1].encoded_lo) : 1u;
+    const uint32_t y_hi = axes.size() >= 2 ? static_cast<uint32_t>(axes[1].encoded_hi) : 1u;
+    const uint32_t z_lo = axes.size() >= 3 ? static_cast<uint32_t>(axes[2].encoded_lo) : 1u;
+    const uint32_t z_hi = axes.size() >= 3 ? static_cast<uint32_t>(axes[2].encoded_hi) : 1u;
+    if (x_lo > x_hi || y_lo > y_hi || z_lo > z_hi) {
+        return {};
+    }
+
+    std::call_once(g_dbscan_init, [ctx]() {
+        g_dbscan_pipe = new RtPipeline(build_rt_pipeline(
+            ctx,
+            kDbScanRgen, kDbScanRmiss, kDbScanRint, kDbScanRahit,
+            "dbscan.rgen", "dbscan.rmiss", "dbscan.rint", "dbscan.rahit", 4));
+    });
+
+    const uint32_t hit_word_count = static_cast<uint32_t>((dataset.row_count + 31u) / 32u);
+    const VkDeviceSize hit_words_bytes = sizeof(uint32_t) * hit_word_count;
+    BufMem d_hit_words = alloc_buffer(ctx, hit_words_bytes,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    zero_buf(ctx, d_hit_words);
+
+    DbScanParams params{
+        hit_word_count,
+        x_lo,
+        y_lo,
+        z_lo,
+        z_hi,
+        x_hi - x_lo + 1u,
+        y_hi - y_lo + 1u,
+        0u,
+    };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mapped = nullptr;
+    vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mapped);
+    std::memcpy(mapped, &params, sizeof(params));
+    vkUnmapMemory(ctx->device, d_params.memory);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_dbscan_pipe->dset_layout, 4, true);
+    bind_tlas(ctx, ds.set, dataset.tlas.handle, 0);
+    bind_ssbo(ctx->device, ds.set, d_hit_words.buffer, hit_words_bytes, 1);
+    BufMem d_dummy = alloc_buffer(ctx, 4, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    bind_ssbo(ctx->device, ds.set, d_dummy.buffer, 4, 2);
+    bind_ubo(ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+
+    dispatch_rt(ctx, *g_dbscan_pipe, ds.set, params.x_count, params.y_count);
+
+    std::vector<uint32_t> hit_words(hit_word_count, 0u);
+    if (hit_word_count > 0) {
+        download_from_buf(ctx, hit_words.data(), d_hit_words, hit_words_bytes);
+    }
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_hit_words);
+    free_buf(ctx, d_params);
+    free_buf(ctx, d_dummy);
+
+    std::vector<size_t> row_indices;
+    row_indices.reserve(std::min(dataset.row_count, kDbMaxCandidateRowsPerJob));
+    for (size_t row_index = 0; row_index < dataset.row_count; ++row_index) {
+        const uint32_t word = static_cast<uint32_t>(row_index >> 5);
+        const uint32_t bit = 1u << (row_index & 31u);
+        if ((hit_words[word] & bit) == 0u) {
+            continue;
+        }
+        if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
+            throw std::runtime_error("first-wave Vulkan DB lowering exceeded the 250000-candidate ceiling");
+        }
+        if (!db_row_matches_all_clauses(
+                dataset.fields.data(),
+                dataset.fields.size(),
+                dataset.row_values.data(),
+                row_index,
+                clauses,
+                clause_count)) {
             continue;
         }
         row_indices.push_back(row_index);
@@ -3994,6 +4307,278 @@ static void run_db_grouped_sum_vulkan(
     for (size_t row_index : candidate_row_indices) {
         const RtdlDbScalar& group_value = db_row_value(row_values, row_index, field_count, group_field_index);
         const RtdlDbScalar& sum_value = db_row_value(row_values, row_index, field_count, value_field_index);
+        sums[group_value.int_value] += sum_value.int_value;
+        if (sums.size() > kDbMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave Vulkan DB grouped kernels exceeded the 65536-group ceiling");
+        }
+    }
+    std::vector<RtdlDbGroupedSumRow> rows;
+    rows.reserve(sums.size());
+    for (const auto& entry : sums) {
+        rows.push_back({entry.first, entry.second});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+        return left.group_key < right.group_key;
+    });
+    auto* out = static_cast<RtdlDbGroupedSumRow*>(std::malloc(sizeof(RtdlDbGroupedSumRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedSumRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static VulkanDbDatasetImpl* create_db_dataset_vulkan(
+        const RtdlDbField* fields,
+        size_t field_count,
+        const RtdlDbScalar* row_values,
+        size_t row_count,
+        const char* const* primary_fields,
+        size_t primary_field_count)
+{
+    db_validate_db_inputs(fields, field_count, row_values, row_count, nullptr, 0);
+    VkContext* ctx = get_context();
+    std::unique_ptr<VulkanDbDatasetImpl> dataset(new VulkanDbDatasetImpl());
+    db_copy_dataset_table(*dataset, fields, field_count, row_values, row_count);
+
+    std::vector<const char*> primary_names;
+    if (primary_field_count > 0) {
+        if (!primary_fields) {
+            throw std::runtime_error("primary_fields pointer must not be null when primary_field_count > 0");
+        }
+        primary_names.reserve(std::min<size_t>(primary_field_count, 3));
+        for (size_t index = 0; index < primary_field_count && index < 3; ++index) {
+            primary_names.push_back(primary_fields[index]);
+        }
+    } else {
+        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+    }
+    if (primary_names.empty()) {
+        throw std::runtime_error("Vulkan prepared DB dataset requires at least one numeric primary RT axis");
+    }
+
+    dataset->primary_axes.reserve(primary_names.size());
+    for (const char* field_name : primary_names) {
+        dataset->primary_axes.push_back(
+            db_make_full_primary_axis(
+                dataset->fields.data(),
+                dataset->fields.size(),
+                dataset->row_values.data(),
+                dataset->row_count,
+                field_name));
+    }
+    dataset->row_metas = db_build_row_metas(
+        dataset->fields.data(),
+        dataset->fields.size(),
+        dataset->row_values.data(),
+        dataset->row_count);
+    dataset->aabbs = db_build_row_aabbs(
+        dataset->fields.data(),
+        dataset->fields.size(),
+        dataset->row_values.data(),
+        dataset->row_count,
+        dataset->primary_axes);
+    dataset->blas = build_aabb_blas(ctx, dataset->aabbs);
+    dataset->tlas = build_tlas(ctx, dataset->blas.handle, dataset->blas.device_addr);
+    return dataset.release();
+}
+
+static VulkanDbDatasetImpl* create_db_dataset_vulkan_columnar(
+        const RtdlDbColumn* columns,
+        size_t column_count,
+        size_t row_count,
+        const char* const* primary_fields,
+        size_t primary_field_count)
+{
+    db_validate_columnar_inputs(columns, column_count, row_count);
+    VkContext* ctx = get_context();
+    std::unique_ptr<VulkanDbDatasetImpl> dataset(new VulkanDbDatasetImpl());
+    db_copy_dataset_columnar_table(*dataset, columns, column_count, row_count);
+
+    std::vector<const char*> primary_names;
+    if (primary_field_count > 0) {
+        if (!primary_fields) {
+            throw std::runtime_error("primary_fields pointer must not be null when primary_field_count > 0");
+        }
+        primary_names.reserve(std::min<size_t>(primary_field_count, 3));
+        for (size_t index = 0; index < primary_field_count && index < 3; ++index) {
+            primary_names.push_back(primary_fields[index]);
+        }
+    } else {
+        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+    }
+    if (primary_names.empty()) {
+        throw std::runtime_error("Vulkan prepared DB dataset requires at least one numeric primary RT axis");
+    }
+
+    dataset->primary_axes.reserve(primary_names.size());
+    for (const char* field_name : primary_names) {
+        dataset->primary_axes.push_back(
+            db_make_full_primary_axis(
+                dataset->fields.data(),
+                dataset->fields.size(),
+                dataset->row_values.data(),
+                dataset->row_count,
+                field_name));
+    }
+    dataset->row_metas = db_build_row_metas(
+        dataset->fields.data(),
+        dataset->fields.size(),
+        dataset->row_values.data(),
+        dataset->row_count);
+    dataset->aabbs = db_build_row_aabbs(
+        dataset->fields.data(),
+        dataset->fields.size(),
+        dataset->row_values.data(),
+        dataset->row_count,
+        dataset->primary_axes);
+    dataset->blas = build_aabb_blas(ctx, dataset->aabbs);
+    dataset->tlas = build_tlas(ctx, dataset->blas.handle, dataset->blas.device_addr);
+    return dataset.release();
+}
+
+static void destroy_db_dataset_vulkan(VulkanDbDatasetImpl* dataset)
+{
+    if (!dataset) {
+        return;
+    }
+    VkContext* ctx = get_context();
+    destroy_accel(ctx, dataset->tlas);
+    destroy_accel(ctx, dataset->blas);
+    delete dataset;
+}
+
+static void run_db_conjunctive_scan_vulkan_prepared(
+        VulkanDbDatasetImpl* dataset,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        RtdlDbRowIdRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!dataset) {
+        throw std::runtime_error("Vulkan prepared DB dataset must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_vulkan_prepared(*dataset, clauses, clause_count);
+    std::vector<RtdlDbRowIdRow> rows;
+    rows.reserve(candidate_row_indices.size());
+    for (size_t row_index : candidate_row_indices) {
+        rows.push_back({dataset->row_metas[row_index].row_id});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+        return left.row_id < right.row_id;
+    });
+    auto* out = static_cast<RtdlDbRowIdRow*>(std::malloc(sizeof(RtdlDbRowIdRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbRowIdRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_db_grouped_count_vulkan_prepared(
+        VulkanDbDatasetImpl* dataset,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        RtdlDbGroupedCountRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!dataset) {
+        throw std::runtime_error("Vulkan prepared DB dataset must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    if (!group_key_field) {
+        throw std::runtime_error("group_key_field must not be null");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    const size_t group_field_index =
+        db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_vulkan_prepared(*dataset, clauses, clause_count);
+    std::unordered_map<int64_t, int64_t> counts;
+    for (size_t row_index : candidate_row_indices) {
+        const RtdlDbScalar& group_value =
+            db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
+        counts[group_value.int_value] += 1;
+        if (counts.size() > kDbMaxGroupsPerJob) {
+            throw std::runtime_error("first-wave Vulkan DB grouped kernels exceeded the 65536-group ceiling");
+        }
+    }
+    std::vector<RtdlDbGroupedCountRow> rows;
+    rows.reserve(counts.size());
+    for (const auto& entry : counts) {
+        rows.push_back({entry.first, entry.second});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+        return left.group_key < right.group_key;
+    });
+    auto* out = static_cast<RtdlDbGroupedCountRow*>(std::malloc(sizeof(RtdlDbGroupedCountRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) {
+        std::memcpy(out, rows.data(), sizeof(RtdlDbGroupedCountRow) * rows.size());
+    }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_db_grouped_sum_vulkan_prepared(
+        VulkanDbDatasetImpl* dataset,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        const char* group_key_field,
+        const char* value_field,
+        RtdlDbGroupedSumRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!dataset) {
+        throw std::runtime_error("Vulkan prepared DB dataset must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("output pointers must not be null");
+    }
+    if (!group_key_field || !value_field) {
+        throw std::runtime_error("group_key_field and value_field must not be null");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    const size_t group_field_index =
+        db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
+    const size_t value_field_index =
+        db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), value_field);
+    if (dataset->fields[value_field_index].kind != kDbKindInt64 && dataset->fields[value_field_index].kind != kDbKindBool) {
+        throw std::runtime_error("first-wave Vulkan grouped_sum supports integer-compatible value fields only");
+    }
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_vulkan_prepared(*dataset, clauses, clause_count);
+    std::unordered_map<int64_t, int64_t> sums;
+    for (size_t row_index : candidate_row_indices) {
+        const RtdlDbScalar& group_value =
+            db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), group_field_index);
+        const RtdlDbScalar& sum_value =
+            db_row_value(dataset->row_values.data(), row_index, dataset->fields.size(), value_field_index);
         sums[group_value.int_value] += sum_value.int_value;
         if (sums.size() > kDbMaxGroupsPerJob) {
             throw std::runtime_error("first-wave Vulkan DB grouped kernels exceeded the 65536-group ceiling");

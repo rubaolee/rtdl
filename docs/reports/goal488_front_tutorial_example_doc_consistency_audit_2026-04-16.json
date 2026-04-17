@@ -1,0 +1,111 @@
+{
+  "commit_performed": false,
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "",
+    "valid": true
+  },
+  "doc_checks": [
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "README.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/README.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/quick_tutorial.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/tutorials/README.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/tutorials/db_workloads.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/release_facing_examples.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "examples/README.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/release_reports/v0_7/README.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/release_reports/v0_7/release_statement.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/release_reports/v0_7/support_matrix.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/release_reports/v0_7/audit_report.md",
+      "stale_current_patterns": [],
+      "valid": true
+    },
+    {
+      "exists": true,
+      "missing_tokens": [],
+      "path": "docs/release_reports/v0_7/tag_preparation.md",
+      "stale_current_patterns": [],
+      "valid": true
+    }
+  ],
+  "example_command_checks": [],
+  "goal": 488,
+  "invalid_doc_checks": [],
+  "invalid_example_commands": [],
+  "merge_performed": false,
+  "push_performed": false,
+  "release_authorization": false,
+  "repo_root": "/Users/rl2025/worktrees/rtdl_v0_4_main_publish",
+  "staging_performed": false,
+  "tag_performed": false,
+  "valid": true
+}

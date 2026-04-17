@@ -81,12 +81,16 @@ from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import OptixRowView
 from .optix_runtime import prepare_optix
+from .optix_runtime import prepare_optix_db_dataset
+from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import run_optix
 from .vulkan_runtime import vulkan_version
 from .vulkan_runtime import VulkanRowView
 from .vulkan_runtime import prepare_vulkan
+from .vulkan_runtime import prepare_vulkan_db_dataset
+from .vulkan_runtime import PreparedVulkanDbDataset
 from .vulkan_runtime import PreparedVulkanExecution
 from .vulkan_runtime import PreparedVulkanKernel
 from .vulkan_runtime import run_vulkan
@@ -102,6 +106,8 @@ from .embree_runtime import PackedRays
 from .embree_runtime import PackedSegments
 from .embree_runtime import PackedTriangles
 from .embree_runtime import prepare_embree
+from .embree_runtime import prepare_embree_db_dataset
+from .embree_runtime import PreparedEmbreeDbDataset
 from .embree_runtime import PreparedEmbreeExecution
 from .embree_runtime import PreparedEmbreeKernel
 from .embree_runtime import run_embree
@@ -529,12 +535,16 @@ __all__ = [
     "OptixRowView",
     "optix_version",
     "prepare_optix",
+    "prepare_optix_db_dataset",
+    "PreparedOptixDbDataset",
     "PreparedOptixExecution",
     "PreparedOptixKernel",
     "run_optix",
     "VulkanRowView",
     "vulkan_version",
     "prepare_vulkan",
+    "prepare_vulkan_db_dataset",
+    "PreparedVulkanDbDataset",
     "PreparedVulkanExecution",
     "PreparedVulkanKernel",
     "run_vulkan",
@@ -623,7 +633,9 @@ __all__ = [
     "download_monuseg_training_zip",
     "build_goal141_public_case",
     "prepare_embree",
+    "prepare_embree_db_dataset",
     "prepare_postgresql_denorm_table",
+    "PreparedEmbreeDbDataset",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
     "public_pathology_datasets",

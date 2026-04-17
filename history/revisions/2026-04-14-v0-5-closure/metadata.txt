@@ -1,0 +1,11 @@
+slug: 2026-04-14-v0-5-closure
+title: v0.5 Closure Catch-up
+version: v0.5
+status: complete
+started_on: 2026-04-14
+closed_on: 2026-04-14
+source_commit: HEAD
+gemini_review: external report reviewed by Dev AI
+codex_revision: registered historical v0.5 closure catch-up
+final_result: COMPLETE
+summary: Closure of paper-consistency and 3D nearest-neighbor line.

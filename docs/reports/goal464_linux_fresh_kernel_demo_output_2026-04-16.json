@@ -1,0 +1,142 @@
+{
+  "app": "regional_order_dashboard_kernel_form",
+  "backend": "embree",
+  "fallback_note": null,
+  "honesty_boundary": "RTDL kernel demo for bounded DB workloads; not SQL, joins, transactions, or a DBMS.",
+  "input_table": {
+    "fields": [
+      "channel",
+      "discount",
+      "quantity",
+      "region",
+      "revenue",
+      "row_id",
+      "ship_date"
+    ],
+    "row_count": 7
+  },
+  "kernel_flow": [
+    "rt.input(..., role='probe') receives predicates or grouped query",
+    "rt.input(..., role='build') receives application rows",
+    "rt.traverse(..., accel='bvh') discovers encoded row candidates",
+    "rt.refine(...) applies exact scan or grouped aggregate semantics",
+    "rt.emit(...) returns application JSON rows"
+  ],
+  "kernels": {
+    "promo_scan_kernel": "conjunctive_scan",
+    "region_count_kernel": "grouped_count",
+    "region_revenue_kernel": "grouped_sum"
+  },
+  "predicate_examples": {
+    "one_predicate": [
+      [
+        "discount",
+        "eq",
+        6
+      ]
+    ],
+    "three_predicates": [
+      [
+        "ship_date",
+        "between",
+        12,
+        15
+      ],
+      [
+        "discount",
+        "eq",
+        6
+      ],
+      [
+        "quantity",
+        "lt",
+        20
+      ]
+    ],
+    "two_predicates": [
+      [
+        "ship_date",
+        "between",
+        12,
+        15
+      ],
+      [
+        "quantity",
+        "lt",
+        20
+      ]
+    ]
+  },
+  "requested_backend": "auto",
+  "results": {
+    "one_predicate_discounted_ids": [
+      {
+        "row_id": 3
+      },
+      {
+        "row_id": 4
+      },
+      {
+        "row_id": 5
+      },
+      {
+        "row_id": 7
+      }
+    ],
+    "open_order_count_by_region": [
+      {
+        "count": 2,
+        "region": "east"
+      },
+      {
+        "count": 1,
+        "region": "south"
+      },
+      {
+        "count": 2,
+        "region": "west"
+      }
+    ],
+    "three_predicate_promo_order_ids": [
+      {
+        "row_id": 3
+      },
+      {
+        "row_id": 4
+      },
+      {
+        "row_id": 5
+      },
+      {
+        "row_id": 7
+      }
+    ],
+    "two_predicate_campaign_window_ids": [
+      {
+        "row_id": 3
+      },
+      {
+        "row_id": 4
+      },
+      {
+        "row_id": 5
+      },
+      {
+        "row_id": 6
+      },
+      {
+        "row_id": 7
+      }
+    ],
+    "web_revenue_by_region": [
+      {
+        "region": "east",
+        "sum": 180
+      },
+      {
+        "region": "west",
+        "sum": 240
+      }
+    ]
+  }
+}

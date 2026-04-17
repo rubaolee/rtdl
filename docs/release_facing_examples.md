@@ -39,6 +39,11 @@ Before running any command below:
   package from `src/rtdsl/`
 - commands below use `python` as the public convention
 - if your shell only provides `python3`, substitute `python3` for `python`
+- optional Embree build/probe: `make build-embree`
+- Windows Embree users should set `RTDL_EMBREE_PREFIX` to an x64 Embree prefix
+  and `RTDL_VCVARS64` if Visual Studio Build Tools are not in the default
+  location; copied binary snapshots must carry the matching
+  `build/librtdl_embree.dll` or allow first-use rebuild from source
 
 Windows shell note:
 
@@ -157,6 +162,8 @@ Kernel examples:
 App-style example:
 
 - [rtdl_sales_risk_screening.py](../examples/rtdl_sales_risk_screening.py)
+- [rtdl_v0_7_db_app_demo.py](../examples/rtdl_v0_7_db_app_demo.py)
+- [rtdl_v0_7_db_kernel_app_demo.py](../examples/rtdl_v0_7_db_kernel_app_demo.py)
 
 Run:
 
@@ -176,6 +183,8 @@ PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend embree
 PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu
 PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 ```
 
 On Linux hosts with the GPU stack enabled:
@@ -203,6 +212,17 @@ Current honesty boundary:
   - `optix`
   - `vulkan`
 - PostgreSQL is the Linux correctness anchor, not a public example backend flag
+- native prepared DB dataset APIs exist for Embree, OptiX, and Vulkan, but the
+  public example CLIs intentionally stay small and show the normal backend flag
+  path first
+- Linux columnar repeated-query performance evidence is now canonically
+  summarized in
+  [Goal 452](reports/goal452_v0_7_rtdl_vs_best_tested_postgresql_perf_rebase_2026-04-16.md):
+  query-only results are mixed against the best PostgreSQL modes tested so far,
+  while setup-plus-10-query total time favors RTDL in the measured Linux
+  evidence
+- Goal 492 is the final release-readiness hold before explicit `v0.7.0`
+  release authorization
 - this is still the active `v0.7` branch line, not the last tagged mainline release
 
 ### Public CLI Backend Selection

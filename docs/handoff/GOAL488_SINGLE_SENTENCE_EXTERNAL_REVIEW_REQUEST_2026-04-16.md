@@ -1,0 +1,1 @@
+Please review Goal488's front-page/tutorial/example/v0.7 release-doc consistency audit and write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal488_external_review_2026-04-16.md`.

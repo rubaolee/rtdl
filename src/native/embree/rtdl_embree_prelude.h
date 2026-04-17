@@ -188,6 +188,14 @@ struct RtdlDbScalar {
   const char* string_value;
 };
 
+struct RtdlDbColumn {
+  const char* name;
+  uint32_t kind;
+  const int64_t* int_values;
+  const double* double_values;
+  const char* const* string_values;
+};
+
 struct RtdlDbClause {
   const char* field;
   uint32_t op;
@@ -208,6 +216,8 @@ struct RtdlDbGroupedSumRow {
   int64_t group_key;
   int64_t sum;
 };
+
+struct RtdlEmbreeDbDataset;
 
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
 int rtdl_embree_run_lsi(
@@ -390,6 +400,53 @@ int rtdl_embree_run_grouped_sum(
     size_t field_count,
     const RtdlDbScalar* row_values,
     size_t row_count,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    const char* group_key_field,
+    const char* value_field,
+    RtdlDbGroupedSumRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_db_dataset_create(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const char* const* primary_fields,
+    size_t primary_field_count,
+    RtdlEmbreeDbDataset** dataset_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_db_dataset_create_columnar(
+    const RtdlDbColumn* columns,
+    size_t column_count,
+    size_t row_count,
+    const char* const* primary_fields,
+    size_t primary_field_count,
+    RtdlEmbreeDbDataset** dataset_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_db_dataset_destroy(RtdlEmbreeDbDataset* dataset);
+int rtdl_embree_db_dataset_conjunctive_scan(
+    RtdlEmbreeDbDataset* dataset,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    RtdlDbRowIdRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_db_dataset_grouped_count(
+    RtdlEmbreeDbDataset* dataset,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    const char* group_key_field,
+    RtdlDbGroupedCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_db_dataset_grouped_sum(
+    RtdlEmbreeDbDataset* dataset,
     const RtdlDbClause* clauses,
     size_t clause_count,
     const char* group_key_field,

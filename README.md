@@ -14,18 +14,17 @@ It gives you:
 The current released surface now spans geometric, nearest-neighbor, and graph
 workloads, but the language goal is broader than any one workload family alone.
 
-This branch also carries a bounded `v0.7` development line for DB-style
-analytical workloads. That `v0.7` line is not the current tagged release on
-`main`.
+This branch carries the bounded `v0.7.0` release line for DB-style analytical
+workloads.
 
-RTDL is not a general-purpose renderer or graphics engine.  
+RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.
 
 ## Version Status At A Glance
 
-- current released version: `v0.6.1`
-- current active branch line here: bounded `v0.7` RT DB work
+- current released version: `v0.7.0`
+- current active release line here: bounded `v0.7.0` RT DB work
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -33,6 +32,9 @@ core can power a bounded Python application.
   - `conjunctive_scan`
   - `grouped_count`
   - `grouped_sum`
+  - native prepared DB dataset reuse on Embree, OptiX, and Vulkan
+  - app-level and kernel-form DB demos
+  - release-readiness and staging-authorization evidence through Goal 492
 - current `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -71,6 +73,8 @@ RTDL uses several backends behind one public kernel surface:
 - `PostGIS` / `PostgreSQL`:
   - not RTDL backends
   - used as external correctness/timing anchors for some workload families
+  - for the `v0.7` DB branch, PostgreSQL is the Linux correctness and
+    repeated-query performance baseline
 
 ## OS Support At A Glance
 
@@ -180,6 +184,16 @@ PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_referenc
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
 
+Then try the bounded `v0.7` DB branch line:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
+```
+
 Windows `cmd.exe`:
 
 ```bat
@@ -188,6 +202,11 @@ python examples\rtdl_hello_world.py
 python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 python examples\rtdl_graph_bfs.py --backend cpu_python_reference
 python examples\rtdl_graph_triangle_count.py --backend cpu_python_reference
+python examples\rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+python examples\rtdl_db_grouped_count.py --backend cpu_python_reference
+python examples\rtdl_db_grouped_sum.py --backend cpu_python_reference
+python examples\rtdl_v0_7_db_app_demo.py --backend auto
+python examples\rtdl_v0_7_db_kernel_app_demo.py --backend auto
 ```
 
 PowerShell:
@@ -198,6 +217,11 @@ python examples/rtdl_hello_world.py
 python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 python examples/rtdl_graph_bfs.py --backend cpu_python_reference
 python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
+python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
+python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
+python examples/rtdl_v0_7_db_app_demo.py --backend auto
+python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 ```
 
 Notes:
@@ -207,8 +231,15 @@ Notes:
 - if your shell only provides `python3`, substitute `python3`
 - `PYTHONPATH=src:.` is what makes the local `src/rtdsl/` package importable
 - `cpu` auto-builds the native C oracle library on first use
-- `embree` runs when the Embree backend is present
+- `embree` auto-builds/probes `build/librtdl_embree.*` on first use when the
+  host has Embree headers/libraries available
 - on Linux with a configured GPU stack, `optix` and `vulkan` can run after the backend libraries are available
+
+Optional Embree backend build/probe step:
+
+```bash
+make build-embree
+```
 
 Optional Linux GPU backend build step:
 
@@ -216,6 +247,13 @@ Optional Linux GPU backend build step:
 make build-optix
 make build-vulkan
 ```
+
+Windows Embree note: install or unpack Embree for x64, set
+`RTDL_EMBREE_PREFIX` to that Embree prefix, and set `RTDL_VCVARS64` if Visual
+Studio Build Tools are not in the default location. A binary Windows snapshot
+must either include the matching `build/librtdl_embree.dll` from this checkout
+or allow first-use rebuild from source; stale DLLs are rejected when required
+exports such as `rtdl_embree_run_fixed_radius_neighbors` are missing.
 
 ## Choose Your Path
 
@@ -275,7 +313,16 @@ Release and preview layers inside the current repository:
 - `v0.4.0`: released nearest-neighbor workload expansion
 - `v0.5.0`: released 3D nearest-neighbor and multi-backend expansion
 - `v0.6.1`: released corrected RT graph line
-- `v0.7`: active bounded DB branch line, not yet tagged as the new mainline release
+- `v0.7.0`: released bounded DB branch line
+  - current native prepared DB dataset work is validated on Linux across
+    Embree, OptiX, Vulkan, and PostgreSQL for bounded synthetic repeated-query
+    gates
+  - current canonical performance wording is Goal 452: against the best
+    PostgreSQL modes tested so far, query-only results are mixed, while
+    setup-plus-10-query total time favors RTDL in the measured Linux evidence
+  - release-readiness evidence is Goal 492: the package was held until explicit
+    release authorization, with `rtdsl_current.tar.gz` as the only default
+    staging exclusion
 
 Current public demo artifact:
 
@@ -285,6 +332,8 @@ For exact backend/workload status, use:
 
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
+- [RTDL v0.7 Branch Statement](docs/release_reports/v0_7/release_statement.md)
+- [RTDL v0.7 Branch Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 - [RTDL v0.5 Release Statement](docs/release_reports/v0_5/release_statement.md)
 - [RTDL v0.5 Support Matrix](docs/release_reports/v0_5/support_matrix.md)
 
@@ -354,6 +403,14 @@ Important honesty boundaries:
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform
 - PostGIS is an external indexed comparison baseline, not an RTDL backend
+- PostgreSQL is the external baseline for the bounded `v0.7` DB branch; RTDL is
+  still not a DBMS and does not execute arbitrary SQL
+- RTDL is not a DBMS
+- `v0.7` DB performance claims are bounded to the tested Linux synthetic
+  workloads; Goal 452 is the canonical comparison against best-tested
+  PostgreSQL modes, not an exhaustive PostgreSQL tuning claim
+- `v0.7.0` is the current bounded DB release; release claims remain limited to
+  the documented v0.7 support matrix and performance boundary
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.
@@ -373,4 +430,4 @@ Best next pages:
 - [Documentation Index](docs/README.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Feature Homes](docs/features/README.md)
-- [RTDL v0.4 Release Package](docs/release_reports/v0_4/README.md)
+- [RTDL v0.7 Branch Package](docs/release_reports/v0_7/README.md)

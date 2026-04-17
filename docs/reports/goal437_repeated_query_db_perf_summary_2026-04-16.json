@@ -1,0 +1,135 @@
+{
+  "goal": 437,
+  "repeated_query_count": 10,
+  "row_count": 200000,
+  "source_files": {
+    "embree": "docs/reports/goal434_embree_native_prepared_db_dataset_linux_2026-04-16.json",
+    "optix": "docs/reports/goal435_optix_native_prepared_db_dataset_linux_2026-04-16.json",
+    "vulkan": "docs/reports/goal436_vulkan_native_prepared_db_dataset_linux_2026-04-16.json"
+  },
+  "workloads": {
+    "conjunctive_scan": {
+      "embree": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.018752563453745097,
+        "median_query_speedup_vs_postgresql": 1.5546162799309786,
+        "postgresql_median_query_seconds": 0.029153040435630828,
+        "postgresql_setup_seconds": 12.259940404910594,
+        "postgresql_total_repeated_seconds": 12.549843533779494,
+        "prepare_seconds": 2.927411004086025,
+        "row_count": 22268,
+        "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+        "total_repeated_seconds": 3.1138329427922145,
+        "total_repeated_speedup_vs_postgresql": 4.030352226451136
+      },
+      "optix": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.011617212556302547,
+        "median_query_speedup_vs_postgresql": 2.2677608581430952,
+        "postgresql_median_query_seconds": 0.026345059915911406,
+        "postgresql_setup_seconds": 10.121371102053672,
+        "postgresql_total_repeated_seconds": 10.384041860932484,
+        "prepare_seconds": 2.693910773959942,
+        "row_count": 22268,
+        "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+        "total_repeated_seconds": 3.2395991542143747,
+        "total_repeated_speedup_vs_postgresql": 3.2053477503301444
+      },
+      "vulkan": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.013603091530967504,
+        "median_query_speedup_vs_postgresql": 1.9479535570604303,
+        "postgresql_median_query_seconds": 0.026498190534766763,
+        "postgresql_setup_seconds": 10.145429844036698,
+        "postgresql_total_repeated_seconds": 10.409818126121536,
+        "prepare_seconds": 2.7648022329667583,
+        "row_count": 22268,
+        "row_hash": "19461bddd250025c3d24a174f82e5f66046e40dded85ef27614143a08c9590c8",
+        "total_repeated_seconds": 3.217003285768442,
+        "total_repeated_speedup_vs_postgresql": 3.235874259803547
+      }
+    },
+    "grouped_count": {
+      "embree": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.015879101993050426,
+        "median_query_speedup_vs_postgresql": 1.4044626393179538,
+        "postgresql_median_query_seconds": 0.022301605495158583,
+        "postgresql_setup_seconds": 12.352186294039711,
+        "postgresql_total_repeated_seconds": 12.575945643358864,
+        "prepare_seconds": 2.914072341984138,
+        "row_count": 8,
+        "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+        "total_repeated_seconds": 3.073149149888195,
+        "total_repeated_speedup_vs_postgresql": 4.0922015268332785
+      },
+      "optix": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.004478940449189395,
+        "median_query_speedup_vs_postgresql": 4.518575709907355,
+        "postgresql_median_query_seconds": 0.020238431519828737,
+        "postgresql_setup_seconds": 10.440232023014687,
+        "postgresql_total_repeated_seconds": 10.643650552025065,
+        "prepare_seconds": 2.548569131991826,
+        "row_count": 8,
+        "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+        "total_repeated_seconds": 2.5942205127794296,
+        "total_repeated_speedup_vs_postgresql": 4.102831852417022
+      },
+      "vulkan": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.007031500514131039,
+        "median_query_speedup_vs_postgresql": 2.9073898922683603,
+        "postgresql_median_query_seconds": 0.02044331352226436,
+        "postgresql_setup_seconds": 10.042244142969139,
+        "postgresql_total_repeated_seconds": 10.247574065928347,
+        "prepare_seconds": 2.6066849830094725,
+        "row_count": 8,
+        "row_hash": "869ed487d7eda66115bb00dceaf75df016fac2e2e0a6d75119f993d63137a77b",
+        "total_repeated_seconds": 2.678680377197452,
+        "total_repeated_speedup_vs_postgresql": 3.8256053813519144
+      }
+    },
+    "grouped_sum": {
+      "embree": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.03532804304268211,
+        "median_query_speedup_vs_postgresql": 1.085985611897025,
+        "postgresql_median_query_seconds": 0.03836574644083157,
+        "postgresql_setup_seconds": 10.601886600954458,
+        "postgresql_total_repeated_seconds": 10.986006595776416,
+        "prepare_seconds": 2.7748001689324155,
+        "row_count": 8,
+        "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+        "total_repeated_seconds": 3.1277550702216104,
+        "total_repeated_speedup_vs_postgresql": 3.512425477420144
+      },
+      "optix": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.010184271493926644,
+        "median_query_speedup_vs_postgresql": 3.4412269984991006,
+        "postgresql_median_query_seconds": 0.03504639002494514,
+        "postgresql_setup_seconds": 12.867585464031436,
+        "postgresql_total_repeated_seconds": 13.218745940015651,
+        "prepare_seconds": 2.414290201035328,
+        "row_count": 8,
+        "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+        "total_repeated_seconds": 2.5168610856635496,
+        "total_repeated_speedup_vs_postgresql": 5.252076094033072
+      },
+      "vulkan": {
+        "break_even_query_count": "wins_from_first_query",
+        "median_query_seconds": 0.013520832522772253,
+        "median_query_speedup_vs_postgresql": 2.6094377333775767,
+        "postgresql_median_query_seconds": 0.035281770571600646,
+        "postgresql_setup_seconds": 12.660917158937082,
+        "postgresql_total_repeated_seconds": 13.014906157390215,
+        "prepare_seconds": 2.463052402017638,
+        "row_count": 8,
+        "row_hash": "123b2f6fc6fa9f69e2df8da24441116549271314ef3b602482467c6ad47ed330",
+        "total_repeated_seconds": 2.600840176921338,
+        "total_repeated_speedup_vs_postgresql": 5.004116082517688
+      }
+    }
+  }
+}

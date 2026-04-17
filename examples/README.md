@@ -20,6 +20,8 @@ If you are new to RTDL, use these files first:
 - `rtdl_db_conjunctive_scan.py`
 - `rtdl_db_grouped_count.py`
 - `rtdl_db_grouped_sum.py`
+- `rtdl_v0_7_db_app_demo.py`
+- `rtdl_v0_7_db_kernel_app_demo.py`
 - `rtdl_sales_risk_screening.py`
 - `rtdl_service_coverage_gaps.py`
 - `rtdl_event_hotspot_screening.py`
@@ -65,5 +67,12 @@ Current DB example boundary:
   - `embree`
   - `optix`
   - `vulkan`
+- `rtdl_v0_7_db_app_demo.py` is the app-level demo: it shows one
+  denormalized order table becoming matched row IDs, grouped counts, and
+  grouped sums through the v0.7 bounded DB workload surface
+- `rtdl_v0_7_db_kernel_app_demo.py` is the kernel-form companion demo: it
+  shows `rt.input(..., role="probe")`, `rt.input(..., role="build")`,
+  `rt.traverse(..., accel="bvh")`, `rt.refine(...)`, and `rt.emit(...)` around
+  the same bounded DB workload surface
 - PostgreSQL remains a Linux correctness/performance anchor, not a public
   example backend flag

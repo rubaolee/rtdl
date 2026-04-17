@@ -1,0 +1,1 @@
+Please review Goal 435 for v0.7 by checking the native OptiX prepared DB dataset implementation, tests, Linux PostgreSQL performance JSON, and reports under `/Users/rl2025/worktrees/rtdl_v0_4_main_publish`, then write an ACCEPT/REJECT review with any blockers to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal435_external_review_2026-04-16.md`.

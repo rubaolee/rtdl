@@ -1,0 +1,1 @@
+Please review Goal481's post-Goal480 advisory pre-stage hold ledger and write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal481_external_review_2026-04-16.md`.

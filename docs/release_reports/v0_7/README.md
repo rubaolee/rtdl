@@ -1,13 +1,13 @@
 # RTDL v0.7 Branch Package
 
-This directory is the bounded branch package for the current `v0.7` RT DB
+This directory is the bounded release package for the current `v0.7.0` RT DB
 line.
 
 Status:
 
-- active branch line
-- release-gated on `codex/v0_7_rt_db`
-- not yet the repository's last tagged mainline release
+- released bounded DB line
+- tag target: `v0.7.0`
+- release branch: `codex/v0_7_rt_db`
 
 Read in this order:
 

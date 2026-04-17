@@ -1,0 +1,29 @@
+== host ==
+lx1
+2026-04-16T12:10:50-04:00
+Python 3.12.3
+psql (PostgreSQL) 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+/var/run/postgresql:5432 - accepting connections
+NVIDIA GeForce GTX 1070, 580.126.09
+== build/probe ==
+mkdir -p build
+PYTHONPATH=src:. python3 -c "import rtdsl as rt; print('Embree', '.'.join(map(str, rt.embree_version())))"
+Embree 4.3.0
+mkdir -p build
+/usr/bin/nvcc -std=c++17 -O3 -shared -I/home/lestat/vendor/optix-dev/include -I/usr/include  -DRTDL_OPTIX_INCLUDE_DIR=\"/home/lestat/vendor/optix-dev/include\" -DRTDL_CUDA_INCLUDE_DIR=\"/usr/include\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\" -Xcompiler -fPIC \
+	src/native/rtdl_optix.cpp \
+	-L/usr/lib64 -lcuda -lnvrtc -lgeos_c  \
+	-o build/librtdl_optix.so
+mkdir -p build
+g++ -std=c++17 -O3 -shared -fPIC -I/usr/include  -DRTDL_VULKAN_INCLUDE_DIR=\"/usr/include\" \
+	src/native/rtdl_vulkan.cpp \
+	-L/usr/lib -lvulkan -lshaderc -lgeos_c  \
+	-o build/librtdl_vulkan.so
+== runtime probe ==
+{"embree": [4, 3, 0], "optix": [9, 0, 0], "vulkan": [0, 1, 0]}
+== focused tests ==
+...........................................................................................................................................................
+----------------------------------------------------------------------
+Ran 155 tests in 8.776s
+
+OK

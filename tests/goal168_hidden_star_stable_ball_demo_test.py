@@ -162,11 +162,14 @@ class Goal168HiddenStarStableBallDemoTest(unittest.TestCase):
             jobs=1,
             **kwargs,
         )
-        summary_2 = render_hidden_star_stable_ball_frames(
-            output_dir=output_dir_jobs_2,
-            jobs=2,
-            **kwargs,
-        )
+        try:
+            summary_2 = render_hidden_star_stable_ball_frames(
+                output_dir=output_dir_jobs_2,
+                jobs=2,
+                **kwargs,
+            )
+        except PermissionError as exc:
+            raise unittest.SkipTest(f"ProcessPoolExecutor unavailable in this environment: {exc}") from exc
         for index in range(2):
             bytes_1 = Path(summary_1["frames"][index]["frame_path"]).read_bytes()
             bytes_2 = Path(summary_2["frames"][index]["frame_path"]).read_bytes()

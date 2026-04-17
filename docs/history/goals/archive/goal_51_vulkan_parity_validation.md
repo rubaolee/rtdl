@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Validate the newly integrated Vulkan KHR ray-tracing backend against the native C/C++ oracle across the standard RTDL workload suite. 
+Validate the newly integrated Vulkan KHR ray-tracing backend against the native C/C++ oracle across the standard RTDL workload suite.
 
 This goal moves the Vulkan backend from "integrated" to "verified" by proving exact-row parity (within float32 tolerances) on synthetic and small real-data samples.
 

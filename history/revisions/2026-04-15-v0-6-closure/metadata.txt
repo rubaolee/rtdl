@@ -1,0 +1,11 @@
+slug: 2026-04-15-v0-6-closure
+title: v0.6.1 Closure Catch-up
+version: v0.6.1
+status: complete
+started_on: 2026-04-15
+closed_on: 2026-04-15
+source_commit: HEAD
+gemini_review: external report reviewed by Dev AI
+codex_revision: registered historical v0.6.1 graph closure catch-up
+final_result: COMPLETE
+summary: Closure of corrected RT graph line and v0.6.1 rollout evidence.

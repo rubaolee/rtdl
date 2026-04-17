@@ -17,8 +17,27 @@ struct DbPrimaryAxis {
   int64_t encoded_hi;
 };
 
+struct EmbreeDbDatasetImpl {
+  std::vector<std::string> field_names;
+  std::vector<RtdlDbField> fields;
+  std::vector<std::string> scalar_strings;
+  std::vector<RtdlDbScalar> row_values;
+  size_t row_count;
+  std::vector<DbPrimaryAxis> primary_axes;
+  std::vector<DbRowBox> boxes;
+  DbRowBoxSceneData scene_data;
+  EmbreeDevice device;
+  SceneHolder holder;
+
+  EmbreeDbDatasetImpl() : row_count(0), scene_data {&boxes}, device(), holder(device.device) {}
+};
+
 size_t db_find_field_index_or_throw(const RtdlDbField* fields, size_t field_count, const char* name) {
   return db_find_field_index(fields, field_count, name);
+}
+
+bool db_field_kind_is_numeric(uint32_t kind) {
+  return kind == kDbKindInt64 || kind == kDbKindFloat64 || kind == kDbKindBool;
 }
 
 std::vector<double> db_sorted_distinct_numeric_values(
@@ -60,6 +79,25 @@ bool db_clause_matches_numeric_value(const RtdlDbClause& clause, double value) {
   }
 }
 
+DbPrimaryAxis db_make_full_primary_axis(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const char* field_name) {
+  const size_t field_index = db_find_field_index_or_throw(fields, field_count, field_name);
+  if (!db_field_kind_is_numeric(fields[field_index].kind)) {
+    throw std::runtime_error("first-wave Embree prepared DB datasets require numeric primary RT axes");
+  }
+  const std::vector<double> sorted_values =
+      db_sorted_distinct_numeric_values(row_values, row_count, field_count, field_index);
+  return {
+      field_index,
+      sorted_values,
+      1,
+      sorted_values.empty() ? 0 : static_cast<int64_t>(sorted_values.size())};
+}
+
 DbPrimaryAxis db_make_primary_axis(
     const RtdlDbField* fields,
     size_t field_count,
@@ -85,6 +123,25 @@ DbPrimaryAxis db_make_primary_axis(
     return {field_index, sorted_values, 1, 0};
   }
   return {field_index, sorted_values, encoded_lo, encoded_hi};
+}
+
+DbPrimaryAxis db_axis_with_clause_range(const DbPrimaryAxis& axis, const RtdlDbClause& clause) {
+  DbPrimaryAxis ranged = axis;
+  int64_t encoded_lo = -1;
+  int64_t encoded_hi = -1;
+  for (size_t index = 0; index < axis.sorted_values.size(); ++index) {
+    if (!db_clause_matches_numeric_value(clause, axis.sorted_values[index])) {
+      continue;
+    }
+    const int64_t encoded = static_cast<int64_t>(index + 1);
+    if (encoded_lo < 0) {
+      encoded_lo = encoded;
+    }
+    encoded_hi = encoded;
+  }
+  ranged.encoded_lo = encoded_lo < 0 ? 1 : encoded_lo;
+  ranged.encoded_hi = encoded_hi < 0 ? 0 : encoded_hi;
+  return ranged;
 }
 
 int64_t db_encode_axis_value(const DbPrimaryAxis& axis, const RtdlDbScalar& value) {
@@ -121,6 +178,24 @@ std::vector<DbRowBox> db_build_row_boxes(
   return boxes;
 }
 
+std::vector<DbPrimaryAxis> db_dataset_query_axes(
+    const EmbreeDbDatasetImpl& dataset,
+    const RtdlDbClause* clauses,
+    size_t clause_count) {
+  std::vector<DbPrimaryAxis> axes = dataset.primary_axes;
+  for (DbPrimaryAxis& axis : axes) {
+    const char* axis_field = dataset.fields[axis.field_index].name;
+    for (size_t clause_index = 0; clause_index < clause_count; ++clause_index) {
+      if (std::strcmp(axis_field, clauses[clause_index].field) != 0) {
+        continue;
+      }
+      axis = db_axis_with_clause_range(axis, clauses[clause_index]);
+      break;
+    }
+  }
+  return axes;
+}
+
 template <typename LaunchFn>
 void db_launch_primary_matrix_rays(
     const std::vector<DbPrimaryAxis>& axes,
@@ -154,6 +229,169 @@ void db_throw_if_limit_error() {
   const std::string message = g_db_limit_error_message;
   db_clear_limit_error();
   throw std::runtime_error(message);
+}
+
+void db_validate_db_inputs(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const RtdlDbClause* clauses,
+    size_t clause_count) {
+  if (field_count == 0 || fields == nullptr || row_values == nullptr) {
+    throw std::runtime_error("DB table inputs must not be null");
+  }
+  if (clause_count > 0 && clauses == nullptr) {
+    throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+  }
+  db_throw_if_row_count_exceeds_limit(row_count);
+}
+
+std::vector<const char*> db_default_primary_fields(const RtdlDbField* fields, size_t field_count) {
+  std::vector<const char*> names;
+  for (size_t index = 0; index < field_count && names.size() < 3; ++index) {
+    if (std::strcmp(fields[index].name, "row_id") == 0) {
+      continue;
+    }
+    if (db_field_kind_is_numeric(fields[index].kind)) {
+      names.push_back(fields[index].name);
+    }
+  }
+  return names;
+}
+
+size_t db_count_scalar_strings(const RtdlDbScalar* row_values, size_t scalar_count) {
+  size_t count = 0;
+  for (size_t index = 0; index < scalar_count; ++index) {
+    if (row_values[index].kind == kDbKindText && row_values[index].string_value != nullptr) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+void db_copy_dataset_table(
+    EmbreeDbDatasetImpl& dataset,
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count) {
+  dataset.field_names.reserve(field_count);
+  for (size_t index = 0; index < field_count; ++index) {
+    dataset.field_names.emplace_back(fields[index].name == nullptr ? "" : fields[index].name);
+  }
+  dataset.fields.reserve(field_count);
+  for (size_t index = 0; index < field_count; ++index) {
+    dataset.fields.push_back({dataset.field_names[index].c_str(), fields[index].kind});
+  }
+
+  const size_t scalar_count = row_count * field_count;
+  dataset.scalar_strings.reserve(db_count_scalar_strings(row_values, scalar_count));
+  dataset.row_values.reserve(scalar_count);
+  for (size_t index = 0; index < scalar_count; ++index) {
+    RtdlDbScalar copied = row_values[index];
+    if (copied.kind == kDbKindText && copied.string_value != nullptr) {
+      dataset.scalar_strings.emplace_back(copied.string_value);
+      copied.string_value = dataset.scalar_strings.back().c_str();
+    }
+    dataset.row_values.push_back(copied);
+  }
+  dataset.row_count = row_count;
+}
+
+void db_validate_columnar_inputs(
+    const RtdlDbColumn* columns,
+    size_t column_count,
+    size_t row_count) {
+  if (column_count == 0 || columns == nullptr) {
+    throw std::runtime_error("DB columnar inputs must not be null");
+  }
+  db_throw_if_row_count_exceeds_limit(row_count);
+  for (size_t column_index = 0; column_index < column_count; ++column_index) {
+    const RtdlDbColumn& column = columns[column_index];
+    if (column.name == nullptr) {
+      throw std::runtime_error("DB column name must not be null");
+    }
+    if ((column.kind == kDbKindInt64 || column.kind == kDbKindBool) && column.int_values == nullptr) {
+      throw std::runtime_error("DB integer/bool column values must not be null");
+    }
+    if (column.kind == kDbKindFloat64 && column.double_values == nullptr) {
+      throw std::runtime_error("DB float column values must not be null");
+    }
+    if (column.kind == kDbKindText && column.string_values == nullptr) {
+      throw std::runtime_error("DB text column values must not be null");
+    }
+  }
+}
+
+void db_copy_dataset_columnar_table(
+    EmbreeDbDatasetImpl& dataset,
+    const RtdlDbColumn* columns,
+    size_t column_count,
+    size_t row_count) {
+  dataset.field_names.reserve(column_count);
+  for (size_t column_index = 0; column_index < column_count; ++column_index) {
+    dataset.field_names.emplace_back(columns[column_index].name == nullptr ? "" : columns[column_index].name);
+  }
+  dataset.fields.reserve(column_count);
+  for (size_t column_index = 0; column_index < column_count; ++column_index) {
+    dataset.fields.push_back({dataset.field_names[column_index].c_str(), columns[column_index].kind});
+  }
+
+  size_t string_count = 0;
+  for (size_t column_index = 0; column_index < column_count; ++column_index) {
+    if (columns[column_index].kind == kDbKindText) {
+      string_count += row_count;
+    }
+  }
+  dataset.scalar_strings.reserve(string_count);
+  dataset.row_values.reserve(row_count * column_count);
+  for (size_t row_index = 0; row_index < row_count; ++row_index) {
+    for (size_t column_index = 0; column_index < column_count; ++column_index) {
+      const RtdlDbColumn& column = columns[column_index];
+      RtdlDbScalar value{};
+      value.kind = column.kind;
+      if (column.kind == kDbKindFloat64) {
+        value.double_value = column.double_values[row_index];
+      } else if (column.kind == kDbKindText) {
+        const char* text = column.string_values[row_index];
+        dataset.scalar_strings.emplace_back(text == nullptr ? "" : text);
+        value.string_value = dataset.scalar_strings.back().c_str();
+      } else {
+        value.int_value = column.int_values[row_index];
+      }
+      dataset.row_values.push_back(value);
+    }
+  }
+  dataset.row_count = row_count;
+}
+
+void db_attach_dataset_scene(EmbreeDbDatasetImpl& dataset) {
+  dataset.holder.geometry = rtcNewGeometry(dataset.device.device, RTC_GEOMETRY_TYPE_USER);
+  rtcSetGeometryUserPrimitiveCount(dataset.holder.geometry, static_cast<unsigned>(dataset.boxes.size()));
+  rtcSetGeometryUserData(dataset.holder.geometry, &dataset.scene_data);
+  rtcSetGeometryBoundsFunction(dataset.holder.geometry, db_row_box_bounds, nullptr);
+  rtcSetGeometryIntersectFunction(dataset.holder.geometry, db_row_box_intersect);
+  rtcCommitGeometry(dataset.holder.geometry);
+  rtcAttachGeometry(dataset.holder.scene, dataset.holder.geometry);
+  rtcCommitScene(dataset.holder.scene);
+}
+
+template <typename LaunchFn>
+void db_run_dataset_rays(const EmbreeDbDatasetImpl& dataset, const std::vector<DbPrimaryAxis>& axes, LaunchFn&& launch_fn) {
+  db_clear_limit_error();
+  db_launch_primary_matrix_rays(axes, [&](int64_t x, int64_t y, int64_t z_lo, int64_t z_hi) {
+    RTCRayHit rayhit;
+    set_ray_3d(
+        &rayhit,
+        {static_cast<double>(x), static_cast<double>(y), static_cast<double>(z_lo) - 1.0},
+        {0.0, 0.0, 1.0},
+        static_cast<float>((z_hi - z_lo) + 2));
+    RTCIntersectArguments args;
+    rtcInitIntersectArguments(&args);
+    launch_fn(rayhit, args);
+    db_throw_if_limit_error();
+  });
 }
 
 }  // namespace
@@ -1593,6 +1831,318 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_grouped_sum(
       g_query_kind = QueryKind::kNone;
       g_query_state = nullptr;
       db_throw_if_limit_error();
+    });
+    std::vector<RtdlDbGroupedSumRow> rows;
+    rows.reserve(sums.size());
+    for (const auto& entry : sums) {
+      rows.push_back({entry.first, entry.second});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedSumRow& left, const RtdlDbGroupedSumRow& right) {
+      return left.group_key < right.group_key;
+    });
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create(
+    const RtdlDbField* fields,
+    size_t field_count,
+    const RtdlDbScalar* row_values,
+    size_t row_count,
+    const char* const* primary_fields,
+    size_t primary_field_count,
+    RtdlEmbreeDbDataset** dataset_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (dataset_out == nullptr) {
+      throw std::runtime_error("dataset output pointer must not be null");
+    }
+    *dataset_out = nullptr;
+    db_validate_db_inputs(fields, field_count, row_values, row_count, nullptr, 0);
+
+    EmbreeDbDatasetImpl* dataset = new EmbreeDbDatasetImpl();
+    try {
+      db_copy_dataset_table(*dataset, fields, field_count, row_values, row_count);
+
+      std::vector<const char*> primary_names;
+      if (primary_field_count > 0) {
+        if (primary_fields == nullptr) {
+          throw std::runtime_error("primary_fields pointer must not be null when primary_field_count > 0");
+        }
+        primary_names.reserve(std::min<size_t>(primary_field_count, 3));
+        for (size_t index = 0; index < primary_field_count && index < 3; ++index) {
+          primary_names.push_back(primary_fields[index]);
+        }
+      } else {
+        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+      }
+      if (primary_names.empty()) {
+        throw std::runtime_error("Embree prepared DB dataset requires at least one numeric primary RT axis");
+      }
+
+      dataset->primary_axes.reserve(primary_names.size());
+      for (const char* field_name : primary_names) {
+        dataset->primary_axes.push_back(
+            db_make_full_primary_axis(
+                dataset->fields.data(),
+                dataset->fields.size(),
+                dataset->row_values.data(),
+                dataset->row_count,
+                field_name));
+      }
+      dataset->boxes = db_build_row_boxes(
+          dataset->fields.data(),
+          dataset->fields.size(),
+          dataset->row_values.data(),
+          dataset->row_count,
+          dataset->primary_axes);
+      db_attach_dataset_scene(*dataset);
+      *dataset_out = reinterpret_cast<RtdlEmbreeDbDataset*>(dataset);
+    } catch (...) {
+      delete dataset;
+      throw;
+    }
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_create_columnar(
+    const RtdlDbColumn* columns,
+    size_t column_count,
+    size_t row_count,
+    const char* const* primary_fields,
+    size_t primary_field_count,
+    RtdlEmbreeDbDataset** dataset_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (dataset_out == nullptr) {
+      throw std::runtime_error("dataset output pointer must not be null");
+    }
+    *dataset_out = nullptr;
+    db_validate_columnar_inputs(columns, column_count, row_count);
+
+    EmbreeDbDatasetImpl* dataset = new EmbreeDbDatasetImpl();
+    try {
+      db_copy_dataset_columnar_table(*dataset, columns, column_count, row_count);
+
+      std::vector<const char*> primary_names;
+      if (primary_field_count > 0) {
+        if (primary_fields == nullptr) {
+          throw std::runtime_error("primary_fields pointer must not be null when primary_field_count > 0");
+        }
+        primary_names.reserve(std::min<size_t>(primary_field_count, 3));
+        for (size_t index = 0; index < primary_field_count && index < 3; ++index) {
+          primary_names.push_back(primary_fields[index]);
+        }
+      } else {
+        primary_names = db_default_primary_fields(dataset->fields.data(), dataset->fields.size());
+      }
+      if (primary_names.empty()) {
+        throw std::runtime_error("Embree prepared DB dataset requires at least one numeric primary RT axis");
+      }
+
+      dataset->primary_axes.reserve(primary_names.size());
+      for (const char* field_name : primary_names) {
+        dataset->primary_axes.push_back(
+            db_make_full_primary_axis(
+                dataset->fields.data(),
+                dataset->fields.size(),
+                dataset->row_values.data(),
+                dataset->row_count,
+                field_name));
+      }
+      dataset->boxes = db_build_row_boxes(
+          dataset->fields.data(),
+          dataset->fields.size(),
+          dataset->row_values.data(),
+          dataset->row_count,
+          dataset->primary_axes);
+      db_attach_dataset_scene(*dataset);
+      *dataset_out = reinterpret_cast<RtdlEmbreeDbDataset*>(dataset);
+    } catch (...) {
+      delete dataset;
+      throw;
+    }
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_db_dataset_destroy(RtdlEmbreeDbDataset* dataset) {
+  delete reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_conjunctive_scan(
+    RtdlEmbreeDbDataset* dataset,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    RtdlDbRowIdRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (dataset == nullptr) {
+      throw std::runtime_error("Embree prepared DB dataset must not be null");
+    }
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (clause_count > 0 && clauses == nullptr) {
+      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto* impl = reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+
+    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
+    std::unordered_set<uint32_t> seen_row_ids;
+    std::vector<RtdlDbRowIdRow> rows;
+    DbScanRayQueryState state {
+        impl->fields.data(),
+        impl->fields.size(),
+        impl->row_values.data(),
+        impl->row_count,
+        clauses,
+        clause_count,
+        kDbMaxCandidateRowsPerJob,
+        &seen_row_ids,
+        &rows};
+    db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
+      g_query_kind = QueryKind::kDbScanRay;
+      g_query_state = &state;
+      rtcIntersect1(impl->holder.scene, &rayhit, &args);
+      g_query_kind = QueryKind::kNone;
+      g_query_state = nullptr;
+    });
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbRowIdRow& left, const RtdlDbRowIdRow& right) {
+      return left.row_id < right.row_id;
+    });
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_count(
+    RtdlEmbreeDbDataset* dataset,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    const char* group_key_field,
+    RtdlDbGroupedCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (dataset == nullptr) {
+      throw std::runtime_error("Embree prepared DB dataset must not be null");
+    }
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (group_key_field == nullptr) {
+      throw std::runtime_error("group_key_field must not be null");
+    }
+    if (clause_count > 0 && clauses == nullptr) {
+      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto* impl = reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+
+    const size_t group_field_index =
+        db_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), group_key_field);
+    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
+    std::unordered_set<uint32_t> seen_row_ids;
+    std::unordered_map<int64_t, int64_t> counts;
+    DbGroupedCountRayQueryState state {
+        impl->fields.data(),
+        impl->fields.size(),
+        impl->row_values.data(),
+        impl->row_count,
+        clauses,
+        clause_count,
+        group_field_index,
+        kDbMaxCandidateRowsPerJob,
+        kDbMaxGroupsPerJob,
+        &seen_row_ids,
+        &counts};
+    db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
+      g_query_kind = QueryKind::kDbGroupedCountRay;
+      g_query_state = &state;
+      rtcIntersect1(impl->holder.scene, &rayhit, &args);
+      g_query_kind = QueryKind::kNone;
+      g_query_state = nullptr;
+    });
+    std::vector<RtdlDbGroupedCountRow> rows;
+    rows.reserve(counts.size());
+    for (const auto& entry : counts) {
+      rows.push_back({entry.first, entry.second});
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlDbGroupedCountRow& left, const RtdlDbGroupedCountRow& right) {
+      return left.group_key < right.group_key;
+    });
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_db_dataset_grouped_sum(
+    RtdlEmbreeDbDataset* dataset,
+    const RtdlDbClause* clauses,
+    size_t clause_count,
+    const char* group_key_field,
+    const char* value_field,
+    RtdlDbGroupedSumRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (dataset == nullptr) {
+      throw std::runtime_error("Embree prepared DB dataset must not be null");
+    }
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (group_key_field == nullptr || value_field == nullptr) {
+      throw std::runtime_error("group_key_field and value_field must not be null");
+    }
+    if (clause_count > 0 && clauses == nullptr) {
+      throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto* impl = reinterpret_cast<EmbreeDbDatasetImpl*>(dataset);
+
+    const size_t group_field_index =
+        db_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), group_key_field);
+    const size_t value_field_index =
+        db_find_field_index_or_throw(impl->fields.data(), impl->fields.size(), value_field);
+    if (impl->fields[value_field_index].kind != kDbKindInt64
+        && impl->fields[value_field_index].kind != kDbKindBool) {
+      throw std::runtime_error("first-wave Embree grouped_sum supports integer-compatible value fields only");
+    }
+
+    const std::vector<DbPrimaryAxis> axes = db_dataset_query_axes(*impl, clauses, clause_count);
+    std::unordered_set<uint32_t> seen_row_ids;
+    std::unordered_map<int64_t, int64_t> sums;
+    DbGroupedSumRayQueryState state {
+        impl->fields.data(),
+        impl->fields.size(),
+        impl->row_values.data(),
+        impl->row_count,
+        clauses,
+        clause_count,
+        group_field_index,
+        value_field_index,
+        kDbMaxCandidateRowsPerJob,
+        kDbMaxGroupsPerJob,
+        &seen_row_ids,
+        &sums};
+    db_run_dataset_rays(*impl, axes, [&](RTCRayHit& rayhit, RTCIntersectArguments& args) {
+      g_query_kind = QueryKind::kDbGroupedSumRay;
+      g_query_state = &state;
+      rtcIntersect1(impl->holder.scene, &rayhit, &args);
+      g_query_kind = QueryKind::kNone;
+      g_query_state = nullptr;
     });
     std::vector<RtdlDbGroupedSumRow> rows;
     rows.reserve(sums.size());

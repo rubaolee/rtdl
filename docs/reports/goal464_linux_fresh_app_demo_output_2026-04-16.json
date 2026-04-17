@@ -1,0 +1,136 @@
+{
+  "app": "regional_order_dashboard",
+  "backend": "embree",
+  "data_flow": [
+    "app order rows",
+    "RTDL v0.7 bounded DB workload",
+    "prepared RT dataset over encoded row boxes",
+    "application-ready JSON rows"
+  ],
+  "fallback_note": null,
+  "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+  "input_table": {
+    "fields": [
+      "channel",
+      "discount",
+      "quantity",
+      "region",
+      "revenue",
+      "row_id",
+      "ship_date"
+    ],
+    "row_count": 7
+  },
+  "prepared_dataset": {
+    "row_count": 7,
+    "transfer": "columnar"
+  },
+  "queries": {
+    "open_order_count_by_region": {
+      "meaning": "How many small post-window orders remain by region?",
+      "operation": "grouped_count",
+      "query": {
+        "group_keys": [
+          "region"
+        ],
+        "predicates": [
+          [
+            "ship_date",
+            "ge",
+            12
+          ],
+          [
+            "quantity",
+            "lt",
+            20
+          ]
+        ]
+      }
+    },
+    "promo_order_ids": {
+      "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+      "operation": "conjunctive_scan",
+      "predicates": [
+        [
+          "ship_date",
+          "between",
+          12,
+          15
+        ],
+        [
+          "discount",
+          "eq",
+          6
+        ],
+        [
+          "quantity",
+          "lt",
+          20
+        ]
+      ]
+    },
+    "web_revenue_by_region": {
+      "meaning": "How much web-channel revenue is covered by region?",
+      "operation": "grouped_sum",
+      "query": {
+        "group_keys": [
+          "region"
+        ],
+        "predicates": [
+          [
+            "ship_date",
+            "ge",
+            12
+          ],
+          [
+            "channel",
+            "eq",
+            "web"
+          ]
+        ],
+        "value_field": "revenue"
+      }
+    }
+  },
+  "requested_backend": "auto",
+  "results": {
+    "open_order_count_by_region": [
+      {
+        "count": 2,
+        "region": "east"
+      },
+      {
+        "count": 1,
+        "region": "south"
+      },
+      {
+        "count": 2,
+        "region": "west"
+      }
+    ],
+    "promo_order_ids": [
+      {
+        "row_id": 3
+      },
+      {
+        "row_id": 4
+      },
+      {
+        "row_id": 5
+      },
+      {
+        "row_id": 7
+      }
+    ],
+    "web_revenue_by_region": [
+      {
+        "region": "east",
+        "sum": 180
+      },
+      {
+        "region": "west",
+        "sum": 240
+      }
+    ]
+  }
+}

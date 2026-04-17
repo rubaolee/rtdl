@@ -1,0 +1,1 @@
+Please review Goal483's v0.7 release-report refresh after Goal482 and write an ACCEPT/BLOCK verdict to `/Users/rl2025/worktrees/rtdl_v0_4_main_publish/docs/reports/goal483_external_review_2026-04-16.md`.

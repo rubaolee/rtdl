@@ -26,6 +26,7 @@ Current feature homes:
 - [Segment/Polygon Any-Hit Rows](segment_polygon_anyhit_rows/README.md)
 - [Polygon-Pair Overlap Area Rows](polygon_pair_overlap_area_rows/README.md)
 - [Polygon-Set Jaccard](polygon_set_jaccard/README.md)
+- [Database Workloads](db_workloads/README.md) (active bounded `v0.7` branch line)
 
 Reading order for new users:
 
@@ -34,5 +35,6 @@ Reading order for new users:
 3. this feature index
 4. [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) or [KNN Rows](knn_rows/README.md) for the released nearest-neighbor line
 5. the specific feature home you plan to use
-6. [RTDL Workload Cookbook](../rtdl/workload_cookbook.md)
-7. [RTDL DSL Reference](../rtdl/dsl_reference.md)
+6. [Database Workloads](db_workloads/README.md) if you are working on the bounded `v0.7` DB branch
+7. [RTDL Workload Cookbook](../rtdl/workload_cookbook.md)
+8. [RTDL DSL Reference](../rtdl/dsl_reference.md)

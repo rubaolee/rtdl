@@ -1,0 +1,11 @@
+slug: 2026-04-12-v0-4-closure
+title: v0.4 Closure Catch-up
+version: v0.4
+status: complete
+started_on: 2026-04-12
+closed_on: 2026-04-12
+source_commit: HEAD
+gemini_review: external report reviewed by Dev AI
+codex_revision: registered historical v0.4 closure catch-up
+final_result: COMPLETE
+summary: Closure of nearest-neighbor and GPU unified rework line.
