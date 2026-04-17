@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 72
-- Archived files: 808
-- External reports: 182
-- Project snapshots: 626
+- Revision rounds: 73
+- Archived files: 817
+- External reports: 183
+- Project snapshots: 634
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.7.0 | 2026-04-16 | complete-consensus | Goal498 Feature Quickstart Cookbook | Claude accepted Goal498 | added runnable all-feature cookbook tutorial and example | COMPLETE | `HEAD` | `2026-04-16-goal498-feature-quickstart-cookbook` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal497 Public Entry Smoke Check | external review request prepared; Codex local smoke pass accepted | ran public-entry link, wording, example-command, and Markdown sanity checks | COMPLETE | `HEAD` | `2026-04-16-goal497-public-entry-smoke` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal496 Public Docs Competing Versions | Claude accepted; Gemini Flash attempted but produced no valid verdict | selected user-value-first public docs with bounded release claims preserved | COMPLETE | `HEAD` | `2026-04-16-goal496-public-docs-competing-versions` |
 | v0.7.0 | 2026-04-16 | complete-consensus | Goal495 Complete History Map | Claude and Gemini Flash accepted Goal495 | added visitor-facing complete repo-visible history map and inventories | COMPLETE | `HEAD` | `2026-04-16-goal495-complete-history-map` |

@@ -127,6 +127,7 @@ Primary front-door links:
 - [Current Architecture](docs/current_architecture.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Tutorials](docs/tutorials/README.md)
+- [Feature Quickstart Cookbook](docs/tutorials/feature_quickstart_cookbook.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
 - [Documentation Index](docs/README.md)
@@ -200,6 +201,13 @@ Then run one released workload:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
+```
+
+Then run the feature cookbook when you want a compact recipe for every public
+feature:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
 ```
 
 Then try the released graph line:

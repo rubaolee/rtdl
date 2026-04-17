@@ -1,0 +1,1 @@
+Review Goal 498 and verify that the new Feature Quickstart Cookbook gives users a fast, runnable, honest learning path for every current RTDL public feature without overstating backend or performance claims.

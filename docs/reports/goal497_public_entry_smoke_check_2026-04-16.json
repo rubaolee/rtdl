@@ -29,6 +29,17 @@
     {
       "cmd": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_feature_quickstart_cookbook.py"
+      ],
+      "name": "feature_quickstart_cookbook",
+      "ok": true,
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"feature_quickstart_cookbook\",\n  \"backend\": \"cpu_python_reference\",\n  \"feature_count\": 16,\n  \"honesty_boundary\": \"This cookbook uses the portable CPU Python reference path so every feature shape is easy to learn. Use feature docs and support matrices before making backend/performance claims.\",\n  \"recipes\": [\n    {\n      \"feature\": \"lsi\",\n      \"input\": \"two segment sets\",\n      \"output\": \"segment/segment intersection rows\",\n      \"rows\": [\n        {\n          \"intersection_point_x\": 1.0,\n          \"intersection_point_y\": 1.0,\n          \"left_id\": 1,\n          \"right_id\": 2\n        }\n      ]\n    },\n    {\n      \"feature\": \"pip\",\n      \"input\": \"points plus polygons\",\n      \"output\": \"containment rows\",\n      \"rows\": [\n        {\n          \"contains\": 1,\n          \"point_id\": 10,\n          \"polygon_id\": 20\n        }\n      ]\n    },\n    {\n      \"feature\": \"overlay\",\n      \"input\": \"left polygons plus right polygons\",\n      \"output\": \"overlap seed rows for exact follow-up\",\n      \"rows\": [\n        {\n          \"left_polygon_id\": 1,\n          \"requires_lsi\": 1,\n          \"requires_pip\": 0,\n          \"right_polygon_id\": 2\n        }\n      ]\n    },\n    {\n      \"feature\": \"ray_tri_hi"
+    },
+    {
+      "cmd": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
         "examples/rtdl_graph_bfs.py",
         "--backend",
         "cpu_python_reference"
@@ -74,6 +85,7 @@
     "docs/README.md",
     "docs/current_architecture.md",
     "docs/quick_tutorial.md",
+    "docs/tutorials/feature_quickstart_cookbook.md",
     "docs/release_facing_examples.md",
     "examples/README.md",
     "docs/features/README.md",

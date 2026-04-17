@@ -28,6 +28,11 @@ Across these features, the intended RTDL benefit is the same: write the
 workload contract once, then let RTDL handle traversal/refinement/backend
 plumbing inside documented release limits.
 
+For the fastest feature-by-feature learning path, use:
+
+- [Feature Quickstart Cookbook](../tutorials/feature_quickstart_cookbook.md)
+- [rtdl_feature_quickstart_cookbook.py](../../examples/rtdl_feature_quickstart_cookbook.py)
+
 Current feature homes:
 
 - [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) (released in `v0.4.0`)

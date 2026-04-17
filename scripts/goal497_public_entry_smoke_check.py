@@ -19,6 +19,7 @@ PUBLIC_DOCS = [
     "docs/README.md",
     "docs/current_architecture.md",
     "docs/quick_tutorial.md",
+    "docs/tutorials/feature_quickstart_cookbook.md",
     "docs/release_facing_examples.md",
     "examples/README.md",
     "docs/features/README.md",
@@ -45,6 +46,10 @@ SMOKE_COMMANDS = [
             "--copies",
             "16",
         ],
+    },
+    {
+        "name": "feature_quickstart_cookbook",
+        "cmd": [sys.executable, "examples/rtdl_feature_quickstart_cookbook.py"],
     },
     {
         "name": "graph_bfs",
@@ -90,6 +95,12 @@ REQUIRED_PHRASES = {
     "docs/quick_tutorial.md": [
         "input -> traverse -> refine -> emit",
         "not a promise that every backend is always 10x faster",
+        "Feature Quickstart Cookbook",
+    ],
+    "docs/tutorials/feature_quickstart_cookbook.md": [
+        "one compact recipe per current public feature",
+        "PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py",
+        "The cookbook teaches feature shape through `cpu_python_reference`",
     ],
     "docs/README.md": [
         "Evaluate RTDL In Ten Minutes",

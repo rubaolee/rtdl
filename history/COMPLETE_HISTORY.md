@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `72`
-- Archived files in `history/history.db`: `808`
-- External report snapshots: `182`
-- Project snapshots: `626`
-- Tracked `docs/reports/` artifacts: `1448`
-- Tracked `history/ad_hoc_reviews/` artifacts: `659`
-- Tracked AI handoff files: `374`
+- Structured revision rounds: `73`
+- Archived files in `history/history.db`: `817`
+- External report snapshots: `183`
+- Project snapshots: `634`
+- Tracked `docs/reports/` artifacts: `1450`
+- Tracked `history/ad_hoc_reviews/` artifacts: `660`
+- Tracked AI handoff files: `375`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal497 Public Entry Smoke Check | `COMPLETE` | `2026-04-16-goal497-public-entry-smoke` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal496 Public Docs Competing Versions | `COMPLETE` | `2026-04-16-goal496-public-docs-competing-versions` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal495 Complete History Map | `COMPLETE` | `2026-04-16-goal495-complete-history-map` |
@@ -66,15 +67,14 @@ Use these layers together:
 | `v0.6.1` | 2026-04-15 | `complete` | v0.6.1 Closure Catch-up | `COMPLETE` | `2026-04-15-v0-6-closure` |
 | `v0.5` | 2026-04-14 | `complete` | v0.5 Closure Catch-up | `COMPLETE` | `2026-04-14-v0-5-closure` |
 | `v0.4` | 2026-04-12 | `complete` | v0.4 Closure Catch-up | `COMPLETE` | `2026-04-12-v0-4-closure` |
-| `v0.3` | 2026-04-09 | `complete` | v0.2/v0.3 Closure Catch-up | `COMPLETE` | `2026-04-09-v0-2-v0-3-closure` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 659 |
-| `ai_handoff` | 374 |
-| `example` | 66 |
+| `ad_hoc_review_or_consensus` | 660 |
+| `ai_handoff` | 375 |
+| `example` | 67 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
 | `history_index` | 3 |
@@ -82,12 +82,12 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 480 |
 | `release_report` | 49 |
-| `report_or_review` | 1448 |
+| `report_or_review` | 1450 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1247 |
+| `structured_history_archive` | 1255 |
 | `test` | 199 |
-| `tutorial` | 9 |
+| `tutorial` | 10 |
 
 ## Boundaries
 

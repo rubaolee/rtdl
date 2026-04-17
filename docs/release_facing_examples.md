@@ -23,6 +23,7 @@ If you want a guided learning order instead of a flat example list, start with:
 | --- | --- | --- |
 | Verify the checkout runs | `examples/rtdl_hello_world.py` | smallest possible command |
 | Learn one kernel across backends | `examples/rtdl_hello_world_backends.py` | shows backend selection without changing the kernel idea |
+| Learn every feature shape quickly | `examples/rtdl_feature_quickstart_cookbook.py` | one compact CPU Python reference recipe per public feature |
 | Spatial/geometric query | `examples/rtdl_segment_polygon_hitcount.py` | released segment/polygon workload |
 | Nearest-neighbor query | `examples/rtdl_fixed_radius_neighbors.py` | released v0.4 nearest-neighbor surface |
 | Graph traversal | `examples/rtdl_graph_bfs.py` | frontier data becomes discovered vertices |
@@ -70,6 +71,18 @@ Windows shell note:
   - `$env:PYTHONPATH = "src;."`
 
 Then run the same `python ...` command from the repo root.
+
+## Feature Cookbook
+
+Run one compact recipe for every current public feature:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
+```
+
+Read the companion tutorial:
+
+- [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 
 ## v0.4 nearest-neighbor examples
 

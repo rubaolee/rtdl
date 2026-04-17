@@ -13,14 +13,15 @@ Read these in order:
 2. [Current Architecture](current_architecture.md)
 3. [Quick Tutorial](quick_tutorial.md)
 4. [RTDL Tutorials](tutorials/README.md)
-5. [Release-Facing Examples](release_facing_examples.md)
-6. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-7. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+5. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+6. [Release-Facing Examples](release_facing_examples.md)
+7. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+8. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 If you need the previous graph release line, also read:
 
-8. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-9. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+9. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+10. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -31,8 +32,9 @@ write?", use this short path:
 
 1. read [Current Architecture](current_architecture.md) for the user contract
 2. run [Quick Tutorial](quick_tutorial.md)
-3. choose one runnable example from [Release-Facing Examples](release_facing_examples.md)
-4. check the exact backend boundary in the [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+3. choose a feature from [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+4. run one runnable example from [Release-Facing Examples](release_facing_examples.md)
+5. check the exact backend boundary in the [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 The public promise is authoring-burden reduction: RTDL hides backend-specific
 traversal and result plumbing behind one kernel shape while preserving bounded,
@@ -55,6 +57,7 @@ audited release claims.
 - [Quick Tutorial](quick_tutorial.md)
 - [Current Architecture](current_architecture.md)
 - [RTDL Tutorials](tutorials/README.md)
+- [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 - [Release-Facing Examples](release_facing_examples.md)
 - [RTDL Language Docs Index](rtdl/README.md)
 - [Feature Homes](features/README.md)

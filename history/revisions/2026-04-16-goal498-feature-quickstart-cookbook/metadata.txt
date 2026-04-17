@@ -1,0 +1,11 @@
+slug: 2026-04-16-goal498-feature-quickstart-cookbook
+title: Goal498 Feature Quickstart Cookbook
+version: v0.7.0
+status: complete-consensus
+started_on: 2026-04-16
+closed_on: 2026-04-16
+source_commit: HEAD
+gemini_review: Claude accepted Goal498
+codex_revision: added runnable all-feature cookbook tutorial and example
+final_result: COMPLETE
+summary: Users now have one fast recipe path for every current public RTDL feature.

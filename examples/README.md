@@ -15,6 +15,7 @@ If you are new to RTDL, use these files first:
 | --- | --- | --- |
 | the smallest runnable program | `rtdl_hello_world.py` | one script becomes a known output |
 | one kernel across backends | `rtdl_hello_world_backends.py` | one query becomes backend-comparable rows |
+| one recipe for every feature | `rtdl_feature_quickstart_cookbook.py` | each feature input becomes its expected output rows |
 | nearest-neighbor search | `rtdl_fixed_radius_neighbors.py` | points/queries become neighbor rows |
 | graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices |
 | graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows |
@@ -24,6 +25,7 @@ If you are new to RTDL, use these files first:
 
 - `rtdl_hello_world.py`
 - `rtdl_hello_world_backends.py`
+- `rtdl_feature_quickstart_cookbook.py`
 - `rtdl_fixed_radius_neighbors.py`
 - `rtdl_knn_rows.py`
 - `rtdl_graph_bfs.py`

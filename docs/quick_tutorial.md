@@ -201,6 +201,19 @@ What changes:
 
 ---
 
+## Step 3.5: Pick a feature
+
+If you already understand `input -> traverse -> refine -> emit` and want to
+know which RTDL feature matches your data, use the cookbook:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
+```
+
+Then read [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md).
+
+---
+
 ## Step 4: Try a spatial query
 
 ```bash
