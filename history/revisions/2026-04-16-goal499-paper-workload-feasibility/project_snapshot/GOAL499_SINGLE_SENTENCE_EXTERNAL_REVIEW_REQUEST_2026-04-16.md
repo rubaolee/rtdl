@@ -1,0 +1,1 @@
+Review Goal 499 and verify whether the four uploaded paper workloads are correctly classified for next-release RTDL + Python app feasibility, including what RTDL should own, what Python should own, and which minimal RTDL additions are needed.

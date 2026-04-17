@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `73`
-- Archived files in `history/history.db`: `817`
-- External report snapshots: `183`
-- Project snapshots: `634`
-- Tracked `docs/reports/` artifacts: `1450`
-- Tracked `history/ad_hoc_reviews/` artifacts: `660`
-- Tracked AI handoff files: `375`
+- Structured revision rounds: `74`
+- Archived files in `history/history.db`: `822`
+- External report snapshots: `184`
+- Project snapshots: `638`
+- Tracked `docs/reports/` artifacts: `1453`
+- Tracked `history/ad_hoc_reviews/` artifacts: `661`
+- Tracked AI handoff files: `376`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal497 Public Entry Smoke Check | `COMPLETE` | `2026-04-16-goal497-public-entry-smoke` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal496 Public Docs Competing Versions | `COMPLETE` | `2026-04-16-goal496-public-docs-competing-versions` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7` | 2026-04-16 | `active-hold` | v0.7 Current Release-Hold State | `HOLD` | `2026-04-16-v0-7-current-hold` |
 | `v0.6.1` | 2026-04-15 | `complete` | v0.6.1 Closure Catch-up | `COMPLETE` | `2026-04-15-v0-6-closure` |
 | `v0.5` | 2026-04-14 | `complete` | v0.5 Closure Catch-up | `COMPLETE` | `2026-04-14-v0-5-closure` |
-| `v0.4` | 2026-04-12 | `complete` | v0.4 Closure Catch-up | `COMPLETE` | `2026-04-12-v0-4-closure` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 660 |
-| `ai_handoff` | 375 |
+| `ad_hoc_review_or_consensus` | 661 |
+| `ai_handoff` | 376 |
 | `example` | 67 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,10 +82,10 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 480 |
 | `release_report` | 49 |
-| `report_or_review` | 1450 |
+| `report_or_review` | 1453 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1255 |
+| `structured_history_archive` | 1261 |
 | `test` | 199 |
 | `tutorial` | 10 |
 
