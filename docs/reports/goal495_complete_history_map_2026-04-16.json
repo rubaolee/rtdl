@@ -1,8 +1,8 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 665,
-    "ai_handoff": 380,
-    "example": 69,
+    "ad_hoc_review_or_consensus": 666,
+    "ai_handoff": 381,
+    "example": 70,
     "feature_doc": 13,
     "front_page": 1,
     "history_index": 3,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1466,
+    "report_or_review": 1469,
     "script": 117,
     "source": 76,
-    "structured_history_archive": 1301,
-    "test": 200,
+    "structured_history_archive": 1314,
+    "test": 201,
     "tutorial": 10
   },
   "counts": {
-    "ad_hoc_reviews": 665,
-    "archived_files": 858,
-    "docs_reports": 1466,
-    "external_reports": 188,
-    "handoffs": 380,
-    "project_snapshots": 670,
+    "ad_hoc_reviews": 666,
+    "archived_files": 870,
+    "docs_reports": 1469,
+    "external_reports": 189,
+    "handoffs": 381,
+    "project_snapshots": 681,
     "release_tags": 8,
-    "revision_metadata_files": 79,
-    "revision_rounds": 78,
-    "tracked_files": 4896
+    "revision_metadata_files": 80,
+    "revision_rounds": 79,
+    "tracked_files": 4916
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "Codex implemented the third Goal499 paper-derived app using RTDL body-to-node candidate rows plus Python opening-rule and force reduction",
+      "final_result": "COMPLETE",
+      "gemini_review": "Claude accepted; Gemini Flash review attempt capacity-blocked",
+      "slug": "2026-04-17-goal504-v0-8-barnes-hut-force-app",
+      "source_commit": "896c25f67a230373dca13d91c79838c59b1e037f",
+      "started_on": "2026-04-17",
+      "status": "complete-consensus",
+      "summary": "Implemented the bounded Barnes-Hut force app as a v0.8 app-building workload and recorded the exposed language gaps.",
+      "title": "Goal504 v0.8 Barnes-Hut Force App",
+      "version": "v0.8.0"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "Codex implemented the second Goal499 paper-derived app using RTDL ray/triangle hit-count rows plus Python pose aggregation",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Front page, docs, tutorials, examples, feature docs, and v0.7 release package refreshed and audited after v0.7.0 release.",
       "title": "Goal493 Post-v0.7 Public Surface 3C Audit",
-      "version": "v0.7.0"
-    },
-    {
-      "closed_on": "2026-04-16",
-      "codex_revision": "registered final v0.7.0 tag/main release action",
-      "final_result": "RELEASED",
-      "gemini_review": "release action followed prior Claude and Gemini accepted gates",
-      "slug": "2026-04-16-v0-7-release-action",
-      "source_commit": "a63a1d1",
-      "started_on": "2026-04-16",
-      "status": "released",
-      "summary": "v0.7.0 was tagged, pushed, and fast-forwarded to main after explicit user authorization.",
-      "title": "v0.7.0 Release Action",
       "version": "v0.7.0"
     }
   ],

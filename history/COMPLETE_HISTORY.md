@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `78`
-- Archived files in `history/history.db`: `858`
-- External report snapshots: `188`
-- Project snapshots: `670`
-- Tracked `docs/reports/` artifacts: `1466`
-- Tracked `history/ad_hoc_reviews/` artifacts: `665`
-- Tracked AI handoff files: `380`
+- Structured revision rounds: `79`
+- Archived files in `history/history.db`: `870`
+- External report snapshots: `189`
+- Project snapshots: `681`
+- Tracked `docs/reports/` artifacts: `1469`
+- Tracked `history/ad_hoc_reviews/` artifacts: `666`
+- Tracked AI handoff files: `381`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal504 v0.8 Barnes-Hut Force App | `COMPLETE` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal503 v0.8 Robot Collision Screening App | `COMPLETE` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal502 Hausdorff Distance App | `COMPLETE` | `2026-04-17-goal502-hausdorff-distance-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal501 v0.7 DB Comprehensive Attack Response | `COMPLETE` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
@@ -66,15 +67,14 @@ Use these layers together:
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal495 Complete History Map | `COMPLETE` | `2026-04-16-goal495-complete-history-map` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal494 History Revisions Refresh After v0.7 Release | `COMPLETE` | `2026-04-16-goal494-history-revisions-refresh` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal493 Post-v0.7 Public Surface 3C Audit | `COMPLETE` | `2026-04-16-goal493-post-v0-7-public-surface-3c` |
-| `v0.7.0` | 2026-04-16 | `released` | v0.7.0 Release Action | `RELEASED` | `2026-04-16-v0-7-release-action` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 665 |
-| `ai_handoff` | 380 |
-| `example` | 69 |
+| `ad_hoc_review_or_consensus` | 666 |
+| `ai_handoff` | 381 |
+| `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
 | `history_index` | 3 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1466 |
+| `report_or_review` | 1469 |
 | `script` | 117 |
 | `source` | 76 |
-| `structured_history_archive` | 1301 |
-| `test` | 200 |
+| `structured_history_archive` | 1314 |
+| `test` | 201 |
 | `tutorial` | 10 |
 
 ## Boundaries

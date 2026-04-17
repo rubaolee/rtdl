@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 78
-- Archived files: 858
-- External reports: 188
-- Project snapshots: 670
+- Revision rounds: 79
+- Archived files: 870
+- External reports: 189
+- Project snapshots: 681
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8.0 | 2026-04-17 | complete-consensus | Goal504 v0.8 Barnes-Hut Force App | Claude accepted; Gemini Flash review attempt capacity-blocked | Codex implemented the third Goal499 paper-derived app using RTDL body-to-node candidate rows plus Python opening-rule and force reduction | COMPLETE | `896c25f67a230373dca13d91c79838c59b1e037f` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal503 v0.8 Robot Collision Screening App | Claude and Gemini Flash accepted the bounded robot collision screening app | Codex implemented the second Goal499 paper-derived app using RTDL ray/triangle hit-count rows plus Python pose aggregation | COMPLETE | `d2004b391644a2d644c8f9cbd7b77995c57972c5` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |
 | v0.7.0 | 2026-04-17 | complete-consensus | Goal502 Hausdorff Distance App | Claude and Gemini Flash accepted the Hausdorff app implementation | Codex implemented the first Goal499 paper-derived app using RTDL knn rows plus Python reduction and recorded consensus | COMPLETE | `eea9acca66a645b868aa2ce22bfa9365005bc64b` | `2026-04-17-goal502-hausdorff-distance-app` |
 | v0.7.0 | 2026-04-17 | complete-consensus | Goal501 v0.7 DB Comprehensive Attack Response | Claude accepted all seven reported DB attack defects as fixed or bounded | Codex ingested the comprehensive attack report, fixed normalization and encoding defects, added regression coverage, and recorded consensus | COMPLETE | `43580fdd4d8861dbcbb5f3230a4f3b09547da293` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
