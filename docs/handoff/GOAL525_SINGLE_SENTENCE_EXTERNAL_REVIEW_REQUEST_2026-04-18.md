@@ -1,0 +1,1 @@
+Review Goal525 by checking `docs/reports/goal525_v0_8_proximity_perf_doc_refresh_2026-04-18.md`, the edited public docs, and `tests/goal525_v0_8_proximity_perf_doc_refresh_test.py`, then write whether the v0.8 Stage-1 proximity performance documentation is now accurate, bounded, and release-facing-consistent.

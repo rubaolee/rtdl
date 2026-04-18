@@ -69,6 +69,10 @@ bounded DB-style analytical workloads.
   - outlier detection and DBSCAN clustering apps using
     `fixed_radius_neighbors` plus Python density/count and cluster-expansion
     logic
+    - Linux Goal524 evidence now characterizes CPU/oracle, Embree, OptiX, and
+      Vulkan timing for these three Stage-1 proximity apps, with no
+      external-baseline speedup claim because SciPy was not installed in that
+      validation checkout
   - robot collision screening app using `ray_triangle_hit_count` plus Python
     pose/link aggregation
     - Linux performance evidence now covers CPU, Embree, and OptiX as accepted
@@ -424,6 +428,9 @@ Release and preview layers inside the current repository:
     hit-count parity
   - Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence with
     candidate generation separated from Python force reduction
+  - Stage-1 proximity apps now have bounded Linux CPU/Embree/OptiX/Vulkan
+    timing characterization through Goal524; that evidence is not a claim
+    against SciPy, scikit-learn, FAISS, or production ANN/clustering systems
   - the current claim is "RTDL rows plus Python app logic," not a new released
     backend/language surface
 

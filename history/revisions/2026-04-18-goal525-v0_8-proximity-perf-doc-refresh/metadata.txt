@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal525-v0_8-proximity-perf-doc-refresh
+title: Goal525 v0.8 proximity performance doc refresh
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: f05f5e4a0166bb95fae7eff7d9bcfaef978b5e42
+gemini_review: docs/reports/goal525_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal525-v0_8-proximity-perf-doc-refresh.md
+final_result: accepted
+summary: Public docs refreshed after Goal524; Stage-1 proximity performance claims now bounded and current.

@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 686,
-    "ai_handoff": 401,
+    "ad_hoc_review_or_consensus": 687,
+    "ai_handoff": 402,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1541,
+    "report_or_review": 1544,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1504,
-    "test": 218,
+    "structured_history_archive": 1516,
+    "test": 219,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 686,
-    "archived_files": 1044,
-    "docs_reports": 1541,
+    "ad_hoc_reviews": 687,
+    "archived_files": 1056,
+    "docs_reports": 1544,
     "external_reports": 193,
-    "handoffs": 401,
-    "project_snapshots": 851,
+    "handoffs": 402,
+    "project_snapshots": 863,
     "release_tags": 8,
-    "revision_metadata_files": 100,
-    "revision_rounds": 99,
-    "tracked_files": 5245
+    "revision_metadata_files": 101,
+    "revision_rounds": 100,
+    "tracked_files": 5263
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal525-v0_8-proximity-perf-doc-refresh.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal525_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal525-v0_8-proximity-perf-doc-refresh",
+      "source_commit": "f05f5e4a0166bb95fae7eff7d9bcfaef978b5e42",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Public docs refreshed after Goal524; Stage-1 proximity performance claims now bounded and current.",
+      "title": "Goal525 v0.8 proximity performance doc refresh",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal524-stage1-proximity-linux-perf.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Broad tutorial/example harness now covers v0.8 app backend commands and optional video dependency skips.",
       "title": "Goal514 tutorial/example harness refresh",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal513-public-example-smoke-gate.md",
-      "final_result": "docs/reports/goal513_public_example_smoke_gate_2026-04-17.md",
-      "gemini_review": "docs/reports/goal513_gemini_review_2026-04-17.md",
-      "slug": "goal513-public-example-smoke-gate",
-      "source_commit": "c2f59e3",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Public example smoke gate now verifies front-page portable commands and v0.8 app outputs.",
-      "title": "Goal513 public example smoke gate",
       "version": "v0.8"
     }
   ],
