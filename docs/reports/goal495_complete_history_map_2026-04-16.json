@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 680,
-    "ai_handoff": 395,
+    "ad_hoc_review_or_consensus": 681,
+    "ai_handoff": 396,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1519,
+    "report_or_review": 1523,
     "script": 121,
     "source": 76,
-    "structured_history_archive": 1453,
-    "test": 215,
+    "structured_history_archive": 1461,
+    "test": 216,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 680,
-    "archived_files": 999,
-    "docs_reports": 1519,
+    "ad_hoc_reviews": 681,
+    "archived_files": 1006,
+    "docs_reports": 1523,
     "external_reports": 193,
-    "handoffs": 395,
-    "project_snapshots": 806,
+    "handoffs": 396,
+    "project_snapshots": 813,
     "release_tags": 8,
-    "revision_metadata_files": 94,
-    "revision_rounds": 93,
-    "tracked_files": 5153
+    "revision_metadata_files": 95,
+    "revision_rounds": 94,
+    "tracked_files": 5168
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal519-rt-workload-universe.md",
+      "final_result": "docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md",
+      "gemini_review": "docs/reports/goal519_gemini_review_2026-04-17.md",
+      "slug": "goal519-rt-workload-universe",
+      "source_commit": "f0d4ef9c923545833324b9d500f42317c47b3347",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "RTDL roadmap now maps the arXiv 2603.28771v1 RT workload universe to current coverage, future apps, language-growth needs, and fundamental boundaries.",
+      "title": "Goal519 RT workload universe roadmap",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal518-v0-8-final-local-release-audit.md",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Refreshed public docs after Goal507 so the Hausdorff Linux performance evidence is discoverable and bounded.",
       "title": "Goal508 Hausdorff Performance Public Doc Refresh",
-      "version": "v0.8.0"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "Codex consensus accepts the bounded Hausdorff Linux performance evidence",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude PASS and Gemini ACCEPT in docs/reports",
-      "slug": "2026-04-17-goal507-hausdorff-linux-perf",
-      "source_commit": "0612916139d13a1ce1d0f63ce693fd48e5976c34",
-      "started_on": "2026-04-17",
-      "status": "complete-consensus",
-      "summary": "Measured the v0.8 Hausdorff app on Linux across Embree, OptiX, Vulkan, SciPy, scikit-learn, and FAISS with raw JSON evidence and honest performance boundaries.",
-      "title": "Goal507 Hausdorff Linux Large-Scale Performance",
       "version": "v0.8.0"
     }
   ],

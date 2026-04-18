@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 93
-- Archived files: 999
+- Revision rounds: 94
+- Archived files: 1006
 - External reports: 193
-- Project snapshots: 806
+- Project snapshots: 813
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal519 RT workload universe roadmap | docs/reports/goal519_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal519-rt-workload-universe.md | docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md | `f0d4ef9c923545833324b9d500f42317c47b3347` | `goal519-rt-workload-universe` |
 | v0.8 | 2026-04-17 | accepted | Goal518 v0.8 final local release audit | docs/reports/goal518_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal518-v0-8-final-local-release-audit.md | docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md | `b974a6f` | `goal518-v0-8-final-local-release-audit` |
 | v0.8 | 2026-04-17 | accepted | Goal517 ITRE app programming model | docs/reports/goal517_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal517-itre-app-programming-model.md | docs/reports/goal517_itre_app_programming_model_2026-04-17.md | `828918b` | `goal517-itre-app-programming-model` |
 | v0.8 | 2026-04-17 | accepted | Goal516 Linux full public command validation | docs/reports/goal516_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal516-linux-full-public-command-validation.md | docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md | `087f76f` | `goal516-linux-full-public-command-validation` |

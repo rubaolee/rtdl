@@ -1,0 +1,1 @@
+Review `/Users/rl2025/rtdl_python_only/docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md` against `/Users/rl2025/Downloads/2603.28771v1.pdf`, then decide whether Goal519 gives a correct and honest RTDL roadmap for attempting all paper-listed RT workloads unless fundamentally out of scope.

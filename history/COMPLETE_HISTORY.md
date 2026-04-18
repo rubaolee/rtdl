@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `93`
-- Archived files in `history/history.db`: `999`
+- Structured revision rounds: `94`
+- Archived files in `history/history.db`: `1006`
 - External report snapshots: `193`
-- Project snapshots: `806`
-- Tracked `docs/reports/` artifacts: `1519`
-- Tracked `history/ad_hoc_reviews/` artifacts: `680`
-- Tracked AI handoff files: `395`
+- Project snapshots: `813`
+- Tracked `docs/reports/` artifacts: `1523`
+- Tracked `history/ad_hoc_reviews/` artifacts: `681`
+- Tracked AI handoff files: `396`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal519 RT workload universe roadmap | `docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md` | `goal519-rt-workload-universe` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal518 v0.8 final local release audit | `docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md` | `goal518-v0-8-final-local-release-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal517 ITRE app programming model | `docs/reports/goal517_itre_app_programming_model_2026-04-17.md` | `goal517-itre-app-programming-model` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal516 Linux full public command validation | `docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md` | `goal516-linux-full-public-command-validation` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal510 Goal509 public documentation follow-through | `docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md` | `goal510-goal509-public-doc-followthrough` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal509 robot and Barnes-Hut Linux performance evidence | `docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md` | `goal509-robot-barnes-linux-perf` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal508 Hausdorff Performance Public Doc Refresh | `COMPLETE` | `2026-04-17-goal508-hausdorff-perf-public-doc-refresh` |
-| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal507 Hausdorff Linux Large-Scale Performance | `COMPLETE` | `2026-04-17-goal507-hausdorff-linux-perf` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 680 |
-| `ai_handoff` | 395 |
+| `ad_hoc_review_or_consensus` | 681 |
+| `ai_handoff` | 396 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 482 |
 | `release_report` | 49 |
-| `report_or_review` | 1519 |
+| `report_or_review` | 1523 |
 | `script` | 121 |
 | `source` | 76 |
-| `structured_history_archive` | 1453 |
-| `test` | 215 |
+| `structured_history_archive` | 1461 |
+| `test` | 216 |
 | `tutorial` | 11 |
 
 ## Boundaries

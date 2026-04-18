@@ -1,0 +1,11 @@
+slug: goal519-rt-workload-universe
+title: Goal519 RT workload universe roadmap
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: f0d4ef9c923545833324b9d500f42317c47b3347
+gemini_review: docs/reports/goal519_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal519-rt-workload-universe.md
+final_result: docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md
+summary: RTDL roadmap now maps the arXiv 2603.28771v1 RT workload universe to current coverage, future apps, language-growth needs, and fundamental boundaries.
