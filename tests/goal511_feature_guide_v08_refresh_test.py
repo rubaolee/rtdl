@@ -14,6 +14,9 @@ class Goal511FeatureGuideV08RefreshTest(unittest.TestCase):
         self.assertIn("accepted `v0.8` app-building work", text)
         self.assertIn("not a released support-matrix line yet", text)
         self.assertIn("rtdl_hausdorff_distance_app.py", text)
+        self.assertIn("rtdl_ann_candidate_app.py", text)
+        self.assertIn("rtdl_outlier_detection_app.py", text)
+        self.assertIn("rtdl_dbscan_clustering_app.py", text)
         self.assertIn("rtdl_robot_collision_screening_app.py", text)
         self.assertIn("rtdl_barnes_hut_force_app.py", text)
 
@@ -22,6 +25,7 @@ class Goal511FeatureGuideV08RefreshTest(unittest.TestCase):
 
         self.assertIn("Goal507 Hausdorff Linux Performance Report", text)
         self.assertIn("Goal509 Robot/Barnes-Hut Linux Performance Report", text)
+        self.assertIn("Goal519 Stage-1 proximity apps", text)
         self.assertIn("Vulkan\n  is not exposed for that app", text)
         self.assertIn("This is not a full N-body acceleration claim", text)
         self.assertIn("RT-core hardware speedup from the GTX 1070 Linux app evidence", text)

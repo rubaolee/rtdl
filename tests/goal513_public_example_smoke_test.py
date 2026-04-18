@@ -41,6 +41,9 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
             ("examples/rtdl_v0_7_db_app_demo.py", "--backend", "auto"),
             ("examples/rtdl_v0_7_db_kernel_app_demo.py", "--backend", "auto"),
             ("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
+            ("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference"),
+            ("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference"),
+            ("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference"),
         )
@@ -52,10 +55,16 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
 
     def test_front_page_v08_examples_report_oracle_or_boundary(self) -> None:
         hausdorff = run_json_example("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
+        ann = run_json_example("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference")
+        outlier = run_json_example("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference")
+        dbscan = run_json_example("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu_python_reference")
         robot = run_json_example("examples/rtdl_robot_collision_screening_app.py", "--backend", "cpu_python_reference")
         barnes = run_json_example("examples/rtdl_barnes_hut_force_app.py", "--backend", "cpu_python_reference")
 
         self.assertTrue(hausdorff["matches_oracle"])
+        self.assertAlmostEqual(float(ann["recall_at_1"]), 2.0 / 3.0)
+        self.assertTrue(outlier["matches_oracle"])
+        self.assertTrue(dbscan["matches_oracle"])
         self.assertTrue(robot["matches_oracle"])
         self.assertIn("Bounded one-level 2D approximation", barnes["boundary"])
         self.assertIn("candidate_row_count", barnes)
@@ -67,6 +76,9 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
         self.assertGreaterEqual(payload["feature_count"], 19)
         recipe_names = {recipe["feature"] for recipe in payload["recipes"]}  # type: ignore[index]
         self.assertIn("hausdorff_distance_app", recipe_names)
+        self.assertIn("ann_candidate_app", recipe_names)
+        self.assertIn("outlier_detection_app", recipe_names)
+        self.assertIn("dbscan_clustering_app", recipe_names)
         self.assertIn("robot_collision_screening_app", recipe_names)
         self.assertIn("barnes_hut_force_app", recipe_names)
 

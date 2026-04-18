@@ -4,15 +4,17 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 94
-- Archived files: 1006
+- Revision rounds: 96
+- Archived files: 1025
 - External reports: 193
-- Project snapshots: 813
+- Project snapshots: 832
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal521 v0.8 workload scope decision matrix | docs/reports/goal521_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal521-v0_8-workload-scope.md | docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md | `89079f4c0d60b8a8517b8b302170868de1e3e4a7` | `goal521-v0-8-workload-scope` |
+| v0.8 | 2026-04-17 | accepted | Goal520 v0.8 Stage-1 proximity apps | docs/reports/goal520_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal520-stage1-proximity-apps.md | docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md | `89079f4c0d60b8a8517b8b302170868de1e3e4a7` | `goal520-stage1-proximity-apps` |
 | v0.8 | 2026-04-17 | accepted | Goal519 RT workload universe roadmap | docs/reports/goal519_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal519-rt-workload-universe.md | docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md | `f0d4ef9c923545833324b9d500f42317c47b3347` | `goal519-rt-workload-universe` |
 | v0.8 | 2026-04-17 | accepted | Goal518 v0.8 final local release audit | docs/reports/goal518_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal518-v0-8-final-local-release-audit.md | docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md | `b974a6f` | `goal518-v0-8-final-local-release-audit` |
 | v0.8 | 2026-04-17 | accepted | Goal517 ITRE app programming model | docs/reports/goal517_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal517-itre-app-programming-model.md | docs/reports/goal517_itre_app_programming_model_2026-04-17.md | `828918b` | `goal517-itre-app-programming-model` |

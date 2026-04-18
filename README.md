@@ -64,6 +64,11 @@ bounded DB-style analytical workloads.
   - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
     - Linux performance evidence now covers Embree, OptiX, Vulkan, SciPy
       `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`
+  - ANN candidate search app using `knn_rows(k=1)` over a Python-selected
+    approximate candidate set, with recall and distance-ratio reporting
+  - outlier detection and DBSCAN clustering apps using
+    `fixed_radius_neighbors` plus Python density/count and cluster-expansion
+    logic
   - robot collision screening app using `ray_triangle_hit_count` plus Python
     pose/link aggregation
     - Linux performance evidence now covers CPU, Embree, and OptiX as accepted
@@ -254,6 +259,9 @@ backend/language claim:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
@@ -272,6 +280,9 @@ python examples\rtdl_db_grouped_sum.py --backend cpu_python_reference
 python examples\rtdl_v0_7_db_app_demo.py --backend auto
 python examples\rtdl_v0_7_db_kernel_app_demo.py --backend auto
 python examples\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples\rtdl_ann_candidate_app.py --backend cpu_python_reference
+python examples\rtdl_outlier_detection_app.py --backend cpu_python_reference
+python examples\rtdl_dbscan_clustering_app.py --backend cpu_python_reference
 python examples\rtdl_robot_collision_screening_app.py --backend cpu_python_reference
 python examples\rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
@@ -290,6 +301,9 @@ python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
 python examples/rtdl_v0_7_db_app_demo.py --backend auto
 python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference
+python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference
+python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference
 python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference
 python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
@@ -400,8 +414,9 @@ Release and preview layers inside the current repository:
     release authorization, with `rtdsl_current.tar.gz` as the only default
     staging exclusion
 - `v0.8`: active app-building line on top of the released `v0.7.0` surface
-  - apps added so far: Hausdorff distance, robot collision screening, and
-    Barnes-Hut force approximation
+  - apps added so far: Hausdorff distance, ANN candidate search, outlier
+    detection, DBSCAN clustering, robot collision screening, and Barnes-Hut
+    force approximation
   - Hausdorff now has bounded Linux Embree/OptiX/Vulkan performance evidence
     against SciPy, scikit-learn, and FAISS nearest-neighbor baselines
   - robot collision screening now has bounded Linux CPU/Embree/OptiX

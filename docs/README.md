@@ -146,6 +146,11 @@ Keep these current facts in mind while reading:
   - the final `v0.7.0` release action recorded after explicit user authorization
 - the accepted `v0.8` app-building line on `main` currently adds:
   - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
+  - ANN candidate search app using `knn_rows(k=1)` over a Python-selected
+    approximate candidate set
+  - outlier detection and DBSCAN clustering apps using
+    `fixed_radius_neighbors` plus Python density/count and cluster-expansion
+    logic
   - robot collision screening app using `ray_triangle_hit_count` plus Python
     pose/link aggregation
   - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus

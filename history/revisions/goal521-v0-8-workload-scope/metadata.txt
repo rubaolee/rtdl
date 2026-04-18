@@ -1,0 +1,11 @@
+slug: goal521-v0-8-workload-scope
+title: Goal521 v0.8 workload scope decision matrix
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 89079f4c0d60b8a8517b8b302170868de1e3e4a7
+gemini_review: docs/reports/goal521_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal521-v0_8-workload-scope.md
+final_result: docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md
+summary: RTDL v0.8 app scope is now consensus-gated across all 32 paper workloads, with do-now, already-covered, defer, and reframe decisions plus reasons.

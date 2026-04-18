@@ -88,7 +88,9 @@ backend/workload/platform combination has the same maturity.
 The current `v0.8` app-building direction demonstrates how those released
 features can be used inside Python applications without changing language
 internals first. Current examples include Hausdorff distance over `knn_rows`,
-robot collision screening over `ray_triangle_hit_count`, and Barnes-Hut force
+ANN candidate search over `knn_rows`, outlier detection and DBSCAN over
+`fixed_radius_neighbors`, robot collision screening over `ray_triangle_hit_count`,
+and Barnes-Hut force
 approximation over `fixed_radius_neighbors`.
 
 The programming-model claim is intentionally bounded: the accepted

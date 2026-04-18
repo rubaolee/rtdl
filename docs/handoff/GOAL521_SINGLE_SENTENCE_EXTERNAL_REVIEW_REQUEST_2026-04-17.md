@@ -1,0 +1,1 @@
+Review `docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md` against the Goal519 workload universe and judge whether its v0.8 do-now/already-covered/defer/out-of-scope decisions are reasonable, honest, and sufficient before closing the v0.8 app list.

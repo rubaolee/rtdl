@@ -1,0 +1,11 @@
+slug: goal520-stage1-proximity-apps
+title: Goal520 v0.8 Stage-1 proximity apps
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 89079f4c0d60b8a8517b8b302170868de1e3e4a7
+gemini_review: docs/reports/goal520_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal520-stage1-proximity-apps.md
+final_result: docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md
+summary: RTDL v0.8 now includes currently supportable Goal519 Stage-1 proximity apps: ANN candidate search, outlier detection, and DBSCAN clustering using existing RTDL kernels plus Python orchestration.

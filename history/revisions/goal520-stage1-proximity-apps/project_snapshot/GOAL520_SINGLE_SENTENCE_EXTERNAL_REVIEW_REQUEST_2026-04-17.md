@@ -1,0 +1,1 @@
+Review Goal520 by reading `docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md`, the three new app files, the updated docs/tests it lists, and decide whether the ANN, outlier, and DBSCAN apps honestly implement currently supportable Goal519 Stage-1 proximity workloads using existing RTDL + Python without overstating language or performance claims.

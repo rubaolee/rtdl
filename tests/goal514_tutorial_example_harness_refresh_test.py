@@ -18,6 +18,30 @@ class Goal514TutorialExampleHarnessRefreshTest(unittest.TestCase):
             ["examples/rtdl_hausdorff_distance_app.py", "--backend", "vulkan"],
         )
         self.assertEqual(
+            cases["ann_candidate_app_optix"]["args"],
+            ["examples/rtdl_ann_candidate_app.py", "--backend", "optix"],
+        )
+        self.assertEqual(
+            cases["ann_candidate_app_vulkan"]["args"],
+            ["examples/rtdl_ann_candidate_app.py", "--backend", "vulkan"],
+        )
+        self.assertEqual(
+            cases["outlier_detection_app_optix"]["args"],
+            ["examples/rtdl_outlier_detection_app.py", "--backend", "optix"],
+        )
+        self.assertEqual(
+            cases["outlier_detection_app_vulkan"]["args"],
+            ["examples/rtdl_outlier_detection_app.py", "--backend", "vulkan"],
+        )
+        self.assertEqual(
+            cases["dbscan_clustering_app_optix"]["args"],
+            ["examples/rtdl_dbscan_clustering_app.py", "--backend", "optix"],
+        )
+        self.assertEqual(
+            cases["dbscan_clustering_app_vulkan"]["args"],
+            ["examples/rtdl_dbscan_clustering_app.py", "--backend", "vulkan"],
+        )
+        self.assertEqual(
             cases["robot_collision_screening_app_optix"]["args"],
             ["examples/rtdl_robot_collision_screening_app.py", "--backend", "optix"],
         )
@@ -33,6 +57,12 @@ class Goal514TutorialExampleHarnessRefreshTest(unittest.TestCase):
         for name in (
             "hausdorff_distance_app_optix",
             "hausdorff_distance_app_vulkan",
+            "ann_candidate_app_optix",
+            "ann_candidate_app_vulkan",
+            "outlier_detection_app_optix",
+            "outlier_detection_app_vulkan",
+            "dbscan_clustering_app_optix",
+            "dbscan_clustering_app_vulkan",
             "robot_collision_screening_app_optix",
             "barnes_hut_force_app_optix",
             "barnes_hut_force_app_vulkan",

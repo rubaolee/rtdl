@@ -10,7 +10,9 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+from examples.rtdl_ann_candidate_app import run_app as run_ann
 from examples.rtdl_db_conjunctive_scan import run_backend as run_db_scan
+from examples.rtdl_dbscan_clustering_app import run_app as run_dbscan
 from examples.rtdl_db_grouped_count import run_backend as run_grouped_count
 from examples.rtdl_db_grouped_sum import run_backend as run_grouped_sum
 from examples.rtdl_barnes_hut_force_app import run_app as run_barnes_hut
@@ -19,6 +21,7 @@ from examples.rtdl_graph_bfs import run_backend as run_graph_bfs
 from examples.rtdl_graph_triangle_count import run_backend as run_triangle_count
 from examples.rtdl_hausdorff_distance_app import run_app as run_hausdorff
 from examples.rtdl_knn_rows import run_case as run_knn_rows
+from examples.rtdl_outlier_detection_app import run_app as run_outlier
 from examples.rtdl_polygon_pair_overlap_area_rows import (
     make_authored_polygon_pair_overlap_case,
 )
@@ -100,8 +103,11 @@ def _recipe(name: str, input_summary: str, output_summary: str, rows) -> dict[st
 
 
 def run_cookbook() -> dict[str, object]:
+    ann_result = run_ann("cpu_python_reference")
     barnes_hut_result = run_barnes_hut("cpu_python_reference")
+    dbscan_result = run_dbscan("cpu_python_reference")
     hausdorff_result = run_hausdorff("cpu_python_reference")
+    outlier_result = run_outlier("cpu_python_reference")
     robot_collision_result = run_robot_collision("cpu_python_reference")
     recipes = [
         _recipe(
@@ -252,6 +258,34 @@ def run_cookbook() -> dict[str, object]:
             {
                 "hausdorff_distance": hausdorff_result["hausdorff_distance"],
                 "witness_direction": hausdorff_result["witness_direction"],
+            },
+        ),
+        _recipe(
+            "ann_candidate_app",
+            "query points plus Python-selected candidate points",
+            "approximate nearest-neighbor rows plus recall/distance quality",
+            {
+                "recall_at_1": ann_result["recall_at_1"],
+                "mean_distance_ratio": ann_result["mean_distance_ratio"],
+            },
+        ),
+        _recipe(
+            "outlier_detection_app",
+            "one point cloud",
+            "fixed-radius neighbor rows reduced to density-threshold outlier labels",
+            {
+                "outlier_point_ids": outlier_result["outlier_point_ids"],
+                "matches_oracle": outlier_result["matches_oracle"],
+            },
+        ),
+        _recipe(
+            "dbscan_clustering_app",
+            "one point cloud",
+            "fixed-radius neighbor rows expanded into density-cluster labels",
+            {
+                "cluster_sizes": dbscan_result["cluster_sizes"],
+                "noise_point_ids": dbscan_result["noise_point_ids"],
+                "matches_oracle": dbscan_result["matches_oracle"],
             },
         ),
         _recipe(

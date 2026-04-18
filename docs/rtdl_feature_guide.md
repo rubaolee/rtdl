@@ -83,6 +83,9 @@ Current user-programming note:
   - [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
   - [rtdl_v0_7_db_app_demo.py](../examples/rtdl_v0_7_db_app_demo.py)
   - [rtdl_hausdorff_distance_app.py](../examples/rtdl_hausdorff_distance_app.py)
+  - [rtdl_ann_candidate_app.py](../examples/rtdl_ann_candidate_app.py)
+  - [rtdl_outlier_detection_app.py](../examples/rtdl_outlier_detection_app.py)
+  - [rtdl_dbscan_clustering_app.py](../examples/rtdl_dbscan_clustering_app.py)
   - [rtdl_robot_collision_screening_app.py](../examples/rtdl_robot_collision_screening_app.py)
   - [rtdl_barnes_hut_force_app.py](../examples/rtdl_barnes_hut_force_app.py)
 - RTDL provides the query core there, while Python handles application logic and
@@ -92,6 +95,9 @@ Current app-building performance note:
 
 - Hausdorff distance has bounded Linux Embree/OptiX/Vulkan performance evidence
   against RTDL and mature nearest-neighbor baselines.
+- ANN candidate search, outlier detection, and DBSCAN clustering are current
+  Goal519 Stage-1 proximity apps over existing `knn_rows` and
+  `fixed_radius_neighbors`; they do not yet have Linux performance closure.
 - Robot collision screening has bounded Linux CPU/Embree/OptiX evidence; Vulkan
   is not exposed for that app until the per-edge hit-count mismatch found in
   Goal509 is fixed.
