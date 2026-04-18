@@ -1,0 +1,1 @@
+Review Goal526 by checking `docs/reports/goal526_v0_8_public_doc_stale_app_count_cleanup_2026-04-18.md`, `docs/release_facing_examples.md`, `docs/rtdl_feature_guide.md`, and `tests/goal526_v0_8_public_doc_stale_phrase_test.py`, then write whether the stale v0.8 app-count wording is fully fixed without introducing overclaiming.

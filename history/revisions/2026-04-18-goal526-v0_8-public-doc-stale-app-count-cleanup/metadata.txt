@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal526-v0_8-public-doc-stale-app-count-cleanup
+title: Goal526 v0.8 public doc stale app-count cleanup
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: 2075bba
+gemini_review: docs/reports/goal526_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal526-v0_8-public-doc-stale-app-count-cleanup.md
+final_result: accepted
+summary: Removed stale app-count wording after Goal524 and named all six v0.8 app examples.
