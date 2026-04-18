@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `98`
-- Archived files in `history/history.db`: `1037`
+- Structured revision rounds: `99`
+- Archived files in `history/history.db`: `1044`
 - External report snapshots: `193`
-- Project snapshots: `844`
-- Tracked `docs/reports/` artifacts: `1537`
-- Tracked `history/ad_hoc_reviews/` artifacts: `685`
-- Tracked AI handoff files: `400`
+- Project snapshots: `851`
+- Tracked `docs/reports/` artifacts: `1541`
+- Tracked `history/ad_hoc_reviews/` artifacts: `686`
+- Tracked AI handoff files: `401`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal524 v0.8 Stage-1 proximity Linux performance | `docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md` | `goal524-stage1-proximity-linux-perf` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal523 v0.8 Linux public command validation | `docs/reports/goal523_v0_8_linux_public_command_validation_2026-04-17.md` | `goal523-linux-public-command-validation` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal522 v0.8 scope-refreshed final local audit | `docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md` | `goal522-v0-8-scope-refreshed-local-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal521 v0.8 workload scope decision matrix | `docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md` | `goal521-v0-8-workload-scope` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal515 public docs command truth | `docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md` | `goal515-public-docs-command-truth` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal514 tutorial/example harness refresh | `docs/reports/goal514_tutorial_example_harness_refresh_2026-04-17.md` | `goal514-tutorial-example-harness-refresh` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal513 public example smoke gate | `docs/reports/goal513_public_example_smoke_gate_2026-04-17.md` | `goal513-public-example-smoke-gate` |
-| `v0.8` | 2026-04-17 | `accepted` | Goal512 public documentation smoke audit | `docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md` | `goal512-public-doc-smoke-audit` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 685 |
-| `ai_handoff` | 400 |
+| `ad_hoc_review_or_consensus` | 686 |
+| `ai_handoff` | 401 |
 | `example` | 73 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,10 +82,10 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 482 |
 | `release_report` | 49 |
-| `report_or_review` | 1537 |
-| `script` | 121 |
+| `report_or_review` | 1541 |
+| `script` | 122 |
 | `source` | 76 |
-| `structured_history_archive` | 1496 |
+| `structured_history_archive` | 1504 |
 | `test` | 218 |
 | `tutorial` | 11 |
 

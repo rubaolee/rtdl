@@ -1,0 +1,1 @@
+Review `docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md`, `docs/reports/goal524_linux_stage1_proximity_perf_2026-04-17.json`, and `scripts/goal524_stage1_proximity_perf.py`, then decide whether the Linux Stage-1 proximity performance characterization is correct, repeatable, and honestly bounded without unsupported external-baseline speedup claims.

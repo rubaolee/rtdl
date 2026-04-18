@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 685,
-    "ai_handoff": 400,
+    "ad_hoc_review_or_consensus": 686,
+    "ai_handoff": 401,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1537,
-    "script": 121,
+    "report_or_review": 1541,
+    "script": 122,
     "source": 76,
-    "structured_history_archive": 1496,
+    "structured_history_archive": 1504,
     "test": 218,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 685,
-    "archived_files": 1037,
-    "docs_reports": 1537,
+    "ad_hoc_reviews": 686,
+    "archived_files": 1044,
+    "docs_reports": 1541,
     "external_reports": 193,
-    "handoffs": 400,
-    "project_snapshots": 844,
+    "handoffs": 401,
+    "project_snapshots": 851,
     "release_tags": 8,
-    "revision_metadata_files": 99,
-    "revision_rounds": 98,
-    "tracked_files": 5230
+    "revision_metadata_files": 100,
+    "revision_rounds": 99,
+    "tracked_files": 5245
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal524-stage1-proximity-linux-perf.md",
+      "final_result": "docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md",
+      "gemini_review": "docs/reports/goal524_gemini_review_2026-04-17.md",
+      "slug": "goal524-stage1-proximity-linux-perf",
+      "source_commit": "125431beb7ac1f77116d7e0b548d52e60e4c6630",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "RTDL v0.8 Stage-1 proximity apps now have bounded Linux timing characterization across RTDL backends, with correctness passing and no external-baseline speedup claim.",
+      "title": "Goal524 v0.8 Stage-1 proximity Linux performance",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal523-linux-public-command-validation.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Public example smoke gate now verifies front-page portable commands and v0.8 app outputs.",
       "title": "Goal513 public example smoke gate",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal512-public-doc-smoke-audit.md",
-      "final_result": "docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md",
-      "gemini_review": "docs/reports/goal512_gemini_review_2026-04-17.md",
-      "slug": "goal512-public-doc-smoke-audit",
-      "source_commit": "f7b9c2b",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Public-doc smoke audit now guards v0.8 status wording, Goal507/Goal509 boundaries, and local Markdown links.",
-      "title": "Goal512 public documentation smoke audit",
       "version": "v0.8"
     }
   ],

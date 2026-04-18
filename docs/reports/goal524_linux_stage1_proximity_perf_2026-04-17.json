@@ -1,0 +1,258 @@
+{
+  "apps": [
+    "ann_candidate",
+    "outlier_detection",
+    "dbscan_clustering"
+  ],
+  "backends": [
+    "cpu_python_reference",
+    "cpu",
+    "embree",
+    "optix",
+    "vulkan",
+    "scipy"
+  ],
+  "copies": 128,
+  "goal": "524",
+  "honesty_boundary": "This is a bounded in-process timing harness for RTDL Stage-1 proximity apps. It is not a claim of general ANN, anomaly-detection, or clustering performance.",
+  "repeats": 3,
+  "results": [
+    {
+      "app": "ann_candidate",
+      "backend": "cpu_python_reference",
+      "copies": 128,
+      "correctness": {
+        "exact_match_count": 256,
+        "mean_distance_ratio": 3.6666666666637027,
+        "query_count": 384,
+        "recall_at_1": 0.6666666666666666
+      },
+      "repeats": 3,
+      "seconds_max": 0.13926688907667994,
+      "seconds_median": 0.13902572204824537,
+      "seconds_min": 0.13835431798361242,
+      "status": "passed"
+    },
+    {
+      "app": "ann_candidate",
+      "backend": "cpu",
+      "copies": 128,
+      "correctness": {
+        "exact_match_count": 256,
+        "mean_distance_ratio": 3.6666666666637027,
+        "query_count": 384,
+        "recall_at_1": 0.6666666666666666
+      },
+      "repeats": 3,
+      "seconds_max": 0.08412368502467871,
+      "seconds_median": 0.08376743097323924,
+      "seconds_min": 0.08359131996985525,
+      "status": "passed"
+    },
+    {
+      "app": "ann_candidate",
+      "backend": "embree",
+      "copies": 128,
+      "correctness": {
+        "exact_match_count": 256,
+        "mean_distance_ratio": 3.6666666666637027,
+        "query_count": 384,
+        "recall_at_1": 0.6666666666666666
+      },
+      "repeats": 3,
+      "seconds_max": 0.08959503704681993,
+      "seconds_median": 0.08933114795945585,
+      "seconds_min": 0.08904131199233234,
+      "status": "passed"
+    },
+    {
+      "app": "ann_candidate",
+      "backend": "optix",
+      "copies": 128,
+      "correctness": {
+        "exact_match_count": 256,
+        "mean_distance_ratio": 3.666915821568383,
+        "query_count": 384,
+        "recall_at_1": 0.6666666666666666
+      },
+      "repeats": 3,
+      "seconds_max": 0.08136820292565972,
+      "seconds_median": 0.08097713789902627,
+      "seconds_min": 0.08083629398606718,
+      "status": "passed"
+    },
+    {
+      "app": "ann_candidate",
+      "backend": "vulkan",
+      "copies": 128,
+      "correctness": {
+        "exact_match_count": 256,
+        "mean_distance_ratio": 3.666915821568383,
+        "query_count": 384,
+        "recall_at_1": 0.6666666666666666
+      },
+      "repeats": 3,
+      "seconds_max": 0.09376392397098243,
+      "seconds_median": 0.08525785396341234,
+      "seconds_min": 0.08508776500821114,
+      "status": "passed"
+    },
+    {
+      "app": "ann_candidate",
+      "backend": "scipy",
+      "copies": 128,
+      "skip_reason": "ModuleNotFoundError: No module named 'scipy'",
+      "status": "skipped"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "cpu_python_reference",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.3708607270382345,
+      "seconds_median": 0.3707150010159239,
+      "seconds_min": 0.3701268139993772,
+      "status": "passed"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "cpu",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.13076715299393982,
+      "seconds_median": 0.12981505994684994,
+      "seconds_min": 0.12966063001658767,
+      "status": "passed"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "embree",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.13341396301984787,
+      "seconds_median": 0.1290735569782555,
+      "seconds_min": 0.12871659395750612,
+      "status": "passed"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "optix",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.12824816699139774,
+      "seconds_median": 0.12786746700294316,
+      "seconds_min": 0.12765095010399818,
+      "status": "passed"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "vulkan",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.13479906402062625,
+      "seconds_median": 0.13254558306653053,
+      "seconds_min": 0.13235174992587417,
+      "status": "passed"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "scipy",
+      "copies": 128,
+      "skip_reason": "ModuleNotFoundError: No module named 'scipy'",
+      "status": "skipped"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "cpu_python_reference",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.3811341979308054,
+      "seconds_median": 0.37486284505575895,
+      "seconds_min": 0.37440794706344604,
+      "status": "passed"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "cpu",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.14240005100145936,
+      "seconds_median": 0.13470828905701637,
+      "seconds_min": 0.13455124897882342,
+      "status": "passed"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "embree",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.13347701996099204,
+      "seconds_median": 0.13301858003251255,
+      "seconds_min": 0.13295786001253873,
+      "status": "passed"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "optix",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.13829239003825933,
+      "seconds_median": 0.1325314179994166,
+      "seconds_min": 0.13243831903673708,
+      "status": "passed"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "vulkan",
+      "copies": 128,
+      "correctness": {
+        "matches_oracle": true
+      },
+      "repeats": 3,
+      "seconds_max": 0.1378960160072893,
+      "seconds_median": 0.1373246069997549,
+      "seconds_min": 0.13648608303628862,
+      "status": "passed"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "scipy",
+      "copies": 128,
+      "skip_reason": "ModuleNotFoundError: No module named 'scipy'",
+      "status": "skipped"
+    }
+  ],
+  "summary": {
+    "failed": 0,
+    "passed": 15,
+    "skipped": 3,
+    "total": 18
+  }
+}

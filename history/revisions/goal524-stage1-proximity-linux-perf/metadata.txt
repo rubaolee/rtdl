@@ -1,0 +1,11 @@
+slug: goal524-stage1-proximity-linux-perf
+title: Goal524 v0.8 Stage-1 proximity Linux performance
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 125431beb7ac1f77116d7e0b548d52e60e4c6630
+gemini_review: docs/reports/goal524_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal524-stage1-proximity-linux-perf.md
+final_result: docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md
+summary: RTDL v0.8 Stage-1 proximity apps now have bounded Linux timing characterization across RTDL backends, with correctness passing and no external-baseline speedup claim.
