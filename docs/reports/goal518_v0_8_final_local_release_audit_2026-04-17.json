@@ -1,0 +1,75 @@
+{
+  "goal": "518",
+  "name": "v0.8 final local release audit",
+  "valid": true,
+  "checks": {
+    "forbidden_public_strings": {
+      "valid": true,
+      "findings": []
+    },
+    "targeted_release_tests": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "unittest",
+        "tests.goal517_itre_app_model_doc_test",
+        "tests.goal516_linux_public_command_validation_artifact_test",
+        "tests.goal515_public_command_truth_audit_test",
+        "tests.goal513_public_example_smoke_test",
+        "tests.goal512_public_doc_smoke_audit_test",
+        "-v"
+      ],
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": "test_itre_doc_records_bounded_app_model (tests.goal517_itre_app_model_doc_test.Goal517ItreAppModelDocTest.test_itre_doc_records_bounded_app_model) ... ok\ntest_public_docs_link_itre_app_model (tests.goal517_itre_app_model_doc_test.Goal517ItreAppModelDocTest.test_public_docs_link_itre_app_model) ... ok\ntest_linux_public_command_artifact_reports_full_backend_pass (tests.goal516_linux_public_command_validation_artifact_test.Goal516LinuxPublicCommandValidationArtifactTest.test_linux_public_command_artifact_reports_full_backend_pass) ... ok\ntest_public_runnable_commands_are_mechanically_covered (tests.goal515_public_command_truth_audit_test.Goal515PublicCommandTruthAuditTest.test_public_runnable_commands_are_mechanically_covered) ... ok\ntest_front_page_feature_cookbook_runs_all_public_recipes (tests.goal513_public_example_smoke_test.Goal513PublicExampleSmokeTest.test_front_page_feature_cookbook_runs_all_public_recipes) ... ok\ntest_front_page_portable_examples_run (tests.goal513_public_example_smoke_test.Goal513PublicExampleSmokeTest.test_front_page_portable_examples_run) ... ok\ntest_front_page_v08_examples_report_oracle_or_boundary (tests.goal513_public_example_smoke_test.Goal513PublicExampleSmokeTest.test_front_page_v08_examples_report_oracle_or_boundary) ... ok\ntest_core_public_docs_preserve_v08_evidence_boundaries (tests.goal512_public_doc_smoke_audit_test.Goal512PublicDocSmokeAuditTest.test_core_public_docs_preserve_v08_evidence_boundaries) ... ok\ntest_public_docs_do_not_call_v08_released_or_in_progress (tests.goal512_public_doc_smoke_audit_test.Goal512PublicDocSmokeAuditTest.test_public_docs_do_not_call_v08_released_or_in_progress) ... ok\ntest_public_markdown_links_resolve (tests.goal512_public_doc_smoke_audit_test.Goal512PublicDocSmokeAuditTest.test_public_markdown_links_resolve) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 1.580s\n\nOK\n",
+      "valid": true
+    },
+    "public_command_truth": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/goal515_public_command_truth_audit.py"
+      ],
+      "returncode": 0,
+      "stdout_tail": "{\"classification_counts\": {\"linux_gpu_backend_gated\": 33, \"linux_postgresql_gated\": 1, \"optional_native_backend_gated\": 44, \"portable_python_cpu\": 131, \"visual_demo_or_optional_artifact\": 7}, \"command_count\": 216, \"coverage_counts\": {\"goal410_harness_exact\": 199, \"goal410_harness_family\": 11, \"goal513_front_page_smoke_exact\": 5, \"postgresql_validation_command\": 1}, \"public_doc_count\": 14, \"valid\": true}\n",
+      "stderr_tail": "",
+      "valid": true
+    },
+    "complete_history_map": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/goal495_complete_history_map.py"
+      ],
+      "returncode": 0,
+      "stdout_tail": "{\"counts\": {\"ad_hoc_reviews\": 679, \"archived_files\": 991, \"docs_reports\": 1517, \"external_reports\": 193, \"handoffs\": 394, \"project_snapshots\": 798, \"release_tags\": 8, \"revision_metadata_files\": 93, \"revision_rounds\": 92, \"tracked_files\": 5140}, \"valid\": true}\n",
+      "stderr_tail": "",
+      "valid": true
+    },
+    "py_compile": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "py_compile",
+        "scripts/goal518_v0_8_final_local_release_audit.py",
+        "tests/goal517_itre_app_model_doc_test.py",
+        "tests/goal516_linux_public_command_validation_artifact_test.py"
+      ],
+      "returncode": 0,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "valid": true
+    },
+    "git_status": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "returncode": 0,
+      "stdout_tail": " M docs/reports/goal495_complete_history_file_inventory_2026-04-16.csv\n M docs/reports/goal495_complete_history_map_2026-04-16.json\n M docs/reports/goal495_complete_history_map_2026-04-16.md\n M docs/reports/goal515_public_command_truth_audit_2026-04-17.json\n M docs/reports/goal515_public_command_truth_audit_2026-04-17.md\n M history/COMPLETE_HISTORY.md\n?? docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.json\n?? docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md\n?? scripts/goal518_v0_8_final_local_release_audit.py\n?? tests/goal518_v0_8_final_local_release_audit_test.py\n",
+      "stderr_tail": "",
+      "valid": true,
+      "unexpected": [],
+      "policy": "Only current Goal518 audit artifacts and regenerated audit/history indexes may be dirty during this pre-commit audit."
+    }
+  }
+}

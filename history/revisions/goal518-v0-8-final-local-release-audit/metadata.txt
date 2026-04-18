@@ -1,0 +1,11 @@
+slug: goal518-v0-8-final-local-release-audit
+title: Goal518 v0.8 final local release audit
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: b974a6f
+gemini_review: docs/reports/goal518_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal518-v0-8-final-local-release-audit.md
+final_result: docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md
+summary: Final local v0.8 release-readiness audit passed without granting release authorization.

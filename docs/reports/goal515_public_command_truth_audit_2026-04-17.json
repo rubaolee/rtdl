@@ -2089,7 +2089,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 31,
+      "line": 36,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -2099,7 +2099,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 32,
+      "line": 37,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -2109,7 +2109,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 33,
+      "line": 38,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -2119,7 +2119,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 40,
+      "line": 45,
       "command": "python examples\\rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -2129,7 +2129,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 41,
+      "line": 46,
       "command": "python examples\\rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -2139,7 +2139,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 42,
+      "line": 47,
       "command": "python examples\\rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -2149,7 +2149,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 49,
+      "line": 54,
       "command": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -2159,7 +2159,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 50,
+      "line": 55,
       "command": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -2169,7 +2169,7 @@
     },
     {
       "path": "docs/tutorials/v0_8_app_building.md",
-      "line": 51,
+      "line": 56,
       "command": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",

@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 92
-- Archived files: 991
+- Revision rounds: 93
+- Archived files: 999
 - External reports: 193
-- Project snapshots: 798
+- Project snapshots: 806
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal518 v0.8 final local release audit | docs/reports/goal518_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal518-v0-8-final-local-release-audit.md | docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md | `b974a6f` | `goal518-v0-8-final-local-release-audit` |
 | v0.8 | 2026-04-17 | accepted | Goal517 ITRE app programming model | docs/reports/goal517_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal517-itre-app-programming-model.md | docs/reports/goal517_itre_app_programming_model_2026-04-17.md | `828918b` | `goal517-itre-app-programming-model` |
 | v0.8 | 2026-04-17 | accepted | Goal516 Linux full public command validation | docs/reports/goal516_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal516-linux-full-public-command-validation.md | docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md | `087f76f` | `goal516-linux-full-public-command-validation` |
 | v0.8 | 2026-04-17 | accepted | Goal515 public docs command truth | docs/reports/goal515_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal515-public-docs-command-truth.md | docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md | `56a7a04` | `goal515-public-docs-command-truth` |
