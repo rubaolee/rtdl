@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 692,
-    "ai_handoff": 407,
+    "ad_hoc_review_or_consensus": 693,
+    "ai_handoff": 408,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 54,
-    "report_or_review": 1561,
+    "report_or_review": 1564,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1560,
-    "test": 222,
+    "structured_history_archive": 1569,
+    "test": 223,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 692,
-    "archived_files": 1095,
-    "docs_reports": 1561,
+    "ad_hoc_reviews": 693,
+    "archived_files": 1104,
+    "docs_reports": 1564,
     "external_reports": 193,
-    "handoffs": 407,
-    "project_snapshots": 902,
+    "handoffs": 408,
+    "project_snapshots": 911,
     "release_tags": 8,
-    "revision_metadata_files": 106,
-    "revision_rounds": 105,
-    "tracked_files": 5342
+    "revision_metadata_files": 107,
+    "revision_rounds": 106,
+    "tracked_files": 5357
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal531-v0_8-release-candidate-public-links.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal531_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal531-v0_8-release-candidate-public-links",
+      "source_commit": "bf3cc8c",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Linked the v0.8 release-candidate package from public entry points without tag authorization.",
+      "title": "Goal531 v0.8 release-candidate public links",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal530-v0_8-release-candidate-package.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "RTDL v0.8 now includes currently supportable Goal519 Stage-1 proximity apps: ANN candidate search, outlier detection, and DBSCAN clustering using existing RTDL kernels plus Python orchestration.",
       "title": "Goal520 v0.8 Stage-1 proximity apps",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal519-rt-workload-universe.md",
-      "final_result": "docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md",
-      "gemini_review": "docs/reports/goal519_gemini_review_2026-04-17.md",
-      "slug": "goal519-rt-workload-universe",
-      "source_commit": "f0d4ef9c923545833324b9d500f42317c47b3347",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "RTDL roadmap now maps the arXiv 2603.28771v1 RT workload universe to current coverage, future apps, language-growth needs, and fundamental boundaries.",
-      "title": "Goal519 RT workload universe roadmap",
       "version": "v0.8"
     }
   ],
