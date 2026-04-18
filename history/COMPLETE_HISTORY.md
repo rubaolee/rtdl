@@ -21,7 +21,7 @@ files indexed here.
 - Tracked `docs/reports/` artifacts: `1567`
 - Tracked `history/ad_hoc_reviews/` artifacts: `694`
 - Tracked AI handoff files: `409`
-- Tracked release tags: `8`
+- Tracked release tags: `9`
 
 ## How To Read The History
 
@@ -50,6 +50,7 @@ Use these layers together:
 - `v0.6.0`
 - `v0.6.1`
 - `v0.7.0`
+- `v0.8.0`
 
 ## Current Top Revision Rounds
 

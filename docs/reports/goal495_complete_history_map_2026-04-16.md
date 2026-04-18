@@ -25,7 +25,7 @@ The answer is now explicit:
 - tracked `docs/reports/` artifacts: `1567`
 - tracked `history/ad_hoc_reviews/` artifacts: `694`
 - tracked handoff files: `409`
-- release tags: `8`
+- release tags: `9`
 
 ## Outputs
 

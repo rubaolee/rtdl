@@ -24,7 +24,7 @@
     "external_reports": 193,
     "handoffs": 409,
     "project_snapshots": 928,
-    "release_tags": 8,
+    "release_tags": 9,
     "revision_metadata_files": 108,
     "revision_rounds": 107,
     "tracked_files": 5378
@@ -45,7 +45,8 @@
     "v0.5.0",
     "v0.6.0",
     "v0.6.1",
-    "v0.7.0"
+    "v0.7.0",
+    "v0.8.0"
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
