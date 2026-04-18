@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `106`
-- Archived files in `history/history.db`: `1104`
+- Structured revision rounds: `107`
+- Archived files in `history/history.db`: `1121`
 - External report snapshots: `193`
-- Project snapshots: `911`
-- Tracked `docs/reports/` artifacts: `1564`
-- Tracked `history/ad_hoc_reviews/` artifacts: `693`
-- Tracked AI handoff files: `408`
+- Project snapshots: `928`
+- Tracked `docs/reports/` artifacts: `1567`
+- Tracked `history/ad_hoc_reviews/` artifacts: `694`
+- Tracked AI handoff files: `409`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-18 | `accepted` | Goal532 v0.8 release authorization and tagging | `accepted` | `2026-04-18-goal532-v0_8-release-authorization-and-tagging` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal531 v0.8 release-candidate public links | `accepted` | `2026-04-18-goal531-v0_8-release-candidate-public-links` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal530 v0.8 release-candidate package | `accepted` | `2026-04-18-goal530-v0_8-release-candidate-package` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal529 v0.8 Linux post-doc-refresh validation | `accepted` | `2026-04-18-goal529-v0_8-linux-post-doc-refresh-validation` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal523 v0.8 Linux public command validation | `docs/reports/goal523_v0_8_linux_public_command_validation_2026-04-17.md` | `goal523-linux-public-command-validation` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal522 v0.8 scope-refreshed final local audit | `docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md` | `goal522-v0-8-scope-refreshed-local-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal521 v0.8 workload scope decision matrix | `docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md` | `goal521-v0-8-workload-scope` |
-| `v0.8` | 2026-04-17 | `accepted` | Goal520 v0.8 Stage-1 proximity apps | `docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md` | `goal520-stage1-proximity-apps` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 693 |
-| `ai_handoff` | 408 |
+| `ad_hoc_review_or_consensus` | 694 |
+| `ai_handoff` | 409 |
 | `example` | 73 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 482 |
 | `release_report` | 54 |
-| `report_or_review` | 1564 |
+| `report_or_review` | 1567 |
 | `script` | 122 |
 | `source` | 76 |
-| `structured_history_archive` | 1569 |
-| `test` | 223 |
+| `structured_history_archive` | 1584 |
+| `test` | 224 |
 | `tutorial` | 11 |
 
 ## Boundaries

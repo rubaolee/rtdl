@@ -19,8 +19,8 @@ Read these in order:
 8. [Release-Facing Examples](release_facing_examples.md)
 9. [v0.8 App Building](tutorials/v0_8_app_building.md)
 10. [ITRE App Programming Model](rtdl/itre_app_model.md)
-11. [v0.8 Release-Candidate Statement](release_reports/v0_8/release_statement.md)
-12. [v0.8 Release-Candidate Support Matrix](release_reports/v0_8/support_matrix.md)
+11. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
+12. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 13. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
 14. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
@@ -43,7 +43,7 @@ write?", use this short path:
 5. read [v0.8 App Building](tutorials/v0_8_app_building.md) if you want to see
    RTDL kernels used inside Python applications
 6. check the exact app-building boundary in the
-   [v0.8 Release-Candidate Support Matrix](release_reports/v0_8/support_matrix.md)
+   [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 7. check the exact released DB boundary in the
    [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
@@ -72,9 +72,9 @@ audited release claims.
 - [RTDL Tutorials](tutorials/README.md)
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
-- [v0.8 Release-Candidate Package](release_reports/v0_8/README.md)
-- [v0.8 Release-Candidate Statement](release_reports/v0_8/release_statement.md)
-- [v0.8 Release-Candidate Support Matrix](release_reports/v0_8/support_matrix.md)
+- [v0.8 Release Package](release_reports/v0_8/README.md)
+- [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
+- [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [Release-Facing Examples](release_facing_examples.md)
 - [RTDL Language Docs Index](rtdl/README.md)
@@ -90,7 +90,7 @@ audited release claims.
 
 ## Release Packages
 
-- [v0.8 Release-Candidate Package](release_reports/v0_8/README.md)
+- [v0.8 Release Package](release_reports/v0_8/README.md)
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.7 Release Package](release_reports/v0_7/README.md)
 - [v0.5 Release Package](release_reports/v0_5/README.md)
@@ -122,9 +122,9 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.7.0`
-- current `main` carries the released bounded `v0.7.0` DB line plus accepted
-  `v0.8` app-building examples over existing RTDL features
+- current released version is `v0.8.0`
+- current `main` carries the released bounded `v0.7.0` DB line plus released
+  `v0.8.0` app-building examples over existing RTDL features
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -153,7 +153,7 @@ Keep these current facts in mind while reading:
   - app-level and kernel-form v0.7 DB demos
   - release-readiness and staging-authorization evidence through Goal 492
   - the final `v0.7.0` release action recorded after explicit user authorization
-- the accepted `v0.8` app-building line on `main` currently adds:
+- the released `v0.8.0` app-building line currently adds:
   - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
   - ANN candidate search app using `knn_rows(k=1)` over a Python-selected
     approximate candidate set

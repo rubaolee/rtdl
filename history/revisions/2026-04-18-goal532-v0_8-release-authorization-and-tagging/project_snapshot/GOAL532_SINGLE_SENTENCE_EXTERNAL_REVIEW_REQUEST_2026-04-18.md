@@ -1,0 +1,1 @@
+Review Goal532 as the explicit v0.8.0 release-authorization and tagging gate: inspect the v0.8 release-package/public-doc/test changes plus Goals528-531 evidence, then write an ACCEPT or BLOCK verdict on whether it is safe to create and push tag `v0.8.0`.

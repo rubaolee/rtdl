@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal532-v0_8-release-authorization-and-tagging
+title: Goal532 v0.8 release authorization and tagging
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: 37084a6b587e5ef4a22b0fbfd177d4d1c631c151
+gemini_review: docs/reports/goal532_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal532-v0_8-release-authorization-and-tagging.md
+final_result: accepted
+summary: Converted the accepted v0.8 release candidate to v0.8.0 release docs, validated Goal530-532 tests and full local unit discovery, and obtained Claude/Gemini/Codex consensus that tag v0.8.0 is safe after the release commit.

@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 693,
-    "ai_handoff": 408,
+    "ad_hoc_review_or_consensus": 694,
+    "ai_handoff": 409,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 54,
-    "report_or_review": 1564,
+    "report_or_review": 1567,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1569,
-    "test": 223,
+    "structured_history_archive": 1584,
+    "test": 224,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 693,
-    "archived_files": 1104,
-    "docs_reports": 1564,
+    "ad_hoc_reviews": 694,
+    "archived_files": 1121,
+    "docs_reports": 1567,
     "external_reports": 193,
-    "handoffs": 408,
-    "project_snapshots": 911,
+    "handoffs": 409,
+    "project_snapshots": 928,
     "release_tags": 8,
-    "revision_metadata_files": 107,
-    "revision_rounds": 106,
-    "tracked_files": 5357
+    "revision_metadata_files": 108,
+    "revision_rounds": 107,
+    "tracked_files": 5378
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal532-v0_8-release-authorization-and-tagging.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal532_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal532-v0_8-release-authorization-and-tagging",
+      "source_commit": "37084a6b587e5ef4a22b0fbfd177d4d1c631c151",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Converted the accepted v0.8 release candidate to v0.8.0 release docs, validated Goal530-532 tests and full local unit discovery, and obtained Claude/Gemini/Codex consensus that tag v0.8.0 is safe after the release commit.",
+      "title": "Goal532 v0.8 release authorization and tagging",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal531-v0_8-release-candidate-public-links.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "RTDL v0.8 app scope is now consensus-gated across all 32 paper workloads, with do-now, already-covered, defer, and reframe decisions plus reasons.",
       "title": "Goal521 v0.8 workload scope decision matrix",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal520-stage1-proximity-apps.md",
-      "final_result": "docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md",
-      "gemini_review": "docs/reports/goal520_gemini_review_2026-04-17.md",
-      "slug": "goal520-stage1-proximity-apps",
-      "source_commit": "89079f4c0d60b8a8517b8b302170868de1e3e4a7",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "RTDL v0.8 now includes currently supportable Goal519 Stage-1 proximity apps: ANN candidate search, outlier detection, and DBSCAN clustering using existing RTDL kernels plus Python orchestration.",
-      "title": "Goal520 v0.8 Stage-1 proximity apps",
       "version": "v0.8"
     }
   ],

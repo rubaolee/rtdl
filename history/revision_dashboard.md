@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 106
-- Archived files: 1104
+- Revision rounds: 107
+- Archived files: 1121
 - External reports: 193
-- Project snapshots: 911
+- Project snapshots: 928
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-18 | accepted | Goal532 v0.8 release authorization and tagging | docs/reports/goal532_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal532-v0_8-release-authorization-and-tagging.md | accepted | `37084a6b587e5ef4a22b0fbfd177d4d1c631c151` | `2026-04-18-goal532-v0_8-release-authorization-and-tagging` |
 | v0.8 | 2026-04-18 | accepted | Goal531 v0.8 release-candidate public links | docs/reports/goal531_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal531-v0_8-release-candidate-public-links.md | accepted | `bf3cc8c` | `2026-04-18-goal531-v0_8-release-candidate-public-links` |
 | v0.8 | 2026-04-18 | accepted | Goal530 v0.8 release-candidate package | docs/reports/goal530_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal530-v0_8-release-candidate-package.md | accepted | `1ee5b49` | `2026-04-18-goal530-v0_8-release-candidate-package` |
 | v0.8 | 2026-04-18 | accepted | Goal529 v0.8 Linux post-doc-refresh validation | docs/reports/goal529_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal529-v0_8-linux-post-doc-refresh-validation.md | accepted | `10fd467` | `2026-04-18-goal529-v0_8-linux-post-doc-refresh-validation` |

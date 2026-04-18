@@ -15,9 +15,9 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.7.0`. The current `main` branch also
-carries accepted `v0.8` app-building work that uses the existing RTDL surface
-without claiming a new released language/backend line yet.
+The current released version is `v0.8.0`. It releases the accepted app-building
+work that uses the existing RTDL surface without claiming a new
+language/backend line beyond the documented v0.7 runtime surface.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -47,9 +47,9 @@ bounded DB-style analytical workloads.
 
 ## Version Status At A Glance
 
-- current released version: `v0.7.0`
-- current mainline release here: bounded `v0.7.0` RT DB work plus accepted
-  `v0.8` app-building examples over existing RTDL features
+- current released version: `v0.8.0`
+- current mainline release here: bounded `v0.7.0` RT DB work plus released
+  `v0.8.0` app-building examples over existing RTDL features
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -60,7 +60,7 @@ bounded DB-style analytical workloads.
   - native prepared DB dataset reuse on Embree, OptiX, and Vulkan
   - app-level and kernel-form DB demos
   - release-readiness and staging-authorization evidence through Goal 492
-- current accepted `v0.8` app-building work on `main`:
+- current released `v0.8.0` app-building surface:
   - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
     - Linux performance evidence now covers Embree, OptiX, Vulkan, SciPy
       `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`
@@ -91,8 +91,8 @@ bounded DB-style analytical workloads.
 
 For exact status:
 
-- [RTDL v0.8 Release-Candidate Statement](docs/release_reports/v0_8/release_statement.md)
-- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
+- [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
+- [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
@@ -144,7 +144,7 @@ Current honest platform story:
 If you want the exact current boundary instead of the short front-page summary,
 use:
 
-- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
+- [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 
@@ -260,9 +260,9 @@ PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
 PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 ```
 
-Then try the accepted `v0.8` app-building line. These apps use existing RTDL
-features and Python-owned application logic; they are not a new released
-backend/language claim:
+Then try the released `v0.8.0` app-building line. These apps use existing RTDL
+features and Python-owned application logic; they are not a new
+backend/language contract beyond the documented support matrix:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
@@ -369,12 +369,12 @@ If you want the current bounded DB release line:
 - [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
 - [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 
-If you want the current app-building line on `main`:
+If you want the current released app-building line:
 
 - [v0.8 App Building](docs/tutorials/v0_8_app_building.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
-- [RTDL v0.8 Release-Candidate Package](docs/release_reports/v0_8/README.md)
-- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
+- [RTDL v0.8 Release Package](docs/release_reports/v0_8/README.md)
+- [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 
 If you want the earlier released nearest-neighbor line:
 
@@ -393,12 +393,11 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.7.0`
+- `v0.8.0`
 
 Current mainline release line:
 
-- bounded `v0.7.0` RT DB work, with accepted `v0.8` app-building examples on
-  `main`
+- bounded `v0.7.0` RT DB work, with released `v0.8.0` app-building examples
 
 Newest released graph workload surface:
 
@@ -422,7 +421,7 @@ Release and preview layers inside the current repository:
   - release-readiness evidence is Goal 492: the package was held until explicit
     release authorization, with `rtdsl_current.tar.gz` as the only default
     staging exclusion
-- `v0.8`: active app-building line on top of the released `v0.7.0` surface
+- `v0.8.0`: released app-building line on top of the released `v0.7.0` surface
   - apps added so far: Hausdorff distance, ANN candidate search, outlier
     detection, DBSCAN clustering, robot collision screening, and Barnes-Hut
     force approximation
@@ -445,8 +444,8 @@ Current public demo artifact:
 
 For exact backend/workload status, use:
 
-- [RTDL v0.8 Release-Candidate Statement](docs/release_reports/v0_8/release_statement.md)
-- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
+- [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
+- [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
@@ -517,8 +516,8 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
-- the current v0.8 app-building line is accepted development work on `main`,
-  not a new released support-matrix claim
+- the current v0.8 app-building line is released as `v0.8.0`, but it is still
+  not a new language/backend contract beyond the documented support matrix
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform
@@ -529,8 +528,8 @@ Important honesty boundaries:
 - `v0.7` DB performance claims are bounded to the tested Linux synthetic
   workloads; Goal 452 is the canonical comparison against best-tested
   PostgreSQL modes, not an exhaustive PostgreSQL tuning claim
-- `v0.7.0` is the current bounded DB release; release claims remain limited to
-  the documented v0.7 support matrix and performance boundary
+- `v0.7.0` remains the bounded DB release; `v0.8.0` is the app-building
+  release over that surface
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.
@@ -551,6 +550,6 @@ Best next pages:
 - [Current Architecture](docs/current_architecture.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Feature Homes](docs/features/README.md)
-- [RTDL v0.8 Release-Candidate Package](docs/release_reports/v0_8/README.md)
+- [RTDL v0.8 Release Package](docs/release_reports/v0_8/README.md)
 - [RTDL v0.7 Release Package](docs/release_reports/v0_7/README.md)
 - [Complete History Map](history/COMPLETE_HISTORY.md)
