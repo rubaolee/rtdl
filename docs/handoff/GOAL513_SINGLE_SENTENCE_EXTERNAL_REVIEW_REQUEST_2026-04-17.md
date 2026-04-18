@@ -1,0 +1,1 @@
+Review `/Users/rl2025/rtdl_python_only/docs/reports/goal513_public_example_smoke_gate_2026-04-17.md` and `/Users/rl2025/rtdl_python_only/tests/goal513_public_example_smoke_test.py`, then decide whether Goal513 correctly adds a public example smoke gate for front-page/tutorial/example commands without changing released public example output contracts.

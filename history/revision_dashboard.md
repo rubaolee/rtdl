@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 87
-- Archived files: 949
+- Revision rounds: 88
+- Archived files: 955
 - External reports: 193
-- Project snapshots: 756
+- Project snapshots: 762
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal513 public example smoke gate | docs/reports/goal513_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal513-public-example-smoke-gate.md | docs/reports/goal513_public_example_smoke_gate_2026-04-17.md | `c2f59e3` | `goal513-public-example-smoke-gate` |
 | v0.8 | 2026-04-17 | accepted | Goal512 public documentation smoke audit | docs/reports/goal512_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal512-public-doc-smoke-audit.md | docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md | `f7b9c2b` | `goal512-public-doc-smoke-audit` |
 | v0.8 | 2026-04-17 | accepted | Goal511 feature guide v0.8 refresh | docs/reports/goal511_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal511-feature-guide-v08-refresh.md | docs/reports/goal511_feature_guide_v08_refresh_2026-04-17.md | `95cd837` | `goal511-feature-guide-v08-refresh` |
 | v0.8 | 2026-04-17 | accepted | Goal510 Goal509 public documentation follow-through | docs/reports/goal510_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal510-goal509-public-doc-followthrough.md | docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md | `f81deb2` | `goal510-goal509-public-doc-followthrough` |

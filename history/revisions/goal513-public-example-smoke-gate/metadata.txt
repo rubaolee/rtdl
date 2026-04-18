@@ -1,0 +1,11 @@
+slug: goal513-public-example-smoke-gate
+title: Goal513 public example smoke gate
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: c2f59e3
+gemini_review: docs/reports/goal513_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal513-public-example-smoke-gate.md
+final_result: docs/reports/goal513_public_example_smoke_gate_2026-04-17.md
+summary: Public example smoke gate now verifies front-page portable commands and v0.8 app outputs.

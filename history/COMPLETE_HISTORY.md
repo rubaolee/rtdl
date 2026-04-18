@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `87`
-- Archived files in `history/history.db`: `949`
+- Structured revision rounds: `88`
+- Archived files in `history/history.db`: `955`
 - External report snapshots: `193`
-- Project snapshots: `756`
-- Tracked `docs/reports/` artifacts: `1497`
-- Tracked `history/ad_hoc_reviews/` artifacts: `674`
-- Tracked AI handoff files: `389`
+- Project snapshots: `762`
+- Tracked `docs/reports/` artifacts: `1500`
+- Tracked `history/ad_hoc_reviews/` artifacts: `675`
+- Tracked AI handoff files: `390`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal513 public example smoke gate | `docs/reports/goal513_public_example_smoke_gate_2026-04-17.md` | `goal513-public-example-smoke-gate` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal512 public documentation smoke audit | `docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md` | `goal512-public-doc-smoke-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal511 feature guide v0.8 refresh | `docs/reports/goal511_feature_guide_v08_refresh_2026-04-17.md` | `goal511-feature-guide-v08-refresh` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal510 Goal509 public documentation follow-through | `docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md` | `goal510-goal509-public-doc-followthrough` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal504 v0.8 Barnes-Hut Force App | `COMPLETE` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal503 v0.8 Robot Collision Screening App | `COMPLETE` | `2026-04-17-goal503-v0-8-robot-collision-screening-app` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal502 Hausdorff Distance App | `COMPLETE` | `2026-04-17-goal502-hausdorff-distance-app` |
-| `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal501 v0.7 DB Comprehensive Attack Response | `COMPLETE` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 674 |
-| `ai_handoff` | 389 |
+| `ad_hoc_review_or_consensus` | 675 |
+| `ai_handoff` | 390 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1497 |
+| `report_or_review` | 1500 |
 | `script` | 119 |
 | `source` | 76 |
-| `structured_history_archive` | 1398 |
-| `test` | 209 |
+| `structured_history_archive` | 1405 |
+| `test` | 210 |
 | `tutorial` | 11 |
 
 ## Boundaries
