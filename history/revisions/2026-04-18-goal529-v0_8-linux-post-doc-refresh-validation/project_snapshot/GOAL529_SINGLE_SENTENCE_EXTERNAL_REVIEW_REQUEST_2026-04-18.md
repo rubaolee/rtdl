@@ -1,0 +1,1 @@
+Review Goal529 by checking `docs/reports/goal529_v0_8_linux_post_doc_refresh_validation_2026-04-18.md` and `docs/reports/goal529_linux_public_command_check_2026-04-18.json`, then write whether the Linux post-doc-refresh validation is accurate, bounded, and sufficient as the primary-host follow-up to Goal528.

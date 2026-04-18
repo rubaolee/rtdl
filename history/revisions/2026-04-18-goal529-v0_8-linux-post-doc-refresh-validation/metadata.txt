@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal529-v0_8-linux-post-doc-refresh-validation
+title: Goal529 v0.8 Linux post-doc-refresh validation
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: 10fd467
+gemini_review: docs/reports/goal529_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal529-v0_8-linux-post-doc-refresh-validation.md
+final_result: accepted
+summary: Primary Linux host validated after post-doc refresh: 88 public commands and 232 unit tests passed.
