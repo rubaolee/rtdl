@@ -1,0 +1,11 @@
+slug: goal512-public-doc-smoke-audit
+title: Goal512 public documentation smoke audit
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: f7b9c2b
+gemini_review: docs/reports/goal512_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal512-public-doc-smoke-audit.md
+final_result: docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md
+summary: Public-doc smoke audit now guards v0.8 status wording, Goal507/Goal509 boundaries, and local Markdown links.

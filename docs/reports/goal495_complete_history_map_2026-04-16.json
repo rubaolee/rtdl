@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 673,
-    "ai_handoff": 388,
+    "ad_hoc_review_or_consensus": 674,
+    "ai_handoff": 389,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1494,
+    "report_or_review": 1497,
     "script": 119,
     "source": 76,
-    "structured_history_archive": 1390,
-    "test": 208,
+    "structured_history_archive": 1398,
+    "test": 209,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 673,
-    "archived_files": 942,
-    "docs_reports": 1494,
+    "ad_hoc_reviews": 674,
+    "archived_files": 949,
+    "docs_reports": 1497,
     "external_reports": 193,
-    "handoffs": 388,
-    "project_snapshots": 749,
+    "handoffs": 389,
+    "project_snapshots": 756,
     "release_tags": 8,
-    "revision_metadata_files": 87,
-    "revision_rounds": 86,
-    "tracked_files": 5041
+    "revision_metadata_files": 88,
+    "revision_rounds": 87,
+    "tracked_files": 5055
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal512-public-doc-smoke-audit.md",
+      "final_result": "docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md",
+      "gemini_review": "docs/reports/goal512_gemini_review_2026-04-17.md",
+      "slug": "goal512-public-doc-smoke-audit",
+      "source_commit": "f7b9c2b",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "Public-doc smoke audit now guards v0.8 status wording, Goal507/Goal509 boundaries, and local Markdown links.",
+      "title": "Goal512 public documentation smoke audit",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal511-feature-guide-v08-refresh.md",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Ingested the v0.7 DB comprehensive attack report and remediated all seven reported bug/crash classes with focused regression coverage.",
       "title": "Goal501 v0.7 DB Comprehensive Attack Response",
-      "version": "v0.7.0"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "Codex preserved the external report, corrected stale/overbroad claims, fixed missing-field ValueError consistency, and recorded consensus",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude accepted the audit intake response and error-contract fix",
-      "slug": "2026-04-17-goal500-v0-7-db-expert-attack-audit-intake",
-      "source_commit": "62734347a17198326acc85c46ae2537eae56b12f",
-      "started_on": "2026-04-17",
-      "status": "complete-consensus",
-      "summary": "Ingested the 2026-04-17 external v0.7 DB expert attack audit, fixed the remaining grouped-field error-surface gap, and preserved the bounded response record.",
-      "title": "Goal500 v0.7 DB Expert Attack Audit Intake",
       "version": "v0.7.0"
     }
   ],
