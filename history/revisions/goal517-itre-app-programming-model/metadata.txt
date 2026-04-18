@@ -1,0 +1,11 @@
+slug: goal517-itre-app-programming-model
+title: Goal517 ITRE app programming model
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 828918b
+gemini_review: docs/reports/goal517_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal517-itre-app-programming-model.md
+final_result: docs/reports/goal517_itre_app_programming_model_2026-04-17.md
+summary: ITRE app-programming boundary documented for v0.8 apps.
