@@ -1,0 +1,1 @@
+Review Goal530 by checking `docs/reports/goal530_v0_8_release_candidate_package_2026-04-18.md`, the new `docs/release_reports/v0_8/` package, and `tests/goal530_v0_8_release_candidate_package_test.py`, then write whether the v0.8 release-candidate package is accurate, bounded, complete enough for final review, and does not authorize tagging.

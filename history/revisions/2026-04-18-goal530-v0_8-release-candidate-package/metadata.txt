@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal530-v0_8-release-candidate-package
+title: Goal530 v0.8 release-candidate package
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: 1ee5b49
+gemini_review: docs/reports/goal530_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal530-v0_8-release-candidate-package.md
+final_result: accepted
+summary: Created bounded v0.8 release-candidate reports without tag authorization.
