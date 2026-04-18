@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 675,
-    "ai_handoff": 390,
+    "ad_hoc_review_or_consensus": 676,
+    "ai_handoff": 391,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1500,
+    "report_or_review": 1503,
     "script": 119,
     "source": 76,
-    "structured_history_archive": 1405,
-    "test": 210,
+    "structured_history_archive": 1413,
+    "test": 211,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 675,
-    "archived_files": 955,
-    "docs_reports": 1500,
+    "ad_hoc_reviews": 676,
+    "archived_files": 962,
+    "docs_reports": 1503,
     "external_reports": 193,
-    "handoffs": 390,
-    "project_snapshots": 762,
+    "handoffs": 391,
+    "project_snapshots": 769,
     "release_tags": 8,
-    "revision_metadata_files": 89,
-    "revision_rounds": 88,
-    "tracked_files": 5068
+    "revision_metadata_files": 90,
+    "revision_rounds": 89,
+    "tracked_files": 5082
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal514-tutorial-example-harness-refresh.md",
+      "final_result": "docs/reports/goal514_tutorial_example_harness_refresh_2026-04-17.md",
+      "gemini_review": "docs/reports/goal514_gemini_review_2026-04-17.md",
+      "slug": "goal514-tutorial-example-harness-refresh",
+      "source_commit": "0211dc4",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "Broad tutorial/example harness now covers v0.8 app backend commands and optional video dependency skips.",
+      "title": "Goal514 tutorial/example harness refresh",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal513-public-example-smoke-gate.md",
@@ -191,19 +204,6 @@
       "summary": "Implemented the bounded robot collision screening app as a v0.8 app-building workload over existing RTDL ray/triangle features.",
       "title": "Goal503 v0.8 Robot Collision Screening App",
       "version": "v0.8.0"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "Codex implemented the first Goal499 paper-derived app using RTDL knn rows plus Python reduction and recorded consensus",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude and Gemini Flash accepted the Hausdorff app implementation",
-      "slug": "2026-04-17-goal502-hausdorff-distance-app",
-      "source_commit": "eea9acca66a645b868aa2ce22bfa9365005bc64b",
-      "started_on": "2026-04-17",
-      "status": "complete-consensus",
-      "summary": "Implemented the bounded Hausdorff distance app as the first Goal499 paper-derived RTDL + Python workload pattern.",
-      "title": "Goal502 Hausdorff Distance App",
-      "version": "v0.7.0"
     }
   ],
   "valid": true

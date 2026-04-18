@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 88
-- Archived files: 955
+- Revision rounds: 89
+- Archived files: 962
 - External reports: 193
-- Project snapshots: 762
+- Project snapshots: 769
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal514 tutorial/example harness refresh | docs/reports/goal514_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal514-tutorial-example-harness-refresh.md | docs/reports/goal514_tutorial_example_harness_refresh_2026-04-17.md | `0211dc4` | `goal514-tutorial-example-harness-refresh` |
 | v0.8 | 2026-04-17 | accepted | Goal513 public example smoke gate | docs/reports/goal513_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal513-public-example-smoke-gate.md | docs/reports/goal513_public_example_smoke_gate_2026-04-17.md | `c2f59e3` | `goal513-public-example-smoke-gate` |
 | v0.8 | 2026-04-17 | accepted | Goal512 public documentation smoke audit | docs/reports/goal512_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal512-public-doc-smoke-audit.md | docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md | `f7b9c2b` | `goal512-public-doc-smoke-audit` |
 | v0.8 | 2026-04-17 | accepted | Goal511 feature guide v0.8 refresh | docs/reports/goal511_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal511-feature-guide-v08-refresh.md | docs/reports/goal511_feature_guide_v08_refresh_2026-04-17.md | `95cd837` | `goal511-feature-guide-v08-refresh` |

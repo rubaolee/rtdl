@@ -1,0 +1,1 @@
+ACCEPT: The broad tutorial/example harness now includes the v0.8 app OptiX/Vulkan commands advertised by public docs and handles optional video dependencies with explicit skips, as verified by the contents of `scripts/goal410_tutorial_example_check.py` and `tests/goal514_tutorial_example_harness_refresh_test.py`.
