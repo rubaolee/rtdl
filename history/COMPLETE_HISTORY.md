@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `101`
-- Archived files in `history/history.db`: `1064`
+- Structured revision rounds: `102`
+- Archived files in `history/history.db`: `1072`
 - External report snapshots: `193`
-- Project snapshots: `871`
-- Tracked `docs/reports/` artifacts: `1547`
-- Tracked `history/ad_hoc_reviews/` artifacts: `688`
-- Tracked AI handoff files: `403`
+- Project snapshots: `879`
+- Tracked `docs/reports/` artifacts: `1550`
+- Tracked `history/ad_hoc_reviews/` artifacts: `689`
+- Tracked AI handoff files: `404`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-18 | `accepted` | Goal527 examples and capability boundary refresh | `accepted` | `2026-04-18-goal527-examples-and-capability-boundary-refresh` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal526 v0.8 public doc stale app-count cleanup | `accepted` | `2026-04-18-goal526-v0_8-public-doc-stale-app-count-cleanup` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal525 v0.8 proximity performance doc refresh | `accepted` | `2026-04-18-goal525-v0_8-proximity-perf-doc-refresh` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal524 v0.8 Stage-1 proximity Linux performance | `docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md` | `goal524-stage1-proximity-linux-perf` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal518 v0.8 final local release audit | `docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md` | `goal518-v0-8-final-local-release-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal517 ITRE app programming model | `docs/reports/goal517_itre_app_programming_model_2026-04-17.md` | `goal517-itre-app-programming-model` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal516 Linux full public command validation | `docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md` | `goal516-linux-full-public-command-validation` |
-| `v0.8` | 2026-04-17 | `accepted` | Goal515 public docs command truth | `docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md` | `goal515-public-docs-command-truth` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 688 |
-| `ai_handoff` | 403 |
+| `ad_hoc_review_or_consensus` | 689 |
+| `ai_handoff` | 404 |
 | `example` | 73 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 482 |
 | `release_report` | 49 |
-| `report_or_review` | 1547 |
+| `report_or_review` | 1550 |
 | `script` | 122 |
 | `source` | 76 |
-| `structured_history_archive` | 1525 |
-| `test` | 220 |
+| `structured_history_archive` | 1534 |
+| `test` | 221 |
 | `tutorial` | 11 |
 
 ## Boundaries

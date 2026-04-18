@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 688,
-    "ai_handoff": 403,
+    "ad_hoc_review_or_consensus": 689,
+    "ai_handoff": 404,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1547,
+    "report_or_review": 1550,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1525,
-    "test": 220,
+    "structured_history_archive": 1534,
+    "test": 221,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 688,
-    "archived_files": 1064,
-    "docs_reports": 1547,
+    "ad_hoc_reviews": 689,
+    "archived_files": 1072,
+    "docs_reports": 1550,
     "external_reports": 193,
-    "handoffs": 403,
-    "project_snapshots": 871,
+    "handoffs": 404,
+    "project_snapshots": 879,
     "release_tags": 8,
-    "revision_metadata_files": 102,
-    "revision_rounds": 101,
-    "tracked_files": 5278
+    "revision_metadata_files": 103,
+    "revision_rounds": 102,
+    "tracked_files": 5293
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal527-examples-and-capability-boundary-refresh.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal527_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal527-examples-and-capability-boundary-refresh",
+      "source_commit": "934bd31",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Examples index and capability boundaries now state the Goal524 Stage-1 proximity app limits.",
+      "title": "Goal527 examples and capability boundary refresh",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal526-v0_8-public-doc-stale-app-count-cleanup.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Linux full public command harness passed across Oracle, Embree, OptiX, Vulkan, and PostgreSQL.",
       "title": "Goal516 Linux full public command validation",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal515-public-docs-command-truth.md",
-      "final_result": "docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md",
-      "gemini_review": "docs/reports/goal515_gemini_review_2026-04-17.md",
-      "slug": "goal515-public-docs-command-truth",
-      "source_commit": "56a7a04",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Public docs command truth audit now proves all runnable public commands are covered or explicitly gated.",
-      "title": "Goal515 public docs command truth",
       "version": "v0.8"
     }
   ],
