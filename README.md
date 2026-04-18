@@ -91,6 +91,8 @@ bounded DB-style analytical workloads.
 
 For exact status:
 
+- [RTDL v0.8 Release-Candidate Statement](docs/release_reports/v0_8/release_statement.md)
+- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
@@ -142,6 +144,7 @@ Current honest platform story:
 If you want the exact current boundary instead of the short front-page summary,
 use:
 
+- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.7 Support Matrix](docs/release_reports/v0_7/support_matrix.md)
 
@@ -370,6 +373,8 @@ If you want the current app-building line on `main`:
 
 - [v0.8 App Building](docs/tutorials/v0_8_app_building.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
+- [RTDL v0.8 Release-Candidate Package](docs/release_reports/v0_8/README.md)
+- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 
 If you want the earlier released nearest-neighbor line:
 
@@ -440,6 +445,8 @@ Current public demo artifact:
 
 For exact backend/workload status, use:
 
+- [RTDL v0.8 Release-Candidate Statement](docs/release_reports/v0_8/release_statement.md)
+- [RTDL v0.8 Release-Candidate Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
 - [RTDL v0.6 Support Matrix](docs/release_reports/v0_6/support_matrix.md)
 - [RTDL v0.7 Release Statement](docs/release_reports/v0_7/release_statement.md)
@@ -544,5 +551,6 @@ Best next pages:
 - [Current Architecture](docs/current_architecture.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Feature Homes](docs/features/README.md)
+- [RTDL v0.8 Release-Candidate Package](docs/release_reports/v0_8/README.md)
 - [RTDL v0.7 Release Package](docs/release_reports/v0_7/README.md)
 - [Complete History Map](history/COMPLETE_HISTORY.md)

@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 105
-- Archived files: 1095
+- Revision rounds: 106
+- Archived files: 1104
 - External reports: 193
-- Project snapshots: 902
+- Project snapshots: 911
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-18 | accepted | Goal531 v0.8 release-candidate public links | docs/reports/goal531_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal531-v0_8-release-candidate-public-links.md | accepted | `bf3cc8c` | `2026-04-18-goal531-v0_8-release-candidate-public-links` |
 | v0.8 | 2026-04-18 | accepted | Goal530 v0.8 release-candidate package | docs/reports/goal530_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal530-v0_8-release-candidate-package.md | accepted | `1ee5b49` | `2026-04-18-goal530-v0_8-release-candidate-package` |
 | v0.8 | 2026-04-18 | accepted | Goal529 v0.8 Linux post-doc-refresh validation | docs/reports/goal529_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal529-v0_8-linux-post-doc-refresh-validation.md | accepted | `10fd467` | `2026-04-18-goal529-v0_8-linux-post-doc-refresh-validation` |
 | v0.8 | 2026-04-18 | accepted | Goal528 v0.8 post-doc-refresh local audit | docs/reports/goal528_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal528-v0_8-post-doc-refresh-local-audit.md | accepted | `806d8fa` | `2026-04-18-goal528-v0_8-post-doc-refresh-local-audit` |

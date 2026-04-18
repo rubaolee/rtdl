@@ -1,0 +1,1 @@
+Review Goal531 by checking `docs/reports/goal531_v0_8_release_candidate_public_links_2026-04-18.md`, the updated `README.md`, `docs/README.md`, `docs/current_architecture.md`, and `tests/goal531_v0_8_release_candidate_public_links_test.py`, then write whether the v0.8 release-candidate package is now discoverable without implying tag authorization.

@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal531-v0_8-release-candidate-public-links
+title: Goal531 v0.8 release-candidate public links
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: bf3cc8c
+gemini_review: docs/reports/goal531_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal531-v0_8-release-candidate-public-links.md
+final_result: accepted
+summary: Linked the v0.8 release-candidate package from public entry points without tag authorization.
