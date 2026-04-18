@@ -1,0 +1,1 @@
+Review `docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md` and decide whether the refreshed v0.8 local release audit honestly reflects the current six-app scope, test evidence, public command check, docs, history, and remaining Linux/performance boundary.

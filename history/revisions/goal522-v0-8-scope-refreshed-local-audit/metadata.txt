@@ -1,0 +1,11 @@
+slug: goal522-v0-8-scope-refreshed-local-audit
+title: Goal522 v0.8 scope-refreshed final local audit
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: ccd866991ae78fef6daff70a162800b0f0832b96
+gemini_review: docs/reports/goal522_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal522-v0_8-scope-refreshed-local-audit.md
+final_result: docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md
+summary: RTDL v0.8 final local audit now reflects the six-app scope, full local tests, public command harness, docs, history, and remaining Linux/performance boundary.

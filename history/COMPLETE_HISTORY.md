@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `96`
-- Archived files in `history/history.db`: `1025`
+- Structured revision rounds: `97`
+- Archived files in `history/history.db`: `1031`
 - External report snapshots: `193`
-- Project snapshots: `832`
-- Tracked `docs/reports/` artifacts: `1529`
-- Tracked `history/ad_hoc_reviews/` artifacts: `683`
-- Tracked AI handoff files: `398`
+- Project snapshots: `838`
+- Tracked `docs/reports/` artifacts: `1533`
+- Tracked `history/ad_hoc_reviews/` artifacts: `684`
+- Tracked AI handoff files: `399`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal522 v0.8 scope-refreshed final local audit | `docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md` | `goal522-v0-8-scope-refreshed-local-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal521 v0.8 workload scope decision matrix | `docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md` | `goal521-v0-8-workload-scope` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal520 v0.8 Stage-1 proximity apps | `docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md` | `goal520-stage1-proximity-apps` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal519 RT workload universe roadmap | `docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md` | `goal519-rt-workload-universe` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal513 public example smoke gate | `docs/reports/goal513_public_example_smoke_gate_2026-04-17.md` | `goal513-public-example-smoke-gate` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal512 public documentation smoke audit | `docs/reports/goal512_public_doc_smoke_audit_2026-04-17.md` | `goal512-public-doc-smoke-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal511 feature guide v0.8 refresh | `docs/reports/goal511_feature_guide_v08_refresh_2026-04-17.md` | `goal511-feature-guide-v08-refresh` |
-| `v0.8` | 2026-04-17 | `accepted` | Goal510 Goal509 public documentation follow-through | `docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md` | `goal510-goal509-public-doc-followthrough` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 683 |
-| `ai_handoff` | 398 |
+| `ad_hoc_review_or_consensus` | 684 |
+| `ai_handoff` | 399 |
 | `example` | 73 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,10 +82,10 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 482 |
 | `release_report` | 49 |
-| `report_or_review` | 1529 |
+| `report_or_review` | 1533 |
 | `script` | 121 |
 | `source` | 76 |
-| `structured_history_archive` | 1482 |
+| `structured_history_archive` | 1489 |
 | `test` | 218 |
 | `tutorial` | 11 |
 

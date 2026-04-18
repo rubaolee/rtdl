@@ -19,12 +19,12 @@ The answer is now explicit:
 
 ## Counts
 
-- tracked files: `5204`
-- structured revision rounds: `96`
-- archived files in `history/history.db`: `1025`
-- tracked `docs/reports/` artifacts: `1529`
-- tracked `history/ad_hoc_reviews/` artifacts: `683`
-- tracked handoff files: `398`
+- tracked files: `5217`
+- structured revision rounds: `97`
+- archived files in `history/history.db`: `1031`
+- tracked `docs/reports/` artifacts: `1533`
+- tracked `history/ad_hoc_reviews/` artifacts: `684`
+- tracked handoff files: `399`
 - release tags: `8`
 
 ## Outputs

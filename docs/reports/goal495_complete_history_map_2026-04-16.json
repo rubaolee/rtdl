@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 683,
-    "ai_handoff": 398,
+    "ad_hoc_review_or_consensus": 684,
+    "ai_handoff": 399,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1529,
+    "report_or_review": 1533,
     "script": 121,
     "source": 76,
-    "structured_history_archive": 1482,
+    "structured_history_archive": 1489,
     "test": 218,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 683,
-    "archived_files": 1025,
-    "docs_reports": 1529,
+    "ad_hoc_reviews": 684,
+    "archived_files": 1031,
+    "docs_reports": 1533,
     "external_reports": 193,
-    "handoffs": 398,
-    "project_snapshots": 832,
+    "handoffs": 399,
+    "project_snapshots": 838,
     "release_tags": 8,
-    "revision_metadata_files": 97,
-    "revision_rounds": 96,
-    "tracked_files": 5204
+    "revision_metadata_files": 98,
+    "revision_rounds": 97,
+    "tracked_files": 5217
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal522-v0_8-scope-refreshed-local-audit.md",
+      "final_result": "docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md",
+      "gemini_review": "docs/reports/goal522_gemini_review_2026-04-17.md",
+      "slug": "goal522-v0-8-scope-refreshed-local-audit",
+      "source_commit": "ccd866991ae78fef6daff70a162800b0f0832b96",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "RTDL v0.8 final local audit now reflects the six-app scope, full local tests, public command harness, docs, history, and remaining Linux/performance boundary.",
+      "title": "Goal522 v0.8 scope-refreshed final local audit",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal521-v0_8-workload-scope.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Feature guide now reflects accepted v0.8 app-building and Goal507/Goal509 boundaries without overclaiming.",
       "title": "Goal511 feature guide v0.8 refresh",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal510-goal509-public-doc-followthrough.md",
-      "final_result": "docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md",
-      "gemini_review": "docs/reports/goal510_gemini_review_2026-04-17.md",
-      "slug": "goal510-goal509-public-doc-followthrough",
-      "source_commit": "f81deb2",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Public docs now carry Goal509 robot/Barnes-Hut performance boundaries without overclaiming.",
-      "title": "Goal510 Goal509 public documentation follow-through",
       "version": "v0.8"
     }
   ],
