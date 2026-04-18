@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 684,
-    "ai_handoff": 399,
+    "ad_hoc_review_or_consensus": 685,
+    "ai_handoff": 400,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1533,
+    "report_or_review": 1537,
     "script": 121,
     "source": 76,
-    "structured_history_archive": 1489,
+    "structured_history_archive": 1496,
     "test": 218,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 684,
-    "archived_files": 1031,
-    "docs_reports": 1533,
+    "ad_hoc_reviews": 685,
+    "archived_files": 1037,
+    "docs_reports": 1537,
     "external_reports": 193,
-    "handoffs": 399,
-    "project_snapshots": 838,
+    "handoffs": 400,
+    "project_snapshots": 844,
     "release_tags": 8,
-    "revision_metadata_files": 98,
-    "revision_rounds": 97,
-    "tracked_files": 5217
+    "revision_metadata_files": 99,
+    "revision_rounds": 98,
+    "tracked_files": 5230
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal523-linux-public-command-validation.md",
+      "final_result": "docs/reports/goal523_v0_8_linux_public_command_validation_2026-04-17.md",
+      "gemini_review": "docs/reports/goal523_gemini_review_2026-04-17.md",
+      "slug": "goal523-linux-public-command-validation",
+      "source_commit": "64d6e1b5fdb5d2668843b2e70e93a3ffb4f1d813",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "RTDL v0.8 public tutorial/example command surface now has Linux validation: 88 passed, 0 failed, 0 skipped across available RTDL backends, with robot Vulkan gap preserved.",
+      "title": "Goal523 v0.8 Linux public command validation",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal522-v0_8-scope-refreshed-local-audit.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Public-doc smoke audit now guards v0.8 status wording, Goal507/Goal509 boundaries, and local Markdown links.",
       "title": "Goal512 public documentation smoke audit",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal511-feature-guide-v08-refresh.md",
-      "final_result": "docs/reports/goal511_feature_guide_v08_refresh_2026-04-17.md",
-      "gemini_review": "docs/reports/goal511_gemini_review_2026-04-17.md",
-      "slug": "goal511-feature-guide-v08-refresh",
-      "source_commit": "95cd837",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Feature guide now reflects accepted v0.8 app-building and Goal507/Goal509 boundaries without overclaiming.",
-      "title": "Goal511 feature guide v0.8 refresh",
       "version": "v0.8"
     }
   ],

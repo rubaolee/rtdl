@@ -1,0 +1,11 @@
+slug: goal523-linux-public-command-validation
+title: Goal523 v0.8 Linux public command validation
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 64d6e1b5fdb5d2668843b2e70e93a3ffb4f1d813
+gemini_review: docs/reports/goal523_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal523-linux-public-command-validation.md
+final_result: docs/reports/goal523_v0_8_linux_public_command_validation_2026-04-17.md
+summary: RTDL v0.8 public tutorial/example command surface now has Linux validation: 88 passed, 0 failed, 0 skipped across available RTDL backends, with robot Vulkan gap preserved.

@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 97
-- Archived files: 1031
+- Revision rounds: 98
+- Archived files: 1037
 - External reports: 193
-- Project snapshots: 838
+- Project snapshots: 844
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal523 v0.8 Linux public command validation | docs/reports/goal523_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal523-linux-public-command-validation.md | docs/reports/goal523_v0_8_linux_public_command_validation_2026-04-17.md | `64d6e1b5fdb5d2668843b2e70e93a3ffb4f1d813` | `goal523-linux-public-command-validation` |
 | v0.8 | 2026-04-17 | accepted | Goal522 v0.8 scope-refreshed final local audit | docs/reports/goal522_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal522-v0_8-scope-refreshed-local-audit.md | docs/reports/goal522_v0_8_scope_refreshed_final_local_audit_2026-04-17.md | `ccd866991ae78fef6daff70a162800b0f0832b96` | `goal522-v0-8-scope-refreshed-local-audit` |
 | v0.8 | 2026-04-17 | accepted | Goal521 v0.8 workload scope decision matrix | docs/reports/goal521_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal521-v0_8-workload-scope.md | docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md | `89079f4c0d60b8a8517b8b302170868de1e3e4a7` | `goal521-v0-8-workload-scope` |
 | v0.8 | 2026-04-17 | accepted | Goal520 v0.8 Stage-1 proximity apps | docs/reports/goal520_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal520-stage1-proximity-apps.md | docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md | `89079f4c0d60b8a8517b8b302170868de1e3e4a7` | `goal520-stage1-proximity-apps` |

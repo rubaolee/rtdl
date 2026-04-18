@@ -1,0 +1,1 @@
+Review `docs/reports/goal523_v0_8_linux_public_command_validation_2026-04-17.md` and the JSON artifact it references, then decide whether the Linux public command validation honestly proves the v0.8 six-app public command surface runs across available RTDL backends without making unsupported performance claims.
