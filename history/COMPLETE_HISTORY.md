@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `102`
-- Archived files in `history/history.db`: `1072`
+- Structured revision rounds: `103`
+- Archived files in `history/history.db`: `1078`
 - External report snapshots: `193`
-- Project snapshots: `879`
-- Tracked `docs/reports/` artifacts: `1550`
-- Tracked `history/ad_hoc_reviews/` artifacts: `689`
-- Tracked AI handoff files: `404`
+- Project snapshots: `885`
+- Tracked `docs/reports/` artifacts: `1554`
+- Tracked `history/ad_hoc_reviews/` artifacts: `690`
+- Tracked AI handoff files: `405`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-18 | `accepted` | Goal528 v0.8 post-doc-refresh local audit | `accepted` | `2026-04-18-goal528-v0_8-post-doc-refresh-local-audit` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal527 examples and capability boundary refresh | `accepted` | `2026-04-18-goal527-examples-and-capability-boundary-refresh` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal526 v0.8 public doc stale app-count cleanup | `accepted` | `2026-04-18-goal526-v0_8-public-doc-stale-app-count-cleanup` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal525 v0.8 proximity performance doc refresh | `accepted` | `2026-04-18-goal525-v0_8-proximity-perf-doc-refresh` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal519 RT workload universe roadmap | `docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md` | `goal519-rt-workload-universe` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal518 v0.8 final local release audit | `docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md` | `goal518-v0-8-final-local-release-audit` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal517 ITRE app programming model | `docs/reports/goal517_itre_app_programming_model_2026-04-17.md` | `goal517-itre-app-programming-model` |
-| `v0.8` | 2026-04-17 | `accepted` | Goal516 Linux full public command validation | `docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md` | `goal516-linux-full-public-command-validation` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 689 |
-| `ai_handoff` | 404 |
+| `ad_hoc_review_or_consensus` | 690 |
+| `ai_handoff` | 405 |
 | `example` | 73 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,10 +82,10 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 482 |
 | `release_report` | 49 |
-| `report_or_review` | 1550 |
+| `report_or_review` | 1554 |
 | `script` | 122 |
 | `source` | 76 |
-| `structured_history_archive` | 1534 |
+| `structured_history_archive` | 1541 |
 | `test` | 221 |
 | `tutorial` | 11 |
 

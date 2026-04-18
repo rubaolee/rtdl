@@ -1,4 +1,17 @@
 path,category
+docs/handoff/GOAL528_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-18.md,ai_handoff
+docs/reports/goal528_claude_review_2026-04-18.md,report_or_review
+docs/reports/goal528_gemini_review_2026-04-18.md,report_or_review
+docs/reports/goal528_macos_public_command_check_2026-04-18.json,report_or_review
+docs/reports/goal528_v0_8_post_doc_refresh_local_audit_2026-04-18.md,report_or_review
+history/ad_hoc_reviews/2026-04-18-codex-consensus-goal528-v0_8-post-doc-refresh-local-audit.md,ad_hoc_review_or_consensus
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/metadata.txt,structured_history_archive
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/project_snapshot/2026-04-18-codex-consensus-goal528-v0_8-post-doc-refresh-local-audit.md,structured_history_archive
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/project_snapshot/GOAL528_SINGLE_SENTENCE_EXTERNAL_REVIEW_REQUEST_2026-04-18.md,structured_history_archive
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/project_snapshot/goal528_claude_review_2026-04-18.md,structured_history_archive
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/project_snapshot/goal528_gemini_review_2026-04-18.md,structured_history_archive
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/project_snapshot/goal528_macos_public_command_check_2026-04-18.json,structured_history_archive
+history/revisions/2026-04-18-goal528-v0_8-post-doc-refresh-local-audit/project_snapshot/goal528_v0_8_post_doc_refresh_local_audit_2026-04-18.md,structured_history_archive
 .github/workflows/public-surface.yml,other
 .gitignore,other
 Makefile,other

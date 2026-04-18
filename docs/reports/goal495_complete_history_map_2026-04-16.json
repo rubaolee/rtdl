@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 689,
-    "ai_handoff": 404,
+    "ad_hoc_review_or_consensus": 690,
+    "ai_handoff": 405,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1550,
+    "report_or_review": 1554,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1534,
+    "structured_history_archive": 1541,
     "test": 221,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 689,
-    "archived_files": 1072,
-    "docs_reports": 1550,
+    "ad_hoc_reviews": 690,
+    "archived_files": 1078,
+    "docs_reports": 1554,
     "external_reports": 193,
-    "handoffs": 404,
-    "project_snapshots": 879,
+    "handoffs": 405,
+    "project_snapshots": 885,
     "release_tags": 8,
-    "revision_metadata_files": 103,
-    "revision_rounds": 102,
-    "tracked_files": 5293
+    "revision_metadata_files": 104,
+    "revision_rounds": 103,
+    "tracked_files": 5306
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal528-v0_8-post-doc-refresh-local-audit.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal528_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal528-v0_8-post-doc-refresh-local-audit",
+      "source_commit": "806d8fa",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Post-Goals 525-527 macOS local tests, public command harness, stale-scan, and history-map audit accepted.",
+      "title": "Goal528 v0.8 post-doc-refresh local audit",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal527-examples-and-capability-boundary-refresh.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "ITRE app-programming boundary documented for v0.8 apps.",
       "title": "Goal517 ITRE app programming model",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal516-linux-full-public-command-validation.md",
-      "final_result": "docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md",
-      "gemini_review": "docs/reports/goal516_gemini_review_2026-04-17.md",
-      "slug": "goal516-linux-full-public-command-validation",
-      "source_commit": "087f76f",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Linux full public command harness passed across Oracle, Embree, OptiX, Vulkan, and PostgreSQL.",
-      "title": "Goal516 Linux full public command validation",
       "version": "v0.8"
     }
   ],

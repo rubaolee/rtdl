@@ -1,0 +1,1 @@
+Review Goal528 by checking `docs/reports/goal528_v0_8_post_doc_refresh_local_audit_2026-04-18.md`, the Goal528 public command JSON, and the current v0.8 docs touched by Goals 525-527, then write whether the post-doc-refresh local audit is accurate, bounded, and sufficient as a macOS-side release-readiness gate.

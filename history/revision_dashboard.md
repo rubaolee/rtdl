@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 102
-- Archived files: 1072
+- Revision rounds: 103
+- Archived files: 1078
 - External reports: 193
-- Project snapshots: 879
+- Project snapshots: 885
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-18 | accepted | Goal528 v0.8 post-doc-refresh local audit | docs/reports/goal528_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal528-v0_8-post-doc-refresh-local-audit.md | accepted | `806d8fa` | `2026-04-18-goal528-v0_8-post-doc-refresh-local-audit` |
 | v0.8 | 2026-04-18 | accepted | Goal527 examples and capability boundary refresh | docs/reports/goal527_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal527-examples-and-capability-boundary-refresh.md | accepted | `934bd31` | `2026-04-18-goal527-examples-and-capability-boundary-refresh` |
 | v0.8 | 2026-04-18 | accepted | Goal526 v0.8 public doc stale app-count cleanup | docs/reports/goal526_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal526-v0_8-public-doc-stale-app-count-cleanup.md | accepted | `2075bba` | `2026-04-18-goal526-v0_8-public-doc-stale-app-count-cleanup` |
 | v0.8 | 2026-04-18 | accepted | Goal525 v0.8 proximity performance doc refresh | docs/reports/goal525_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal525-v0_8-proximity-perf-doc-refresh.md | accepted | `f05f5e4a0166bb95fae7eff7d9bcfaef978b5e42` | `2026-04-18-goal525-v0_8-proximity-perf-doc-refresh` |
