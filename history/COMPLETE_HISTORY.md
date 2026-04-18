@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `104`
-- Archived files in `history/history.db`: `1084`
+- Structured revision rounds: `105`
+- Archived files in `history/history.db`: `1095`
 - External report snapshots: `193`
-- Project snapshots: `891`
-- Tracked `docs/reports/` artifacts: `1558`
-- Tracked `history/ad_hoc_reviews/` artifacts: `691`
-- Tracked AI handoff files: `406`
+- Project snapshots: `902`
+- Tracked `docs/reports/` artifacts: `1561`
+- Tracked `history/ad_hoc_reviews/` artifacts: `692`
+- Tracked AI handoff files: `407`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-18 | `accepted` | Goal530 v0.8 release-candidate package | `accepted` | `2026-04-18-goal530-v0_8-release-candidate-package` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal529 v0.8 Linux post-doc-refresh validation | `accepted` | `2026-04-18-goal529-v0_8-linux-post-doc-refresh-validation` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal528 v0.8 post-doc-refresh local audit | `accepted` | `2026-04-18-goal528-v0_8-post-doc-refresh-local-audit` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal527 examples and capability boundary refresh | `accepted` | `2026-04-18-goal527-examples-and-capability-boundary-refresh` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8` | 2026-04-17 | `accepted` | Goal521 v0.8 workload scope decision matrix | `docs/reports/goal521_v0_8_workload_scope_decision_matrix_2026-04-17.md` | `goal521-v0-8-workload-scope` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal520 v0.8 Stage-1 proximity apps | `docs/reports/goal520_v0_8_stage1_proximity_apps_2026-04-17.md` | `goal520-stage1-proximity-apps` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal519 RT workload universe roadmap | `docs/reports/goal519_rt_workload_universe_from_2603_28771_2026-04-17.md` | `goal519-rt-workload-universe` |
-| `v0.8` | 2026-04-17 | `accepted` | Goal518 v0.8 final local release audit | `docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md` | `goal518-v0-8-final-local-release-audit` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 691 |
-| `ai_handoff` | 406 |
+| `ad_hoc_review_or_consensus` | 692 |
+| `ai_handoff` | 407 |
 | `example` | 73 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -81,12 +81,12 @@ Use these layers together:
 | `history_support` | 4 |
 | `live_goal_doc` | 61 |
 | `other` | 482 |
-| `release_report` | 49 |
-| `report_or_review` | 1558 |
+| `release_report` | 54 |
+| `report_or_review` | 1561 |
 | `script` | 122 |
 | `source` | 76 |
-| `structured_history_archive` | 1548 |
-| `test` | 221 |
+| `structured_history_archive` | 1560 |
+| `test` | 222 |
 | `tutorial` | 11 |
 
 ## Boundaries

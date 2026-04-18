@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 691,
-    "ai_handoff": 406,
+    "ad_hoc_review_or_consensus": 692,
+    "ai_handoff": 407,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -9,25 +9,25 @@
     "history_support": 4,
     "live_goal_doc": 61,
     "other": 482,
-    "release_report": 49,
-    "report_or_review": 1558,
+    "release_report": 54,
+    "report_or_review": 1561,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1548,
-    "test": 221,
+    "structured_history_archive": 1560,
+    "test": 222,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 691,
-    "archived_files": 1084,
-    "docs_reports": 1558,
+    "ad_hoc_reviews": 692,
+    "archived_files": 1095,
+    "docs_reports": 1561,
     "external_reports": 193,
-    "handoffs": 406,
-    "project_snapshots": 891,
+    "handoffs": 407,
+    "project_snapshots": 902,
     "release_tags": 8,
-    "revision_metadata_files": 105,
-    "revision_rounds": 104,
-    "tracked_files": 5319
+    "revision_metadata_files": 106,
+    "revision_rounds": 105,
+    "tracked_files": 5342
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal530-v0_8-release-candidate-package.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal530_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal530-v0_8-release-candidate-package",
+      "source_commit": "1ee5b49",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Created bounded v0.8 release-candidate reports without tag authorization.",
+      "title": "Goal530 v0.8 release-candidate package",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal529-v0_8-linux-post-doc-refresh-validation.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "RTDL roadmap now maps the arXiv 2603.28771v1 RT workload universe to current coverage, future apps, language-growth needs, and fundamental boundaries.",
       "title": "Goal519 RT workload universe roadmap",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal518-v0-8-final-local-release-audit.md",
-      "final_result": "docs/reports/goal518_v0_8_final_local_release_audit_2026-04-17.md",
-      "gemini_review": "docs/reports/goal518_gemini_review_2026-04-17.md",
-      "slug": "goal518-v0-8-final-local-release-audit",
-      "source_commit": "b974a6f",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Final local v0.8 release-readiness audit passed without granting release authorization.",
-      "title": "Goal518 v0.8 final local release audit",
       "version": "v0.8"
     }
   ],
