@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 672,
-    "ai_handoff": 387,
+    "ad_hoc_review_or_consensus": 673,
+    "ai_handoff": 388,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1491,
+    "report_or_review": 1494,
     "script": 119,
     "source": 76,
-    "structured_history_archive": 1381,
-    "test": 207,
+    "structured_history_archive": 1390,
+    "test": 208,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 672,
-    "archived_files": 934,
-    "docs_reports": 1491,
+    "ad_hoc_reviews": 673,
+    "archived_files": 942,
+    "docs_reports": 1494,
     "external_reports": 193,
-    "handoffs": 387,
-    "project_snapshots": 741,
+    "handoffs": 388,
+    "project_snapshots": 749,
     "release_tags": 8,
-    "revision_metadata_files": 86,
-    "revision_rounds": 85,
-    "tracked_files": 5026
+    "revision_metadata_files": 87,
+    "revision_rounds": 86,
+    "tracked_files": 5041
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal511-feature-guide-v08-refresh.md",
+      "final_result": "docs/reports/goal511_feature_guide_v08_refresh_2026-04-17.md",
+      "gemini_review": "docs/reports/goal511_gemini_review_2026-04-17.md",
+      "slug": "goal511-feature-guide-v08-refresh",
+      "source_commit": "95cd837",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "Feature guide now reflects accepted v0.8 app-building and Goal507/Goal509 boundaries without overclaiming.",
+      "title": "Goal511 feature guide v0.8 refresh",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal510-goal509-public-doc-followthrough.md",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Ingested the 2026-04-17 external v0.7 DB expert attack audit, fixed the remaining grouped-field error-surface gap, and preserved the bounded response record.",
       "title": "Goal500 v0.7 DB Expert Attack Audit Intake",
-      "version": "v0.7.0"
-    },
-    {
-      "closed_on": "2026-04-16",
-      "codex_revision": "Codex classified paper workloads, verified nearest-neighbor API surface, and recorded consensus",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude and Gemini Flash accepted the uploaded-paper workload classification",
-      "slug": "2026-04-16-goal499-paper-workload-feasibility",
-      "source_commit": "02e4f6c815ddd4a686262a2570c71303c3066512",
-      "started_on": "2026-04-16",
-      "status": "complete-consensus",
-      "summary": "Classified the uploaded X-HD, Juno, RT-BarnesHut, and RT collision detection papers into near-term RTDL+Python app candidates and longer-term language-growth candidates.",
-      "title": "Goal499 Paper Workload Feasibility",
       "version": "v0.7.0"
     }
   ],
