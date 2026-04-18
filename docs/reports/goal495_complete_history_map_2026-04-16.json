@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 690,
-    "ai_handoff": 405,
+    "ad_hoc_review_or_consensus": 691,
+    "ai_handoff": 406,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1554,
+    "report_or_review": 1558,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1541,
+    "structured_history_archive": 1548,
     "test": 221,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 690,
-    "archived_files": 1078,
-    "docs_reports": 1554,
+    "ad_hoc_reviews": 691,
+    "archived_files": 1084,
+    "docs_reports": 1558,
     "external_reports": 193,
-    "handoffs": 405,
-    "project_snapshots": 885,
+    "handoffs": 406,
+    "project_snapshots": 891,
     "release_tags": 8,
-    "revision_metadata_files": 104,
-    "revision_rounds": 103,
-    "tracked_files": 5306
+    "revision_metadata_files": 105,
+    "revision_rounds": 104,
+    "tracked_files": 5319
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal529-v0_8-linux-post-doc-refresh-validation.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal529_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal529-v0_8-linux-post-doc-refresh-validation",
+      "source_commit": "10fd467",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Primary Linux host validated after post-doc refresh: 88 public commands and 232 unit tests passed.",
+      "title": "Goal529 v0.8 Linux post-doc-refresh validation",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal528-v0_8-post-doc-refresh-local-audit.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Final local v0.8 release-readiness audit passed without granting release authorization.",
       "title": "Goal518 v0.8 final local release audit",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal517-itre-app-programming-model.md",
-      "final_result": "docs/reports/goal517_itre_app_programming_model_2026-04-17.md",
-      "gemini_review": "docs/reports/goal517_gemini_review_2026-04-17.md",
-      "slug": "goal517-itre-app-programming-model",
-      "source_commit": "828918b",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "ITRE app-programming boundary documented for v0.8 apps.",
-      "title": "Goal517 ITRE app programming model",
       "version": "v0.8"
     }
   ],
