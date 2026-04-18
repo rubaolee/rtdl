@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 101
-- Archived files: 1064
+- Revision rounds: 102
+- Archived files: 1072
 - External reports: 193
-- Project snapshots: 871
+- Project snapshots: 879
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-18 | accepted | Goal527 examples and capability boundary refresh | docs/reports/goal527_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal527-examples-and-capability-boundary-refresh.md | accepted | `934bd31` | `2026-04-18-goal527-examples-and-capability-boundary-refresh` |
 | v0.8 | 2026-04-18 | accepted | Goal526 v0.8 public doc stale app-count cleanup | docs/reports/goal526_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal526-v0_8-public-doc-stale-app-count-cleanup.md | accepted | `2075bba` | `2026-04-18-goal526-v0_8-public-doc-stale-app-count-cleanup` |
 | v0.8 | 2026-04-18 | accepted | Goal525 v0.8 proximity performance doc refresh | docs/reports/goal525_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal525-v0_8-proximity-perf-doc-refresh.md | accepted | `f05f5e4a0166bb95fae7eff7d9bcfaef978b5e42` | `2026-04-18-goal525-v0_8-proximity-perf-doc-refresh` |
 | v0.8 | 2026-04-17 | accepted | Goal524 v0.8 Stage-1 proximity Linux performance | docs/reports/goal524_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal524-stage1-proximity-linux-perf.md | docs/reports/goal524_v0_8_stage1_proximity_linux_perf_2026-04-17.md | `125431beb7ac1f77116d7e0b548d52e60e4c6630` | `goal524-stage1-proximity-linux-perf` |

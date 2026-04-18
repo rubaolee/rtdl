@@ -1,0 +1,3 @@
+ACCEPT
+
+The documentation in `examples/README.md` and `docs/capability_boundaries.md` has been updated to accurately describe the v0.8 Stage-1 proximity apps. The changes clearly differentiate the current capabilities from full ANN, SciPy, scikit-learn, FAISS, or production-system support, addressing the concerns of overstatement. The addition and passing of `tests/goal527_examples_capability_boundary_refresh_test.py` further validate these updates.

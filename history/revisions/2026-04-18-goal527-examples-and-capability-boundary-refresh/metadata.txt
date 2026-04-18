@@ -1,0 +1,11 @@
+slug: 2026-04-18-goal527-examples-and-capability-boundary-refresh
+title: Goal527 examples and capability boundary refresh
+version: v0.8
+status: accepted
+started_on: 2026-04-18
+closed_on: 2026-04-18
+source_commit: 934bd31
+gemini_review: docs/reports/goal527_gemini_review_2026-04-18.md
+codex_revision: history/ad_hoc_reviews/2026-04-18-codex-consensus-goal527-examples-and-capability-boundary-refresh.md
+final_result: accepted
+summary: Examples index and capability boundaries now state the Goal524 Stage-1 proximity app limits.
