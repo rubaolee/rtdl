@@ -66,8 +66,13 @@ bounded DB-style analytical workloads.
       `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`
   - robot collision screening app using `ray_triangle_hit_count` plus Python
     pose/link aggregation
+    - Linux performance evidence now covers CPU, Embree, and OptiX as accepted
+      correctness-matching backends; Vulkan is explicitly rejected for this app
+      until its per-edge hit-count parity defect is fixed
   - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus
     Python quadtree/opening-rule/force reduction
+    - Linux performance evidence now separates RTDL candidate-generation timing
+      from Python force-reduction timing across CPU, Embree, OptiX, and Vulkan
   - tutorial and suite consolidation that records missing future language
     pressure instead of claiming new internals
 - previous `v0.6.1` additions over `v0.5.0`:
@@ -144,6 +149,7 @@ Primary front-door links:
 - [v0.8 App Building](docs/tutorials/v0_8_app_building.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [Hausdorff Linux Performance Evidence](docs/reports/goal507_hausdorff_linux_perf_report_2026-04-17.md)
+- [Robot/Barnes-Hut Linux Performance Evidence](docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
 - [RTDL v0.4 Application Examples](docs/v0_4_application_examples.md)
 - [Documentation Index](docs/README.md)
 
@@ -398,6 +404,11 @@ Release and preview layers inside the current repository:
     Barnes-Hut force approximation
   - Hausdorff now has bounded Linux Embree/OptiX/Vulkan performance evidence
     against SciPy, scikit-learn, and FAISS nearest-neighbor baselines
+  - robot collision screening now has bounded Linux CPU/Embree/OptiX
+    performance evidence; Vulkan is not exposed for that app because it fails
+    hit-count parity
+  - Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence with
+    candidate generation separated from Python force reduction
   - the current claim is "RTDL rows plus Python app logic," not a new released
     backend/language surface
 

@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `84`
-- Archived files in `history/history.db`: `920`
+- Structured revision rounds: `85`
+- Archived files in `history/history.db`: `934`
 - External report snapshots: `193`
-- Project snapshots: `727`
-- Tracked `docs/reports/` artifacts: `1488`
-- Tracked `history/ad_hoc_reviews/` artifacts: `671`
-- Tracked AI handoff files: `386`
+- Project snapshots: `741`
+- Tracked `docs/reports/` artifacts: `1491`
+- Tracked `history/ad_hoc_reviews/` artifacts: `672`
+- Tracked AI handoff files: `387`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal510 Goal509 public documentation follow-through | `docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md` | `goal510-goal509-public-doc-followthrough` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal509 robot and Barnes-Hut Linux performance evidence | `docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md` | `goal509-robot-barnes-linux-perf` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal508 Hausdorff Performance Public Doc Refresh | `COMPLETE` | `2026-04-17-goal508-hausdorff-perf-public-doc-refresh` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal507 Hausdorff Linux Large-Scale Performance | `COMPLETE` | `2026-04-17-goal507-hausdorff-linux-perf` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal501 v0.7 DB Comprehensive Attack Response | `COMPLETE` | `2026-04-17-goal501-v0-7-db-comprehensive-attack-response` |
 | `v0.7.0` | 2026-04-17 | `complete-consensus` | Goal500 v0.7 DB Expert Attack Audit Intake | `COMPLETE` | `2026-04-17-goal500-v0-7-db-expert-attack-audit-intake` |
 | `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal499 Paper Workload Feasibility | `COMPLETE` | `2026-04-16-goal499-paper-workload-feasibility` |
-| `v0.7.0` | 2026-04-16 | `complete-consensus` | Goal498 Feature Quickstart Cookbook | `COMPLETE` | `2026-04-16-goal498-feature-quickstart-cookbook` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 671 |
-| `ai_handoff` | 386 |
+| `ad_hoc_review_or_consensus` | 672 |
+| `ai_handoff` | 387 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1488 |
+| `report_or_review` | 1491 |
 | `script` | 119 |
 | `source` | 76 |
-| `structured_history_archive` | 1368 |
-| `test` | 206 |
+| `structured_history_archive` | 1381 |
+| `test` | 207 |
 | `tutorial` | 11 |
 
 ## Boundaries

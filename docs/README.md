@@ -146,6 +146,9 @@ Keep these current facts in mind while reading:
     pose/link aggregation
   - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus
     Python quadtree/opening-rule/force reduction
+  - bounded Linux performance evidence for all three app patterns through
+    Goal507 and Goal509, including an explicit rejection of robot Vulkan until
+    per-edge hit-count parity is fixed
   - an app-building tutorial that records future language pressure without
     claiming new backend or language internals
 - the released `v0.2.0` surface remains a stable historical

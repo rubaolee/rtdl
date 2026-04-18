@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 84
-- Archived files: 920
+- Revision rounds: 85
+- Archived files: 934
 - External reports: 193
-- Project snapshots: 727
+- Project snapshots: 741
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.8 | 2026-04-17 | accepted | Goal510 Goal509 public documentation follow-through | docs/reports/goal510_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal510-goal509-public-doc-followthrough.md | docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md | `f81deb2` | `goal510-goal509-public-doc-followthrough` |
 | v0.8 | 2026-04-17 | accepted | Goal509 robot and Barnes-Hut Linux performance evidence | docs/reports/goal509_gemini_review_2026-04-17.md | history/ad_hoc_reviews/2026-04-17-codex-consensus-goal509-robot-barnes-linux-perf.md | docs/reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md | `fad7f91617b6649682231deafba0ac42ef556e16` | `goal509-robot-barnes-linux-perf` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal508 Hausdorff Performance Public Doc Refresh | Claude PASS and Gemini ACCEPT in docs/reports | Codex consensus accepts the Goal507 public documentation refresh | COMPLETE | `8ac79888aa58fe19b8cdf5b7d1011124edb1dd10` | `2026-04-17-goal508-hausdorff-perf-public-doc-refresh` |
 | v0.8.0 | 2026-04-17 | complete-consensus | Goal507 Hausdorff Linux Large-Scale Performance | Claude PASS and Gemini ACCEPT in docs/reports | Codex consensus accepts the bounded Hausdorff Linux performance evidence | COMPLETE | `0612916139d13a1ce1d0f63ce693fd48e5976c34` | `2026-04-17-goal507-hausdorff-linux-perf` |

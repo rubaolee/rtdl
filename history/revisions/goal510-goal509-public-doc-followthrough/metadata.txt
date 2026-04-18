@@ -1,0 +1,11 @@
+slug: goal510-goal509-public-doc-followthrough
+title: Goal510 Goal509 public documentation follow-through
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: f81deb2
+gemini_review: docs/reports/goal510_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal510-goal509-public-doc-followthrough.md
+final_result: docs/reports/goal510_goal509_public_doc_followthrough_2026-04-17.md
+summary: Public docs now carry Goal509 robot/Barnes-Hut performance boundaries without overclaiming.
