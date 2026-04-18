@@ -1,0 +1,1 @@
+Review `/Users/rl2025/rtdl_python_only/docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md` and `/Users/rl2025/rtdl_python_only/docs/reports/goal516_linux_tutorial_example_check_2026-04-17.json`, then decide whether Goal516 correctly validates the full public command harness on Linux with Oracle, Embree, OptiX, Vulkan, and PostgreSQL available.

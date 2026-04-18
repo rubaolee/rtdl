@@ -1,0 +1,2 @@
+ACCEPT
+**Reason:** The provided evidence clearly indicates that the prior Oracle-status blocker is resolved, with `oracle:true` and `cpu:true` explicitly explained and validated. Furthermore, the report confirms the availability and successful validation of the full public command harness on Linux across all specified backends: Oracle, Embree, OptiX, Vulkan, and PostgreSQL. All 73 public commands passed, and PostgreSQL correctness tests were successful.

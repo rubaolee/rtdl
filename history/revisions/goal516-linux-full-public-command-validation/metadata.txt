@@ -1,0 +1,11 @@
+slug: goal516-linux-full-public-command-validation
+title: Goal516 Linux full public command validation
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 087f76f
+gemini_review: docs/reports/goal516_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal516-linux-full-public-command-validation.md
+final_result: docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md
+summary: Linux full public command harness passed across Oracle, Embree, OptiX, Vulkan, and PostgreSQL.

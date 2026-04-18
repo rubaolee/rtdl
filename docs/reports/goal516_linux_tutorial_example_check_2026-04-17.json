@@ -1,0 +1,1200 @@
+{
+  "machine": "linux-goal516",
+  "system": "Linux",
+  "python": "3.12.3",
+  "backend_status": {
+    "cpu_python_reference": true,
+    "oracle": true,
+    "cpu": true,
+    "embree": true,
+    "optix": true,
+    "vulkan": true
+  },
+  "summary": {
+    "passed": 73,
+    "failed": 0,
+    "skipped": 0,
+    "total": 73
+  },
+  "results": [
+    {
+      "name": "hello_world",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hello_world.py"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.172436,
+      "stdout": "hello, world\n",
+      "stderr": ""
+    },
+    {
+      "name": "hello_world_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hello_world_backends.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.171771,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hello_world_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hello_world_backends.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.184083,
+      "stdout": "{\n  \"backend\": \"cpu\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hello_world_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hello_world_backends.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.183601,
+      "stdout": "{\n  \"backend\": \"embree\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hello_world_optix",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hello_world_backends.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.525371,
+      "stdout": "{\n  \"backend\": \"optix\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hello_world_vulkan",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hello_world_backends.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.717844,
+      "stdout": "{\n  \"backend\": \"vulkan\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "feature_quickstart_cookbook",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_feature_quickstart_cookbook.py"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.179158,
+      "stdout": " 1,\n          \"right_area\": 9,\n          \"right_polygon_id\": 10,\n          \"union_area\": 14\n        },\n        {\n          \"intersection_area\": 1,\n          \"left_area\": 4,\n          \"left_polygon_id\": 2,\n          \"right_area\": 2,\n          \"right_polygon_id\": 11,\n          \"union_area\": 5\n        }\n      ]\n    },\n    {\n      \"feature\": \"polygon_set_jaccard\",\n      \"input\": \"two polygon sets\",\n      \"output\": \"one set-level Jaccard row\",\n      \"rows\": [\n        {\n          \"intersection_area\": 5,\n          \"jaccard_similarity\": 0.2631578947368421,\n          \"left_area\": 13,\n          \"right_area\": 11,\n          \"union_area\": 19\n        }\n      ]\n    },\n    {\n      \"feature\": \"fixed_radius_neighbors\",\n      \"input\": \"query points plus search points\",\n      \"output\": \"neighbor rows within radius\",\n      \"rows\": [\n        {\n          \"distance\": 0.0,\n          \"neighbor_id\": 1,\n          \"query_id\": 100\n        },\n        {\n          \"distance\": 0.3,\n          \"neighbor_id\": 2,\n          \"query_id\": 100\n        },\n        {\n          \"distance\": 0.3,\n          \"neighbor_id\": 3,\n          \"query_id\": 100\n        },\n        {\n          \"distance\": 0.20000000000000018,\n          \"neighbor_id\": 4,\n          \"query_id\": 101\n        }\n      ]\n    },\n    {\n      \"feature\": \"knn_rows\",\n      \"input\": \"query points plus search points\",\n      \"output\": \"ranked nearest-neighbor rows\",\n      \"rows\": [\n        {\n          \"distance\": 0.0,\n          \"neighbor_id\": 1,\n          \"neighbor_rank\": 1,\n          \"query_id\": 100\n        },\n        {\n          \"distance\": 0.3,\n          \"neighbor_id\": 2,\n          \"neighbor_rank\": 2,\n          \"query_id\": 100\n        },\n        {\n          \"distance\": 0.3,\n          \"neighbor_id\": 3,\n          \"neighbor_rank\": 3,\n          \"query_id\": 100\n        },\n        {\n          \"distance\": 0.20000000000000018,\n          \"neighbor_id\": 4,\n          \"neighbor_rank\": 1,\n          \"query_id\": 101\n        },\n        {\n          \"distance\": 1.0,\n          \"neighbor_id\": 5,\n          \"neighbor_rank\": 2,\n          \"query_id\": 101\n        },\n        {\n          \"distance\": 2.7,\n          \"neighbor_id\": 2,\n          \"neighbor_rank\": 3,\n          \"query_id\": 101\n        }\n      ]\n    },\n    {\n      \"feature\": \"hausdorff_distance_app\",\n      \"input\": \"two point sets\",\n      \"output\": \"directed nearest-neighbor rows reduced to one Hausdorff distance\",\n      \"rows\": {\n        \"hausdorff_distance\": 0.30000000000000004,\n        \"witness_direction\": \"b_to_a\"\n      }\n    },\n    {\n      \"feature\": \"bfs\",\n      \"input\": \"frontier vertices plus graph CSR plus visited set\",\n      \"output\": \"newly discovered vertex rows\",\n      \"rows\": [\n        {\n          \"dst_vertex\": 2,\n          \"level\": 1,\n          \"src_vertex\": 0\n        },\n        {\n          \"dst_vertex\": 3,\n          \"level\": 1,\n          \"src_vertex\": 1\n        }\n      ]\n    },\n    {\n      \"feature\": \"triangle_count\",\n      \"input\": \"seed edges plus graph CSR\",\n      \"output\": \"triangle rows\",\n      \"rows\": [\n        {\n          \"u\": 0,\n          \"v\": 1,\n          \"w\": 2\n        }\n      ]\n    },\n    {\n      \"feature\": \"conjunctive_scan\",\n      \"input\": \"denormalized rows plus predicates\",\n      \"output\": \"matching row IDs\",\n      \"rows\": [\n        {\n          \"row_id\": 3\n        },\n        {\n          \"row_id\": 4\n        }\n      ]\n    },\n    {\n      \"feature\": \"grouped_count\",\n      \"input\": \"denormalized rows plus predicates plus group key\",\n      \"output\": \"grouped count rows\",\n      \"rows\": [\n        {\n          \"count\": 1,\n          \"region\": \"east\"\n        },\n        {\n          \"count\": 2,\n          \"region\": \"west\"\n        }\n      ]\n    },\n    {\n      \"feature\": \"grouped_sum\",\n      \"input\": \"denormalized rows plus predicates plus group key and value field\",\n      \"output\": \"grouped sum rows\",\n      \"rows\": [\n        {\n          \"region\": \"east\",\n          \"sum\": 6\n        },\n        {\n          \"region\": \"west\",\n          \"sum\": 20\n        }\n      ]\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "sorting_demo",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/rtdl_sorting_demo.py",
+        "--backend",
+        "cpu_python_reference",
+        "3",
+        "1",
+        "4",
+        "1",
+        "5",
+        "0",
+        "2",
+        "5"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.172277,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"values\": [\n    3,\n    1,\n    4,\n    1,\n    5,\n    0,\n    2,\n    5\n  ],\n  \"hit_counts\": [\n    4,\n    7,\n    3,\n    7,\n    2,\n    8,\n    5,\n    2\n  ],\n  \"ascending_from_hits\": [\n    0,\n    1,\n    1,\n    2,\n    3,\n    4,\n    5,\n    5\n  ],\n  \"descending_from_hits\": [\n    5,\n    5,\n    4,\n    3,\n    2,\n    1,\n    1,\n    0\n  ],\n  \"ascending_sorted_reference\": [\n    0,\n    1,\n    1,\n    2,\n    3,\n    4,\n    5,\n    5\n  ],\n  \"descending_sorted_reference\": [\n    5,\n    5,\n    4,\n    3,\n    2,\n    1,\n    1,\n    0\n  ],\n  \"ascending_quicksort_reference\": [\n    0,\n    1,\n    1,\n    2,\n    3,\n    4,\n    5,\n    5\n  ],\n  \"descending_quicksort_reference\": [\n    5,\n    5,\n    4,\n    3,\n    2,\n    1,\n    1,\n    0\n  ],\n  \"expected_hit_counts\": [\n    4,\n    7,\n    3,\n    7,\n    2,\n    8,\n    5,\n    2\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "segment_polygon_hitcount",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "cpu_python_reference",
+        "--copies",
+        "4"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.176742,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x4\",\n  \"row_count\": 40,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 10\n    },\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 11\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 12\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 13\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 14\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 15\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 16\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 17\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 18\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 19\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 20\n    },\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 21\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 22\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 23\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 24\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 25\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 26\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 27\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 28\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 29\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 30\n    },\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 31\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 32\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 33\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 34\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 35\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 36\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 37\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 38\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 39\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 40\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "segment_polygon_anyhit_rows",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_segment_polygon_anyhit_rows.py",
+        "--backend",
+        "cpu_python_reference",
+        "--copies",
+        "4"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.171687,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"dataset\": \"derived/br_county_subset_segment_polygon_tiled_x4\",\n  \"row_count\": 44,\n  \"rows\": [\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 1\n    },\n    {\n      \"polygon_id\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 3\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 4\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 5\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 6\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 7\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 8\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 9\n    },\n    {\n      \"polygon_id\": 1,\n      \"segment_id\": 10\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 11\n    },\n    {\n      \"polygon_id\": 4,\n      \"segment_id\": 11\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 12\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 13\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 14\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 15\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 16\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 17\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 18\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 19\n    },\n    {\n      \"polygon_id\": 3,\n      \"segment_id\": 20\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 21\n    },\n    {\n      \"polygon_id\": 6,\n      \"segment_id\": 21\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 22\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 23\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 24\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 25\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 26\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 27\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 28\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 29\n    },\n    {\n      \"polygon_id\": 5,\n      \"segment_id\": 30\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 31\n    },\n    {\n      \"polygon_id\": 8,\n      \"segment_id\": 31\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 32\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 33\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 34\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 35\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 36\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 37\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 38\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 39\n    },\n    {\n      \"polygon_id\": 7,\n      \"segment_id\": 40\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "polygon_pair_overlap_area_rows",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_polygon_pair_overlap_area_rows.py"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170124,
+      "stdout": "[\n  {\n    \"intersection_area\": 4,\n    \"left_area\": 9,\n    \"left_polygon_id\": 1,\n    \"right_area\": 9,\n    \"right_polygon_id\": 10,\n    \"union_area\": 14\n  },\n  {\n    \"intersection_area\": 1,\n    \"left_area\": 4,\n    \"left_polygon_id\": 2,\n    \"right_area\": 2,\n    \"right_polygon_id\": 11,\n    \"union_area\": 5\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "name": "polygon_set_jaccard",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_polygon_set_jaccard.py"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.169717,
+      "stdout": "[\n  {\n    \"intersection_area\": 5,\n    \"jaccard_similarity\": 0.2631578947368421,\n    \"left_area\": 13,\n    \"right_area\": 11,\n    \"union_area\": 19\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "name": "fixed_radius_neighbors_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_fixed_radius_neighbors.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170848,
+      "stdout": "{\n  \"app\": \"fixed_radius_neighbors\",\n  \"backend\": \"cpu_python_reference\",\n  \"k_max\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "fixed_radius_neighbors_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_fixed_radius_neighbors.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182264,
+      "stdout": "{\n  \"app\": \"fixed_radius_neighbors\",\n  \"backend\": \"cpu\",\n  \"k_max\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "fixed_radius_neighbors_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_fixed_radius_neighbors.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.183981,
+      "stdout": "{\n  \"app\": \"fixed_radius_neighbors\",\n  \"backend\": \"embree\",\n  \"k_max\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "knn_rows_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_knn_rows.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.171547,
+      "stdout": "{\n  \"app\": \"knn_rows\",\n  \"backend\": \"cpu_python_reference\",\n  \"k\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 1.0,\n        \"neighbor_id\": 5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 2.7,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"neighbor_rank\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"neighbor_rank\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.7,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "knn_rows_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_knn_rows.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.180084,
+      "stdout": "{\n  \"app\": \"knn_rows\",\n  \"backend\": \"cpu\",\n  \"k\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 1.0,\n        \"neighbor_id\": 5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 2.7,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"neighbor_rank\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"neighbor_rank\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.7,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "knn_rows_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_knn_rows.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.18095,
+      "stdout": "{\n  \"app\": \"knn_rows\",\n  \"backend\": \"embree\",\n  \"k\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 1.0,\n        \"neighbor_id\": 5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 2.7,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"neighbor_rank\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"neighbor_rank\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.7,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hausdorff_distance_app_cpu_python_reference",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170647,
+      "stdout": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"cpu_python_reference\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"matches_oracle\": true,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.\",\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hausdorff_distance_app_cpu",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182422,
+      "stdout": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"cpu\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"matches_oracle\": true,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.\",\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hausdorff_distance_app_embree",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.183475,
+      "stdout": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"embree\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"matches_oracle\": true,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.\",\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hausdorff_distance_app_optix",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.700212,
+      "stdout": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"optix\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.2999999523162842,\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.2999999523162842,\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"hausdorff_distance\": 0.2999999523162842,\n  \"matches_oracle\": true,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.\",\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "hausdorff_distance_app_vulkan",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.497955,
+      "stdout": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"vulkan\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.2999999523162842,\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.2999999523162842,\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"hausdorff_distance\": 0.2999999523162842,\n  \"matches_oracle\": true,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.\",\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "robot_collision_screening_app_cpu_python_reference",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.172925,
+      "stdout": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine.\",\n  \"colliding_pose_ids\": [\n    2,\n    3\n  ],\n  \"edge_ray_count\": 16,\n  \"matches_oracle\": true,\n  \"obstacle_triangle_count\": 2,\n  \"oracle\": {\n    \"colliding_pose_ids\": [\n      2,\n      3\n    ],\n    \"pose_summaries\": [\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_left\",\n        \"pose_id\": 1\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 3,\n        \"hit_ray_ids\": [\n          2010,\n          2011,\n          2012\n        ],\n        \"label\": \"boundary_crossing\",\n        \"pose_id\": 2\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 4,\n        \"hit_ray_ids\": [\n          3010,\n          3011,\n          3012,\n          3013\n        ],\n        \"label\": \"inside_obstacle\",\n        \"pose_id\": 3\n      },\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_right\",\n        \"pose_id\": 4\n      }\n    ]\n  },\n  \"pose_count\": 4,\n  \"pose_summaries\": [\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_left\",\n      \"pose_id\": 1\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 3,\n      \"hit_ray_ids\": [\n        2010,\n        2011,\n        2012\n      ],\n      \"label\": \"boundary_crossing\",\n      \"pose_id\": 2\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 4,\n      \"hit_ray_ids\": [\n        3010,\n        3011,\n        3012,\n        3013\n      ],\n      \"label\": \"inside_obstacle\",\n      \"pose_id\": 3\n    },\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_right\",\n      \"pose_id\": 4\n    }\n  ],\n  \"rows\": [\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1013\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2011\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 2013\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3011\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3012\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3013\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4013\n    }\n  ],\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle hit counts; Python maps edge rays back to pose/link collision flags.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "robot_collision_screening_app_cpu",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.184769,
+      "stdout": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"cpu\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine.\",\n  \"colliding_pose_ids\": [\n    2,\n    3\n  ],\n  \"edge_ray_count\": 16,\n  \"matches_oracle\": true,\n  \"obstacle_triangle_count\": 2,\n  \"oracle\": {\n    \"colliding_pose_ids\": [\n      2,\n      3\n    ],\n    \"pose_summaries\": [\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_left\",\n        \"pose_id\": 1\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 3,\n        \"hit_ray_ids\": [\n          2010,\n          2011,\n          2012\n        ],\n        \"label\": \"boundary_crossing\",\n        \"pose_id\": 2\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 4,\n        \"hit_ray_ids\": [\n          3010,\n          3011,\n          3012,\n          3013\n        ],\n        \"label\": \"inside_obstacle\",\n        \"pose_id\": 3\n      },\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_right\",\n        \"pose_id\": 4\n      }\n    ]\n  },\n  \"pose_count\": 4,\n  \"pose_summaries\": [\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_left\",\n      \"pose_id\": 1\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 3,\n      \"hit_ray_ids\": [\n        2010,\n        2011,\n        2012\n      ],\n      \"label\": \"boundary_crossing\",\n      \"pose_id\": 2\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 4,\n      \"hit_ray_ids\": [\n        3010,\n        3011,\n        3012,\n        3013\n      ],\n      \"label\": \"inside_obstacle\",\n      \"pose_id\": 3\n    },\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_right\",\n      \"pose_id\": 4\n    }\n  ],\n  \"rows\": [\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1013\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2011\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 2013\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3011\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3012\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3013\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4013\n    }\n  ],\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle hit counts; Python maps edge rays back to pose/link collision flags.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "robot_collision_screening_app_embree",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.185122,
+      "stdout": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine.\",\n  \"colliding_pose_ids\": [\n    2,\n    3\n  ],\n  \"edge_ray_count\": 16,\n  \"matches_oracle\": true,\n  \"obstacle_triangle_count\": 2,\n  \"oracle\": {\n    \"colliding_pose_ids\": [\n      2,\n      3\n    ],\n    \"pose_summaries\": [\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_left\",\n        \"pose_id\": 1\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 3,\n        \"hit_ray_ids\": [\n          2010,\n          2011,\n          2012\n        ],\n        \"label\": \"boundary_crossing\",\n        \"pose_id\": 2\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 4,\n        \"hit_ray_ids\": [\n          3010,\n          3011,\n          3012,\n          3013\n        ],\n        \"label\": \"inside_obstacle\",\n        \"pose_id\": 3\n      },\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_right\",\n        \"pose_id\": 4\n      }\n    ]\n  },\n  \"pose_count\": 4,\n  \"pose_summaries\": [\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_left\",\n      \"pose_id\": 1\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 3,\n      \"hit_ray_ids\": [\n        2010,\n        2011,\n        2012\n      ],\n      \"label\": \"boundary_crossing\",\n      \"pose_id\": 2\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 4,\n      \"hit_ray_ids\": [\n        3010,\n        3011,\n        3012,\n        3013\n      ],\n      \"label\": \"inside_obstacle\",\n      \"pose_id\": 3\n    },\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_right\",\n      \"pose_id\": 4\n    }\n  ],\n  \"rows\": [\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1013\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2011\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 2013\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3011\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3012\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3013\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4013\n    }\n  ],\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle hit counts; Python maps edge rays back to pose/link collision flags.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "robot_collision_screening_app_optix",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.526813,
+      "stdout": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"optix\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine.\",\n  \"colliding_pose_ids\": [\n    2,\n    3\n  ],\n  \"edge_ray_count\": 16,\n  \"matches_oracle\": true,\n  \"obstacle_triangle_count\": 2,\n  \"oracle\": {\n    \"colliding_pose_ids\": [\n      2,\n      3\n    ],\n    \"pose_summaries\": [\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_left\",\n        \"pose_id\": 1\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 3,\n        \"hit_ray_ids\": [\n          2010,\n          2011,\n          2012\n        ],\n        \"label\": \"boundary_crossing\",\n        \"pose_id\": 2\n      },\n      {\n        \"collides\": true,\n        \"hit_edge_count\": 4,\n        \"hit_ray_ids\": [\n          3010,\n          3011,\n          3012,\n          3013\n        ],\n        \"label\": \"inside_obstacle\",\n        \"pose_id\": 3\n      },\n      {\n        \"collides\": false,\n        \"hit_edge_count\": 0,\n        \"hit_ray_ids\": [],\n        \"label\": \"clear_right\",\n        \"pose_id\": 4\n      }\n    ]\n  },\n  \"pose_count\": 4,\n  \"pose_summaries\": [\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_left\",\n      \"pose_id\": 1\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 3,\n      \"hit_ray_ids\": [\n        2010,\n        2011,\n        2012\n      ],\n      \"label\": \"boundary_crossing\",\n      \"pose_id\": 2\n    },\n    {\n      \"collides\": true,\n      \"hit_edge_count\": 4,\n      \"hit_ray_ids\": [\n        3010,\n        3011,\n        3012,\n        3013\n      ],\n      \"label\": \"inside_obstacle\",\n      \"pose_id\": 3\n    },\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_right\",\n      \"pose_id\": 4\n    }\n  ],\n  \"rows\": [\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1013\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2011\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 2013\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3011\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3012\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3013\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4013\n    }\n  ],\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle hit counts; Python maps edge rays back to pose/link collision flags.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "barnes_hut_force_app_cpu_python_reference",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.1746,
+      "stdout": "0.0,\n      \"neighbor_id\": 11,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.177688439041936,\n      \"neighbor_id\": 13,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.955326059765992,\n      \"neighbor_id\": 12,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 2.205107707119995,\n      \"neighbor_id\": 10,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.3986637907732803,\n      \"neighbor_id\": 13,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.7826237921249263,\n      \"neighbor_id\": 11,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.0161349161204467,\n      \"neighbor_id\": 12,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.6086394921491163,\n      \"neighbor_id\": 10,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.28140973466349195,\n      \"neighbor_id\": 13,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 1.4577379737113252,\n      \"neighbor_id\": 11,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 2.386063704095094,\n      \"neighbor_id\": 12,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 3.1484122982862335,\n      \"neighbor_id\": 10,\n      \"query_id\": 6\n    }\n  ],\n  \"error_rows\": [\n    {\n      \"abs_error\": 0.018656369847309225,\n      \"body_id\": 1,\n      \"relative_error\": 0.00264779731021958\n    },\n    {\n      \"abs_error\": 0.013502147953277583,\n      \"body_id\": 2,\n      \"relative_error\": 0.006558786879803883\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 3,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 4,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 5,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0246485454208788,\n      \"body_id\": 6,\n      \"relative_error\": 0.003449595910263197\n    }\n  ],\n  \"exact_force_rows\": [\n    {\n      \"body_id\": 1,\n      \"force_x\": 4.529764834252745,\n      \"force_y\": 5.396970754241206\n    },\n    {\n      \"body_id\": 2,\n      \"force_x\": 0.9189409922421019,\n      \"force_y\": -1.842152367029925\n    },\n    {\n      \"body_id\": 3,\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"body_id\": 4,\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"body_id\": 5,\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"body_id\": 6,\n      \"force_x\": -4.677492586278445,\n      \"force_y\": -5.40157267231589\n    }\n  ],\n  \"force_rows\": [\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 1,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4\n      ],\n      \"force_x\": 4.513687081310003,\n      \"force_y\": 5.406434685569768\n    },\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 2,\n      \"exact_body_ids\": [\n        1,\n        3,\n        4\n      ],\n      \"force_x\": 0.9138591530808194,\n      \"force_y\": -1.8296430540955126\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 3,\n      \"exact_body_ids\": [\n        1,\n        2,\n        4,\n        5,\n        6\n      ],\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 4,\n      \"exact_body_ids\": [\n        1,\n        2,\n        3,\n        5,\n        6\n      ],\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"accepted_node_ids\": [\n        10\n      ],\n      \"body_id\": 5,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4,\n        6\n      ],\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"accepted_node_ids\": [\n        10,\n        12\n      ],\n      \"body_id\": 6,\n      \"exact_body_ids\": [\n        4,\n        5\n      ],\n      \"force_x\": -4.665966756850863,\n      \"force_y\": -5.423360422254133\n    }\n  ],\n  \"max_relative_error\": 0.006558786879803883,\n  \"node_count\": 4,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "barnes_hut_force_app_cpu",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.185983,
+      "stdout": "0.0,\n      \"neighbor_id\": 11,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.177688439041936,\n      \"neighbor_id\": 13,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.955326059765992,\n      \"neighbor_id\": 12,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 2.205107707119995,\n      \"neighbor_id\": 10,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.3986637907732803,\n      \"neighbor_id\": 13,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.7826237921249263,\n      \"neighbor_id\": 11,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.0161349161204467,\n      \"neighbor_id\": 12,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.6086394921491163,\n      \"neighbor_id\": 10,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.28140973466349195,\n      \"neighbor_id\": 13,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 1.4577379737113252,\n      \"neighbor_id\": 11,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 2.386063704095094,\n      \"neighbor_id\": 12,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 3.1484122982862335,\n      \"neighbor_id\": 10,\n      \"query_id\": 6\n    }\n  ],\n  \"error_rows\": [\n    {\n      \"abs_error\": 0.018656369847309225,\n      \"body_id\": 1,\n      \"relative_error\": 0.00264779731021958\n    },\n    {\n      \"abs_error\": 0.013502147953277583,\n      \"body_id\": 2,\n      \"relative_error\": 0.006558786879803883\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 3,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 4,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 5,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0246485454208788,\n      \"body_id\": 6,\n      \"relative_error\": 0.003449595910263197\n    }\n  ],\n  \"exact_force_rows\": [\n    {\n      \"body_id\": 1,\n      \"force_x\": 4.529764834252745,\n      \"force_y\": 5.396970754241206\n    },\n    {\n      \"body_id\": 2,\n      \"force_x\": 0.9189409922421019,\n      \"force_y\": -1.842152367029925\n    },\n    {\n      \"body_id\": 3,\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"body_id\": 4,\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"body_id\": 5,\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"body_id\": 6,\n      \"force_x\": -4.677492586278445,\n      \"force_y\": -5.40157267231589\n    }\n  ],\n  \"force_rows\": [\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 1,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4\n      ],\n      \"force_x\": 4.513687081310003,\n      \"force_y\": 5.406434685569768\n    },\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 2,\n      \"exact_body_ids\": [\n        1,\n        3,\n        4\n      ],\n      \"force_x\": 0.9138591530808194,\n      \"force_y\": -1.8296430540955126\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 3,\n      \"exact_body_ids\": [\n        1,\n        2,\n        4,\n        5,\n        6\n      ],\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 4,\n      \"exact_body_ids\": [\n        1,\n        2,\n        3,\n        5,\n        6\n      ],\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"accepted_node_ids\": [\n        10\n      ],\n      \"body_id\": 5,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4,\n        6\n      ],\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"accepted_node_ids\": [\n        10,\n        12\n      ],\n      \"body_id\": 6,\n      \"exact_body_ids\": [\n        4,\n        5\n      ],\n      \"force_x\": -4.665966756850863,\n      \"force_y\": -5.423360422254133\n    }\n  ],\n  \"max_relative_error\": 0.006558786879803883,\n  \"node_count\": 4,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "barnes_hut_force_app_embree",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.186633,
+      "stdout": "0.0,\n      \"neighbor_id\": 11,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.177688439041936,\n      \"neighbor_id\": 13,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.955326059765992,\n      \"neighbor_id\": 12,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 2.205107707119995,\n      \"neighbor_id\": 10,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.3986637907732803,\n      \"neighbor_id\": 13,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.7826237921249263,\n      \"neighbor_id\": 11,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.0161349161204467,\n      \"neighbor_id\": 12,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.6086394921491163,\n      \"neighbor_id\": 10,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.28140973466349195,\n      \"neighbor_id\": 13,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 1.4577379737113252,\n      \"neighbor_id\": 11,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 2.386063704095094,\n      \"neighbor_id\": 12,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 3.1484122982862335,\n      \"neighbor_id\": 10,\n      \"query_id\": 6\n    }\n  ],\n  \"error_rows\": [\n    {\n      \"abs_error\": 0.018656369847309225,\n      \"body_id\": 1,\n      \"relative_error\": 0.00264779731021958\n    },\n    {\n      \"abs_error\": 0.013502147953277583,\n      \"body_id\": 2,\n      \"relative_error\": 0.006558786879803883\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 3,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 4,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 5,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0246485454208788,\n      \"body_id\": 6,\n      \"relative_error\": 0.003449595910263197\n    }\n  ],\n  \"exact_force_rows\": [\n    {\n      \"body_id\": 1,\n      \"force_x\": 4.529764834252745,\n      \"force_y\": 5.396970754241206\n    },\n    {\n      \"body_id\": 2,\n      \"force_x\": 0.9189409922421019,\n      \"force_y\": -1.842152367029925\n    },\n    {\n      \"body_id\": 3,\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"body_id\": 4,\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"body_id\": 5,\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"body_id\": 6,\n      \"force_x\": -4.677492586278445,\n      \"force_y\": -5.40157267231589\n    }\n  ],\n  \"force_rows\": [\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 1,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4\n      ],\n      \"force_x\": 4.513687081310003,\n      \"force_y\": 5.406434685569768\n    },\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 2,\n      \"exact_body_ids\": [\n        1,\n        3,\n        4\n      ],\n      \"force_x\": 0.9138591530808194,\n      \"force_y\": -1.8296430540955126\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 3,\n      \"exact_body_ids\": [\n        1,\n        2,\n        4,\n        5,\n        6\n      ],\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 4,\n      \"exact_body_ids\": [\n        1,\n        2,\n        3,\n        5,\n        6\n      ],\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"accepted_node_ids\": [\n        10\n      ],\n      \"body_id\": 5,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4,\n        6\n      ],\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"accepted_node_ids\": [\n        10,\n        12\n      ],\n      \"body_id\": 6,\n      \"exact_body_ids\": [\n        4,\n        5\n      ],\n      \"force_x\": -4.665966756850863,\n      \"force_y\": -5.423360422254133\n    }\n  ],\n  \"max_relative_error\": 0.006558786879803883,\n  \"node_count\": 4,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "barnes_hut_force_app_optix",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.701226,
+      "stdout": "0.0,\n      \"neighbor_id\": 11,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.177688439041936,\n      \"neighbor_id\": 13,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.955326059765992,\n      \"neighbor_id\": 12,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 2.205107707119995,\n      \"neighbor_id\": 10,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.3986637907732803,\n      \"neighbor_id\": 13,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.7826237921249263,\n      \"neighbor_id\": 11,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.0161349161204467,\n      \"neighbor_id\": 12,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.6086394921491163,\n      \"neighbor_id\": 10,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.28140973466349195,\n      \"neighbor_id\": 13,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 1.4577379737113252,\n      \"neighbor_id\": 11,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 2.386063704095094,\n      \"neighbor_id\": 12,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 3.1484122982862335,\n      \"neighbor_id\": 10,\n      \"query_id\": 6\n    }\n  ],\n  \"error_rows\": [\n    {\n      \"abs_error\": 0.018656369847309225,\n      \"body_id\": 1,\n      \"relative_error\": 0.00264779731021958\n    },\n    {\n      \"abs_error\": 0.013502147953277583,\n      \"body_id\": 2,\n      \"relative_error\": 0.006558786879803883\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 3,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 4,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 5,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0246485454208788,\n      \"body_id\": 6,\n      \"relative_error\": 0.003449595910263197\n    }\n  ],\n  \"exact_force_rows\": [\n    {\n      \"body_id\": 1,\n      \"force_x\": 4.529764834252745,\n      \"force_y\": 5.396970754241206\n    },\n    {\n      \"body_id\": 2,\n      \"force_x\": 0.9189409922421019,\n      \"force_y\": -1.842152367029925\n    },\n    {\n      \"body_id\": 3,\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"body_id\": 4,\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"body_id\": 5,\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"body_id\": 6,\n      \"force_x\": -4.677492586278445,\n      \"force_y\": -5.40157267231589\n    }\n  ],\n  \"force_rows\": [\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 1,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4\n      ],\n      \"force_x\": 4.513687081310003,\n      \"force_y\": 5.406434685569768\n    },\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 2,\n      \"exact_body_ids\": [\n        1,\n        3,\n        4\n      ],\n      \"force_x\": 0.9138591530808194,\n      \"force_y\": -1.8296430540955126\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 3,\n      \"exact_body_ids\": [\n        1,\n        2,\n        4,\n        5,\n        6\n      ],\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 4,\n      \"exact_body_ids\": [\n        1,\n        2,\n        3,\n        5,\n        6\n      ],\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"accepted_node_ids\": [\n        10\n      ],\n      \"body_id\": 5,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4,\n        6\n      ],\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"accepted_node_ids\": [\n        10,\n        12\n      ],\n      \"body_id\": 6,\n      \"exact_body_ids\": [\n        4,\n        5\n      ],\n      \"force_x\": -4.665966756850863,\n      \"force_y\": -5.423360422254133\n    }\n  ],\n  \"max_relative_error\": 0.006558786879803883,\n  \"node_count\": 4,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "barnes_hut_force_app_vulkan",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.48981,
+      "stdout": "0.0,\n      \"neighbor_id\": 11,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.177688439041936,\n      \"neighbor_id\": 13,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.955326059765992,\n      \"neighbor_id\": 12,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 2.205107707119995,\n      \"neighbor_id\": 10,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.3986637907732803,\n      \"neighbor_id\": 13,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.7826237921249263,\n      \"neighbor_id\": 11,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.0161349161204467,\n      \"neighbor_id\": 12,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 2.6086394921491163,\n      \"neighbor_id\": 10,\n      \"query_id\": 5\n    },\n    {\n      \"distance\": 0.28140973466349195,\n      \"neighbor_id\": 13,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 1.4577379737113252,\n      \"neighbor_id\": 11,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 2.386063704095094,\n      \"neighbor_id\": 12,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 3.1484122982862335,\n      \"neighbor_id\": 10,\n      \"query_id\": 6\n    }\n  ],\n  \"error_rows\": [\n    {\n      \"abs_error\": 0.018656369847309225,\n      \"body_id\": 1,\n      \"relative_error\": 0.00264779731021958\n    },\n    {\n      \"abs_error\": 0.013502147953277583,\n      \"body_id\": 2,\n      \"relative_error\": 0.006558786879803883\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 3,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 4,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0,\n      \"body_id\": 5,\n      \"relative_error\": 0.0\n    },\n    {\n      \"abs_error\": 0.0246485454208788,\n      \"body_id\": 6,\n      \"relative_error\": 0.003449595910263197\n    }\n  ],\n  \"exact_force_rows\": [\n    {\n      \"body_id\": 1,\n      \"force_x\": 4.529764834252745,\n      \"force_y\": 5.396970754241206\n    },\n    {\n      \"body_id\": 2,\n      \"force_x\": 0.9189409922421019,\n      \"force_y\": -1.842152367029925\n    },\n    {\n      \"body_id\": 3,\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"body_id\": 4,\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"body_id\": 5,\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"body_id\": 6,\n      \"force_x\": -4.677492586278445,\n      \"force_y\": -5.40157267231589\n    }\n  ],\n  \"force_rows\": [\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 1,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4\n      ],\n      \"force_x\": 4.513687081310003,\n      \"force_y\": 5.406434685569768\n    },\n    {\n      \"accepted_node_ids\": [\n        13\n      ],\n      \"body_id\": 2,\n      \"exact_body_ids\": [\n        1,\n        3,\n        4\n      ],\n      \"force_x\": 0.9138591530808194,\n      \"force_y\": -1.8296430540955126\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 3,\n      \"exact_body_ids\": [\n        1,\n        2,\n        4,\n        5,\n        6\n      ],\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 4,\n      \"exact_body_ids\": [\n        1,\n        2,\n        3,\n        5,\n        6\n      ],\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"accepted_node_ids\": [\n        10\n      ],\n      \"body_id\": 5,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4,\n        6\n      ],\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"accepted_node_ids\": [\n        10,\n        12\n      ],\n      \"body_id\": 6,\n      \"exact_body_ids\": [\n        4,\n        5\n      ],\n      \"force_x\": -4.665966756850863,\n      \"force_y\": -5.423360422254133\n    }\n  ],\n  \"max_relative_error\": 0.006558786879803883,\n  \"node_count\": 4,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_bfs_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_bfs.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170118,
+      "stdout": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"cpu_python_reference\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_bfs_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_bfs.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.181876,
+      "stdout": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"cpu\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_bfs_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_bfs.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182522,
+      "stdout": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"embree\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_bfs_optix",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_bfs.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.177283,
+      "stdout": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"optix\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_bfs_vulkan",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_bfs.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.176667,
+      "stdout": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"vulkan\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_triangle_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_triangle_count.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170253,
+      "stdout": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"cpu_python_reference\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_triangle_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_triangle_count.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.18178,
+      "stdout": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"cpu\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_triangle_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_triangle_count.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182938,
+      "stdout": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"embree\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_triangle_optix",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_triangle_count.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.176844,
+      "stdout": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"optix\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "graph_triangle_vulkan",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_graph_triangle_count.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.174534,
+      "stdout": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"vulkan\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_conjunctive_scan_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.17159,
+      "stdout": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"cpu_python_reference\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_conjunctive_scan_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.180498,
+      "stdout": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"cpu\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_conjunctive_scan_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182596,
+      "stdout": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"embree\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_conjunctive_scan_optix",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.760807,
+      "stdout": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"optix\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_conjunctive_scan_vulkan",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_conjunctive_scan.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.72335,
+      "stdout": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"vulkan\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_count_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_count.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.173105,
+      "stdout": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"cpu_python_reference\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_count_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_count.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.181177,
+      "stdout": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"cpu\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_count_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_count.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.183073,
+      "stdout": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"embree\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_count_optix",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_count.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.771303,
+      "stdout": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"optix\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_count_vulkan",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_count.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.718225,
+      "stdout": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"vulkan\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_sum_cpu_python_reference",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_sum.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170738,
+      "stdout": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"cpu_python_reference\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_sum_cpu",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_sum.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182205,
+      "stdout": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"cpu\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_sum_embree",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_sum.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.182077,
+      "stdout": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"embree\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_sum_optix",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_sum.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.775933,
+      "stdout": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"optix\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "db_grouped_sum_vulkan",
+      "category": "tutorial",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_db_grouped_sum.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.745913,
+      "stdout": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"vulkan\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "sales_risk_screening_cpu_python_reference",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_sales_risk_screening.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.171822,
+      "stdout": "{\n  \"app\": \"sales_risk_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"rows\": {\n    \"grouped_count\": [\n      {\n        \"count\": 1,\n        \"region\": \"central\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"grouped_sum\": [\n      {\n        \"region\": \"central\",\n        \"sum\": 260\n      },\n      {\n        \"region\": \"east\",\n        \"sum\": 310\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 430\n      }\n    ],\n    \"scan\": [\n      {\n        \"row_id\": 2\n      },\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "sales_risk_screening_cpu",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_sales_risk_screening.py",
+        "--backend",
+        "cpu"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.183666,
+      "stdout": "{\n  \"app\": \"sales_risk_screening\",\n  \"backend\": \"cpu\",\n  \"rows\": {\n    \"grouped_count\": [\n      {\n        \"count\": 1,\n        \"region\": \"central\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"grouped_sum\": [\n      {\n        \"region\": \"central\",\n        \"sum\": 260\n      },\n      {\n        \"region\": \"east\",\n        \"sum\": 310\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 430\n      }\n    ],\n    \"scan\": [\n      {\n        \"row_id\": 2\n      },\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "sales_risk_screening_embree",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_sales_risk_screening.py",
+        "--backend",
+        "embree"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.185228,
+      "stdout": "{\n  \"app\": \"sales_risk_screening\",\n  \"backend\": \"embree\",\n  \"rows\": {\n    \"grouped_count\": [\n      {\n        \"count\": 1,\n        \"region\": \"central\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"grouped_sum\": [\n      {\n        \"region\": \"central\",\n        \"sum\": 260\n      },\n      {\n        \"region\": \"east\",\n        \"sum\": 310\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 430\n      }\n    ],\n    \"scan\": [\n      {\n        \"row_id\": 2\n      },\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "sales_risk_screening_optix",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_sales_risk_screening.py",
+        "--backend",
+        "optix"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.768984,
+      "stdout": "{\n  \"app\": \"sales_risk_screening\",\n  \"backend\": \"optix\",\n  \"rows\": {\n    \"grouped_count\": [\n      {\n        \"count\": 1,\n        \"region\": \"central\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"grouped_sum\": [\n      {\n        \"region\": \"central\",\n        \"sum\": 260\n      },\n      {\n        \"region\": \"east\",\n        \"sum\": 310\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 430\n      }\n    ],\n    \"scan\": [\n      {\n        \"row_id\": 2\n      },\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "sales_risk_screening_vulkan",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_sales_risk_screening.py",
+        "--backend",
+        "vulkan"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.715132,
+      "stdout": "{\n  \"app\": \"sales_risk_screening\",\n  \"backend\": \"vulkan\",\n  \"rows\": {\n    \"grouped_count\": [\n      {\n        \"count\": 1,\n        \"region\": \"central\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"grouped_sum\": [\n      {\n        \"region\": \"central\",\n        \"sum\": 260\n      },\n      {\n        \"region\": \"east\",\n        \"sum\": 310\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 430\n      }\n    ],\n    \"scan\": [\n      {\n        \"row_id\": 2\n      },\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "v0_7_db_app_demo_auto",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_v0_7_db_app_demo.py",
+        "--backend",
+        "auto"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.183291,
+      "stdout": "{\n  \"app\": \"regional_order_dashboard\",\n  \"backend\": \"embree\",\n  \"data_flow\": [\n    \"app order rows\",\n    \"RTDL v0.7 bounded DB workload\",\n    \"prepared RT dataset over encoded row boxes\",\n    \"application-ready JSON rows\"\n  ],\n  \"fallback_note\": null,\n  \"honesty_boundary\": \"Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.\",\n  \"input_table\": {\n    \"fields\": [\n      \"channel\",\n      \"discount\",\n      \"quantity\",\n      \"region\",\n      \"revenue\",\n      \"row_id\",\n      \"ship_date\"\n    ],\n    \"row_count\": 7\n  },\n  \"prepared_dataset\": {\n    \"row_count\": 7,\n    \"transfer\": \"columnar\"\n  },\n  \"queries\": {\n    \"open_order_count_by_region\": {\n      \"meaning\": \"How many small post-window orders remain by region?\",\n      \"operation\": \"grouped_count\",\n      \"query\": {\n        \"group_keys\": [\n          \"region\"\n        ],\n        \"predicates\": [\n          [\n            \"ship_date\",\n            \"ge\",\n            12\n          ],\n          [\n            \"quantity\",\n            \"lt\",\n            20\n          ]\n        ]\n      }\n    },\n    \"promo_order_ids\": {\n      \"meaning\": \"Which discounted small-quantity orders shipped during the campaign window?\",\n      \"operation\": \"conjunctive_scan\",\n      \"predicates\": [\n        [\n          \"ship_date\",\n          \"between\",\n          12,\n          15\n        ],\n        [\n          \"discount\",\n          \"eq\",\n          6\n        ],\n        [\n          \"quantity\",\n          \"lt\",\n          20\n        ]\n      ]\n    },\n    \"web_revenue_by_region\": {\n      \"meaning\": \"How much web-channel revenue is covered by region?\",\n      \"operation\": \"grouped_sum\",\n      \"query\": {\n        \"group_keys\": [\n          \"region\"\n        ],\n        \"predicates\": [\n          [\n            \"ship_date\",\n            \"ge\",\n            12\n          ],\n          [\n            \"channel\",\n            \"eq\",\n            \"web\"\n          ]\n        ],\n        \"value_field\": \"revenue\"\n      }\n    }\n  },\n  \"requested_backend\": \"auto\",\n  \"results\": {\n    \"open_order_count_by_region\": [\n      {\n        \"count\": 2,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"south\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"promo_order_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"web_revenue_by_region\": [\n      {\n        \"region\": \"east\",\n        \"sum\": 180\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 240\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "v0_7_db_kernel_app_demo_auto",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_v0_7_db_kernel_app_demo.py",
+        "--backend",
+        "auto"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.185103,
+      "stdout": "{\n  \"app\": \"regional_order_dashboard_kernel_form\",\n  \"backend\": \"embree\",\n  \"fallback_note\": null,\n  \"honesty_boundary\": \"RTDL kernel demo for bounded DB workloads; not SQL, joins, transactions, or a DBMS.\",\n  \"input_table\": {\n    \"fields\": [\n      \"channel\",\n      \"discount\",\n      \"quantity\",\n      \"region\",\n      \"revenue\",\n      \"row_id\",\n      \"ship_date\"\n    ],\n    \"row_count\": 7\n  },\n  \"kernel_flow\": [\n    \"rt.input(..., role='probe') receives predicates or grouped query\",\n    \"rt.input(..., role='build') receives application rows\",\n    \"rt.traverse(..., accel='bvh') discovers encoded row candidates\",\n    \"rt.refine(...) applies exact scan or grouped aggregate semantics\",\n    \"rt.emit(...) returns application JSON rows\"\n  ],\n  \"kernels\": {\n    \"promo_scan_kernel\": \"conjunctive_scan\",\n    \"region_count_kernel\": \"grouped_count\",\n    \"region_revenue_kernel\": \"grouped_sum\"\n  },\n  \"predicate_examples\": {\n    \"one_predicate\": [\n      [\n        \"discount\",\n        \"eq\",\n        6\n      ]\n    ],\n    \"three_predicates\": [\n      [\n        \"ship_date\",\n        \"between\",\n        12,\n        15\n      ],\n      [\n        \"discount\",\n        \"eq\",\n        6\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ],\n    \"two_predicates\": [\n      [\n        \"ship_date\",\n        \"between\",\n        12,\n        15\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"requested_backend\": \"auto\",\n  \"results\": {\n    \"one_predicate_discounted_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"open_order_count_by_region\": [\n      {\n        \"count\": 2,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"south\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"three_predicate_promo_order_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"two_predicate_campaign_window_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 6\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"web_revenue_by_region\": [\n      {\n        \"region\": \"east\",\n        \"sum\": 180\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 240\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "service_coverage_gaps",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "cpu_python_reference",
+        "--copies",
+        "2"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.17198,
+      "stdout": "{\n  \"app\": \"service_coverage_gaps\",\n  \"backend\": \"cpu_python_reference\",\n  \"clinic_count\": 6,\n  \"clinic_loads\": {\n    \"10\": 2,\n    \"11\": 1,\n    \"12\": 2,\n    \"110\": 2,\n    \"111\": 1\n  },\n  \"copies\": 2,\n  \"household_count\": 8,\n  \"k_max\": 4,\n  \"nearby_clinics_by_household\": {\n    \"1\": [\n      {\n        \"clinic_id\": 10,\n        \"distance\": 0.14142135623730953\n      }\n    ],\n    \"2\": [\n      {\n        \"clinic_id\": 10,\n        \"distance\": 0.5\n      }\n    ],\n    \"3\": [\n      {\n        \"clinic_id\": 11,\n        \"distance\": 0.22360679774997913\n      }\n    ],\n    \"101\": [\n      {\n        \"clinic_id\": 110,\n        \"distance\": 0.14142135623730925\n      },\n      {\n        \"clinic_id\": 12,\n        \"distance\": 0.7000000000000002\n      }\n    ],\n    \"102\": [\n      {\n        \"clinic_id\": 12,\n        \"distance\": 0.44721359549995804\n      },\n      {\n        \"clinic_id\": 110,\n        \"distance\": 0.5000000000000003\n      }\n    ],\n    \"103\": [\n      {\n        \"clinic_id\": 111,\n        \"distance\": 0.22360679774997913\n      }\n    ]\n  },\n  \"radius\": 0.85,\n  \"rows\": [\n    {\n      \"distance\": 0.14142135623730953,\n      \"neighbor_id\": 10,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.5,\n      \"neighbor_id\": 10,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.22360679774997913,\n      \"neighbor_id\": 11,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.14142135623730925,\n      \"neighbor_id\": 110,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.7000000000000002,\n      \"neighbor_id\": 12,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.44721359549995804,\n      \"neighbor_id\": 12,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.5000000000000003,\n      \"neighbor_id\": 110,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.22360679774997913,\n      \"neighbor_id\": 111,\n      \"query_id\": 103\n    }\n  ],\n  \"uncovered_household_ids\": [\n    4,\n    104\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "event_hotspot_screening",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "cpu_python_reference",
+        "--copies",
+        "2"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.169905,
+      "stdout": "{\n  \"app\": \"event_hotspot_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"copies\": 2,\n  \"event_count\": 12,\n  \"hotspot_threshold\": 3,\n  \"hotspots\": [\n    {\n      \"event_id\": 101,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 102,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 103,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 1,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 2,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 3,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 4,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 6,\n      \"neighbor_count\": 3\n    },\n    {\n      \"event_id\": 104,\n      \"neighbor_count\": 3\n    }\n  ],\n  \"k_max\": 12,\n  \"neighbor_count_by_event\": {\n    \"1\": 3,\n    \"2\": 3,\n    \"3\": 3,\n    \"4\": 3,\n    \"5\": 0,\n    \"6\": 3,\n    \"101\": 4,\n    \"102\": 4,\n    \"103\": 4,\n    \"104\": 3,\n    \"105\": 0,\n    \"106\": 0\n  },\n  \"radius\": 0.75,\n  \"rows\": [\n    {\n      \"distance\": 0.223606797749979,\n      \"neighbor_id\": 2,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.36055512754639896,\n      \"neighbor_id\": 3,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.4272001872658766,\n      \"neighbor_id\": 4,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.20615528128088306,\n      \"neighbor_id\": 4,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.223606797749979,\n      \"neighbor_id\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.31622776601683794,\n      \"neighbor_id\": 3,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.31622776601683794,\n      \"neighbor_id\": 2,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.36055512754639896,\n      \"neighbor_id\": 1,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.36400549446402586,\n      \"neighbor_id\": 4,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.20615528128088306,\n      \"neighbor_id\": 2,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.36400549446402586,\n      \"neighbor_id\": 3,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.4272001872658766,\n      \"neighbor_id\": 1,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.40000000000000036,\n      \"neighbor_id\": 101,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 0.6082762530298225,\n      \"neighbor_id\": 102,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 0.728010988928052,\n      \"neighbor_id\": 103,\n      \"query_id\": 6\n    },\n    {\n      \"distance\": 0.22360679774997913,\n      \"neighbor_id\": 102,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.3605551275463988,\n      \"neighbor_id\": 103,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.40000000000000036,\n      \"neighbor_id\": 6,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.4272001872658769,\n      \"neighbor_id\": 104,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.20615528128088317,\n      \"neighbor_id\": 104,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.22360679774997913,\n      \"neighbor_id\": 101,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.31622776601683783,\n      \"neighbor_id\": 103,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.6082762530298225,\n      \"neighbor_id\": 6,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.31622776601683783,\n      \"neighbor_id\": 102,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 0.3605551275463988,\n      \"neighbor_id\": 101,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 0.364005494464026,\n      \"neighbor_id\": 104,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 0.728010988928052,\n      \"neighbor_id\": 6,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 0.20615528128088317,\n      \"neighbor_id\": 102,\n      \"query_id\": 104\n    },\n    {\n      \"distance\": 0.364005494464026,\n      \"neighbor_id\": 103,\n      \"query_id\": 104\n    },\n    {\n      \"distance\": 0.4272001872658769,\n      \"neighbor_id\": 101,\n      \"query_id\": 104\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "facility_knn_assignment",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_facility_knn_assignment.py",
+        "--backend",
+        "cpu_python_reference",
+        "--copies",
+        "2"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.171772,
+      "stdout": "2271554554524,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"103\": [\n      {\n        \"depot_id\": 111,\n        \"distance\": 0.6082762530298217,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"depot_id\": 112,\n        \"distance\": 0.9219544457292891,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"depot_id\": 110,\n        \"distance\": 2.3021728866442674,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"104\": [\n      {\n        \"depot_id\": 112,\n        \"distance\": 0.44721359549995826,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"depot_id\": 113,\n        \"distance\": 1.1401754250991376,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"depot_id\": 111,\n        \"distance\": 1.9235384061671348,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"copies\": 2,\n  \"customer_count\": 8,\n  \"depot_count\": 8,\n  \"k\": 3,\n  \"primary_depot_by_customer\": {\n    \"1\": 10,\n    \"2\": 11,\n    \"3\": 11,\n    \"4\": 12,\n    \"101\": 110,\n    \"102\": 111,\n    \"103\": 111,\n    \"104\": 112\n  },\n  \"primary_depot_load\": {\n    \"10\": 1,\n    \"11\": 2,\n    \"12\": 1,\n    \"110\": 1,\n    \"111\": 2,\n    \"112\": 1\n  },\n  \"rows\": [\n    {\n      \"distance\": 0.2,\n      \"neighbor_id\": 10,\n      \"neighbor_rank\": 1,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 1.5,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 2,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 3.0016662039607267,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 3,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.7280109889280517,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 1.019803902718557,\n      \"neighbor_id\": 10,\n      \"neighbor_rank\": 2,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 2.202271554554524,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 3,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.608276253029822,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 1,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.9219544457292886,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 2,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 2.302172886644268,\n      \"neighbor_id\": 10,\n      \"neighbor_rank\": 3,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.4472135954999578,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 1,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.140175425099138,\n      \"neighbor_id\": 13,\n      \"neighbor_rank\": 2,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.9235384061671343,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 3,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 110,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.5,\n      \"neighbor_id\": 13,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.5,\n      \"neighbor_id\": 111,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 0.728010988928052,\n      \"neighbor_id\": 111,\n      \"neighbor_rank\": 1,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 1.019803902718557,\n      \"neighbor_id\": 110,\n      \"neighbor_rank\": 2,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 2.202271554554524,\n      \"neighbor_id\": 112,\n      \"neighbor_rank\": 3,\n      \"query_id\": 102\n    },\n    {\n      \"distance\": 0.6082762530298217,\n      \"neighbor_id\": 111,\n      \"neighbor_rank\": 1,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 0.9219544457292891,\n      \"neighbor_id\": 112,\n      \"neighbor_rank\": 2,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 2.3021728866442674,\n      \"neighbor_id\": 110,\n      \"neighbor_rank\": 3,\n      \"query_id\": 103\n    },\n    {\n      \"distance\": 0.44721359549995826,\n      \"neighbor_id\": 112,\n      \"neighbor_rank\": 1,\n      \"query_id\": 104\n    },\n    {\n      \"distance\": 1.1401754250991376,\n      \"neighbor_id\": 113,\n      \"neighbor_rank\": 2,\n      \"query_id\": 104\n    },\n    {\n      \"distance\": 1.9235384061671348,\n      \"neighbor_id\": 111,\n      \"neighbor_rank\": 3,\n      \"query_id\": 104\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "road_hazard_screening",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/rtdl_road_hazard_screening.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.173671,
+      "stdout": "{\n  \"app\": \"road_hazard_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"priority_segments\": [\n    1\n  ],\n  \"row_count\": 3,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "lit_ball_demo",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/visual_demo/rtdl_lit_ball_demo.py",
+        "--backend",
+        "cpu_python_reference",
+        "--compare-backend",
+        "none",
+        "--width",
+        "64",
+        "--height",
+        "64",
+        "--triangles",
+        "128",
+        "--output",
+        "/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/lit_ball_demo/demo.pgm"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.24755,
+      "stdout": "                                  \n                                                                \n                            %%%%%###                            \n                         @%%%%%%%####**                         \n                       @@@@%%%%%%####****                       \n                     @@@@@@%%%%%%####***+++                     \n                   @@@@@@@@%%%%%%####***++++=                   \n                  @@@@@@@@@%%%%%%###****+++===                  \n                 @@@@@@@@@@%%%%%####***++++====                 \n                @@@@@@@@@@@@%%%%####***+++====--                \n               @@@@@@@@@@@@@%%%%####***+++===----               \n              @@@@@@@@@@@@@@%%%%####**+++====----:              \n              @@@@@@@@@@@@@@%%%%###***+++===----::              \n             @@@@@@@@@@@@@@@%%%%###***++===----::::             \n            %@@@@@@@@@@@@@@@@%%%###**+++===---::::..            \n            %%@@@@@@@@@@@@@@@%%%###**++===---::::...            \n           %%%%@@@@@@@@@@@@@@%%%###**++==---::::.....           \n           %%%%%@@@@@@@@@@@@@%%%##**++===--::::......           \n          %%%%%%%%@@@@@@@@@@@@%%##**++==--:::.........          \n          %%%%%%%%%@@@@@@@@@@@%%##**+==--:::..........          \n          %%%%%%%%%%@@@@@@@@@@%%##*++=--:::...........          \n         #%%%%%%%%%%%@@@@@@@@@%%##*+==--::.............         \n         ####%%%%%%%%%%@@@@@@@%%#**+=--::..............         \n         ######%%%%%%%%%@@@@@@@%#*+=--::...............         \n         #########%%%%%%%@@@@@@%#*+=-:.................         \n         ############%%%%%@@@@@%#*=-:..................         \n        *##############%%%%%@@@%#+-:....................        \n        *******###########%%%@@%*=:.....................        \n        **************######%%@@*:......................        \n        *********************##@:.......................        \n        *************+++++++++=.........................        \n        +++++++++++++++++===-:..........................        \n        +++++++++++++=====--:...........................        \n        ++++++++=======---::............................        \n         +++=========---::.............................         \n         =========-----::..............................         \n         =======-----:::...............................         \n         ====------:::.................................         \n         ==------::::..................................         \n          ------::::..................................          \n          ----:::::...................................          \n          --:::::.....................................          \n           :::::.....................................           \n           ::::......................................           \n            ::......................................            \n            ........................................            \n             ......................................             \n              ....................................              \n              ....................................              \n               ..................................               \n                ................................                \n                 ..............................                 \n                  ............................                  \n                   ..........................                   \n                     ......................                     \n                       ..................                       \n                         ..............                         \n                            ........                            \n                                                                \n                                                                \n                                                                \n                                                                \n",
+      "stderr": ""
+    },
+    {
+      "name": "hidden_star_demo",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py",
+        "--backend",
+        "cpu_python_reference",
+        "--compare-backend",
+        "none",
+        "--width",
+        "48",
+        "--height",
+        "48",
+        "--latitude-bands",
+        "6",
+        "--longitude-bands",
+        "12",
+        "--frames",
+        "1",
+        "--jobs",
+        "1",
+        "--shadow-mode",
+        "rtdl_light_to_surface",
+        "--output-dir",
+        "/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/hidden_star_demo"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.557937,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"frame_count\": 1,\n  \"frames\": [\n    {\n      \"compare_backend\": null,\n      \"frame_index\": 0,\n      \"frame_path\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/hidden_star_demo/frame_000.ppm\",\n      \"hit_pixels\": 1636,\n      \"phase\": 0.0,\n      \"query_seconds\": 0.1735979620134458,\n      \"rt_rows\": 2304,\n      \"shading_seconds\": 0.02532225998584181,\n      \"shadow_query_seconds\": 0.07515532209072262,\n      \"shadow_rays\": 989\n    }\n  ],\n  \"image_height\": 48,\n  \"image_width\": 48,\n  \"jobs\": 1,\n  \"latitude_bands\": 6,\n  \"light_count\": 1,\n  \"light_layout\": \"single_rtdl_light_to_surface_shadow\",\n  \"longitude_bands\": 12,\n  \"numpy_fast_path\": true,\n  \"phase_mode\": \"uniform\",\n  \"query_share\": 0.9076084658705426,\n  \"scene\": \"single_hidden\",\n  \"shadow_mode\": \"rtdl_light_to_surface\",\n  \"show_light_source\": false,\n  \"total_query_seconds\": 0.1735979620134458,\n  \"total_shading_seconds\": 0.02532225998584181,\n  \"total_shadow_query_seconds\": 0.07515532209072262,\n  \"triangle_count\": 120,\n  \"wall_clock_seconds\": 0.28823965205810964\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "smooth_camera_demo",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
+        "--backend",
+        "cpu_python_reference",
+        "--compare-backend",
+        "none",
+        "--width",
+        "48",
+        "--height",
+        "48",
+        "--latitude-bands",
+        "6",
+        "--longitude-bands",
+        "12",
+        "--frames",
+        "1",
+        "--jobs",
+        "1",
+        "--output-dir",
+        "/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/smooth_camera_demo"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.594775,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"camera_motion\": \"front_arc\",\n  \"camera_sweep_degrees\": 84.0,\n  \"frame_count\": 1,\n  \"frames\": [\n    {\n      \"compare_backend\": null,\n      \"eye\": [\n        -4.095079310916213,\n        0.36000000000000004,\n        4.548046331921653\n      ],\n      \"frame_index\": 0,\n      \"frame_path\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/smooth_camera_demo/frame_000.ppm\",\n      \"hit_pixels\": 1675,\n      \"phase\": 0.0,\n      \"query_seconds\": 0.18541556794662029,\n      \"raw_frame_path\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/smooth_camera_demo/frame_000_raw.ppm\",\n      \"rt_rows\": 2304,\n      \"shading_seconds\": 0.13871694297995418,\n      \"shadow_query_seconds\": 0.12518753192853183,\n      \"shadow_rays\": 1675\n    }\n  ],\n  \"image_height\": 48,\n  \"image_width\": 48,\n  \"jobs\": 1,\n  \"latitude_bands\": 6,\n  \"light_count\": 1,\n  \"longitude_bands\": 12,\n  \"numpy_fast_path\": true,\n  \"phase_endpoint_inclusive\": true,\n  \"phase_mode\": \"uniform\",\n  \"query_share\": 0.691273636273807,\n  \"show_light_source\": false,\n  \"temporal_blend_alpha\": 0.0,\n  \"theme\": \"true_onelight\",\n  \"total_query_seconds\": 0.18541556794662029,\n  \"total_shading_seconds\": 0.13871694297995418,\n  \"total_shadow_query_seconds\": 0.12518753192853183,\n  \"triangle_count\": 120,\n  \"wall_clock_seconds\": 0.33980581699870527\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "render_hidden_star_chunked_video",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "examples/visual_demo/render_hidden_star_chunked_video.py",
+        "--backend",
+        "cpu_python_reference",
+        "--compare-backend",
+        "none",
+        "--width",
+        "48",
+        "--height",
+        "48",
+        "--latitude-bands",
+        "6",
+        "--longitude-bands",
+        "12",
+        "--frames",
+        "1",
+        "--chunk-frames",
+        "1",
+        "--jobs",
+        "1",
+        "--fps",
+        "12",
+        "--output-dir",
+        "/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/render_hidden_star_chunked_video"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.762995,
+      "stdout": "{\n  \"backend\": \"cpu_python_reference\",\n  \"chunk_frames\": 1,\n  \"chunks\": [\n    {\n      \"chunk_end\": 0,\n      \"chunk_start\": 0,\n      \"frame_count\": 1,\n      \"summary_path\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/render_hidden_star_chunked_video/chunks/chunk_000_000/summary.json\",\n      \"total_query_seconds\": 0.1756957620382309,\n      \"total_shading_seconds\": 0.02935478393919766,\n      \"total_shadow_query_seconds\": 0.15143873391207308,\n      \"wall_clock_seconds\": 0.37481161998584867\n    }\n  ],\n  \"compare_backend\": \"none\",\n  \"fps\": 12,\n  \"height\": 48,\n  \"jobs\": 1,\n  \"latitude_bands\": 6,\n  \"longitude_bands\": 12,\n  \"scene\": \"crossed_dual_hidden\",\n  \"shadow_mode\": \"rtdl_light_to_surface\",\n  \"total_frames\": 1,\n  \"total_query_seconds\": 0.1756957620382309,\n  \"total_shading_seconds\": 0.02935478393919766,\n  \"total_shadow_query_seconds\": 0.15143873391207308,\n  \"video_path\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/render_hidden_star_chunked_video/win_cpu_python_reference_hidden_star_earth_48x48_1f_12fps_crossed_dual_hidden_rtdl_light_to_surface_chunked.mp4\",\n  \"wall_clock_seconds\": 0.4717400830704719,\n  \"width\": 48\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "generate_only_polygon_set_jaccard_bundle",
+      "category": "example",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/rtdl_generate_only.py",
+        "--workload",
+        "polygon_set_jaccard",
+        "--dataset",
+        "authored_polygon_set_jaccard_minimal",
+        "--backend",
+        "cpu_python_reference",
+        "--output-mode",
+        "rows",
+        "--artifact-shape",
+        "handoff_bundle",
+        "--output",
+        "/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/generated_polygon_set_jaccard_bundle"
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "duration_seconds": 0.170417,
+      "stdout": "{\n  \"manifest\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/generated_polygon_set_jaccard_bundle/request.json\",\n  \"output_dir\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/generated_polygon_set_jaccard_bundle\",\n  \"program\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/generated_polygon_set_jaccard_bundle/generated_polygon_set_jaccard_cpu_python_reference_authored_polygon_set_jaccard_minimal.py\",\n  \"readme\": \"/home/lestat/work/rtdl_goal516_public_command_validation/build/goal410/generated_polygon_set_jaccard_bundle/README.md\",\n  \"request\": {\n    \"artifact_shape\": \"handoff_bundle\",\n    \"backend\": \"cpu_python_reference\",\n    \"dataset\": \"authored_polygon_set_jaccard_minimal\",\n    \"output_mode\": \"rows\",\n    \"verify\": true,\n    \"workload\": \"polygon_set_jaccard\"\n  }\n}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -14,13 +14,13 @@ files indexed here.
 
 ## What Is Recorded
 
-- Structured revision rounds: `90`
-- Archived files in `history/history.db`: `972`
+- Structured revision rounds: `91`
+- Archived files in `history/history.db`: `980`
 - External report snapshots: `193`
-- Project snapshots: `779`
-- Tracked `docs/reports/` artifacts: `1508`
-- Tracked `history/ad_hoc_reviews/` artifacts: `677`
-- Tracked AI handoff files: `392`
+- Project snapshots: `787`
+- Tracked `docs/reports/` artifacts: `1512`
+- Tracked `history/ad_hoc_reviews/` artifacts: `678`
+- Tracked AI handoff files: `393`
 - Tracked release tags: `8`
 
 ## How To Read The History
@@ -55,6 +55,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.8` | 2026-04-17 | `accepted` | Goal516 Linux full public command validation | `docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md` | `goal516-linux-full-public-command-validation` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal515 public docs command truth | `docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md` | `goal515-public-docs-command-truth` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal514 tutorial/example harness refresh | `docs/reports/goal514_tutorial_example_harness_refresh_2026-04-17.md` | `goal514-tutorial-example-harness-refresh` |
 | `v0.8` | 2026-04-17 | `accepted` | Goal513 public example smoke gate | `docs/reports/goal513_public_example_smoke_gate_2026-04-17.md` | `goal513-public-example-smoke-gate` |
@@ -66,14 +67,13 @@ Use these layers together:
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal507 Hausdorff Linux Large-Scale Performance | `COMPLETE` | `2026-04-17-goal507-hausdorff-linux-perf` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal506 v0.8 Public Entry Alignment | `COMPLETE` | `2026-04-17-goal506-v0-8-public-entry-alignment` |
 | `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal505 v0.8 App Suite Consolidation | `COMPLETE` | `2026-04-17-goal505-v0-8-app-suite-consolidation` |
-| `v0.8.0` | 2026-04-17 | `complete-consensus` | Goal504 v0.8 Barnes-Hut Force App | `COMPLETE` | `2026-04-17-goal504-v0-8-barnes-hut-force-app` |
 
 ## Tracked File Categories
 
 | Category | Count |
 | --- | ---: |
-| `ad_hoc_review_or_consensus` | 677 |
-| `ai_handoff` | 392 |
+| `ad_hoc_review_or_consensus` | 678 |
+| `ai_handoff` | 393 |
 | `example` | 70 |
 | `feature_doc` | 13 |
 | `front_page` | 1 |
@@ -82,11 +82,11 @@ Use these layers together:
 | `live_goal_doc` | 61 |
 | `other` | 481 |
 | `release_report` | 49 |
-| `report_or_review` | 1508 |
+| `report_or_review` | 1512 |
 | `script` | 120 |
 | `source` | 76 |
-| `structured_history_archive` | 1424 |
-| `test` | 212 |
+| `structured_history_archive` | 1433 |
+| `test` | 213 |
 | `tutorial` | 11 |
 
 ## Boundaries

@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 677,
-    "ai_handoff": 392,
+    "ad_hoc_review_or_consensus": 678,
+    "ai_handoff": 393,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1508,
+    "report_or_review": 1512,
     "script": 120,
     "source": 76,
-    "structured_history_archive": 1424,
-    "test": 212,
+    "structured_history_archive": 1433,
+    "test": 213,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 677,
-    "archived_files": 972,
-    "docs_reports": 1508,
+    "ad_hoc_reviews": 678,
+    "archived_files": 980,
+    "docs_reports": 1512,
     "external_reports": 193,
-    "handoffs": 392,
-    "project_snapshots": 779,
+    "handoffs": 393,
+    "project_snapshots": 787,
     "release_tags": 8,
-    "revision_metadata_files": 91,
-    "revision_rounds": 90,
-    "tracked_files": 5102
+    "revision_metadata_files": 92,
+    "revision_rounds": 91,
+    "tracked_files": 5118
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal516-linux-full-public-command-validation.md",
+      "final_result": "docs/reports/goal516_linux_full_public_command_validation_2026-04-17.md",
+      "gemini_review": "docs/reports/goal516_gemini_review_2026-04-17.md",
+      "slug": "goal516-linux-full-public-command-validation",
+      "source_commit": "087f76f",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "Linux full public command harness passed across Oracle, Embree, OptiX, Vulkan, and PostgreSQL.",
+      "title": "Goal516 Linux full public command validation",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal515-public-docs-command-truth.md",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Consolidated the v0.8 app-building line across tutorials, release examples, suite tests, AI reviews, and history.",
       "title": "Goal505 v0.8 App Suite Consolidation",
-      "version": "v0.8.0"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "Codex implemented the third Goal499 paper-derived app using RTDL body-to-node candidate rows plus Python opening-rule and force reduction",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude accepted; Gemini Flash review attempt capacity-blocked",
-      "slug": "2026-04-17-goal504-v0-8-barnes-hut-force-app",
-      "source_commit": "896c25f67a230373dca13d91c79838c59b1e037f",
-      "started_on": "2026-04-17",
-      "status": "complete-consensus",
-      "summary": "Implemented the bounded Barnes-Hut force app as a v0.8 app-building workload and recorded the exposed language gaps.",
-      "title": "Goal504 v0.8 Barnes-Hut Force App",
       "version": "v0.8.0"
     }
   ],
