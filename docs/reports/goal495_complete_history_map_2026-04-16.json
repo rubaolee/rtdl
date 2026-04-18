@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 687,
-    "ai_handoff": 402,
+    "ad_hoc_review_or_consensus": 688,
+    "ai_handoff": 403,
     "example": 73,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 482,
     "release_report": 49,
-    "report_or_review": 1544,
+    "report_or_review": 1547,
     "script": 122,
     "source": 76,
-    "structured_history_archive": 1516,
-    "test": 219,
+    "structured_history_archive": 1525,
+    "test": 220,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 687,
-    "archived_files": 1056,
-    "docs_reports": 1544,
+    "ad_hoc_reviews": 688,
+    "archived_files": 1064,
+    "docs_reports": 1547,
     "external_reports": 193,
-    "handoffs": 402,
-    "project_snapshots": 863,
+    "handoffs": 403,
+    "project_snapshots": 871,
     "release_tags": 8,
-    "revision_metadata_files": 101,
-    "revision_rounds": 100,
-    "tracked_files": 5263
+    "revision_metadata_files": 102,
+    "revision_rounds": 101,
+    "tracked_files": 5278
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-18",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal526-v0_8-public-doc-stale-app-count-cleanup.md",
+      "final_result": "accepted",
+      "gemini_review": "docs/reports/goal526_gemini_review_2026-04-18.md",
+      "slug": "2026-04-18-goal526-v0_8-public-doc-stale-app-count-cleanup",
+      "source_commit": "2075bba",
+      "started_on": "2026-04-18",
+      "status": "accepted",
+      "summary": "Removed stale app-count wording after Goal524 and named all six v0.8 app examples.",
+      "title": "Goal526 v0.8 public doc stale app-count cleanup",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-18",
       "codex_revision": "history/ad_hoc_reviews/2026-04-18-codex-consensus-goal525-v0_8-proximity-perf-doc-refresh.md",
@@ -190,19 +203,6 @@
       "status": "accepted",
       "summary": "Public docs command truth audit now proves all runnable public commands are covered or explicitly gated.",
       "title": "Goal515 public docs command truth",
-      "version": "v0.8"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal514-tutorial-example-harness-refresh.md",
-      "final_result": "docs/reports/goal514_tutorial_example_harness_refresh_2026-04-17.md",
-      "gemini_review": "docs/reports/goal514_gemini_review_2026-04-17.md",
-      "slug": "goal514-tutorial-example-harness-refresh",
-      "source_commit": "0211dc4",
-      "started_on": "2026-04-17",
-      "status": "accepted",
-      "summary": "Broad tutorial/example harness now covers v0.8 app backend commands and optional video dependency skips.",
-      "title": "Goal514 tutorial/example harness refresh",
       "version": "v0.8"
     }
   ],
