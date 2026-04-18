@@ -1,0 +1,11 @@
+slug: goal515-public-docs-command-truth
+title: Goal515 public docs command truth
+version: v0.8
+status: accepted
+started_on: 2026-04-17
+closed_on: 2026-04-17
+source_commit: 56a7a04
+gemini_review: docs/reports/goal515_gemini_review_2026-04-17.md
+codex_revision: history/ad_hoc_reviews/2026-04-17-codex-consensus-goal515-public-docs-command-truth.md
+final_result: docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md
+summary: Public docs command truth audit now proves all runnable public commands are covered or explicitly gated.

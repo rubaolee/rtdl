@@ -1,7 +1,7 @@
 {
   "categories": {
-    "ad_hoc_review_or_consensus": 676,
-    "ai_handoff": 391,
+    "ad_hoc_review_or_consensus": 677,
+    "ai_handoff": 392,
     "example": 70,
     "feature_doc": 13,
     "front_page": 1,
@@ -10,24 +10,24 @@
     "live_goal_doc": 61,
     "other": 481,
     "release_report": 49,
-    "report_or_review": 1503,
-    "script": 119,
+    "report_or_review": 1508,
+    "script": 120,
     "source": 76,
-    "structured_history_archive": 1413,
-    "test": 211,
+    "structured_history_archive": 1424,
+    "test": 212,
     "tutorial": 11
   },
   "counts": {
-    "ad_hoc_reviews": 676,
-    "archived_files": 962,
-    "docs_reports": 1503,
+    "ad_hoc_reviews": 677,
+    "archived_files": 972,
+    "docs_reports": 1508,
     "external_reports": 193,
-    "handoffs": 391,
-    "project_snapshots": 769,
+    "handoffs": 392,
+    "project_snapshots": 779,
     "release_tags": 8,
-    "revision_metadata_files": 90,
-    "revision_rounds": 89,
-    "tracked_files": 5082
+    "revision_metadata_files": 91,
+    "revision_rounds": 90,
+    "tracked_files": 5102
   },
   "date": "2026-04-16",
   "goal": 495,
@@ -49,6 +49,19 @@
   ],
   "repo_root": "/Users/rl2025/rtdl_python_only",
   "top_revision_rounds": [
+    {
+      "closed_on": "2026-04-17",
+      "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal515-public-docs-command-truth.md",
+      "final_result": "docs/reports/goal515_public_docs_command_truth_closure_2026-04-17.md",
+      "gemini_review": "docs/reports/goal515_gemini_review_2026-04-17.md",
+      "slug": "goal515-public-docs-command-truth",
+      "source_commit": "56a7a04",
+      "started_on": "2026-04-17",
+      "status": "accepted",
+      "summary": "Public docs command truth audit now proves all runnable public commands are covered or explicitly gated.",
+      "title": "Goal515 public docs command truth",
+      "version": "v0.8"
+    },
     {
       "closed_on": "2026-04-17",
       "codex_revision": "history/ad_hoc_reviews/2026-04-17-codex-consensus-goal514-tutorial-example-harness-refresh.md",
@@ -190,19 +203,6 @@
       "status": "complete-consensus",
       "summary": "Implemented the bounded Barnes-Hut force app as a v0.8 app-building workload and recorded the exposed language gaps.",
       "title": "Goal504 v0.8 Barnes-Hut Force App",
-      "version": "v0.8.0"
-    },
-    {
-      "closed_on": "2026-04-17",
-      "codex_revision": "Codex implemented the second Goal499 paper-derived app using RTDL ray/triangle hit-count rows plus Python pose aggregation",
-      "final_result": "COMPLETE",
-      "gemini_review": "Claude and Gemini Flash accepted the bounded robot collision screening app",
-      "slug": "2026-04-17-goal503-v0-8-robot-collision-screening-app",
-      "source_commit": "d2004b391644a2d644c8f9cbd7b77995c57972c5",
-      "started_on": "2026-04-17",
-      "status": "complete-consensus",
-      "summary": "Implemented the bounded robot collision screening app as a v0.8 app-building workload over existing RTDL ray/triangle features.",
-      "title": "Goal503 v0.8 Robot Collision Screening App",
       "version": "v0.8.0"
     }
   ],
