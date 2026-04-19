@@ -1,0 +1,313 @@
+{
+  "date": "2026-04-19",
+  "goal": "Goal595 v0.9.2 Apple RT repeatable performance harness",
+  "host": {
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm"
+  },
+  "versions": {
+    "apple_rt": [
+      0,
+      9,
+      2
+    ],
+    "apple_rt_context": "Apple M4",
+    "embree": [
+      4,
+      4,
+      0
+    ]
+  },
+  "methodology": {
+    "warmups_before_sample_window": 5,
+    "measured_repeats": 20,
+    "stability_threshold_cv": 0.15,
+    "cold_seconds": "first measured call in this process before harness warmups",
+    "statistics": "min/median/mean/max/stdev/coefficient_of_variation over measured repeats",
+    "note": "CPU reference is for parity and scale context; Embree is the current mature RTDL local backend baseline."
+  },
+  "cases": [
+    {
+      "workload": "ray_triangle_closest_hit_3d",
+      "input_sizes": {
+        "rays": 256,
+        "triangles": 256
+      },
+      "cpu_reference_rows": 256,
+      "backend_results": {
+        "embree": {
+          "cold_seconds": 0.004951875074766576,
+          "warmups": 5,
+          "samples_seconds": [
+            0.003369665937498212,
+            0.0026673340471461415,
+            0.0025934999575838447,
+            0.002552499994635582,
+            0.002595375059172511,
+            0.0028068330138921738,
+            0.0029512910405173898,
+            0.0026173749938607216,
+            0.0025891660479828715,
+            0.002904833061620593,
+            0.002629250055179,
+            0.0029310419922694564,
+            0.0028712500352412462,
+            0.0027611670084297657,
+            0.0027331250021234155,
+            0.0027372499462217093,
+            0.0028359589632600546,
+            0.0027124169282615185,
+            0.003081665956415236,
+            0.0032059999648481607
+          ],
+          "stats": {
+            "count": 20,
+            "min_seconds": 0.002552499994635582,
+            "median_seconds": 0.0027492084773257375,
+            "mean_seconds": 0.00280734995030798,
+            "max_seconds": 0.003369665937498212,
+            "stdev_seconds": 0.0002192084983582612,
+            "coefficient_of_variation": 0.07808378087463337
+          },
+          "stable": true,
+          "stability_threshold_cv": 0.15,
+          "row_count": 256,
+          "matches_cpu_reference": true
+        },
+        "apple_rt": {
+          "cold_seconds": 0.012223082943819463,
+          "warmups": 5,
+          "samples_seconds": [
+            0.007988790981471539,
+            0.0032049580477178097,
+            0.0017861250089481473,
+            0.001462915912270546,
+            0.0019931249553337693,
+            0.01112608308903873,
+            0.0016412499826401472,
+            0.0013817499857395887,
+            0.0014198330463841558,
+            0.001422584056854248,
+            0.006900833104737103,
+            0.0014664169866591692,
+            0.001650041900575161,
+            0.0013275420060381293,
+            0.0012500419979915023,
+            0.0011493329657241702,
+            0.001362500013783574,
+            0.0013584999833256006,
+            0.0073651670245453715,
+            0.0016264170408248901
+          ],
+          "stats": {
+            "count": 20,
+            "min_seconds": 0.0011493329657241702,
+            "median_seconds": 0.0015464170137420297,
+            "mean_seconds": 0.0029442104045301677,
+            "max_seconds": 0.01112608308903873,
+            "stdev_seconds": 0.0029036599630379457,
+            "coefficient_of_variation": 0.9862270572001823
+          },
+          "stable": false,
+          "stability_threshold_cv": 0.15,
+          "row_count": 256,
+          "matches_cpu_reference": true
+        }
+      },
+      "apple_rt_vs_embree_median_ratio": 0.5624953605723965
+    },
+    {
+      "workload": "ray_triangle_hit_count_3d",
+      "input_sizes": {
+        "rays": 128,
+        "triangles": 512
+      },
+      "cpu_reference_rows": 128,
+      "backend_results": {
+        "embree": {
+          "cold_seconds": 0.003074166947044432,
+          "warmups": 5,
+          "samples_seconds": [
+            0.002479958930052817,
+            0.0025066660018637776,
+            0.0024683340452611446,
+            0.002789375022985041,
+            0.0027347910217940807,
+            0.0026292919646948576,
+            0.00255704193841666,
+            0.002509874990209937,
+            0.0026400419883430004,
+            0.00280287500936538,
+            0.0026902920799329877,
+            0.0025010000681504607,
+            0.0024445420131087303,
+            0.002425665967166424,
+            0.0024202909553423524,
+            0.0024895829847082496,
+            0.0027296668849885464,
+            0.002586584072560072,
+            0.0024495829129591584,
+            0.00243170908652246
+          ],
+          "stats": {
+            "count": 20,
+            "min_seconds": 0.0024202909553423524,
+            "median_seconds": 0.0025082704960368574,
+            "mean_seconds": 0.0025643583969213067,
+            "max_seconds": 0.00280287500936538,
+            "stdev_seconds": 0.0001272400725940951,
+            "coefficient_of_variation": 0.049618677618095734
+          },
+          "stable": true,
+          "stability_threshold_cv": 0.15,
+          "row_count": 128,
+          "matches_cpu_reference": true
+        },
+        "apple_rt": {
+          "cold_seconds": 0.23441975004971027,
+          "warmups": 5,
+          "samples_seconds": [
+            0.270992917008698,
+            0.23278841702267528,
+            0.35014329210389405,
+            0.33553133392706513,
+            0.27578949998132885,
+            0.23918799997773021,
+            0.2801751249935478,
+            0.2969312500208616,
+            0.3920252500101924,
+            0.32625937496777624,
+            0.33855400001630187,
+            0.3322074169991538,
+            0.41318533301819116,
+            0.40617908409330994,
+            0.3599296659231186,
+            0.32448558299802244,
+            0.4014895000727847,
+            0.3785866250982508,
+            0.2887649170588702,
+            0.26254791603423655
+          ],
+          "stats": {
+            "count": 20,
+            "min_seconds": 0.23278841702267528,
+            "median_seconds": 0.329233395983465,
+            "mean_seconds": 0.3252877250663005,
+            "max_seconds": 0.41318533301819116,
+            "stdev_seconds": 0.05572288629775629,
+            "coefficient_of_variation": 0.17130337852865118
+          },
+          "stable": false,
+          "stability_threshold_cv": 0.15,
+          "row_count": 128,
+          "matches_cpu_reference": true
+        }
+      },
+      "apple_rt_vs_embree_median_ratio": 131.25912715700466
+    },
+    {
+      "workload": "segment_intersection_2d",
+      "input_sizes": {
+        "left": 128,
+        "right": 128
+      },
+      "cpu_reference_rows": 16384,
+      "backend_results": {
+        "embree": {
+          "cold_seconds": 0.008276000036858022,
+          "warmups": 5,
+          "samples_seconds": [
+            0.007957374909892678,
+            0.007991541060619056,
+            0.00802462489809841,
+            0.007769624935463071,
+            0.008004000061191618,
+            0.007766249938867986,
+            0.007954707951284945,
+            0.010317000094801188,
+            0.00774316699244082,
+            0.007579625002108514,
+            0.007792999967932701,
+            0.007744499947875738,
+            0.00782179192174226,
+            0.007624750025570393,
+            0.007762916968204081,
+            0.007599000004120171,
+            0.007798875099979341,
+            0.007684832904487848,
+            0.01084862498100847,
+            0.007937708054669201
+          ],
+          "stats": {
+            "count": 20,
+            "min_seconds": 0.007579625002108514,
+            "median_seconds": 0.007795937533956021,
+            "mean_seconds": 0.008086195786017925,
+            "max_seconds": 0.01084862498100847,
+            "stdev_seconds": 0.0008684797023953347,
+            "coefficient_of_variation": 0.10740275469177336
+          },
+          "stable": true,
+          "stability_threshold_cv": 0.15,
+          "row_count": 16384,
+          "matches_cpu_reference": true
+        },
+        "apple_rt": {
+          "cold_seconds": 0.12246179103385657,
+          "warmups": 5,
+          "samples_seconds": [
+            0.09147562505677342,
+            0.10315883404109627,
+            0.10037666594143957,
+            0.10893304203636944,
+            0.09355454100295901,
+            0.08770212507806718,
+            0.09913750004488975,
+            0.12013095803558826,
+            0.09440016699954867,
+            0.09557845804374665,
+            0.07552858407143503,
+            0.08505300001706928,
+            0.10162425006274134,
+            0.08081962494179606,
+            0.0826500840485096,
+            0.08113270800095052,
+            0.09606295893900096,
+            0.06924733403138816,
+            0.07906045904383063,
+            0.08720612502656877
+          ],
+          "stats": {
+            "count": 20,
+            "min_seconds": 0.06924733403138816,
+            "median_seconds": 0.09251508302986622,
+            "mean_seconds": 0.09164165222318843,
+            "max_seconds": 0.12013095803558826,
+            "stdev_seconds": 0.012200497440058593,
+            "coefficient_of_variation": 0.13313266559560627
+          },
+          "stable": true,
+          "stability_threshold_cv": 0.15,
+          "row_count": 16384,
+          "matches_cpu_reference": true
+        }
+      },
+      "apple_rt_vs_embree_median_ratio": 11.86708880450967
+    }
+  ],
+  "unstable_results": [
+    {
+      "workload": "ray_triangle_closest_hit_3d",
+      "backend": "apple_rt",
+      "coefficient_of_variation": 0.9862270572001823,
+      "threshold": 0.15
+    },
+    {
+      "workload": "ray_triangle_hit_count_3d",
+      "backend": "apple_rt",
+      "coefficient_of_variation": 0.17130337852865118,
+      "threshold": 0.15
+    }
+  ]
+}
