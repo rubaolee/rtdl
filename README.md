@@ -148,6 +148,7 @@ For exact status:
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
 - [Backend Maturity](docs/backend_maturity.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
+- [RTDL v0.9.2 Release Candidate Package](docs/release_reports/v0_9_2/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
@@ -626,6 +627,7 @@ For exact backend/workload status, use:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
+- [RTDL v0.9.2 Release Candidate Package](docs/release_reports/v0_9_2/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)

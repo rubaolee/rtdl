@@ -191,6 +191,7 @@ For exact release claims, read:
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9 Release Package](release_reports/v0_9/README.md)
+- [v0.9.2 Release Candidate Package](release_reports/v0_9_2/README.md)
 - [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.7 Release Statement](release_reports/v0_7/release_statement.md)

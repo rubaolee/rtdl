@@ -22,17 +22,18 @@ Read these in order:
 11. [ITRE App Programming Model](rtdl/itre_app_model.md)
 12. [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 13. [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
-14. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-15. [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
-16. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
-17. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-18. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-19. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+14. [v0.9.2 Release Candidate Package](release_reports/v0_9_2/README.md)
+15. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+16. [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
+17. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
+18. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
+19. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+20. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 If you need the previous graph release line, also read:
 
-20. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-21. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+21. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+22. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -83,6 +84,7 @@ audited release claims.
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+- [v0.9.2 Release Candidate Package](release_reports/v0_9_2/README.md)
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [Release-Facing Examples](release_facing_examples.md)
 - [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
@@ -102,6 +104,7 @@ audited release claims.
 
 - [v0.9 Release Package](release_reports/v0_9/README.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+- [v0.9.2 Release Candidate Package](release_reports/v0_9_2/README.md)
 - [v0.8 Release Package](release_reports/v0_8/README.md)
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.7 Release Package](release_reports/v0_7/README.md)
