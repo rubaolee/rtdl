@@ -45,6 +45,29 @@ Their correct public framing is:
 - reference/oracle parity where tested
 - measured performance varies by workload, host, and implementation maturity
 
+## Linux GPU Performance Notes
+
+The current Linux GPU evidence has two layers:
+
+- Goal560 is the canonical release smoke matrix: 18 workloads, 72
+  backend/workload parity checks across Embree, OptiX, Vulkan, and HIPRT, all
+  matching the CPU Python reference. It is not a throughput benchmark.
+- Later external large-scale testing reported OptiX/Vulkan near-parity on the
+  tested NVIDIA host, with HIPRT slower on database scans and failing one large
+  graph BFS case with `std::bad_alloc`.
+
+The large-scale result strengthens the existing maturity boundary rather than
+changing it. Vulkan should be treated as a serious open GPU performance path on
+that NVIDIA host. OptiX remains useful as the NVIDIA-specific RT backend.
+HIPRT remains a real backend integration, but current evidence supports
+correctness and API coverage, not broad performance leadership or memory-scaling
+claims.
+
+Do not describe HIPRT-on-NVIDIA/CUDA/Orochi measurements as AMD GPU results.
+AMD GPU behavior remains unproven until tested on AMD hardware. Do not claim
+large graph scalability for HIPRT until the graph representation and prepared
+execution path have been memory-profiled and retested.
+
 ## Apple Metal/MPS RT
 
 The Apple Metal/MPS backend is real Apple RT work, not a CPU fallback, for the

@@ -221,3 +221,12 @@ fixture, HIPRT prepared query medians were `0.00184s` for `conjunctive_scan`,
 PostgreSQL query medians of `0.00327s`, `0.01059s`, and `0.01118s`, with
 PostgreSQL setup/index phases of roughly `5.1s` to `5.7s`. This is a bounded
 repeated-query RTDL DB-kernel result, not a general DBMS or arbitrary-SQL claim.
+
+Post-release large-scale external testing reported a stricter performance
+picture on the same NVIDIA Linux class of host: OptiX and Vulkan were nearly
+tied on the tested database and BFS workloads, HIPRT was slower on database
+scan throughput, and HIPRT failed one large BFS graph case with
+`std::bad_alloc`. Treat that result as a critical scaling signal for future
+HIPRT optimization. It does not invalidate the v0.9 correctness matrix, but it
+does prohibit any claim that HIPRT is memory-scalable or performance-leading
+for graph workloads today.
