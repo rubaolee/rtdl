@@ -21,10 +21,10 @@ backend line, exact bounded RTXRMQ-style closest-hit support on CPU reference,
 Apple Silicon, while preserving the documented platform and backend honesty
 boundaries.
 
-Current `main` also carries the v0.9.2 Apple RT performance line. That line
-keeps the v0.9.1 release boundary intact while adding prepared Apple closest-hit
-reuse and masked Apple MPS RT traversal for 3D hit-count and 2D
-segment-intersection.
+Current `main` carries the next Apple RT release target, `v0.9.4`. The untagged
+`v0.9.2` candidate and `v0.9.3` native-coverage milestone are internal evidence
+lines absorbed into `v0.9.4`, not separate public releases. Until `v0.9.4` is
+authorized and tagged, the current released version remains `v0.9.1`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -55,10 +55,11 @@ bounded DB-style analytical workloads.
 ## Version Status At A Glance
 
 - current released version: `v0.9.1`
-- current mainline development line here: `v0.9.2` candidate Apple RT
-  performance work, layered on the released `v0.9.1` Apple RT closest-hit slice,
-  the `v0.9.0` HIPRT / closest-hit expansion, the released `v0.8.0`
-  app-building examples, and the bounded `v0.7.0` RT DB work
+- current mainline development line here: `v0.9.4` Apple RT expansion target,
+  absorbing the untagged `v0.9.2` candidate and `v0.9.3` internal milestone on
+  top of the released `v0.9.1` Apple RT closest-hit slice, the `v0.9.0` HIPRT /
+  closest-hit expansion, the released `v0.8.0` app-building examples, and the
+  bounded `v0.7.0` RT DB work
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -555,10 +556,11 @@ Current mainline release line:
 - bounded `v0.7.0` RT DB work, released `v0.8.0` app-building examples, and
   released `v0.9.0` HIPRT / closest-hit expansion, with released `v0.9.1`
   Apple RT closest-hit support
-- current `v0.9.2` candidate main additionally carries Apple RT full-surface
-  compatibility dispatch, native Apple MPS RT for 3D hit-count and 2D
-  segment-intersection, prepared closest-hit reuse, and masked Apple RT
-  traversal optimizations for hit-count and segment-intersection
+- current `v0.9.4` target additionally carries Apple RT full-surface
+  compatibility dispatch, expanded Apple MPS RT geometry/native-assisted slices,
+  Apple Metal compute DB/graph slices, prepared closest-hit reuse, and masked
+  Apple RT traversal optimizations inherited from the untagged `v0.9.2` and
+  `v0.9.3` evidence lines
 
 Newest released graph workload surface:
 
@@ -609,15 +611,16 @@ Release and preview layers inside the current repository:
   - `run_apple_rt` supports 3D `ray_triangle_closest_hit` through Apple
     Metal/MPS on macOS Apple Silicon
   - no full native Apple RT parity or speedup claim yet
-- `v0.9.2` candidate main: Apple RT full-surface compatibility and performance
-  work
-  - all 18 current predicates are callable through `run_apple_rt`
-  - 3D closest-hit is `native_mps_rt`; 3D hit-count is
-    `native_mps_rt`; 2D segment-intersection is `native_mps_rt`; the rest are
-    `cpu_reference_compat` until native Apple implementations land
-  - prepared closest-hit reuse and masked traversal reduce overhead on the
-    local Apple M4 evidence, but Apple RT is not yet claimed as broadly faster
-    than Embree
+- `v0.9.2`: untagged internal candidate evidence, absorbed into `v0.9.4`
+  - Apple RT full-surface compatibility dispatch, prepared closest-hit reuse,
+    and early Apple RT performance/overhead evidence
+- `v0.9.3`: untagged internal native-coverage milestone, absorbed into `v0.9.4`
+  - expanded Apple MPS RT geometry/native-assisted slices and associated
+    correctness/performance evidence
+- `v0.9.4`: next public release target
+  - combines the untagged `v0.9.2`/`v0.9.3` Apple work with Apple Metal compute
+    DB/graph slices, final release docs, full tests, and audit gates
+  - Apple RT is not yet claimed as broadly faster than Embree
 
 Current public demo artifact:
 

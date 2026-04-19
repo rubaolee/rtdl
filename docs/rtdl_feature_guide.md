@@ -34,13 +34,13 @@ The released `v0.9.1` line adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
 local Apple M4 host.
 
-Current `main` carries the `v0.9.2` candidate Apple RT performance line.
-Goal582 makes `run_apple_rt` full-surface callable for all 18
-current predicates on Apple Silicon macOS. That does not mean all predicates
-are Apple hardware-backed: 3D closest-hit is `native_mps_rt`, 3D hit-count is
-`native_mps_rt`, 2D segment-intersection is `native_mps_rt`, and the rest are
-currently `cpu_reference_compat`. Goals596-598 add prepared closest-hit reuse
-and masked Apple MPS RT traversal for hit-count and segment-intersection.
+Current `main` targets `v0.9.4` as the next public Apple RT release. The
+untagged `v0.9.2` Apple RT candidate and `v0.9.3` native-coverage milestone are
+internal evidence lines absorbed into `v0.9.4`, not separate public releases.
+The `v0.9.4` target combines full-surface `run_apple_rt` compatibility,
+prepared closest-hit reuse, masked traversal work, expanded Apple MPS RT
+geometry/native-assisted slices, and Apple Metal compute DB/graph slices. Exact
+public claims wait for the `v0.9.4` full test, doc, and audit gates.
 
 Today it includes:
 
