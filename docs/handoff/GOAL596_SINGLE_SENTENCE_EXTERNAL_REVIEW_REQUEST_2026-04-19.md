@@ -1,0 +1,1 @@
+Please review Goal596 by checking `/Users/rl2025/rtdl_python_only/docs/reports/goal596_v0_9_2_apple_rt_prepared_closest_hit_closure_2026-04-19.md`, the referenced native/Python/test files, and the performance artifact, then write an ACCEPT/BLOCK verdict to `/Users/rl2025/rtdl_python_only/docs/reports/goal596_external_review_2026-04-19.md`.

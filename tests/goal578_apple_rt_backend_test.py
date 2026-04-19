@@ -50,7 +50,7 @@ class Goal578AppleRtBackendTest(unittest.TestCase):
         }
 
     def test_version_and_context_probe(self) -> None:
-        self.assertEqual(rt.apple_rt_version(), (0, 9, 1))
+        self.assertEqual(rt.apple_rt_version(), (0, 9, 2))
         self.assertTrue(rt.apple_rt_context_probe())
 
     def test_direct_helper_matches_cpu_reference(self) -> None:
@@ -62,6 +62,27 @@ class Goal578AppleRtBackendTest(unittest.TestCase):
             self.assertEqual(actual_row["ray_id"], expected_row["ray_id"])
             self.assertEqual(actual_row["triangle_id"], expected_row["triangle_id"])
             self.assertAlmostEqual(actual_row["t"], expected_row["t"], places=5)
+
+    def test_prepared_closest_hit_matches_cpu_reference(self) -> None:
+        case = self._case()
+        with rt.prepare_apple_rt_ray_triangle_closest_hit(case["triangles"]) as prepared:
+            actual = tuple(prepared.run(case["rays"]))
+            repeat = tuple(prepared.run(case["rays"]))
+        expected = rt.ray_triangle_closest_hit_cpu(case["rays"], case["triangles"])
+        self.assertEqual(len(actual), len(expected))
+        self.assertEqual(len(repeat), len(expected))
+        for actual_row, expected_row in zip(actual, expected):
+            self.assertEqual(actual_row["ray_id"], expected_row["ray_id"])
+            self.assertEqual(actual_row["triangle_id"], expected_row["triangle_id"])
+            self.assertAlmostEqual(actual_row["t"], expected_row["t"], places=5)
+        self.assertEqual(actual, repeat)
+
+    def test_prepared_closest_hit_rejects_run_after_close(self) -> None:
+        case = self._case()
+        prepared = rt.prepare_apple_rt_ray_triangle_closest_hit(case["triangles"])
+        prepared.close()
+        with self.assertRaises(RuntimeError):
+            prepared.run(case["rays"])
 
     def test_run_apple_rt_matches_cpu_reference(self) -> None:
         case = self._case()

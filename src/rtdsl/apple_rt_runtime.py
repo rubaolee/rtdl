@@ -200,6 +200,26 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_ray_closest_hit_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_prepare_ray_closest_hit_3d.argtypes = [
+        ctypes.POINTER(_RtdlTriangle3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_prepare_ray_closest_hit_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_prepared_ray_closest_hit_3d.argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlRay3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayClosestHitRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_prepared_ray_closest_hit_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_destroy_prepared_ray_closest_hit_3d.argtypes = [ctypes.c_void_p]
+    library.rtdl_apple_rt_destroy_prepared_ray_closest_hit_3d.restype = None
     library.rtdl_apple_rt_run_ray_hitcount_3d.argtypes = [
         ctypes.POINTER(_RtdlRay3D),
         ctypes.c_size_t,
@@ -314,6 +334,77 @@ def ray_triangle_closest_hit_apple_rt(
         row_type=_RtdlRayClosestHitRow,
         field_names=("ray_id", "triangle_id", "t"),
     )
+
+
+class PreparedAppleRtRayTriangleClosestHit3D:
+    def __init__(self, triangles: tuple[_CanonicalTriangle3D, ...]):
+        if any(not isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
+            raise ValueError("prepared Apple RT ray_triangle_closest_hit currently requires 3D triangles")
+        self._library = _load_library()
+        self._closed = False
+        triangle_records = _pack_triangles_3d(triangles)
+        handle = ctypes.c_void_p()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_apple_rt_prepare_ray_closest_hit_3d(
+            triangle_records,
+            len(triangles),
+            ctypes.byref(handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self._handle = handle
+
+    def run(self, rays: tuple[_CanonicalRay3D, ...]) -> AppleRtRowView:
+        if self._closed:
+            raise RuntimeError("prepared Apple RT closest-hit handle is closed")
+        if any(not isinstance(ray, _CanonicalRay3D) for ray in rays):
+            raise ValueError("prepared Apple RT ray_triangle_closest_hit currently requires 3D rays")
+        ray_records = _pack_rays_3d(rays)
+        rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_apple_rt_run_prepared_ray_closest_hit_3d(
+            self._handle,
+            ray_records,
+            len(rays),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return AppleRtRowView(
+            library=self._library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayClosestHitRow,
+            field_names=("ray_id", "triangle_id", "t"),
+        )
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        if self._handle:
+            self._library.rtdl_apple_rt_destroy_prepared_ray_closest_hit_3d(self._handle)
+        self._closed = True
+
+    def __enter__(self) -> "PreparedAppleRtRayTriangleClosestHit3D":
+        if self._closed:
+            raise RuntimeError("prepared Apple RT closest-hit handle is closed")
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        self.close()
+
+
+def prepare_apple_rt_ray_triangle_closest_hit(
+    triangles: tuple[_CanonicalTriangle3D, ...],
+) -> PreparedAppleRtRayTriangleClosestHit3D:
+    return PreparedAppleRtRayTriangleClosestHit3D(triangles)
 
 
 def segment_intersection_apple_rt(

@@ -79,6 +79,8 @@ from .apple_rt_runtime import apple_rt_predicate_mode
 from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
+from .apple_rt_runtime import PreparedAppleRtRayTriangleClosestHit3D
+from .apple_rt_runtime import prepare_apple_rt_ray_triangle_closest_hit
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_hit_count_apple_rt
 from .apple_rt_runtime import run_apple_rt
@@ -719,6 +721,8 @@ __all__ = [
     "apple_rt_support_matrix",
     "apple_rt_version",
     "AppleRtRowView",
+    "PreparedAppleRtRayTriangleClosestHit3D",
+    "prepare_apple_rt_ray_triangle_closest_hit",
     "prepare_embree_db_dataset",
     "prepare_postgresql_denorm_table",
     "PreparedEmbreeDbDataset",
