@@ -271,6 +271,11 @@ geometry/nearest-neighbor slices, Apple Metal compute for bounded DB and graph
 slices, and disclosed CPU exact refinement, aggregation, uniqueness, or
 ordering where required.
 
+For database-style and graph workloads on Apple Silicon, current RTDL uses
+Apple Metal compute/native-assisted kernels. It does not currently claim Apple
+MPS ray-tracing-hardware traversal for `conjunctive_scan`, `grouped_count`,
+`grouped_sum`, `bfs_discover`, or `triangle_match`.
+
 It cannot yet claim broad Apple hardware speedup evidence, non-macOS support,
 or mature-backend status comparable to Embree.
 

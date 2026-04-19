@@ -161,6 +161,8 @@ Current Apple RT boundary:
   `run_apple_rt` with explicit native or native-assisted Apple modes
 - native Apple execution currently uses MPS RT for supported geometry and
   nearest-neighbor slices, plus Metal compute for bounded DB and graph slices
+- Apple DB and graph paths are therefore Apple GPU compute/native-assisted
+  paths, not Apple ray-tracing-hardware traversal paths
 - prepared closest-hit reuse and masked traversal reduce setup overhead for the
   current Apple ray-intersection slices
 - this is not a broad measured Apple speedup claim; Embree remains the mature

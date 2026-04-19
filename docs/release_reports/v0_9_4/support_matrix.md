@@ -36,5 +36,11 @@ compute kernels rather than MPS ray traversal. CPU-side refinement,
 aggregation, sorting, or materialization remains part of the implementation
 where stated above.
 
+Therefore, current RTDL DB workloads on Apple Silicon (`conjunctive_scan`,
+`grouped_count`, and `grouped_sum`) and current graph workloads
+(`bfs_discover` and `triangle_match`) are Apple GPU compute/native-assisted
+paths. They are not Apple ray-tracing-hardware traversal paths and must not be
+marketed as MPS RT acceleration.
+
 Do not claim broad Apple speedup, mature Apple backend status, or non-macOS
 support from this matrix.

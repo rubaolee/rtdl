@@ -66,6 +66,11 @@ ordering after native candidate/filter work. The line also adds prepared
 closest-hit reuse and masked chunked traversal for hit-count and
 segment-intersection to reduce repeated Apple MPS RT setup overhead.
 
+This means HIPRT and Apple RT are now two newer RTDL backend families alongside
+Embree, OptiX, and Vulkan. It does not mean the Apple backend uses Apple
+ray-tracing hardware for every predicate: Apple DB and graph support currently
+uses Metal compute/native-assisted kernels.
+
 ## What Python Owns
 
 Python remains the application layer:
@@ -91,7 +96,7 @@ kernels and native backend paths, not in Python loops.
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
 | HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
-| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; current v0.9.4 target has full-surface native/native-assisted dispatch across 18 predicates |
+| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; current v0.9.4 target has full-surface native/native-assisted dispatch across 18 predicates, with DB/graph rows implemented through Metal compute/native-assisted modes rather than MPS ray traversal |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 ## Workload Families

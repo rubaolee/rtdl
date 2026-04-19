@@ -201,6 +201,8 @@ RTDL uses several backends behind one public kernel surface:
   - implemented through Apple Metal/MPS `MPSRayIntersector` for geometry and
     nearest-neighbor slices, plus Apple Metal compute kernels for bounded DB
     and graph slices
+  - important hardware boundary: bounded DB and graph Apple paths are Apple GPU
+    Metal-compute paths, not Apple MPS ray-tracing-hardware traversal paths
   - prepared closest-hit reuse and masked traversal reduce repeated setup
     overhead
   - no broad hardware-speedup claim is made; local Apple M4 evidence is

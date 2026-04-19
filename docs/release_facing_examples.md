@@ -217,6 +217,9 @@ Current Apple RT boundary:
 - current Apple execution modes: MPS RT for supported geometry and
   nearest-neighbor slices; Metal compute or native-assisted Metal filtering for
   bounded DB and graph slices
+- DB and graph examples on Apple Silicon are Apple GPU compute/native-assisted
+  execution paths; they are not evidence of Apple ray-tracing-hardware
+  traversal for those workloads
 - Goal596 prepared support: repeated 3D closest-hit queries can reuse prepared
   Apple RT build data
 - Goal597/Goal598 masked traversal support: 3D hit-count and 2D

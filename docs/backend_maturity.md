@@ -60,6 +60,11 @@ segment-intersection, expanded MPS RT geometry/nearest-neighbor slices, and
 Metal compute/native-assisted DB and graph slices. Local Apple M4
 measurements against Embree after Goal598 show:
 
+Do not read "Apple RT backend" as "every Apple workload uses Apple
+ray-tracing hardware." The DB and graph rows in the current Apple surface are
+Apple GPU Metal-compute/native-assisted paths, not MPS ray-tracing traversal
+paths.
+
 | Workload | Embree median | Apple RT median | Apple RT vs Embree |
 | --- | ---: | ---: | ---: |
 | 3D `ray_triangle_closest_hit` | 0.002708896 s | 0.001413271 s | about 0.52x Apple/Embree, but unstable |
