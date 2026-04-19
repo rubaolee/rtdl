@@ -99,6 +99,15 @@ kernels and native backend paths, not in Python loops.
 | Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; current v0.9.4 target has full-surface native/native-assisted dispatch across 18 predicates, with DB/graph rows implemented through Metal compute/native-assisted modes rather than MPS ray traversal |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
+Native backend code follows the modular layout used by Embree, OptiX, and
+Vulkan. Root files under `/Users/rl2025/rtdl_python_only/src/native/` are thin
+build wrappers; backend-specific implementation chunks live under
+`/Users/rl2025/rtdl_python_only/src/native/embree/`,
+`/Users/rl2025/rtdl_python_only/src/native/optix/`,
+`/Users/rl2025/rtdl_python_only/src/native/vulkan/`,
+`/Users/rl2025/rtdl_python_only/src/native/hiprt/`, and
+`/Users/rl2025/rtdl_python_only/src/native/apple_rt/`.
+
 ## Workload Families
 
 Current released public workload families include:

@@ -744,6 +744,10 @@ Key locations:
 
 - `src/rtdsl/`: Python package and runtime surface
 - `src/native/`: native backend implementations
+  - root files such as `rtdl_optix.cpp`, `rtdl_hiprt.cpp`, and
+    `rtdl_apple_rt.mm` are thin build wrappers
+  - backend-specific implementation chunks live under directories such as
+    `src/native/optix/`, `src/native/hiprt/`, and `src/native/apple_rt/`
 - `examples/`: runnable examples
 - `docs/`: tutorials, release reports, references, and history
 - `tests/`: automated verification
