@@ -211,7 +211,8 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
         self.assertEqual(modes["conjunctive_scan"], "native_metal_compute")
         self.assertEqual(modes["grouped_count"], "native_metal_filter_cpu_aggregate")
         self.assertEqual(modes["grouped_sum"], "native_metal_filter_cpu_aggregate")
-        self.assertEqual(modes["bfs_discover"], "cpu_reference_compat")
+        self.assertEqual(modes["bfs_discover"], "native_metal_compute")
+        self.assertEqual(modes["triangle_match"], "cpu_reference_compat")
         self.assertEqual(len(modes), 18)
 
     def test_segment_intersection_native_matches_cpu_reference(self) -> None:
@@ -309,11 +310,10 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
     def test_native_only_rejects_compatibility_paths(self) -> None:
         with self.assertRaises(NotImplementedError):
             rt.run_apple_rt(
-                bfs_kernel,
+                triangle_match_kernel,
                 native_only=True,
-                frontier=(rt.FrontierVertex(vertex_id=0, level=0),),
-                graph=rt.csr_graph(row_offsets=(0, 1, 1), column_indices=(1,)),
-                visited=(0,),
+                seeds=((0, 1),),
+                graph=rt.csr_graph(row_offsets=(0, 1, 2), column_indices=(1, 0)),
             )
 
 

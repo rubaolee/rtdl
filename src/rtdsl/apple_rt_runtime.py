@@ -20,6 +20,11 @@ from .db_reference import grouped_sum_cpu
 from .db_reference import normalize_denorm_table
 from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
+from .graph_reference import CSRGraph as _CanonicalCSRGraph
+from .graph_reference import FrontierVertex as _CanonicalFrontierVertex
+from .graph_reference import normalize_frontier
+from .graph_reference import normalize_vertex_set
+from .graph_reference import validate_csr_graph
 from .ir import CompiledKernel
 from .reference import Point as _CanonicalPoint2D
 from .reference import Point3D as _CanonicalPoint3D
@@ -40,6 +45,7 @@ from .reference import _segment_hits_polygon as _reference_segment_hits_polygon
 
 APPLE_RT_NATIVE_PREDICATES = frozenset(
     {
+        "bfs_discover",
         "conjunctive_scan",
         "grouped_count",
         "grouped_sum",
@@ -55,7 +61,7 @@ APPLE_RT_NATIVE_PREDICATES = frozenset(
         "segment_polygon_hitcount",
     }
 )
-APPLE_RT_METAL_COMPUTE_PREDICATES = frozenset({"conjunctive_scan"})
+APPLE_RT_METAL_COMPUTE_PREDICATES = frozenset({"bfs_discover", "conjunctive_scan"})
 APPLE_RT_METAL_FILTER_CPU_AGGREGATE_PREDICATES = frozenset({"grouped_count", "grouped_sum"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
@@ -96,6 +102,13 @@ _DB_OP_CODES = {
 }
 
 _APPLE_RT_SUPPORT_NOTES = {
+    "bfs_discover": {
+        "native_candidate_discovery": "no",
+        "cpu_refinement": "dedupe_and_sorted_row_materialization",
+        "native_only": "supported_for_csr_frontier_vertex_set",
+        "native_shapes": ("VertexFrontier/CSRGraph/VertexSet",),
+        "notes": "Apple Metal compute expands CSR frontier edges and filters visited vertices; CPU performs deterministic dedupe and result ordering.",
+    },
     "bounded_knn_rows": {
         "native_candidate_discovery": "shape_dependent",
         "cpu_refinement": "distance_ranking",
@@ -372,6 +385,21 @@ class _RtdlAppleDbNumericClause(ctypes.Structure):
     ]
 
 
+class _RtdlAppleFrontierVertex(ctypes.Structure):
+    _fields_ = [
+        ("vertex_id", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlAppleBfsRow(ctypes.Structure):
+    _fields_ = [
+        ("src_vertex", ctypes.c_uint32),
+        ("dst_vertex", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
 _LIBRARY: ctypes.CDLL | None = None
 
 
@@ -474,6 +502,23 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_bfs_discover_compute.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlAppleFrontierVertex),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlAppleBfsRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_bfs_discover_compute.restype = ctypes.c_int
     library.rtdl_apple_rt_run_ray_closest_hit_3d.argtypes = [
         ctypes.POINTER(_RtdlRay3D),
         ctypes.c_size_t,
@@ -770,6 +815,82 @@ def grouped_sum_apple_rt(table_rows, query) -> tuple[dict[str, object], ...]:
             value_field=grouped_query.value_field,
         ),
     )
+
+
+def bfs_discover_apple_rt(
+    graph,
+    frontier,
+    visited,
+    *,
+    dedupe: bool = True,
+) -> tuple[dict[str, int], ...]:
+    """Run BFS discovery with Apple Metal frontier expansion and CPU ordering."""
+    graph_record = graph if isinstance(graph, _CanonicalCSRGraph) else _normalize_records("graph", "graph_csr", graph)
+    validate_csr_graph(graph_record)
+    frontier_records = normalize_frontier(frontier)
+    visited_records = normalize_vertex_set(visited)
+    if not frontier_records:
+        return ()
+
+    frontier_edge_offsets = [0]
+    for item in frontier_records:
+        if item.vertex_id < 0 or item.vertex_id >= graph_record.vertex_count:
+            raise ValueError("Apple RT BFS frontier vertex_id must be a valid graph vertex")
+        degree = graph_record.row_offsets[item.vertex_id + 1] - graph_record.row_offsets[item.vertex_id]
+        frontier_edge_offsets.append(frontier_edge_offsets[-1] + degree)
+    output_capacity = frontier_edge_offsets[-1]
+    if output_capacity == 0:
+        return ()
+
+    library = _load_library()
+    row_offsets_array = (ctypes.c_uint32 * len(graph_record.row_offsets))(*graph_record.row_offsets)
+    column_indices_array = (ctypes.c_uint32 * max(1, len(graph_record.column_indices)))(*(graph_record.column_indices or (0,)))
+    frontier_array = (_RtdlAppleFrontierVertex * len(frontier_records))(
+        *[_RtdlAppleFrontierVertex(item.vertex_id, item.level) for item in frontier_records]
+    )
+    frontier_offsets_array = (ctypes.c_uint32 * len(frontier_edge_offsets))(*frontier_edge_offsets)
+    visited_array = (ctypes.c_uint32 * max(1, len(visited_records)))(*(visited_records or (0,)))
+    rows_ptr = ctypes.POINTER(_RtdlAppleBfsRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_bfs_discover_compute(
+        row_offsets_array,
+        len(graph_record.row_offsets),
+        column_indices_array,
+        len(graph_record.column_indices),
+        frontier_array,
+        len(frontier_records),
+        frontier_offsets_array,
+        output_capacity,
+        visited_array,
+        len(visited_records),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        rows = []
+        seen: set[int] = set()
+        for index in range(row_count.value):
+            row = rows_ptr[index]
+            dst = int(row.dst_vertex)
+            if dedupe and dst in seen:
+                continue
+            seen.add(dst)
+            rows.append(
+                {
+                    "src_vertex": int(row.src_vertex),
+                    "dst_vertex": dst,
+                    "level": int(row.level),
+                }
+            )
+    finally:
+        if bool(rows_ptr):
+            library.rtdl_apple_rt_free_rows(rows_ptr)
+    rows.sort(key=lambda row: (row["level"], row["dst_vertex"], row["src_vertex"]))
+    return tuple(rows)
 
 
 def _pack_rays_3d(rays: tuple[_CanonicalRay3D, ...]):
@@ -1795,6 +1916,16 @@ def run_apple_rt(
         return tuple(grouped_count_apple_rt(right_records, left_records))
     if predicate_name == "grouped_sum":
         return tuple(grouped_sum_apple_rt(right_records, left_records))
+    if predicate_name == "bfs_discover":
+        visited_name = str(compiled.refine_op.predicate.options["visited_input"])
+        return tuple(
+            bfs_discover_apple_rt(
+                right_records,
+                left_records,
+                normalized[visited_name],
+                dedupe=bool(compiled.refine_op.predicate.options.get("dedupe", True)),
+            )
+        )
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
@@ -1803,7 +1934,8 @@ def run_apple_rt(
             "2D point-nearest-segment, 2D segment-polygon workloads, "
             "bounded 2D polygon-pair area/Jaccard workloads, 2D overlay compose, "
             "numeric DB conjunctive_scan through Metal compute, and grouped DB "
-            "aggregation through Metal predicate filtering plus CPU aggregation; "
+            "aggregation through Metal predicate filtering plus CPU aggregation, "
+            "and BFS discovery through Metal frontier expansion; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

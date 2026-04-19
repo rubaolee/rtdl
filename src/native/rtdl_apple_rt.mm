@@ -129,6 +129,17 @@ struct RtdlAppleDbNumericClause {
     float value_hi;
 };
 
+struct RtdlAppleFrontierVertex {
+    uint32_t vertex_id;
+    uint32_t level;
+};
+
+struct RtdlAppleBfsRow {
+    uint32_t src_vertex;
+    uint32_t dst_vertex;
+    uint32_t level;
+};
+
 struct AppleRtClosestHitPrepared {
     id<MTLDevice> device = nil;
     id<MTLCommandQueue> command_queue = nil;
@@ -829,6 +840,282 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeri
         [field_count_buffer release];
         [value_buffer release];
         [row_id_buffer release];
+        [pipeline release];
+        [function release];
+        [library release];
+        [command_queue release];
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t edge_count,
+    const RtdlAppleFrontierVertex* frontier,
+    size_t frontier_count,
+    const uint32_t* frontier_edge_offsets,
+    size_t output_capacity,
+    const uint32_t* visited,
+    size_t visited_count,
+    RtdlAppleBfsRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_bfs_discover_compute");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (frontier_count == 0 || output_capacity == 0) {
+        return 0;
+    }
+    if (row_offsets == nullptr || column_indices == nullptr || frontier == nullptr ||
+        frontier_edge_offsets == nullptr || (visited_count > 0 && visited == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_bfs_discover_compute");
+        return 1;
+    }
+    if (row_offset_count < 2) {
+        set_message(error_out, error_size, "Apple RT BFS requires at least one graph vertex");
+        return 1;
+    }
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    if (row_offset_count - 1 > std::numeric_limits<uint32_t>::max() ||
+        frontier_count > std::numeric_limits<uint32_t>::max() ||
+        visited_count > std::numeric_limits<uint32_t>::max() ||
+        output_capacity > std::numeric_limits<uint32_t>::max()) {
+        set_message(error_out, error_size, "Apple RT BFS currently supports at most uint32-sized inputs");
+        return 1;
+    }
+    if (row_offsets[0] != 0 || row_offsets[row_offset_count - 1] != edge_count) {
+        set_message(error_out, error_size, "Apple RT BFS row_offsets do not match edge count");
+        return 1;
+    }
+    for (size_t i = 1; i < row_offset_count; ++i) {
+        if (row_offsets[i] < row_offsets[i - 1] || row_offsets[i] > edge_count) {
+            set_message(error_out, error_size, "Apple RT BFS row_offsets must be non-decreasing and in range");
+            return 1;
+        }
+    }
+    for (size_t i = 0; i < edge_count; ++i) {
+        if (column_indices[i] >= vertex_count) {
+            set_message(error_out, error_size, "Apple RT BFS column index is out of range");
+            return 1;
+        }
+    }
+    for (size_t i = 0; i < frontier_count; ++i) {
+        if (frontier[i].vertex_id >= vertex_count) {
+            set_message(error_out, error_size, "Apple RT BFS frontier vertex is out of range");
+            return 1;
+        }
+    }
+    for (size_t i = 0; i < visited_count; ++i) {
+        if (visited[i] >= vertex_count) {
+            set_message(error_out, error_size, "Apple RT BFS visited vertex is out of range");
+            return 1;
+        }
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+        NSString* source =
+            @"#include <metal_stdlib>\n"
+             "using namespace metal;\n"
+             "struct FrontierVertex { uint vertex_id; uint level; };\n"
+             "struct BfsRow { uint src_vertex; uint dst_vertex; uint level; };\n"
+             "kernel void rtdl_bfs_discover(device const uint* row_offsets [[buffer(0)]],\n"
+             "                              device const uint* column_indices [[buffer(1)]],\n"
+             "                              device const FrontierVertex* frontier [[buffer(2)]],\n"
+             "                              device const uint* frontier_edge_offsets [[buffer(3)]],\n"
+             "                              device const uint* visited [[buffer(4)]],\n"
+             "                              constant uint& visited_count [[buffer(5)]],\n"
+             "                              device BfsRow* out [[buffer(6)]],\n"
+             "                              uint id [[thread_position_in_grid]]) {\n"
+             "    FrontierVertex item = frontier[id];\n"
+             "    uint start = row_offsets[item.vertex_id];\n"
+             "    uint end = row_offsets[item.vertex_id + 1u];\n"
+             "    uint out_base = frontier_edge_offsets[id];\n"
+             "    for (uint edge = start; edge < end; ++edge) {\n"
+             "        uint dst = column_indices[edge];\n"
+             "        bool is_visited = false;\n"
+             "        for (uint v = 0; v < visited_count; ++v) {\n"
+             "            if (visited[v] == dst) { is_visited = true; break; }\n"
+             "        }\n"
+             "        uint out_index = out_base + (edge - start);\n"
+             "        out[out_index].src_vertex = item.vertex_id;\n"
+             "        out[out_index].dst_vertex = is_visited ? 0xffffffffu : dst;\n"
+             "        out[out_index].level = item.level + 1u;\n"
+             "    }\n"
+             "}\n";
+        NSError* compile_error = nil;
+        id<MTLLibrary> library = [device newLibraryWithSource:source options:nil error:&compile_error];
+        if (library == nil) {
+            std::string message = "Metal BFS library compilation failed";
+            if (compile_error != nil) {
+                message += ": ";
+                message += [[compile_error localizedDescription] UTF8String];
+            }
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 4;
+        }
+        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_bfs_discover"];
+        if (function == nil) {
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal BFS function not found");
+            return 4;
+        }
+        NSError* pipeline_error = nil;
+        id<MTLComputePipelineState> pipeline = [device newComputePipelineStateWithFunction:function error:&pipeline_error];
+        if (pipeline == nil) {
+            std::string message = "Metal BFS pipeline creation failed";
+            if (pipeline_error != nil) {
+                message += ": ";
+                message += [[pipeline_error localizedDescription] UTF8String];
+            }
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 4;
+        }
+
+        uint32_t visited_count_u32 = static_cast<uint32_t>(visited_count);
+        uint32_t empty_visited = 0;
+        const size_t row_offset_bytes = row_offset_count * sizeof(uint32_t);
+        const size_t edge_bytes = std::max<size_t>(1, edge_count) * sizeof(uint32_t);
+        const size_t frontier_bytes = frontier_count * sizeof(RtdlAppleFrontierVertex);
+        const size_t frontier_offset_bytes = (frontier_count + 1) * sizeof(uint32_t);
+        const size_t visited_bytes = std::max<size_t>(1, visited_count) * sizeof(uint32_t);
+        const size_t out_bytes = output_capacity * sizeof(RtdlAppleBfsRow);
+        id<MTLBuffer> row_offsets_buffer = [device newBufferWithBytes:row_offsets length:row_offset_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> column_indices_buffer = [device newBufferWithBytes:(edge_count == 0 ? &empty_visited : column_indices) length:edge_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> frontier_buffer = [device newBufferWithBytes:frontier length:frontier_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> frontier_offsets_buffer = [device newBufferWithBytes:frontier_edge_offsets length:frontier_offset_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> visited_buffer = [device newBufferWithBytes:(visited_count == 0 ? &empty_visited : visited) length:visited_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> visited_count_buffer = [device newBufferWithBytes:&visited_count_u32 length:sizeof(uint32_t) options:MTLResourceStorageModeShared];
+        id<MTLBuffer> out_buffer = [device newBufferWithLength:out_bytes options:MTLResourceStorageModeShared];
+        if (row_offsets_buffer == nil || column_indices_buffer == nil || frontier_buffer == nil ||
+            frontier_offsets_buffer == nil || visited_buffer == nil || visited_count_buffer == nil || out_buffer == nil) {
+            [out_buffer release];
+            [visited_count_buffer release];
+            [visited_buffer release];
+            [frontier_offsets_buffer release];
+            [frontier_buffer release];
+            [column_indices_buffer release];
+            [row_offsets_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal BFS buffer allocation failed");
+            return 5;
+        }
+        std::memset([out_buffer contents], 0xff, out_bytes);
+
+        id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+        id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
+        if (command_buffer == nil || encoder == nil) {
+            [out_buffer release];
+            [visited_count_buffer release];
+            [visited_buffer release];
+            [frontier_offsets_buffer release];
+            [frontier_buffer release];
+            [column_indices_buffer release];
+            [row_offsets_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal BFS command encoding failed");
+            return 3;
+        }
+        [encoder setComputePipelineState:pipeline];
+        [encoder setBuffer:row_offsets_buffer offset:0 atIndex:0];
+        [encoder setBuffer:column_indices_buffer offset:0 atIndex:1];
+        [encoder setBuffer:frontier_buffer offset:0 atIndex:2];
+        [encoder setBuffer:frontier_offsets_buffer offset:0 atIndex:3];
+        [encoder setBuffer:visited_buffer offset:0 atIndex:4];
+        [encoder setBuffer:visited_count_buffer offset:0 atIndex:5];
+        [encoder setBuffer:out_buffer offset:0 atIndex:6];
+        const NSUInteger threadgroup_width =
+            std::max<NSUInteger>(1, std::min<NSUInteger>(pipeline.maxTotalThreadsPerThreadgroup, frontier_count));
+        [encoder dispatchThreads:MTLSizeMake(frontier_count, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(threadgroup_width, 1, 1)];
+        [encoder endEncoding];
+        [command_buffer commit];
+        [command_buffer waitUntilCompleted];
+        if ([command_buffer error] != nil) {
+            std::string message = "Metal BFS command buffer failed: ";
+            message += [[[command_buffer error] localizedDescription] UTF8String];
+            [out_buffer release];
+            [visited_count_buffer release];
+            [visited_buffer release];
+            [frontier_offsets_buffer release];
+            [frontier_buffer release];
+            [column_indices_buffer release];
+            [row_offsets_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 6;
+        }
+
+        const auto* all_rows = static_cast<const RtdlAppleBfsRow*>([out_buffer contents]);
+        size_t matched_count = 0;
+        for (size_t index = 0; index < output_capacity; ++index) {
+            if (all_rows[index].dst_vertex != std::numeric_limits<uint32_t>::max()) {
+                ++matched_count;
+            }
+        }
+        if (matched_count > 0) {
+            auto* out = static_cast<RtdlAppleBfsRow*>(std::malloc(matched_count * sizeof(RtdlAppleBfsRow)));
+            if (out == nullptr) {
+                [out_buffer release];
+                [visited_count_buffer release];
+                [visited_buffer release];
+                [frontier_offsets_buffer release];
+                [frontier_buffer release];
+                [column_indices_buffer release];
+                [row_offsets_buffer release];
+                [pipeline release];
+                [function release];
+                [library release];
+                [command_queue release];
+                set_message(error_out, error_size, "out of memory allocating Apple RT BFS rows");
+                return 7;
+            }
+            size_t out_index = 0;
+            for (size_t index = 0; index < output_capacity; ++index) {
+                if (all_rows[index].dst_vertex != std::numeric_limits<uint32_t>::max()) {
+                    out[out_index++] = all_rows[index];
+                }
+            }
+            *rows_out = out;
+            *row_count_out = matched_count;
+        }
+
+        [out_buffer release];
+        [visited_count_buffer release];
+        [visited_buffer release];
+        [frontier_offsets_buffer release];
+        [frontier_buffer release];
+        [column_indices_buffer release];
+        [row_offsets_buffer release];
         [pipeline release];
         [function release];
         [library release];

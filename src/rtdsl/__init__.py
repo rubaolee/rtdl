@@ -80,6 +80,7 @@ from .apple_rt_runtime import apple_rt_predicate_mode
 from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
+from .apple_rt_runtime import bfs_discover_apple_rt
 from .apple_rt_runtime import conjunctive_scan_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_2d_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_3d_apple_rt
@@ -484,6 +485,7 @@ __all__ = [
     "bounded_knn_rows",
     "bounded_knn_rows_cpu",
     "bfs_discover",
+    "bfs_discover_apple_rt",
     "bfs_expand_cpu",
     "CandidateSet",
     "CompiledKernel",

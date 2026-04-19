@@ -52,6 +52,9 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["grouped_count"]["cpu_refinement"], "cpu_group_aggregation_after_metal_filter")
         self.assertEqual(by_predicate["grouped_sum"]["mode"], "native_metal_filter_cpu_aggregate")
         self.assertEqual(by_predicate["grouped_sum"]["cpu_refinement"], "cpu_group_aggregation_after_metal_filter")
+        self.assertEqual(by_predicate["bfs_discover"]["mode"], "native_metal_compute")
+        self.assertEqual(by_predicate["bfs_discover"]["cpu_refinement"], "dedupe_and_sorted_row_materialization")
+        self.assertEqual(by_predicate["bfs_discover"]["native_only"], "supported_for_csr_frontier_vertex_set")
 
     def test_compatibility_rows_are_not_marked_hardware_backed(self) -> None:
         native_candidates = {
