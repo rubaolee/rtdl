@@ -80,6 +80,7 @@ from .apple_rt_runtime import apple_rt_predicate_mode
 from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
+from .apple_rt_runtime import conjunctive_scan_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_2d_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_3d_apple_rt
 from .apple_rt_runtime import overlay_compose_apple_rt
@@ -486,6 +487,7 @@ __all__ = [
     "CompiledKernel",
     "contains",
     "conjunctive_scan",
+    "conjunctive_scan_apple_rt",
     "conjunctive_scan_hiprt",
     "conjunctive_scan_cpu",
     "csr_graph",

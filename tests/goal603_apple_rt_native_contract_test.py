@@ -45,6 +45,9 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["segment_polygon_anyhit_rows"]["cpu_refinement"], "exact_segment_polygon")
         self.assertEqual(by_predicate["segment_polygon_hitcount"]["native_candidate_discovery"], "yes")
         self.assertEqual(by_predicate["segment_polygon_hitcount"]["cpu_refinement"], "exact_segment_polygon")
+        self.assertEqual(by_predicate["conjunctive_scan"]["mode"], "native_metal_compute")
+        self.assertEqual(by_predicate["conjunctive_scan"]["cpu_refinement"], "row_id_materialization_only")
+        self.assertEqual(by_predicate["conjunctive_scan"]["native_only"], "supported_for_numeric_predicates")
 
     def test_compatibility_rows_are_not_marked_hardware_backed(self) -> None:
         native_candidates = {
@@ -71,7 +74,7 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
             },
         )
         for row in rt.apple_rt_support_matrix():
-            if row["predicate"] in native_candidates:
+            if row["predicate"] in native_candidates or row["mode"] == "native_metal_compute":
                 continue
             with self.subTest(predicate=row["predicate"]):
                 self.assertEqual(row["native_candidate_discovery"], "no")

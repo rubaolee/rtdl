@@ -122,6 +122,13 @@ struct RtdlSegmentPolygonCandidateRow {
     uint32_t polygon_id;
 };
 
+struct RtdlAppleDbNumericClause {
+    uint32_t field_index;
+    uint32_t op;
+    float value;
+    float value_hi;
+};
+
 struct AppleRtClosestHitPrepared {
     id<MTLDevice> device = nil;
     id<MTLCommandQueue> command_queue = nil;
@@ -565,6 +572,263 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_u32_add_compute(
         [out_buffer release];
         [right_buffer release];
         [left_buffer release];
+        [pipeline release];
+        [function release];
+        [library release];
+        [command_queue release];
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute(
+    const uint32_t* row_ids,
+    const float* row_values,
+    size_t row_count,
+    size_t field_count,
+    const RtdlAppleDbNumericClause* clauses,
+    size_t clause_count,
+    uint32_t** row_ids_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (row_ids_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute");
+        return 1;
+    }
+    *row_ids_out = nullptr;
+    *row_count_out = 0;
+    if (row_count == 0) {
+        return 0;
+    }
+    if (row_ids == nullptr || row_values == nullptr || (clause_count > 0 && clauses == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute");
+        return 1;
+    }
+    if (field_count == 0) {
+        set_message(error_out, error_size, "Apple RT DB scan requires at least one field");
+        return 1;
+    }
+    if (row_count > std::numeric_limits<size_t>::max() / field_count ||
+        row_count * field_count > std::numeric_limits<size_t>::max() / sizeof(float) ||
+        row_count > std::numeric_limits<size_t>::max() / sizeof(uint32_t) ||
+        clause_count > std::numeric_limits<size_t>::max() / sizeof(RtdlAppleDbNumericClause)) {
+        set_message(error_out, error_size, "Apple RT DB scan input is too large");
+        return 1;
+    }
+    for (size_t index = 0; index < clause_count; ++index) {
+        if (clauses[index].field_index >= field_count) {
+            set_message(error_out, error_size, "Apple RT DB scan clause field index is out of range");
+            return 1;
+        }
+        if (clauses[index].op < 1 || clauses[index].op > 6) {
+            set_message(error_out, error_size, "Apple RT DB scan clause operator is unsupported");
+            return 1;
+        }
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+
+        NSString* source =
+            @"#include <metal_stdlib>\n"
+             "using namespace metal;\n"
+             "struct RtdlAppleDbNumericClause {\n"
+             "    uint field_index;\n"
+             "    uint op;\n"
+             "    float value;\n"
+             "    float value_hi;\n"
+             "};\n"
+             "static bool rtdl_db_match(float lhs, RtdlAppleDbNumericClause clause) {\n"
+             "    if (clause.op == 1u) { return lhs == clause.value; }\n"
+             "    if (clause.op == 2u) { return lhs < clause.value; }\n"
+             "    if (clause.op == 3u) { return lhs <= clause.value; }\n"
+             "    if (clause.op == 4u) { return lhs > clause.value; }\n"
+             "    if (clause.op == 5u) { return lhs >= clause.value; }\n"
+             "    return lhs >= clause.value && lhs <= clause.value_hi;\n"
+             "}\n"
+             "kernel void rtdl_db_conjunctive_scan(device const uint* row_ids [[buffer(0)]],\n"
+             "                                      device const float* row_values [[buffer(1)]],\n"
+             "                                      constant uint& field_count [[buffer(2)]],\n"
+             "                                      device const RtdlAppleDbNumericClause* clauses [[buffer(3)]],\n"
+             "                                      constant uint& clause_count [[buffer(4)]],\n"
+             "                                      device uint* out [[buffer(5)]],\n"
+             "                                      uint id [[thread_position_in_grid]]) {\n"
+             "    bool matched = true;\n"
+             "    for (uint i = 0; i < clause_count; ++i) {\n"
+             "        RtdlAppleDbNumericClause clause = clauses[i];\n"
+             "        float lhs = row_values[id * field_count + clause.field_index];\n"
+             "        if (!rtdl_db_match(lhs, clause)) { matched = false; break; }\n"
+             "    }\n"
+             "    out[id] = matched ? 1u : 0u;\n"
+             "}\n";
+        NSError* compile_error = nil;
+        id<MTLLibrary> library = [device newLibraryWithSource:source options:nil error:&compile_error];
+        if (library == nil) {
+            std::string message = "Metal DB scan library compilation failed";
+            if (compile_error != nil) {
+                message += ": ";
+                message += [[compile_error localizedDescription] UTF8String];
+            }
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 4;
+        }
+        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_db_conjunctive_scan"];
+        if (function == nil) {
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal DB scan function not found");
+            return 4;
+        }
+        NSError* pipeline_error = nil;
+        id<MTLComputePipelineState> pipeline = [device newComputePipelineStateWithFunction:function error:&pipeline_error];
+        if (pipeline == nil) {
+            std::string message = "Metal DB scan pipeline creation failed";
+            if (pipeline_error != nil) {
+                message += ": ";
+                message += [[pipeline_error localizedDescription] UTF8String];
+            }
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 4;
+        }
+
+        const size_t row_id_bytes = row_count * sizeof(uint32_t);
+        const size_t value_bytes = row_count * field_count * sizeof(float);
+        const size_t clause_bytes = std::max<size_t>(1, clause_count) * sizeof(RtdlAppleDbNumericClause);
+        uint32_t field_count_u32 = static_cast<uint32_t>(field_count);
+        uint32_t clause_count_u32 = static_cast<uint32_t>(clause_count);
+        if (field_count > std::numeric_limits<uint32_t>::max() ||
+            clause_count > std::numeric_limits<uint32_t>::max()) {
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Apple RT DB scan field/clause count exceeds uint32");
+            return 1;
+        }
+        RtdlAppleDbNumericClause empty_clause{};
+        id<MTLBuffer> row_id_buffer = [device newBufferWithBytes:row_ids length:row_id_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> value_buffer = [device newBufferWithBytes:row_values length:value_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> field_count_buffer = [device newBufferWithBytes:&field_count_u32 length:sizeof(uint32_t) options:MTLResourceStorageModeShared];
+        id<MTLBuffer> clause_buffer = [device newBufferWithBytes:(clause_count == 0 ? &empty_clause : clauses)
+                                                          length:clause_bytes
+                                                         options:MTLResourceStorageModeShared];
+        id<MTLBuffer> clause_count_buffer = [device newBufferWithBytes:&clause_count_u32 length:sizeof(uint32_t) options:MTLResourceStorageModeShared];
+        id<MTLBuffer> out_buffer = [device newBufferWithLength:row_id_bytes options:MTLResourceStorageModeShared];
+        if (row_id_buffer == nil || value_buffer == nil || field_count_buffer == nil ||
+            clause_buffer == nil || clause_count_buffer == nil || out_buffer == nil) {
+            [out_buffer release];
+            [clause_count_buffer release];
+            [clause_buffer release];
+            [field_count_buffer release];
+            [value_buffer release];
+            [row_id_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal DB scan buffer allocation failed");
+            return 5;
+        }
+
+        id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+        id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
+        if (command_buffer == nil || encoder == nil) {
+            [out_buffer release];
+            [clause_count_buffer release];
+            [clause_buffer release];
+            [field_count_buffer release];
+            [value_buffer release];
+            [row_id_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal DB scan command encoding failed");
+            return 3;
+        }
+        [encoder setComputePipelineState:pipeline];
+        [encoder setBuffer:row_id_buffer offset:0 atIndex:0];
+        [encoder setBuffer:value_buffer offset:0 atIndex:1];
+        [encoder setBuffer:field_count_buffer offset:0 atIndex:2];
+        [encoder setBuffer:clause_buffer offset:0 atIndex:3];
+        [encoder setBuffer:clause_count_buffer offset:0 atIndex:4];
+        [encoder setBuffer:out_buffer offset:0 atIndex:5];
+        const NSUInteger threadgroup_width =
+            std::max<NSUInteger>(1, std::min<NSUInteger>(pipeline.maxTotalThreadsPerThreadgroup, row_count));
+        [encoder dispatchThreads:MTLSizeMake(row_count, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(threadgroup_width, 1, 1)];
+        [encoder endEncoding];
+        [command_buffer commit];
+        [command_buffer waitUntilCompleted];
+        if ([command_buffer error] != nil) {
+            std::string message = "Metal DB scan command buffer failed: ";
+            message += [[[command_buffer error] localizedDescription] UTF8String];
+            [out_buffer release];
+            [clause_count_buffer release];
+            [clause_buffer release];
+            [field_count_buffer release];
+            [value_buffer release];
+            [row_id_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 6;
+        }
+
+        const auto* all_results = static_cast<const uint32_t*>([out_buffer contents]);
+        size_t matched_count = 0;
+        for (size_t index = 0; index < row_count; ++index) {
+            if (all_results[index] != 0) {
+                ++matched_count;
+            }
+        }
+        if (matched_count > 0) {
+            auto* out = static_cast<uint32_t*>(std::malloc(matched_count * sizeof(uint32_t)));
+            if (out == nullptr) {
+                [out_buffer release];
+                [clause_count_buffer release];
+                [clause_buffer release];
+                [field_count_buffer release];
+                [value_buffer release];
+                [row_id_buffer release];
+                [pipeline release];
+                [function release];
+                [library release];
+                [command_queue release];
+                set_message(error_out, error_size, "out of memory allocating Apple RT DB scan rows");
+                return 7;
+            }
+            size_t out_index = 0;
+            for (size_t index = 0; index < row_count; ++index) {
+                if (all_results[index] != 0) {
+                    out[out_index++] = row_ids[index];
+                }
+            }
+            *row_ids_out = out;
+            *row_count_out = matched_count;
+        }
+
+        [out_buffer release];
+        [clause_count_buffer release];
+        [clause_buffer release];
+        [field_count_buffer release];
+        [value_buffer release];
+        [row_id_buffer release];
         [pipeline release];
         [function release];
         [library release];

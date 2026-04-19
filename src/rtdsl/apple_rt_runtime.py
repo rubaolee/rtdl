@@ -8,10 +8,14 @@ with the Linux GPU backends yet.
 from __future__ import annotations
 
 import ctypes
+import math
 import os
 import platform
 from pathlib import Path
 
+from .db_reference import PredicateBundle
+from .db_reference import normalize_denorm_table
+from .db_reference import normalize_predicate_bundle
 from .ir import CompiledKernel
 from .reference import Point as _CanonicalPoint2D
 from .reference import Point3D as _CanonicalPoint3D
@@ -32,6 +36,7 @@ from .reference import _segment_hits_polygon as _reference_segment_hits_polygon
 
 APPLE_RT_NATIVE_PREDICATES = frozenset(
     {
+        "conjunctive_scan",
         "point_in_polygon",
         "point_nearest_segment",
         "overlay_compose",
@@ -44,6 +49,7 @@ APPLE_RT_NATIVE_PREDICATES = frozenset(
         "segment_polygon_hitcount",
     }
 )
+APPLE_RT_METAL_COMPUTE_PREDICATES = frozenset({"conjunctive_scan"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
         "bfs_discover",
@@ -66,6 +72,21 @@ APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
         "triangle_match",
     }
 )
+
+_DB_OP_EQ = 1
+_DB_OP_LT = 2
+_DB_OP_LE = 3
+_DB_OP_GT = 4
+_DB_OP_GE = 5
+_DB_OP_BETWEEN = 6
+_DB_OP_CODES = {
+    "eq": _DB_OP_EQ,
+    "lt": _DB_OP_LT,
+    "le": _DB_OP_LE,
+    "gt": _DB_OP_GT,
+    "ge": _DB_OP_GE,
+    "between": _DB_OP_BETWEEN,
+}
 
 _APPLE_RT_SUPPORT_NOTES = {
     "bounded_knn_rows": {
@@ -158,6 +179,13 @@ _APPLE_RT_SUPPORT_NOTES = {
         "native_only": "supported_for_segment2d_polygon2d",
         "native_shapes": ("Segment2D/Polygon2D",),
         "notes": "Apple Metal/MPS polygon bounding-box traversal for segment candidates, then exact hit-count refinement.",
+    },
+    "conjunctive_scan": {
+        "native_candidate_discovery": "no",
+        "cpu_refinement": "row_id_materialization_only",
+        "native_only": "supported_for_numeric_predicates",
+        "native_shapes": ("PredicateSet/DenormTable numeric",),
+        "notes": "Apple Metal compute evaluates bounded numeric conjunctive predicates over packed table columns; CPU only packs inputs and materializes matched row_ids.",
     },
 }
 
@@ -314,6 +342,15 @@ class _RtdlSegmentPolygonCandidateRow(ctypes.Structure):
     ]
 
 
+class _RtdlAppleDbNumericClause(ctypes.Structure):
+    _fields_ = [
+        ("field_index", ctypes.c_uint32),
+        ("op", ctypes.c_uint32),
+        ("value", ctypes.c_float),
+        ("value_hi", ctypes.c_float),
+    ]
+
+
 _LIBRARY: ctypes.CDLL | None = None
 
 
@@ -403,6 +440,19 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_u32_add_compute.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlAppleDbNumericClause),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(ctypes.c_uint32)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute.restype = ctypes.c_int
     library.rtdl_apple_rt_run_ray_closest_hit_3d.argtypes = [
         ctypes.POINTER(_RtdlRay3D),
         ctypes.c_size_t,
@@ -578,6 +628,88 @@ def apple_rt_compute_u32_add(left: tuple[int, ...], right: tuple[int, ...]) -> t
     finally:
         if bool(values_ptr):
             library.rtdl_apple_rt_free_rows(values_ptr)
+
+
+def _numeric_db_value(value, *, role: str) -> float:
+    if isinstance(value, bool):
+        return 1.0 if value else 0.0
+    if isinstance(value, int):
+        if abs(value) > 2**24:
+            raise ValueError(f"Apple RT DB numeric scan {role} integer exceeds exact float32 range")
+        return float(value)
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError(f"Apple RT DB numeric scan {role} float must be finite")
+        return float(value)
+    raise ValueError(f"Apple RT DB numeric scan {role} must be bool, int, or float")
+
+
+def _normalize_apple_db_predicates(predicates) -> PredicateBundle:
+    bundle = normalize_predicate_bundle(predicates)
+    for clause in bundle.clauses:
+        _numeric_db_value(clause.value, role=f"predicate `{clause.field}` value")
+        if clause.op == "between":
+            _numeric_db_value(clause.value_hi, role=f"predicate `{clause.field}` upper value")
+    return bundle
+
+
+def conjunctive_scan_apple_rt(table_rows, predicates) -> tuple[dict[str, int], ...]:
+    """Run bounded numeric DB conjunctive_scan with Apple Metal compute filtering."""
+    table = normalize_denorm_table(table_rows)
+    bundle = _normalize_apple_db_predicates(predicates)
+    if not table:
+        return ()
+
+    predicate_fields = tuple(dict.fromkeys(str(clause.field) for clause in bundle.clauses)) or ("row_id",)
+    field_to_index = {field: index for index, field in enumerate(predicate_fields)}
+    row_ids = []
+    values = []
+    first_schema = set(str(name) for name in table[0].keys())
+    for row_index, row in enumerate(table):
+        if set(str(name) for name in row.keys()) != first_schema:
+            raise ValueError(f"Apple RT DB scan row {row_index} does not match the first-row schema")
+        row_ids.append(int(row["row_id"]))
+        for field in predicate_fields:
+            if field not in row:
+                raise ValueError(f"Apple RT DB scan row {row_index} is missing predicate field `{field}`")
+            values.append(_numeric_db_value(row[field], role=f"row {row_index} field `{field}`"))
+
+    clause_records = []
+    for clause in bundle.clauses:
+        clause_records.append(
+            _RtdlAppleDbNumericClause(
+                field_to_index[str(clause.field)],
+                _DB_OP_CODES[str(clause.op)],
+                _numeric_db_value(clause.value, role=f"predicate `{clause.field}` value"),
+                0.0 if clause.value_hi is None else _numeric_db_value(clause.value_hi, role=f"predicate `{clause.field}` upper value"),
+            )
+        )
+
+    library = _load_library()
+    row_ids_array = (ctypes.c_uint32 * len(row_ids))(*row_ids)
+    values_array = (ctypes.c_float * len(values))(*values)
+    clauses_array = (_RtdlAppleDbNumericClause * len(clause_records))(*clause_records)
+    rows_ptr = ctypes.POINTER(ctypes.c_uint32)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_db_conjunctive_scan_numeric_compute(
+        row_ids_array,
+        values_array,
+        len(row_ids),
+        len(predicate_fields),
+        clauses_array,
+        len(clause_records),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple({"row_id": int(rows_ptr[index])} for index in range(row_count.value))
+    finally:
+        if bool(rows_ptr):
+            library.rtdl_apple_rt_free_rows(rows_ptr)
 
 
 def _pack_rays_3d(rays: tuple[_CanonicalRay3D, ...]):
@@ -1413,9 +1545,13 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
     """Return the current Apple RT dispatch class for a predicate.
 
     `native_mps_rt` means the operation uses the Apple Metal/MPS ray
-    intersector. `cpu_reference_compat` means the public Apple RT dispatcher is
-    callable for parity but the operation is not yet hardware-backed.
+    intersector. `native_metal_compute` means Apple Metal compute performs the
+    main predicate/filter stage without MPS RT traversal. `cpu_reference_compat`
+    means the public Apple RT dispatcher is callable for parity but the
+    operation is not yet hardware-backed.
     """
+    if predicate_name in APPLE_RT_METAL_COMPUTE_PREDICATES:
+        return "native_metal_compute"
     if predicate_name in {"fixed_radius_neighbors", "bounded_knn_rows", "knn_rows"}:
         return "native_mps_rt_2d_3d"
     if predicate_name == "ray_triangle_hit_count":
@@ -1591,13 +1727,16 @@ def run_apple_rt(
         return segment_polygon_anyhit_rows_apple_rt(left_records, right_records)
     if predicate_name == "segment_intersection":
         return tuple(segment_intersection_apple_rt(left_records, right_records))
+    if predicate_name == "conjunctive_scan":
+        return tuple(conjunctive_scan_apple_rt(right_records, left_records))
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
             "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, 2D segment_intersection, "
             "2D/3D point-neighborhood workloads, point-in-polygon positive hits, "
             "2D point-nearest-segment, 2D segment-polygon workloads, "
-            "bounded 2D polygon-pair area/Jaccard workloads, and 2D overlay compose; "
+            "bounded 2D polygon-pair area/Jaccard workloads, 2D overlay compose, "
+            "and numeric DB conjunctive_scan through Metal compute; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)
