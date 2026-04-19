@@ -79,6 +79,7 @@ from .apple_rt_runtime import apple_rt_predicate_mode
 from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
+from .apple_rt_runtime import fixed_radius_neighbors_2d_apple_rt
 from .apple_rt_runtime import PreparedAppleRtRayTriangleClosestHit3D
 from .apple_rt_runtime import prepare_apple_rt_ray_triangle_closest_hit
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
@@ -606,6 +607,7 @@ __all__ = [
     "FakePostgresqlConnection",
     "bfs_expand_hiprt",
     "fixed_radius_neighbors_2d_hiprt",
+    "fixed_radius_neighbors_2d_apple_rt",
     "fixed_radius_neighbors_3d_hiprt",
     "fixed_radius_neighbors_cpu",
     "knn_rows_cpu",

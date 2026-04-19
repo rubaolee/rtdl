@@ -42,7 +42,14 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         }
         self.assertEqual(
             native_candidates,
-            {"ray_triangle_closest_hit", "ray_triangle_hit_count", "segment_intersection"},
+            {
+                "bounded_knn_rows",
+                "fixed_radius_neighbors",
+                "knn_rows",
+                "ray_triangle_closest_hit",
+                "ray_triangle_hit_count",
+                "segment_intersection",
+            },
         )
         for row in rt.apple_rt_support_matrix():
             if row["predicate"] in native_candidates:

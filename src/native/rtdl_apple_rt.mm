@@ -59,6 +59,12 @@ struct __attribute__((packed)) RtdlTriangle2D {
     double y2;
 };
 
+struct __attribute__((packed)) RtdlPoint2D {
+    uint32_t id;
+    double x;
+    double y;
+};
+
 struct RtdlSegment {
     uint32_t id;
     double x0;
@@ -83,6 +89,12 @@ struct RtdlRayClosestHitRow {
 struct RtdlRayHitCountRow {
     uint32_t ray_id;
     uint32_t hit_count;
+};
+
+struct RtdlNeighborRow {
+    uint32_t query_id;
+    uint32_t neighbor_id;
+    double distance;
 };
 
 struct AppleRtClosestHitPrepared {
@@ -217,6 +229,12 @@ bool ray_hits_triangle_2d(const RtdlRay2D& ray, const RtdlTriangle2D& tri) {
     return segment_intersects_segment_2d(ray.ox, ray.oy, ex, ey, tri.x0, tri.y0, tri.x1, tri.y1) ||
            segment_intersects_segment_2d(ray.ox, ray.oy, ex, ey, tri.x1, tri.y1, tri.x2, tri.y2) ||
            segment_intersects_segment_2d(ray.ox, ray.oy, ex, ey, tri.x2, tri.y2, tri.x0, tri.y0);
+}
+
+double point_distance_2d(const RtdlPoint2D& query, const RtdlPoint2D& point) {
+    const double dx = query.x - point.x;
+    const double dy = query.y - point.y;
+    return std::sqrt(dx * dx + dy * dy);
 }
 
 int run_closest_hit_prepared(
@@ -1049,6 +1067,252 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_hitcount_2d(
         }
         *rows_out = out;
         *row_count_out = ray_count;
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_fixed_radius_neighbors_2d(
+    const RtdlPoint2D* queries,
+    size_t query_count,
+    const RtdlPoint2D* points,
+    size_t point_count,
+    double radius,
+    uint32_t k_max,
+    RtdlNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_fixed_radius_neighbors_2d");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if ((query_count > 0 && queries == nullptr) || (point_count > 0 && points == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_fixed_radius_neighbors_2d");
+        return 1;
+    }
+    if (!std::isfinite(radius) || radius < 0.0 || k_max == 0) {
+        set_message(error_out, error_size, "invalid radius or k_max passed to rtdl_apple_rt_run_fixed_radius_neighbors_2d");
+        return 1;
+    }
+    if (query_count == 0 || point_count == 0) {
+        return 0;
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+
+        std::vector<MPSRayOriginMaskDirectionMaxDistance> mps_rays(query_count);
+        for (size_t i = 0; i < query_count; ++i) {
+            if (!std::isfinite(queries[i].x) || !std::isfinite(queries[i].y)) {
+                mps_rays[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
+                mps_rays[i].mask = 0;
+                mps_rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
+                mps_rays[i].maxDistance = -1.0f;
+                continue;
+            }
+            mps_rays[i].origin = MPSPackedFloat3(static_cast<float>(queries[i].x), static_cast<float>(queries[i].y), -1.0f);
+            mps_rays[i].mask = 0xFFFFFFFFu;
+            mps_rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 2.0f);
+            mps_rays[i].maxDistance = 1.000001f;
+        }
+
+        id<MTLBuffer> ray_buffer = [device newBufferWithBytes:mps_rays.data()
+                                                       length:mps_rays.size() * sizeof(MPSRayOriginMaskDirectionMaxDistance)
+                                                      options:MTLResourceStorageModeShared];
+        if (ray_buffer == nil) {
+            set_message(error_out, error_size, "Metal query ray buffer creation failed");
+            return 4;
+        }
+        id<MTLBuffer> intersection_buffer = [device newBufferWithLength:query_count * sizeof(MPSIntersectionDistancePrimitiveIndex)
+                                                                 options:MTLResourceStorageModeShared];
+        if (intersection_buffer == nil) {
+            set_message(error_out, error_size, "Metal neighbor intersection buffer creation failed");
+            return 5;
+        }
+
+        MPSRayIntersector* intersector = [[MPSRayIntersector alloc] initWithDevice:device];
+        if (intersector == nil) {
+            set_message(error_out, error_size, "MPSRayIntersector initialization failed");
+            return 6;
+        }
+        intersector.cullMode = MTLCullModeNone;
+        intersector.rayDataType = MPSRayDataTypeOriginMaskDirectionMaxDistance;
+        intersector.rayMaskOptions = MPSRayMaskOptionPrimitive;
+        intersector.rayMaskOperator = MPSRayMaskOperatorAnd;
+        intersector.intersectionDataType = MPSIntersectionDataTypeDistancePrimitiveIndex;
+        intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
+        intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
+
+        std::vector<std::vector<RtdlNeighborRow>> candidates_by_query(query_count);
+        constexpr size_t chunk_size = 32;
+        for (size_t chunk_begin = 0; chunk_begin < point_count; chunk_begin += chunk_size) {
+            const size_t chunk_count = std::min(chunk_size, point_count - chunk_begin);
+            const uint32_t full_chunk_mask = chunk_count == 32 ? 0xFFFFFFFFu : ((1u << chunk_count) - 1u);
+            auto* gpu_rays = static_cast<MPSRayOriginMaskDirectionMaxDistance*>([ray_buffer contents]);
+            for (size_t query_index = 0; query_index < query_count; ++query_index) {
+                const bool valid_query = std::isfinite(queries[query_index].x) && std::isfinite(queries[query_index].y);
+                gpu_rays[query_index].mask = valid_query ? full_chunk_mask : 0u;
+            }
+
+            std::vector<MPSPackedFloat3> vertices;
+            std::vector<uint32_t> primitive_masks;
+            std::vector<size_t> primitive_point_offsets;
+            vertices.reserve(chunk_count * 24);
+            primitive_masks.reserve(chunk_count * 8);
+            primitive_point_offsets.reserve(chunk_count * 8);
+
+            auto add_triangle = [&](float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz, uint32_t mask, size_t local_index) {
+                vertices.emplace_back(ax, ay, az);
+                vertices.emplace_back(bx, by, bz);
+                vertices.emplace_back(cx, cy, cz);
+                primitive_masks.push_back(mask);
+                primitive_point_offsets.push_back(local_index);
+            };
+
+            for (size_t local_index = 0; local_index < chunk_count; ++local_index) {
+                const RtdlPoint2D& point = points[chunk_begin + local_index];
+                const uint32_t mask = 1u << local_index;
+                const float minx = static_cast<float>(point.x - radius);
+                const float maxx = static_cast<float>(point.x + radius);
+                const float miny = static_cast<float>(point.y - radius);
+                const float maxy = static_cast<float>(point.y + radius);
+                constexpr float z0 = -1.0f;
+                constexpr float z1 = 1.0f;
+
+                add_triangle(minx, miny, z0, maxx, miny, z0, maxx, maxy, z0, mask, local_index);
+                add_triangle(minx, miny, z0, maxx, maxy, z0, minx, maxy, z0, mask, local_index);
+                add_triangle(minx, miny, z1, maxx, maxy, z1, maxx, miny, z1, mask, local_index);
+                add_triangle(minx, miny, z1, minx, maxy, z1, maxx, maxy, z1, mask, local_index);
+                add_triangle(minx, miny, z0, maxx, miny, z0, maxx, miny, z1, mask, local_index);
+                add_triangle(minx, miny, z0, maxx, miny, z1, minx, miny, z1, mask, local_index);
+                add_triangle(maxx, maxy, z0, minx, maxy, z0, minx, maxy, z1, mask, local_index);
+                add_triangle(maxx, maxy, z0, minx, maxy, z1, maxx, maxy, z1, mask, local_index);
+            }
+
+            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
+                                                              length:vertices.size() * sizeof(MPSPackedFloat3)
+                                                             options:MTLResourceStorageModeShared];
+            if (vertex_buffer == nil) {
+                set_message(error_out, error_size, "Metal fixed-radius box vertex buffer creation failed");
+                return 7;
+            }
+            id<MTLBuffer> mask_buffer = [device newBufferWithBytes:primitive_masks.data()
+                                                            length:primitive_masks.size() * sizeof(uint32_t)
+                                                           options:MTLResourceStorageModeShared];
+            if (mask_buffer == nil) {
+                [vertex_buffer release];
+                set_message(error_out, error_size, "Metal fixed-radius primitive mask buffer creation failed");
+                return 8;
+            }
+
+            MPSTriangleAccelerationStructure* accel = [[MPSTriangleAccelerationStructure alloc] initWithDevice:device];
+            if (accel == nil) {
+                [mask_buffer release];
+                [vertex_buffer release];
+                set_message(error_out, error_size, "MPSTriangleAccelerationStructure initialization failed for fixed-radius");
+                return 9;
+            }
+            accel.vertexBuffer = vertex_buffer;
+            accel.vertexStride = sizeof(MPSPackedFloat3);
+            accel.maskBuffer = mask_buffer;
+            accel.triangleCount = primitive_masks.size();
+            [accel rebuild];
+
+            for (size_t pass = 0; pass < chunk_count; ++pass) {
+                id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+                if (command_buffer == nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, "Metal command buffer creation failed");
+                    return 10;
+                }
+                [intersector encodeIntersectionToCommandBuffer:command_buffer
+                                              intersectionType:MPSIntersectionTypeNearest
+                                                     rayBuffer:ray_buffer
+                                               rayBufferOffset:0
+                                            intersectionBuffer:intersection_buffer
+                                      intersectionBufferOffset:0
+                                                      rayCount:query_count
+                                         accelerationStructure:accel];
+                [command_buffer commit];
+                [command_buffer waitUntilCompleted];
+                NSError* error = [command_buffer error];
+                if (error != nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+                    return 11;
+                }
+                const auto* hits = static_cast<const MPSIntersectionDistancePrimitiveIndex*>([intersection_buffer contents]);
+                size_t active_hits = 0;
+                size_t active_masks = 0;
+                for (size_t query_index = 0; query_index < query_count; ++query_index) {
+                    const float distance = hits[query_index].distance;
+                    const uint32_t primitive_index = hits[query_index].primitiveIndex;
+                    if (distance >= 0.0f && distance <= 1.000001f && primitive_index < primitive_point_offsets.size()) {
+                        const size_t local_index = primitive_point_offsets[primitive_index];
+                        const uint32_t bit = 1u << local_index;
+                        if ((gpu_rays[query_index].mask & bit) != 0u) {
+                            const RtdlPoint2D& point = points[chunk_begin + local_index];
+                            const double exact_distance = point_distance_2d(queries[query_index], point);
+                            if (exact_distance <= radius + 1.0e-9) {
+                                candidates_by_query[query_index].push_back(RtdlNeighborRow{queries[query_index].id, point.id, exact_distance});
+                            }
+                            gpu_rays[query_index].mask &= ~bit;
+                            active_hits += 1;
+                        }
+                    }
+                    if (gpu_rays[query_index].mask != 0u) {
+                        active_masks += 1;
+                    }
+                }
+                if (active_hits == 0 || active_masks == 0) {
+                    break;
+                }
+            }
+            [accel release];
+            [mask_buffer release];
+            [vertex_buffer release];
+        }
+
+        std::vector<RtdlNeighborRow> rows;
+        for (auto& query_rows : candidates_by_query) {
+            std::sort(query_rows.begin(), query_rows.end(), [](const auto& a, const auto& b) {
+                if (a.distance != b.distance) {
+                    return a.distance < b.distance;
+                }
+                return a.neighbor_id < b.neighbor_id;
+            });
+            const size_t keep = std::min(static_cast<size_t>(k_max), query_rows.size());
+            for (size_t i = 0; i < keep; ++i) {
+                rows.push_back(query_rows[i]);
+            }
+        }
+
+        if (rows.empty()) {
+            return 0;
+        }
+        auto* out = static_cast<RtdlNeighborRow*>(std::malloc(rows.size() * sizeof(RtdlNeighborRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT fixed-radius rows");
+            return 12;
+        }
+        std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlNeighborRow));
+        *rows_out = out;
+        *row_count_out = rows.size();
         return 0;
     }
 }
