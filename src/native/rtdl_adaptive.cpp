@@ -6,6 +6,7 @@
 #include <cstring>
 #include <exception>
 #include <new>
+#include <algorithm>
 #include <vector>
 
 #if defined(_WIN32)
@@ -45,6 +46,21 @@ struct RtdlAdaptiveRayHitCountRow {
   uint32_t hit_count;
 };
 
+struct RtdlAdaptiveSegment {
+  uint32_t id;
+  double x0;
+  double y0;
+  double x1;
+  double y1;
+};
+
+struct RtdlAdaptiveLsiRow {
+  uint32_t left_id;
+  uint32_t right_id;
+  double intersection_point_x;
+  double intersection_point_y;
+};
+
 RTDL_ADAPTIVE_EXPORT void rtdl_adaptive_free_rows(void* pointer) {
   std::free(pointer);
 }
@@ -69,6 +85,16 @@ RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_ray_hitcount_3d(
     char* error_out,
     size_t error_size);
 
+RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
+    const RtdlAdaptiveSegment* left,
+    size_t left_count,
+    const RtdlAdaptiveSegment* right,
+    size_t right_count,
+    RtdlAdaptiveLsiRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+
 }  // extern "C"
 
 namespace {
@@ -86,11 +112,51 @@ struct TriangleSoA {
   std::vector<double> e2z;
 };
 
+struct SegmentSoA {
+  std::vector<uint32_t> id;
+  std::vector<double> x0;
+  std::vector<double> y0;
+  std::vector<double> dx;
+  std::vector<double> dy;
+  std::vector<double> min_x;
+  std::vector<double> min_y;
+  std::vector<double> max_x;
+  std::vector<double> max_y;
+};
+
 void set_error(char* error_out, size_t error_size, const char* message) {
   if (error_out == nullptr || error_size == 0) {
     return;
   }
   std::snprintf(error_out, error_size, "%s", message);
+}
+
+SegmentSoA stage_segments_soa(const RtdlAdaptiveSegment* segments, size_t count) {
+  SegmentSoA staged;
+  staged.id.reserve(count);
+  staged.x0.reserve(count);
+  staged.y0.reserve(count);
+  staged.dx.reserve(count);
+  staged.dy.reserve(count);
+  staged.min_x.reserve(count);
+  staged.min_y.reserve(count);
+  staged.max_x.reserve(count);
+  staged.max_y.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    const RtdlAdaptiveSegment& segment = segments[i];
+    const double dx = segment.x1 - segment.x0;
+    const double dy = segment.y1 - segment.y0;
+    staged.id.push_back(segment.id);
+    staged.x0.push_back(segment.x0);
+    staged.y0.push_back(segment.y0);
+    staged.dx.push_back(dx);
+    staged.dy.push_back(dy);
+    staged.min_x.push_back(std::min(segment.x0, segment.x1));
+    staged.min_y.push_back(std::min(segment.y0, segment.y1));
+    staged.max_x.push_back(std::max(segment.x0, segment.x1));
+    staged.max_y.push_back(std::max(segment.y0, segment.y1));
+  }
+  return staged;
 }
 
 TriangleSoA stage_triangles_soa(const RtdlAdaptiveTriangle3D* triangles, size_t count) {
@@ -119,6 +185,44 @@ TriangleSoA stage_triangles_soa(const RtdlAdaptiveTriangle3D* triangles, size_t 
     staged.e2z.push_back(triangle.z2 - triangle.z0);
   }
   return staged;
+}
+
+inline bool bbox_overlap(
+    double left_min_x,
+    double left_min_y,
+    double left_max_x,
+    double left_max_y,
+    const SegmentSoA& right,
+    size_t index) {
+  return !(left_max_x < right.min_x[index] ||
+           right.max_x[index] < left_min_x ||
+           left_max_y < right.min_y[index] ||
+           right.max_y[index] < left_min_y);
+}
+
+inline bool segment_intersection_point(
+    const RtdlAdaptiveSegment& left,
+    double left_dx,
+    double left_dy,
+    const SegmentSoA& right,
+    size_t index,
+    double* ix,
+    double* iy) {
+  constexpr double eps = 1.0e-9;
+  const double denom = left_dx * right.dy[index] - left_dy * right.dx[index];
+  if (std::fabs(denom) < eps) {
+    return false;
+  }
+  const double qmp_x = right.x0[index] - left.x0;
+  const double qmp_y = right.y0[index] - left.y0;
+  const double t = (qmp_x * right.dy[index] - qmp_y * right.dx[index]) / denom;
+  const double u = (qmp_x * left_dy - qmp_y * left_dx) / denom;
+  if (!(0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0)) {
+    return false;
+  }
+  *ix = left.x0 + t * left_dx;
+  *iy = left.y0 + t * left_dy;
+  return true;
 }
 
 inline bool finite_ray_hits_triangle_3d(
@@ -162,6 +266,72 @@ inline bool finite_ray_hits_triangle_3d(
                     triangles.e2z[index] * qvz) *
                    inv_det;
   return t >= 0.0 && t <= ray.tmax;
+}
+
+extern "C" RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
+    const RtdlAdaptiveSegment* left,
+    size_t left_count,
+    const RtdlAdaptiveSegment* right,
+    size_t right_count,
+    RtdlAdaptiveLsiRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  if (rows_out == nullptr || row_count_out == nullptr) {
+    set_error(error_out, error_size, "null output passed to rtdl_adaptive_run_segment_intersection");
+    return 1;
+  }
+  *rows_out = nullptr;
+  *row_count_out = 0;
+  if ((left_count > 0 && left == nullptr) || (right_count > 0 && right == nullptr)) {
+    set_error(error_out, error_size, "null input passed to rtdl_adaptive_run_segment_intersection");
+    return 2;
+  }
+
+  try {
+    SegmentSoA staged_right = stage_segments_soa(right, right_count);
+    std::vector<RtdlAdaptiveLsiRow> rows;
+    rows.reserve(std::min(left_count * right_count, static_cast<size_t>(1024)));
+    for (size_t left_index = 0; left_index < left_count; ++left_index) {
+      const RtdlAdaptiveSegment& left_segment = left[left_index];
+      const double left_dx = left_segment.x1 - left_segment.x0;
+      const double left_dy = left_segment.y1 - left_segment.y0;
+      const double left_min_x = std::min(left_segment.x0, left_segment.x1);
+      const double left_min_y = std::min(left_segment.y0, left_segment.y1);
+      const double left_max_x = std::max(left_segment.x0, left_segment.x1);
+      const double left_max_y = std::max(left_segment.y0, left_segment.y1);
+      for (size_t right_index = 0; right_index < right_count; ++right_index) {
+        if (!bbox_overlap(left_min_x, left_min_y, left_max_x, left_max_y, staged_right, right_index)) {
+          continue;
+        }
+        double ix = 0.0;
+        double iy = 0.0;
+        if (!segment_intersection_point(left_segment, left_dx, left_dy, staged_right, right_index, &ix, &iy)) {
+          continue;
+        }
+        rows.push_back({left_segment.id, staged_right.id[right_index], ix, iy});
+      }
+    }
+
+    auto* output = static_cast<RtdlAdaptiveLsiRow*>(
+        std::calloc(rows.empty() ? 1 : rows.size(), sizeof(RtdlAdaptiveLsiRow)));
+    if (output == nullptr) {
+      set_error(error_out, error_size, "out of memory allocating adaptive segment-intersection rows");
+      return 3;
+    }
+    if (!rows.empty()) {
+      std::memcpy(output, rows.data(), rows.size() * sizeof(RtdlAdaptiveLsiRow));
+    }
+    *rows_out = output;
+    *row_count_out = rows.size();
+    return 0;
+  } catch (const std::bad_alloc&) {
+    set_error(error_out, error_size, "out of memory in adaptive segment-intersection kernel");
+    return 4;
+  } catch (const std::exception& exc) {
+    set_error(error_out, error_size, exc.what());
+    return 5;
+  }
 }
 
 }  // namespace

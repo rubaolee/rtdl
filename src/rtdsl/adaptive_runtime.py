@@ -17,6 +17,7 @@ from pathlib import Path
 
 from .ir import CompiledKernel
 from .reference import Ray3D
+from .reference import Segment
 from .reference import Triangle3D
 from .runtime import _normalize_records
 from .runtime import _project_rows
@@ -27,6 +28,7 @@ from .runtime import run_cpu_python_reference
 ADAPTIVE_BACKEND_NAME = "adaptive"
 ADAPTIVE_COMPAT_MODE = "cpu_reference_compat"
 ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE = "native_adaptive_cpu_soa_3d"
+ADAPTIVE_NATIVE_SEGMENT_INTERSECTION_MODE = "native_adaptive_cpu_soa_2d"
 _ERROR_BUFFER_SIZE = 512
 
 
@@ -62,6 +64,25 @@ class _RtdlAdaptiveRayHitCountRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
         ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlAdaptiveSegment(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+    ]
+
+
+class _RtdlAdaptiveLsiRow(ctypes.Structure):
+    _fields_ = [
+        ("left_id", ctypes.c_uint32),
+        ("right_id", ctypes.c_uint32),
+        ("intersection_point_x", ctypes.c_double),
+        ("intersection_point_y", ctypes.c_double),
     ]
 
 
@@ -346,6 +367,8 @@ def run_adaptive(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ..
 
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     workload = _classify_workload(compiled)
+    if workload == "segment_intersection" and adaptive_available():
+        return _run_segment_intersection_native(compiled, inputs)
     if workload == "ray_triangle_hit_count_3d" and adaptive_available():
         return _run_ray_triangle_hit_count_3d_native(compiled, inputs)
     return run_cpu_python_reference(compiled, **inputs)
@@ -419,10 +442,93 @@ def adaptive_version() -> tuple[int, int, int]:
 
 def _support_row_with_runtime_mode(row: AdaptiveWorkloadSupport) -> dict[str, object]:
     payload = row.to_dict()
+    if row.workload == "segment_intersection" and adaptive_available():
+        payload["mode"] = ADAPTIVE_NATIVE_SEGMENT_INTERSECTION_MODE
+        payload["native"] = True
     if row.workload == "ray_triangle_hit_count_3d" and adaptive_available():
         payload["mode"] = ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE
         payload["native"] = True
     return payload
+
+
+def _run_segment_intersection_native(
+    compiled: CompiledKernel,
+    inputs: dict[str, object],
+) -> tuple[dict[str, object], ...]:
+    expected_inputs = {item.name: item for item in compiled.inputs}
+    missing = [name for name in expected_inputs if name not in inputs]
+    unexpected = [name for name in inputs if name not in expected_inputs]
+    if missing:
+        raise ValueError(f"missing RTDL adaptive inputs: {', '.join(sorted(missing))}")
+    if unexpected:
+        raise ValueError(f"unexpected RTDL adaptive inputs: {', '.join(sorted(unexpected))}")
+
+    normalized_inputs = {
+        name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
+        for name, payload in inputs.items()
+    }
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left = normalized_inputs[left_name]
+    right = normalized_inputs[right_name]
+    if any(not isinstance(item, Segment) for item in left):
+        raise TypeError("native adaptive segment_intersection requires Segment left inputs")
+    if any(not isinstance(item, Segment) for item in right):
+        raise TypeError("native adaptive segment_intersection requires Segment right inputs")
+
+    left_array = (_RtdlAdaptiveSegment * len(left))(
+        *(
+            _RtdlAdaptiveSegment(
+                int(segment.id),
+                float(segment.x0),
+                float(segment.y0),
+                float(segment.x1),
+                float(segment.y1),
+            )
+            for segment in left
+        )
+    )
+    right_array = (_RtdlAdaptiveSegment * len(right))(
+        *(
+            _RtdlAdaptiveSegment(
+                int(segment.id),
+                float(segment.x0),
+                float(segment.y0),
+                float(segment.x1),
+                float(segment.y1),
+            )
+            for segment in right
+        )
+    )
+    rows_ptr = ctypes.POINTER(_RtdlAdaptiveLsiRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(_ERROR_BUFFER_SIZE)
+    status = _adaptive_lib().rtdl_adaptive_run_segment_intersection(
+        left_array,
+        len(left),
+        right_array,
+        len(right),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        _ERROR_BUFFER_SIZE,
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_adaptive_run_segment_intersection failed with status {status}: {detail}")
+    try:
+        rows = tuple(
+            {
+                "left_id": int(rows_ptr[index].left_id),
+                "right_id": int(rows_ptr[index].right_id),
+                "intersection_point_x": float(rows_ptr[index].intersection_point_x),
+                "intersection_point_y": float(rows_ptr[index].intersection_point_y),
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        _adaptive_lib().rtdl_adaptive_free_rows(rows_ptr)
+    return _project_rows(compiled, rows)
 
 
 def _run_ray_triangle_hit_count_3d_native(
@@ -531,6 +637,17 @@ def _adaptive_lib():
         ctypes.c_size_t,
     ]
     lib.rtdl_adaptive_run_ray_hitcount_3d.restype = ctypes.c_int
+    lib.rtdl_adaptive_run_segment_intersection.argtypes = [
+        ctypes.POINTER(_RtdlAdaptiveSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlAdaptiveSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlAdaptiveLsiRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    lib.rtdl_adaptive_run_segment_intersection.restype = ctypes.c_int
     return lib
 
 
