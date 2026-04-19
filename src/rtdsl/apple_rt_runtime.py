@@ -14,6 +14,7 @@ from pathlib import Path
 
 from .ir import CompiledKernel
 from .reference import Point as _CanonicalPoint2D
+from .reference import Point3D as _CanonicalPoint3D
 from .reference import Ray2D as _CanonicalRay2D
 from .reference import Ray3D as _CanonicalRay3D
 from .reference import Segment as _CanonicalSegment
@@ -52,23 +53,23 @@ _APPLE_RT_SUPPORT_NOTES = {
     "bounded_knn_rows": {
         "native_candidate_discovery": "shape_dependent",
         "cpu_refinement": "distance_ranking",
-        "native_only": "supported_for_point2d",
-        "native_shapes": ("Point2D/Point2D",),
-        "notes": "Apple Metal/MPS point-neighborhood box traversal for 2D candidates, then exact distance ranking.",
+        "native_only": "supported_for_point2d_and_point3d",
+        "native_shapes": ("Point2D/Point2D", "Point3D/Point3D"),
+        "notes": "Apple Metal/MPS point-neighborhood box traversal for 2D/3D candidates, then exact distance ranking.",
     },
     "fixed_radius_neighbors": {
         "native_candidate_discovery": "shape_dependent",
         "cpu_refinement": "exact_distance_filter_and_sort",
-        "native_only": "supported_for_point2d",
-        "native_shapes": ("Point2D/Point2D",),
-        "notes": "Apple Metal/MPS box traversal around 2D search points, then exact Euclidean filtering.",
+        "native_only": "supported_for_point2d_and_point3d",
+        "native_shapes": ("Point2D/Point2D", "Point3D/Point3D"),
+        "notes": "Apple Metal/MPS box traversal around 2D/3D search points, then exact Euclidean filtering.",
     },
     "knn_rows": {
         "native_candidate_discovery": "shape_dependent",
         "cpu_refinement": "distance_ranking",
-        "native_only": "supported_for_point2d",
-        "native_shapes": ("Point2D/Point2D",),
-        "notes": "Apple Metal/MPS broad box traversal for 2D candidate discovery, then exact kNN ranking.",
+        "native_only": "supported_for_point2d_and_point3d",
+        "native_shapes": ("Point2D/Point2D", "Point3D/Point3D"),
+        "notes": "Apple Metal/MPS broad box traversal for 2D/3D candidate discovery, then exact kNN ranking.",
     },
     "ray_triangle_closest_hit": {
         "native_candidate_discovery": "yes",
@@ -167,6 +168,16 @@ class _RtdlPoint2D(ctypes.Structure):
         ("id", ctypes.c_uint32),
         ("x", ctypes.c_double),
         ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlPoint3D(ctypes.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+        ("z", ctypes.c_double),
     ]
 
 
@@ -357,6 +368,19 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_fixed_radius_neighbors_2d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_fixed_radius_neighbors_3d.argtypes = [
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_fixed_radius_neighbors_3d.restype = ctypes.c_int
     library.rtdl_apple_rt_run_lsi.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
@@ -447,6 +471,13 @@ def _pack_points_2d(points: tuple[_CanonicalPoint2D, ...]):
     records = (_RtdlPoint2D * len(points))()
     for index, point in enumerate(points):
         records[index] = _RtdlPoint2D(point.id, point.x, point.y)
+    return records
+
+
+def _pack_points_3d(points: tuple[_CanonicalPoint3D, ...]):
+    records = (_RtdlPoint3D * len(points))()
+    for index, point in enumerate(points):
+        records[index] = _RtdlPoint3D(point.id, point.x, point.y, point.z)
     return records
 
 
@@ -699,6 +730,49 @@ def fixed_radius_neighbors_2d_apple_rt(
     )
 
 
+def fixed_radius_neighbors_3d_apple_rt(
+    query_points: tuple[_CanonicalPoint3D, ...],
+    search_points: tuple[_CanonicalPoint3D, ...],
+    *,
+    radius: float,
+    k_max: int,
+) -> AppleRtRowView:
+    if any(not isinstance(point, _CanonicalPoint3D) for point in query_points):
+        raise ValueError("Apple RT fixed_radius_neighbors_3d currently requires 3D query points")
+    if any(not isinstance(point, _CanonicalPoint3D) for point in search_points):
+        raise ValueError("Apple RT fixed_radius_neighbors_3d currently requires 3D search points")
+    if radius < 0.0:
+        raise ValueError("Apple RT fixed_radius_neighbors_3d radius must be non-negative")
+    if k_max <= 0:
+        raise ValueError("Apple RT fixed_radius_neighbors_3d k_max must be positive")
+    library = _load_library()
+    query_records = _pack_points_3d(query_points)
+    search_records = _pack_points_3d(search_points)
+    rows_ptr = ctypes.POINTER(_RtdlNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_fixed_radius_neighbors_3d(
+        query_records,
+        len(query_points),
+        search_records,
+        len(search_points),
+        float(radius),
+        int(k_max),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return AppleRtRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlNeighborRow,
+        field_names=("query_id", "neighbor_id", "distance"),
+    )
+
+
 def _rank_neighbor_rows(rows, *, k_max: int) -> tuple[dict[str, object], ...]:
     by_query: dict[int, list[dict[str, object]]] = {}
     for row in rows:
@@ -729,6 +803,18 @@ def _combined_point2d_radius(query_points: tuple[_CanonicalPoint2D, ...], search
     return (dx * dx + dy * dy) ** 0.5 + 1.0e-9
 
 
+def _combined_point3d_radius(query_points: tuple[_CanonicalPoint3D, ...], search_points: tuple[_CanonicalPoint3D, ...]) -> float:
+    if not query_points or not search_points:
+        return 0.0
+    xs = [point.x for point in (*query_points, *search_points)]
+    ys = [point.y for point in (*query_points, *search_points)]
+    zs = [point.z for point in (*query_points, *search_points)]
+    dx = max(xs) - min(xs)
+    dy = max(ys) - min(ys)
+    dz = max(zs) - min(zs)
+    return (dx * dx + dy * dy + dz * dz) ** 0.5 + 1.0e-9
+
+
 def apple_rt_predicate_mode(predicate_name: str) -> str:
     """Return the current Apple RT dispatch class for a predicate.
 
@@ -737,7 +823,7 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
     callable for parity but the operation is not yet hardware-backed.
     """
     if predicate_name in {"fixed_radius_neighbors", "bounded_knn_rows", "knn_rows"}:
-        return "native_mps_rt_2d_else_cpu_reference_compat"
+        return "native_mps_rt_2d_3d"
     if predicate_name == "ray_triangle_hit_count":
         return "native_mps_rt_2d_3d"
     if predicate_name in APPLE_RT_NATIVE_PREDICATES:
@@ -812,11 +898,34 @@ def run_apple_rt(
                 k_max=int(options["k_max"]),
             )
         )
+    if predicate_name == "fixed_radius_neighbors" and all(
+        isinstance(point, _CanonicalPoint3D) for point in left_records
+    ) and all(isinstance(point, _CanonicalPoint3D) for point in right_records):
+        options = compiled.refine_op.predicate.options
+        return tuple(
+            fixed_radius_neighbors_3d_apple_rt(
+                left_records,
+                right_records,
+                radius=float(options["radius"]),
+                k_max=int(options["k_max"]),
+            )
+        )
     if predicate_name == "bounded_knn_rows" and all(
         isinstance(point, _CanonicalPoint2D) for point in left_records
     ) and all(isinstance(point, _CanonicalPoint2D) for point in right_records):
         options = compiled.refine_op.predicate.options
         fixed_rows = fixed_radius_neighbors_2d_apple_rt(
+            left_records,
+            right_records,
+            radius=float(options["radius"]),
+            k_max=int(options["k_max"]),
+        )
+        return _rank_neighbor_rows(fixed_rows, k_max=int(options["k_max"]))
+    if predicate_name == "bounded_knn_rows" and all(
+        isinstance(point, _CanonicalPoint3D) for point in left_records
+    ) and all(isinstance(point, _CanonicalPoint3D) for point in right_records):
+        options = compiled.refine_op.predicate.options
+        fixed_rows = fixed_radius_neighbors_3d_apple_rt(
             left_records,
             right_records,
             radius=float(options["radius"]),
@@ -835,13 +944,25 @@ def run_apple_rt(
             k_max=max(k, len(right_records)),
         )
         return _rank_neighbor_rows(fixed_rows, k_max=k)
+    if predicate_name == "knn_rows" and all(
+        isinstance(point, _CanonicalPoint3D) for point in left_records
+    ) and all(isinstance(point, _CanonicalPoint3D) for point in right_records):
+        options = compiled.refine_op.predicate.options
+        k = int(options["k"])
+        fixed_rows = fixed_radius_neighbors_3d_apple_rt(
+            left_records,
+            right_records,
+            radius=_combined_point3d_radius(left_records, right_records),
+            k_max=max(k, len(right_records)),
+        )
+        return _rank_neighbor_rows(fixed_rows, k_max=k)
     if predicate_name == "segment_intersection":
         return tuple(segment_intersection_apple_rt(left_records, right_records))
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
             "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, 2D segment_intersection, "
-            "and 2D point-neighborhood workloads; "
+            "and 2D/3D point-neighborhood workloads; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)
