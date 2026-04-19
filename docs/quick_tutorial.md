@@ -79,14 +79,14 @@ Backend note:
 - released `v0.9.1` Apple RT support exists on Apple Silicon macOS;
   native Apple Metal/MPS execution currently covers 3D
   `ray_triangle_closest_hit`
-- current v0.9.4 target Apple RT work makes all 18 current predicates callable
+- released v0.9.4 Apple RT work makes all 18 current predicates callable
   through `run_apple_rt` with explicit native or native-assisted modes
 - supported geometry and nearest-neighbor slices use Apple MPS RT; bounded DB
   and graph slices use Apple Metal compute/native-assisted filtering, not Apple
   ray-tracing-hardware traversal
 - use `native_only=True` when an app must reject unsupported shape/backend
   combinations instead of falling back to a compatibility path
-- current v0.9.4 target Apple RT work also adds prepared closest-hit reuse and
+- released v0.9.4 Apple RT work also adds prepared closest-hit reuse and
   masked traversal for hit-count and segment-intersection
 
 Optional Embree backend build/probe:

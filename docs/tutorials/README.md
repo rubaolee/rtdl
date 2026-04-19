@@ -28,7 +28,7 @@ RT stack.
 | 8 | [v0.8 App Building](v0_8_app_building.md) | Build apps from existing RTDL rows plus Python orchestration |
 | 9 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
 | 10 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the released v0.9 HIPRT surface |
-| 11 | [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py) | See the released v0.9.1 Apple Metal/MPS closest-hit slice and the current v0.9.4 Apple RT target direction |
+| 11 | [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py) | See the released v0.9.1 Apple Metal/MPS closest-hit slice and the released v0.9.4 Apple RT consolidation |
 
 ---
 

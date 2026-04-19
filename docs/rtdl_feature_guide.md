@@ -25,22 +25,22 @@ performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v0.9.1`: the bounded `v0.7.0` DB package, the
+The current released state is `v0.9.4`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
-and the released `v0.9.1` Apple RT closest-hit slice.
+the released `v0.9.1` Apple RT closest-hit slice, and the released `v0.9.4`
+Apple RT consolidation.
 
 The released `v0.9.1` line adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
 local Apple M4 host.
 
-Current `main` targets `v0.9.4` as the next public Apple RT release. The
-untagged `v0.9.2` Apple RT candidate and `v0.9.3` native-coverage milestone are
-internal evidence lines absorbed into `v0.9.4`, not separate public releases.
-The `v0.9.4` target combines full-surface `run_apple_rt` compatibility,
+The untagged `v0.9.2` Apple RT candidate and `v0.9.3` native-coverage
+milestone are internal evidence lines absorbed into `v0.9.4`, not separate
+public releases. The released `v0.9.4` line combines full-surface
+`run_apple_rt` compatibility,
 prepared closest-hit reuse, masked traversal work, expanded Apple MPS RT
-geometry/native-assisted slices, and Apple Metal compute DB/graph slices. Exact
-public claims wait for the `v0.9.4` full test, doc, and audit gates.
+geometry/native-assisted slices, and Apple Metal compute DB/graph slices.
 
 Today it includes:
 
@@ -55,7 +55,7 @@ Today it includes:
   the current 18-workload HIPRT matrix
 - a released `v0.9.1` Apple RT backend slice for 3D closest-hit ray/triangle
   traversal on macOS Apple Silicon
-- a current `v0.9.4` Apple RT target with all 18 current predicates callable
+- a released `v0.9.4` Apple RT line with all 18 current predicates callable
   through explicit native or native-assisted Apple modes
 - native Apple MPS RT coverage for supported geometry and nearest-neighbor
   slices
@@ -99,7 +99,7 @@ Current release layers:
   surface
 - `v0.9.0`: released HIPRT backend and exact bounded closest-hit expansion
 - `v0.9.1`: released Apple Metal/MPS RT backend slice for closest-hit
-- `v0.9.4` target on current `main`: full-surface Apple RT dispatch with
+- `v0.9.4`: full-surface Apple RT dispatch with
   native/native-assisted geometry, nearest-neighbor, DB, and graph slices,
   absorbing the internal v0.9.2/v0.9.3 evidence lines
 
@@ -130,7 +130,7 @@ Current user-programming note:
   `run_cpu`, and Embree; the released `v0.9.1` Apple RT slice exposes
   the same primitive for 3D rays/triangles through `run_apple_rt`; OptiX,
   Vulkan, and HIPRT do not yet expose this closest-hit primitive
-- current `v0.9.4` Goals582-620 let users call the current 18-predicate
+- released `v0.9.4` Goals582-620 let users call the current 18-predicate
   workload surface through `run_apple_rt` with explicit native or
   native-assisted modes; geometry/nearest-neighbor slices use Apple MPS RT,
   while bounded DB and graph slices use Apple Metal compute with disclosed CPU
@@ -226,7 +226,7 @@ The current repo can:
   prepared graph CSR paths, plus prepared bounded DB table reuse
 - run the v0.9.1 Apple RT closest-hit path on macOS Apple Silicon
   after `make build-apple-rt`
-- run the current v0.9.4 Apple RT target surface on macOS Apple Silicon, while
+- run the released v0.9.4 Apple RT surface on macOS Apple Silicon, while
   using `native_only=True` when an app must reject unsupported shape/backend
   combinations; current Apple modes include MPS RT geometry/nearest-neighbor
   slices and Metal compute/native-assisted DB/graph slices

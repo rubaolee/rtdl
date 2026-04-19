@@ -12,7 +12,7 @@ class Goal511FeatureGuideV08RefreshTest(unittest.TestCase):
         text = (REPO_ROOT / "docs" / "rtdl_feature_guide.md").read_text(encoding="utf-8")
 
         self.assertIn("released `v0.8.0` app-building layer", text)
-        self.assertIn("`v0.9.4` Apple RT target", text)
+        self.assertIn("released `v0.9.4` Apple RT line", text)
         self.assertIn("rtdl_hausdorff_distance_app.py", text)
         self.assertIn("rtdl_ann_candidate_app.py", text)
         self.assertIn("rtdl_outlier_detection_app.py", text)

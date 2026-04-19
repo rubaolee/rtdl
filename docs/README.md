@@ -88,7 +88,7 @@ audited release claims.
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
-- [v0.9.4 Release Target Package](release_reports/v0_9_4/README.md)
+- [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
 - [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
 - [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
 - [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
@@ -112,7 +112,7 @@ audited release claims.
 
 - [v0.9 Release Package](release_reports/v0_9/README.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
-- [v0.9.4 Release Target Package](release_reports/v0_9_4/README.md)
+- [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
 - [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
 - [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
 - [v0.9.2 Internal Candidate Package](release_reports/v0_9_2/README.md)
@@ -150,16 +150,15 @@ Keep these current facts in mind while reading:
 
 - current released version is `v0.9.4`
 - current `main` carries the released bounded `v0.7.0` DB line, released
-  `v0.8.0` app-building examples over existing RTDL features, and released
-  `v0.9.0` HIPRT / closest-hit expansion, plus the released `v0.9.1` Apple RT
-  closest-hit slice
-- current `main` targets `v0.9.4` as the next public Apple RT release; the
-  untagged `v0.9.2` candidate and `v0.9.3` native-coverage milestone are
+  `v0.8.0` app-building examples over existing RTDL features, released
+  `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1` Apple RT
+  closest-hit slice, and the released `v0.9.4` Apple RT consolidation
+- the untagged `v0.9.2` candidate and `v0.9.3` native-coverage milestone are
   internal evidence lines absorbed into `v0.9.4`, not separate public releases
-- current `v0.9.4` target carries Apple RT full-surface compatibility,
+- released `v0.9.4` carries Apple RT full-surface compatibility,
   prepared closest-hit reuse, masked Apple MPS RT traversal, expanded Apple
   MPS RT geometry/native-assisted slices, and Apple Metal compute DB/graph
-  slices; exact released claims wait for the `v0.9.4` release gate
+  slices under the published v0.9.4 release boundary
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -214,7 +213,7 @@ Keep these current facts in mind while reading:
 - the released `v0.9.1` line adds Apple Metal/MPS `run_apple_rt`
   support for 3D `ray_triangle_closest_hit`; it does not claim full Apple
   backend parity or measured speedup yet
-- the current `v0.9.4` target absorbs the internal v0.9.2/v0.9.3 Apple
+- released `v0.9.4` absorbs the internal v0.9.2/v0.9.3 Apple
   evidence lines and now carries full-surface `run_apple_rt` dispatch with
   explicit native or native-assisted Apple modes for all 18 current predicates;
   this still does not claim broad Apple backend maturity or global Apple speedup

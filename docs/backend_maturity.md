@@ -54,7 +54,7 @@ current native slices:
 - 3D `ray_triangle_hit_count`
 - 2D `segment_intersection`
 
-The v0.9.1 Apple RT slice was correctness-first. Current v0.9.4 target work
+The v0.9.1 Apple RT slice was correctness-first. Released v0.9.4 work
 adds prepared closest-hit reuse, masked chunked traversal for hit-count and
 segment-intersection, expanded MPS RT geometry/nearest-neighbor slices, and
 Metal compute/native-assisted DB and graph slices. Local Apple M4

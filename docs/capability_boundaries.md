@@ -112,7 +112,7 @@ and prepared bounded DB table reuse.
 
 The released `v0.9.1` Apple RT slice also fits this direction. It began with
 3D `ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon.
-Current v0.9.4 target work expands Apple execution to the full 18-predicate
+Released v0.9.4 work expands Apple execution to the full 18-predicate
 surface through explicit native or native-assisted modes: MPS RT for supported
 geometry/nearest-neighbor slices and Metal compute for bounded DB/graph slices.
 
@@ -248,7 +248,7 @@ and HIPRT still need native closest-hit kernels before RTDL can claim full
 four-backend RTXRMQ support.
 
 The released `v0.9.1` Apple RT slice adds one native closest-hit path through
-Apple Metal/MPS, and current v0.9.4 target work adds prepared closest-hit reuse.
+Apple Metal/MPS, and released v0.9.4 work adds prepared closest-hit reuse.
 That does not change the remaining OptiX, Vulkan, and HIPRT closest-hit gaps.
 
 ### HIPRT Backend Coverage

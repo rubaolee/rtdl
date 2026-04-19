@@ -149,7 +149,7 @@ For exact status:
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
 - [Backend Maturity](docs/backend_maturity.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
-- [RTDL v0.9.4 Release Target Package](docs/release_reports/v0_9_4/README.md)
+- [RTDL v0.9.4 Release Package](docs/release_reports/v0_9_4/README.md)
 - [RTDL v0.9.4 Release Statement](docs/release_reports/v0_9_4/release_statement.md)
 - [RTDL v0.9.4 Apple RT Support Matrix](docs/release_reports/v0_9_4/support_matrix.md)
 - [RTDL v0.9.4 Audit Report](docs/release_reports/v0_9_4/audit_report.md)
@@ -196,7 +196,7 @@ RTDL uses several backends behind one public kernel surface:
     validation, RT-core speedup, or CPU fallback is claimed
 - `Apple RT`:
   - released `v0.9.1` closest-hit backend slice on macOS Apple Silicon
-  - current `v0.9.4` target exposes all 18 current predicates through
+  - released `v0.9.4` exposes all 18 current predicates through
     `run_apple_rt` with explicit native or native-assisted modes
   - implemented through Apple Metal/MPS `MPSRayIntersector` for geometry and
     nearest-neighbor slices, plus Apple Metal compute kernels for bounded DB
@@ -376,8 +376,7 @@ release status is tracked by the HIPRT matrix: `run_hiprt` has Linux parity
 coverage for 18 workloads across geometry, 2D geometry, nearest neighbor,
 graph, and bounded DB-style analytics.
 
-Released `v0.9.1` Apple RT closest-hit path, plus current `v0.9.4` Apple RT
-target work on Apple Silicon macOS:
+Released Apple RT path on Apple Silicon macOS:
 
 ```bash
 make build-apple-rt
@@ -385,16 +384,16 @@ PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
 ```
 
 That example compares CPU Python reference rows against `run_apple_rt` for 3D
-closest-hit ray/triangle queries. In current `main`, prepared closest-hit reuse
-is also available through `rt.prepare_apple_rt_ray_triangle_closest_hit(...)`.
-This remains bounded Apple RT support, not full Apple backend parity or a broad
-speedup claim.
+closest-hit ray/triangle queries. The released `v0.9.4` line also includes
+prepared closest-hit reuse through
+`rt.prepare_apple_rt_ray_triangle_closest_hit(...)`.
+This remains bounded Apple RT support, not a broad speedup claim.
 
-On current main after Goals582-620, `run_apple_rt` can execute the full current
-18-predicate RTDL surface on Apple Silicon macOS through explicit
-native/native-assisted dispatch. Use `rt.apple_rt_support_matrix()` to see
-which predicates are `native_mps_rt`, `native_mps_rt_2d_3d`,
-`native_metal_compute`, or `native_metal_filter_cpu_aggregate`.
+In `v0.9.4`, `run_apple_rt` can execute the full current 18-predicate RTDL
+surface on Apple Silicon macOS through explicit native/native-assisted
+dispatch. Use `rt.apple_rt_support_matrix()` to see which predicates are
+`native_mps_rt`, `native_mps_rt_2d_3d`, `native_metal_compute`, or
+`native_metal_filter_cpu_aggregate`.
 
 Goal583 added native Apple MPS RT execution for 3D `ray_triangle_hit_count`.
 Goal597 then replaced the per-triangle loop with masked chunked nearest-hit
@@ -490,7 +489,7 @@ make build-apple-rt
 
 After building, `examples/rtdl_apple_rt_closest_hit.py` and
 `tests/goal578_apple_rt_backend_test.py` can exercise the current Apple RT
-closest-hit slice. Current v0.9.4 target tests additionally cover prepared
+closest-hit slice. Released v0.9.4 tests additionally cover prepared
 closest-hit, masked hit-count, masked segment-intersection, expanded geometry
 and nearest-neighbor slices, and Metal compute DB/graph paths.
 
@@ -556,14 +555,14 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.9.1`
+- `v0.9.4`
 
 Current mainline release line:
 
 - bounded `v0.7.0` RT DB work, released `v0.8.0` app-building examples, and
   released `v0.9.0` HIPRT / closest-hit expansion, with released `v0.9.1`
   Apple RT closest-hit support
-- current `v0.9.4` target additionally carries Apple RT full-surface
+- released `v0.9.4` additionally carries Apple RT full-surface
   compatibility dispatch, expanded Apple MPS RT geometry/native-assisted slices,
   Apple Metal compute DB/graph slices, prepared closest-hit reuse, and masked
   Apple RT traversal optimizations inherited from the untagged `v0.9.2` and
@@ -637,7 +636,7 @@ For exact backend/workload status, use:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
-- [RTDL v0.9.4 Release Target Package](docs/release_reports/v0_9_4/README.md)
+- [RTDL v0.9.4 Release Package](docs/release_reports/v0_9_4/README.md)
 - [RTDL v0.9.4 Apple RT Support Matrix](docs/release_reports/v0_9_4/support_matrix.md)
 - [RTDL v0.9.2 Internal Candidate Package](docs/release_reports/v0_9_2/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
@@ -664,7 +663,7 @@ The repository currently includes:
   - Apple RT: macOS Apple Silicon Metal/MPS backend slices for 3D closest-hit,
     hit-count, segment-intersection, point-neighborhood, point/polygon,
     segment/polygon, polygon-pair, and overlay work, plus Apple Metal compute
-    DB/graph slices in the current v0.9.4 target
+    DB/graph slices in released v0.9.4
 - examples ranging from smallest first-run scripts to RTDL-plus-Python demos
 - accepted v0.8 app-building examples that show RTDL rows inside Python apps
 
@@ -716,7 +715,7 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
-- the current v0.9 line is released as `v0.9.1`, but it is still bounded by the
+- the current v0.9 line is released as `v0.9.4`, but it is still bounded by the
   documented Linux HIPRT, closest-hit, and Apple RT support matrix
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine

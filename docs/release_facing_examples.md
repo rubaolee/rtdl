@@ -14,7 +14,7 @@ It currently covers:
   path with explicit platform boundaries
 - the released `v0.9.1` Apple RT example, clearly marked as a
   bounded macOS/Apple-Silicon closest-hit slice
-- the current `v0.9.4` Apple RT target work, clearly marked as bounded
+- the released `v0.9.4` Apple RT consolidation, clearly marked as bounded
   native/native-assisted Apple execution rather than broad Apple speedup
   evidence
 
@@ -193,7 +193,7 @@ Current HIPRT boundary:
 
 This released v0.9.1 path is for Apple Silicon macOS users. It began as the
 Goal578 one-workload 3D closest-hit ray/triangle slice through Apple Metal/MPS
-`MPSRayIntersector`. Current `v0.9.4` target work keeps that boundary honest
+`MPSRayIntersector`. Released `v0.9.4` work keeps that boundary honest
 while adding prepared/masked performance improvements and native/native-assisted
 coverage for the broader 18-predicate surface.
 
@@ -212,7 +212,7 @@ available, it checks approximate row parity for `run_apple_rt`.
 Current Apple RT boundary:
 
 - released `run_apple_rt` native support: 3D `ray_triangle_closest_hit`
-- current v0.9.4 target dispatch support: all 18 current predicates are
+- released v0.9.4 dispatch support: all 18 current predicates are
   callable through `run_apple_rt` with explicit native or native-assisted modes
 - current Apple execution modes: MPS RT for supported geometry and
   nearest-neighbor slices; Metal compute or native-assisted Metal filtering for
@@ -232,7 +232,7 @@ Current Apple RT boundary:
   BFS/triangle workloads use Apple Metal compute or Metal-filter-plus-CPU
   materialization under explicit support-matrix modes
 - validated locally on Apple M4 through focused tests and external AI reviews
-  for the released closest-hit slice and current v0.9.4 target work
+  for the released closest-hit slice and released v0.9.4 work
 - unsupported claims: broad Apple hardware speedup evidence, non-macOS support,
   and Apple backend maturity comparable to Embree
 
