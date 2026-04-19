@@ -155,7 +155,9 @@ Current Apple RT boundary:
   through CPU Python reference first, then attempts Apple RT if the macOS
   `build/librtdl_apple_rt.dylib` library is available
 - build it on Apple Silicon macOS with `make build-apple-rt`
-- this is the v0.9.1 released slice: `run_apple_rt` currently supports only
-  `ray_triangle_closest_hit` over 3D rays and 3D triangles
-- this is not a full Apple backend parity claim and not a measured hardware
-  speedup claim
+- this is the v0.9.1 released native slice: `run_apple_rt` uses Apple Metal/MPS
+  RT for `ray_triangle_closest_hit` over 3D rays and 3D triangles
+- post-v0.9.1 Goal582 makes all 18 current predicates callable through
+  `run_apple_rt`, but non-closest-hit predicates are `cpu_reference_compat`
+- this is not a full native Apple backend parity claim and not a measured
+  hardware speedup claim

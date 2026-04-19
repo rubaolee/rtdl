@@ -262,9 +262,14 @@ nearest-neighbor, graph CSR, and bounded DB table paths.
 
 The released `v0.9.1` Apple RT slice can use `run_apple_rt` for 3D
 `ray_triangle_closest_hit` on Apple Silicon macOS after `make build-apple-rt`.
-It cannot yet claim broad Apple RT parity, Apple hardware speedup evidence,
-non-macOS support, prepared Apple RT reuse, or Apple RT support for the broader
-geometry, nearest-neighbor, graph, and DB workload matrices.
+Goal582 extends the dispatcher so all 18 current RTDL predicates are callable
+through `run_apple_rt` on Apple Silicon macOS, but only 3D closest-hit is
+`native_mps_rt`; the broader geometry, nearest-neighbor, graph, and DB paths are
+currently `cpu_reference_compat`.
+
+It cannot yet claim broad native Apple RT parity, Apple hardware speedup
+evidence, non-macOS support, prepared Apple RT reuse, or hardware-backed Apple
+RT support for the broader workload matrices.
 
 ### Automatic Speedups For Every Workload
 

@@ -206,12 +206,15 @@ available, it checks approximate row parity for `run_apple_rt`.
 
 Current Apple RT boundary:
 
-- `run_apple_rt` support: 3D `ray_triangle_closest_hit`
+- released `run_apple_rt` native support: 3D `ray_triangle_closest_hit`
+- post-`v0.9.1` Goal582 dispatch support: all 18 current predicates are
+  callable through `run_apple_rt`, with non-closest-hit predicates explicitly
+  marked `cpu_reference_compat`
 - validated locally on Apple M4 through Goal578 focused tests and Gemini/Claude
-  reviews
-- unsupported claims: full Apple backend parity, Apple hardware speedup
-  evidence, non-macOS support, and Apple support for the broader workload
-  matrix
+  reviews; Goal582 adds a full-surface dispatch parity test
+- unsupported claims: full native Apple backend parity, Apple hardware speedup
+  evidence, non-macOS support, and hardware-backed Apple support for the
+  broader workload matrix
 
 ## v0.4 nearest-neighbor examples
 

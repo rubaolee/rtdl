@@ -65,6 +65,8 @@ from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import embree_version
 from .apple_rt_runtime import apple_rt_context_probe
+from .apple_rt_runtime import apple_rt_predicate_mode
+from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
@@ -693,6 +695,8 @@ __all__ = [
     "build_goal141_public_case",
     "prepare_embree",
     "apple_rt_context_probe",
+    "apple_rt_predicate_mode",
+    "apple_rt_support_matrix",
     "apple_rt_version",
     "AppleRtRowView",
     "prepare_embree_db_dataset",

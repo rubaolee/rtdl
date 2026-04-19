@@ -24,14 +24,19 @@ Use release reports for measured performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v0.9.0`: the bounded `v0.7.0` DB package, the
+The current released state is `v0.9.1`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
-Python application logic, and the released `v0.9.0` HIPRT / closest-hit
-expansion.
+Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
+and the released `v0.9.1` Apple RT closest-hit slice.
 
 The current `v0.9.1` release adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
 local Apple M4 host.
+
+Post-`v0.9.1` Goal582 makes `run_apple_rt` full-surface callable for all 18
+current predicates on Apple Silicon macOS. That does not mean all predicates
+are Apple hardware-backed: only 3D closest-hit is `native_mps_rt`; the rest are
+currently `cpu_reference_compat`.
 
 Today it includes:
 
@@ -46,6 +51,8 @@ Today it includes:
   the current 18-workload HIPRT matrix
 - a released `v0.9.1` Apple RT backend slice for 3D closest-hit ray/triangle
   traversal on macOS Apple Silicon
+- a post-`v0.9.1` Apple RT compatibility dispatcher for all current predicates,
+  with explicit `native_mps_rt` versus `cpu_reference_compat` modes
 
 Current supported workload families:
 
@@ -103,6 +110,9 @@ Current user-programming note:
   `run_cpu`, and Embree; the released `v0.9.1` Apple RT slice exposes
   the same primitive for 3D rays/triangles through `run_apple_rt`; OptiX,
   Vulkan, and HIPRT do not yet expose this closest-hit primitive
+- post-`v0.9.1` Goal582 lets users call the rest of the current workload
+  surface through `run_apple_rt` in compatibility mode while native Apple
+  implementations are added one workload family at a time
 - RTDL provides the query core there, while Python handles application logic and
   output
 
@@ -194,6 +204,9 @@ The current repo can:
   prepared graph CSR paths, plus prepared bounded DB table reuse
 - run the v0.9.1 Apple RT closest-hit path on macOS Apple Silicon
   after `make build-apple-rt`
+- run the post-v0.9.1 Apple RT full-surface compatibility dispatch on macOS
+  Apple Silicon, while using `native_only=True` when an app must reject
+  CPU-reference compatibility paths
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
@@ -219,5 +232,5 @@ RTDL does not yet claim:
 - RT-core hardware speedup from the GTX 1070 Linux app evidence
 - AMD GPU HIPRT validation, HIPRT CPU fallback, HIPRT RT-core speedup evidence,
   or OptiX/Vulkan/HIPRT native support for `ray_triangle_closest_hit`
-- full Apple RT backend parity or Apple hardware speedup evidence beyond the
-  current bounded 3D closest-hit slice
+- full native Apple RT backend parity or Apple hardware speedup evidence beyond
+  the current bounded 3D closest-hit slice

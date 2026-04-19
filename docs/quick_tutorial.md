@@ -77,8 +77,11 @@ Backend note:
   `bfs_discover` and `triangle_match`, and prepared bounded DB table reuse for
   repeated `conjunctive_scan`, `grouped_count`, and `grouped_sum` queries
 - released `v0.9.1` Apple RT support exists on Apple Silicon macOS;
-  `run_apple_rt` currently covers 3D `ray_triangle_closest_hit` through Apple
-  Metal/MPS only
+  native Apple Metal/MPS execution currently covers 3D
+  `ray_triangle_closest_hit`
+- post-`v0.9.1` Goal582 makes all 18 current predicates callable through
+  `run_apple_rt`, but non-closest-hit predicates are compatibility dispatch
+  (`cpu_reference_compat`), not Apple hardware execution
 
 Optional Embree backend build/probe:
 

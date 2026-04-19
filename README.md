@@ -108,8 +108,17 @@ bounded DB-style analytical workloads.
     Silicon through Apple Metal/MPS
   - local Apple M4 Goal578 evidence covers build, context probe, direct helper
     parity, `run_apple_rt` parity, and empty-triangle behavior
-  - explicit non-claims: no full Apple backend parity, no Apple speedup claim,
-    and no non-closest-hit Apple RT workload support yet
+  - explicit release non-claims: no full Apple backend parity, no Apple speedup
+    claim, and no non-closest-hit Apple RT workload support in the `v0.9.1`
+    tag
+- current post-`v0.9.1` development line:
+  - Goal582 makes all 18 current RTDL predicates callable through
+    `run_apple_rt` on Apple Silicon macOS
+  - execution mode is explicit: 3D `ray_triangle_closest_hit` uses native
+    Apple Metal/MPS RT, while the other predicates currently use
+    `cpu_reference_compat`
+  - `run_apple_rt(..., native_only=True)` rejects those compatibility paths
+    instead of silently pretending they are Apple RT hardware execution
 - previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -162,7 +171,11 @@ RTDL uses several backends behind one public kernel surface:
     validation, RT-core speedup, or CPU fallback is claimed
 - `Apple RT`:
   - released `v0.9.1` backend slice on macOS Apple Silicon
-  - currently exposes `run_apple_rt` for 3D `ray_triangle_closest_hit`
+  - native mode currently exposes `run_apple_rt` for 3D
+    `ray_triangle_closest_hit`
+  - post-`v0.9.1` development adds full-surface compatibility dispatch for all
+    18 current predicates through `run_apple_rt`; non-closest-hit predicates
+    are marked `cpu_reference_compat`, not hardware-backed Apple RT
   - implemented through Apple Metal/MPS `MPSRayIntersector`
   - no full parity or hardware-speedup claim is made yet
 - `PostGIS` / `PostgreSQL`:
@@ -345,6 +358,11 @@ That example compares CPU Python reference rows against `run_apple_rt` for 3D
 closest-hit ray/triangle queries. It is a bounded released slice, not full
 Apple backend parity or a speedup claim.
 
+On current main after Goal582, `run_apple_rt` can also execute the full current
+18-predicate RTDL surface on Apple Silicon macOS through an explicit
+compatibility dispatch. Use `rt.apple_rt_support_matrix()` to see which
+predicates are `native_mps_rt` and which are `cpu_reference_compat`.
+
 Windows `cmd.exe`:
 
 ```bat
@@ -432,6 +450,12 @@ make build-apple-rt
 After building, `examples/rtdl_apple_rt_closest_hit.py` and
 `tests/goal578_apple_rt_backend_test.py` can exercise the current Apple RT
 closest-hit slice.
+
+For the post-`v0.9.1` full-surface dispatch check, run:
+
+```bash
+PYTHONPATH=src:. python -m unittest tests.goal582_apple_rt_full_surface_dispatch_test -v
+```
 
 Windows Embree note: install or unpack Embree for x64, set
 `RTDL_EMBREE_PREFIX` to that Embree prefix, and set `RTDL_VCVARS64` if Visual
@@ -543,7 +567,11 @@ Release and preview layers inside the current repository:
 - `v0.9.1`: released Apple RT closest-hit slice
   - `run_apple_rt` supports 3D `ray_triangle_closest_hit` through Apple
     Metal/MPS on macOS Apple Silicon
-  - no full Apple RT parity or speedup claim yet
+  - no full native Apple RT parity or speedup claim yet
+- post-`v0.9.1` main: Goal582 Apple RT full-surface compatibility dispatch
+  - all 18 current predicates are callable through `run_apple_rt`
+  - only 3D closest-hit is `native_mps_rt`; the rest are
+    `cpu_reference_compat` until native Apple implementations land
 
 Current public demo artifact:
 

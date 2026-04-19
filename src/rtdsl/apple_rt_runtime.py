@@ -16,8 +16,33 @@ from .ir import CompiledKernel
 from .reference import Ray3D as _CanonicalRay3D
 from .reference import Triangle3D as _CanonicalTriangle3D
 from .runtime import _normalize_records
+from .runtime import _run_cpu_python_reference_from_normalized
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
+
+APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit"})
+APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
+    {
+        "bfs_discover",
+        "bounded_knn_rows",
+        "conjunctive_scan",
+        "fixed_radius_neighbors",
+        "grouped_count",
+        "grouped_sum",
+        "knn_rows",
+        "overlay_compose",
+        "point_in_polygon",
+        "point_nearest_segment",
+        "polygon_pair_overlap_area_rows",
+        "polygon_set_jaccard",
+        "ray_triangle_closest_hit",
+        "ray_triangle_hit_count",
+        "segment_intersection",
+        "segment_polygon_anyhit_rows",
+        "segment_polygon_hitcount",
+        "triangle_match",
+    }
+)
 
 
 class _RtdlRay3D(ctypes.Structure):
@@ -235,16 +260,43 @@ def ray_triangle_closest_hit_apple_rt(
     )
 
 
-def run_apple_rt(kernel: CompiledKernel | object, **inputs) -> tuple[dict[str, object], ...]:
+def apple_rt_predicate_mode(predicate_name: str) -> str:
+    """Return the current Apple RT dispatch class for a predicate.
+
+    `native_mps_rt` means the operation uses the Apple Metal/MPS ray
+    intersector. `cpu_reference_compat` means the public Apple RT dispatcher is
+    callable for parity but the operation is not yet hardware-backed.
+    """
+    if predicate_name in APPLE_RT_NATIVE_PREDICATES:
+        return "native_mps_rt"
+    if predicate_name in APPLE_RT_COMPATIBILITY_PREDICATES:
+        return "cpu_reference_compat"
+    return "unsupported"
+
+
+def apple_rt_support_matrix() -> tuple[dict[str, str], ...]:
+    return tuple(
+        {"predicate": predicate_name, "mode": apple_rt_predicate_mode(predicate_name)}
+        for predicate_name in sorted(APPLE_RT_COMPATIBILITY_PREDICATES)
+    )
+
+
+def run_apple_rt(
+    kernel: CompiledKernel | object,
+    *,
+    native_only: bool = False,
+    **inputs,
+) -> tuple[dict[str, object], ...]:
     compiled = _resolve_kernel(kernel)
     _validate_kernel_for_cpu(compiled)
+    _load_library()
     if compiled.candidates is None:
         raise ValueError("run_apple_rt currently requires a traversal candidate stage")
     if compiled.refine_op is None:
         raise ValueError("run_apple_rt currently requires a refine stage")
     predicate_name = compiled.refine_op.predicate.name
-    if predicate_name != "ray_triangle_closest_hit":
-        raise NotImplementedError("Apple RT v0.9.1 currently supports only ray_triangle_closest_hit")
+    if predicate_name not in APPLE_RT_COMPATIBILITY_PREDICATES:
+        raise NotImplementedError(f"Apple RT dispatcher does not support predicate `{predicate_name}`")
     expected_inputs = {item.name: item for item in compiled.inputs}
     missing = [name for name in expected_inputs if name not in inputs]
     unexpected = [name for name in inputs if name not in expected_inputs]
@@ -258,4 +310,13 @@ def run_apple_rt(kernel: CompiledKernel | object, **inputs) -> tuple[dict[str, o
     }
     rays = normalized[compiled.candidates.left.name]
     triangles = normalized[compiled.candidates.right.name]
-    return tuple(ray_triangle_closest_hit_apple_rt(rays, triangles))
+    if predicate_name == "ray_triangle_closest_hit" and all(
+        isinstance(ray, _CanonicalRay3D) for ray in rays
+    ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
+        return tuple(ray_triangle_closest_hit_apple_rt(rays, triangles))
+    if native_only:
+        raise NotImplementedError(
+            "Apple RT native MPS execution currently supports only 3D ray_triangle_closest_hit; "
+            f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
+        )
+    return _run_cpu_python_reference_from_normalized(compiled, normalized)

@@ -56,6 +56,12 @@ The released `v0.9.1` Apple RT work provides `run_apple_rt` for 3D
 `ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon. It
 does not claim full Apple backend parity or performance speedup yet.
 
+The post-`v0.9.1` Goal582 development line makes `run_apple_rt` callable for
+all 18 current RTDL predicates on Apple Silicon macOS. That is a dispatch
+coverage step, not full hardware parity: 3D closest-hit is `native_mps_rt`;
+other predicates are currently `cpu_reference_compat` and are rejected when
+`native_only=True`.
+
 ## What Python Owns
 
 Python remains the application layer:
@@ -81,7 +87,7 @@ kernels and native backend paths, not in Python loops.
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
 | HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
-| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit |
+| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; post-v0.9.1 compatibility dispatch for the broader 18-predicate surface |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 ## Workload Families
@@ -104,8 +110,10 @@ nearest-neighbor rows, prepared graph CSR build data for BFS discovery and
 triangle-match query batches, and prepared bounded DB table reuse for
 conjunctive scan, grouped count, and grouped sum.
 
-The released Apple RT slice is narrower: `run_apple_rt` currently covers only
-3D `ray_triangle_closest_hit` over Ray3D/Triangle3D data.
+The released Apple RT native slice is narrower: `run_apple_rt` currently uses
+Apple Metal/MPS RT only for 3D `ray_triangle_closest_hit` over
+Ray3D/Triangle3D data. Goal582 adds broad callable dispatch through CPU
+reference compatibility for the other current predicates.
 
 Each family is documented with its own current support boundary. Not every
 backend/workload/platform combination has the same maturity.
@@ -166,8 +174,8 @@ Do not read the current system as:
 - a claim that every platform has identical backend coverage
 - a claim that HIPRT is AMD-validated, RT-core-accelerated on the tested GTX
   1070 path, a CPU fallback backend, or a native closest-hit backend today
-- a claim that Apple RT has full workload parity or measured speedup beyond
-  the current 3D closest-hit slice
+- a claim that Apple RT has full native workload parity or measured speedup
+  beyond the current 3D closest-hit slice
 
 For exact release claims, read:
 
