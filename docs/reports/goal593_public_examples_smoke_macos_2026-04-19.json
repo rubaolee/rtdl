@@ -1,0 +1,237 @@
+{
+  "date": "2026-04-19",
+  "examples": [
+    {
+      "path": "examples/rtdl_ann_candidate_app.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.19005249999463558,
+      "stdout_tail": "  \"approx_neighbor_id\": 103,\n      \"distance_ratio\": 8.999999999999778,\n      \"exact_distance\": 0.020000000000000462,\n      \"exact_match\": false,\n      \"exact_neighbor_id\": 104,\n      \"query_id\": 2\n    },\n    {\n      \"approx_distance\": 0.09999999999999964,\n      \"approx_neighbor_id\": 105,\n      \"distance_ratio\": 1.0,\n      \"exact_distance\": 0.09999999999999964,\n      \"exact_match\": true,\n      \"exact_neighbor_id\": 105,\n      \"query_id\": 3\n    }\n  ],\n  \"copies\": 1,\n  \"exact_match_count\": 2,\n  \"exact_rows\": [\n    {\n      \"distance\": 0.05,\n      \"neighbor_id\": 101,\n      \"neighbor_rank\": 1,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.020000000000000462,\n      \"neighbor_id\": 104,\n      \"neighbor_rank\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.09999999999999964,\n      \"neighbor_id\": 105,\n      \"neighbor_rank\": 1,\n      \"query_id\": 3\n    }\n  ],\n  \"k\": 1,\n  \"mean_distance_ratio\": 3.666666666666593,\n  \"query_count\": 3,\n  \"recall_at_1\": 0.6666666666666666,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.\",\n  \"search_count\": 6\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_apple_rt_closest_hit.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.19026570802088827,
+      "stdout_tail": "{\n  \"apple_rt_available\": true,\n  \"apple_rt_probe\": \"Apple M4\",\n  \"cpu_python_reference\": [\n    {\n      \"ray_id\": 1,\n      \"t\": 1.2,\n      \"triangle_id\": 11\n    }\n  ],\n  \"example\": \"apple_rt_closest_hit\",\n  \"parity\": true,\n  \"run_apple_rt\": [\n    {\n      \"ray_id\": 1,\n      \"t\": 1.2000000476837158,\n      \"triangle_id\": 11\n    }\n  ],\n  \"scope\": \"v0.9.1 released Apple Metal/MPS closest-hit example for Ray3D/Triangle3D\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_barnes_hut_force_app.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12805100006517023,
+      "stdout_tail": "\": 0.9138591530808194,\n      \"force_y\": -1.8296430540955126\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 3,\n      \"exact_body_ids\": [\n        1,\n        2,\n        4,\n        5,\n        6\n      ],\n      \"force_x\": -0.9992978572724248,\n      \"force_y\": -4.44165387497898\n    },\n    {\n      \"accepted_node_ids\": [],\n      \"body_id\": 4,\n      \"exact_body_ids\": [\n        1,\n        2,\n        3,\n        5,\n        6\n      ],\n      \"force_x\": 0.8868538042053737,\n      \"force_y\": 7.01524633578666\n    },\n    {\n      \"accepted_node_ids\": [\n        10\n      ],\n      \"body_id\": 5,\n      \"exact_body_ids\": [\n        2,\n        3,\n        4,\n        6\n      ],\n      \"force_x\": -0.6587691871493502,\n      \"force_y\": -0.7268381757030715\n    },\n    {\n      \"accepted_node_ids\": [\n        10,\n        12\n      ],\n      \"body_id\": 6,\n      \"exact_body_ids\": [\n        4,\n        5\n      ],\n      \"force_x\": -4.665966756850863,\n      \"force_y\": -5.423360422254133\n    }\n  ],\n  \"max_relative_error\": 0.006558786879803883,\n  \"node_count\": 4,\n  \"rtdl_role\": \"RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.\",\n  \"theta\": 0.75\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_db_conjunctive_scan.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12676604208536446,
+      "stdout_tail": "{\n  \"app\": \"db_conjunctive_scan\",\n  \"backend\": \"cpu_python_reference\",\n  \"predicates\": [\n    [\n      \"ship_date\",\n      \"between\",\n      11,\n      13\n    ],\n    [\n      \"discount\",\n      \"eq\",\n      6\n    ],\n    [\n      \"quantity\",\n      \"lt\",\n      20\n    ]\n  ],\n  \"rows\": [\n    {\n      \"row_id\": 3\n    },\n    {\n      \"row_id\": 4\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_db_grouped_count.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12331912503577769,
+      "stdout_tail": "{\n  \"app\": \"db_grouped_count\",\n  \"backend\": \"cpu_python_reference\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"rows\": [\n    {\n      \"count\": 1,\n      \"region\": \"east\"\n    },\n    {\n      \"count\": 2,\n      \"region\": \"west\"\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_db_grouped_sum.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12561395904049277,
+      "stdout_tail": "{\n  \"app\": \"db_grouped_sum\",\n  \"backend\": \"cpu_python_reference\",\n  \"query\": {\n    \"group_keys\": [\n      \"region\"\n    ],\n    \"predicates\": [\n      [\n        \"ship_date\",\n        \"ge\",\n        11\n      ]\n    ],\n    \"value_field\": \"revenue\"\n  },\n  \"rows\": [\n    {\n      \"region\": \"east\",\n      \"sum\": 6\n    },\n    {\n      \"region\": \"west\",\n      \"sum\": 20\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_dbscan_clustering_app.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.13324687501881272,
+      "stdout_tail": " {\n    \"1\": 4,\n    \"2\": 3\n  },\n  \"copies\": 1,\n  \"epsilon\": 0.35,\n  \"k_max\": 16,\n  \"matches_oracle\": true,\n  \"min_points\": 3,\n  \"neighbor_row_count\": 26,\n  \"noise_point_ids\": [\n    8\n  ],\n  \"oracle_cluster_rows\": [\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n      \"point_id\": 1\n    },\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n      \"point_id\": 2\n    },\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n      \"point_id\": 3\n    },\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n      \"point_id\": 4\n    },\n    {\n      \"cluster_id\": 2,\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 5\n    },\n    {\n      \"cluster_id\": 2,\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 6\n    },\n    {\n      \"cluster_id\": 2,\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 7\n    },\n    {\n      \"cluster_id\": -1,\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"point_count\": 8,\n  \"rtdl_role\": \"RTDL emits fixed-radius neighbor rows; Python expands DBSCAN core, border, and noise labels.\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_event_hotspot_screening.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12775075004901737,
+      "stdout_tail": "0,\n    \"6\": 0\n  },\n  \"radius\": 0.75,\n  \"rows\": [\n    {\n      \"distance\": 0.223606797749979,\n      \"neighbor_id\": 2,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.36055512754639896,\n      \"neighbor_id\": 3,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.4272001872658766,\n      \"neighbor_id\": 4,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.20615528128088306,\n      \"neighbor_id\": 4,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.223606797749979,\n      \"neighbor_id\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.31622776601683794,\n      \"neighbor_id\": 3,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.31622776601683794,\n      \"neighbor_id\": 2,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.36055512754639896,\n      \"neighbor_id\": 1,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.36400549446402586,\n      \"neighbor_id\": 4,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.20615528128088306,\n      \"neighbor_id\": 2,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.36400549446402586,\n      \"neighbor_id\": 3,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 0.4272001872658766,\n      \"neighbor_id\": 1,\n      \"query_id\": 4\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_facility_knn_assignment.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12734191701747477,
+      "stdout_tail": "e\": 3.0016662039607267,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 3,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.7280109889280517,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 1.019803902718557,\n      \"neighbor_id\": 10,\n      \"neighbor_rank\": 2,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 2.202271554554524,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 3,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.608276253029822,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 1,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.9219544457292886,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 2,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 2.302172886644268,\n      \"neighbor_id\": 10,\n      \"neighbor_rank\": 3,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.4472135954999578,\n      \"neighbor_id\": 12,\n      \"neighbor_rank\": 1,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.140175425099138,\n      \"neighbor_id\": 13,\n      \"neighbor_rank\": 2,\n      \"query_id\": 4\n    },\n    {\n      \"distance\": 1.9235384061671343,\n      \"neighbor_id\": 11,\n      \"neighbor_rank\": 3,\n      \"query_id\": 4\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_feature_quickstart_cookbook.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.136004832922481,
+      "stdout_tail": "t_vertex\": 3,\n          \"level\": 1,\n          \"src_vertex\": 1\n        }\n      ]\n    },\n    {\n      \"feature\": \"triangle_count\",\n      \"input\": \"seed edges plus graph CSR\",\n      \"output\": \"triangle rows\",\n      \"rows\": [\n        {\n          \"u\": 0,\n          \"v\": 1,\n          \"w\": 2\n        }\n      ]\n    },\n    {\n      \"feature\": \"conjunctive_scan\",\n      \"input\": \"denormalized rows plus predicates\",\n      \"output\": \"matching row IDs\",\n      \"rows\": [\n        {\n          \"row_id\": 3\n        },\n        {\n          \"row_id\": 4\n        }\n      ]\n    },\n    {\n      \"feature\": \"grouped_count\",\n      \"input\": \"denormalized rows plus predicates plus group key\",\n      \"output\": \"grouped count rows\",\n      \"rows\": [\n        {\n          \"count\": 1,\n          \"region\": \"east\"\n        },\n        {\n          \"count\": 2,\n          \"region\": \"west\"\n        }\n      ]\n    },\n    {\n      \"feature\": \"grouped_sum\",\n      \"input\": \"denormalized rows plus predicates plus group key and value field\",\n      \"output\": \"grouped sum rows\",\n      \"rows\": [\n        {\n          \"region\": \"east\",\n          \"sum\": 6\n        },\n        {\n          \"region\": \"west\",\n          \"sum\": 20\n        }\n      ]\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_fixed_radius_neighbors.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.1234186670044437,
+      "stdout_tail": "{\n  \"app\": \"fixed_radius_neighbors\",\n  \"backend\": \"cpu_python_reference\",\n  \"k_max\": 3,\n  \"neighbors_by_query\": {\n    \"100\": [\n      {\n        \"distance\": 0.0,\n        \"neighbor_id\": 1\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"radius\": 0.5,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_graph_bfs.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12524220801424235,
+      "stdout_tail": "{\n  \"app\": \"graph_bfs\",\n  \"backend\": \"cpu_python_reference\",\n  \"frontier\": [\n    {\n      \"level\": 0,\n      \"vertex_id\": 0\n    },\n    {\n      \"level\": 0,\n      \"vertex_id\": 1\n    }\n  ],\n  \"graph_edge_count\": 5,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"dst_vertex\": 2,\n      \"level\": 1,\n      \"src_vertex\": 0\n    },\n    {\n      \"dst_vertex\": 3,\n      \"level\": 1,\n      \"src_vertex\": 1\n    }\n  ],\n  \"visited\": [\n    0,\n    1\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_graph_triangle_count.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.13397483306471258,
+      "stdout_tail": "{\n  \"app\": \"graph_triangle_count\",\n  \"backend\": \"cpu_python_reference\",\n  \"graph_edge_count\": 6,\n  \"graph_vertex_count\": 4,\n  \"rows\": [\n    {\n      \"u\": 0,\n      \"v\": 1,\n      \"w\": 2\n    }\n  ],\n  \"seed_edges\": [\n    {\n      \"u\": 0,\n      \"v\": 1\n    },\n    {\n      \"u\": 1,\n      \"v\": 2\n    },\n    {\n      \"u\": 0,\n      \"v\": 2\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_hausdorff_distance_app.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12698537507094443,
+      "stdout_tail": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"cpu_python_reference\",\n  \"copies\": 1,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"row_count\": 4,\n    \"source_id\": 103,\n    \"target_id\": 3\n  },\n  \"hausdorff_distance\": 0.30000000000000004,\n  \"matches_oracle\": true,\n  \"oracle\": {\n    \"directed_a_to_b\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 3,\n      \"target_id\": 103\n    },\n    \"directed_b_to_a\": {\n      \"distance\": 0.30000000000000004,\n      \"row_count\": 4,\n      \"source_id\": 103,\n      \"target_id\": 3\n    },\n    \"hausdorff_distance\": 0.30000000000000004,\n    \"witness_direction\": \"b_to_a\"\n  },\n  \"point_count_a\": 4,\n  \"point_count_b\": 4,\n  \"rtdl_role\": \"RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.\",\n  \"witness_direction\": \"b_to_a\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_hello_world.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12229879200458527,
+      "stdout_tail": "hello, world\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_hello_world_backends.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.1246817089850083,
+      "stdout_tail": "{\n  \"backend\": \"cpu_python_reference\",\n  \"triangle_hit_count\": 2,\n  \"visible_hit_rect_id\": 2,\n  \"visible_hit_label\": \"hello, world\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_hiprt_ray_triangle_hitcount.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.14023887494113296,
+      "stdout_tail": "{\n  \"cpu_python_reference\": {\n    \"first_batch\": [\n      {\n        \"hit_count\": 2,\n        \"ray_id\": 1\n      },\n      {\n        \"hit_count\": 0,\n        \"ray_id\": 2\n      },\n      {\n        \"hit_count\": 0,\n        \"ray_id\": 3\n      }\n    ],\n    \"second_batch\": [\n      {\n        \"hit_count\": 2,\n        \"ray_id\": 4\n      },\n      {\n        \"hit_count\": 0,\n        \"ray_id\": 5\n      }\n    ]\n  },\n  \"example\": \"hiprt_ray_triangle_hitcount\",\n  \"hiprt_available\": false,\n  \"hiprt_error\": \"RTDL HIPRT backend library not found; build it with `make build-hiprt` or set RTDL_HIPRT_LIB (/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib: dlopen(/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib, 0x0006): tried: '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file))\",\n  \"scope\": \"v0.9 HIPRT candidate prepared-path example for Ray3D/Triangle3D ray_triangle_hit_count; broader run_hiprt coverage is tracked by the 18-workload matrix\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_knn_rows.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.14982408296782523,
+      "stdout_tail": "neighbor_id\": 2,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 0.3,\n        \"neighbor_id\": 3,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"101\": [\n      {\n        \"distance\": 0.20000000000000018,\n        \"neighbor_id\": 4,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"distance\": 1.0,\n        \"neighbor_id\": 5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"distance\": 2.7,\n        \"neighbor_id\": 2,\n        \"neighbor_rank\": 3\n      }\n    ]\n  },\n  \"query_count\": 2,\n  \"rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 1,\n      \"neighbor_rank\": 1,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 2,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.3,\n      \"neighbor_id\": 3,\n      \"neighbor_rank\": 3,\n      \"query_id\": 100\n    },\n    {\n      \"distance\": 0.20000000000000018,\n      \"neighbor_id\": 4,\n      \"neighbor_rank\": 1,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 1.0,\n      \"neighbor_id\": 5,\n      \"neighbor_rank\": 2,\n      \"query_id\": 101\n    },\n    {\n      \"distance\": 2.7,\n      \"neighbor_id\": 2,\n      \"neighbor_rank\": 3,\n      \"query_id\": 101\n    }\n  ],\n  \"search_count\": 5\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_outlier_detection_app.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.14827483298722655,
+      "stdout_tail": "{\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 7\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"k_max\": 16,\n  \"matches_oracle\": true,\n  \"min_neighbors_including_self\": 3,\n  \"neighbor_row_count\": 20,\n  \"oracle_density_rows\": [\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 3\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 5\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 6\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 7\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 8\n    }\n  ],\n  \"outlier_point_ids\": [\n    7,\n    8\n  ],\n  \"point_count\": 8,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"RTDL emits fixed-radius neighbor rows; Python converts local density counts into outlier labels.\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.1293763330904767,
+      "stdout_tail": "[\n  {\n    \"intersection_area\": 4,\n    \"left_area\": 9,\n    \"left_polygon_id\": 1,\n    \"right_area\": 9,\n    \"right_polygon_id\": 10,\n    \"union_area\": 14\n  },\n  {\n    \"intersection_area\": 1,\n    \"left_area\": 4,\n    \"left_polygon_id\": 2,\n    \"right_area\": 2,\n    \"right_polygon_id\": 11,\n    \"union_area\": 5\n  }\n]\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_polygon_set_jaccard.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12033312499988824,
+      "stdout_tail": "[\n  {\n    \"intersection_area\": 5,\n    \"jaccard_similarity\": 0.2631578947368421,\n    \"left_area\": 13,\n    \"right_area\": 11,\n    \"union_area\": 19\n  }\n]\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_road_hazard_screening.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.12870708294212818,
+      "stdout_tail": "{\n  \"app\": \"road_hazard_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"priority_segments\": [\n    1\n  ],\n  \"row_count\": 3,\n  \"rows\": [\n    {\n      \"hit_count\": 2,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 3\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_robot_collision_screening_app.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.14022983401082456,
+      "stdout_tail": "    \"pose_id\": 3\n    },\n    {\n      \"collides\": false,\n      \"hit_edge_count\": 0,\n      \"hit_ray_ids\": [],\n      \"label\": \"clear_right\",\n      \"pose_id\": 4\n    }\n  ],\n  \"rows\": [\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 1013\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2011\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 2012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 2013\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3010\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3011\n    },\n    {\n      \"hit_count\": 2,\n      \"ray_id\": 3012\n    },\n    {\n      \"hit_count\": 1,\n      \"ray_id\": 3013\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4010\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4011\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4012\n    },\n    {\n      \"hit_count\": 0,\n      \"ray_id\": 4013\n    }\n  ],\n  \"rtdl_role\": \"RTDL emits per-edge ray/triangle hit counts; Python maps edge rays back to pose/link collision flags.\"\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_sales_risk_screening.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.1393198750447482,
+      "stdout_tail": "{\n  \"app\": \"sales_risk_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"rows\": {\n    \"grouped_count\": [\n      {\n        \"count\": 1,\n        \"region\": \"central\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"grouped_sum\": [\n      {\n        \"region\": \"central\",\n        \"sum\": 260\n      },\n      {\n        \"region\": \"east\",\n        \"sum\": 310\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 430\n      }\n    ],\n    \"scan\": [\n      {\n        \"row_id\": 2\n      },\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 6\n      }\n    ]\n  },\n  \"summary\": {\n    \"highest_risk_region\": \"west\",\n    \"risky_order_count_by_region\": {\n      \"central\": 1,\n      \"east\": 1,\n      \"west\": 2\n    },\n    \"risky_order_ids\": [\n      2,\n      3,\n      4,\n      6\n    ],\n    \"risky_revenue_by_region\": {\n      \"central\": 260,\n      \"east\": 310,\n      \"west\": 430\n    }\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_segment_polygon_anyhit_rows.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.13100687495898455,
+      "stdout_tail": "{\n  \"backend\": \"cpu_python_reference\",\n  \"dataset\": \"authored_segment_polygon_minimal\",\n  \"row_count\": 2,\n  \"rows\": [\n    {\n      \"polygon_id\": 10,\n      \"segment_id\": 1\n    },\n    {\n      \"polygon_id\": 11,\n      \"segment_id\": 2\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_segment_polygon_hitcount.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.13129587506409734,
+      "stdout_tail": "{\n  \"backend\": \"cpu_python_reference\",\n  \"dataset\": \"authored_segment_polygon_minimal\",\n  \"row_count\": 2,\n  \"rows\": [\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 1\n    },\n    {\n      \"hit_count\": 1,\n      \"segment_id\": 2\n    }\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_service_coverage_gaps.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.1318781248992309,
+      "stdout_tail": "{\n  \"app\": \"service_coverage_gaps\",\n  \"backend\": \"cpu_python_reference\",\n  \"clinic_count\": 3,\n  \"clinic_loads\": {\n    \"10\": 2,\n    \"11\": 1\n  },\n  \"copies\": 1,\n  \"household_count\": 4,\n  \"k_max\": 4,\n  \"nearby_clinics_by_household\": {\n    \"1\": [\n      {\n        \"clinic_id\": 10,\n        \"distance\": 0.14142135623730953\n      }\n    ],\n    \"2\": [\n      {\n        \"clinic_id\": 10,\n        \"distance\": 0.5\n      }\n    ],\n    \"3\": [\n      {\n        \"clinic_id\": 11,\n        \"distance\": 0.22360679774997913\n      }\n    ]\n  },\n  \"radius\": 0.85,\n  \"rows\": [\n    {\n      \"distance\": 0.14142135623730953,\n      \"neighbor_id\": 10,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.5,\n      \"neighbor_id\": 10,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.22360679774997913,\n      \"neighbor_id\": 11,\n      \"query_id\": 3\n    }\n  ],\n  \"uncovered_household_ids\": [\n    4\n  ]\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_v0_7_db_app_demo.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.13297670800238848,
+      "stdout_tail": ",\n          6\n        ],\n        [\n          \"quantity\",\n          \"lt\",\n          20\n        ]\n      ]\n    },\n    \"web_revenue_by_region\": {\n      \"meaning\": \"How much web-channel revenue is covered by region?\",\n      \"operation\": \"grouped_sum\",\n      \"query\": {\n        \"group_keys\": [\n          \"region\"\n        ],\n        \"predicates\": [\n          [\n            \"ship_date\",\n            \"ge\",\n            12\n          ],\n          [\n            \"channel\",\n            \"eq\",\n            \"web\"\n          ]\n        ],\n        \"value_field\": \"revenue\"\n      }\n    }\n  },\n  \"requested_backend\": \"cpu_reference\",\n  \"results\": {\n    \"open_order_count_by_region\": [\n      {\n        \"count\": 2,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"south\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"promo_order_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"web_revenue_by_region\": [\n      {\n        \"region\": \"east\",\n        \"sum\": 180\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 240\n      }\n    ]\n  }\n}\n",
+      "stderr_tail": ""
+    },
+    {
+      "path": "examples/rtdl_v0_7_db_kernel_app_demo.py",
+      "status": "pass",
+      "returncode": 0,
+      "seconds": 0.1308977500302717,
+      "stdout_tail": "       \"between\",\n        12,\n        15\n      ],\n      [\n        \"quantity\",\n        \"lt\",\n        20\n      ]\n    ]\n  },\n  \"requested_backend\": \"cpu_python_reference\",\n  \"results\": {\n    \"one_predicate_discounted_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"open_order_count_by_region\": [\n      {\n        \"count\": 2,\n        \"region\": \"east\"\n      },\n      {\n        \"count\": 1,\n        \"region\": \"south\"\n      },\n      {\n        \"count\": 2,\n        \"region\": \"west\"\n      }\n    ],\n    \"three_predicate_promo_order_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"two_predicate_campaign_window_ids\": [\n      {\n        \"row_id\": 3\n      },\n      {\n        \"row_id\": 4\n      },\n      {\n        \"row_id\": 5\n      },\n      {\n        \"row_id\": 6\n      },\n      {\n        \"row_id\": 7\n      }\n    ],\n    \"web_revenue_by_region\": [\n      {\n        \"region\": \"east\",\n        \"sum\": 180\n      },\n      {\n        \"region\": \"west\",\n        \"sum\": 240\n      }\n    ]\n  }\n}\n",
+      "stderr_tail": ""
+    }
+  ]
+}
