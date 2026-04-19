@@ -10,10 +10,12 @@ sys.path.insert(0, "scripts")
 
 from goal15_compare_embree import compare_goal15
 from tests._optional_native_compare import skip_optional_native_compare_failure
+from tests._optional_native_compare import skip_unless_optional_native_compare_toolchain_present
 
 
 class Goal15CompareTest(unittest.TestCase):
     def test_native_compare_matches_rtdl_on_small_uniform_cases(self) -> None:
+        skip_unless_optional_native_compare_toolchain_present()
         with tempfile.TemporaryDirectory() as tmpdir:
             try:
                 payload = compare_goal15(Path(tmpdir))
