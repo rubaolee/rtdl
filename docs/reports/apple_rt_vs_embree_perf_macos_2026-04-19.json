@@ -1,0 +1,129 @@
+{
+  "date": "2026-04-19",
+  "host": "Apple M4 macOS local",
+  "apple_rt_version": [
+    0,
+    9,
+    1
+  ],
+  "apple_rt_context": "Apple M4",
+  "embree_version": [
+    4,
+    4,
+    0
+  ],
+  "note": "same RTDL kernels and inputs; includes current Python dispatch/ctypes overhead; local bounded smoke, not release-wide performance claim",
+  "cases": [
+    {
+      "workload": "ray_triangle_closest_hit_3d",
+      "input_sizes": {
+        "rays": 256,
+        "triangles": 256
+      },
+      "cpu_reference_rows": 256,
+      "embree_rows": 256,
+      "apple_rt_rows": 256,
+      "embree_matches_cpu": true,
+      "apple_rt_matches_cpu": true,
+      "embree_seconds": [
+        0.00021383294370025396,
+        0.000212125014513731,
+        0.00019995891489088535,
+        0.00020304194185882807,
+        0.00029133399948477745,
+        0.00022666598670184612,
+        0.00020391703583300114,
+        0.00020183308515697718,
+        0.00019595806952565908
+      ],
+      "apple_rt_seconds": [
+        0.0063483749981969595,
+        0.0018024579621851444,
+        0.0024686669930815697,
+        0.0017363750375807285,
+        0.0016883329953998327,
+        0.0012057919520884752,
+        0.0012037500273436308,
+        0.0065171250607818365,
+        0.0021067089401185513
+      ],
+      "embree_median_seconds": 0.00020391703583300114,
+      "apple_rt_median_seconds": 0.0018024579621851444,
+      "apple_rt_vs_embree_median_ratio": 8.83917302358826
+    },
+    {
+      "workload": "ray_triangle_hit_count_3d",
+      "input_sizes": {
+        "rays": 128,
+        "triangles": 512
+      },
+      "cpu_reference_rows": 128,
+      "embree_rows": 128,
+      "apple_rt_rows": 128,
+      "embree_matches_cpu": true,
+      "apple_rt_matches_cpu": true,
+      "embree_seconds": [
+        0.00021729094441980124,
+        0.00020787492394447327,
+        0.00020329095423221588,
+        0.00020608294289559126,
+        0.0001990000018849969,
+        0.0002043750137090683,
+        0.00019975006580352783,
+        0.0002021249383687973,
+        0.00020050001330673695
+      ],
+      "apple_rt_seconds": [
+        0.3272814159281552,
+        0.33877212496008724,
+        0.32673249999061227,
+        0.404883167007938,
+        0.3735492090927437,
+        0.35365216596983373,
+        0.3383692909264937,
+        0.32868329191114753,
+        0.32370154198724777
+      ],
+      "embree_median_seconds": 0.00020329095423221588,
+      "apple_rt_median_seconds": 0.3383692909264937,
+      "apple_rt_vs_embree_median_ratio": 1664.4581762353287
+    },
+    {
+      "workload": "segment_intersection_2d",
+      "input_sizes": {
+        "left": 128,
+        "right": 128
+      },
+      "cpu_reference_rows": 16384,
+      "embree_rows": 16384,
+      "apple_rt_rows": 16384,
+      "embree_matches_cpu": true,
+      "apple_rt_matches_cpu": true,
+      "embree_seconds": [
+        0.009224625071510673,
+        0.01073033397551626,
+        0.009188667056150734,
+        0.010270791011862457,
+        0.012280625058338046,
+        0.010139124933630228,
+        0.009617834002710879,
+        0.00863508298061788,
+        0.010417541954666376
+      ],
+      "apple_rt_seconds": [
+        0.09049758303444833,
+        0.09592704195529222,
+        0.12063695804681629,
+        0.09217462490778416,
+        0.0976529159815982,
+        0.09126487502362579,
+        0.09693470795173198,
+        0.0956204580143094,
+        0.10269750002771616
+      ],
+      "embree_median_seconds": 0.010139124933630228,
+      "apple_rt_median_seconds": 0.09592704195529222,
+      "apple_rt_vs_embree_median_ratio": 9.461077024222677
+    }
+  ]
+}

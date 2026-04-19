@@ -19,7 +19,8 @@ and one stable row-emission model for CPU/oracle, Embree, OptiX, Vulkan,
 HIPRT, and Apple RT where the workload/backend pair is supported.
 
 This is a developer-productivity promise, not an automatic speedup promise.
-Use release reports for measured performance claims.
+Use release reports and [Backend Maturity](backend_maturity.md) for measured
+performance claims.
 
 ## What RTDL Is Today
 
@@ -56,6 +57,12 @@ Today it includes:
   with explicit `native_mps_rt` versus `cpu_reference_compat` modes
 - native Apple MPS RT coverage for 3D `ray_triangle_hit_count` after Goal583
 - native Apple MPS RT coverage for 2D `segment_intersection` after Goal590
+
+Backend maturity note: Embree is currently the only backend RTDL should call
+optimized or mature in public performance-facing claims. OptiX, Vulkan, HIPRT,
+and Apple Metal/MPS RT are real backend integrations with bounded correctness
+evidence, but they are not broad optimized-backend claims. Apple Metal/MPS RT is
+currently correctness-validated but unoptimized on local Apple M4 measurements.
 
 Current supported workload families:
 
