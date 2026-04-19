@@ -29,7 +29,8 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["ray_triangle_closest_hit"]["native_candidate_discovery"], "yes")
         self.assertEqual(by_predicate["ray_triangle_closest_hit"]["native_shapes"], ("Ray3D/Triangle3D",))
         self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_candidate_discovery"], "shape_dependent")
-        self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_only"], "supported_for_3d_only")
+        self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_only"], "supported_for_2d_and_3d")
+        self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_shapes"], ("Ray2D/Triangle2D", "Ray3D/Triangle3D"))
         self.assertEqual(by_predicate["segment_intersection"]["native_candidate_discovery"], "yes")
         self.assertEqual(by_predicate["segment_intersection"]["cpu_refinement"], "exact_intersection_point")
 
@@ -51,13 +52,13 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
                 self.assertEqual(row["cpu_refinement"], "full_cpu_reference_compat")
                 self.assertEqual(row["native_shapes"], ())
 
-    def test_native_only_still_rejects_2d_shape_dependent_hitcount(self) -> None:
+    def test_native_only_still_rejects_unsupported_compatibility_predicate(self) -> None:
         with self.assertRaises(NotImplementedError):
             rt.run_apple_rt(
                 ray_hitcount_kernel,
                 native_only=True,
                 rays=(rt.Ray2D(1, -1.0, 0.5, 1.0, 0.0, 3.0),),
-                triangles=(rt.Triangle(2, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0),),
+                triangles=(rt.Triangle3D(2, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0),),
             )
 
 

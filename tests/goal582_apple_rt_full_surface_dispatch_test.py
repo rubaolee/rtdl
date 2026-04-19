@@ -206,7 +206,7 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
         self.assertIn("segment_intersection_apple_rt", rt.__all__)
         modes = {row["predicate"]: row["mode"] for row in rt.apple_rt_support_matrix()}
         self.assertEqual(modes["ray_triangle_closest_hit"], "native_mps_rt")
-        self.assertEqual(modes["ray_triangle_hit_count"], "native_mps_rt_3d_else_cpu_reference_compat")
+        self.assertEqual(modes["ray_triangle_hit_count"], "native_mps_rt_2d_3d")
         self.assertEqual(modes["segment_intersection"], "native_mps_rt")
         self.assertEqual(modes["grouped_sum"], "cpu_reference_compat")
         self.assertEqual(len(modes), 18)
@@ -306,10 +306,10 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
     def test_native_only_rejects_compatibility_paths(self) -> None:
         with self.assertRaises(NotImplementedError):
             rt.run_apple_rt(
-                ray_hitcount_kernel,
+                point_in_polygon_kernel,
                 native_only=True,
-                rays=(rt.Ray2D(1, -1.0, 0.5, 1.0, 0.0, 3.0),),
-                triangles=(rt.Triangle(2, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0),),
+                points=(rt.Point(1, 0.5, 0.5),),
+                polygons=(_square(1, 0.0, 0.0, 2.0, 2.0),),
             )
 
 

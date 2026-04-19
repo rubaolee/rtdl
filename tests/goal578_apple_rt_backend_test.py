@@ -50,7 +50,7 @@ class Goal578AppleRtBackendTest(unittest.TestCase):
         }
 
     def test_version_and_context_probe(self) -> None:
-        self.assertEqual(rt.apple_rt_version(), (0, 9, 2))
+        self.assertEqual(rt.apple_rt_version(), (0, 9, 3))
         self.assertTrue(rt.apple_rt_context_probe())
 
     def test_direct_helper_matches_cpu_reference(self) -> None:

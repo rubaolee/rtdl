@@ -13,8 +13,10 @@ import platform
 from pathlib import Path
 
 from .ir import CompiledKernel
+from .reference import Ray2D as _CanonicalRay2D
 from .reference import Ray3D as _CanonicalRay3D
 from .reference import Segment as _CanonicalSegment
+from .reference import Triangle as _CanonicalTriangle2D
 from .reference import Triangle3D as _CanonicalTriangle3D
 from .runtime import _normalize_records
 from .runtime import _run_cpu_python_reference_from_normalized
@@ -56,9 +58,9 @@ _APPLE_RT_SUPPORT_NOTES = {
     "ray_triangle_hit_count": {
         "native_candidate_discovery": "shape_dependent",
         "cpu_refinement": "count_accumulation",
-        "native_only": "supported_for_3d_only",
-        "native_shapes": ("Ray3D/Triangle3D",),
-        "notes": "3D ray/triangle uses Apple Metal/MPS traversal; 2D ray/triangle remains compatibility-only.",
+        "native_only": "supported_for_2d_and_3d",
+        "native_shapes": ("Ray2D/Triangle2D", "Ray3D/Triangle3D"),
+        "notes": "2D ray/triangle uses Apple Metal/MPS prism candidate traversal; 3D uses Apple Metal/MPS triangle traversal.",
     },
     "segment_intersection": {
         "native_candidate_discovery": "yes",
@@ -109,6 +111,31 @@ class _RtdlTriangle3D(ctypes.Structure):
         ("x2", ctypes.c_double),
         ("y2", ctypes.c_double),
         ("z2", ctypes.c_double),
+    ]
+
+
+class _RtdlRay2D(ctypes.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("ox", ctypes.c_double),
+        ("oy", ctypes.c_double),
+        ("dx", ctypes.c_double),
+        ("dy", ctypes.c_double),
+        ("tmax", ctypes.c_double),
+    ]
+
+
+class _RtdlTriangle2D(ctypes.Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("x2", ctypes.c_double),
+        ("y2", ctypes.c_double),
     ]
 
 
@@ -267,6 +294,17 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_ray_hitcount_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_ray_hitcount_2d.argtypes = [
+        ctypes.POINTER(_RtdlRay2D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlTriangle2D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_ray_hitcount_2d.restype = ctypes.c_int
     library.rtdl_apple_rt_run_lsi.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
@@ -327,6 +365,28 @@ def _pack_triangles_3d(triangles: tuple[_CanonicalTriangle3D, ...]):
             triangle.x2,
             triangle.y2,
             triangle.z2,
+        )
+    return records
+
+
+def _pack_rays_2d(rays: tuple[_CanonicalRay2D, ...]):
+    records = (_RtdlRay2D * len(rays))()
+    for index, ray in enumerate(rays):
+        records[index] = _RtdlRay2D(ray.id, ray.ox, ray.oy, ray.dx, ray.dy, ray.tmax)
+    return records
+
+
+def _pack_triangles_2d(triangles: tuple[_CanonicalTriangle2D, ...]):
+    records = (_RtdlTriangle2D * len(triangles))()
+    for index, triangle in enumerate(triangles):
+        records[index] = _RtdlTriangle2D(
+            triangle.id,
+            triangle.x0,
+            triangle.y0,
+            triangle.x1,
+            triangle.y1,
+            triangle.x2,
+            triangle.y2,
         )
     return records
 
@@ -478,14 +538,40 @@ def segment_intersection_apple_rt(
 
 
 def ray_triangle_hit_count_apple_rt(
-    rays: tuple[_CanonicalRay3D, ...],
-    triangles: tuple[_CanonicalTriangle3D, ...],
+    rays: tuple[_CanonicalRay2D | _CanonicalRay3D, ...],
+    triangles: tuple[_CanonicalTriangle2D | _CanonicalTriangle3D, ...],
 ) -> AppleRtRowView:
-    if any(not isinstance(ray, _CanonicalRay3D) for ray in rays):
-        raise ValueError("Apple RT ray_triangle_hit_count currently requires 3D rays")
-    if any(not isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
-        raise ValueError("Apple RT ray_triangle_hit_count currently requires 3D triangles")
     library = _load_library()
+    if all(isinstance(ray, _CanonicalRay2D) for ray in rays) and all(
+        isinstance(triangle, _CanonicalTriangle2D) for triangle in triangles
+    ):
+        ray_records = _pack_rays_2d(rays)
+        triangle_records = _pack_triangles_2d(triangles)
+        rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = library.rtdl_apple_rt_run_ray_hitcount_2d(
+            ray_records,
+            len(rays),
+            triangle_records,
+            len(triangles),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return AppleRtRowView(
+            library=library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayHitCountRow,
+            field_names=("ray_id", "hit_count"),
+        )
+    if any(not isinstance(ray, _CanonicalRay3D) for ray in rays):
+        raise ValueError("Apple RT ray_triangle_hit_count requires all rays to be Ray2D or all rays to be Ray3D")
+    if any(not isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
+        raise ValueError("Apple RT ray_triangle_hit_count requires all triangles to be Triangle2D or all triangles to be Triangle3D")
     ray_records = _pack_rays_3d(rays)
     triangle_records = _pack_triangles_3d(triangles)
     rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
@@ -519,7 +605,7 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
     callable for parity but the operation is not yet hardware-backed.
     """
     if predicate_name == "ray_triangle_hit_count":
-        return "native_mps_rt_3d_else_cpu_reference_compat"
+        return "native_mps_rt_2d_3d"
     if predicate_name in APPLE_RT_NATIVE_PREDICATES:
         return "native_mps_rt"
     if predicate_name in APPLE_RT_COMPATIBILITY_PREDICATES:
@@ -576,12 +662,16 @@ def run_apple_rt(
         isinstance(ray, _CanonicalRay3D) for ray in left_records
     ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in right_records):
         return tuple(ray_triangle_hit_count_apple_rt(left_records, right_records))
+    if predicate_name == "ray_triangle_hit_count" and all(
+        isinstance(ray, _CanonicalRay2D) for ray in left_records
+    ) and all(isinstance(triangle, _CanonicalTriangle2D) for triangle in right_records):
+        return tuple(ray_triangle_hit_count_apple_rt(left_records, right_records))
     if predicate_name == "segment_intersection":
         return tuple(segment_intersection_apple_rt(left_records, right_records))
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
-            "ray_triangle_closest_hit, 3D ray_triangle_hit_count, and 2D segment_intersection; "
+            "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, and 2D segment_intersection; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

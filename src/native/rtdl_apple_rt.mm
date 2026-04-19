@@ -40,6 +40,25 @@ struct __attribute__((packed)) RtdlTriangle3D {
     double z2;
 };
 
+struct __attribute__((packed)) RtdlRay2D {
+    uint32_t id;
+    double ox;
+    double oy;
+    double dx;
+    double dy;
+    double tmax;
+};
+
+struct __attribute__((packed)) RtdlTriangle2D {
+    uint32_t id;
+    double x0;
+    double y0;
+    double x1;
+    double y1;
+    double x2;
+    double y2;
+};
+
 struct RtdlSegment {
     uint32_t id;
     double x0;
@@ -105,6 +124,13 @@ bool valid_ray(const RtdlRay3D& ray) {
            (ray.dx != 0.0 || ray.dy != 0.0 || ray.dz != 0.0);
 }
 
+bool valid_ray_2d(const RtdlRay2D& ray) {
+    return std::isfinite(ray.ox) && std::isfinite(ray.oy) &&
+           std::isfinite(ray.dx) && std::isfinite(ray.dy) &&
+           std::isfinite(ray.tmax) && ray.tmax >= 0.0 &&
+           (ray.dx != 0.0 || ray.dy != 0.0);
+}
+
 bool valid_segment_ray(const RtdlSegment& segment) {
     return std::isfinite(segment.x0) && std::isfinite(segment.y0) &&
            std::isfinite(segment.x1) && std::isfinite(segment.y1) &&
@@ -134,6 +160,63 @@ bool segment_intersection_point(const RtdlSegment& left, const RtdlSegment& righ
     *ix = px + t * rx;
     *iy = py + t * ry;
     return true;
+}
+
+bool point_in_triangle_2d(double x, double y, const RtdlTriangle2D& tri) {
+    const double d1 = (x - tri.x1) * (tri.y0 - tri.y1) - (tri.x0 - tri.x1) * (y - tri.y1);
+    const double d2 = (x - tri.x2) * (tri.y1 - tri.y2) - (tri.x1 - tri.x2) * (y - tri.y2);
+    const double d3 = (x - tri.x0) * (tri.y2 - tri.y0) - (tri.x2 - tri.x0) * (y - tri.y0);
+    const bool has_neg = (d1 < -1.0e-9) || (d2 < -1.0e-9) || (d3 < -1.0e-9);
+    const bool has_pos = (d1 > 1.0e-9) || (d2 > 1.0e-9) || (d3 > 1.0e-9);
+    return !(has_neg && has_pos);
+}
+
+bool segment_intersects_segment_2d(
+    double ax0,
+    double ay0,
+    double ax1,
+    double ay1,
+    double bx0,
+    double by0,
+    double bx1,
+    double by1) {
+    const double rx = ax1 - ax0;
+    const double ry = ay1 - ay0;
+    const double sx = bx1 - bx0;
+    const double sy = by1 - by0;
+    const double denom = rx * sy - ry * sx;
+    const double qpx = bx0 - ax0;
+    const double qpy = by0 - ay0;
+    if (std::abs(denom) < 1.0e-9) {
+        const double cross = qpx * ry - qpy * rx;
+        if (std::abs(cross) > 1.0e-9) {
+            return false;
+        }
+        const double rr = rx * rx + ry * ry;
+        if (rr < 1.0e-18) {
+            return false;
+        }
+        const double t0 = (qpx * rx + qpy * ry) / rr;
+        const double t1 = t0 + (sx * rx + sy * ry) / rr;
+        return std::max(std::min(t0, t1), 0.0) <= std::min(std::max(t0, t1), 1.0) + 1.0e-9;
+    }
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    return t >= -1.0e-9 && t <= 1.0 + 1.0e-9 && u >= -1.0e-9 && u <= 1.0 + 1.0e-9;
+}
+
+bool ray_hits_triangle_2d(const RtdlRay2D& ray, const RtdlTriangle2D& tri) {
+    if (!valid_ray_2d(ray)) {
+        return false;
+    }
+    const double ex = ray.ox + ray.dx * ray.tmax;
+    const double ey = ray.oy + ray.dy * ray.tmax;
+    if (point_in_triangle_2d(ray.ox, ray.oy, tri) || point_in_triangle_2d(ex, ey, tri)) {
+        return true;
+    }
+    return segment_intersects_segment_2d(ray.ox, ray.oy, ex, ey, tri.x0, tri.y0, tri.x1, tri.y1) ||
+           segment_intersects_segment_2d(ray.ox, ray.oy, ex, ey, tri.x1, tri.y1, tri.x2, tri.y2) ||
+           segment_intersects_segment_2d(ray.ox, ray.oy, ex, ey, tri.x2, tri.y2, tri.x0, tri.y0);
 }
 
 int run_closest_hit_prepared(
@@ -253,7 +336,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_get_version(int* major, int* m
     }
     *major = 0;
     *minor = 9;
-    *patch = 2;
+    *patch = 3;
     return 0;
 }
 
@@ -726,6 +809,240 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_hitcount_3d(
         if (out == nullptr) {
             set_message(error_out, error_size, "out of memory allocating Apple RT hit-count rows");
             return 11;
+        }
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = RtdlRayHitCountRow{rays[i].id, counts[i]};
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_hitcount_2d(
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    const RtdlTriangle2D* triangles,
+    size_t triangle_count,
+    RtdlRayHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_ray_hitcount_2d");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if ((ray_count > 0 && rays == nullptr) || (triangle_count > 0 && triangles == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_ray_hitcount_2d");
+        return 1;
+    }
+    if (ray_count == 0) {
+        return 0;
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+
+        std::vector<MPSRayOriginMaskDirectionMaxDistance> mps_rays(ray_count);
+        for (size_t i = 0; i < ray_count; ++i) {
+            if (!valid_ray_2d(rays[i])) {
+                mps_rays[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
+                mps_rays[i].mask = 0;
+                mps_rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
+                mps_rays[i].maxDistance = -1.0f;
+                continue;
+            }
+            // Parameter t in MPS maps to the full finite RTDL ray segment:
+            // xy(t) = origin + direction * (ray.tmax * t), z(t) = -1 + 2t.
+            // The z sweep makes contained 2D cases intersect the triangle prism.
+            mps_rays[i].origin = MPSPackedFloat3(static_cast<float>(rays[i].ox), static_cast<float>(rays[i].oy), -1.0f);
+            mps_rays[i].mask = 0xFFFFFFFFu;
+            mps_rays[i].direction = MPSPackedFloat3(
+                static_cast<float>(rays[i].dx * rays[i].tmax),
+                static_cast<float>(rays[i].dy * rays[i].tmax),
+                2.0f);
+            mps_rays[i].maxDistance = 1.000001f;
+        }
+
+        id<MTLBuffer> ray_buffer = [device newBufferWithBytes:mps_rays.data()
+                                                       length:mps_rays.size() * sizeof(MPSRayOriginMaskDirectionMaxDistance)
+                                                      options:MTLResourceStorageModeShared];
+        if (ray_buffer == nil) {
+            set_message(error_out, error_size, "Metal ray buffer creation failed");
+            return 4;
+        }
+
+        id<MTLBuffer> intersection_buffer = [device newBufferWithLength:ray_count * sizeof(MPSIntersectionDistancePrimitiveIndex)
+                                                                 options:MTLResourceStorageModeShared];
+        if (intersection_buffer == nil) {
+            set_message(error_out, error_size, "Metal intersection buffer creation failed");
+            return 5;
+        }
+
+        MPSRayIntersector* intersector = [[MPSRayIntersector alloc] initWithDevice:device];
+        if (intersector == nil) {
+            set_message(error_out, error_size, "MPSRayIntersector initialization failed");
+            return 6;
+        }
+        intersector.cullMode = MTLCullModeNone;
+        intersector.rayDataType = MPSRayDataTypeOriginMaskDirectionMaxDistance;
+        intersector.rayMaskOptions = MPSRayMaskOptionPrimitive;
+        intersector.rayMaskOperator = MPSRayMaskOperatorAnd;
+        intersector.intersectionDataType = MPSIntersectionDataTypeDistancePrimitiveIndex;
+        intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
+        intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
+
+        std::vector<uint32_t> counts(ray_count, 0);
+        constexpr size_t chunk_size = 32;
+        for (size_t chunk_begin = 0; chunk_begin < triangle_count; chunk_begin += chunk_size) {
+            const size_t chunk_count = std::min(chunk_size, triangle_count - chunk_begin);
+            const uint32_t full_chunk_mask = chunk_count == 32 ? 0xFFFFFFFFu : ((1u << chunk_count) - 1u);
+
+            auto* gpu_rays = static_cast<MPSRayOriginMaskDirectionMaxDistance*>([ray_buffer contents]);
+            for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+                gpu_rays[ray_index].mask = valid_ray_2d(rays[ray_index]) ? full_chunk_mask : 0u;
+            }
+
+            std::vector<MPSPackedFloat3> vertices;
+            std::vector<uint32_t> primitive_masks;
+            std::vector<size_t> primitive_triangle_offsets;
+            vertices.reserve(chunk_count * 24);
+            primitive_masks.reserve(chunk_count * 8);
+            primitive_triangle_offsets.reserve(chunk_count * 8);
+
+            auto add_triangle = [&](float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz, uint32_t mask, size_t local_index) {
+                vertices.emplace_back(ax, ay, az);
+                vertices.emplace_back(bx, by, bz);
+                vertices.emplace_back(cx, cy, cz);
+                primitive_masks.push_back(mask);
+                primitive_triangle_offsets.push_back(local_index);
+            };
+
+            for (size_t local_index = 0; local_index < chunk_count; ++local_index) {
+                const RtdlTriangle2D& tri = triangles[chunk_begin + local_index];
+                const uint32_t mask = 1u << local_index;
+                const float x0 = static_cast<float>(tri.x0);
+                const float y0 = static_cast<float>(tri.y0);
+                const float x1 = static_cast<float>(tri.x1);
+                const float y1 = static_cast<float>(tri.y1);
+                const float x2 = static_cast<float>(tri.x2);
+                const float y2 = static_cast<float>(tri.y2);
+                constexpr float z0 = -1.0f;
+                constexpr float z1 = 1.0f;
+
+                add_triangle(x0, y0, z0, x1, y1, z0, x2, y2, z0, mask, local_index);
+                add_triangle(x0, y0, z1, x2, y2, z1, x1, y1, z1, mask, local_index);
+
+                add_triangle(x0, y0, z0, x1, y1, z0, x1, y1, z1, mask, local_index);
+                add_triangle(x0, y0, z0, x1, y1, z1, x0, y0, z1, mask, local_index);
+                add_triangle(x1, y1, z0, x2, y2, z0, x2, y2, z1, mask, local_index);
+                add_triangle(x1, y1, z0, x2, y2, z1, x1, y1, z1, mask, local_index);
+                add_triangle(x2, y2, z0, x0, y0, z0, x0, y0, z1, mask, local_index);
+                add_triangle(x2, y2, z0, x0, y0, z1, x2, y2, z1, mask, local_index);
+            }
+
+            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
+                                                              length:vertices.size() * sizeof(MPSPackedFloat3)
+                                                             options:MTLResourceStorageModeShared];
+            if (vertex_buffer == nil) {
+                set_message(error_out, error_size, "Metal 2D hit-count prism vertex buffer creation failed");
+                return 7;
+            }
+            id<MTLBuffer> mask_buffer = [device newBufferWithBytes:primitive_masks.data()
+                                                            length:primitive_masks.size() * sizeof(uint32_t)
+                                                           options:MTLResourceStorageModeShared];
+            if (mask_buffer == nil) {
+                [vertex_buffer release];
+                set_message(error_out, error_size, "Metal 2D hit-count primitive mask buffer creation failed");
+                return 8;
+            }
+
+            MPSTriangleAccelerationStructure* accel = [[MPSTriangleAccelerationStructure alloc] initWithDevice:device];
+            if (accel == nil) {
+                [mask_buffer release];
+                [vertex_buffer release];
+                set_message(error_out, error_size, "MPSTriangleAccelerationStructure initialization failed for 2D hit-count");
+                return 9;
+            }
+            accel.vertexBuffer = vertex_buffer;
+            accel.vertexStride = sizeof(MPSPackedFloat3);
+            accel.maskBuffer = mask_buffer;
+            accel.triangleCount = primitive_masks.size();
+            [accel rebuild];
+
+            for (size_t pass = 0; pass < chunk_count; ++pass) {
+                id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+                if (command_buffer == nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, "Metal command buffer creation failed");
+                    return 10;
+                }
+                [intersector encodeIntersectionToCommandBuffer:command_buffer
+                                              intersectionType:MPSIntersectionTypeNearest
+                                                     rayBuffer:ray_buffer
+                                               rayBufferOffset:0
+                                            intersectionBuffer:intersection_buffer
+                                      intersectionBufferOffset:0
+                                                      rayCount:ray_count
+                                         accelerationStructure:accel];
+                [command_buffer commit];
+                [command_buffer waitUntilCompleted];
+                NSError* error = [command_buffer error];
+                if (error != nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+                    return 11;
+                }
+                const auto* gpu_intersections = static_cast<const MPSIntersectionDistancePrimitiveIndex*>([intersection_buffer contents]);
+                size_t active_hits = 0;
+                size_t active_masks = 0;
+                for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+                    const float distance = gpu_intersections[ray_index].distance;
+                    const uint32_t primitive_index = gpu_intersections[ray_index].primitiveIndex;
+                    if (distance >= 0.0f && distance <= 1.000001f && primitive_index < primitive_triangle_offsets.size()) {
+                        const size_t local_index = primitive_triangle_offsets[primitive_index];
+                        const uint32_t bit = 1u << local_index;
+                        if ((gpu_rays[ray_index].mask & bit) != 0u) {
+                            const RtdlTriangle2D& tri = triangles[chunk_begin + local_index];
+                            if (ray_hits_triangle_2d(rays[ray_index], tri)) {
+                                counts[ray_index] += 1;
+                            }
+                            gpu_rays[ray_index].mask &= ~bit;
+                            active_hits += 1;
+                        }
+                    }
+                    if (gpu_rays[ray_index].mask != 0u) {
+                        active_masks += 1;
+                    }
+                }
+                if (active_hits == 0 || active_masks == 0) {
+                    break;
+                }
+            }
+            [accel release];
+            [mask_buffer release];
+            [vertex_buffer release];
+        }
+
+        auto* out = static_cast<RtdlRayHitCountRow*>(std::malloc(ray_count * sizeof(RtdlRayHitCountRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT 2D hit-count rows");
+            return 12;
         }
         for (size_t i = 0; i < ray_count; ++i) {
             out[i] = RtdlRayHitCountRow{rays[i].id, counts[i]};
