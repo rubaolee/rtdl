@@ -210,6 +210,8 @@ Current Apple RT boundary:
 - post-`v0.9.1` Goal582 dispatch support: all 18 current predicates are
   callable through `run_apple_rt`, with non-closest-hit predicates explicitly
   marked `cpu_reference_compat`
+- post-`v0.9.1` Goal583 native support: 3D `ray_triangle_hit_count` through
+  Apple MPS any-hit traversal
 - validated locally on Apple M4 through Goal578 focused tests and Gemini/Claude
   reviews; Goal582 adds a full-surface dispatch parity test
 - unsupported claims: full native Apple backend parity, Apple hardware speedup

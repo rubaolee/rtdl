@@ -15,6 +15,15 @@ def ray_triangle_closest_hit_3d_kernel():
     return rt.emit(hits, fields=["ray_id", "triangle_id", "t"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def ray_triangle_hit_count_3d_kernel():
+    rays = rt.input("rays", rt.Rays, layout=rt.Ray3DLayout, role="probe")
+    triangles = rt.input("triangles", rt.Triangles, layout=rt.Triangle3DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
+
+
 def apple_rt_available() -> bool:
     if platform.system() != "Darwin":
         return False
@@ -67,6 +76,14 @@ class Goal578AppleRtBackendTest(unittest.TestCase):
     def test_empty_triangles_return_no_rows(self) -> None:
         case = self._case()
         self.assertEqual(rt.run_apple_rt(ray_triangle_closest_hit_3d_kernel, rays=case["rays"], triangles=()), ())
+
+    def test_ray_triangle_hit_count_native_matches_cpu_reference(self) -> None:
+        case = self._case()
+        actual = rt.run_apple_rt(ray_triangle_hit_count_3d_kernel, native_only=True, **case)
+        expected = rt.run_cpu_python_reference(ray_triangle_hit_count_3d_kernel, **case)
+        self.assertEqual(actual, expected)
+        direct = tuple(rt.ray_triangle_hit_count_apple_rt(case["rays"], case["triangles"]))
+        self.assertEqual(direct, expected)
 
 
 if __name__ == "__main__":

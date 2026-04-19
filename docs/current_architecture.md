@@ -58,9 +58,9 @@ does not claim full Apple backend parity or performance speedup yet.
 
 The post-`v0.9.1` Goal582 development line makes `run_apple_rt` callable for
 all 18 current RTDL predicates on Apple Silicon macOS. That is a dispatch
-coverage step, not full hardware parity: 3D closest-hit is `native_mps_rt`;
-other predicates are currently `cpu_reference_compat` and are rejected when
-`native_only=True`.
+coverage step, not full hardware parity: 3D closest-hit is `native_mps_rt`, 3D
+hit-count is `native_mps_rt_3d_else_cpu_reference_compat`, and other predicates
+are currently `cpu_reference_compat` and are rejected when `native_only=True`.
 
 ## What Python Owns
 
@@ -110,10 +110,10 @@ nearest-neighbor rows, prepared graph CSR build data for BFS discovery and
 triangle-match query batches, and prepared bounded DB table reuse for
 conjunctive scan, grouped count, and grouped sum.
 
-The released Apple RT native slice is narrower: `run_apple_rt` currently uses
-Apple Metal/MPS RT only for 3D `ray_triangle_closest_hit` over
-Ray3D/Triangle3D data. Goal582 adds broad callable dispatch through CPU
-reference compatibility for the other current predicates.
+The released Apple RT native slice started with 3D `ray_triangle_closest_hit`
+over Ray3D/Triangle3D data. Goal582 adds broad callable dispatch through CPU
+reference compatibility for the other current predicates, and Goal583 adds
+native Apple MPS RT execution for 3D `ray_triangle_hit_count`.
 
 Each family is documented with its own current support boundary. Not every
 backend/workload/platform combination has the same maturity.

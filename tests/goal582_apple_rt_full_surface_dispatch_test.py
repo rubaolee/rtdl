@@ -205,7 +205,7 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
         self.assertIn("apple_rt_support_matrix", rt.__all__)
         modes = {row["predicate"]: row["mode"] for row in rt.apple_rt_support_matrix()}
         self.assertEqual(modes["ray_triangle_closest_hit"], "native_mps_rt")
-        self.assertEqual(modes["ray_triangle_hit_count"], "cpu_reference_compat")
+        self.assertEqual(modes["ray_triangle_hit_count"], "native_mps_rt_3d_else_cpu_reference_compat")
         self.assertEqual(modes["grouped_sum"], "cpu_reference_compat")
         self.assertEqual(len(modes), 18)
 

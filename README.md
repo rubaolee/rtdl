@@ -114,9 +114,9 @@ bounded DB-style analytical workloads.
 - current post-`v0.9.1` development line:
   - Goal582 makes all 18 current RTDL predicates callable through
     `run_apple_rt` on Apple Silicon macOS
-  - execution mode is explicit: 3D `ray_triangle_closest_hit` uses native
-    Apple Metal/MPS RT, while the other predicates currently use
-    `cpu_reference_compat`
+  - execution mode is explicit: 3D `ray_triangle_closest_hit` and 3D
+    `ray_triangle_hit_count` use native Apple Metal/MPS RT, while the other
+    predicates currently use `cpu_reference_compat`
   - `run_apple_rt(..., native_only=True)` rejects those compatibility paths
     instead of silently pretending they are Apple RT hardware execution
 - previous `v0.6.1` additions over `v0.5.0`:
@@ -172,10 +172,11 @@ RTDL uses several backends behind one public kernel surface:
 - `Apple RT`:
   - released `v0.9.1` backend slice on macOS Apple Silicon
   - native mode currently exposes `run_apple_rt` for 3D
-    `ray_triangle_closest_hit`
+    `ray_triangle_closest_hit` and 3D `ray_triangle_hit_count`
   - post-`v0.9.1` development adds full-surface compatibility dispatch for all
     18 current predicates through `run_apple_rt`; non-closest-hit predicates
-    are marked `cpu_reference_compat`, not hardware-backed Apple RT
+    that are not 3D hit-count are marked `cpu_reference_compat`, not
+    hardware-backed Apple RT
   - implemented through Apple Metal/MPS `MPSRayIntersector`
   - no full parity or hardware-speedup claim is made yet
 - `PostGIS` / `PostgreSQL`:
@@ -362,6 +363,10 @@ On current main after Goal582, `run_apple_rt` can also execute the full current
 18-predicate RTDL surface on Apple Silicon macOS through an explicit
 compatibility dispatch. Use `rt.apple_rt_support_matrix()` to see which
 predicates are `native_mps_rt` and which are `cpu_reference_compat`.
+
+Goal583 adds native Apple MPS RT execution for 3D `ray_triangle_hit_count`.
+The implementation uses MPS any-hit ray/triangle traversal per triangle, so it
+is correctness-oriented native coverage, not the final high-throughput design.
 
 Windows `cmd.exe`:
 
@@ -570,7 +575,8 @@ Release and preview layers inside the current repository:
   - no full native Apple RT parity or speedup claim yet
 - post-`v0.9.1` main: Goal582 Apple RT full-surface compatibility dispatch
   - all 18 current predicates are callable through `run_apple_rt`
-  - only 3D closest-hit is `native_mps_rt`; the rest are
+  - 3D closest-hit is `native_mps_rt`; 3D hit-count is
+    `native_mps_rt_3d_else_cpu_reference_compat`; the rest are
     `cpu_reference_compat` until native Apple implementations land
 
 Current public demo artifact:

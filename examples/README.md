@@ -159,5 +159,7 @@ Current Apple RT boundary:
   RT for `ray_triangle_closest_hit` over 3D rays and 3D triangles
 - post-v0.9.1 Goal582 makes all 18 current predicates callable through
   `run_apple_rt`, but non-closest-hit predicates are `cpu_reference_compat`
+- post-v0.9.1 Goal583 adds native Apple MPS RT execution for 3D
+  `ray_triangle_hit_count`
 - this is not a full native Apple backend parity claim and not a measured
   hardware speedup claim

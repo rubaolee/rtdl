@@ -70,6 +70,7 @@ from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
+from .apple_rt_runtime import ray_triangle_hit_count_apple_rt
 from .apple_rt_runtime import run_apple_rt
 from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
@@ -710,6 +711,7 @@ __all__ = [
     "ray_triangle_hit_count_cpu",
     "ray_triangle_closest_hit_cpu",
     "ray_triangle_closest_hit_apple_rt",
+    "ray_triangle_hit_count_apple_rt",
     "ray_triangle_hit_count_hiprt",
     "PreparedHiprtRayTriangleHitCount3D",
     "RAYJOIN_PAPER_TARGETS",

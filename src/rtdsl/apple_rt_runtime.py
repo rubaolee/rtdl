@@ -20,7 +20,7 @@ from .runtime import _run_cpu_python_reference_from_normalized
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 
-APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit"})
+APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit", "ray_triangle_hit_count"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
         "bfs_discover",
@@ -80,6 +80,13 @@ class _RtdlRayClosestHitRow(ctypes.Structure):
         ("ray_id", ctypes.c_uint32),
         ("triangle_id", ctypes.c_uint32),
         ("t", ctypes.c_double),
+    ]
+
+
+class _RtdlRayHitCountRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("hit_count", ctypes.c_uint32),
     ]
 
 
@@ -173,6 +180,17 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_ray_closest_hit_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_ray_hitcount_3d.argtypes = [
+        ctypes.POINTER(_RtdlRay3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlTriangle3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_ray_hitcount_3d.restype = ctypes.c_int
 
 
 def _check_status(status: int, error_buffer: ctypes.Array[ctypes.c_char]) -> None:
@@ -260,6 +278,40 @@ def ray_triangle_closest_hit_apple_rt(
     )
 
 
+def ray_triangle_hit_count_apple_rt(
+    rays: tuple[_CanonicalRay3D, ...],
+    triangles: tuple[_CanonicalTriangle3D, ...],
+) -> AppleRtRowView:
+    if any(not isinstance(ray, _CanonicalRay3D) for ray in rays):
+        raise ValueError("Apple RT ray_triangle_hit_count currently requires 3D rays")
+    if any(not isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
+        raise ValueError("Apple RT ray_triangle_hit_count currently requires 3D triangles")
+    library = _load_library()
+    ray_records = _pack_rays_3d(rays)
+    triangle_records = _pack_triangles_3d(triangles)
+    rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_ray_hitcount_3d(
+        ray_records,
+        len(rays),
+        triangle_records,
+        len(triangles),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return AppleRtRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlRayHitCountRow,
+        field_names=("ray_id", "hit_count"),
+    )
+
+
 def apple_rt_predicate_mode(predicate_name: str) -> str:
     """Return the current Apple RT dispatch class for a predicate.
 
@@ -267,6 +319,8 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
     intersector. `cpu_reference_compat` means the public Apple RT dispatcher is
     callable for parity but the operation is not yet hardware-backed.
     """
+    if predicate_name == "ray_triangle_hit_count":
+        return "native_mps_rt_3d_else_cpu_reference_compat"
     if predicate_name in APPLE_RT_NATIVE_PREDICATES:
         return "native_mps_rt"
     if predicate_name in APPLE_RT_COMPATIBILITY_PREDICATES:
@@ -314,9 +368,14 @@ def run_apple_rt(
         isinstance(ray, _CanonicalRay3D) for ray in rays
     ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
         return tuple(ray_triangle_closest_hit_apple_rt(rays, triangles))
+    if predicate_name == "ray_triangle_hit_count" and all(
+        isinstance(ray, _CanonicalRay3D) for ray in rays
+    ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
+        return tuple(ray_triangle_hit_count_apple_rt(rays, triangles))
     if native_only:
         raise NotImplementedError(
-            "Apple RT native MPS execution currently supports only 3D ray_triangle_closest_hit; "
+            "Apple RT native MPS execution currently supports only 3D "
+            "ray_triangle_closest_hit and 3D ray_triangle_hit_count; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

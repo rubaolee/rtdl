@@ -78,7 +78,8 @@ Backend note:
   repeated `conjunctive_scan`, `grouped_count`, and `grouped_sum` queries
 - released `v0.9.1` Apple RT support exists on Apple Silicon macOS;
   native Apple Metal/MPS execution currently covers 3D
-  `ray_triangle_closest_hit`
+  `ray_triangle_closest_hit`, and post-release Goal583 adds native 3D
+  `ray_triangle_hit_count`
 - post-`v0.9.1` Goal582 makes all 18 current predicates callable through
   `run_apple_rt`, but non-closest-hit predicates are compatibility dispatch
   (`cpu_reference_compat`), not Apple hardware execution

@@ -35,8 +35,9 @@ local Apple M4 host.
 
 Post-`v0.9.1` Goal582 makes `run_apple_rt` full-surface callable for all 18
 current predicates on Apple Silicon macOS. That does not mean all predicates
-are Apple hardware-backed: only 3D closest-hit is `native_mps_rt`; the rest are
-currently `cpu_reference_compat`.
+are Apple hardware-backed: 3D closest-hit is `native_mps_rt`, 3D hit-count is
+`native_mps_rt_3d_else_cpu_reference_compat`, and the rest are currently
+`cpu_reference_compat`.
 
 Today it includes:
 
@@ -53,6 +54,7 @@ Today it includes:
   traversal on macOS Apple Silicon
 - a post-`v0.9.1` Apple RT compatibility dispatcher for all current predicates,
   with explicit `native_mps_rt` versus `cpu_reference_compat` modes
+- native Apple MPS RT coverage for 3D `ray_triangle_hit_count` after Goal583
 
 Current supported workload families:
 
@@ -112,7 +114,8 @@ Current user-programming note:
   Vulkan, and HIPRT do not yet expose this closest-hit primitive
 - post-`v0.9.1` Goal582 lets users call the rest of the current workload
   surface through `run_apple_rt` in compatibility mode while native Apple
-  implementations are added one workload family at a time
+  implementations are added one workload family at a time; Goal583 adds the
+  first expansion beyond closest-hit with 3D `ray_triangle_hit_count`
 - RTDL provides the query core there, while Python handles application logic and
   output
 

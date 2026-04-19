@@ -46,6 +46,11 @@ struct RtdlRayClosestHitRow {
     double t;
 };
 
+struct RtdlRayHitCountRow {
+    uint32_t ray_id;
+    uint32_t hit_count;
+};
+
 void set_message(char* error_out, size_t error_size, const std::string& message) {
     if (error_out == nullptr || error_size == 0) {
         return;
@@ -253,6 +258,150 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_closest_hit_3d(
         std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlRayClosestHitRow));
         *rows_out = out;
         *row_count_out = rows.size();
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_hitcount_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_ray_hitcount_3d");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if ((ray_count > 0 && rays == nullptr) || (triangle_count > 0 && triangles == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_ray_hitcount_3d");
+        return 1;
+    }
+    if (ray_count == 0) {
+        return 0;
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+
+        std::vector<MPSRayOriginMinDistanceDirectionMaxDistance> mps_rays(ray_count);
+        for (size_t i = 0; i < ray_count; ++i) {
+            if (!valid_ray(rays[i])) {
+                mps_rays[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
+                mps_rays[i].minDistance = 0.0f;
+                mps_rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
+                mps_rays[i].maxDistance = -1.0f;
+                continue;
+            }
+            mps_rays[i].origin = MPSPackedFloat3(static_cast<float>(rays[i].ox), static_cast<float>(rays[i].oy), static_cast<float>(rays[i].oz));
+            mps_rays[i].minDistance = 0.0f;
+            mps_rays[i].direction = MPSPackedFloat3(static_cast<float>(rays[i].dx), static_cast<float>(rays[i].dy), static_cast<float>(rays[i].dz));
+            mps_rays[i].maxDistance = finite_tmax(rays[i].tmax);
+        }
+
+        id<MTLBuffer> ray_buffer = [device newBufferWithBytes:mps_rays.data()
+                                                       length:mps_rays.size() * sizeof(MPSRayOriginMinDistanceDirectionMaxDistance)
+                                                      options:MTLResourceStorageModeShared];
+        if (ray_buffer == nil) {
+            set_message(error_out, error_size, "Metal ray buffer creation failed");
+            return 4;
+        }
+
+        std::vector<uint32_t> counts(ray_count, 0);
+        std::vector<MPSIntersectionDistance> intersections(ray_count);
+        id<MTLBuffer> intersection_buffer = [device newBufferWithLength:intersections.size() * sizeof(MPSIntersectionDistance)
+                                                                 options:MTLResourceStorageModeShared];
+        if (intersection_buffer == nil) {
+            set_message(error_out, error_size, "Metal intersection buffer creation failed");
+            return 5;
+        }
+
+        MPSRayIntersector* intersector = [[MPSRayIntersector alloc] initWithDevice:device];
+        if (intersector == nil) {
+            set_message(error_out, error_size, "MPSRayIntersector initialization failed");
+            return 6;
+        }
+        intersector.cullMode = MTLCullModeNone;
+        intersector.rayDataType = MPSRayDataTypeOriginMinDistanceDirectionMaxDistance;
+        intersector.intersectionDataType = MPSIntersectionDataTypeDistance;
+        intersector.rayStride = sizeof(MPSRayOriginMinDistanceDirectionMaxDistance);
+        intersector.intersectionStride = sizeof(MPSIntersectionDistance);
+
+        for (size_t tri_index = 0; tri_index < triangle_count; ++tri_index) {
+            const RtdlTriangle3D& tri = triangles[tri_index];
+            MPSPackedFloat3 vertices[3] = {
+                MPSPackedFloat3(static_cast<float>(tri.x0), static_cast<float>(tri.y0), static_cast<float>(tri.z0)),
+                MPSPackedFloat3(static_cast<float>(tri.x1), static_cast<float>(tri.y1), static_cast<float>(tri.z1)),
+                MPSPackedFloat3(static_cast<float>(tri.x2), static_cast<float>(tri.y2), static_cast<float>(tri.z2)),
+            };
+            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices
+                                                              length:sizeof(vertices)
+                                                             options:MTLResourceStorageModeShared];
+            if (vertex_buffer == nil) {
+                set_message(error_out, error_size, "Metal vertex buffer creation failed");
+                return 7;
+            }
+            MPSTriangleAccelerationStructure* accel = [[MPSTriangleAccelerationStructure alloc] initWithDevice:device];
+            if (accel == nil) {
+                set_message(error_out, error_size, "MPSTriangleAccelerationStructure initialization failed");
+                return 8;
+            }
+            accel.vertexBuffer = vertex_buffer;
+            accel.vertexStride = sizeof(MPSPackedFloat3);
+            accel.triangleCount = 1;
+            [accel rebuild];
+
+            id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+            if (command_buffer == nil) {
+                set_message(error_out, error_size, "Metal command buffer creation failed");
+                return 9;
+            }
+            [intersector encodeIntersectionToCommandBuffer:command_buffer
+                                          intersectionType:MPSIntersectionTypeAny
+                                                 rayBuffer:ray_buffer
+                                           rayBufferOffset:0
+                                        intersectionBuffer:intersection_buffer
+                                  intersectionBufferOffset:0
+                                                  rayCount:ray_count
+                                     accelerationStructure:accel];
+            [command_buffer commit];
+            [command_buffer waitUntilCompleted];
+            NSError* error = [command_buffer error];
+            if (error != nil) {
+                set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+                return 10;
+            }
+            const auto* gpu_intersections = static_cast<const MPSIntersectionDistance*>([intersection_buffer contents]);
+            for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+                if (gpu_intersections[ray_index].distance >= 0.0f) {
+                    counts[ray_index] += 1;
+                }
+            }
+        }
+
+        auto* out = static_cast<RtdlRayHitCountRow*>(std::malloc(ray_count * sizeof(RtdlRayHitCountRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT hit-count rows");
+            return 11;
+        }
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = RtdlRayHitCountRow{rays[i].id, counts[i]};
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
         return 0;
     }
 }
