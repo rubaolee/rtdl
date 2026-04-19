@@ -1,0 +1,1 @@
+Please review `/Users/rl2025/rtdl_python_only/docs/reports/goal625_v0_9_4_total_test_doc_audit_gate_2026-04-19.md`, the v0.9.4 release docs it names, and the referenced test transcripts, then write an ACCEPT or BLOCK verdict with concise rationale to your assigned response file.
