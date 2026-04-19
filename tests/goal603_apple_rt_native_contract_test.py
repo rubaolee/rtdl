@@ -46,6 +46,7 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
                 "bounded_knn_rows",
                 "fixed_radius_neighbors",
                 "knn_rows",
+                "point_in_polygon",
                 "ray_triangle_closest_hit",
                 "ray_triangle_hit_count",
                 "segment_intersection",

@@ -15,6 +15,7 @@ from pathlib import Path
 from .ir import CompiledKernel
 from .reference import Point as _CanonicalPoint2D
 from .reference import Point3D as _CanonicalPoint3D
+from .reference import Polygon as _CanonicalPolygon
 from .reference import Ray2D as _CanonicalRay2D
 from .reference import Ray3D as _CanonicalRay3D
 from .reference import Segment as _CanonicalSegment
@@ -24,6 +25,7 @@ from .runtime import _normalize_records
 from .runtime import _run_cpu_python_reference_from_normalized
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
+from .reference import _point_in_polygon as _reference_point_in_polygon
 
 APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit", "ray_triangle_hit_count", "segment_intersection"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
@@ -70,6 +72,13 @@ _APPLE_RT_SUPPORT_NOTES = {
         "native_only": "supported_for_point2d_and_point3d",
         "native_shapes": ("Point2D/Point2D", "Point3D/Point3D"),
         "notes": "Apple Metal/MPS broad box traversal for 2D/3D candidate discovery, then exact kNN ranking.",
+    },
+    "point_in_polygon": {
+        "native_candidate_discovery": "shape_dependent",
+        "cpu_refinement": "exact_point_in_polygon",
+        "native_only": "supported_for_point2d_polygon2d_positive_hits",
+        "native_shapes": ("Point2D/Polygon2D positive_hits",),
+        "notes": "Apple Metal/MPS polygon bounding-box traversal for positive-hit candidates; full_matrix remains compatibility-only.",
     },
     "ray_triangle_closest_hit": {
         "native_candidate_discovery": "yes",
@@ -220,6 +229,23 @@ class _RtdlNeighborRow(ctypes.Structure):
         ("query_id", ctypes.c_uint32),
         ("neighbor_id", ctypes.c_uint32),
         ("distance", ctypes.c_double),
+    ]
+
+
+class _RtdlPolygonBounds2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("minx", ctypes.c_double),
+        ("miny", ctypes.c_double),
+        ("maxx", ctypes.c_double),
+        ("maxy", ctypes.c_double),
+    ]
+
+
+class _RtdlPointPolygonCandidateRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
     ]
 
 
@@ -381,6 +407,17 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_fixed_radius_neighbors_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_point_polygon_candidates_2d.argtypes = [
+        ctypes.POINTER(_RtdlPoint2D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonBounds2D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPointPolygonCandidateRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_point_polygon_candidates_2d.restype = ctypes.c_int
     library.rtdl_apple_rt_run_lsi.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
@@ -478,6 +515,20 @@ def _pack_points_3d(points: tuple[_CanonicalPoint3D, ...]):
     records = (_RtdlPoint3D * len(points))()
     for index, point in enumerate(points):
         records[index] = _RtdlPoint3D(point.id, point.x, point.y, point.z)
+    return records
+
+
+def _polygon_bounds_2d(polygon: _CanonicalPolygon) -> tuple[float, float, float, float]:
+    xs = [x for x, _ in polygon.vertices]
+    ys = [y for _, y in polygon.vertices]
+    return (min(xs), min(ys), max(xs), max(ys))
+
+
+def _pack_polygon_bounds_2d(polygons: tuple[_CanonicalPolygon, ...]):
+    records = (_RtdlPolygonBounds2D * len(polygons))()
+    for index, polygon in enumerate(polygons):
+        minx, miny, maxx, maxy = _polygon_bounds_2d(polygon)
+        records[index] = _RtdlPolygonBounds2D(polygon.id, minx, miny, maxx, maxy)
     return records
 
 
@@ -773,6 +824,51 @@ def fixed_radius_neighbors_3d_apple_rt(
     )
 
 
+def point_in_polygon_positive_hits_apple_rt(
+    points: tuple[_CanonicalPoint2D, ...],
+    polygons: tuple[_CanonicalPolygon, ...],
+    *,
+    boundary_mode: str = "inclusive",
+) -> tuple[dict[str, object], ...]:
+    if any(not isinstance(point, _CanonicalPoint2D) for point in points):
+        raise ValueError("Apple RT point_in_polygon currently requires 2D point inputs")
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in polygons):
+        raise ValueError("Apple RT point_in_polygon currently requires 2D polygon inputs")
+    if boundary_mode != "inclusive":
+        raise ValueError("Apple RT point_in_polygon currently supports only boundary_mode='inclusive'")
+    library = _load_library()
+    point_records = _pack_points_2d(points)
+    polygon_records = _pack_polygon_bounds_2d(polygons)
+    rows_ptr = ctypes.POINTER(_RtdlPointPolygonCandidateRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_point_polygon_candidates_2d(
+        point_records,
+        len(points),
+        polygon_records,
+        len(polygons),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    point_by_id = {point.id: point for point in points}
+    polygon_by_id = {polygon.id: polygon for polygon in polygons}
+    rows = []
+    try:
+        for index in range(row_count.value):
+            candidate = rows_ptr[index]
+            point = point_by_id[int(candidate.point_id)]
+            polygon = polygon_by_id[int(candidate.polygon_id)]
+            if _reference_point_in_polygon(point.x, point.y, polygon.vertices, boundary_mode=boundary_mode):
+                rows.append({"point_id": point.id, "polygon_id": polygon.id, "contains": 1})
+    finally:
+        if bool(rows_ptr):
+            library.rtdl_apple_rt_free_rows(rows_ptr)
+    return tuple(rows)
+
+
 def _rank_neighbor_rows(rows, *, k_max: int) -> tuple[dict[str, object], ...]:
     by_query: dict[int, list[dict[str, object]]] = {}
     for row in rows:
@@ -956,6 +1052,16 @@ def run_apple_rt(
             k_max=max(k, len(right_records)),
         )
         return _rank_neighbor_rows(fixed_rows, k_max=k)
+    if predicate_name == "point_in_polygon" and all(
+        isinstance(point, _CanonicalPoint2D) for point in left_records
+    ) and all(isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        options = compiled.refine_op.predicate.options
+        if options.get("result_mode", "full_matrix") == "positive_hits":
+            return point_in_polygon_positive_hits_apple_rt(
+                left_records,
+                right_records,
+                boundary_mode=str(options.get("boundary_mode", "inclusive")),
+            )
     if predicate_name == "segment_intersection":
         return tuple(segment_intersection_apple_rt(left_records, right_records))
     if native_only:
