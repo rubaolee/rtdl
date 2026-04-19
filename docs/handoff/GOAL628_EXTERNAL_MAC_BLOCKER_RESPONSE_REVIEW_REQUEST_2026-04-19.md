@@ -1,0 +1,1 @@
+Please review Goal628 by reading `/Users/rl2025/rtdl_python_only/docs/reports/goal628_v0_9_4_external_mac_blocker_response_2026-04-19.md` and the changed tests, then write a concise ACCEPT or BLOCK verdict on whether the response correctly fixes the external macOS release blockers without hiding real correctness failures.

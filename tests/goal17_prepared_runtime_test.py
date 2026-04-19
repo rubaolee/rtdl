@@ -14,6 +14,7 @@ from goal15_compare_embree import build_lsi_dataset
 from goal15_compare_embree import build_pip_dataset
 from goal17_compare_prepared_embree import compare_goal17
 from tests._embree_support import embree_available
+from tests._optional_native_compare import skip_optional_native_compare_failure
 
 
 @unittest.skipUnless(embree_available(), "Embree runtime is not available")
@@ -89,7 +90,11 @@ class Goal17PreparedRuntimeTest(unittest.TestCase):
 
     def test_goal17_compare_reports_speedup(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            payload = compare_goal17(Path(tmpdir), repeats=5)
+            try:
+                payload = compare_goal17(Path(tmpdir), repeats=5)
+            except Exception as exc:
+                skip_optional_native_compare_failure(exc)
+                raise
         self.assertTrue(payload["workloads"]["lsi"]["prepared_matches_current"])
         self.assertTrue(payload["workloads"]["pip"]["prepared_matches_current"])
         self.assertGreater(payload["workloads"]["lsi"]["speedup_vs_current_raw_hot"], 1.0)

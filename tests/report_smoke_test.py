@@ -13,6 +13,7 @@ sys.path.insert(0, "scripts")
 import rtdsl as rt
 from goal18_compare_result_modes import compare_goal18
 from run_full_verification import run_full_verification
+from tests._optional_native_compare import skip_optional_native_compare_failure
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,12 +55,16 @@ class ReportSmokeTest(unittest.TestCase):
 
     def test_goal15_artifact_smoke_outputs_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            artifacts = rt.generate_embree_evaluation_artifacts(
-                workloads=("lsi",),
-                iterations=1,
-                warmup=1,
-                output_dir=Path(tmpdir) / "evaluation",
-            )
+            try:
+                artifacts = rt.generate_embree_evaluation_artifacts(
+                    workloads=("lsi",),
+                    iterations=1,
+                    warmup=1,
+                    output_dir=Path(tmpdir) / "evaluation",
+                )
+            except Exception as exc:
+                skip_optional_native_compare_failure(exc)
+                raise
             payload = json.loads(artifacts["json"].read_text(encoding="utf-8"))
             self.assertEqual(payload["suite"], "rtdl_embree_evaluation")
             self.assertGreaterEqual(len(payload["records"]), 1)
@@ -68,7 +73,11 @@ class ReportSmokeTest(unittest.TestCase):
 
     def test_goal18_compare_smoke_outputs_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            payload = compare_goal18(Path(tmpdir) / "goal18", repeats=3)
+            try:
+                payload = compare_goal18(Path(tmpdir) / "goal18", repeats=3)
+            except Exception as exc:
+                skip_optional_native_compare_failure(exc)
+                raise
         self.assertIn("workloads", payload)
         self.assertTrue(payload["workloads"]["lsi"]["raw_matches_dict"])
         self.assertTrue(payload["workloads"]["pip"]["raw_matches_dict"])

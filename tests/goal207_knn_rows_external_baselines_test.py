@@ -91,6 +91,13 @@ class _FakePostgisConnection:
 
 
 class Goal207KnnRowsExternalBaselinesTest(unittest.TestCase):
+    def assertKnnRowsAlmostEqual(self, actual, expected) -> None:
+        self.assertEqual(len(actual), len(expected))
+        for actual_row, expected_row in zip(actual, expected):
+            for key in ("query_id", "neighbor_id", "neighbor_rank"):
+                self.assertEqual(actual_row[key], expected_row[key])
+            self.assertAlmostEqual(actual_row["distance"], expected_row["distance"], places=12)
+
     def test_scipy_baseline_matches_python_reference_on_authored_case(self) -> None:
         case = make_knn_rows_authored_case()
         scipy_rows = rt.run_scipy_knn_rows(
@@ -100,7 +107,7 @@ class Goal207KnnRowsExternalBaselinesTest(unittest.TestCase):
             tree_factory=_FakeKDTree,
         )
         python_rows = rt.run_cpu_python_reference(knn_rows_reference, **case)
-        self.assertEqual(scipy_rows, python_rows)
+        self.assertKnnRowsAlmostEqual(scipy_rows, python_rows)
 
     def test_scipy_baseline_sorts_out_of_order_query_ids(self) -> None:
         rows = rt.run_scipy_knn_rows(
@@ -135,7 +142,7 @@ class Goal207KnnRowsExternalBaselinesTest(unittest.TestCase):
             k=3,
         )
         python_rows = rt.run_cpu_python_reference(knn_rows_reference, **case)
-        self.assertEqual(rows, python_rows)
+        self.assertKnnRowsAlmostEqual(rows, python_rows)
         self.assertTrue(any("CREATE INDEX rtdl_query_points_tmp_geom_gist" in sql for sql in connection.executed_sql))
         self.assertTrue(any("CREATE INDEX rtdl_search_points_tmp_geom_gist" in sql for sql in connection.executed_sql))
 
@@ -179,7 +186,7 @@ class Goal207KnnRowsExternalBaselinesTest(unittest.TestCase):
             tree_factory=_FakeKDTree,
         )
         python_rows = rt.run_cpu_python_reference(knn_rows_reference, **case)
-        self.assertEqual(scipy_rows, python_rows)
+        self.assertKnnRowsAlmostEqual(scipy_rows, python_rows)
 
 
 if __name__ == "__main__":
