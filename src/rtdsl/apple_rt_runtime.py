@@ -45,6 +45,42 @@ APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     }
 )
 
+_APPLE_RT_SUPPORT_NOTES = {
+    "ray_triangle_closest_hit": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "row_materialization_only",
+        "native_only": "supported_for_3d",
+        "native_shapes": ("Ray3D/Triangle3D",),
+        "notes": "Apple Metal/MPS nearest-hit traversal over 3D triangles.",
+    },
+    "ray_triangle_hit_count": {
+        "native_candidate_discovery": "shape_dependent",
+        "cpu_refinement": "count_accumulation",
+        "native_only": "supported_for_3d_only",
+        "native_shapes": ("Ray3D/Triangle3D",),
+        "notes": "3D ray/triangle uses Apple Metal/MPS traversal; 2D ray/triangle remains compatibility-only.",
+    },
+    "segment_intersection": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "exact_intersection_point",
+        "native_only": "supported_for_2d",
+        "native_shapes": ("Segment2D/Segment2D",),
+        "notes": "Apple Metal/MPS traversal over extruded segment slabs plus exact CPU endpoint/intersection refinement.",
+    },
+}
+
+
+def _apple_rt_support_notes(predicate_name: str) -> dict[str, object]:
+    if predicate_name in _APPLE_RT_SUPPORT_NOTES:
+        return dict(_APPLE_RT_SUPPORT_NOTES[predicate_name])
+    return {
+        "native_candidate_discovery": "no",
+        "cpu_refinement": "full_cpu_reference_compat",
+        "native_only": "unsupported_until_v0_9_3_native_lowering",
+        "native_shapes": (),
+        "notes": "Callable through run_apple_rt compatibility dispatch, but not Apple hardware-backed yet.",
+    }
+
 
 class _RtdlRay3D(ctypes.Structure):
     _pack_ = 1
@@ -491,11 +527,16 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
     return "unsupported"
 
 
-def apple_rt_support_matrix() -> tuple[dict[str, str], ...]:
-    return tuple(
-        {"predicate": predicate_name, "mode": apple_rt_predicate_mode(predicate_name)}
-        for predicate_name in sorted(APPLE_RT_COMPATIBILITY_PREDICATES)
-    )
+def apple_rt_support_matrix() -> tuple[dict[str, object], ...]:
+    rows = []
+    for predicate_name in sorted(APPLE_RT_COMPATIBILITY_PREDICATES):
+        row: dict[str, object] = {
+            "predicate": predicate_name,
+            "mode": apple_rt_predicate_mode(predicate_name),
+        }
+        row.update(_apple_rt_support_notes(predicate_name))
+        rows.append(row)
+    return tuple(rows)
 
 
 def run_apple_rt(
