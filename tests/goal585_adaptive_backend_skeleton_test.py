@@ -202,6 +202,11 @@ class Goal585AdaptiveBackendSkeletonTest(unittest.TestCase):
         if rt.adaptive_available():
             self.assertEqual(by_workload["segment_intersection"]["mode"], "native_adaptive_cpu_soa_2d")
             self.assertTrue(by_workload["segment_intersection"]["native"])
+            self.assertEqual(
+                by_workload["point_nearest_segment"]["mode"],
+                "native_adaptive_cpu_soa_min_distance_2d",
+            )
+            self.assertTrue(by_workload["point_nearest_segment"]["native"])
             self.assertEqual(by_workload["ray_triangle_hit_count_3d"]["mode"], "native_adaptive_cpu_soa_3d")
             self.assertTrue(by_workload["ray_triangle_hit_count_3d"]["native"])
         else:
@@ -245,9 +250,14 @@ class Goal585AdaptiveBackendSkeletonTest(unittest.TestCase):
             with self.subTest(workload=workload):
                 mode = rt.adaptive_predicate_mode(kernel)
                 self.assertEqual(mode["workload"], workload)
-                if workload in {"segment_intersection", "ray_triangle_hit_count_3d"} and rt.adaptive_available():
+                if workload in {
+                    "segment_intersection",
+                    "point_nearest_segment",
+                    "ray_triangle_hit_count_3d",
+                } and rt.adaptive_available():
                     expected_mode = {
                         "segment_intersection": "native_adaptive_cpu_soa_2d",
+                        "point_nearest_segment": "native_adaptive_cpu_soa_min_distance_2d",
                         "ray_triangle_hit_count_3d": "native_adaptive_cpu_soa_3d",
                     }[workload]
                     self.assertEqual(mode["mode"], expected_mode)

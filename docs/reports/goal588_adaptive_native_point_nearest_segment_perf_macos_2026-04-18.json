@@ -1,0 +1,34 @@
+{
+  "host": "macos_local",
+  "workload": "point_nearest_segment",
+  "point_count": 1024,
+  "segment_count": 2048,
+  "candidate_pairs": 2097152,
+  "result_rows": 1024,
+  "adaptive_mode": {
+    "backend": "adaptive",
+    "workload": "point_nearest_segment",
+    "predicate": "point_nearest_segment",
+    "family": "nearest_neighbor",
+    "mode": "native_adaptive_cpu_soa_min_distance_2d",
+    "native": true,
+    "prepared_context": false
+  },
+  "native_adaptive_seconds": [
+    0.005338167073205113,
+    0.00528050004504621,
+    0.006903499946929514,
+    0.005314250010997057,
+    0.005227082991041243
+  ],
+  "native_adaptive_median_seconds": 0.005314250010997057,
+  "cpu_python_reference_seconds": [
+    0.5914095840416849,
+    0.5855180410435423,
+    0.5915607910137624,
+    0.5947658750228584,
+    0.5918575410032645
+  ],
+  "cpu_python_reference_median_seconds": 0.5915607910137624,
+  "parity": true
+}

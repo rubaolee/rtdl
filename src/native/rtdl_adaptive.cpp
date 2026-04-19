@@ -54,11 +54,23 @@ struct RtdlAdaptiveSegment {
   double y1;
 };
 
+struct RtdlAdaptivePoint {
+  uint32_t id;
+  double x;
+  double y;
+};
+
 struct RtdlAdaptiveLsiRow {
   uint32_t left_id;
   uint32_t right_id;
   double intersection_point_x;
   double intersection_point_y;
+};
+
+struct RtdlAdaptivePointNearestSegmentRow {
+  uint32_t point_id;
+  uint32_t segment_id;
+  double distance;
 };
 
 RTDL_ADAPTIVE_EXPORT void rtdl_adaptive_free_rows(void* pointer) {
@@ -91,6 +103,16 @@ RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
     const RtdlAdaptiveSegment* right,
     size_t right_count,
     RtdlAdaptiveLsiRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+
+RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_point_nearest_segment(
+    const RtdlAdaptivePoint* points,
+    size_t point_count,
+    const RtdlAdaptiveSegment* segments,
+    size_t segment_count,
+    RtdlAdaptivePointNearestSegmentRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -225,6 +247,29 @@ inline bool segment_intersection_point(
   return true;
 }
 
+inline double point_segment_distance_sq(
+    const RtdlAdaptivePoint& point,
+    const SegmentSoA& segments,
+    size_t index) {
+  const double px = point.x - segments.x0[index];
+  const double py = point.y - segments.y0[index];
+  const double len_sq = segments.dx[index] * segments.dx[index] + segments.dy[index] * segments.dy[index];
+  if (len_sq <= 0.0) {
+    return px * px + py * py;
+  }
+  double t = (px * segments.dx[index] + py * segments.dy[index]) / len_sq;
+  if (t < 0.0) {
+    t = 0.0;
+  } else if (t > 1.0) {
+    t = 1.0;
+  }
+  const double cx = segments.x0[index] + t * segments.dx[index];
+  const double cy = segments.y0[index] + t * segments.dy[index];
+  const double ddx = point.x - cx;
+  const double ddy = point.y - cy;
+  return ddx * ddx + ddy * ddy;
+}
+
 inline bool finite_ray_hits_triangle_3d(
     const RtdlAdaptiveRay3D& ray,
     const TriangleSoA& triangles,
@@ -327,6 +372,75 @@ extern "C" RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_segment_intersection(
     return 0;
   } catch (const std::bad_alloc&) {
     set_error(error_out, error_size, "out of memory in adaptive segment-intersection kernel");
+    return 4;
+  } catch (const std::exception& exc) {
+    set_error(error_out, error_size, exc.what());
+    return 5;
+  }
+}
+
+extern "C" RTDL_ADAPTIVE_EXPORT int rtdl_adaptive_run_point_nearest_segment(
+    const RtdlAdaptivePoint* points,
+    size_t point_count,
+    const RtdlAdaptiveSegment* segments,
+    size_t segment_count,
+    RtdlAdaptivePointNearestSegmentRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  if (rows_out == nullptr || row_count_out == nullptr) {
+    set_error(error_out, error_size, "null output passed to rtdl_adaptive_run_point_nearest_segment");
+    return 1;
+  }
+  *rows_out = nullptr;
+  *row_count_out = 0;
+  if ((point_count > 0 && points == nullptr) || (segment_count > 0 && segments == nullptr)) {
+    set_error(error_out, error_size, "null input passed to rtdl_adaptive_run_point_nearest_segment");
+    return 2;
+  }
+
+  try {
+    SegmentSoA staged_segments = stage_segments_soa(segments, segment_count);
+    auto* rows = static_cast<RtdlAdaptivePointNearestSegmentRow*>(
+        std::calloc(point_count == 0 ? 1 : point_count, sizeof(RtdlAdaptivePointNearestSegmentRow)));
+    if (rows == nullptr) {
+      set_error(error_out, error_size, "out of memory allocating adaptive nearest-segment rows");
+      return 3;
+    }
+
+    size_t emitted = 0;
+    for (size_t point_index = 0; point_index < point_count; ++point_index) {
+      if (segment_count == 0) {
+        continue;
+      }
+      const RtdlAdaptivePoint& point = points[point_index];
+      double best_distance_sq = 0.0;
+      uint32_t best_segment_id = 0;
+      bool has_best = false;
+      for (size_t segment_index = 0; segment_index < segment_count; ++segment_index) {
+        const double distance_sq = point_segment_distance_sq(point, staged_segments, segment_index);
+        const uint32_t segment_id = staged_segments.id[segment_index];
+        if (!has_best ||
+            distance_sq < best_distance_sq - 1.0e-14 ||
+            (std::fabs(distance_sq - best_distance_sq) <= 1.0e-14 && segment_id < best_segment_id)) {
+          best_distance_sq = distance_sq;
+          best_segment_id = segment_id;
+          has_best = true;
+        }
+      }
+      if (has_best) {
+        rows[emitted].point_id = point.id;
+        rows[emitted].segment_id = best_segment_id;
+        rows[emitted].distance = std::sqrt(best_distance_sq);
+        ++emitted;
+      }
+    }
+
+    *rows_out = rows;
+    *row_count_out = emitted;
+    return 0;
+  } catch (const std::bad_alloc&) {
+    set_error(error_out, error_size, "out of memory in adaptive point-nearest-segment kernel");
     return 4;
   } catch (const std::exception& exc) {
     set_error(error_out, error_size, exc.what());
