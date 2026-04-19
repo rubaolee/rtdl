@@ -1,0 +1,1 @@
+BLOCK: The feasibility study clearly demonstrates that the current Linux NVIDIA host is not yet capable of running a HIP RT CUDA-path smoke test due to CUDA version incompatibilities. RTDL should defer HIP RT backend implementation until a native HIP RT smoke test passes on a suitable environment as recommended in the report.

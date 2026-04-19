@@ -1,0 +1,58 @@
+{
+  "goal": 544,
+  "title": "HIPRT public docs and example preview",
+  "date": "2026-04-18",
+  "status": "accepted_with_3_ai_consensus",
+  "scope": "Expose the post-v0.8.0 HIPRT Ray3D/Triangle3D ray_triangle_hit_count preview through public docs and a runnable example.",
+  "files_changed": [
+    "/Users/rl2025/rtdl_python_only/examples/rtdl_hiprt_ray_triangle_hitcount.py",
+    "/Users/rl2025/rtdl_python_only/tests/goal544_hiprt_docs_examples_test.py",
+    "/Users/rl2025/rtdl_python_only/README.md",
+    "/Users/rl2025/rtdl_python_only/docs/README.md",
+    "/Users/rl2025/rtdl_python_only/docs/current_architecture.md",
+    "/Users/rl2025/rtdl_python_only/docs/capability_boundaries.md",
+    "/Users/rl2025/rtdl_python_only/docs/quick_tutorial.md",
+    "/Users/rl2025/rtdl_python_only/docs/release_facing_examples.md",
+    "/Users/rl2025/rtdl_python_only/docs/rtdl_feature_guide.md",
+    "/Users/rl2025/rtdl_python_only/docs/tutorials/README.md",
+    "/Users/rl2025/rtdl_python_only/examples/README.md"
+  ],
+  "local_validation": {
+    "host": "macOS local",
+    "example_command": "PYTHONPATH=src:. python3 examples/rtdl_hiprt_ray_triangle_hitcount.py",
+    "example_result": "exit 0, CPU reference rows present, hiprt_available false",
+    "test_command": "PYTHONPATH=src:. python3 -m unittest tests.goal543_hiprt_dispatch_test tests.goal544_hiprt_docs_examples_test",
+    "test_result": "Ran 5 tests, OK, skipped=2"
+  },
+  "linux_validation": {
+    "host": "lestat-lx1",
+    "sync_path": "/tmp/rtdl_goal544_hiprt_docs_examples",
+    "hiprt_prefix": "/home/lestat/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+    "build_result": "make build-hiprt produced build/librtdl_hiprt.so",
+    "probe": {
+      "version": [2, 2, 15109972],
+      "api_version": 2002,
+      "device_type": 1,
+      "device_name": "NVIDIA GeForce GTX 1070"
+    },
+    "example_parity": {
+      "run_hiprt_first_batch": true,
+      "prepare_hiprt_first_batch": true,
+      "prepare_hiprt_second_batch": true
+    },
+    "test_result": "Ran 10 tests, OK"
+  },
+  "honesty_boundary": [
+    "HIPRT is experimental and post-v0.8.0.",
+    "HIPRT is not part of the released v0.8.0 support matrix.",
+    "Current HIPRT support is only Ray3D/Triangle3D ray_triangle_hit_count.",
+    "No AMD GPU validation is claimed.",
+    "No HIPRT CPU fallback is claimed.",
+    "No HIPRT support is claimed for 2D RTDL semantics, DB, graph, or nearest-neighbor workloads."
+  ],
+  "consensus": {
+    "codex": "ACCEPT",
+    "claude": "/Users/rl2025/rtdl_python_only/docs/reports/goal544_external_review_2026-04-18.md",
+    "gemini_flash": "/Users/rl2025/rtdl_python_only/docs/reports/goal544_gemini_flash_review_2026-04-18.md"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "cuda_toolkit": "Build cuda_12.2.r12.2/compiler.33191640_0",
+  "goal": 539,
+  "gpu": "NVIDIA GeForce GTX 1070, 580.126.09, 6.1",
+  "host": "lx1",
+  "log_path": "/tmp/goal539_all_optix_cuda122_correctness_2026-04-18.log",
+  "modules": [
+    "tests.goal162_optix_visual_demo_parity_test",
+    "tests.goal169_optix_orbit_demo_test",
+    "tests.goal216_fixed_radius_neighbors_optix_test",
+    "tests.goal217_knn_rows_optix_test",
+    "tests.goal311_v0_5_optix_3d_nn_test",
+    "tests.goal394_v0_6_rt_graph_bfs_optix_test",
+    "tests.goal397_v0_6_rt_graph_triangle_optix_test",
+    "tests.goal427_v0_7_rt_db_optix_backend_test",
+    "tests.goal427_v0_7_rt_db_optix_perf_test",
+    "tests.goal435_v0_7_optix_native_prepared_db_dataset_test",
+    "tests.goal43_optix_validation_test",
+    "tests.goal441_v0_7_optix_columnar_prepared_db_dataset_transfer_test",
+    "tests.goal44_optix_benchmark_test",
+    "tests.goal45_optix_county_zipcode_test",
+    "tests.goal47_optix_goal41_large_checks_test",
+    "tests.goal65_vulkan_optix_linux_comparison_test",
+    "tests.goal99_optix_cold_prepared_run1_win_test",
+    "tests.optix_embree_interop_test"
+  ],
+  "rtdl_nvcc": "/home/lestat/vendor/cuda-12.2.2/bin/nvcc",
+  "rtdl_optix_lib": "/tmp/rtdl_optix_cuda122_test/build/librtdl_optix.so",
+  "status": "PASS"
+}

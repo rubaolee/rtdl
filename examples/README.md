@@ -28,6 +28,7 @@ If you are new to RTDL, use these files first:
 | DB-style filtering | `rtdl_db_conjunctive_scan.py` | rows plus predicates become matching row IDs |
 | DB-style aggregation | `rtdl_db_grouped_count.py` / `rtdl_db_grouped_sum.py` | rows plus predicates become grouped aggregates |
 | app-level use | `rtdl_v0_7_db_app_demo.py` | a Python app delegates the query core to RTDL |
+| HIPRT example | `rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through the prepared HIPRT path |
 
 - `rtdl_hello_world.py`
 - `rtdl_hello_world_backends.py`
@@ -47,6 +48,7 @@ If you are new to RTDL, use these files first:
 - `rtdl_db_grouped_sum.py`
 - `rtdl_v0_7_db_app_demo.py`
 - `rtdl_v0_7_db_kernel_app_demo.py`
+- `rtdl_hiprt_ray_triangle_hitcount.py`
 - `rtdl_sales_risk_screening.py`
 - `rtdl_service_coverage_gaps.py`
 - `rtdl_event_hotspot_screening.py`
@@ -131,3 +133,16 @@ Current v0.8 app example boundary:
 - `rtdl_barnes_hut_force_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, and `vulkan`; Goal509 records candidate-generation timing
   separately from Python force-reduction timing
+
+Current HIPRT boundary:
+
+- `rtdl_hiprt_ray_triangle_hitcount.py` runs a 3D ray/triangle hit-count kernel
+  through CPU Python reference first, then attempts HIPRT if the Linux HIPRT SDK
+  runtime and `build/librtdl_hiprt.so` are available
+- the example covers both one-shot `run_hiprt` and repeated-query
+  `prepare_hiprt`
+- the broader v0.9.0 matrix is larger than this one example: `run_hiprt` has
+  Linux parity coverage for 18 workloads; prepared HIPRT reuse is currently
+  limited to the paths documented in the v0.9 support matrix
+- this is not an AMD GPU validation, RT-core speedup claim, CPU fallback, or
+  OptiX/Vulkan/HIPRT closest-hit support claim

@@ -1,0 +1,126 @@
+{
+  "backends": {
+    "cpu_python_reference": {
+      "iterations": 1,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.001797917066141963,
+      "median_seconds": 0.001797917066141963,
+      "min_seconds": 0.001797917066141963,
+      "row_count": 32,
+      "status": "ok"
+    },
+    "embree": {
+      "iterations": 1,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.0006682500243186951,
+      "median_seconds": 0.0006682500243186951,
+      "min_seconds": 0.0006682500243186951,
+      "row_count": 32,
+      "status": "ok"
+    },
+    "hiprt_one_shot": {
+      "error_type": "FileNotFoundError",
+      "message": "RTDL HIPRT backend library not found; build it with `make build-hiprt` or set RTDL_HIPRT_LIB (/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib: dlopen(/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib, 0x0006): tried: '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file))",
+      "status": "error"
+    },
+    "hiprt_prepared": {
+      "error_type": "FileNotFoundError",
+      "message": "RTDL HIPRT backend library not found; build it with `make build-hiprt` or set RTDL_HIPRT_LIB (/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib: dlopen(/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib, 0x0006): tried: '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file))",
+      "status": "error"
+    },
+    "optix": {
+      "error_type": "FileNotFoundError",
+      "message": "librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "status": "error"
+    },
+    "vulkan": {
+      "error_type": "FileNotFoundError",
+      "message": "librtdl_vulkan not found.  Build it with 'make build-vulkan' or set RTDL_VULKAN_LIB=/path/to/lib.",
+      "status": "error"
+    }
+  },
+  "case": {
+    "iterations": 1,
+    "max_range": 12,
+    "query_count": 32,
+    "ray_count": 32,
+    "triangle_count": 128,
+    "value_count": 128
+  },
+  "exact_rmq_cpu": {
+    "row_count": 32,
+    "sample_rows": [
+      {
+        "index": 0,
+        "query_id": 0,
+        "value": 0.0
+      },
+      {
+        "index": 8,
+        "query_id": 1,
+        "value": 0.2971887550200803
+      },
+      {
+        "index": 27,
+        "query_id": 2,
+        "value": 0.002008032128514056
+      },
+      {
+        "index": 18,
+        "query_id": 3,
+        "value": 0.6686746987951807
+      },
+      {
+        "index": 44,
+        "query_id": 4,
+        "value": 0.6335341365461847
+      }
+    ],
+    "status": "ok"
+  },
+  "goal": 571,
+  "honesty_boundary": "This is a paper-derived traversal subworkload, not full RTXRMQ. Full RTXRMQ needs a closest-hit/argmin result carrying the hit element id/value; RTDL v0.9 exposes ray_triangle_hit_count but not a public ray_triangle_closest_hit primitive.",
+  "host": {
+    "embree_version": "(4, 4, 0)",
+    "hiprt_version": "unavailable: FileNotFoundError: RTDL HIPRT backend library not found; build it with `make build-hiprt` or set RTDL_HIPRT_LIB (/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib: dlopen(/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib, 0x0006): tried: '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file), '/Users/rl2025/rtdl_python_only/build/librtdl_hiprt.dylib' (no such file))",
+    "hostname": "Rs-MacBook-Air.local",
+    "nvidia_smi": null,
+    "optix_version": "unavailable: FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0",
+    "vulkan_version": "unavailable: FileNotFoundError: librtdl_vulkan not found.  Build it with 'make build-vulkan' or set RTDL_VULKAN_LIB=/path/to/lib."
+  },
+  "paper": {
+    "arxiv_id": "2306.03282v1",
+    "path": "/Users/rl2025/Downloads/2306.03282v1.pdf",
+    "title": "Accelerating Range Minimum Queries with Ray Tracing Cores"
+  },
+  "rtdl_supported_workload": {
+    "description": "One YZ-aligned triangle per array element and one +X ray per query range. The returned hit_count is the number of values in [l,r] at or below a threshold.",
+    "matches_direct_cpu_ray_triangle_reference": true,
+    "name": "rtxrmq_range_threshold_hitcount_analogue",
+    "oracle_row_count": 32,
+    "oracle_sample_rows": [
+      {
+        "hit_count": 1,
+        "ray_id": 0
+      },
+      {
+        "hit_count": 2,
+        "ray_id": 1
+      },
+      {
+        "hit_count": 2,
+        "ray_id": 2
+      },
+      {
+        "hit_count": 2,
+        "ray_id": 3
+      },
+      {
+        "hit_count": 2,
+        "ray_id": 4
+      }
+    ]
+  }
+}

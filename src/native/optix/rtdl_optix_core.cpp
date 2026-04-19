@@ -86,9 +86,7 @@ void download(T* dst, CUdeviceptr src, size_t count) {
 
 static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
                                             const char* name,
-                                            const std::string& optix_inc,
-                                            const std::string& cuda_inc,
-                                            const std::string& cuda_sys_inc,
+                                            const std::vector<std::string>& include_opts,
                                             const std::vector<const char*>& extra_opts)
 {
     namespace fs = std::filesystem;
@@ -123,12 +121,24 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
         nvcc,
         "-ptx",
         "--std=c++14",
+        "-allow-unsupported-compiler",
         "-O3",
-        optix_inc,
-        cuda_inc,
     };
-    if (std::strlen(RTDL_CUDA_SYSTEM_INCLUDE_DIR) > 0) {
-        argv_storage.push_back(cuda_sys_inc);
+    for (const std::string& include_opt : include_opts) {
+        argv_storage.push_back(include_opt);
+    }
+    std::string ccbin;
+    if (const char* configured_ccbin = std::getenv("RTDL_NVCC_CCBIN")) {
+        ccbin = configured_ccbin;
+    } else {
+        std::error_code ignored;
+        if (std::filesystem::exists("/usr/bin/g++-12", ignored)) {
+            ccbin = "/usr/bin/g++-12";
+        }
+    }
+    if (!ccbin.empty()) {
+        argv_storage.push_back("-ccbin");
+        argv_storage.push_back(ccbin);
     }
     for (const char* opt : extra_opts) {
         argv_storage.push_back(opt);
@@ -179,6 +189,18 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
                        std::istreambuf_iterator<char>());
 }
 
+static void append_include_arg(std::vector<std::string>& include_opts,
+                               std::unordered_set<std::string>& seen,
+                               const std::string& include_dir) {
+    if (include_dir.empty()) return;
+    std::error_code ignored;
+    if (!std::filesystem::is_directory(include_dir, ignored)) return;
+    std::string include_arg = "-I" + include_dir;
+    if (seen.insert(include_arg).second) {
+        include_opts.push_back(include_arg);
+    }
+}
+
 std::string compile_to_ptx(const char* cuda_src,
                            const char* name,
                            const std::vector<const char*>& extra_opts = {}) {
@@ -191,23 +213,28 @@ std::string compile_to_ptx(const char* cuda_src,
 #ifndef RTDL_CUDA_SYSTEM_INCLUDE_DIR
 #define RTDL_CUDA_SYSTEM_INCLUDE_DIR ""
 #endif
-    std::string optix_inc = std::string("-I") + RTDL_OPTIX_INCLUDE_DIR;
-    std::string cuda_inc  = std::string("-I") + RTDL_CUDA_INCLUDE_DIR;
-    std::string cuda_sys_inc = std::string("-I") + RTDL_CUDA_SYSTEM_INCLUDE_DIR;
+    std::vector<std::string> nvcc_include_opts;
+    std::unordered_set<std::string> seen_nvcc_include_opts;
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+
+    std::vector<std::string> nvrtc_include_opts = nvcc_include_opts;
+    std::unordered_set<std::string> seen_nvrtc_include_opts = seen_nvcc_include_opts;
+    append_include_arg(nvrtc_include_opts, seen_nvrtc_include_opts, RTDL_CUDA_SYSTEM_INCLUDE_DIR);
+    append_include_arg(nvrtc_include_opts, seen_nvrtc_include_opts, "/usr/include");
+    append_include_arg(nvrtc_include_opts, seen_nvrtc_include_opts, "/usr/include/x86_64-linux-gnu");
 
     if (const char* compiler = std::getenv("RTDL_OPTIX_PTX_COMPILER");
         compiler && std::string(compiler) == "nvcc") {
-        return compile_to_ptx_with_nvcc(cuda_src, name, optix_inc, cuda_inc, cuda_sys_inc, extra_opts);
+        return compile_to_ptx_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
     }
 
-    std::vector<const char*> opts = {
-        optix_inc.c_str(),
-        cuda_inc.c_str(),
-        "--std=c++14",
-    };
-    if (std::strlen(RTDL_CUDA_SYSTEM_INCLUDE_DIR) > 0) {
-        opts.push_back(cuda_sys_inc.c_str());
+    std::vector<const char*> opts;
+    opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 1);
+    for (const std::string& include_opt : nvrtc_include_opts) {
+        opts.push_back(include_opt.c_str());
     }
+    opts.push_back("--std=c++14");
     for (const char* o : extra_opts) opts.push_back(o);
 
     nvrtcProgram prog;
@@ -223,7 +250,7 @@ std::string compile_to_ptx(const char* cuda_src,
         nvrtcGetProgramLog(prog, log.data());
         nvrtcDestroyProgram(&prog);
         try {
-            return compile_to_ptx_with_nvcc(cuda_src, name, optix_inc, cuda_inc, cuda_sys_inc, extra_opts);
+            return compile_to_ptx_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
         } catch (const std::exception& fallback_error) {
             throw std::runtime_error("NVRTC compile failed for " +
                                      std::string(name) + ":\n" + log +
@@ -1842,7 +1869,9 @@ static SegPolyPipeline     g_segpoly;
 static DbScanPipeline      g_dbscan;
 static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
+static FrnCuFunction      g_frn3d;
 static KnnCuFunction      g_knn;
+static KnnCuFunction      g_knn3d;
 
 // GPU structs for upload
 

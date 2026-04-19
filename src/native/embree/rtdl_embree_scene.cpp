@@ -40,6 +40,7 @@ enum class QueryKind {
   kPip,
   kOverlay,
   kRayHitCount,
+  kRayClosestHit,
   kSegmentPolygonHitCount,
   kGraphBfsExpand,
   kGraphTriangleProbe,
@@ -127,6 +128,14 @@ struct RayHitCountState {
 struct RayHitCountState3D {
   const RayQuery3D* ray;
   uint32_t* hit_count;
+  std::unordered_set<uint32_t>* seen_triangle_ids;
+};
+
+struct RayClosestHitState3D {
+  const RayQuery3D* ray;
+  uint32_t* best_triangle_id;
+  double* best_t;
+  bool* has_hit;
   std::unordered_set<uint32_t>* seen_triangle_ids;
 };
 
@@ -770,18 +779,75 @@ void triangle_intersect(const RTCIntersectFunctionNArguments* args) {
 }
 
 void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
-  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kRayHitCount || g_query_state == nullptr) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
     return;
   }
   auto* data = static_cast<TriangleSceneData3D*>(args->geometryUserPtr);
-  auto* state = static_cast<RayHitCountState3D*>(g_query_state);
   const Triangle3D& triangle = (*data->triangles)[args->primID];
-  if (state->seen_triangle_ids->find(triangle.id) != state->seen_triangle_ids->end()) {
+  if (g_query_kind == QueryKind::kRayHitCount) {
+    auto* state = static_cast<RayHitCountState3D*>(g_query_state);
+    if (state->seen_triangle_ids->find(triangle.id) != state->seen_triangle_ids->end()) {
+      return;
+    }
+    if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
+      state->seen_triangle_ids->insert(triangle.id);
+      *state->hit_count += 1;
+    }
     return;
   }
-  if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
+  if (g_query_kind == QueryKind::kRayClosestHit) {
+    auto* state = static_cast<RayClosestHitState3D*>(g_query_state);
+    if (state->seen_triangle_ids->find(triangle.id) != state->seen_triangle_ids->end()) {
+      return;
+    }
+    Vec3 edge1 {
+        triangle.b.x - triangle.a.x,
+        triangle.b.y - triangle.a.y,
+        triangle.b.z - triangle.a.z,
+    };
+    Vec3 edge2 {
+        triangle.c.x - triangle.a.x,
+        triangle.c.y - triangle.a.y,
+        triangle.c.z - triangle.a.z,
+    };
+    Vec3 pvec {
+        state->ray->d.y * edge2.z - state->ray->d.z * edge2.y,
+        state->ray->d.z * edge2.x - state->ray->d.x * edge2.z,
+        state->ray->d.x * edge2.y - state->ray->d.y * edge2.x,
+    };
+    double det = edge1.x * pvec.x + edge1.y * pvec.y + edge1.z * pvec.z;
+    if (std::fabs(det) <= 1.0e-8) {
+      return;
+    }
+    double inv_det = 1.0 / det;
+    Vec3 tvec {
+        state->ray->o.x - triangle.a.x,
+        state->ray->o.y - triangle.a.y,
+        state->ray->o.z - triangle.a.z,
+    };
+    double u = (tvec.x * pvec.x + tvec.y * pvec.y + tvec.z * pvec.z) * inv_det;
+    if (u < 0.0 || u > 1.0) {
+      return;
+    }
+    Vec3 qvec {
+        tvec.y * edge1.z - tvec.z * edge1.y,
+        tvec.z * edge1.x - tvec.x * edge1.z,
+        tvec.x * edge1.y - tvec.y * edge1.x,
+    };
+    double v = (state->ray->d.x * qvec.x + state->ray->d.y * qvec.y + state->ray->d.z * qvec.z) * inv_det;
+    if (v < 0.0 || (u + v) > 1.0) {
+      return;
+    }
+    double hit_t = (edge2.x * qvec.x + edge2.y * qvec.y + edge2.z * qvec.z) * inv_det;
+    if (hit_t < 0.0 || hit_t > state->ray->tmax) {
+      return;
+    }
     state->seen_triangle_ids->insert(triangle.id);
-    *state->hit_count += 1;
+    if (!*state->has_hit || hit_t < *state->best_t || (hit_t == *state->best_t && triangle.id < *state->best_triangle_id)) {
+      *state->has_hit = true;
+      *state->best_t = hit_t;
+      *state->best_triangle_id = triangle.id;
+    }
   }
 }
 

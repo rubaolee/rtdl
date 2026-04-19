@@ -735,6 +735,77 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_hitcount_3d(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_run_ray_closest_hit_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayClosestHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<RayQuery3D> ray_values;
+    std::vector<Triangle3D> triangle_values;
+    ray_values.reserve(ray_count);
+    triangle_values.reserve(triangle_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+      ray_values.push_back({rays[i].id, {rays[i].ox, rays[i].oy, rays[i].oz}, {rays[i].dx, rays[i].dy, rays[i].dz}, rays[i].tmax});
+    }
+    for (size_t i = 0; i < triangle_count; ++i) {
+      triangle_values.push_back({
+          triangles[i].id,
+          {triangles[i].x0, triangles[i].y0, triangles[i].z0},
+          {triangles[i].x1, triangles[i].y1, triangles[i].z1},
+          {triangles[i].x2, triangles[i].y2, triangles[i].z2},
+      });
+    }
+
+    EmbreeDevice device;
+    TriangleSceneData3D data {&triangle_values};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(triangle_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, triangle_bounds_3d, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, triangle_intersect_3d);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<RtdlRayClosestHitRow> rows;
+    rows.reserve(ray_values.size());
+    for (const RayQuery3D& ray : ray_values) {
+      uint32_t best_triangle_id = 0;
+      double best_t = 0.0;
+      bool has_hit = false;
+      std::unordered_set<uint32_t> seen_triangle_ids;
+      RayClosestHitState3D state {&ray, &best_triangle_id, &best_t, &has_hit, &seen_triangle_ids};
+      g_query_kind = QueryKind::kRayClosestHit;
+      g_query_state = &state;
+      RTCRayHit rayhit;
+      set_ray_3d(&rayhit, ray.o, ray.d, ray.tmax);
+      RTCIntersectArguments args;
+      rtcInitIntersectArguments(&args);
+      rtcIntersect1(holder.scene, &rayhit, &args);
+      if (has_hit) {
+        rows.push_back({ray.id, best_triangle_id, best_t});
+      }
+    }
+    g_query_kind = QueryKind::kNone;
+    g_query_state = nullptr;
+
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT int rtdl_embree_run_segment_polygon_hitcount(
     const RtdlSegment* segments,
     size_t segment_count,

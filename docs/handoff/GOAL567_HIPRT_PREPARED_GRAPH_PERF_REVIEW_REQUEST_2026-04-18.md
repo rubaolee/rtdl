@@ -1,0 +1,1 @@
+Please review Goal 567 in `/Users/rl2025/rtdl_python_only`: verify the prepared HIPRT graph CSR implementation for BFS and triangle-match, the deterministic-dedupe correctness boundary, Linux correctness/performance evidence, and v0.9 public-doc updates, then write an ACCEPT/REJECT verdict to the requested response file.

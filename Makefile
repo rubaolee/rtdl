@@ -6,6 +6,7 @@ BUILD_DIR := build
 #   make verify
 #   make build-embree
 #   make build-optix
+#   make build-hiprt
 #   make build-vulkan
 #
 # Historical and goal-numbered targets below are preserved for auditability and
@@ -15,9 +16,11 @@ BUILD_DIR := build
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 OPTIX_LIB_NAME   := librtdl_optix.dylib
+HIPRT_LIB_NAME   := librtdl_hiprt.dylib
 VULKAN_LIB_NAME  := librtdl_vulkan.dylib
 else
 OPTIX_LIB_NAME   := librtdl_optix.so
+HIPRT_LIB_NAME   := librtdl_hiprt.so
 VULKAN_LIB_NAME  := librtdl_vulkan.so
 endif
 
@@ -62,6 +65,28 @@ endif
 CXX_OPTIX ?= $(NVCC)
 GEOS_CFLAGS := $(shell pkg-config --cflags geos 2>/dev/null)
 GEOS_LIBS := $(shell pkg-config --libs geos 2>/dev/null)
+
+HIPRT_CANDIDATES := \
+	$(HOME)/vendor/hiprt-official/hiprtSdk-2.2.0e68f54 \
+	$(HOME)/vendor/hiprtsdk \
+	$(HOME)/vendor/HIPRT \
+	/opt/hiprt \
+	/usr/local/hiprt
+HIPRT_PREFIX ?= $(or $(firstword $(wildcard $(HIPRT_CANDIDATES))),$(HOME)/vendor/hiprt-official/hiprtSdk-2.2.0e68f54)
+HIPRT_INCLUDE := $(HIPRT_PREFIX)
+HIPRT_OROCHI := $(HIPRT_PREFIX)/contrib/Orochi
+HIPRT_LIB_DIR := $(HIPRT_PREFIX)/hiprt/linux64
+HIPRT_LIB_NAME_VENDOR ?= hiprt0200264
+HIPRT_CXX ?= g++
+HIPRT_CXXFLAGS := \
+	-std=c++17 -O2 -shared -fPIC \
+	-DOROCHI_ENABLE_CUEW \
+	-DRTDL_HIPRT_INCLUDE_DIR=\"$(HIPRT_INCLUDE)\" \
+	-I$(HIPRT_INCLUDE) \
+	-I$(HIPRT_OROCHI) \
+	-I$(HIPRT_OROCHI)/contrib/cuew/include \
+	-I$(HIPRT_OROCHI)/contrib/hipew/include
+HIPRT_LDFLAGS := -L$(HIPRT_LIB_DIR) -Wl,-rpath,$(HIPRT_LIB_DIR) -l$(HIPRT_LIB_NAME_VENDOR) -ldl -lpthread
 
 OPTIX_CXXFLAGS := \
 	-std=c++17 -O3 -shared \
@@ -108,7 +133,7 @@ VULKAN_CXXFLAGS := \
 
 VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK) $(GEOS_LIBS)
 
-.PHONY: help build build-embree build-optix build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
@@ -117,6 +142,7 @@ help:
 	@echo "  verify        - run the broader verification driver"
 	@echo "  build-embree  - build/probe the Embree backend library"
 	@echo "  build-optix   - build the OptiX backend library"
+	@echo "  build-hiprt   - build/probe the HIPRT backend library"
 	@echo "  build-vulkan  - build the Vulkan backend library"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
@@ -140,6 +166,23 @@ build-optix:
 		src/native/rtdl_optix.cpp \
 		$(OPTIX_LDFLAGS) \
 		-o $(BUILD_DIR)/$(OPTIX_LIB_NAME)
+
+build-hiprt:
+	mkdir -p $(BUILD_DIR)
+	@if [ ! -f "$(HIPRT_INCLUDE)/hiprt/hiprt.h" ]; then \
+		echo "HIPRT SDK header not found at $(HIPRT_INCLUDE)/hiprt/hiprt.h"; \
+		echo "Set HIPRT_PREFIX to the HIPRT SDK root, for example:"; \
+		echo "  make build-hiprt HIPRT_PREFIX=\$$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54"; \
+		exit 1; \
+	fi
+	$(HIPRT_CXX) $(HIPRT_CXXFLAGS) \
+		src/native/rtdl_hiprt.cpp \
+		$(HIPRT_OROCHI)/Orochi/Orochi.cpp \
+		$(HIPRT_OROCHI)/Orochi/OrochiUtils.cpp \
+		$(HIPRT_OROCHI)/contrib/cuew/src/cuew.cpp \
+		$(HIPRT_OROCHI)/contrib/hipew/src/hipew.cpp \
+		$(HIPRT_LDFLAGS) \
+		-o $(BUILD_DIR)/$(HIPRT_LIB_NAME)
 
 build:
 	mkdir -p $(BUILD_DIR)

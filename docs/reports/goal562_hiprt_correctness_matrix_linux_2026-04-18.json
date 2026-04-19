@@ -1,0 +1,174 @@
+{
+  "description": "HIPRT correctness matrix across v0.9 target workloads",
+  "goal": 547,
+  "results": [
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 7.47480007703416e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.44558922899886966,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_intersection"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 0.00010090199793921784,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.40024117899884004,
+      "parity": true,
+      "status": "PASS",
+      "workload": "point_in_polygon"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.0001237579999724403,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.43019544100025087,
+      "parity": true,
+      "status": "PASS",
+      "workload": "overlay_compose"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 8.722200072952546e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.3992645750004158,
+      "parity": true,
+      "status": "PASS",
+      "workload": "ray_triangle_hit_count_2d"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 8.515499939676374e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5550028479992761,
+      "parity": true,
+      "status": "PASS",
+      "workload": "ray_triangle_hit_count_3d"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.00013447499804897234,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.42857757700039656,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.0001640959999349434,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.4235896490026789,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_polygon_anyhit_rows"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 8.09459997981321e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.3837873060001584,
+      "parity": true,
+      "status": "PASS",
+      "workload": "point_nearest_segment"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 8.76280028023757e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.574940971997421,
+      "parity": true,
+      "status": "PASS",
+      "workload": "fixed_radius_neighbors_2d"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 8.064700159593485e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5800101239983633,
+      "parity": true,
+      "status": "PASS",
+      "workload": "fixed_radius_neighbors_3d"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 9.294399933423847e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5780896989999746,
+      "parity": true,
+      "status": "PASS",
+      "workload": "bounded_knn_rows_3d"
+    },
+    {
+      "cpu_reference_row_count": 6,
+      "cpu_reference_seconds": 0.0001223559993377421,
+      "hiprt_row_count": 6,
+      "hiprt_seconds": 0.5826751929998863,
+      "parity": true,
+      "status": "PASS",
+      "workload": "knn_rows_2d"
+    },
+    {
+      "cpu_reference_row_count": 6,
+      "cpu_reference_seconds": 8.842700117384084e-05,
+      "hiprt_row_count": 6,
+      "hiprt_seconds": 0.5763194380015193,
+      "parity": true,
+      "status": "PASS",
+      "workload": "knn_rows_3d"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 8.274799984064884e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5622541179982363,
+      "parity": true,
+      "status": "PASS",
+      "workload": "bfs_discover"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.0001121280001825653,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.5703608000003442,
+      "parity": true,
+      "status": "PASS",
+      "workload": "triangle_match"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 9.68670028669294e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5733601079991786,
+      "parity": true,
+      "status": "PASS",
+      "workload": "conjunctive_scan"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 9.36739997996483e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5708005300002696,
+      "parity": true,
+      "status": "PASS",
+      "workload": "grouped_count"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 9.461700028623454e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5730769760011754,
+      "parity": true,
+      "status": "PASS",
+      "workload": "grouped_sum"
+    }
+  ],
+  "summary": {
+    "fail": 0,
+    "hiprt_unavailable": 0,
+    "not_implemented": 0,
+    "pass": 18
+  }
+}

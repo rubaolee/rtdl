@@ -1,0 +1,1 @@
+Review `/Users/rl2025/.gemini/antigravity/brain/d81e2ad6-bc5f-4c4b-b49f-0e44b3f64284/rtdl_api_brainstorm.md` against RTDL `v0.8.0` architecture/capability boundaries, then write an ACCEPT/REVISE/BLOCK design review to `docs/reports/goal533_claude_rtdl_api_brainstorm_review_2026-04-18.md`.

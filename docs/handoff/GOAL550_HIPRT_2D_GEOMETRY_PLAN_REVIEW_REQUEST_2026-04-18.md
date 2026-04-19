@@ -1,0 +1,1 @@
+Please review `/Users/rl2025/rtdl_python_only/docs/proposals/goal550_hiprt_2d_geometry_lowering_plan_2026-04-18.md` and write an ACCEPT/REJECT verdict with blockers if any to `/Users/rl2025/rtdl_python_only/docs/reports/goal550_hiprt_2d_geometry_plan_external_review_2026-04-18.md`.

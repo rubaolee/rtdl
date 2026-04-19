@@ -1,0 +1,148 @@
+{
+  "description": "HIPRT correctness matrix across v0.9 target workloads",
+  "goal": 547,
+  "results": [
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 7.687499964958988e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.4349947600003361,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_intersection"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 9.518300066702068e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `point_in_polygon`, but that workload family is not implemented yet; implementation is tracked under Goal 550 2D geometry expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "point_in_polygon"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 8.339700070791878e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `overlay_compose`, but that workload family is not implemented yet; implementation is tracked under Goal 550 2D geometry expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "overlay_compose"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 5.237699951976538e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `ray_triangle_hit_count`, but only Ray3DLayout and Triangle3DLayout are implemented today; implementation is tracked under Goal 550 for 2D, Goal 548/542 for 3D. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "ray_triangle_hit_count_2d"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 4.22630000684876e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5534256679984537,
+      "parity": true,
+      "status": "PASS",
+      "workload": "ray_triangle_hit_count_3d"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.00012037600026815198,
+      "message": "HIPRT v0.9 API skeleton recognizes `segment_polygon_hitcount`, but that workload family is not implemented yet; implementation is tracked under Goal 550 2D geometry expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 6.763999954273459e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `segment_polygon_anyhit_rows`, but that workload family is not implemented yet; implementation is tracked under Goal 550 2D geometry expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "segment_polygon_anyhit_rows"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 4.197899943392258e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `point_nearest_segment`, but that workload family is not implemented yet; implementation is tracked under Goal 550 2D geometry expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "point_nearest_segment"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 4.5714999941992573e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `fixed_radius_neighbors`, but only Point3DLayout fixed-radius inputs are implemented today; implementation is tracked under Goal 548 for 3D, Goal 550 for 2D. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "fixed_radius_neighbors_2d"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 3.6596000427380204e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5814969330003805,
+      "parity": true,
+      "status": "PASS",
+      "workload": "fixed_radius_neighbors_3d"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 8.440100100415293e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5764447889996518,
+      "parity": true,
+      "status": "PASS",
+      "workload": "bounded_knn_rows_3d"
+    },
+    {
+      "cpu_reference_row_count": 6,
+      "cpu_reference_seconds": 8.402999992540572e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `knn_rows`, but only Point3DLayout nearest-neighbor inputs are implemented today; implementation is tracked under Goal 549 for 3D, Goal 550 for 2D. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "knn_rows_2d"
+    },
+    {
+      "cpu_reference_row_count": 6,
+      "cpu_reference_seconds": 4.087900015292689e-05,
+      "hiprt_row_count": 6,
+      "hiprt_seconds": 0.5789845979998063,
+      "parity": true,
+      "status": "PASS",
+      "workload": "knn_rows_3d"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 0.00013102099910611287,
+      "message": "HIPRT v0.9 API skeleton recognizes `bfs_discover`, but that workload family is not implemented yet; implementation is tracked under Goal 550 graph expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "bfs_discover"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 6.789299914089497e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `triangle_match`, but that workload family is not implemented yet; implementation is tracked under Goal 550 graph expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "triangle_match"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 5.441699977382086e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `conjunctive_scan`, but that workload family is not implemented yet; implementation is tracked under Goal 551 DB expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "conjunctive_scan"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 4.965199877915438e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `grouped_count`, but that workload family is not implemented yet; implementation is tracked under Goal 551 DB expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "grouped_count"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 5.026300095778424e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `grouped_sum`, but that workload family is not implemented yet; implementation is tracked under Goal 551 DB expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "grouped_sum"
+    }
+  ],
+  "summary": {
+    "fail": 0,
+    "hiprt_unavailable": 0,
+    "not_implemented": 13,
+    "pass": 5
+  }
+}

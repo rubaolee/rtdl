@@ -1,0 +1,70 @@
+{
+  "description": "HIPRT prepared 3D ray/triangle performance mitigation benchmark",
+  "goal": 565,
+  "honesty_boundary": "This isolates the already-prepared 3D ray/triangle HIPRT path. It is not broad prepared coverage for all 18 v0.9 workloads and is not an AMD GPU or RT-core speedup claim.",
+  "ray_count": 1024,
+  "repeats": 5,
+  "results": {
+    "cpu_python_reference": {
+      "median_seconds": 1.2578058910003165,
+      "row_count": 1024,
+      "seconds": [
+        1.2578058910003165
+      ]
+    },
+    "embree": {
+      "median_seconds": 0.017699356001685373,
+      "parity_vs_cpu_reference": true,
+      "row_count": 1024,
+      "seconds": [
+        0.017699356001685373
+      ],
+      "status": "PASS"
+    },
+    "hiprt_one_shot": {
+      "median_seconds": 0.5655108690007182,
+      "parity_vs_cpu_reference": true,
+      "row_count": 1024,
+      "seconds": [
+        0.5655108690007182
+      ],
+      "status": "PASS"
+    },
+    "hiprt_prepared": {
+      "one_shot_to_prepared_query_speedup": 274.711069932746,
+      "parity_vs_cpu_reference": true,
+      "prepare_seconds": 0.5238471669981664,
+      "query_max_seconds": 0.0021300699991115835,
+      "query_median_seconds": 0.0020585660022334196,
+      "query_min_seconds": 0.0019771160004893318,
+      "query_seconds": [
+        0.0021300699991115835,
+        0.002065635002509225,
+        0.0019851310025842395,
+        0.0019771160004893318,
+        0.0020585660022334196
+      ],
+      "row_count": 1024,
+      "status": "PASS"
+    },
+    "optix": {
+      "median_seconds": 0.3137545069985208,
+      "parity_vs_cpu_reference": true,
+      "row_count": 1024,
+      "seconds": [
+        0.3137545069985208
+      ],
+      "status": "PASS"
+    },
+    "vulkan": {
+      "median_seconds": 0.4174667830011458,
+      "parity_vs_cpu_reference": true,
+      "row_count": 1024,
+      "seconds": [
+        0.4174667830011458
+      ],
+      "status": "PASS"
+    }
+  },
+  "triangle_count": 2048
+}

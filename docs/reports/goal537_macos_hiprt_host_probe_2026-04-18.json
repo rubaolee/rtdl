@@ -1,0 +1,30 @@
+{
+  "command_results": {},
+  "commands": {
+    "hipcc_path": null,
+    "hipconfig_path": null,
+    "nvcc_path": null,
+    "nvidia_smi_path": null
+  },
+  "headers_or_dirs": [],
+  "libraries_or_dirs": [],
+  "library_probe": {},
+  "machine": "macos-local-hiprt-probe",
+  "platform": {
+    "cwd": "/Users/rl2025/rtdl_python_only",
+    "machine": "arm64",
+    "python": "3.14.0",
+    "release": "25.3.0",
+    "system": "Darwin"
+  },
+  "summary": {
+    "can_attempt_hiprt_cuda_smoke_test": false,
+    "can_validate_amd_gpu_backend": false,
+    "has_cuda_gpu": false,
+    "has_cuda_toolchain": false,
+    "has_hip_toolchain": false,
+    "has_hiprt_artifacts": false,
+    "reason_amd_gpu_backend_false": "This probe only checks host artifacts; AMD GPU validation requires an AMD GPU host."
+  },
+  "timestamp": "2026-04-18T13:02:29-0400"
+}

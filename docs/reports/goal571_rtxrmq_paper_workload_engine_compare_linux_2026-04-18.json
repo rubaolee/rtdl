@@ -1,0 +1,143 @@
+{
+  "backends": {
+    "cpu_python_reference": {
+      "iterations": 3,
+      "matches_threshold_oracle": true,
+      "max_seconds": 5.1230579699986265,
+      "median_seconds": 5.121053565999318,
+      "min_seconds": 5.12082903800183,
+      "row_count": 2048,
+      "status": "ok"
+    },
+    "embree": {
+      "iterations": 3,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.014170849000947783,
+      "median_seconds": 0.005302581997966627,
+      "min_seconds": 0.005185849000554299,
+      "row_count": 2048,
+      "status": "ok"
+    },
+    "hiprt_one_shot": {
+      "iterations": 3,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.5513959519994387,
+      "median_seconds": 0.5488949639984639,
+      "min_seconds": 0.5436116899982153,
+      "row_count": 2048,
+      "status": "ok"
+    },
+    "hiprt_prepared": {
+      "iterations": 3,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.004280837998521747,
+      "median_seconds": 0.004217073001200333,
+      "min_seconds": 0.004207043999485904,
+      "prepare_seconds": 0.5262392389995512,
+      "row_count": 2048,
+      "status": "ok"
+    },
+    "optix": {
+      "iterations": 3,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.35172794299796806,
+      "median_seconds": 0.05233858800056623,
+      "min_seconds": 0.05168368399972678,
+      "row_count": 2048,
+      "status": "ok"
+    },
+    "vulkan": {
+      "iterations": 3,
+      "matches_threshold_oracle": true,
+      "max_seconds": 0.45005191499876673,
+      "median_seconds": 0.05757499099854613,
+      "min_seconds": 0.05733801600217703,
+      "row_count": 2048,
+      "status": "ok"
+    }
+  },
+  "case": {
+    "iterations": 3,
+    "max_range": 128,
+    "query_count": 2048,
+    "ray_count": 2048,
+    "triangle_count": 4096,
+    "value_count": 4096
+  },
+  "exact_rmq_cpu": {
+    "row_count": 2048,
+    "sample_rows": [
+      {
+        "index": 0,
+        "query_id": 0,
+        "value": 0.0
+      },
+      {
+        "index": 135,
+        "query_id": 1,
+        "value": 0.010040160642570281
+      },
+      {
+        "index": 270,
+        "query_id": 2,
+        "value": 0.020080321285140562
+      },
+      {
+        "index": 405,
+        "query_id": 3,
+        "value": 0.030120481927710843
+      },
+      {
+        "index": 539,
+        "query_id": 4,
+        "value": 0.0030120481927710845
+      }
+    ],
+    "status": "ok"
+  },
+  "goal": 571,
+  "honesty_boundary": "This is a paper-derived traversal subworkload, not full RTXRMQ. Full RTXRMQ needs a closest-hit/argmin result carrying the hit element id/value; RTDL v0.9 exposes ray_triangle_hit_count but not a public ray_triangle_closest_hit primitive.",
+  "host": {
+    "embree_version": "(4, 3, 0)",
+    "hiprt_version": "(2, 2, 15109972)",
+    "hostname": "lx1",
+    "nvidia_smi": "NVIDIA GeForce GTX 1070, 580.126.09",
+    "optix_version": "(9, 0, 0)",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "vulkan_version": "(0, 1, 0)"
+  },
+  "paper": {
+    "arxiv_id": "2306.03282v1",
+    "path": "/Users/rl2025/Downloads/2306.03282v1.pdf",
+    "title": "Accelerating Range Minimum Queries with Ray Tracing Cores"
+  },
+  "rtdl_supported_workload": {
+    "description": "One YZ-aligned triangle per array element and one +X ray per query range. The returned hit_count is the number of values in [l,r] at or below a threshold.",
+    "matches_direct_cpu_ray_triangle_reference": true,
+    "name": "rtxrmq_range_threshold_hitcount_analogue",
+    "oracle_row_count": 2048,
+    "oracle_sample_rows": [
+      {
+        "hit_count": 1,
+        "ray_id": 0
+      },
+      {
+        "hit_count": 2,
+        "ray_id": 1
+      },
+      {
+        "hit_count": 2,
+        "ray_id": 2
+      },
+      {
+        "hit_count": 4,
+        "ray_id": 3
+      },
+      {
+        "hit_count": 4,
+        "ray_id": 4
+      }
+    ]
+  }
+}

@@ -177,6 +177,27 @@ def ray_triangle_hit_count_cpu(
     return tuple(results)
 
 
+def ray_triangle_closest_hit_cpu(
+    rays: tuple[Ray2D | Ray3D, ...],
+    triangles: tuple[Triangle | Triangle3D, ...],
+) -> tuple[dict[str, float | int], ...]:
+    results = []
+    for ray in rays:
+        best_t: float | None = None
+        best_triangle_id: int | None = None
+        for triangle in triangles:
+            hit_t = _finite_ray_triangle_hit_t(ray, triangle)
+            if hit_t is None:
+                continue
+            triangle_id = int(triangle.id)
+            if best_t is None or hit_t < best_t or (hit_t == best_t and triangle_id < int(best_triangle_id)):
+                best_t = hit_t
+                best_triangle_id = triangle_id
+        if best_t is not None and best_triangle_id is not None:
+            results.append({"ray_id": int(ray.id), "triangle_id": best_triangle_id, "t": best_t})
+    return tuple(results)
+
+
 def fixed_radius_neighbors_cpu(
     query_points: tuple[Point | Point3D, ...],
     search_points: tuple[Point | Point3D, ...],
@@ -600,11 +621,15 @@ def _point_on_segment(
 
 
 def _finite_ray_hits_triangle(ray: Ray2D | Ray3D, triangle: Triangle | Triangle3D) -> bool:
+    return _finite_ray_triangle_hit_t(ray, triangle) is not None
+
+
+def _finite_ray_triangle_hit_t(ray: Ray2D | Ray3D, triangle: Triangle | Triangle3D) -> float | None:
     if isinstance(ray, Ray3D) or isinstance(triangle, Triangle3D):
         if not isinstance(ray, Ray3D) or not isinstance(triangle, Triangle3D):
             raise ValueError("ray_triangle_hit_count_cpu requires rays and triangles to both be 2D or both be 3D")
-        return _finite_ray_hits_triangle_3d(ray, triangle)
-    return _finite_ray_hits_triangle_2d(ray, triangle)
+        return _finite_ray_triangle_hit_t_3d(ray, triangle)
+    return 0.0 if _finite_ray_hits_triangle_2d(ray, triangle) else None
 
 
 def _finite_ray_hits_triangle_2d(ray: Ray2D, triangle: Triangle) -> bool:
@@ -631,6 +656,10 @@ def _finite_ray_hits_triangle_2d(ray: Ray2D, triangle: Triangle) -> bool:
 
 
 def _finite_ray_hits_triangle_3d(ray: Ray3D, triangle: Triangle3D) -> bool:
+    return _finite_ray_triangle_hit_t_3d(ray, triangle) is not None
+
+
+def _finite_ray_triangle_hit_t_3d(ray: Ray3D, triangle: Triangle3D) -> float | None:
     edge1x = triangle.x1 - triangle.x0
     edge1y = triangle.y1 - triangle.y0
     edge1z = triangle.z1 - triangle.z0
@@ -644,7 +673,7 @@ def _finite_ray_hits_triangle_3d(ray: Ray3D, triangle: Triangle3D) -> bool:
 
     det = edge1x * pvx + edge1y * pvy + edge1z * pvz
     if abs(det) <= 1.0e-8:
-        return False
+        return None
 
     inv_det = 1.0 / det
     tvx = ray.ox - triangle.x0
@@ -653,7 +682,7 @@ def _finite_ray_hits_triangle_3d(ray: Ray3D, triangle: Triangle3D) -> bool:
 
     u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det
     if u < 0.0 or u > 1.0:
-        return False
+        return None
 
     qvx = tvy * edge1z - tvz * edge1y
     qvy = tvz * edge1x - tvx * edge1z
@@ -661,10 +690,12 @@ def _finite_ray_hits_triangle_3d(ray: Ray3D, triangle: Triangle3D) -> bool:
 
     v = (ray.dx * qvx + ray.dy * qvy + ray.dz * qvz) * inv_det
     if v < 0.0 or (u + v) > 1.0:
-        return False
+        return None
 
     t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det
-    return t >= 0.0 and t <= ray.tmax
+    if t >= 0.0 and t <= ray.tmax:
+        return t
+    return None
 
 
 def _segment_hits_polygon(segment: Segment, polygon: Polygon) -> bool:

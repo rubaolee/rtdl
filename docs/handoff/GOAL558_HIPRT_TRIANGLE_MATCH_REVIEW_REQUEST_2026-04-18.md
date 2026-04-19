@@ -1,0 +1,1 @@
+Review Goal 558 HIPRT `triangle_match` implementation in `/Users/rl2025/rtdl_python_only`, starting from `/Users/rl2025/rtdl_python_only/docs/reports/goal558_hiprt_triangle_match_2026-04-18.md`, verify the native/Python/test evidence and honesty boundary, then write your verdict to `/Users/rl2025/rtdl_python_only/docs/reports/goal558_external_review_2026-04-18.md`.

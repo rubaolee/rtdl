@@ -1,0 +1,144 @@
+{
+  "goal": 545,
+  "title": "v0.9 HIPRT requirements and feasibility matrix",
+  "date": "2026-04-18",
+  "status": "accepted_with_3_ai_consensus",
+  "version_target": "v0.9 HIPRT backend line",
+  "objective": "Grow HIPRT from a narrow Ray3D/Triangle3D preview into a first-class RTDL backend with correctness and performance evidence against Embree, OptiX, and Vulkan.",
+  "current_hiprt_support": [
+    "hiprt_version",
+    "hiprt_context_probe",
+    "ray_triangle_hit_count_hiprt",
+    "prepare_hiprt_ray_triangle_hit_count",
+    "run_hiprt for Ray3D/Triangle3D ray_triangle_hit_count",
+    "prepare_hiprt for Ray3D/Triangle3D ray_triangle_hit_count"
+  ],
+  "peer_backend_workloads": [
+    {
+      "predicate": "segment_intersection",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "2D segment intersection needs honest HIPRT candidate mapping plus exact refinement."
+    },
+    {
+      "predicate": "point_in_polygon",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "Polygon representation may require AABB/triangle proxy traversal plus exact containment refinement."
+    },
+    {
+      "predicate": "overlay_compose",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "Overlay seed semantics are compositional and may need multiple candidate/refine paths."
+    },
+    {
+      "predicate": "ray_triangle_hit_count",
+      "layouts": "Ray2D/Triangle2D",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "Direct 2D lifting may be degenerate because rays and triangles can be coplanar."
+    },
+    {
+      "predicate": "ray_triangle_hit_count",
+      "layouts": "Ray3D/Triangle3D",
+      "current_peer_backends": ["embree", "optix", "vulkan", "hiprt"],
+      "hiprt_goal": "already implemented; harden and benchmark",
+      "risk": "Performance includes compile/build unless prepared path is used."
+    },
+    {
+      "predicate": "segment_polygon_hitcount",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "Needs polygon candidate discovery plus exact segment/polygon hit-count semantics."
+    },
+    {
+      "predicate": "segment_polygon_anyhit_rows",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "Needs any-hit row emission without duplicate or false-positive rows."
+    },
+    {
+      "predicate": "point_nearest_segment",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D geometry expansion",
+      "risk": "Nearest segment may be implemented through candidate discovery and exact distance refinement."
+    },
+    {
+      "predicate": "fixed_radius_neighbors",
+      "layouts": "2D",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D nearest-neighbor expansion",
+      "risk": "Point primitive encoding must preserve radius and k_max behavior."
+    },
+    {
+      "predicate": "fixed_radius_neighbors",
+      "layouts": "3D",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "3D nearest-neighbor expansion",
+      "risk": "Likely feasible with point AABB/cube proxies plus exact distance refinement."
+    },
+    {
+      "predicate": "knn_rows",
+      "layouts": "2D",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "2D nearest-neighbor expansion",
+      "risk": "Requires deterministic ordering and rank semantics."
+    },
+    {
+      "predicate": "knn_rows",
+      "layouts": "3D",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "3D nearest-neighbor expansion",
+      "risk": "Likely feasible but needs bounded candidate strategy and exact rank semantics."
+    },
+    {
+      "predicate": "bfs_discover",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "graph expansion",
+      "risk": "May become ordinary GPU compute unless graph edges can be mapped to meaningful HIPRT traversal."
+    },
+    {
+      "predicate": "triangle_match",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "graph expansion",
+      "risk": "Intersection-like graph work may be feasible but needs a documented HIPRT lowering."
+    },
+    {
+      "predicate": "conjunctive_scan",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "DB expansion",
+      "risk": "Requires RT-DB row/predicate spatial encoding and exact predicate checking."
+    },
+    {
+      "predicate": "grouped_count",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "DB expansion",
+      "risk": "Requires candidate discovery plus deterministic grouping."
+    },
+    {
+      "predicate": "grouped_sum",
+      "current_peer_backends": ["embree", "optix", "vulkan"],
+      "hiprt_goal": "DB expansion",
+      "risk": "Requires exact integer-compatible accumulation and prepared dataset support."
+    }
+  ],
+  "planned_goals": [
+    545,
+    546,
+    547,
+    548,
+    549,
+    550,
+    551,
+    552,
+    553,
+    554
+  ],
+  "release_rule": "v0.9 cannot claim same support as peer backends unless each accepted workload passes HIPRT row-level correctness and has performance data, or has a 3-AI consensus rejection/reclassification recorded in the support matrix.",
+  "consensus": {
+    "codex": "ACCEPT",
+    "claude": "/Users/rl2025/rtdl_python_only/docs/reports/goal545_external_review_2026-04-18.md",
+    "gemini_flash": "/Users/rl2025/rtdl_python_only/docs/reports/goal545_gemini_flash_review_2026-04-18.md"
+  }
+}

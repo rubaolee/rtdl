@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "rt.optix_version probe",
+    "goal427 db OptiX backend unittest",
+    "goal435 native prepared DB dataset unittest",
+    "goal441 columnar transfer unittest",
+    "goal43 OptiX validation payload unittest",
+    "hello-world OptiX example",
+    "db conjunctive_scan OptiX example",
+    "db grouped_count OptiX example",
+    "db grouped_sum OptiX example"
+  ],
+  "cuda_toolkit": "Build cuda_12.2.r12.2/compiler.33191640_0",
+  "goal": 538,
+  "gpu": "NVIDIA GeForce GTX 1070, 580.126.09, 6.1",
+  "host": "lx1",
+  "log_path": "/tmp/goal538_optix_cuda122_validation_2026-04-18.log",
+  "rtdl_nvcc": "/home/lestat/vendor/cuda-12.2.2/bin/nvcc",
+  "rtdl_optix_lib": "/tmp/rtdl_optix_cuda122_test/build/librtdl_optix.so",
+  "status": "PASS"
+}

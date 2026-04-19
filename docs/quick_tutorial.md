@@ -70,6 +70,12 @@ Backend note:
 - `embree` auto-builds/probes `build/librtdl_embree.*` on first use when the
   host has Embree headers/libraries available
 - on Linux with a configured GPU stack, `optix` and `vulkan` can run too
+- released `v0.9.0` HIPRT support exists after `v0.8.0`; `run_hiprt` covers
+  the current 18-workload HIPRT matrix on the Linux validation host,
+  while `prepare_hiprt` currently covers prepared 3D `ray_triangle_hit_count`
+  and prepared 3D `fixed_radius_neighbors`, plus prepared graph CSR reuse for
+  `bfs_discover` and `triangle_match`, and prepared bounded DB table reuse for
+  repeated `conjunctive_scan`, `grouped_count`, and `grouped_sum` queries
 
 Optional Embree backend build/probe:
 
@@ -88,6 +94,15 @@ On Linux GPU hosts, build the GPU backend libraries once before using the
 ```bash
 make build-optix
 make build-vulkan
+```
+
+On Linux hosts with the HIPRT SDK installed, build the HIPRT backend before
+using the HIPRT example or matrix tests:
+
+```bash
+make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk
+export RTDL_HIPRT_LIB=$PWD/build/librtdl_hiprt.so
+export LD_LIBRARY_PATH=/path/to/hiprtSdk/hiprt/linux64:${LD_LIBRARY_PATH:-}
 ```
 
 ---
@@ -191,6 +206,13 @@ If your machine is configured for GPU backends:
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend vulkan
+```
+
+If your Linux machine is configured for the HIPRT backend, use the
+dedicated 3D prepared-path example first:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py
 ```
 
 What stays the same:

@@ -1,0 +1,1 @@
+Please review Goal 566 in `/Users/rl2025/rtdl_python_only`: verify that the prepared HIPRT 3D fixed-radius nearest-neighbor implementation, tests, Linux performance JSON, and v0.9 support-matrix updates are technically correct and honestly bounded, then write an ACCEPT/REJECT verdict to the requested response file.

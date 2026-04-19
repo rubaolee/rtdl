@@ -1,0 +1,166 @@
+{
+  "description": "HIPRT correctness matrix across v0.9 target workloads",
+  "goal": 547,
+  "results": [
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 7.63790012570098e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.42957837500034657,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_intersection"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 9.620299897505902e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.39817676700113225,
+      "parity": true,
+      "status": "PASS",
+      "workload": "point_in_polygon"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.00012977799997315742,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.4305565819995536,
+      "parity": true,
+      "status": "PASS",
+      "workload": "overlay_compose"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 9.013000089908019e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.3951838989996759,
+      "parity": true,
+      "status": "PASS",
+      "workload": "ray_triangle_hit_count_2d"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 8.981000064522959e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5524085639990517,
+      "parity": true,
+      "status": "PASS",
+      "workload": "ray_triangle_hit_count_3d"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.00011957900096604135,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.42428287400070985,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.00011880499914695974,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.41992682899945066,
+      "parity": true,
+      "status": "PASS",
+      "workload": "segment_polygon_anyhit_rows"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 7.231599920487497e-05,
+      "hiprt_row_count": 1,
+      "hiprt_seconds": 0.37618637699961255,
+      "parity": true,
+      "status": "PASS",
+      "workload": "point_nearest_segment"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 0.00010557800123933703,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5733192229999986,
+      "parity": true,
+      "status": "PASS",
+      "workload": "fixed_radius_neighbors_2d"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 7.777599967084825e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5732970520002709,
+      "parity": true,
+      "status": "PASS",
+      "workload": "fixed_radius_neighbors_3d"
+    },
+    {
+      "cpu_reference_row_count": 5,
+      "cpu_reference_seconds": 9.117800072999671e-05,
+      "hiprt_row_count": 5,
+      "hiprt_seconds": 0.5773461689987016,
+      "parity": true,
+      "status": "PASS",
+      "workload": "bounded_knn_rows_3d"
+    },
+    {
+      "cpu_reference_row_count": 6,
+      "cpu_reference_seconds": 8.232799882534891e-05,
+      "hiprt_row_count": 6,
+      "hiprt_seconds": 0.5674465530009911,
+      "parity": true,
+      "status": "PASS",
+      "workload": "knn_rows_2d"
+    },
+    {
+      "cpu_reference_row_count": 6,
+      "cpu_reference_seconds": 8.310399971378502e-05,
+      "hiprt_row_count": 6,
+      "hiprt_seconds": 0.5771533710012591,
+      "parity": true,
+      "status": "PASS",
+      "workload": "knn_rows_3d"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 8.151200017891824e-05,
+      "hiprt_row_count": 2,
+      "hiprt_seconds": 0.5754871280005318,
+      "parity": true,
+      "status": "PASS",
+      "workload": "bfs_discover"
+    },
+    {
+      "cpu_reference_row_count": 1,
+      "cpu_reference_seconds": 0.00010035699961008504,
+      "message": "HIPRT v0.9 API skeleton recognizes `triangle_match`, but that workload family is not implemented yet; implementation is tracked under Goal 550 graph expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "triangle_match"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 6.28100005997112e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `conjunctive_scan`, but that workload family is not implemented yet; implementation is tracked under Goal 551 DB expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "conjunctive_scan"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 5.104600131744519e-05,
+      "message": "HIPRT v0.9 API skeleton recognizes `grouped_count`, but that workload family is not implemented yet; implementation is tracked under Goal 551 DB expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "grouped_count"
+    },
+    {
+      "cpu_reference_row_count": 2,
+      "cpu_reference_seconds": 0.00010691500028769951,
+      "message": "HIPRT v0.9 API skeleton recognizes `grouped_sum`, but that workload family is not implemented yet; implementation is tracked under Goal 551 DB expansion. No CPU fallback is used.",
+      "status": "NOT_IMPLEMENTED",
+      "workload": "grouped_sum"
+    }
+  ],
+  "summary": {
+    "fail": 0,
+    "hiprt_unavailable": 0,
+    "not_implemented": 4,
+    "pass": 14
+  }
+}

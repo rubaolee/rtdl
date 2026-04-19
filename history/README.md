@@ -109,7 +109,7 @@ This hybrid layout is more practical than:
 ## Current State
 
 This archive began with the March 29, 2026 review-and-revision cycle and now
-contains later rounds through the post-`v0.7.0` release history refresh:
+contains later rounds through the `v0.9.0` release action:
 
 - language/runtime bring-up
 - Embree validation and RayJoin-style reproduction work
@@ -117,6 +117,8 @@ contains later rounds through the post-`v0.7.0` release history refresh:
 - full-project audits, documentation rewrites, and backend comparison notes
 - `v0.7.0` release-readiness, release action, and post-release public-surface
   3C audit records
+- `v0.8.0` app-building release records
+- `v0.9.0` HIPRT / closest-hit release records
 - ad hoc review memos and consensus notes that complement the structured rounds
 
 The immutable rule still applies:

@@ -1,0 +1,1 @@
+ACCEPT: The CUDA 12.2.2 OptiX compatibility fix and validation evidence are sufficient as detailed in `goal538_optix_cuda122_validation_2026-04-18.md`. The implemented code changes in `rtdl_optix_core.cpp` align with the reported fixes, and all tests and examples passed.

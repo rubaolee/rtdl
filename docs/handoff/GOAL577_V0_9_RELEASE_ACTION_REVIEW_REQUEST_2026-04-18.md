@@ -1,0 +1,1 @@
+Review Goal 577: RTDL v0.9.0 release action converted live public docs and VERSION from candidate to released state after Goal575/Goal576 gates, with local full tests passing 239/239, focused v0.9 public-doc audit passing, and `git diff --check` passing; write ACCEPT or REJECT to `/Users/rl2025/rtdl_python_only/docs/reports/goal577_gemini_flash_review_2026-04-18.md`.

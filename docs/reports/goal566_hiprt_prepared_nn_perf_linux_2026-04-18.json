@@ -1,0 +1,72 @@
+{
+  "description": "HIPRT prepared 3D fixed-radius nearest-neighbor performance mitigation benchmark",
+  "goal": 566,
+  "honesty_boundary": "This isolates prepared reuse for 3D fixed-radius nearest neighbors. It does not yet claim prepared coverage for 2D neighbors, KNN ranking helpers, graph CSR, DB tables, AMD GPUs, or RT-core speedup.",
+  "k_max": 16,
+  "query_count": 1024,
+  "radius": 1.05,
+  "repeats": 5,
+  "results": {
+    "cpu_python_reference": {
+      "median_seconds": 0.8784345390013186,
+      "row_count": 2238,
+      "seconds": [
+        0.8784345390013186
+      ]
+    },
+    "embree": {
+      "median_seconds": 0.021408183998573804,
+      "parity_vs_cpu_reference": true,
+      "row_count": 2238,
+      "seconds": [
+        0.021408183998573804
+      ],
+      "status": "PASS"
+    },
+    "hiprt_one_shot": {
+      "median_seconds": 0.5980711039992457,
+      "parity_vs_cpu_reference": true,
+      "row_count": 2238,
+      "seconds": [
+        0.5980711039992457
+      ],
+      "status": "PASS"
+    },
+    "hiprt_prepared": {
+      "one_shot_to_prepared_query_speedup": 169.30203030998044,
+      "parity_vs_cpu_reference": true,
+      "prepare_seconds": 0.5480710439987888,
+      "query_max_seconds": 0.012758122997183818,
+      "query_median_seconds": 0.003532569000526564,
+      "query_min_seconds": 0.003426397997827735,
+      "query_seconds": [
+        0.012758122997183818,
+        0.003795984001044417,
+        0.0034465479984646663,
+        0.003532569000526564,
+        0.003426397997827735
+      ],
+      "row_count": 2238,
+      "status": "PASS"
+    },
+    "optix": {
+      "median_seconds": 0.4838706460031972,
+      "parity_vs_cpu_reference": true,
+      "row_count": 2238,
+      "seconds": [
+        0.4838706460031972
+      ],
+      "status": "PASS"
+    },
+    "vulkan": {
+      "median_seconds": 0.25635796099959407,
+      "parity_vs_cpu_reference": true,
+      "row_count": 2238,
+      "seconds": [
+        0.25635796099959407
+      ],
+      "status": "PASS"
+    }
+  },
+  "search_count": 4096
+}

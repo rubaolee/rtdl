@@ -17,6 +17,7 @@ from .api import point_in_polygon
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
 from .api import ray_triangle_hit_count
+from .api import ray_triangle_closest_hit
 from .api import refine
 from .api import segment_intersection
 from .api import segment_polygon_anyhit_rows
@@ -86,6 +87,34 @@ from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import run_optix
+from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
+from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
+from .hiprt_runtime import bfs_expand_hiprt
+from .hiprt_runtime import conjunctive_scan_hiprt
+from .hiprt_runtime import grouped_count_hiprt
+from .hiprt_runtime import grouped_sum_hiprt
+from .hiprt_runtime import hiprt_context_probe
+from .hiprt_runtime import hiprt_version
+from .hiprt_runtime import knn_rows_2d_hiprt
+from .hiprt_runtime import overlay_compose_hiprt
+from .hiprt_runtime import prepare_hiprt_db_table
+from .hiprt_runtime import prepare_hiprt_ray_triangle_hit_count
+from .hiprt_runtime import prepare_hiprt_fixed_radius_neighbors_3d
+from .hiprt_runtime import prepare_hiprt_graph_csr
+from .hiprt_runtime import prepare_hiprt
+from .hiprt_runtime import PreparedHiprtDbKernel
+from .hiprt_runtime import PreparedHiprtDbTable
+from .hiprt_runtime import PreparedHiprtFixedRadiusNeighbors3D
+from .hiprt_runtime import PreparedHiprtFixedRadiusKernel
+from .hiprt_runtime import PreparedHiprtGraphCSR
+from .hiprt_runtime import PreparedHiprtGraphKernel
+from .hiprt_runtime import PreparedHiprtKernel
+from .hiprt_runtime import PreparedHiprtRayTriangleHitCount3D
+from .hiprt_runtime import ray_triangle_hit_count_hiprt
+from .hiprt_runtime import run_hiprt
+from .hiprt_runtime import segment_polygon_anyhit_rows_hiprt
+from .hiprt_runtime import segment_polygon_hitcount_hiprt
+from .hiprt_runtime import triangle_match_hiprt
 from .vulkan_runtime import vulkan_version
 from .vulkan_runtime import VulkanRowView
 from .vulkan_runtime import prepare_vulkan
@@ -261,6 +290,7 @@ from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
 from .reference import Ray3D
 from .reference import ray_triangle_hit_count_cpu
+from .reference import ray_triangle_closest_hit_cpu
 from .reference import Segment
 from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
@@ -424,6 +454,7 @@ __all__ = [
     "CompiledKernel",
     "contains",
     "conjunctive_scan",
+    "conjunctive_scan_hiprt",
     "conjunctive_scan_cpu",
     "csr_graph",
     "CSRGraph",
@@ -445,16 +476,33 @@ __all__ = [
     "GroupedQueryLayout",
     "grouped_count",
     "grouped_count_cpu",
+    "grouped_count_hiprt",
     "grouped_sum",
     "grouped_sum_cpu",
+    "grouped_sum_hiprt",
+    "hiprt_context_probe",
+    "hiprt_version",
     "InputContract",
     "LaunchParam",
     "Layout",
     "overlay_compose",
+    "overlay_compose_hiprt",
     "oracle_version",
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
+    "prepare_hiprt",
+    "prepare_hiprt_db_table",
+    "prepare_hiprt_fixed_radius_neighbors_3d",
+    "prepare_hiprt_graph_csr",
+    "prepare_hiprt_ray_triangle_hit_count",
+    "PreparedHiprtDbKernel",
+    "PreparedHiprtDbTable",
+    "PreparedHiprtFixedRadiusKernel",
+    "PreparedHiprtFixedRadiusNeighbors3D",
+    "PreparedHiprtGraphCSR",
+    "PreparedHiprtGraphKernel",
+    "PreparedHiprtKernel",
     "OutputRecord",
     "OverpassElementStats",
     "PaperTarget",
@@ -528,6 +576,9 @@ __all__ = [
     "connect_postgis",
     "connect_postgresql",
     "FakePostgresqlConnection",
+    "bfs_expand_hiprt",
+    "fixed_radius_neighbors_2d_hiprt",
+    "fixed_radius_neighbors_3d_hiprt",
     "fixed_radius_neighbors_cpu",
     "knn_rows_cpu",
     "EmbreeRowView",
@@ -540,6 +591,7 @@ __all__ = [
     "PreparedOptixExecution",
     "PreparedOptixKernel",
     "run_optix",
+    "triangle_match_hiprt",
     "VulkanRowView",
     "vulkan_version",
     "prepare_vulkan",
@@ -565,6 +617,7 @@ __all__ = [
     "run_goal138_polygon_overlap_postgis_validation",
     "run_goal140_polygon_set_jaccard_postgis_validation",
     "run_goal141_public_jaccard_audit",
+    "run_hiprt",
     "run_postgis_polygon_pair_overlap_area_rows",
     "run_postgis_polygon_set_jaccard",
     "run_postgis_polygon_set_jaccard_for_case",
@@ -594,6 +647,7 @@ __all__ = [
     "input",
     "kernel",
     "knn_rows",
+    "knn_rows_2d_hiprt",
     "layout",
     "load_arcgis_feature_pages",
     "load_cdb",
@@ -640,7 +694,11 @@ __all__ = [
     "PreparedEmbreeKernel",
     "public_pathology_datasets",
     "ray_triangle_hit_count",
+    "ray_triangle_closest_hit",
     "ray_triangle_hit_count_cpu",
+    "ray_triangle_closest_hit_cpu",
+    "ray_triangle_hit_count_hiprt",
+    "PreparedHiprtRayTriangleHitCount3D",
     "RAYJOIN_PAPER_TARGETS",
     "rayjoin_bounded_plans",
     "rayjoin_feature_service_layers",
@@ -686,6 +744,8 @@ __all__ = [
     "segment_intersection",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
+    "segment_polygon_anyhit_rows_hiprt",
+    "segment_polygon_hitcount_hiprt",
     "segment_polygon_large_dataset_name",
     "Segment",
     "segment_polygon_hitcount_cpu",

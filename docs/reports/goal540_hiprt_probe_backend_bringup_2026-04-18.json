@@ -1,0 +1,47 @@
+{
+  "goal": 540,
+  "date": "2026-04-18",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "linux_checkout": "/tmp/rtdl_goal540_hiprt_probe",
+  "hiprt_sdk": "/home/lestat/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "build": {
+    "command": "make build-hiprt HIPRT_PREFIX=$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+    "result": "PASS",
+    "output_library": "/tmp/rtdl_goal540_hiprt_probe/build/librtdl_hiprt.so"
+  },
+  "host": {
+    "hostname": "lx1",
+    "kernel": "Linux lx1 6.17.0-20-generic #20~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Mar 19 01:28:37 UTC 2 x86_64",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "nvidia_driver": "580.126.09",
+    "driver_reported_cuda": "13.0"
+  },
+  "probe": {
+    "version": [2, 2, 15109972],
+    "api_version": 2002,
+    "device_type": 1,
+    "device_name": "NVIDIA GeForce GTX 1070",
+    "result": "PASS"
+  },
+  "tests": {
+    "macos": {
+      "command": "PYTHONPATH=src:. python3 -m unittest tests.goal540_hiprt_probe_test",
+      "result": "OK",
+      "tests": 2,
+      "skipped": 2
+    },
+    "linux": {
+      "command": "PYTHONPATH=src:. python3 -m unittest tests.goal540_hiprt_probe_test",
+      "result": "OK",
+      "tests": 2,
+      "skipped": 0,
+      "seconds": 0.087
+    }
+  },
+  "non_claims": [
+    "No AMD GPU hardware validation",
+    "No CPU HIPRT fallback validation",
+    "No RTDL workload execution through HIPRT",
+    "No HIPRT performance claim"
+  ]
+}

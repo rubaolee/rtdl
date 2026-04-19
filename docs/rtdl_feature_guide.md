@@ -24,10 +24,10 @@ Use release reports for measured performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is the bounded `v0.7.0` package. The current `main`
-branch also carries accepted `v0.8` app-building work that uses existing RTDL
-features plus Python application logic without claiming a new released
-language/backend line.
+The current released state is `v0.9.0`: the bounded `v0.7.0` DB package, the
+released `v0.8.0` app-building layer that uses existing RTDL features with
+Python application logic, and the released `v0.9.0` HIPRT / closest-hit
+expansion.
 
 Today it includes:
 
@@ -38,6 +38,8 @@ Today it includes:
 - a controlled OptiX backend
 - a Vulkan backend for supported workload families, with the current performance
   story depending on workload and host configuration
+- a released `v0.9.0` HIPRT backend with Linux `run_hiprt` parity coverage for
+  the current 18-workload HIPRT matrix
 
 Current supported workload families:
 
@@ -63,8 +65,9 @@ Current release layers:
 - `v0.5.0`: 3D nearest-neighbor and multi-backend expansion
 - `v0.6.1`: corrected RT graph line
 - `v0.7.0`: bounded database-style analytical kernel line
-- `v0.8`: accepted app-building work on `main` over the released `v0.7.0`
-  surface, not a released support-matrix line yet
+- `v0.8.0`: released app-building work on `main` over the released `v0.7.0`
+  surface
+- `v0.9.0`: released HIPRT backend and exact bounded closest-hit expansion
 
 Plus:
 
@@ -88,6 +91,10 @@ Current user-programming note:
   - [rtdl_dbscan_clustering_app.py](../examples/rtdl_dbscan_clustering_app.py)
   - [rtdl_robot_collision_screening_app.py](../examples/rtdl_robot_collision_screening_app.py)
   - [rtdl_barnes_hut_force_app.py](../examples/rtdl_barnes_hut_force_app.py)
+- the released `v0.9.0` line also includes an exact bounded RTXRMQ-style
+  range-minimum-query gate using `ray_triangle_closest_hit` on CPU reference,
+  `run_cpu`, and Embree; OptiX, Vulkan, and HIPRT do not yet expose this
+  closest-hit primitive
 - RTDL provides the query core there, while Python handles application logic and
   output
 
@@ -173,6 +180,10 @@ The current repo can:
   keeping Vulkan as the slower portable backend
 - support user-authored RTDL-plus-Python applications where RTDL handles the
   geometry-query core and Python handles surrounding application logic
+- run the released HIPRT matrix through `run_hiprt` when the Linux HIPRT SDK
+  runtime is available; `prepare_hiprt` currently covers prepared 3D
+  ray/triangle hit-count, prepared 3D fixed-radius nearest-neighbor, and
+  prepared graph CSR paths, plus prepared bounded DB table reuse
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
@@ -196,3 +207,5 @@ RTDL does not yet claim:
 - faithful full Barnes-Hut or full N-body solver acceleration
 - robot Vulkan support before the Goal509 hit-count parity defect is fixed
 - RT-core hardware speedup from the GTX 1070 Linux app evidence
+- AMD GPU HIPRT validation, HIPRT CPU fallback, HIPRT RT-core speedup evidence,
+  or OptiX/Vulkan/HIPRT native support for `ray_triangle_closest_hit`

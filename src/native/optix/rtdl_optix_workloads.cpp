@@ -2522,10 +2522,10 @@ static void run_fixed_radius_neighbors_cuda_3d(
         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
 {
     (void)get_optix_context();
-    std::call_once(g_frn.init, [&]() {
+    std::call_once(g_frn3d.init, [&]() {
         std::string ptx = compile_to_ptx(kFixedRadiusNeighbors3DKernelSrc, "frn3d_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_frn.module, ptx.c_str()));
-        CU_CHECK(cuModuleGetFunction(&g_frn.fn, g_frn.module, "fixed_radius_neighbors_3d"));
+        CU_CHECK(cuModuleLoadData(&g_frn3d.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(&g_frn3d.fn, g_frn3d.module, "fixed_radius_neighbors_3d"));
     });
 
     constexpr double kFixedRadiusCandidateEps = 1.0e-4;
@@ -2569,7 +2569,7 @@ static void run_fixed_radius_neighbors_cuda_3d(
 
     unsigned block = 256;
     unsigned grid = (qc + block - 1) / block;
-    CU_CHECK(cuLaunchKernel(g_frn.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
+    CU_CHECK(cuLaunchKernel(g_frn3d.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
 
     std::vector<GpuFrnRecord> gpu_rows(output_capacity);
@@ -2740,10 +2740,10 @@ static void run_knn_rows_cuda_3d(
         RtdlKnnNeighborRow** rows_out, size_t* row_count_out)
 {
     (void)get_optix_context();
-    std::call_once(g_knn.init, [&]() {
+    std::call_once(g_knn3d.init, [&]() {
         std::string ptx = compile_to_ptx(kKnnRows3DKernelSrc, "knn3d_kernel.cu");
-        CU_CHECK(cuModuleLoadData(&g_knn.module, ptx.c_str()));
-        CU_CHECK(cuModuleGetFunction(&g_knn.fn, g_knn.module, "knn_rows_3d"));
+        CU_CHECK(cuModuleLoadData(&g_knn3d.module, ptx.c_str()));
+        CU_CHECK(cuModuleGetFunction(&g_knn3d.fn, g_knn3d.module, "knn_rows_3d"));
     });
 
     std::vector<GpuPoint3DHost> gpu_queries(query_count);
@@ -2783,7 +2783,7 @@ static void run_knn_rows_cuda_3d(
 
     unsigned block = 256;
     unsigned grid = (qc + block - 1) / block;
-    CU_CHECK(cuLaunchKernel(g_knn.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
+    CU_CHECK(cuLaunchKernel(g_knn3d.fn, grid, 1, 1, block, 1, 1, 0, nullptr, args, nullptr));
     CU_CHECK(cuStreamSynchronize(nullptr));
 
     std::vector<GpuKnnRecord> gpu_rows(output_capacity);

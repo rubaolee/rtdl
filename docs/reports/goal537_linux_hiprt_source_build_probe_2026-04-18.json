@@ -1,0 +1,79 @@
+{
+  "command_results": {
+    "nvcc_version": {
+      "argv": [
+        "/usr/bin/nvcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "seconds": 0.0021071400001346774,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2023 NVIDIA Corporation\nBuilt on Fri_Jan__6_16:45:21_PST_2023\nCuda compilation tools, release 12.0, V12.0.140\nBuild cuda_12.0.r12.0/compiler.32267302_0"
+    },
+    "nvidia_smi_query": {
+      "argv": [
+        "/usr/bin/nvidia-smi",
+        "--query-gpu=name,driver_version,compute_cap",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "seconds": 0.017988179999974818,
+      "stderr": "",
+      "stdout": "NVIDIA GeForce GTX 1070, 580.126.09, 6.1"
+    }
+  },
+  "commands": {
+    "hipcc_path": null,
+    "hipconfig_path": null,
+    "nvcc_path": "/usr/bin/nvcc",
+    "nvidia_smi_path": "/usr/bin/nvidia-smi"
+  },
+  "headers_or_dirs": [
+    "/home/lestat/vendor/HIPRT/hiprt",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt.h.in",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt_common.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt_device.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt_libpath.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt_math.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt_types.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprt_vec.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprtew.h",
+    "/home/lestat/vendor/HIPRT/hiprt/hiprtew.h.in"
+  ],
+  "libraries_or_dirs": [
+    "/home/lestat/vendor/HIPRT/dist/bin/Release/libhiprt0300164.so",
+    "/home/lestat/vendor/HIPRT/hiprt"
+  ],
+  "library_probe": {
+    "ldconfig_hiprt": {
+      "argv": [
+        "/bin/sh",
+        "-lc",
+        "ldconfig -p | grep -Ei 'hiprt|libamdhip|libcuda[^a-z]|libcudart' | head -80"
+      ],
+      "returncode": 0,
+      "seconds": 0.0076598770001510275,
+      "stderr": "",
+      "stdout": "libcudart.so.12 (libc6,x86-64) => /lib/x86_64-linux-gnu/libcudart.so.12\n\tlibcudart.so (libc6,x86-64) => /lib/x86_64-linux-gnu/libcudart.so\n\tlibcuda.so.1 (libc6,x86-64) => /lib/x86_64-linux-gnu/libcuda.so.1\n\tlibcuda.so (libc6,x86-64) => /lib/x86_64-linux-gnu/libcuda.so\n\tlibamdhip64.so.5 (libc6,x86-64) => /lib/x86_64-linux-gnu/libamdhip64.so.5"
+    }
+  },
+  "machine": "linux-hiprt-source-build-probe",
+  "platform": {
+    "cwd": "/home/lestat",
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "release": "6.17.0-20-generic",
+    "system": "Linux"
+  },
+  "summary": {
+    "can_attempt_hiprt_cuda_smoke_test": true,
+    "can_validate_amd_gpu_backend": false,
+    "has_cuda_gpu": true,
+    "has_cuda_toolchain": true,
+    "has_hip_toolchain": false,
+    "has_hiprt_artifacts": true,
+    "reason_amd_gpu_backend_false": "This probe only checks host artifacts; AMD GPU validation requires an AMD GPU host."
+  },
+  "timestamp": "2026-04-18T13:02:30-0400"
+}

@@ -1,0 +1,1 @@
+ACCEPT. v0.9 remains release-ready after adding the RTXRMQ paper-derived workload gate.

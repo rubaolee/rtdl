@@ -15,7 +15,7 @@ connects the kernel result to the rest of an application.
 | --- | --- | --- |
 | Can do and intended | Released or directly aligned with the RTDL design | spatial joins, nearest-neighbor rows, graph BFS/triangle counting, bounded DB-style scans/groups |
 | Can do but not intended as RTDL's role | Possible when RTDL is used as a kernel inside a larger Python app, but RTDL should not become the whole system | rendering demos, robotics app orchestration, database-style workflows, full simulations |
-| Cannot do yet | Missing language types, predicates, reductions, or backend lowering | full SQL DBMS behavior, general rendering, high-dimensional ANN/PQ, continuous swept-volume collision detection |
+| Cannot do yet | Missing language types, predicates, reductions, or backend lowering | full SQL DBMS behavior, general rendering, high-dimensional ANN/PQ, continuous swept-volume collision detection, general HIPRT backend coverage |
 
 ## What RTDL Can Do And Intends To Do
 
@@ -103,6 +103,12 @@ Current accepted v0.8 examples of this model are Hausdorff distance, ANN
 candidate search, outlier detection, DBSCAN clustering, robot collision
 screening, and Barnes-Hut force approximation. Their backend and performance
 boundaries are recorded in Goal507, Goal509, and Goal524.
+
+The released `v0.9.0` HIPRT backend also fits this intended direction.
+`run_hiprt` now covers the 18-workload Linux HIPRT matrix, while
+repeated-query `prepare_hiprt` currently covers prepared 3D ray/triangle
+hit-count, prepared 3D fixed-radius nearest-neighbor, prepared graph CSR paths,
+and prepared bounded DB table reuse.
 
 ## What RTDL Can Do But Is Not Intended To Become
 
@@ -223,6 +229,26 @@ accelerated backends. Current kernels depend on bounded, typed inputs and
 predicates that the runtime knows how to lower. New data types such as strings,
 dates, curves, spheres, meshes with rich metadata, or high-dimensional vectors
 need explicit language and backend support before performance claims are valid.
+
+### Closest-Hit / RTXRMQ Coverage
+
+The released `v0.9.0` line includes a bounded `ray_triangle_closest_hit`
+primitive for 3D ray/triangle workloads on the CPU Python reference, `run_cpu`,
+and Embree backend. Goal573 uses it to express an exact RTXRMQ-style
+range-minimum query gate from `/Users/rl2025/Downloads/2306.03282v1.pdf`.
+
+The current boundary is backend coverage, not language shape: OptiX, Vulkan,
+and HIPRT still need native closest-hit kernels before RTDL can claim full
+four-backend RTXRMQ support.
+
+### HIPRT Backend Coverage
+
+The released `v0.9.0` HIPRT backend can use `run_hiprt` for the 18-workload
+Linux HIPRT matrix on a HIPRT-SDK setup. It cannot yet claim AMD GPU hardware
+validation, HIPRT CPU fallback, RT-core speedup evidence from the tested GTX
+1070 path, OptiX/Vulkan/HIPRT native closest-hit support, or broader prepared
+HIPRT reuse beyond the prepared 3D ray/triangle, 3D fixed-radius
+nearest-neighbor, graph CSR, and bounded DB table paths.
 
 ### Automatic Speedups For Every Workload
 

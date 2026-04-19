@@ -1,0 +1,141 @@
+{
+  "degree": 4,
+  "description": "HIPRT prepared graph CSR performance mitigation benchmark for deterministic BFS and triangle-match",
+  "edge_count": 4096,
+  "frontier_count": 128,
+  "goal": 567,
+  "honesty_boundary": "This isolates prepared reuse for a HIPRT graph CSR build side. BFS timing uses dedupe=True, whose deterministic global dedupe is order-sensitive and intentionally remains serialized for CPU parity. This is not a full graph-system benchmark, not an AMD GPU claim, and not RT-core speedup evidence.",
+  "repeats": 5,
+  "results": {
+    "bfs_discover": {
+      "backends": {
+        "embree": {
+          "median_seconds": 0.014502299000014318,
+          "parity_vs_cpu_reference": true,
+          "row_count": 326,
+          "seconds": [
+            0.014502299000014318
+          ],
+          "status": "PASS"
+        },
+        "hiprt_one_shot": {
+          "median_seconds": 0.669875954001327,
+          "parity_vs_cpu_reference": true,
+          "row_count": 326,
+          "seconds": [
+            0.669875954001327
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "median_seconds": 0.005468809002195485,
+          "parity_vs_cpu_reference": true,
+          "row_count": 326,
+          "seconds": [
+            0.005468809002195485
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "median_seconds": 0.0025870469980873168,
+          "parity_vs_cpu_reference": true,
+          "row_count": 326,
+          "seconds": [
+            0.0025870469980873168
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_python_reference": {
+        "median_seconds": 0.0007224399996630382,
+        "row_count": 326,
+        "seconds": [
+          0.0007224399996630382
+        ]
+      },
+      "hiprt_prepared_graph": {
+        "one_shot_to_prepared_query_speedup": 32.747191210812176,
+        "parity_vs_cpu_reference": true,
+        "prepare_seconds": 0.723795981000876,
+        "query_max_seconds": 0.022674546999041922,
+        "query_median_seconds": 0.020455982001294615,
+        "query_min_seconds": 0.020356496999738738,
+        "query_seconds": [
+          0.022674546999041922,
+          0.02044306400057394,
+          0.020356496999738738,
+          0.02046305099793244,
+          0.020455982001294615
+        ],
+        "row_count": 326,
+        "status": "PASS"
+      }
+    },
+    "triangle_match": {
+      "backends": {
+        "embree": {
+          "median_seconds": 0.004034558998682769,
+          "parity_vs_cpu_reference": true,
+          "row_count": 774,
+          "seconds": [
+            0.004034558998682769
+          ],
+          "status": "PASS"
+        },
+        "hiprt_one_shot": {
+          "median_seconds": 0.5743891179990896,
+          "parity_vs_cpu_reference": true,
+          "row_count": 774,
+          "seconds": [
+            0.5743891179990896
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "median_seconds": 0.001826652998715872,
+          "parity_vs_cpu_reference": true,
+          "row_count": 774,
+          "seconds": [
+            0.001826652998715872
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "median_seconds": 0.0017549959993630182,
+          "parity_vs_cpu_reference": true,
+          "row_count": 774,
+          "seconds": [
+            0.0017549959993630182
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_python_reference": {
+        "median_seconds": 0.0018495830008760095,
+        "row_count": 774,
+        "seconds": [
+          0.0018495830008760095
+        ]
+      },
+      "hiprt_prepared_graph": {
+        "one_shot_to_prepared_query_speedup": 261.2652855616197,
+        "parity_vs_cpu_reference": true,
+        "prepare_seconds": 0.723795981000876,
+        "query_max_seconds": 0.00418318600350176,
+        "query_median_seconds": 0.002198490001319442,
+        "query_min_seconds": 0.0021620229999825824,
+        "query_seconds": [
+          0.00418318600350176,
+          0.0022478409991890658,
+          0.002198490001319442,
+          0.0021823370007041376,
+          0.0021620229999825824
+        ],
+        "row_count": 774,
+        "status": "PASS"
+      }
+    }
+  },
+  "seed_count": 256,
+  "vertex_count": 512
+}

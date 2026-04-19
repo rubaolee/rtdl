@@ -1,0 +1,41 @@
+{
+  "goal": 541,
+  "date": "2026-04-18",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "linux_checkout": "/tmp/rtdl_goal541_hiprt_rayhit",
+  "hiprt_sdk": "/home/lestat/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+  "workload": "ray_triangle_hit_count_3d",
+  "build": {
+    "command": "make build-hiprt HIPRT_PREFIX=$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+    "result": "PASS"
+  },
+  "unit_tests": {
+    "command": "PYTHONPATH=src:. python3 -m unittest tests.goal540_hiprt_probe_test tests.goal541_hiprt_ray_hitcount_test",
+    "tests": 4,
+    "result": "OK",
+    "seconds": 0.729
+  },
+  "randomized_smoke": {
+    "ray_count": 128,
+    "triangle_count": 256,
+    "parity": true,
+    "total_hits_cpu": 155,
+    "total_hits_hiprt": 155,
+    "cpu_seconds": 0.019992178999928,
+    "hiprt_seconds_including_compile_build_launch": 0.622283716000311
+  },
+  "scope": [
+    "Ray3D only",
+    "Triangle3D only",
+    "HIPRT triangle mesh build",
+    "HIPRT any-hit traversal kernel",
+    "CPU oracle parity"
+  ],
+  "non_claims": [
+    "No AMD GPU validation",
+    "No HIPRT CPU fallback validation",
+    "No 2D HIPRT ray-triangle support",
+    "No general run_hiprt lowering integration",
+    "No performance-win claim"
+  ]
+}

@@ -1,0 +1,1 @@
+Review `docs/reports/goal534_minimal_itre_extensions_design_study_2026-04-18.md` for whether it correctly rewrites the rejected rendering brainstorm into bounded non-rendering minimal ITRE extensions, then write an ACCEPT/REVISE/BLOCK verdict to `docs/reports/goal534_claude_minimal_itre_extensions_review_2026-04-18.md`.

@@ -2,8 +2,8 @@
 
 This is the current public architecture page for users evaluating RTDL.
 Historical architecture reports are preserved elsewhere, but this page explains
-the released `v0.7.0` design plus the released `v0.8.0` app-building layer on
-top of it.
+the released `v0.7.0` design, the released `v0.8.0` app-building layer, and
+the released `v0.9.0` HIPRT / closest-hit expansion on top of it.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
@@ -22,8 +22,8 @@ ray-tracing-style search:
 
 The intended benefit is a **10x reduction in authoring burden** for modern
 ray-tracing workloads. Instead of hand-writing separate Embree, OptiX, Vulkan,
-and CPU code paths, the user writes one RTDL kernel shape and chooses a backend
-when running it.
+HIPRT, and CPU code paths, the user writes one RTDL kernel shape and
+chooses a backend when running it.
 
 This is not a blanket performance claim. Performance depends on workload,
 backend, host hardware, data shape, and preparation strategy. The release
@@ -45,6 +45,11 @@ RTDL owns the workload core:
 For released workload families, RTDL also owns the backend-specific lowering
 needed to reach CPU/oracle, Embree, OptiX, and Vulkan surfaces where those
 backends are supported.
+
+The released `v0.9.0` HIPRT work provides `run_hiprt` Linux parity coverage for
+the current 18-workload HIPRT matrix. It does not claim AMD GPU validation,
+RT-core speedup evidence, CPU fallback, or OptiX/Vulkan/HIPRT support for the
+new closest-hit primitive.
 
 ## What Python Owns
 
@@ -70,6 +75,7 @@ kernels and native backend paths, not in Python loops.
 | Embree | CPU ray-tracing backend |
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
+| HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 ## Workload Families
@@ -81,6 +87,16 @@ Current released public workload families include:
 - nearest neighbor: fixed-radius neighbors and KNN rows
 - graph: bounded BFS expansion and triangle-count probe kernels
 - DB-style analytics: bounded conjunctive scan, grouped count, and grouped sum
+- closest-hit: exact bounded RTXRMQ-style range-minimum query on CPU reference,
+  `run_cpu`, and Embree
+
+The released HIPRT backend covers the v0.9 18-workload `run_hiprt` matrix.
+The prepared HIPRT API is narrower: `prepare_hiprt` currently covers Ray3D
+probes against Triangle3D build geometry emitting per-ray hit-count rows, plus
+Point3D probe batches against prepared Point3D build sets for fixed-radius
+nearest-neighbor rows, prepared graph CSR build data for BFS discovery and
+triangle-match query batches, and prepared bounded DB table reuse for
+conjunctive scan, grouped count, and grouped sum.
 
 Each family is documented with its own current support boundary. Not every
 backend/workload/platform combination has the same maturity.
@@ -139,12 +155,16 @@ Do not read the current system as:
 - an arbitrary SQL engine
 - a proof that every backend is faster for every workload
 - a claim that every platform has identical backend coverage
+- a claim that HIPRT is AMD-validated, RT-core-accelerated on the tested GTX
+  1070 path, a CPU fallback backend, or a native closest-hit backend today
 
 For exact release claims, read:
 
 - [RTDL Capability Boundaries](capability_boundaries.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
+- [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
+- [v0.9 Release Package](release_reports/v0_9/README.md)
 - [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.7 Release Statement](release_reports/v0_7/release_statement.md)

@@ -9,7 +9,9 @@ It currently covers:
 - the released `v0.4.0` nearest-neighbor line
 - the released `v0.6.1` RT graph line
 - the released bounded `v0.7.0` DB line
-- the accepted `v0.8` app-building line on `main` over existing RTDL features
+- the released `v0.8.0` app-building line on `main` over existing RTDL features
+- the released `v0.9.0` HIPRT example, clearly marked as a Linux/HIPRT-SDK
+  path with explicit platform boundaries
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -39,6 +41,7 @@ If you want a guided learning order instead of a flat example list, start with:
 | Bounded DB filter | `examples/rtdl_db_conjunctive_scan.py` | denormalized rows plus predicates become row IDs |
 | Bounded DB aggregate | `examples/rtdl_db_grouped_count.py` / `examples/rtdl_db_grouped_sum.py` | filtered rows become grouped results |
 | App integration | `examples/rtdl_v0_7_db_app_demo.py` | Python app stays thin around the RTDL query core |
+| HIPRT example | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through `run_hiprt` / `prepare_hiprt` |
 
 This is the practical burden reduction: you choose the workload shape and
 backend flag; RTDL keeps traversal/refinement/result plumbing consistent.
@@ -66,6 +69,8 @@ Before running any command below:
 - commands below use `python` as the public convention
 - if your shell only provides `python3`, substitute `python3` for `python`
 - optional Embree build/probe: `make build-embree`
+- optional v0.9 HIPRT build on Linux:
+  `make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk`
 - Windows Embree users should set `RTDL_EMBREE_PREFIX` to an x64 Embree prefix
   and `RTDL_VCVARS64` if Visual Studio Build Tools are not in the default
   location; copied binary snapshots must carry the matching
@@ -142,6 +147,39 @@ Linux across RTDL CPU/oracle, Embree, OptiX, and Vulkan backends. It does not
 claim a speedup against SciPy, scikit-learn, FAISS, or production ANN,
 anomaly-detection, or clustering systems; SciPy was not installed in the Linux
 validation checkout used for that artifact.
+
+## HIPRT Backend
+
+This released v0.9.0 path is for Linux users with the HIPRT SDK installed. It
+is bounded by the v0.9 support matrix: validated through HIPRT/Orochi CUDA mode
+on the Linux NVIDIA host, without AMD GPU validation, HIPRT CPU fallback, or
+RT-core speedup claims from the tested GTX 1070 path.
+
+Build and run:
+
+```bash
+make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk
+export RTDL_HIPRT_LIB=$PWD/build/librtdl_hiprt.so
+export LD_LIBRARY_PATH=/path/to/hiprtSdk/hiprt/linux64:${LD_LIBRARY_PATH:-}
+PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py
+```
+
+The example first computes a CPU Python reference answer, then attempts HIPRT.
+If the HIPRT backend library or runtime is unavailable, it prints a JSON result
+with `hiprt_available: false` and exits successfully. If HIPRT is available, it
+checks both one-shot `run_hiprt` and repeated-query `prepare_hiprt` parity for
+the prepared 3D ray/triangle path.
+
+Current HIPRT boundary:
+
+- `run_hiprt` support: 18 Linux-parity workloads across geometry, 2D
+  geometry, nearest-neighbor, graph, and bounded DB-style analytics
+- `prepare_hiprt` support: prepared 3D `ray_triangle_hit_count` and
+  prepared 3D `fixed_radius_neighbors`, plus prepared graph CSR reuse for
+  `bfs_discover` and `triangle_match`
+- unsupported claims: AMD GPU validation, RT-core speedup evidence from the
+  tested GTX 1070 path, CPU fallback, and OptiX/Vulkan/HIPRT native
+  `ray_triangle_closest_hit`
 
 ## v0.4 nearest-neighbor examples
 

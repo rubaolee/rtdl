@@ -1,0 +1,937 @@
+{
+  "backends": [
+    "hiprt",
+    "embree",
+    "optix",
+    "vulkan"
+  ],
+  "description": "v0.9 HIPRT performance comparison against CPU reference, Embree, OptiX, and Vulkan where available",
+  "goal": 560,
+  "honesty_boundary": "Small-fixture timing includes backend startup/JIT/build overhead and is intended as a release smoke comparison, not a throughput or RT-core speedup claim.",
+  "repeats": 1,
+  "results": [
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.010263354997732677,
+          "median_seconds": 0.010263354997732677,
+          "min_seconds": 0.010263354997732677,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.010263354997732677
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.44854329000008875,
+          "median_seconds": 0.44854329000008875,
+          "min_seconds": 0.44854329000008875,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.44854329000008875
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.2555538059968967,
+          "median_seconds": 0.2555538059968967,
+          "min_seconds": 0.2555538059968967,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.2555538059968967
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.6969911070009402,
+          "median_seconds": 0.6969911070009402,
+          "min_seconds": 0.6969911070009402,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.6969911070009402
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 6.940800085430965e-05,
+      "cpu_reference_row_count": 1,
+      "workload": "segment_intersection"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.007428951001202222,
+          "median_seconds": 0.007428951001202222,
+          "min_seconds": 0.007428951001202222,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.007428951001202222
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.3807122270009131,
+          "median_seconds": 0.3807122270009131,
+          "min_seconds": 0.3807122270009131,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.3807122270009131
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.6460319670004537,
+          "median_seconds": 0.6460319670004537,
+          "min_seconds": 0.6460319670004537,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.6460319670004537
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.3157804959992063,
+          "median_seconds": 0.3157804959992063,
+          "min_seconds": 0.3157804959992063,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.3157804959992063
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 9.6314000984421e-05,
+      "cpu_reference_row_count": 2,
+      "workload": "point_in_polygon"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.022935003999009496,
+          "median_seconds": 0.022935003999009496,
+          "min_seconds": 0.022935003999009496,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.022935003999009496
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.4190195640003367,
+          "median_seconds": 0.4190195640003367,
+          "min_seconds": 0.4190195640003367,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.4190195640003367
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.3935875919996761,
+          "median_seconds": 0.3935875919996761,
+          "min_seconds": 0.3935875919996761,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.3935875919996761
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.31293580700003076,
+          "median_seconds": 0.31293580700003076,
+          "min_seconds": 0.31293580700003076,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.31293580700003076
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.0002362630002608057,
+      "cpu_reference_row_count": 1,
+      "workload": "overlay_compose"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0005853010006831028,
+          "median_seconds": 0.0005853010006831028,
+          "min_seconds": 0.0005853010006831028,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.0005853010006831028
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.3789584750011272,
+          "median_seconds": 0.3789584750011272,
+          "min_seconds": 0.3789584750011272,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.3789584750011272
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.12235877100101789,
+          "median_seconds": 0.12235877100101789,
+          "min_seconds": 0.12235877100101789,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.12235877100101789
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.2953759279989754,
+          "median_seconds": 0.2953759279989754,
+          "min_seconds": 0.2953759279989754,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.2953759279989754
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00013740499707637355,
+      "cpu_reference_row_count": 1,
+      "workload": "ray_triangle_hit_count_2d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.006813553998654243,
+          "median_seconds": 0.006813553998654243,
+          "min_seconds": 0.006813553998654243,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.006813553998654243
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5424040449979657,
+          "median_seconds": 0.5424040449979657,
+          "min_seconds": 0.5424040449979657,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.5424040449979657
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.1260906690004049,
+          "median_seconds": 0.1260906690004049,
+          "min_seconds": 0.1260906690004049,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.1260906690004049
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.21978717900128686,
+          "median_seconds": 0.21978717900128686,
+          "min_seconds": 0.21978717900128686,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.21978717900128686
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 9.501699969405308e-05,
+      "cpu_reference_row_count": 2,
+      "workload": "ray_triangle_hit_count_3d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0002547470030549448,
+          "median_seconds": 0.0002547470030549448,
+          "min_seconds": 0.0002547470030549448,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.0002547470030549448
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.4161787289995118,
+          "median_seconds": 0.4161787289995118,
+          "min_seconds": 0.4161787289995118,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.4161787289995118
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.00010798199946293607,
+          "median_seconds": 0.00010798199946293607,
+          "min_seconds": 0.00010798199946293607,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.00010798199946293607
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 4.9387327680015005,
+          "median_seconds": 4.9387327680015005,
+          "min_seconds": 4.9387327680015005,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            4.9387327680015005
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00015206999887595885,
+      "cpu_reference_row_count": 1,
+      "workload": "segment_polygon_hitcount"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0001746440029819496,
+          "median_seconds": 0.0001746440029819496,
+          "min_seconds": 0.0001746440029819496,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.0001746440029819496
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.42155090999949607,
+          "median_seconds": 0.42155090999949607,
+          "min_seconds": 0.42155090999949607,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.42155090999949607
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.00012816399976145476,
+          "median_seconds": 0.00012816399976145476,
+          "min_seconds": 0.00012816399976145476,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.00012816399976145476
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.00013430100079858676,
+          "median_seconds": 0.00013430100079858676,
+          "min_seconds": 0.00013430100079858676,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.00013430100079858676
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00017128000035881996,
+      "cpu_reference_row_count": 1,
+      "workload": "segment_polygon_anyhit_rows"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0002020979991357308,
+          "median_seconds": 0.0002020979991357308,
+          "min_seconds": 0.0002020979991357308,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.0002020979991357308
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.36735546899944893,
+          "median_seconds": 0.36735546899944893,
+          "min_seconds": 0.36735546899944893,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.36735546899944893
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.30887381200227537,
+          "median_seconds": 0.30887381200227537,
+          "min_seconds": 0.30887381200227537,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.30887381200227537
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.08909740400122246,
+          "median_seconds": 0.08909740400122246,
+          "min_seconds": 0.08909740400122246,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.08909740400122246
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 4.733000241685659e-05,
+      "cpu_reference_row_count": 1,
+      "workload": "point_nearest_segment"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0005373789972509257,
+          "median_seconds": 0.0005373789972509257,
+          "min_seconds": 0.0005373789972509257,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.0005373789972509257
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5705515410008957,
+          "median_seconds": 0.5705515410008957,
+          "min_seconds": 0.5705515410008957,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.5705515410008957
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.31881584000075236,
+          "median_seconds": 0.31881584000075236,
+          "min_seconds": 0.31881584000075236,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.31881584000075236
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.09047254399774829,
+          "median_seconds": 0.09047254399774829,
+          "min_seconds": 0.09047254399774829,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.09047254399774829
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00012822799908462912,
+      "cpu_reference_row_count": 5,
+      "workload": "fixed_radius_neighbors_2d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0005249599998933263,
+          "median_seconds": 0.0005249599998933263,
+          "min_seconds": 0.0005249599998933263,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.0005249599998933263
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5679977719992166,
+          "median_seconds": 0.5679977719992166,
+          "min_seconds": 0.5679977719992166,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.5679977719992166
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.31974086800255463,
+          "median_seconds": 0.31974086800255463,
+          "min_seconds": 0.31974086800255463,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.31974086800255463
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.09096795699952054,
+          "median_seconds": 0.09096795699952054,
+          "min_seconds": 0.09096795699952054,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.09096795699952054
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00011715999789885245,
+      "cpu_reference_row_count": 5,
+      "workload": "fixed_radius_neighbors_3d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0006203220000315923,
+          "median_seconds": 0.0006203220000315923,
+          "min_seconds": 0.0006203220000315923,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.0006203220000315923
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5715721560009115,
+          "median_seconds": 0.5715721560009115,
+          "min_seconds": 0.5715721560009115,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.5715721560009115
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.00032960300086415373,
+          "median_seconds": 0.00032960300086415373,
+          "min_seconds": 0.00032960300086415373,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.00032960300086415373
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.00273329400079092,
+          "median_seconds": 0.00273329400079092,
+          "min_seconds": 0.00273329400079092,
+          "parity_vs_cpu_reference": true,
+          "row_count": 5,
+          "seconds": [
+            0.00273329400079092
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00015053899915073998,
+      "cpu_reference_row_count": 5,
+      "workload": "bounded_knn_rows_3d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0004084069987584371,
+          "median_seconds": 0.0004084069987584371,
+          "min_seconds": 0.0004084069987584371,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.0004084069987584371
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5670542900006694,
+          "median_seconds": 0.5670542900006694,
+          "min_seconds": 0.5670542900006694,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.5670542900006694
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.3168543639985728,
+          "median_seconds": 0.3168543639985728,
+          "min_seconds": 0.3168543639985728,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.3168543639985728
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.09258776700153248,
+          "median_seconds": 0.09258776700153248,
+          "min_seconds": 0.09258776700153248,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.09258776700153248
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 7.363300028373487e-05,
+      "cpu_reference_row_count": 6,
+      "workload": "knn_rows_2d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.000708380997821223,
+          "median_seconds": 0.000708380997821223,
+          "min_seconds": 0.000708380997821223,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.000708380997821223
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.569450737999432,
+          "median_seconds": 0.569450737999432,
+          "min_seconds": 0.569450737999432,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.569450737999432
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.32308437499887077,
+          "median_seconds": 0.32308437499887077,
+          "min_seconds": 0.32308437499887077,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.32308437499887077
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.09292707300119218,
+          "median_seconds": 0.09292707300119218,
+          "min_seconds": 0.09292707300119218,
+          "parity_vs_cpu_reference": true,
+          "row_count": 6,
+          "seconds": [
+            0.09292707300119218
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00011556000026757829,
+      "cpu_reference_row_count": 6,
+      "workload": "knn_rows_3d"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0005575899995164946,
+          "median_seconds": 0.0005575899995164946,
+          "min_seconds": 0.0005575899995164946,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0005575899995164946
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.556287256997166,
+          "median_seconds": 0.556287256997166,
+          "min_seconds": 0.556287256997166,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.556287256997166
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.0002469099999871105,
+          "median_seconds": 0.0002469099999871105,
+          "min_seconds": 0.0002469099999871105,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0002469099999871105
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.0001247910004167352,
+          "median_seconds": 0.0001247910004167352,
+          "min_seconds": 0.0001247910004167352,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0001247910004167352
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00013043500075582415,
+      "cpu_reference_row_count": 2,
+      "workload": "bfs_discover"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.00048531799984630197,
+          "median_seconds": 0.00048531799984630197,
+          "min_seconds": 0.00048531799984630197,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.00048531799984630197
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5541520199985825,
+          "median_seconds": 0.5541520199985825,
+          "min_seconds": 0.5541520199985825,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.5541520199985825
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.0002130800021404866,
+          "median_seconds": 0.0002130800021404866,
+          "min_seconds": 0.0002130800021404866,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.0002130800021404866
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.00011147400073241442,
+          "median_seconds": 0.00011147400073241442,
+          "min_seconds": 0.00011147400073241442,
+          "parity_vs_cpu_reference": true,
+          "row_count": 1,
+          "seconds": [
+            0.00011147400073241442
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00012464999963412993,
+      "cpu_reference_row_count": 1,
+      "workload": "triangle_match"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0004214229993522167,
+          "median_seconds": 0.0004214229993522167,
+          "min_seconds": 0.0004214229993522167,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0004214229993522167
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5690383939981984,
+          "median_seconds": 0.5690383939981984,
+          "min_seconds": 0.5690383939981984,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.5690383939981984
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.39614820999850053,
+          "median_seconds": 0.39614820999850053,
+          "min_seconds": 0.39614820999850053,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.39614820999850053
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.3019786889999523,
+          "median_seconds": 0.3019786889999523,
+          "min_seconds": 0.3019786889999523,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.3019786889999523
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 7.924500096123666e-05,
+      "cpu_reference_row_count": 2,
+      "workload": "conjunctive_scan"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.0004987079992133658,
+          "median_seconds": 0.0004987079992133658,
+          "min_seconds": 0.0004987079992133658,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0004987079992133658
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5640109810010472,
+          "median_seconds": 0.5640109810010472,
+          "min_seconds": 0.5640109810010472,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.5640109810010472
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.0005742009998357389,
+          "median_seconds": 0.0005742009998357389,
+          "min_seconds": 0.0005742009998357389,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0005742009998357389
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.0044607140007428825,
+          "median_seconds": 0.0044607140007428825,
+          "min_seconds": 0.0044607140007428825,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0044607140007428825
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 0.00011870500020449981,
+      "cpu_reference_row_count": 2,
+      "workload": "grouped_count"
+    },
+    {
+      "backends": {
+        "embree": {
+          "max_seconds": 0.00046784400183241814,
+          "median_seconds": 0.00046784400183241814,
+          "min_seconds": 0.00046784400183241814,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.00046784400183241814
+          ],
+          "status": "PASS"
+        },
+        "hiprt": {
+          "max_seconds": 0.5658196410004166,
+          "median_seconds": 0.5658196410004166,
+          "min_seconds": 0.5658196410004166,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.5658196410004166
+          ],
+          "status": "PASS"
+        },
+        "optix": {
+          "max_seconds": 0.0006041989981895313,
+          "median_seconds": 0.0006041989981895313,
+          "min_seconds": 0.0006041989981895313,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.0006041989981895313
+          ],
+          "status": "PASS"
+        },
+        "vulkan": {
+          "max_seconds": 0.00429793500006781,
+          "median_seconds": 0.00429793500006781,
+          "min_seconds": 0.00429793500006781,
+          "parity_vs_cpu_reference": true,
+          "row_count": 2,
+          "seconds": [
+            0.00429793500006781
+          ],
+          "status": "PASS"
+        }
+      },
+      "cpu_reference_median_seconds": 7.997099964995869e-05,
+      "cpu_reference_row_count": 2,
+      "workload": "grouped_sum"
+    }
+  ],
+  "summary": {
+    "backend_unavailable": 0,
+    "fail": 0,
+    "pass": 72
+  }
+}

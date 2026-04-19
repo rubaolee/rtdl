@@ -37,6 +37,7 @@ from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
 from .reference import Ray3D
 from .reference import ray_triangle_hit_count_cpu
+from .reference import ray_triangle_closest_hit_cpu
 from .reference import Segment
 from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
@@ -167,6 +168,8 @@ def _run_cpu_python_reference_from_normalized(
         rows = overlay_compose_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "ray_triangle_hit_count":
         rows = ray_triangle_hit_count_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
+    elif predicate_name == "ray_triangle_closest_hit":
+        rows = ray_triangle_closest_hit_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "segment_polygon_hitcount":
         rows = segment_polygon_hitcount_cpu(normalized_inputs[left_name], normalized_inputs[right_name])
     elif predicate_name == "segment_polygon_anyhit_rows":
@@ -440,6 +443,8 @@ def _validate_oracle_supported_inputs(compiled: CompiledKernel, normalized_input
                     "use run_cpu_python_reference for the experimental 3D point path"
                 )
             if isinstance(item, (Triangle3D, Ray3D)):
+                if predicate_name == "ray_triangle_closest_hit":
+                    continue
                 raise ValueError(
                     "run_cpu currently supports only 2D ray/triangle records; "
                     "use run_cpu_python_reference for the experimental 3D ray-triangle path"

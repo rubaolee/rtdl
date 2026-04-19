@@ -250,6 +250,14 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlRayClosestHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("triangle_id", ctypes.c_uint32),
+        ("t", ctypes.c_double),
+    ]
+
+
 class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
     _fields_ = [
         ("segment_id", ctypes.c_uint32),
@@ -444,6 +452,7 @@ class PreparedEmbreeKernel:
             "point_in_polygon",
             "overlay_compose",
             "ray_triangle_hit_count",
+            "ray_triangle_closest_hit",
             "segment_polygon_hitcount",
             "segment_polygon_anyhit_rows",
             "point_nearest_segment",
@@ -502,6 +511,8 @@ class PreparedEmbreeExecution:
             return _call_overlay_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "ray_triangle_hit_count":
             return _call_ray_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
+        if predicate_name == "ray_triangle_closest_hit":
+            return _call_ray_closest_hit_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "segment_polygon_hitcount":
             return _call_segment_polygon_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "segment_polygon_anyhit_rows":
@@ -1884,6 +1895,43 @@ def _call_ray_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, li
     )
 
 
+def _call_ray_closest_hit_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    rays_name = compiled.candidates.left.name
+    triangles_name = compiled.candidates.right.name
+    rays = packed_inputs[rays_name]
+    triangles = packed_inputs[triangles_name]
+
+    if rays.dimension != 3 or triangles.dimension != 3:
+        raise ValueError("Embree ray_triangle_closest_hit currently requires 3D rays and 3D triangles")
+    rows_ptr = ctypes.POINTER(_RtdlRayClosestHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    call = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_closest_hit_3d")
+    if call is None:
+        raise RuntimeError(
+            "loaded Embree backend library does not export rtdl_embree_run_ray_closest_hit_3d; "
+            "rebuild the Embree backend from current main"
+        )
+    status = call(
+        rays.records,
+        rays.count,
+        triangles.records,
+        triangles.count,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlRayClosestHitRow,
+        field_names=("ray_id", "triangle_id", "t"),
+    )
+
+
 def _run_segment_polygon_hitcount_embree(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
     segments_name = compiled.candidates.left.name
     polygons_name = compiled.candidates.right.name
@@ -2721,6 +2769,20 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_ray3d.restype = ctypes.c_int
+
+    optional_closest_3d = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_closest_hit_3d")
+    if optional_closest_3d is not None:
+        optional_closest_3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayClosestHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_closest_3d.restype = ctypes.c_int
 
     library.rtdl_embree_run_segment_polygon_hitcount.argtypes = [
         ctypes.POINTER(_RtdlSegment),

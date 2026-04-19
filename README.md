@@ -15,9 +15,10 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.8.0`. It releases the accepted app-building
-work that uses the existing RTDL surface without claiming a new
-language/backend line beyond the documented v0.7 runtime surface.
+The current released version is `v0.9.0`. It releases the accepted HIPRT
+backend line plus exact bounded RTXRMQ-style closest-hit support on CPU
+reference, `run_cpu`, and Embree, while preserving the documented platform and
+backend honesty boundaries.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -47,9 +48,10 @@ bounded DB-style analytical workloads.
 
 ## Version Status At A Glance
 
-- current released version: `v0.8.0`
-- current mainline release here: bounded `v0.7.0` RT DB work plus released
-  `v0.8.0` app-building examples over existing RTDL features
+- current released version: `v0.9.0`
+- current mainline release here: bounded `v0.7.0` RT DB work, released
+  `v0.8.0` app-building examples over existing RTDL features, and released
+  `v0.9.0` HIPRT / closest-hit expansion
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -78,12 +80,28 @@ bounded DB-style analytical workloads.
     - Linux performance evidence now covers CPU, Embree, and OptiX as accepted
       correctness-matching backends; Vulkan is explicitly rejected for this app
       until its per-edge hit-count parity defect is fixed
+  - exact bounded RTXRMQ-style range-minimum query app using the new
+    `ray_triangle_closest_hit` primitive plus Python result decoding
+    - Linux Goal573 evidence covers CPU reference and Embree correctness and
+      timing; OptiX, Vulkan, and HIPRT closest-hit kernels remain future native
+      backend work
   - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus
     Python quadtree/opening-rule/force reduction
     - Linux performance evidence now separates RTDL candidate-generation timing
       from Python force-reduction timing across CPU, Embree, OptiX, and Vulkan
   - tutorial and suite consolidation that records missing future language
     pressure instead of claiming new internals
+- current released `v0.9.0` backend and primitive expansion:
+  - HIPRT `run_hiprt` parity coverage for the accepted 18-workload Linux
+    matrix across geometry, 2D geometry, nearest-neighbor, graph, and bounded
+    DB-style analytics
+  - prepared HIPRT reuse evidence for 3D ray/triangle hit-count, 3D
+    fixed-radius nearest-neighbor, graph CSR, and bounded DB table data
+  - exact bounded RTXRMQ-style RMQ through `ray_triangle_closest_hit` on CPU
+    reference, `run_cpu`, and Embree
+  - explicit non-claims: no AMD GPU validation, no HIPRT CPU fallback, no
+    RT-core speedup claim from GTX 1070 evidence, and no OptiX/Vulkan/HIPRT
+    closest-hit support yet
 - previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -91,6 +109,8 @@ bounded DB-style analytical workloads.
 
 For exact status:
 
+- [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
+- [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
@@ -121,6 +141,16 @@ RTDL uses several backends behind one public kernel surface:
   - the Vulkan ray-tracing GPU backend
   - portable GPU path
   - one of the main high-performance graph backends in `v0.6.1`
+- `HIPRT`:
+  - released `v0.9.0` backend surface
+  - `run_hiprt` covers the 18-workload HIPRT correctness/performance matrix
+    on the Linux validation host
+  - `prepare_hiprt` currently covers prepared 3D `ray_triangle_hit_count`,
+    prepared 3D `fixed_radius_neighbors`, and prepared graph CSR reuse for
+    `bfs_discover` / `triangle_match`, plus prepared bounded DB table reuse for
+    `conjunctive_scan`, `grouped_count`, and `grouped_sum`
+  - validated on the Linux NVIDIA CUDA path through HIPRT/Orochi; no AMD GPU
+    validation, RT-core speedup, or CPU fallback is claimed
 - `PostGIS` / `PostgreSQL`:
   - not RTDL backends
   - used as external correctness/timing anchors for some workload families
@@ -273,6 +303,21 @@ PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend
 PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference
 ```
 
+Released `v0.9.0` HIPRT path for Linux hosts with the HIPRT SDK and
+CUDA-compatible Orochi path installed:
+
+```bash
+make build-hiprt HIPRT_PREFIX=$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54
+export RTDL_HIPRT_LIB=$PWD/build/librtdl_hiprt.so
+export LD_LIBRARY_PATH=$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54/hiprt/linux64:${LD_LIBRARY_PATH:-}
+PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py
+```
+
+That example shows the prepared 3D ray/triangle path. The broader `v0.9`
+release status is tracked by the HIPRT matrix: `run_hiprt` has Linux parity
+coverage for 18 workloads across geometry, 2D geometry, nearest neighbor,
+graph, and bounded DB-style analytics.
+
 Windows `cmd.exe`:
 
 ```bat
@@ -339,6 +384,18 @@ make build-optix
 make build-vulkan
 ```
 
+Optional `v0.9.0` HIPRT backend build step on Linux:
+
+```bash
+make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk
+```
+
+After building, set `RTDL_HIPRT_LIB` to the built `librtdl_hiprt.so` and make
+the HIPRT runtime library directory visible through `LD_LIBRARY_PATH` before
+running HIPRT examples or the HIPRT matrix tests. This path is an active
+`v0.9.0` release path with the platform limits documented in the v0.9 support
+matrix.
+
 Windows Embree note: install or unpack Embree for x64, set
 `RTDL_EMBREE_PREFIX` to that Embree prefix, and set `RTDL_VCVARS64` if Visual
 Studio Build Tools are not in the default location. A binary Windows snapshot
@@ -393,11 +450,12 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.8.0`
+- `v0.9.0`
 
 Current mainline release line:
 
-- bounded `v0.7.0` RT DB work, with released `v0.8.0` app-building examples
+- bounded `v0.7.0` RT DB work, released `v0.8.0` app-building examples, and
+  released `v0.9.0` HIPRT / closest-hit expansion
 
 Newest released graph workload surface:
 
@@ -437,6 +495,13 @@ Release and preview layers inside the current repository:
     against SciPy, scikit-learn, FAISS, or production ANN/clustering systems
   - the current claim is "RTDL rows plus Python app logic," not a new released
     backend/language surface
+- `v0.9.0`: released HIPRT backend and closest-hit expansion
+  - `run_hiprt` parity coverage for the accepted 18-workload Linux matrix
+  - prepared HIPRT reuse evidence for selected repeated-query workload data
+  - exact bounded RTXRMQ-style `ray_triangle_closest_hit` support on CPU
+    reference, `run_cpu`, and Embree
+  - no AMD GPU validation, HIPRT CPU fallback, RT-core speedup claim, or
+    OptiX/Vulkan/HIPRT closest-hit support claim
 
 Current public demo artifact:
 
@@ -444,6 +509,7 @@ Current public demo artifact:
 
 For exact backend/workload status, use:
 
+- [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
@@ -516,8 +582,8 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
-- the current v0.8 app-building line is released as `v0.8.0`, but it is still
-  not a new language/backend contract beyond the documented support matrix
+- the current v0.9 line is released as `v0.9.0`, but it is still bounded by the
+  documented Linux HIPRT and closest-hit support matrix
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform
@@ -529,7 +595,8 @@ Important honesty boundaries:
   workloads; Goal 452 is the canonical comparison against best-tested
   PostgreSQL modes, not an exhaustive PostgreSQL tuning claim
 - `v0.7.0` remains the bounded DB release; `v0.8.0` is the app-building
-  release over that surface
+  release over that surface; `v0.9.0` adds HIPRT backend coverage and exact
+  bounded closest-hit RMQ support under its support matrix
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.

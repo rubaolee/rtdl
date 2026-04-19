@@ -1,0 +1,1 @@
+Please review `/Users/rl2025/rtdl_python_only/docs/reports/goal572_v0_9_post_rtxrmq_release_addendum_2026-04-18.md` together with the Goal 571 report/reviews it cites, then write an ACCEPT/REJECT verdict to `/Users/rl2025/rtdl_python_only/docs/reports/goal572_external_review_2026-04-18.md` on whether v0.9 remains release-ready after adding the RTXRMQ paper-derived workload gate.

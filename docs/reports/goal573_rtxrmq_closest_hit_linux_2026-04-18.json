@@ -1,0 +1,128 @@
+{
+  "backends": {
+    "cpu_python_reference": {
+      "iterations": 3,
+      "matches_exact_rmq": true,
+      "max_seconds": 11.423265043998981,
+      "median_seconds": 11.408521232002386,
+      "min_seconds": 11.38723694500004,
+      "row_count": 2048,
+      "sample_rows": [
+        {
+          "index": 0,
+          "query_id": 0,
+          "value": 0.0
+        },
+        {
+          "index": 135,
+          "query_id": 1,
+          "value": 0.010040160642570281
+        },
+        {
+          "index": 270,
+          "query_id": 2,
+          "value": 0.020080321285140562
+        },
+        {
+          "index": 405,
+          "query_id": 3,
+          "value": 0.030120481927710843
+        },
+        {
+          "index": 539,
+          "query_id": 4,
+          "value": 0.0030120481927710845
+        }
+      ],
+      "status": "ok"
+    },
+    "embree": {
+      "iterations": 3,
+      "matches_exact_rmq": true,
+      "max_seconds": 0.04271760799747426,
+      "median_seconds": 0.027439960998890456,
+      "min_seconds": 0.027047077997849556,
+      "row_count": 2048,
+      "sample_rows": [
+        {
+          "index": 0,
+          "query_id": 0,
+          "value": 0.0
+        },
+        {
+          "index": 135,
+          "query_id": 1,
+          "value": 0.010040160642570281
+        },
+        {
+          "index": 270,
+          "query_id": 2,
+          "value": 0.020080321285140562
+        },
+        {
+          "index": 405,
+          "query_id": 3,
+          "value": 0.030120481927710843
+        },
+        {
+          "index": 539,
+          "query_id": 4,
+          "value": 0.0030120481927710845
+        }
+      ],
+      "status": "ok"
+    }
+  },
+  "case": {
+    "iterations": 3,
+    "max_range": 128,
+    "query_count": 2048,
+    "ray_count": 2048,
+    "triangle_count": 8192,
+    "value_count": 4096
+  },
+  "expected_sample": [
+    {
+      "index": 0,
+      "query_id": 0,
+      "value": 0.0
+    },
+    {
+      "index": 135,
+      "query_id": 1,
+      "value": 0.010040160642570281
+    },
+    {
+      "index": 270,
+      "query_id": 2,
+      "value": 0.020080321285140562
+    },
+    {
+      "index": 405,
+      "query_id": 3,
+      "value": 0.030120481927710843
+    },
+    {
+      "index": 539,
+      "query_id": 4,
+      "value": 0.0030120481927710845
+    }
+  ],
+  "goal": 573,
+  "honesty_boundary": "This is an exact bounded RTXRMQ-style RMQ implementation using the new RTDL ray_triangle_closest_hit primitive. In this first closure, CPU reference and Embree are implemented; OptiX, Vulkan, and HIPRT closest-hit kernels remain future native work.",
+  "host": {
+    "embree_version": "(4, 3, 0)",
+    "hiprt_version": "unavailable: FileNotFoundError: RTDL HIPRT backend library not found; build it with `make build-hiprt` or set RTDL_HIPRT_LIB (/tmp/rtdl_goal573_closest/build/librtdl_hiprt.so: /tmp/rtdl_goal573_closest/build/librtdl_hiprt.so: cannot open shared object file: No such file or directory)",
+    "hostname": "lx1",
+    "nvidia_smi": "NVIDIA GeForce GTX 1070, 580.126.09",
+    "optix_version": "unavailable: FileNotFoundError: librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "vulkan_version": "unavailable: FileNotFoundError: librtdl_vulkan not found.  Build it with 'make build-vulkan' or set RTDL_VULKAN_LIB=/path/to/lib."
+  },
+  "paper": {
+    "arxiv_id": "2306.03282v1",
+    "path": "/Users/rl2025/Downloads/2306.03282v1.pdf",
+    "title": "Accelerating Range Minimum Queries with Ray Tracing Cores"
+  }
+}

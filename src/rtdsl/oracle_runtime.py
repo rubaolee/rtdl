@@ -18,6 +18,7 @@ from .ir import CompiledKernel
 from .db_reference import grouped_count_cpu
 from .db_reference import grouped_sum_cpu
 from .reference import Point3D
+from .reference import ray_triangle_closest_hit_cpu
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:
@@ -322,6 +323,10 @@ def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, o
         return _run_overlay_oracle(compiled, normalized_inputs, library)
     if predicate_name == "ray_triangle_hit_count":
         return _run_ray_hitcount_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "ray_triangle_closest_hit":
+        rays_name = compiled.candidates.left.name
+        triangles_name = compiled.candidates.right.name
+        return ray_triangle_closest_hit_cpu(normalized_inputs[rays_name], normalized_inputs[triangles_name])
     if predicate_name == "segment_polygon_hitcount":
         return _run_segment_polygon_hitcount_oracle(compiled, normalized_inputs, library)
     if predicate_name == "segment_polygon_anyhit_rows":

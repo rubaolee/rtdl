@@ -21,7 +21,7 @@ files indexed here.
 - Tracked `docs/reports/` artifacts: `1567`
 - Tracked `history/ad_hoc_reviews/` artifacts: `694`
 - Tracked AI handoff files: `409`
-- Tracked release tags: `9`
+- Tracked release tags: `10`
 
 ## How To Read The History
 
@@ -51,11 +51,15 @@ Use these layers together:
 - `v0.6.1`
 - `v0.7.0`
 - `v0.8.0`
+- `v0.9.0`
 
 ## Current Top Revision Rounds
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.9` | 2026-04-18 | `accepted` | Goal577 v0.9.0 release action | `accepted` | `docs/reports/goal577_v0_9_0_release_action_2026-04-18.md` |
+| `v0.9` | 2026-04-18 | `accepted` | Goal576 v0.9 archive link audit | `accepted` | `docs/reports/goal576_v0_9_archive_link_audit_2026-04-18.md` |
+| `v0.9` | 2026-04-18 | `accepted` | Goal575 v0.9 final release gate after closest-hit | `accepted` | `docs/reports/goal575_v0_9_final_release_gate_after_closest_hit_2026-04-18.md` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal532 v0.8 release authorization and tagging | `accepted` | `2026-04-18-goal532-v0_8-release-authorization-and-tagging` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal531 v0.8 release-candidate public links | `accepted` | `2026-04-18-goal531-v0_8-release-candidate-public-links` |
 | `v0.8` | 2026-04-18 | `accepted` | Goal530 v0.8 release-candidate package | `accepted` | `2026-04-18-goal530-v0_8-release-candidate-package` |

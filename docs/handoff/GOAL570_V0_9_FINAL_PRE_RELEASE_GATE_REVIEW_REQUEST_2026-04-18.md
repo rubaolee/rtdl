@@ -1,0 +1,1 @@
+Please review `/Users/rl2025/rtdl_python_only/docs/reports/goal570_v0_9_final_pre_release_test_doc_audit_2026-04-18.md` plus the referenced Goal 570 JSON artifacts and updated v0.9 public docs, verify whether the final v0.9 total test/doc/flow audit is coherent, honest, and release-ready, and write an ACCEPT/REJECT verdict with blockers if any.

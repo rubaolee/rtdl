@@ -1,0 +1,47 @@
+{
+  "goal": 546,
+  "title": "HIPRT API parity skeleton",
+  "date": "2026-04-18",
+  "status": "accepted_with_2_ai_consensus",
+  "files_changed": [
+    "/Users/rl2025/rtdl_python_only/src/rtdsl/hiprt_runtime.py",
+    "/Users/rl2025/rtdl_python_only/tests/goal543_hiprt_dispatch_test.py",
+    "/Users/rl2025/rtdl_python_only/tests/goal546_hiprt_api_parity_skeleton_test.py"
+  ],
+  "recognized_peer_predicates": [
+    "segment_intersection",
+    "point_in_polygon",
+    "overlay_compose",
+    "ray_triangle_hit_count",
+    "segment_polygon_hitcount",
+    "segment_polygon_anyhit_rows",
+    "point_nearest_segment",
+    "fixed_radius_neighbors",
+    "bounded_knn_rows",
+    "knn_rows",
+    "bfs_discover",
+    "triangle_match",
+    "conjunctive_scan",
+    "grouped_count",
+    "grouped_sum"
+  ],
+  "implemented_predicates": [
+    "ray_triangle_hit_count for Ray3D/Triangle3D"
+  ],
+  "rejection_policy": "Unimplemented peer predicates raise NotImplementedError before backend loading and explicitly state no CPU fallback is used.",
+  "local_validation": {
+    "command": "PYTHONPATH=src:. python3 -m unittest tests.goal543_hiprt_dispatch_test tests.goal544_hiprt_docs_examples_test tests.goal546_hiprt_api_parity_skeleton_test",
+    "result": "Ran 11 tests, OK, skipped=2"
+  },
+  "linux_validation": {
+    "host": "lestat-lx1",
+    "sync_path": "/tmp/rtdl_goal546_hiprt_api_skeleton",
+    "hiprt_prefix": "/home/lestat/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+    "command": "PYTHONPATH=src:. python3 -m unittest tests.goal540_hiprt_probe_test tests.goal541_hiprt_ray_hitcount_test tests.goal543_hiprt_dispatch_test tests.goal544_hiprt_docs_examples_test tests.goal546_hiprt_api_parity_skeleton_test",
+    "result": "Ran 16 tests, OK"
+  },
+  "consensus": {
+    "codex": "ACCEPT",
+    "claude": "/Users/rl2025/rtdl_python_only/docs/reports/goal546_external_review_2026-04-18.md"
+  }
+}
