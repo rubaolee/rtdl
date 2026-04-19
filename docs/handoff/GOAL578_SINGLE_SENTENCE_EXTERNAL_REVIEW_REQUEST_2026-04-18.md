@@ -1,0 +1,1 @@
+Review Goal578 v0.9.1 Apple RT backend bring-up by checking the implementation, focused tests, and evidence report, then write an ACCEPT/REJECT verdict with blockers to `/Users/rl2025/rtdl_python_only/docs/reports/goal578_external_review_2026-04-18.md`.

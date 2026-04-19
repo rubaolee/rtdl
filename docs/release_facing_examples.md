@@ -12,6 +12,8 @@ It currently covers:
 - the released `v0.8.0` app-building line on `main` over existing RTDL features
 - the released `v0.9.0` HIPRT example, clearly marked as a Linux/HIPRT-SDK
   path with explicit platform boundaries
+- the released `v0.9.1` Apple RT example, clearly marked as a
+  bounded macOS/Apple-Silicon closest-hit slice
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -42,6 +44,7 @@ If you want a guided learning order instead of a flat example list, start with:
 | Bounded DB aggregate | `examples/rtdl_db_grouped_count.py` / `examples/rtdl_db_grouped_sum.py` | filtered rows become grouped results |
 | App integration | `examples/rtdl_v0_7_db_app_demo.py` | Python app stays thin around the RTDL query core |
 | HIPRT example | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through `run_hiprt` / `prepare_hiprt` |
+| Apple RT example | `examples/rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through `run_apple_rt` |
 
 This is the practical burden reduction: you choose the workload shape and
 backend flag; RTDL keeps traversal/refinement/result plumbing consistent.
@@ -71,6 +74,8 @@ Before running any command below:
 - optional Embree build/probe: `make build-embree`
 - optional v0.9 HIPRT build on Linux:
   `make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk`
+- optional v0.9.1 Apple RT build on Apple Silicon macOS:
+  `make build-apple-rt`
 - Windows Embree users should set `RTDL_EMBREE_PREFIX` to an x64 Embree prefix
   and `RTDL_VCVARS64` if Visual Studio Build Tools are not in the default
   location; copied binary snapshots must carry the matching
@@ -180,6 +185,33 @@ Current HIPRT boundary:
 - unsupported claims: AMD GPU validation, RT-core speedup evidence from the
   tested GTX 1070 path, CPU fallback, and OptiX/Vulkan/HIPRT native
   `ray_triangle_closest_hit`
+
+## Apple RT Backend
+
+This released v0.9.1 path is for Apple Silicon macOS users. It is
+bounded by Goal578: one 3D closest-hit ray/triangle workload through Apple
+Metal/MPS `MPSRayIntersector`.
+
+Build and run:
+
+```bash
+make build-apple-rt
+PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
+```
+
+The example first computes a CPU Python reference answer, then attempts Apple
+RT. If the Apple RT backend library is unavailable, it prints a JSON result
+with `apple_rt_available: false` and exits successfully. If Apple RT is
+available, it checks approximate row parity for `run_apple_rt`.
+
+Current Apple RT boundary:
+
+- `run_apple_rt` support: 3D `ray_triangle_closest_hit`
+- validated locally on Apple M4 through Goal578 focused tests and Gemini/Claude
+  reviews
+- unsupported claims: full Apple backend parity, Apple hardware speedup
+  evidence, non-macOS support, and Apple support for the broader workload
+  matrix
 
 ## v0.4 nearest-neighbor examples
 

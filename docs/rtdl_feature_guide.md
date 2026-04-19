@@ -15,8 +15,8 @@ This guide is intentionally lighter than the documents in `docs/rtdl/`.
 RTDL is useful when a workload can be expressed as accelerated search plus exact
 refinement. The public authoring target is a 10x reduction in workload-writing
 burden: fewer backend-specific files, less duplicated BVH/RT traversal code,
-and one stable row-emission model for CPU/oracle, Embree, OptiX, and Vulkan
-where the workload/backend pair is supported.
+and one stable row-emission model for CPU/oracle, Embree, OptiX, Vulkan,
+HIPRT, and Apple RT where the workload/backend pair is supported.
 
 This is a developer-productivity promise, not an automatic speedup promise.
 Use release reports for measured performance claims.
@@ -29,6 +29,10 @@ released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, and the released `v0.9.0` HIPRT / closest-hit
 expansion.
 
+The current `v0.9.1` release adds an Apple RT slice:
+`run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
+local Apple M4 host.
+
 Today it includes:
 
 - a kernel authoring surface
@@ -40,6 +44,8 @@ Today it includes:
   story depending on workload and host configuration
 - a released `v0.9.0` HIPRT backend with Linux `run_hiprt` parity coverage for
   the current 18-workload HIPRT matrix
+- a released `v0.9.1` Apple RT backend slice for 3D closest-hit ray/triangle
+  traversal on macOS Apple Silicon
 
 Current supported workload families:
 
@@ -68,6 +74,7 @@ Current release layers:
 - `v0.8.0`: released app-building work on `main` over the released `v0.7.0`
   surface
 - `v0.9.0`: released HIPRT backend and exact bounded closest-hit expansion
+- `v0.9.1`: released Apple Metal/MPS RT backend slice for closest-hit
 
 Plus:
 
@@ -93,8 +100,9 @@ Current user-programming note:
   - [rtdl_barnes_hut_force_app.py](../examples/rtdl_barnes_hut_force_app.py)
 - the released `v0.9.0` line also includes an exact bounded RTXRMQ-style
   range-minimum-query gate using `ray_triangle_closest_hit` on CPU reference,
-  `run_cpu`, and Embree; OptiX, Vulkan, and HIPRT do not yet expose this
-  closest-hit primitive
+  `run_cpu`, and Embree; the released `v0.9.1` Apple RT slice exposes
+  the same primitive for 3D rays/triangles through `run_apple_rt`; OptiX,
+  Vulkan, and HIPRT do not yet expose this closest-hit primitive
 - RTDL provides the query core there, while Python handles application logic and
   output
 
@@ -184,6 +192,8 @@ The current repo can:
   runtime is available; `prepare_hiprt` currently covers prepared 3D
   ray/triangle hit-count, prepared 3D fixed-radius nearest-neighbor, and
   prepared graph CSR paths, plus prepared bounded DB table reuse
+- run the v0.9.1 Apple RT closest-hit path on macOS Apple Silicon
+  after `make build-apple-rt`
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
@@ -209,3 +219,5 @@ RTDL does not yet claim:
 - RT-core hardware speedup from the GTX 1070 Linux app evidence
 - AMD GPU HIPRT validation, HIPRT CPU fallback, HIPRT RT-core speedup evidence,
   or OptiX/Vulkan/HIPRT native support for `ray_triangle_closest_hit`
+- full Apple RT backend parity or Apple hardware speedup evidence beyond the
+  current bounded 3D closest-hit slice

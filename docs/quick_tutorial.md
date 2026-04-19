@@ -76,6 +76,9 @@ Backend note:
   and prepared 3D `fixed_radius_neighbors`, plus prepared graph CSR reuse for
   `bfs_discover` and `triangle_match`, and prepared bounded DB table reuse for
   repeated `conjunctive_scan`, `grouped_count`, and `grouped_sum` queries
+- released `v0.9.1` Apple RT support exists on Apple Silicon macOS;
+  `run_apple_rt` currently covers 3D `ray_triangle_closest_hit` through Apple
+  Metal/MPS only
 
 Optional Embree backend build/probe:
 
@@ -103,6 +106,13 @@ using the HIPRT example or matrix tests:
 make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk
 export RTDL_HIPRT_LIB=$PWD/build/librtdl_hiprt.so
 export LD_LIBRARY_PATH=/path/to/hiprtSdk/hiprt/linux64:${LD_LIBRARY_PATH:-}
+```
+
+On Apple Silicon macOS, build the Apple RT backend before using the
+Apple RT closest-hit example:
+
+```bash
+make build-apple-rt
 ```
 
 ---
@@ -213,6 +223,13 @@ dedicated 3D prepared-path example first:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py
+```
+
+If your Apple Silicon Mac is configured for the Apple RT backend,
+use the dedicated closest-hit example first:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
 ```
 
 What stays the same:

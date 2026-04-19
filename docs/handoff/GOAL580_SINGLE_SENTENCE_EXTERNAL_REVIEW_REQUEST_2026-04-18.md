@@ -1,0 +1,1 @@
+Review Goal580 v0.9.1 Apple RT pre-release test/doc/flow gate by checking the evidence report and changed files, then write an ACCEPT/REJECT verdict with blockers to `/Users/rl2025/rtdl_python_only/docs/reports/goal580_external_review_2026-04-18.md`.

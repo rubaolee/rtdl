@@ -15,7 +15,7 @@ connects the kernel result to the rest of an application.
 | --- | --- | --- |
 | Can do and intended | Released or directly aligned with the RTDL design | spatial joins, nearest-neighbor rows, graph BFS/triangle counting, bounded DB-style scans/groups |
 | Can do but not intended as RTDL's role | Possible when RTDL is used as a kernel inside a larger Python app, but RTDL should not become the whole system | rendering demos, robotics app orchestration, database-style workflows, full simulations |
-| Cannot do yet | Missing language types, predicates, reductions, or backend lowering | full SQL DBMS behavior, general rendering, high-dimensional ANN/PQ, continuous swept-volume collision detection, general HIPRT backend coverage |
+| Cannot do yet | Missing language types, predicates, reductions, or backend lowering | full SQL DBMS behavior, general rendering, high-dimensional ANN/PQ, continuous swept-volume collision detection, general HIPRT or Apple RT backend coverage |
 
 ## What RTDL Can Do And Intends To Do
 
@@ -109,6 +109,10 @@ The released `v0.9.0` HIPRT backend also fits this intended direction.
 repeated-query `prepare_hiprt` currently covers prepared 3D ray/triangle
 hit-count, prepared 3D fixed-radius nearest-neighbor, prepared graph CSR paths,
 and prepared bounded DB table reuse.
+
+The released `v0.9.1` Apple RT slice also fits this direction, but it is
+narrower: `run_apple_rt` currently covers 3D `ray_triangle_closest_hit` through
+Apple Metal/MPS on macOS Apple Silicon only.
 
 ## What RTDL Can Do But Is Not Intended To Become
 
@@ -241,6 +245,10 @@ The current boundary is backend coverage, not language shape: OptiX, Vulkan,
 and HIPRT still need native closest-hit kernels before RTDL can claim full
 four-backend RTXRMQ support.
 
+The released `v0.9.1` Apple RT slice adds one native closest-hit path through
+Apple Metal/MPS. That does not change the remaining OptiX, Vulkan, and HIPRT
+closest-hit gaps.
+
 ### HIPRT Backend Coverage
 
 The released `v0.9.0` HIPRT backend can use `run_hiprt` for the 18-workload
@@ -249,6 +257,14 @@ validation, HIPRT CPU fallback, RT-core speedup evidence from the tested GTX
 1070 path, OptiX/Vulkan/HIPRT native closest-hit support, or broader prepared
 HIPRT reuse beyond the prepared 3D ray/triangle, 3D fixed-radius
 nearest-neighbor, graph CSR, and bounded DB table paths.
+
+### Apple RT Backend Coverage
+
+The released `v0.9.1` Apple RT slice can use `run_apple_rt` for 3D
+`ray_triangle_closest_hit` on Apple Silicon macOS after `make build-apple-rt`.
+It cannot yet claim broad Apple RT parity, Apple hardware speedup evidence,
+non-macOS support, prepared Apple RT reuse, or Apple RT support for the broader
+geometry, nearest-neighbor, graph, and DB workload matrices.
 
 ### Automatic Speedups For Every Workload
 

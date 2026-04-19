@@ -29,6 +29,7 @@ If you are new to RTDL, use these files first:
 | DB-style aggregation | `rtdl_db_grouped_count.py` / `rtdl_db_grouped_sum.py` | rows plus predicates become grouped aggregates |
 | app-level use | `rtdl_v0_7_db_app_demo.py` | a Python app delegates the query core to RTDL |
 | HIPRT example | `rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through the prepared HIPRT path |
+| Apple RT example | `rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through the Apple Metal/MPS path |
 
 - `rtdl_hello_world.py`
 - `rtdl_hello_world_backends.py`
@@ -49,6 +50,7 @@ If you are new to RTDL, use these files first:
 - `rtdl_v0_7_db_app_demo.py`
 - `rtdl_v0_7_db_kernel_app_demo.py`
 - `rtdl_hiprt_ray_triangle_hitcount.py`
+- `rtdl_apple_rt_closest_hit.py`
 - `rtdl_sales_risk_screening.py`
 - `rtdl_service_coverage_gaps.py`
 - `rtdl_event_hotspot_screening.py`
@@ -146,3 +148,14 @@ Current HIPRT boundary:
   limited to the paths documented in the v0.9 support matrix
 - this is not an AMD GPU validation, RT-core speedup claim, CPU fallback, or
   OptiX/Vulkan/HIPRT closest-hit support claim
+
+Current Apple RT boundary:
+
+- `rtdl_apple_rt_closest_hit.py` runs a 3D ray/triangle closest-hit kernel
+  through CPU Python reference first, then attempts Apple RT if the macOS
+  `build/librtdl_apple_rt.dylib` library is available
+- build it on Apple Silicon macOS with `make build-apple-rt`
+- this is the v0.9.1 released slice: `run_apple_rt` currently supports only
+  `ray_triangle_closest_hit` over 3D rays and 3D triangles
+- this is not a full Apple backend parity claim and not a measured hardware
+  speedup claim

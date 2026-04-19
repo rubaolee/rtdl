@@ -1,4 +1,4 @@
-# RTDL v0.9.0 Release Package
+# RTDL v0.9 Release Package
 
 This package records the released `v0.9.0` line.
 
@@ -10,6 +10,11 @@ Goals 571-574 added and closed the RTXRMQ paper workload, including the new
 
 The final release gate is Goal 575. Goal 576 records that broader archive-link
 debt is non-blocking for the current public v0.9 release path.
+
+Release note: Goal 578 starts the `v0.9.1` Apple RT line on main. It adds
+`run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on
+macOS Apple Silicon. This is a bounded released slice, not a full
+Apple backend parity claim or speedup claim.
 
 Start here:
 
@@ -39,3 +44,6 @@ Start here:
 - [Goal 576 Archive Link Audit](../../reports/goal576_v0_9_archive_link_audit_2026-04-18.md)
 - [Goal 576 Codex Review](../../reports/goal576_codex_review_2026-04-18.md)
 - [Goal 576 Gemini Flash Review](../../reports/goal576_gemini_flash_review_2026-04-18.md)
+- [Goal 578 v0.9.1 Apple RT Backend Bring-Up](../../reports/goal578_v0_9_1_apple_rt_backend_bringup_2026-04-18.md)
+- [Goal 578 Gemini Flash Review](../../reports/goal578_gemini_flash_review_2026-04-18.md)
+- [Goal 578 Claude Review](../../reports/goal578_claude_review_2026-04-18.md)

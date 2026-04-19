@@ -8,6 +8,7 @@ BUILD_DIR := build
 #   make build-optix
 #   make build-hiprt
 #   make build-vulkan
+#   make build-apple-rt
 #
 # Historical and goal-numbered targets below are preserved for auditability and
 # internal reproduction work. They are not the primary front-door interface for
@@ -15,13 +16,15 @@ BUILD_DIR := build
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-OPTIX_LIB_NAME   := librtdl_optix.dylib
-HIPRT_LIB_NAME   := librtdl_hiprt.dylib
-VULKAN_LIB_NAME  := librtdl_vulkan.dylib
+	OPTIX_LIB_NAME   := librtdl_optix.dylib
+	HIPRT_LIB_NAME   := librtdl_hiprt.dylib
+	VULKAN_LIB_NAME  := librtdl_vulkan.dylib
+	APPLE_RT_LIB_NAME := librtdl_apple_rt.dylib
 else
-OPTIX_LIB_NAME   := librtdl_optix.so
-HIPRT_LIB_NAME   := librtdl_hiprt.so
-VULKAN_LIB_NAME  := librtdl_vulkan.so
+	OPTIX_LIB_NAME   := librtdl_optix.so
+	HIPRT_LIB_NAME   := librtdl_hiprt.so
+	VULKAN_LIB_NAME  := librtdl_vulkan.so
+	APPLE_RT_LIB_NAME := librtdl_apple_rt.so
 endif
 
 OPTIX_CANDIDATES := \
@@ -133,7 +136,11 @@ VULKAN_CXXFLAGS := \
 
 VULKAN_LDFLAGS := -L$(VULKAN_LIB_DIR) -lvulkan $(SHADERC_LINK) $(GEOS_LIBS)
 
-.PHONY: help build build-embree build-optix build-hiprt build-vulkan run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
+CXX_APPLE_RT ?= xcrun clang++
+APPLE_RT_CXXFLAGS := -std=c++17 -O3 -shared -fPIC -ObjC++ -Wno-deprecated-declarations
+APPLE_RT_LDFLAGS := -framework Foundation -framework Metal -framework MetalPerformanceShaders
+
+.PHONY: help build build-embree build-optix build-hiprt build-vulkan build-apple-rt run run-rtdsl-py run-rtdsl-sim run-rtdsl-embree run-rtdsl-baseline bench-rtdsl-baseline eval-rtdsl-embree eval-section-5-6 eval-section-5-6-publish-2026-03-31 report-rtdsl-paper report-goal14-section-5-6-estimate run-goal15-compare run-goal18-compare run-goal19-compare run-goal23-reproduction test verify clean
 
 help:
 	@echo "Public targets:"
@@ -144,8 +151,20 @@ help:
 	@echo "  build-optix   - build the OptiX backend library"
 	@echo "  build-hiprt   - build/probe the HIPRT backend library"
 	@echo "  build-vulkan  - build the Vulkan backend library"
+	@echo "  build-apple-rt - build the Apple Metal/MPS RT backend library"
 	@echo ""
 	@echo "Other targets are preserved for internal reproduction and audit work."
+
+build-apple-rt:
+	mkdir -p $(BUILD_DIR)
+	@if [ "$(UNAME_S)" != "Darwin" ]; then \
+		echo "RTDL Apple RT backend is only buildable on macOS"; \
+		exit 1; \
+	fi
+	$(CXX_APPLE_RT) $(APPLE_RT_CXXFLAGS) \
+		src/native/rtdl_apple_rt.mm \
+		$(APPLE_RT_LDFLAGS) \
+		-o $(BUILD_DIR)/$(APPLE_RT_LIB_NAME)
 
 build-vulkan:
 	mkdir -p $(BUILD_DIR)

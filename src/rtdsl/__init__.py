@@ -64,6 +64,11 @@ from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import embree_version
+from .apple_rt_runtime import apple_rt_context_probe
+from .apple_rt_runtime import apple_rt_version
+from .apple_rt_runtime import AppleRtRowView
+from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
+from .apple_rt_runtime import run_apple_rt
 from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
 from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
@@ -687,6 +692,9 @@ __all__ = [
     "download_monuseg_training_zip",
     "build_goal141_public_case",
     "prepare_embree",
+    "apple_rt_context_probe",
+    "apple_rt_version",
+    "AppleRtRowView",
     "prepare_embree_db_dataset",
     "prepare_postgresql_denorm_table",
     "PreparedEmbreeDbDataset",
@@ -697,6 +705,7 @@ __all__ = [
     "ray_triangle_closest_hit",
     "ray_triangle_hit_count_cpu",
     "ray_triangle_closest_hit_cpu",
+    "ray_triangle_closest_hit_apple_rt",
     "ray_triangle_hit_count_hiprt",
     "PreparedHiprtRayTriangleHitCount3D",
     "RAYJOIN_PAPER_TARGETS",
@@ -708,6 +717,7 @@ __all__ = [
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_embree",
+    "run_apple_rt",
     "run_goal23_reproduction",
     "run_cpu",
     "run_cpu_python_reference",

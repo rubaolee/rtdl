@@ -1,8 +1,8 @@
-# RTDL v0.9.0 Support Matrix
+# RTDL v0.9 Support Matrix
 
 Date: 2026-04-18
 
-Status: released as `v0.9.0`
+Status: `v0.9.1` released
 
 ## Scope
 
@@ -58,13 +58,14 @@ Canonical evidence:
 
 ## Backend Status
 
-| Backend | v0.9.0 role |
+| Backend | v0.9 role |
 | --- | --- |
 | `cpu_python_reference` | exact truth path for matrix parity |
 | Embree | existing CPU RT backend comparison target |
 | OptiX | existing NVIDIA RT backend comparison target |
 | Vulkan | existing portable GPU backend comparison target |
 | HIPRT | released backend via HIPRT/Orochi CUDA mode on Linux |
+| Apple RT | released v0.9.1 backend slice via Apple Metal/MPS on macOS Apple Silicon |
 
 ## HIPRT Workload Matrix
 
@@ -112,6 +113,31 @@ Linux Goal 573 evidence:
 This closes the missing language/runtime primitive for CPU reference, `run_cpu`,
 and Embree. It does not claim OptiX, Vulkan, or HIPRT native closest-hit
 support.
+
+## Apple RT / v0.9.1 Matrix
+
+Goal 578 adds the first Apple RT backend slice in `v0.9.1`.
+
+| Primitive / workload | CPU Python reference | `run_cpu` | Embree | Apple RT | OptiX | Vulkan | HIPRT |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `ray_triangle_closest_hit` 3D | supported | supported | supported | supported | future work | future work | future work |
+
+Local Apple M4 evidence:
+
+- build command: `make build-apple-rt`
+- focused command: `PYTHONPATH=src:. python3 -m unittest tests.goal578_apple_rt_backend_test -v`
+- result: `Ran 4 tests ... OK`
+- backend path: `/Users/rl2025/rtdl_python_only/build/librtdl_apple_rt.dylib`
+- implementation report: `/Users/rl2025/rtdl_python_only/docs/reports/goal578_v0_9_1_apple_rt_backend_bringup_2026-04-18.md`
+- Gemini review: `/Users/rl2025/rtdl_python_only/docs/reports/goal578_gemini_flash_review_2026-04-18.md`
+- Claude review: `/Users/rl2025/rtdl_python_only/docs/reports/goal578_claude_review_2026-04-18.md`
+
+Boundary:
+
+- Apple RT currently means the macOS Metal/MPS `MPSRayIntersector` path.
+- `run_apple_rt` currently supports only 3D `ray_triangle_closest_hit`.
+- No full Apple backend parity, performance-leading claim, or measured Apple
+  hardware RT-core speedup is claimed yet.
 
 ## Prepared API Status
 

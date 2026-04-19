@@ -1,0 +1,1 @@
+Review Goal579 v0.9.1 Apple RT public-doc/example integration by checking the evidence report and changed public files, then write an ACCEPT/REJECT verdict with blockers to `/Users/rl2025/rtdl_python_only/docs/reports/goal579_external_review_2026-04-18.md`.

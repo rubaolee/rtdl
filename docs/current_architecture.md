@@ -2,8 +2,9 @@
 
 This is the current public architecture page for users evaluating RTDL.
 Historical architecture reports are preserved elsewhere, but this page explains
-the released `v0.7.0` design, the released `v0.8.0` app-building layer, and
-the released `v0.9.0` HIPRT / closest-hit expansion on top of it.
+the released `v0.7.0` design, the released `v0.8.0` app-building layer, the
+released `v0.9.0` HIPRT / closest-hit expansion, and the released `v0.9.1`
+Apple RT closest-hit slice on top of it.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
@@ -22,7 +23,7 @@ ray-tracing-style search:
 
 The intended benefit is a **10x reduction in authoring burden** for modern
 ray-tracing workloads. Instead of hand-writing separate Embree, OptiX, Vulkan,
-HIPRT, and CPU code paths, the user writes one RTDL kernel shape and
+HIPRT, Apple RT, and CPU code paths, the user writes one RTDL kernel shape and
 chooses a backend when running it.
 
 This is not a blanket performance claim. Performance depends on workload,
@@ -51,6 +52,10 @@ the current 18-workload HIPRT matrix. It does not claim AMD GPU validation,
 RT-core speedup evidence, CPU fallback, or OptiX/Vulkan/HIPRT support for the
 new closest-hit primitive.
 
+The released `v0.9.1` Apple RT work provides `run_apple_rt` for 3D
+`ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon. It
+does not claim full Apple backend parity or performance speedup yet.
+
 ## What Python Owns
 
 Python remains the application layer:
@@ -76,6 +81,7 @@ kernels and native backend paths, not in Python loops.
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
 | HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
+| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 ## Workload Families
@@ -97,6 +103,9 @@ Point3D probe batches against prepared Point3D build sets for fixed-radius
 nearest-neighbor rows, prepared graph CSR build data for BFS discovery and
 triangle-match query batches, and prepared bounded DB table reuse for
 conjunctive scan, grouped count, and grouped sum.
+
+The released Apple RT slice is narrower: `run_apple_rt` currently covers only
+3D `ray_triangle_closest_hit` over Ray3D/Triangle3D data.
 
 Each family is documented with its own current support boundary. Not every
 backend/workload/platform combination has the same maturity.
@@ -157,6 +166,8 @@ Do not read the current system as:
 - a claim that every platform has identical backend coverage
 - a claim that HIPRT is AMD-validated, RT-core-accelerated on the tested GTX
   1070 path, a CPU fallback backend, or a native closest-hit backend today
+- a claim that Apple RT has full workload parity or measured speedup beyond
+  the current 3D closest-hit slice
 
 For exact release claims, read:
 

@@ -27,7 +27,8 @@ RT stack.
 | 7 | [Database Workloads](db_workloads.md) | Released `v0.7.0` bounded DB kernels |
 | 8 | [v0.8 App Building](v0_8_app_building.md) | Build apps from existing RTDL rows plus Python orchestration |
 | 9 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
-| 10 | [HIPRT Candidate Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the active v0.9 HIPRT candidate |
+| 10 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the released v0.9 HIPRT surface |
+| 11 | [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py) | See the released v0.9.1 Apple Metal/MPS closest-hit slice |
 
 ---
 
@@ -73,7 +74,8 @@ application.
 
 - [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
 - [v0.8 App Building](v0_8_app_building.md)
-- [HIPRT Candidate Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+- [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+- [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py)
 
 ---
 
@@ -87,7 +89,8 @@ Once you finish the ladder, the next useful destinations are:
 - [Feature Homes](../features/README.md)
 - [RTDL Language Docs](../rtdl/README.md)
 - [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
-- [HIPRT Candidate Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+- [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+- [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py)
 
 Use the tutorials first. Use the reference pages when you want exact contracts,
 edge cases, and backend/status detail.

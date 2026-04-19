@@ -15,10 +15,11 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.9.0`. It releases the accepted HIPRT
-backend line plus exact bounded RTXRMQ-style closest-hit support on CPU
-reference, `run_cpu`, and Embree, while preserving the documented platform and
-backend honesty boundaries.
+The current released version is `v0.9.1`. It releases the accepted HIPRT
+backend line, exact bounded RTXRMQ-style closest-hit support on CPU reference,
+`run_cpu`, and Embree, plus the bounded Apple RT closest-hit slice on macOS
+Apple Silicon, while preserving the documented platform and backend honesty
+boundaries.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -48,10 +49,10 @@ bounded DB-style analytical workloads.
 
 ## Version Status At A Glance
 
-- current released version: `v0.9.0`
-- current mainline release here: bounded `v0.7.0` RT DB work, released
-  `v0.8.0` app-building examples over existing RTDL features, and released
-  `v0.9.0` HIPRT / closest-hit expansion
+- current released version: `v0.9.1`
+- current mainline release here: `v0.9.1`, which layers the released Apple RT
+  closest-hit slice on top of the `v0.9.0` HIPRT / closest-hit expansion, the
+  released `v0.8.0` app-building examples, and the bounded `v0.7.0` RT DB work
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -102,6 +103,13 @@ bounded DB-style analytical workloads.
   - explicit non-claims: no AMD GPU validation, no HIPRT CPU fallback, no
     RT-core speedup claim from GTX 1070 evidence, and no OptiX/Vulkan/HIPRT
     closest-hit support yet
+- current released `v0.9.1` Apple RT expansion:
+  - `run_apple_rt` supports 3D `ray_triangle_closest_hit` on macOS Apple
+    Silicon through Apple Metal/MPS
+  - local Apple M4 Goal578 evidence covers build, context probe, direct helper
+    parity, `run_apple_rt` parity, and empty-triangle behavior
+  - explicit non-claims: no full Apple backend parity, no Apple speedup claim,
+    and no non-closest-hit Apple RT workload support yet
 - previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -111,6 +119,7 @@ For exact status:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
+- [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
@@ -151,6 +160,11 @@ RTDL uses several backends behind one public kernel surface:
     `conjunctive_scan`, `grouped_count`, and `grouped_sum`
   - validated on the Linux NVIDIA CUDA path through HIPRT/Orochi; no AMD GPU
     validation, RT-core speedup, or CPU fallback is claimed
+- `Apple RT`:
+  - released `v0.9.1` backend slice on macOS Apple Silicon
+  - currently exposes `run_apple_rt` for 3D `ray_triangle_closest_hit`
+  - implemented through Apple Metal/MPS `MPSRayIntersector`
+  - no full parity or hardware-speedup claim is made yet
 - `PostGIS` / `PostgreSQL`:
   - not RTDL backends
   - used as external correctness/timing anchors for some workload families
@@ -170,6 +184,8 @@ Current honest platform story:
 - `local macOS`:
   - bounded local support for portable Python/native paths
   - focused regression and local checks
+  - bounded Apple RT checks on Apple Silicon after
+    `make build-apple-rt`
 
 If you want the exact current boundary instead of the short front-page summary,
 use:
@@ -318,6 +334,17 @@ release status is tracked by the HIPRT matrix: `run_hiprt` has Linux parity
 coverage for 18 workloads across geometry, 2D geometry, nearest neighbor,
 graph, and bounded DB-style analytics.
 
+Released `v0.9.1` Apple RT path for Apple Silicon macOS:
+
+```bash
+make build-apple-rt
+PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
+```
+
+That example compares CPU Python reference rows against `run_apple_rt` for 3D
+closest-hit ray/triangle queries. It is a bounded released slice, not full
+Apple backend parity or a speedup claim.
+
 Windows `cmd.exe`:
 
 ```bat
@@ -396,6 +423,16 @@ running HIPRT examples or the HIPRT matrix tests. This path is an active
 `v0.9.0` release path with the platform limits documented in the v0.9 support
 matrix.
 
+Optional `v0.9.1` Apple RT build step on Apple Silicon macOS:
+
+```bash
+make build-apple-rt
+```
+
+After building, `examples/rtdl_apple_rt_closest_hit.py` and
+`tests/goal578_apple_rt_backend_test.py` can exercise the current Apple RT
+closest-hit slice.
+
 Windows Embree note: install or unpack Embree for x64, set
 `RTDL_EMBREE_PREFIX` to that Embree prefix, and set `RTDL_VCVARS64` if Visual
 Studio Build Tools are not in the default location. A binary Windows snapshot
@@ -455,7 +492,8 @@ Current release:
 Current mainline release line:
 
 - bounded `v0.7.0` RT DB work, released `v0.8.0` app-building examples, and
-  released `v0.9.0` HIPRT / closest-hit expansion
+  released `v0.9.0` HIPRT / closest-hit expansion, with released `v0.9.1`
+  Apple RT closest-hit support
 
 Newest released graph workload surface:
 
@@ -502,6 +540,10 @@ Release and preview layers inside the current repository:
     reference, `run_cpu`, and Embree
   - no AMD GPU validation, HIPRT CPU fallback, RT-core speedup claim, or
     OptiX/Vulkan/HIPRT closest-hit support claim
+- `v0.9.1`: released Apple RT closest-hit slice
+  - `run_apple_rt` supports 3D `ray_triangle_closest_hit` through Apple
+    Metal/MPS on macOS Apple Silicon
+  - no full Apple RT parity or speedup claim yet
 
 Current public demo artifact:
 
@@ -510,6 +552,7 @@ Current public demo artifact:
 For exact backend/workload status, use:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
+- [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
 - [RTDL v0.6 Release Statement](docs/release_reports/v0_6/release_statement.md)
@@ -531,6 +574,7 @@ The repository currently includes:
   - Embree: Intel CPU ray-tracing backend
   - OptiX: NVIDIA GPU ray-tracing backend
   - Vulkan: Vulkan ray-tracing GPU backend
+  - Apple RT: macOS Apple Silicon Metal/MPS backend slice for 3D closest-hit
 - examples ranging from smallest first-run scripts to RTDL-plus-Python demos
 - accepted v0.8 app-building examples that show RTDL rows inside Python apps
 
@@ -582,8 +626,8 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
-- the current v0.9 line is released as `v0.9.0`, but it is still bounded by the
-  documented Linux HIPRT and closest-hit support matrix
+- the current v0.9 line is released as `v0.9.1`, but it is still bounded by the
+  documented Linux HIPRT, closest-hit, and Apple RT support matrix
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform
@@ -596,7 +640,8 @@ Important honesty boundaries:
   PostgreSQL modes, not an exhaustive PostgreSQL tuning claim
 - `v0.7.0` remains the bounded DB release; `v0.8.0` is the app-building
   release over that surface; `v0.9.0` adds HIPRT backend coverage and exact
-  bounded closest-hit RMQ support under its support matrix
+  bounded closest-hit RMQ support under its support matrix; `v0.9.1` releases
+  the bounded Apple RT closest-hit line
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.

@@ -20,16 +20,18 @@ Read these in order:
 9. [v0.8 App Building](tutorials/v0_8_app_building.md)
 10. [ITRE App Programming Model](rtdl/itre_app_model.md)
 11. [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
-12. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-13. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
-14. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-15. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-16. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+12. [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+13. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+14. [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
+15. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
+16. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
+17. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+18. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 If you need the previous graph release line, also read:
 
-16. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-17. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+19. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+20. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -78,9 +80,11 @@ audited release claims.
 - [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
+- [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [Release-Facing Examples](release_facing_examples.md)
 - [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+- [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
 - [RTDL Language Docs Index](rtdl/README.md)
 - [Feature Homes](features/README.md)
 - [Workloads And Research Foundations](workloads_and_research_foundations.md)
@@ -95,6 +99,7 @@ audited release claims.
 ## Release Packages
 
 - [v0.9 Release Package](release_reports/v0_9/README.md)
+- [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
 - [v0.8 Release Package](release_reports/v0_8/README.md)
 - [v0.6 Release Package](release_reports/v0_6/README.md)
 - [v0.7 Release Package](release_reports/v0_7/README.md)
@@ -127,10 +132,11 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.9.0`
+- current released version is `v0.9.1`
 - current `main` carries the released bounded `v0.7.0` DB line, released
   `v0.8.0` app-building examples over existing RTDL features, and released
-  `v0.9.0` HIPRT / closest-hit expansion
+  `v0.9.0` HIPRT / closest-hit expansion, plus the released `v0.9.1` Apple RT
+  closest-hit slice
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -182,6 +188,9 @@ Keep these current facts in mind while reading:
   RTXRMQ-style closest-hit support on CPU reference, `run_cpu`, and Embree; it
   has no AMD GPU validation, no RT-core speedup claim, no CPU fallback, and no
   OptiX/Vulkan/HIPRT closest-hit support yet
+- the released `v0.9.1` line adds Apple Metal/MPS `run_apple_rt`
+  support for 3D `ray_triangle_closest_hit`; it does not claim full Apple
+  backend parity or measured speedup yet
 - the released `v0.2.0` surface remains a stable historical
   workload/documentation baseline
 - the released `v0.3.0` line is an application-style demo layer on top of that
