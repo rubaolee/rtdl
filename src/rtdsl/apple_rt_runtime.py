@@ -26,8 +26,24 @@ from .runtime import _run_cpu_python_reference_from_normalized
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 from .reference import _point_in_polygon as _reference_point_in_polygon
+from .reference import _point_segment_distance as _reference_point_segment_distance
+from .reference import _polygon_unit_cells as _reference_polygon_unit_cells
+from .reference import _segment_hits_polygon as _reference_segment_hits_polygon
 
-APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit", "ray_triangle_hit_count", "segment_intersection"})
+APPLE_RT_NATIVE_PREDICATES = frozenset(
+    {
+        "point_in_polygon",
+        "point_nearest_segment",
+        "overlay_compose",
+        "polygon_pair_overlap_area_rows",
+        "polygon_set_jaccard",
+        "ray_triangle_closest_hit",
+        "ray_triangle_hit_count",
+        "segment_intersection",
+        "segment_polygon_anyhit_rows",
+        "segment_polygon_hitcount",
+    }
+)
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
         "bfs_discover",
@@ -76,9 +92,37 @@ _APPLE_RT_SUPPORT_NOTES = {
     "point_in_polygon": {
         "native_candidate_discovery": "shape_dependent",
         "cpu_refinement": "exact_point_in_polygon",
-        "native_only": "supported_for_point2d_polygon2d_positive_hits",
-        "native_shapes": ("Point2D/Polygon2D positive_hits",),
-        "notes": "Apple Metal/MPS polygon bounding-box traversal for positive-hit candidates; full_matrix remains compatibility-only.",
+        "native_only": "supported_for_point2d_polygon2d",
+        "native_shapes": ("Point2D/Polygon2D positive_hits", "Point2D/Polygon2D full_matrix"),
+        "notes": "Apple Metal/MPS polygon bounding-box traversal discovers positive hits; CPU materializes full_matrix false rows when requested.",
+    },
+    "point_nearest_segment": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "exact_distance_ranking",
+        "native_only": "supported_for_point2d_segment2d",
+        "native_shapes": ("Point2D/Segment2D",),
+        "notes": "Apple Metal/MPS expanded segment-box traversal for candidates, then exact point-segment distance ranking.",
+    },
+    "overlay_compose": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "full_pair_row_materialization",
+        "native_only": "supported_for_polygon2d_polygon2d",
+        "native_shapes": ("Polygon2D/Polygon2D",),
+        "notes": "Apple Metal/MPS segment-intersection and point-in-polygon traversal discover overlay flags; CPU materializes the required all-pairs rows.",
+    },
+    "polygon_pair_overlap_area_rows": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "exact_unit_cell_area",
+        "native_only": "supported_for_polygon2d_polygon2d",
+        "native_shapes": ("Polygon2D/Polygon2D",),
+        "notes": "Apple Metal/MPS point-polygon and segment-polygon traversal finds candidate polygon pairs, then exact unit-cell area is computed.",
+    },
+    "polygon_set_jaccard": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "exact_unit_cell_set_jaccard",
+        "native_only": "supported_for_polygon2d_polygon2d",
+        "native_shapes": ("Polygon2D/Polygon2D",),
+        "notes": "Apple Metal/MPS polygon-pair candidate discovery bounds the intersection phase; exact set areas remain CPU-refined.",
     },
     "ray_triangle_closest_hit": {
         "native_candidate_discovery": "yes",
@@ -100,6 +144,20 @@ _APPLE_RT_SUPPORT_NOTES = {
         "native_only": "supported_for_2d",
         "native_shapes": ("Segment2D/Segment2D",),
         "notes": "Apple Metal/MPS traversal over extruded segment slabs plus exact CPU endpoint/intersection refinement.",
+    },
+    "segment_polygon_anyhit_rows": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "exact_segment_polygon",
+        "native_only": "supported_for_segment2d_polygon2d",
+        "native_shapes": ("Segment2D/Polygon2D",),
+        "notes": "Apple Metal/MPS polygon bounding-box traversal for segment candidates, then exact segment/polygon refinement.",
+    },
+    "segment_polygon_hitcount": {
+        "native_candidate_discovery": "yes",
+        "cpu_refinement": "exact_segment_polygon",
+        "native_only": "supported_for_segment2d_polygon2d",
+        "native_shapes": ("Segment2D/Polygon2D",),
+        "notes": "Apple Metal/MPS polygon bounding-box traversal for segment candidates, then exact hit-count refinement.",
     },
 }
 
@@ -245,6 +303,13 @@ class _RtdlPolygonBounds2D(ctypes.Structure):
 class _RtdlPointPolygonCandidateRow(ctypes.Structure):
     _fields_ = [
         ("point_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
+    ]
+
+
+class _RtdlSegmentPolygonCandidateRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
         ("polygon_id", ctypes.c_uint32),
     ]
 
@@ -418,6 +483,17 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_point_polygon_candidates_2d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_segment_polygon_candidates_2d.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonBounds2D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonCandidateRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_segment_polygon_candidates_2d.restype = ctypes.c_int
     library.rtdl_apple_rt_run_lsi.argtypes = [
         ctypes.POINTER(_RtdlSegment),
         ctypes.c_size_t,
@@ -869,6 +945,381 @@ def point_in_polygon_positive_hits_apple_rt(
     return tuple(rows)
 
 
+def point_in_polygon_full_matrix_apple_rt(
+    points: tuple[_CanonicalPoint2D, ...],
+    polygons: tuple[_CanonicalPolygon, ...],
+    *,
+    boundary_mode: str = "inclusive",
+) -> tuple[dict[str, object], ...]:
+    positive_pairs = {
+        (int(row["point_id"]), int(row["polygon_id"]))
+        for row in point_in_polygon_positive_hits_apple_rt(points, polygons, boundary_mode=boundary_mode)
+    }
+    return tuple(
+        {"point_id": point.id, "polygon_id": polygon.id, "contains": 1 if (point.id, polygon.id) in positive_pairs else 0}
+        for point in points
+        for polygon in polygons
+    )
+
+
+def _point_segment_candidate_radius(
+    points: tuple[_CanonicalPoint2D, ...],
+    segments: tuple[_CanonicalSegment, ...],
+) -> float:
+    xs = [point.x for point in points]
+    ys = [point.y for point in points]
+    for segment in segments:
+        xs.extend((segment.x0, segment.x1))
+        ys.extend((segment.y0, segment.y1))
+    if not xs or not ys:
+        return 0.0
+    dx = max(xs) - min(xs)
+    dy = max(ys) - min(ys)
+    return (dx * dx + dy * dy) ** 0.5 + 1.0e-6
+
+
+def point_segment_candidates_apple_rt(
+    points: tuple[_CanonicalPoint2D, ...],
+    segments: tuple[_CanonicalSegment, ...],
+) -> tuple[dict[str, object], ...]:
+    if any(not isinstance(point, _CanonicalPoint2D) for point in points):
+        raise ValueError("Apple RT point_nearest_segment currently requires 2D point inputs")
+    if any(not isinstance(segment, _CanonicalSegment) for segment in segments):
+        raise ValueError("Apple RT point_nearest_segment currently requires 2D segment inputs")
+    if not points or not segments:
+        return ()
+    radius = _point_segment_candidate_radius(points, segments)
+    segment_boxes = (_RtdlPolygonBounds2D * len(segments))()
+    for index, segment in enumerate(segments):
+        segment_boxes[index] = _RtdlPolygonBounds2D(
+            segment.id,
+            min(segment.x0, segment.x1) - radius,
+            min(segment.y0, segment.y1) - radius,
+            max(segment.x0, segment.x1) + radius,
+            max(segment.y0, segment.y1) + radius,
+        )
+    library = _load_library()
+    point_records = _pack_points_2d(points)
+    rows_ptr = ctypes.POINTER(_RtdlPointPolygonCandidateRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_point_polygon_candidates_2d(
+        point_records,
+        len(points),
+        segment_boxes,
+        len(segments),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        candidates = {
+            (int(rows_ptr[index].point_id), int(rows_ptr[index].polygon_id))
+            for index in range(row_count.value)
+        }
+    finally:
+        if bool(rows_ptr):
+            library.rtdl_apple_rt_free_rows(rows_ptr)
+    return tuple(
+        {"point_id": point_id, "segment_id": segment_id}
+        for point_id, segment_id in sorted(candidates, key=lambda item: (item[0], item[1]))
+    )
+
+
+def point_nearest_segment_apple_rt(
+    points: tuple[_CanonicalPoint2D, ...],
+    segments: tuple[_CanonicalSegment, ...],
+) -> tuple[dict[str, object], ...]:
+    point_by_id = {point.id: point for point in points}
+    segment_by_id = {segment.id: segment for segment in segments}
+    best_by_point: dict[int, tuple[int, float]] = {}
+    for candidate in point_segment_candidates_apple_rt(points, segments):
+        point_id = int(candidate["point_id"])
+        segment_id = int(candidate["segment_id"])
+        distance = _reference_point_segment_distance(point_by_id[point_id], segment_by_id[segment_id])
+        best = best_by_point.get(point_id)
+        if best is None or distance < best[1] - 1.0e-7 or (
+            abs(distance - best[1]) <= 1.0e-7 and segment_id < best[0]
+        ):
+            best_by_point[point_id] = (segment_id, distance)
+    rows = []
+    for point in points:
+        best = best_by_point.get(point.id)
+        if best is None:
+            continue
+        rows.append({"point_id": point.id, "segment_id": best[0], "distance": best[1]})
+    return tuple(rows)
+
+
+def segment_polygon_candidates_apple_rt(
+    segments: tuple[_CanonicalSegment, ...],
+    polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    if any(not isinstance(segment, _CanonicalSegment) for segment in segments):
+        raise ValueError("Apple RT segment-polygon candidates currently require 2D segments")
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in polygons):
+        raise ValueError("Apple RT segment-polygon candidates currently require 2D polygons")
+    library = _load_library()
+    segment_records = _pack_segments(segments)
+    polygon_records = _pack_polygon_bounds_2d(polygons)
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonCandidateRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_segment_polygon_candidates_2d(
+        segment_records,
+        len(segments),
+        polygon_records,
+        len(polygons),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        candidates = {
+            (int(rows_ptr[index].segment_id), int(rows_ptr[index].polygon_id))
+            for index in range(row_count.value)
+        }
+    finally:
+        if bool(rows_ptr):
+            library.rtdl_apple_rt_free_rows(rows_ptr)
+
+    # A segment fully contained inside a polygon's candidate box does not cross
+    # a box face, so surface-ray traversal alone cannot discover it. Endpoint
+    # point-in-polygon uses the existing MPS box candidate path and keeps
+    # native_only candidate discovery hardware-backed before exact refinement.
+    endpoint_points = []
+    endpoint_to_segment: dict[int, int] = {}
+    for index, segment in enumerate(segments):
+        start_id = index * 2 + 1
+        end_id = index * 2 + 2
+        endpoint_points.append(_CanonicalPoint2D(start_id, segment.x0, segment.y0))
+        endpoint_points.append(_CanonicalPoint2D(end_id, segment.x1, segment.y1))
+        endpoint_to_segment[start_id] = segment.id
+        endpoint_to_segment[end_id] = segment.id
+    for row in point_in_polygon_positive_hits_apple_rt(tuple(endpoint_points), polygons):
+        candidates.add((endpoint_to_segment[int(row["point_id"])], int(row["polygon_id"])))
+
+    return tuple(
+        {"segment_id": segment_id, "polygon_id": polygon_id}
+        for segment_id, polygon_id in sorted(candidates, key=lambda item: (item[0], item[1]))
+    )
+
+
+def segment_polygon_hitcount_apple_rt(
+    segments: tuple[_CanonicalSegment, ...],
+    polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    segment_by_id = {segment.id: segment for segment in segments}
+    polygon_by_id = {polygon.id: polygon for polygon in polygons}
+    counts = {segment.id: 0 for segment in segments}
+    for candidate in segment_polygon_candidates_apple_rt(segments, polygons):
+        segment = segment_by_id[int(candidate["segment_id"])]
+        polygon = polygon_by_id[int(candidate["polygon_id"])]
+        if _reference_segment_hits_polygon(segment, polygon):
+            counts[segment.id] += 1
+    return tuple({"segment_id": segment.id, "hit_count": counts[segment.id]} for segment in segments)
+
+
+def segment_polygon_anyhit_rows_apple_rt(
+    segments: tuple[_CanonicalSegment, ...],
+    polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    segment_by_id = {segment.id: segment for segment in segments}
+    polygon_by_id = {polygon.id: polygon for polygon in polygons}
+    rows = []
+    for candidate in segment_polygon_candidates_apple_rt(segments, polygons):
+        segment = segment_by_id[int(candidate["segment_id"])]
+        polygon = polygon_by_id[int(candidate["polygon_id"])]
+        if _reference_segment_hits_polygon(segment, polygon):
+            rows.append({"segment_id": segment.id, "polygon_id": polygon.id})
+    return tuple(rows)
+
+
+def _polygon_edge_segments(
+    polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[tuple[_CanonicalSegment, ...], dict[int, int]]:
+    segments = []
+    segment_to_polygon: dict[int, int] = {}
+    next_id = 1
+    for polygon in polygons:
+        vertices = list(polygon.vertices)
+        if not vertices:
+            continue
+        for start, end in zip(vertices, vertices[1:] + vertices[:1]):
+            segments.append(_CanonicalSegment(next_id, start[0], start[1], end[0], end[1]))
+            segment_to_polygon[next_id] = polygon.id
+            next_id += 1
+    return tuple(segments), segment_to_polygon
+
+
+def _polygon_vertices_as_points(
+    polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[tuple[_CanonicalPoint2D, ...], dict[int, int]]:
+    points = []
+    point_to_polygon: dict[int, int] = {}
+    next_id = 1
+    for polygon in polygons:
+        for x, y in polygon.vertices:
+            points.append(_CanonicalPoint2D(next_id, x, y))
+            point_to_polygon[next_id] = polygon.id
+            next_id += 1
+    return tuple(points), point_to_polygon
+
+
+def polygon_pair_candidates_apple_rt(
+    left_polygons: tuple[_CanonicalPolygon, ...],
+    right_polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in left_polygons):
+        raise ValueError("Apple RT polygon-pair candidates currently require 2D left polygons")
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in right_polygons):
+        raise ValueError("Apple RT polygon-pair candidates currently require 2D right polygons")
+    candidates: set[tuple[int, int]] = set()
+
+    left_edges, left_edge_to_polygon = _polygon_edge_segments(left_polygons)
+    for row in segment_polygon_anyhit_rows_apple_rt(left_edges, right_polygons):
+        candidates.add((left_edge_to_polygon[int(row["segment_id"])], int(row["polygon_id"])))
+
+    right_edges, right_edge_to_polygon = _polygon_edge_segments(right_polygons)
+    for row in segment_polygon_anyhit_rows_apple_rt(right_edges, left_polygons):
+        candidates.add((int(row["polygon_id"]), right_edge_to_polygon[int(row["segment_id"])]))
+
+    left_points, left_point_to_polygon = _polygon_vertices_as_points(left_polygons)
+    for row in point_in_polygon_positive_hits_apple_rt(left_points, right_polygons):
+        candidates.add((left_point_to_polygon[int(row["point_id"])], int(row["polygon_id"])))
+
+    right_points, right_point_to_polygon = _polygon_vertices_as_points(right_polygons)
+    for row in point_in_polygon_positive_hits_apple_rt(right_points, left_polygons):
+        candidates.add((int(row["polygon_id"]), right_point_to_polygon[int(row["point_id"])]))
+
+    left_order = {polygon.id: index for index, polygon in enumerate(left_polygons)}
+    right_order = {polygon.id: index for index, polygon in enumerate(right_polygons)}
+    return tuple(
+        {"left_polygon_id": left_id, "right_polygon_id": right_id}
+        for left_id, right_id in sorted(candidates, key=lambda item: (left_order[item[0]], right_order[item[1]]))
+    )
+
+
+def polygon_pair_overlap_area_rows_apple_rt(
+    left_polygons: tuple[_CanonicalPolygon, ...],
+    right_polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    candidate_pairs = {
+        (int(row["left_polygon_id"]), int(row["right_polygon_id"]))
+        for row in polygon_pair_candidates_apple_rt(left_polygons, right_polygons)
+    }
+    right_by_id = {polygon.id: polygon for polygon in right_polygons}
+    left_cells_by_id = {polygon.id: tuple(_reference_polygon_unit_cells(polygon)) for polygon in left_polygons}
+    right_cells_by_id = {polygon.id: tuple(_reference_polygon_unit_cells(polygon)) for polygon in right_polygons}
+    rows = []
+    for left_polygon in left_polygons:
+        left_cells = left_cells_by_id[left_polygon.id]
+        left_cell_lookup = set(left_cells)
+        left_area = len(left_cells)
+        for right_polygon in right_polygons:
+            if (left_polygon.id, right_polygon.id) not in candidate_pairs:
+                continue
+            right_cells = right_cells_by_id[right_polygon.id]
+            intersection_area = sum(1 for cell in right_cells if cell in left_cell_lookup)
+            if intersection_area <= 0:
+                continue
+            right_area = len(right_cells)
+            rows.append(
+                {
+                    "left_polygon_id": left_polygon.id,
+                    "right_polygon_id": right_by_id[right_polygon.id].id,
+                    "intersection_area": intersection_area,
+                    "left_area": left_area,
+                    "right_area": right_area,
+                    "union_area": left_area + right_area - intersection_area,
+                }
+            )
+    return tuple(rows)
+
+
+def polygon_set_jaccard_apple_rt(
+    left_polygons: tuple[_CanonicalPolygon, ...],
+    right_polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    candidate_pairs = {
+        (int(row["left_polygon_id"]), int(row["right_polygon_id"]))
+        for row in polygon_pair_candidates_apple_rt(left_polygons, right_polygons)
+    }
+    left_cells_by_id = {polygon.id: set(_reference_polygon_unit_cells(polygon)) for polygon in left_polygons}
+    right_cells_by_id = {polygon.id: set(_reference_polygon_unit_cells(polygon)) for polygon in right_polygons}
+    left_cells = set().union(*left_cells_by_id.values()) if left_cells_by_id else set()
+    right_cells = set().union(*right_cells_by_id.values()) if right_cells_by_id else set()
+    intersection_cells = set()
+    for left_id, right_id in candidate_pairs:
+        intersection_cells.update(left_cells_by_id[left_id] & right_cells_by_id[right_id])
+    intersection_area = len(intersection_cells)
+    left_area = len(left_cells)
+    right_area = len(right_cells)
+    union_area = left_area + right_area - intersection_area
+    return (
+        {
+            "intersection_area": intersection_area,
+            "left_area": left_area,
+            "right_area": right_area,
+            "union_area": union_area,
+            "jaccard_similarity": 0.0 if union_area == 0 else intersection_area / union_area,
+        },
+    )
+
+
+def overlay_compose_apple_rt(
+    left_polygons: tuple[_CanonicalPolygon, ...],
+    right_polygons: tuple[_CanonicalPolygon, ...],
+) -> tuple[dict[str, object], ...]:
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in left_polygons):
+        raise ValueError("Apple RT overlay_compose currently requires 2D left polygons")
+    if any(not isinstance(polygon, _CanonicalPolygon) for polygon in right_polygons):
+        raise ValueError("Apple RT overlay_compose currently requires 2D right polygons")
+
+    left_edges, left_edge_to_polygon = _polygon_edge_segments(left_polygons)
+    right_edges, right_edge_to_polygon = _polygon_edge_segments(right_polygons)
+    lsi_pairs = {
+        (left_edge_to_polygon[int(row["left_id"])], right_edge_to_polygon[int(row["right_id"])])
+        for row in segment_intersection_apple_rt(left_edges, right_edges)
+    }
+
+    left_first_points = tuple(
+        _CanonicalPoint2D(polygon.id, polygon.vertices[0][0], polygon.vertices[0][1])
+        for polygon in left_polygons
+        if polygon.vertices
+    )
+    right_first_points = tuple(
+        _CanonicalPoint2D(polygon.id, polygon.vertices[0][0], polygon.vertices[0][1])
+        for polygon in right_polygons
+        if polygon.vertices
+    )
+    pip_pairs = {
+        (int(row["point_id"]), int(row["polygon_id"]))
+        for row in point_in_polygon_positive_hits_apple_rt(left_first_points, right_polygons)
+    }
+    pip_pairs.update(
+        (int(row["polygon_id"]), int(row["point_id"]))
+        for row in point_in_polygon_positive_hits_apple_rt(right_first_points, left_polygons)
+    )
+
+    rows = []
+    for left_polygon in left_polygons:
+        for right_polygon in right_polygons:
+            rows.append(
+                {
+                    "left_polygon_id": left_polygon.id,
+                    "right_polygon_id": right_polygon.id,
+                    "requires_lsi": 1 if (left_polygon.id, right_polygon.id) in lsi_pairs else 0,
+                    "requires_pip": 1 if (left_polygon.id, right_polygon.id) in pip_pairs else 0,
+                }
+            )
+    return tuple(rows)
+
+
 def _rank_neighbor_rows(rows, *, k_max: int) -> tuple[dict[str, object], ...]:
     by_query: dict[int, list[dict[str, object]]] = {}
     for row in rows:
@@ -1062,13 +1513,44 @@ def run_apple_rt(
                 right_records,
                 boundary_mode=str(options.get("boundary_mode", "inclusive")),
             )
+        return point_in_polygon_full_matrix_apple_rt(
+            left_records,
+            right_records,
+            boundary_mode=str(options.get("boundary_mode", "inclusive")),
+        )
+    if predicate_name == "point_nearest_segment" and all(
+        isinstance(point, _CanonicalPoint2D) for point in left_records
+    ) and all(isinstance(segment, _CanonicalSegment) for segment in right_records):
+        return point_nearest_segment_apple_rt(left_records, right_records)
+    if predicate_name == "overlay_compose" and all(
+        isinstance(polygon, _CanonicalPolygon) for polygon in left_records
+    ) and all(isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        return overlay_compose_apple_rt(left_records, right_records)
+    if predicate_name == "polygon_pair_overlap_area_rows" and all(
+        isinstance(polygon, _CanonicalPolygon) for polygon in left_records
+    ) and all(isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        return polygon_pair_overlap_area_rows_apple_rt(left_records, right_records)
+    if predicate_name == "polygon_set_jaccard" and all(
+        isinstance(polygon, _CanonicalPolygon) for polygon in left_records
+    ) and all(isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        return polygon_set_jaccard_apple_rt(left_records, right_records)
+    if predicate_name == "segment_polygon_hitcount" and all(
+        isinstance(segment, _CanonicalSegment) for segment in left_records
+    ) and all(isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        return segment_polygon_hitcount_apple_rt(left_records, right_records)
+    if predicate_name == "segment_polygon_anyhit_rows" and all(
+        isinstance(segment, _CanonicalSegment) for segment in left_records
+    ) and all(isinstance(polygon, _CanonicalPolygon) for polygon in right_records):
+        return segment_polygon_anyhit_rows_apple_rt(left_records, right_records)
     if predicate_name == "segment_intersection":
         return tuple(segment_intersection_apple_rt(left_records, right_records))
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
             "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, 2D segment_intersection, "
-            "and 2D/3D point-neighborhood workloads; "
+            "2D/3D point-neighborhood workloads, point-in-polygon positive hits, "
+            "2D point-nearest-segment, 2D segment-polygon workloads, "
+            "bounded 2D polygon-pair area/Jaccard workloads, and 2D overlay compose; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

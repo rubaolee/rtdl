@@ -68,9 +68,17 @@ class Goal607AppleRtPointInPolygonPositiveNativeTest(unittest.TestCase):
         expected = rt.pip_cpu(case["points"], case["polygons"], result_mode="positive_hits")
         self.assertEqual(actual, expected)
 
-    def test_full_matrix_remains_non_native(self) -> None:
-        with self.assertRaises(NotImplementedError):
-            rt.run_apple_rt(point_in_polygon_full_matrix_kernel, native_only=True, **self._case())
+    def test_full_matrix_native_only_matches_cpu(self) -> None:
+        case = self._case()
+        actual = rt.run_apple_rt(point_in_polygon_full_matrix_kernel, native_only=True, **case)
+        expected = rt.run_cpu_python_reference(point_in_polygon_full_matrix_kernel, **case)
+        self.assertEqual(actual, expected)
+
+    def test_direct_full_matrix_helper_matches_cpu(self) -> None:
+        case = self._case()
+        actual = rt.point_in_polygon_full_matrix_apple_rt(case["points"], case["polygons"])
+        expected = rt.pip_cpu(case["points"], case["polygons"])
+        self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":

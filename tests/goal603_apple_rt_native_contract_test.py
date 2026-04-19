@@ -33,6 +33,18 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_shapes"], ("Ray2D/Triangle2D", "Ray3D/Triangle3D"))
         self.assertEqual(by_predicate["segment_intersection"]["native_candidate_discovery"], "yes")
         self.assertEqual(by_predicate["segment_intersection"]["cpu_refinement"], "exact_intersection_point")
+        self.assertEqual(by_predicate["point_nearest_segment"]["native_candidate_discovery"], "yes")
+        self.assertEqual(by_predicate["point_nearest_segment"]["cpu_refinement"], "exact_distance_ranking")
+        self.assertEqual(by_predicate["overlay_compose"]["native_candidate_discovery"], "yes")
+        self.assertEqual(by_predicate["overlay_compose"]["cpu_refinement"], "full_pair_row_materialization")
+        self.assertEqual(by_predicate["polygon_pair_overlap_area_rows"]["native_candidate_discovery"], "yes")
+        self.assertEqual(by_predicate["polygon_pair_overlap_area_rows"]["cpu_refinement"], "exact_unit_cell_area")
+        self.assertEqual(by_predicate["polygon_set_jaccard"]["native_candidate_discovery"], "yes")
+        self.assertEqual(by_predicate["polygon_set_jaccard"]["cpu_refinement"], "exact_unit_cell_set_jaccard")
+        self.assertEqual(by_predicate["segment_polygon_anyhit_rows"]["native_candidate_discovery"], "yes")
+        self.assertEqual(by_predicate["segment_polygon_anyhit_rows"]["cpu_refinement"], "exact_segment_polygon")
+        self.assertEqual(by_predicate["segment_polygon_hitcount"]["native_candidate_discovery"], "yes")
+        self.assertEqual(by_predicate["segment_polygon_hitcount"]["cpu_refinement"], "exact_segment_polygon")
 
     def test_compatibility_rows_are_not_marked_hardware_backed(self) -> None:
         native_candidates = {
@@ -47,9 +59,15 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
                 "fixed_radius_neighbors",
                 "knn_rows",
                 "point_in_polygon",
+                "point_nearest_segment",
+                "overlay_compose",
+                "polygon_pair_overlap_area_rows",
+                "polygon_set_jaccard",
                 "ray_triangle_closest_hit",
                 "ray_triangle_hit_count",
                 "segment_intersection",
+                "segment_polygon_anyhit_rows",
+                "segment_polygon_hitcount",
             },
         )
         for row in rt.apple_rt_support_matrix():

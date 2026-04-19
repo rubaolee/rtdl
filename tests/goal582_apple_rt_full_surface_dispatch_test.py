@@ -306,10 +306,13 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
     def test_native_only_rejects_compatibility_paths(self) -> None:
         with self.assertRaises(NotImplementedError):
             rt.run_apple_rt(
-                point_in_polygon_kernel,
+                grouped_sum_kernel,
                 native_only=True,
-                points=(rt.Point(1, 0.5, 0.5),),
-                polygons=(_square(1, 0.0, 0.0, 2.0, 2.0),),
+                query={"predicates": (("ship_date", "ge", 11),), "group_keys": ("region",), "value_field": "revenue"},
+                table=(
+                    {"row_id": 1, "region": "east", "ship_date": 10, "revenue": 5},
+                    {"row_id": 2, "region": "west", "ship_date": 12, "revenue": 8},
+                ),
             )
 
 

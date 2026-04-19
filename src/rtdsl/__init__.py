@@ -81,13 +81,20 @@ from .apple_rt_runtime import apple_rt_version
 from .apple_rt_runtime import AppleRtRowView
 from .apple_rt_runtime import fixed_radius_neighbors_2d_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_3d_apple_rt
+from .apple_rt_runtime import overlay_compose_apple_rt
 from .apple_rt_runtime import PreparedAppleRtRayTriangleClosestHit3D
+from .apple_rt_runtime import point_in_polygon_full_matrix_apple_rt
 from .apple_rt_runtime import point_in_polygon_positive_hits_apple_rt
+from .apple_rt_runtime import point_nearest_segment_apple_rt
+from .apple_rt_runtime import polygon_pair_overlap_area_rows_apple_rt
+from .apple_rt_runtime import polygon_set_jaccard_apple_rt
 from .apple_rt_runtime import prepare_apple_rt_ray_triangle_closest_hit
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_hit_count_apple_rt
 from .apple_rt_runtime import run_apple_rt
 from .apple_rt_runtime import segment_intersection_apple_rt
+from .apple_rt_runtime import segment_polygon_anyhit_rows_apple_rt
+from .apple_rt_runtime import segment_polygon_hitcount_apple_rt
 from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
 from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
@@ -702,16 +709,21 @@ __all__ = [
     "lower_to_rayjoin",
     "load_plan_schema",
     "lsi_cpu",
+    "overlay_compose_apple_rt",
     "overlay_compose_cpu",
     "parse_cdb_text",
     "postgis_available",
     "postgresql_available",
     "pip_cpu",
     "Point",
+    "point_in_polygon_full_matrix_apple_rt",
     "point_nearest_segment_cpu",
+    "point_nearest_segment_apple_rt",
     "polygon_probe_points",
     "Polygon",
+    "polygon_pair_overlap_area_rows_apple_rt",
     "polygon_pair_overlap_area_rows_cpu",
+    "polygon_set_jaccard_apple_rt",
     "polygon_set_jaccard_cpu",
     "polygons_to_segments",
     "MONUSEG_DEFAULT_XML",
@@ -790,6 +802,8 @@ __all__ = [
     "scipy_available",
     "segment_intersection",
     "segment_intersection_apple_rt",
+    "segment_polygon_anyhit_rows_apple_rt",
+    "segment_polygon_hitcount_apple_rt",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows_hiprt",

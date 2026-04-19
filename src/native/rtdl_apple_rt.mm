@@ -117,6 +117,11 @@ struct RtdlPointPolygonCandidateRow {
     uint32_t polygon_id;
 };
 
+struct RtdlSegmentPolygonCandidateRow {
+    uint32_t segment_id;
+    uint32_t polygon_id;
+};
+
 struct AppleRtClosestHitPrepared {
     id<MTLDevice> device = nil;
     id<MTLCommandQueue> command_queue = nil;
@@ -1225,6 +1230,10 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_fixed_radius_neighbors_2d(
                 add_triangle(minx, miny, z0, maxx, miny, z1, minx, miny, z1, mask, local_index);
                 add_triangle(maxx, maxy, z0, minx, maxy, z0, minx, maxy, z1, mask, local_index);
                 add_triangle(maxx, maxy, z0, minx, maxy, z1, maxx, maxy, z1, mask, local_index);
+                add_triangle(minx, miny, z0, minx, maxy, z0, minx, maxy, z1, mask, local_index);
+                add_triangle(minx, miny, z0, minx, maxy, z1, minx, miny, z1, mask, local_index);
+                add_triangle(maxx, miny, z0, maxx, maxy, z1, maxx, maxy, z0, mask, local_index);
+                add_triangle(maxx, miny, z0, maxx, miny, z1, maxx, maxy, z1, mask, local_index);
             }
 
             id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
@@ -1685,9 +1694,9 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2
             std::vector<MPSPackedFloat3> vertices;
             std::vector<uint32_t> primitive_masks;
             std::vector<size_t> primitive_polygon_offsets;
-            vertices.reserve(chunk_count * 24);
-            primitive_masks.reserve(chunk_count * 8);
-            primitive_polygon_offsets.reserve(chunk_count * 8);
+            vertices.reserve(chunk_count * 36);
+            primitive_masks.reserve(chunk_count * 12);
+            primitive_polygon_offsets.reserve(chunk_count * 12);
             auto add_triangle = [&](float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz, uint32_t mask, size_t local_index) {
                 vertices.emplace_back(ax, ay, az);
                 vertices.emplace_back(bx, by, bz);
@@ -1699,12 +1708,13 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2
             for (size_t local_index = 0; local_index < chunk_count; ++local_index) {
                 const RtdlPolygonBounds2D& bounds = polygons[chunk_begin + local_index];
                 const uint32_t mask = 1u << local_index;
-                const float minx = static_cast<float>(bounds.minx);
-                const float maxx = static_cast<float>(bounds.maxx);
-                const float miny = static_cast<float>(bounds.miny);
-                const float maxy = static_cast<float>(bounds.maxy);
-                constexpr float z0 = -1.0f;
-                constexpr float z1 = 1.0f;
+                constexpr float eps = 1.0e-4f;
+                const float minx = static_cast<float>(bounds.minx) - eps;
+                const float maxx = static_cast<float>(bounds.maxx) + eps;
+                const float miny = static_cast<float>(bounds.miny) - eps;
+                const float maxy = static_cast<float>(bounds.maxy) + eps;
+                constexpr float z0 = -0.9999f;
+                constexpr float z1 = 0.9999f;
                 add_triangle(minx, miny, z0, maxx, miny, z0, maxx, maxy, z0, mask, local_index);
                 add_triangle(minx, miny, z0, maxx, maxy, z0, minx, maxy, z0, mask, local_index);
                 add_triangle(minx, miny, z1, maxx, maxy, z1, maxx, miny, z1, mask, local_index);
@@ -1713,6 +1723,10 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2
                 add_triangle(minx, miny, z0, maxx, miny, z1, minx, miny, z1, mask, local_index);
                 add_triangle(maxx, maxy, z0, minx, maxy, z0, minx, maxy, z1, mask, local_index);
                 add_triangle(maxx, maxy, z0, minx, maxy, z1, maxx, maxy, z1, mask, local_index);
+                add_triangle(minx, miny, z0, minx, maxy, z0, minx, maxy, z1, mask, local_index);
+                add_triangle(minx, miny, z0, minx, maxy, z1, minx, miny, z1, mask, local_index);
+                add_triangle(maxx, miny, z0, maxx, maxy, z1, maxx, maxy, z0, mask, local_index);
+                add_triangle(maxx, miny, z0, maxx, miny, z1, maxx, maxy, z1, mask, local_index);
             }
 
             id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
@@ -1820,6 +1834,242 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_point_polygon_candidates_2
             return 12;
         }
         std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlPointPolygonCandidateRow));
+        *rows_out = out;
+        *row_count_out = rows.size();
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_segment_polygon_candidates_2d(
+    const RtdlSegment* segments,
+    size_t segment_count,
+    const RtdlPolygonBounds2D* polygons,
+    size_t polygon_count,
+    RtdlSegmentPolygonCandidateRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_segment_polygon_candidates_2d");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if ((segment_count > 0 && segments == nullptr) || (polygon_count > 0 && polygons == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_segment_polygon_candidates_2d");
+        return 1;
+    }
+    if (segment_count == 0 || polygon_count == 0) {
+        return 0;
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+
+        std::vector<MPSRayOriginMaskDirectionMaxDistance> mps_rays(segment_count);
+        for (size_t i = 0; i < segment_count; ++i) {
+            const RtdlSegment& segment = segments[i];
+            if (!valid_segment_ray(segment)) {
+                mps_rays[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
+                mps_rays[i].mask = 0;
+                mps_rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
+                mps_rays[i].maxDistance = -1.0f;
+                continue;
+            }
+            mps_rays[i].origin = MPSPackedFloat3(static_cast<float>(segment.x0), static_cast<float>(segment.y0), -1.0f);
+            mps_rays[i].mask = 0xFFFFFFFFu;
+            mps_rays[i].direction = MPSPackedFloat3(
+                static_cast<float>(segment.x1 - segment.x0),
+                static_cast<float>(segment.y1 - segment.y0),
+                2.0f);
+            mps_rays[i].maxDistance = 1.000001f;
+        }
+        id<MTLBuffer> ray_buffer = [device newBufferWithBytes:mps_rays.data()
+                                                       length:mps_rays.size() * sizeof(MPSRayOriginMaskDirectionMaxDistance)
+                                                      options:MTLResourceStorageModeShared];
+        if (ray_buffer == nil) {
+            set_message(error_out, error_size, "Metal segment-polygon ray buffer creation failed");
+            return 4;
+        }
+        id<MTLBuffer> intersection_buffer = [device newBufferWithLength:segment_count * sizeof(MPSIntersectionDistancePrimitiveIndex)
+                                                                 options:MTLResourceStorageModeShared];
+        if (intersection_buffer == nil) {
+            set_message(error_out, error_size, "Metal segment-polygon intersection buffer creation failed");
+            return 5;
+        }
+
+        MPSRayIntersector* intersector = [[MPSRayIntersector alloc] initWithDevice:device];
+        if (intersector == nil) {
+            set_message(error_out, error_size, "MPSRayIntersector initialization failed");
+            return 6;
+        }
+        intersector.cullMode = MTLCullModeNone;
+        intersector.rayDataType = MPSRayDataTypeOriginMaskDirectionMaxDistance;
+        intersector.rayMaskOptions = MPSRayMaskOptionPrimitive;
+        intersector.rayMaskOperator = MPSRayMaskOperatorAnd;
+        intersector.intersectionDataType = MPSIntersectionDataTypeDistancePrimitiveIndex;
+        intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
+        intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
+
+        std::vector<std::vector<std::pair<size_t, RtdlSegmentPolygonCandidateRow>>> candidates_by_segment(segment_count);
+        constexpr size_t chunk_size = 32;
+        for (size_t chunk_begin = 0; chunk_begin < polygon_count; chunk_begin += chunk_size) {
+            const size_t chunk_count = std::min(chunk_size, polygon_count - chunk_begin);
+            const uint32_t full_chunk_mask = chunk_count == 32 ? 0xFFFFFFFFu : ((1u << chunk_count) - 1u);
+            auto* gpu_rays = static_cast<MPSRayOriginMaskDirectionMaxDistance*>([ray_buffer contents]);
+            for (size_t segment_index = 0; segment_index < segment_count; ++segment_index) {
+                gpu_rays[segment_index].mask = valid_segment_ray(segments[segment_index]) ? full_chunk_mask : 0u;
+            }
+
+            std::vector<MPSPackedFloat3> vertices;
+            std::vector<uint32_t> primitive_masks;
+            std::vector<size_t> primitive_polygon_offsets;
+            vertices.reserve(chunk_count * 24);
+            primitive_masks.reserve(chunk_count * 8);
+            primitive_polygon_offsets.reserve(chunk_count * 8);
+            auto add_triangle = [&](float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz, uint32_t mask, size_t local_index) {
+                vertices.emplace_back(ax, ay, az);
+                vertices.emplace_back(bx, by, bz);
+                vertices.emplace_back(cx, cy, cz);
+                primitive_masks.push_back(mask);
+                primitive_polygon_offsets.push_back(local_index);
+            };
+            for (size_t local_index = 0; local_index < chunk_count; ++local_index) {
+                const RtdlPolygonBounds2D& bounds = polygons[chunk_begin + local_index];
+                const uint32_t mask = 1u << local_index;
+                constexpr float xy_eps = 1.0e-4f;
+                const float minx = static_cast<float>(bounds.minx) - xy_eps;
+                const float maxx = static_cast<float>(bounds.maxx) + xy_eps;
+                const float miny = static_cast<float>(bounds.miny) - xy_eps;
+                const float maxy = static_cast<float>(bounds.maxy) + xy_eps;
+                constexpr float z0 = -0.9999f;
+                constexpr float z1 = 0.9999f;
+                add_triangle(minx, miny, z0, maxx, miny, z0, maxx, maxy, z0, mask, local_index);
+                add_triangle(minx, miny, z0, maxx, maxy, z0, minx, maxy, z0, mask, local_index);
+                add_triangle(minx, miny, z1, maxx, maxy, z1, maxx, miny, z1, mask, local_index);
+                add_triangle(minx, miny, z1, minx, maxy, z1, maxx, maxy, z1, mask, local_index);
+                add_triangle(minx, miny, z0, maxx, miny, z0, maxx, miny, z1, mask, local_index);
+                add_triangle(minx, miny, z0, maxx, miny, z1, minx, miny, z1, mask, local_index);
+                add_triangle(maxx, maxy, z0, minx, maxy, z0, minx, maxy, z1, mask, local_index);
+                add_triangle(maxx, maxy, z0, minx, maxy, z1, maxx, maxy, z1, mask, local_index);
+                add_triangle(minx, maxy, z0, minx, miny, z0, minx, miny, z1, mask, local_index);
+                add_triangle(minx, maxy, z0, minx, miny, z1, minx, maxy, z1, mask, local_index);
+                add_triangle(maxx, miny, z0, maxx, maxy, z0, maxx, maxy, z1, mask, local_index);
+                add_triangle(maxx, miny, z0, maxx, maxy, z1, maxx, miny, z1, mask, local_index);
+            }
+            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
+                                                              length:vertices.size() * sizeof(MPSPackedFloat3)
+                                                             options:MTLResourceStorageModeShared];
+            if (vertex_buffer == nil) {
+                set_message(error_out, error_size, "Metal segment-polygon box vertex buffer creation failed");
+                return 7;
+            }
+            id<MTLBuffer> mask_buffer = [device newBufferWithBytes:primitive_masks.data()
+                                                            length:primitive_masks.size() * sizeof(uint32_t)
+                                                           options:MTLResourceStorageModeShared];
+            if (mask_buffer == nil) {
+                [vertex_buffer release];
+                set_message(error_out, error_size, "Metal segment-polygon primitive mask buffer creation failed");
+                return 8;
+            }
+            MPSTriangleAccelerationStructure* accel = [[MPSTriangleAccelerationStructure alloc] initWithDevice:device];
+            if (accel == nil) {
+                [mask_buffer release];
+                [vertex_buffer release];
+                set_message(error_out, error_size, "MPSTriangleAccelerationStructure initialization failed for segment-polygon");
+                return 9;
+            }
+            accel.vertexBuffer = vertex_buffer;
+            accel.vertexStride = sizeof(MPSPackedFloat3);
+            accel.maskBuffer = mask_buffer;
+            accel.triangleCount = primitive_masks.size();
+            [accel rebuild];
+            for (size_t pass = 0; pass < chunk_count; ++pass) {
+                id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+                if (command_buffer == nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, "Metal command buffer creation failed");
+                    return 10;
+                }
+                [intersector encodeIntersectionToCommandBuffer:command_buffer
+                                              intersectionType:MPSIntersectionTypeNearest
+                                                     rayBuffer:ray_buffer
+                                               rayBufferOffset:0
+                                            intersectionBuffer:intersection_buffer
+                                      intersectionBufferOffset:0
+                                                      rayCount:segment_count
+                                         accelerationStructure:accel];
+                [command_buffer commit];
+                [command_buffer waitUntilCompleted];
+                NSError* error = [command_buffer error];
+                if (error != nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+                    return 11;
+                }
+                const auto* hits = static_cast<const MPSIntersectionDistancePrimitiveIndex*>([intersection_buffer contents]);
+                size_t active_hits = 0;
+                size_t active_masks = 0;
+                for (size_t segment_index = 0; segment_index < segment_count; ++segment_index) {
+                    const float distance = hits[segment_index].distance;
+                    const uint32_t primitive_index = hits[segment_index].primitiveIndex;
+                    if (distance >= 0.0f && distance <= 1.000001f && primitive_index < primitive_polygon_offsets.size()) {
+                        const size_t local_index = primitive_polygon_offsets[primitive_index];
+                        const uint32_t bit = 1u << local_index;
+                        if ((gpu_rays[segment_index].mask & bit) != 0u) {
+                            const RtdlPolygonBounds2D& bounds = polygons[chunk_begin + local_index];
+                            candidates_by_segment[segment_index].push_back({
+                                chunk_begin + local_index,
+                                RtdlSegmentPolygonCandidateRow{segments[segment_index].id, bounds.id},
+                            });
+                            gpu_rays[segment_index].mask &= ~bit;
+                            active_hits += 1;
+                        }
+                    }
+                    if (gpu_rays[segment_index].mask != 0u) {
+                        active_masks += 1;
+                    }
+                }
+                if (active_hits == 0 || active_masks == 0) {
+                    break;
+                }
+            }
+            [accel release];
+            [mask_buffer release];
+            [vertex_buffer release];
+        }
+
+        std::vector<RtdlSegmentPolygonCandidateRow> rows;
+        for (auto& segment_rows : candidates_by_segment) {
+            std::sort(segment_rows.begin(), segment_rows.end(), [](const auto& a, const auto& b) {
+                return a.first < b.first;
+            });
+            for (const auto& item : segment_rows) {
+                rows.push_back(item.second);
+            }
+        }
+        if (rows.empty()) {
+            return 0;
+        }
+        auto* out = static_cast<RtdlSegmentPolygonCandidateRow*>(std::malloc(rows.size() * sizeof(RtdlSegmentPolygonCandidateRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT segment-polygon candidate rows");
+            return 12;
+        }
+        std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlSegmentPolygonCandidateRow));
         *rows_out = out;
         *row_count_out = rows.size();
         return 0;
