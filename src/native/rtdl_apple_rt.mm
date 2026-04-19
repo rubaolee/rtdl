@@ -771,32 +771,32 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
             return 3;
         }
 
-        std::vector<MPSRayOriginMinDistanceDirectionMaxDistance> rays(left_count);
+        std::vector<MPSRayOriginMaskDirectionMaxDistance> rays(left_count);
         for (size_t i = 0; i < left_count; ++i) {
             const RtdlSegment& seg = left_segments[i];
             if (!valid_segment_ray(seg)) {
                 rays[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
-                rays[i].minDistance = 0.0f;
+                rays[i].mask = 0;
                 rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
                 rays[i].maxDistance = -1.0f;
                 continue;
             }
             rays[i].origin = MPSPackedFloat3(static_cast<float>(seg.x0), static_cast<float>(seg.y0), 0.0f);
-            rays[i].minDistance = 0.0f;
+            rays[i].mask = 0xFFFFFFFFu;
             rays[i].direction = MPSPackedFloat3(static_cast<float>(seg.x1 - seg.x0), static_cast<float>(seg.y1 - seg.y0), 0.0f);
             // Keep RT traversal inclusive of segment endpoints; analytic refinement below enforces exact RTDL bounds.
             rays[i].maxDistance = 1.000001f;
         }
 
         id<MTLBuffer> ray_buffer = [device newBufferWithBytes:rays.data()
-                                                       length:rays.size() * sizeof(MPSRayOriginMinDistanceDirectionMaxDistance)
+                                                       length:rays.size() * sizeof(MPSRayOriginMaskDirectionMaxDistance)
                                                       options:MTLResourceStorageModeShared];
         if (ray_buffer == nil) {
             set_message(error_out, error_size, "Metal ray buffer creation failed");
             return 4;
         }
 
-        id<MTLBuffer> intersection_buffer = [device newBufferWithLength:left_count * sizeof(MPSIntersectionDistance)
+        id<MTLBuffer> intersection_buffer = [device newBufferWithLength:left_count * sizeof(MPSIntersectionDistancePrimitiveIndex)
                                                                  options:MTLResourceStorageModeShared];
         if (intersection_buffer == nil) {
             set_message(error_out, error_size, "Metal intersection buffer creation failed");
@@ -809,83 +809,147 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
             return 6;
         }
         intersector.cullMode = MTLCullModeNone;
-        intersector.rayDataType = MPSRayDataTypeOriginMinDistanceDirectionMaxDistance;
-        intersector.intersectionDataType = MPSIntersectionDataTypeDistance;
-        intersector.rayStride = sizeof(MPSRayOriginMinDistanceDirectionMaxDistance);
-        intersector.intersectionStride = sizeof(MPSIntersectionDistance);
+        intersector.rayDataType = MPSRayDataTypeOriginMaskDirectionMaxDistance;
+        intersector.rayMaskOptions = MPSRayMaskOptionPrimitive;
+        intersector.rayMaskOperator = MPSRayMaskOperatorAnd;
+        intersector.intersectionDataType = MPSIntersectionDataTypeDistancePrimitiveIndex;
+        intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
+        intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
 
-        std::vector<std::vector<RtdlLsiRow>> rows_by_left(left_count);
+        std::vector<std::vector<std::pair<size_t, RtdlLsiRow>>> rows_by_left(left_count);
         constexpr float z_extent = 1.0f;
-        for (size_t right_index = 0; right_index < right_count; ++right_index) {
-            const RtdlSegment& right = right_segments[right_index];
-            if (!valid_segment_ray(right)) {
+        constexpr size_t chunk_size = 32;
+        for (size_t chunk_begin = 0; chunk_begin < right_count; chunk_begin += chunk_size) {
+            std::vector<size_t> right_indices;
+            right_indices.reserve(chunk_size);
+            for (size_t offset = 0; offset < chunk_size && chunk_begin + offset < right_count; ++offset) {
+                const size_t right_index = chunk_begin + offset;
+                if (valid_segment_ray(right_segments[right_index])) {
+                    right_indices.push_back(right_index);
+                }
+            }
+            const size_t chunk_count = right_indices.size();
+            if (chunk_count == 0) {
                 continue;
             }
-            MPSPackedFloat3 vertices[4] = {
-                MPSPackedFloat3(static_cast<float>(right.x0), static_cast<float>(right.y0), -z_extent),
-                MPSPackedFloat3(static_cast<float>(right.x1), static_cast<float>(right.y1), -z_extent),
-                MPSPackedFloat3(static_cast<float>(right.x1), static_cast<float>(right.y1), z_extent),
-                MPSPackedFloat3(static_cast<float>(right.x0), static_cast<float>(right.y0), z_extent),
-            };
-            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices
-                                                              length:sizeof(vertices)
+            const uint32_t full_chunk_mask = chunk_count == 32 ? 0xFFFFFFFFu : ((1u << chunk_count) - 1u);
+
+            auto* gpu_rays = static_cast<MPSRayOriginMaskDirectionMaxDistance*>([ray_buffer contents]);
+            for (size_t left_index = 0; left_index < left_count; ++left_index) {
+                gpu_rays[left_index].mask = valid_segment_ray(left_segments[left_index]) ? full_chunk_mask : 0u;
+            }
+
+            std::vector<MPSPackedFloat3> vertices;
+            vertices.reserve(chunk_count * 4);
+            std::vector<uint32_t> primitive_masks;
+            primitive_masks.reserve(chunk_count);
+            for (size_t local_index = 0; local_index < chunk_count; ++local_index) {
+                const RtdlSegment& right = right_segments[right_indices[local_index]];
+                vertices.emplace_back(static_cast<float>(right.x0), static_cast<float>(right.y0), -z_extent);
+                vertices.emplace_back(static_cast<float>(right.x1), static_cast<float>(right.y1), -z_extent);
+                vertices.emplace_back(static_cast<float>(right.x1), static_cast<float>(right.y1), z_extent);
+                vertices.emplace_back(static_cast<float>(right.x0), static_cast<float>(right.y0), z_extent);
+                primitive_masks.push_back(1u << local_index);
+            }
+            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
+                                                              length:vertices.size() * sizeof(MPSPackedFloat3)
                                                              options:MTLResourceStorageModeShared];
             if (vertex_buffer == nil) {
                 set_message(error_out, error_size, "Metal quad vertex buffer creation failed");
                 return 7;
             }
+            id<MTLBuffer> mask_buffer = [device newBufferWithBytes:primitive_masks.data()
+                                                            length:primitive_masks.size() * sizeof(uint32_t)
+                                                           options:MTLResourceStorageModeShared];
+            if (mask_buffer == nil) {
+                [vertex_buffer release];
+                set_message(error_out, error_size, "Metal primitive mask buffer creation failed");
+                return 8;
+            }
 
             MPSQuadrilateralAccelerationStructure* accel = [[MPSQuadrilateralAccelerationStructure alloc] initWithDevice:device];
             if (accel == nil) {
+                [mask_buffer release];
+                [vertex_buffer release];
                 set_message(error_out, error_size, "MPSQuadrilateralAccelerationStructure initialization failed");
-                return 8;
+                return 9;
             }
             accel.vertexBuffer = vertex_buffer;
             accel.vertexStride = sizeof(MPSPackedFloat3);
-            accel.quadrilateralCount = 1;
+            accel.maskBuffer = mask_buffer;
+            accel.quadrilateralCount = chunk_count;
             [accel rebuild];
 
-            id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
-            if (command_buffer == nil) {
-                set_message(error_out, error_size, "Metal command buffer creation failed");
-                return 9;
-            }
-            [intersector encodeIntersectionToCommandBuffer:command_buffer
-                                          intersectionType:MPSIntersectionTypeAny
-                                                 rayBuffer:ray_buffer
-                                           rayBufferOffset:0
-                                        intersectionBuffer:intersection_buffer
-                                  intersectionBufferOffset:0
-                                                  rayCount:left_count
-                                     accelerationStructure:accel];
-            [command_buffer commit];
-            [command_buffer waitUntilCompleted];
-            NSError* error = [command_buffer error];
-            if (error != nil) {
-                set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
-                return 10;
-            }
-
-            const auto* hits = static_cast<const MPSIntersectionDistance*>([intersection_buffer contents]);
-            for (size_t left_index = 0; left_index < left_count; ++left_index) {
-                const float distance = hits[left_index].distance;
-                if (distance < 0.0f || distance > 1.0f) {
-                    continue;
+            for (size_t pass = 0; pass < chunk_count; ++pass) {
+                id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+                if (command_buffer == nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, "Metal command buffer creation failed");
+                    return 10;
                 }
-                const RtdlSegment& left = left_segments[left_index];
-                double ix = 0.0;
-                double iy = 0.0;
-                if (!segment_intersection_point(left, right, &ix, &iy)) {
-                    continue;
+                [intersector encodeIntersectionToCommandBuffer:command_buffer
+                                              intersectionType:MPSIntersectionTypeNearest
+                                                     rayBuffer:ray_buffer
+                                               rayBufferOffset:0
+                                            intersectionBuffer:intersection_buffer
+                                      intersectionBufferOffset:0
+                                                      rayCount:left_count
+                                         accelerationStructure:accel];
+                [command_buffer commit];
+                [command_buffer waitUntilCompleted];
+                NSError* error = [command_buffer error];
+                if (error != nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+                    return 11;
                 }
-                rows_by_left[left_index].push_back(RtdlLsiRow{left.id, right.id, ix, iy});
+                const auto* hits = static_cast<const MPSIntersectionDistancePrimitiveIndex*>([intersection_buffer contents]);
+                size_t active_hits = 0;
+                size_t active_masks = 0;
+                for (size_t left_index = 0; left_index < left_count; ++left_index) {
+                    const float distance = hits[left_index].distance;
+                    const uint32_t primitive_index = hits[left_index].primitiveIndex;
+                    if (distance >= 0.0f && distance <= 1.000001f && primitive_index < chunk_count) {
+                        const uint32_t bit = 1u << primitive_index;
+                        if ((gpu_rays[left_index].mask & bit) != 0u) {
+                            const size_t right_index = right_indices[primitive_index];
+                            const RtdlSegment& left = left_segments[left_index];
+                            const RtdlSegment& right = right_segments[right_index];
+                            double ix = 0.0;
+                            double iy = 0.0;
+                            if (segment_intersection_point(left, right, &ix, &iy)) {
+                                rows_by_left[left_index].push_back({right_index, RtdlLsiRow{left.id, right.id, ix, iy}});
+                            }
+                            gpu_rays[left_index].mask &= ~bit;
+                            active_hits += 1;
+                        }
+                    }
+                    if (gpu_rays[left_index].mask != 0u) {
+                        active_masks += 1;
+                    }
+                }
+                if (active_hits == 0 || active_masks == 0) {
+                    break;
+                }
             }
+            [accel release];
+            [mask_buffer release];
+            [vertex_buffer release];
         }
 
         std::vector<RtdlLsiRow> rows;
         rows.reserve(std::min(left_count * right_count, static_cast<size_t>(1024)));
-        for (const auto& left_rows : rows_by_left) {
-            rows.insert(rows.end(), left_rows.begin(), left_rows.end());
+        for (auto& left_rows : rows_by_left) {
+            std::sort(left_rows.begin(), left_rows.end(), [](const auto& a, const auto& b) {
+                return a.first < b.first;
+            });
+            for (const auto& item : left_rows) {
+                rows.push_back(item.second);
+            }
         }
 
         if (rows.empty()) {
@@ -894,7 +958,7 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_lsi(
         auto* out = static_cast<RtdlLsiRow*>(std::malloc(rows.size() * sizeof(RtdlLsiRow)));
         if (out == nullptr) {
             set_message(error_out, error_size, "out of memory allocating Apple RT segment-intersection rows");
-            return 11;
+            return 12;
         }
         std::memcpy(out, rows.data(), rows.size() * sizeof(RtdlLsiRow));
         *rows_out = out;
