@@ -393,6 +393,16 @@ def _configure_library(library: ctypes.CDLL) -> None:
     library.rtdl_apple_rt_free_rows.restype = None
     library.rtdl_apple_rt_context_probe.argtypes = [ctypes.c_char_p, ctypes.c_size_t]
     library.rtdl_apple_rt_context_probe.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_u32_add_compute.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(ctypes.c_uint32)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_u32_add_compute.restype = ctypes.c_int
     library.rtdl_apple_rt_run_ray_closest_hit_3d.argtypes = [
         ctypes.POINTER(_RtdlRay3D),
         ctypes.c_size_t,
@@ -531,6 +541,43 @@ def apple_rt_context_probe() -> str:
     status = library.rtdl_apple_rt_context_probe(error, len(error))
     _check_status(status, error)
     return error.value.decode("utf-8", errors="replace")
+
+
+def apple_rt_compute_u32_add(left: tuple[int, ...], right: tuple[int, ...]) -> tuple[int, ...]:
+    """Run the v0.9.4 Apple Metal compute smoke kernel.
+
+    This helper is intentionally not a workload API. It proves the backend can
+    compile a Metal compute kernel, dispatch over buffers, and return data.
+    """
+    if len(left) != len(right):
+        raise ValueError("Apple RT compute add requires equal-length inputs")
+    for value in (*left, *right):
+        if not isinstance(value, int) or value < 0 or value > 0xFFFFFFFF:
+            raise ValueError("Apple RT compute add inputs must be uint32 values")
+    if not left:
+        return ()
+
+    library = _load_library()
+    left_records = (ctypes.c_uint32 * len(left))(*left)
+    right_records = (ctypes.c_uint32 * len(right))(*right)
+    values_ptr = ctypes.POINTER(ctypes.c_uint32)()
+    value_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_u32_add_compute(
+        left_records,
+        right_records,
+        len(left),
+        ctypes.byref(values_ptr),
+        ctypes.byref(value_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(int(values_ptr[index]) for index in range(value_count.value))
+    finally:
+        if bool(values_ptr):
+            library.rtdl_apple_rt_free_rows(values_ptr)
 
 
 def _pack_rays_3d(rays: tuple[_CanonicalRay3D, ...]):

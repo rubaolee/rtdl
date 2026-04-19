@@ -75,6 +75,7 @@ from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import embree_version
 from .apple_rt_runtime import apple_rt_context_probe
+from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
 from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
@@ -735,6 +736,7 @@ __all__ = [
     "prepare_embree",
     "prepare_adaptive",
     "apple_rt_context_probe",
+    "apple_rt_compute_u32_add",
     "apple_rt_predicate_mode",
     "apple_rt_support_matrix",
     "apple_rt_version",
