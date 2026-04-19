@@ -13,8 +13,12 @@ import os
 import platform
 from pathlib import Path
 
+from .db_reference import GroupedAggregateQuery
 from .db_reference import PredicateBundle
+from .db_reference import grouped_count_cpu
+from .db_reference import grouped_sum_cpu
 from .db_reference import normalize_denorm_table
+from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
 from .ir import CompiledKernel
 from .reference import Point as _CanonicalPoint2D
@@ -37,6 +41,8 @@ from .reference import _segment_hits_polygon as _reference_segment_hits_polygon
 APPLE_RT_NATIVE_PREDICATES = frozenset(
     {
         "conjunctive_scan",
+        "grouped_count",
+        "grouped_sum",
         "point_in_polygon",
         "point_nearest_segment",
         "overlay_compose",
@@ -50,6 +56,7 @@ APPLE_RT_NATIVE_PREDICATES = frozenset(
     }
 )
 APPLE_RT_METAL_COMPUTE_PREDICATES = frozenset({"conjunctive_scan"})
+APPLE_RT_METAL_FILTER_CPU_AGGREGATE_PREDICATES = frozenset({"grouped_count", "grouped_sum"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
         "bfs_discover",
@@ -186,6 +193,20 @@ _APPLE_RT_SUPPORT_NOTES = {
         "native_only": "supported_for_numeric_predicates",
         "native_shapes": ("PredicateSet/DenormTable numeric",),
         "notes": "Apple Metal compute evaluates bounded numeric conjunctive predicates over packed table columns; CPU only packs inputs and materializes matched row_ids.",
+    },
+    "grouped_count": {
+        "native_candidate_discovery": "no",
+        "cpu_refinement": "cpu_group_aggregation_after_metal_filter",
+        "native_only": "supported_for_numeric_predicates_cpu_aggregation",
+        "native_shapes": ("GroupedQuery/DenormTable numeric predicates",),
+        "notes": "Apple Metal compute evaluates bounded numeric predicate filters, then CPU performs deterministic grouped count aggregation.",
+    },
+    "grouped_sum": {
+        "native_candidate_discovery": "no",
+        "cpu_refinement": "cpu_group_aggregation_after_metal_filter",
+        "native_only": "supported_for_numeric_predicates_cpu_aggregation",
+        "native_shapes": ("GroupedQuery/DenormTable numeric predicates",),
+        "notes": "Apple Metal compute evaluates bounded numeric predicate filters, then CPU performs deterministic grouped sum aggregation.",
     },
 }
 
@@ -710,6 +731,45 @@ def conjunctive_scan_apple_rt(table_rows, predicates) -> tuple[dict[str, int], .
     finally:
         if bool(rows_ptr):
             library.rtdl_apple_rt_free_rows(rows_ptr)
+
+
+def _filter_table_rows_with_apple_metal(table, predicates) -> tuple[dict[str, object], ...]:
+    row_ids = [int(row["row_id"]) for row in table]
+    if len(set(row_ids)) != len(row_ids):
+        raise ValueError("Apple RT grouped DB path requires unique row_id values")
+    matched = conjunctive_scan_apple_rt(table, PredicateBundle(tuple(predicates)))
+    matched_ids = {int(row["row_id"]) for row in matched}
+    return tuple(row for row in table if int(row["row_id"]) in matched_ids)
+
+
+def grouped_count_apple_rt(table_rows, query) -> tuple[dict[str, object], ...]:
+    """Run grouped_count with Apple Metal predicate filtering and CPU aggregation."""
+    table = normalize_denorm_table(table_rows)
+    grouped_query = normalize_grouped_query(query)
+    if not table:
+        return ()
+    filtered = _filter_table_rows_with_apple_metal(table, grouped_query.predicates)
+    return grouped_count_cpu(
+        filtered,
+        GroupedAggregateQuery(predicates=(), group_keys=grouped_query.group_keys),
+    )
+
+
+def grouped_sum_apple_rt(table_rows, query) -> tuple[dict[str, object], ...]:
+    """Run grouped_sum with Apple Metal predicate filtering and CPU aggregation."""
+    table = normalize_denorm_table(table_rows)
+    grouped_query = normalize_grouped_query(query)
+    if not table:
+        return ()
+    filtered = _filter_table_rows_with_apple_metal(table, grouped_query.predicates)
+    return grouped_sum_cpu(
+        filtered,
+        GroupedAggregateQuery(
+            predicates=(),
+            group_keys=grouped_query.group_keys,
+            value_field=grouped_query.value_field,
+        ),
+    )
 
 
 def _pack_rays_3d(rays: tuple[_CanonicalRay3D, ...]):
@@ -1552,6 +1612,8 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
     """
     if predicate_name in APPLE_RT_METAL_COMPUTE_PREDICATES:
         return "native_metal_compute"
+    if predicate_name in APPLE_RT_METAL_FILTER_CPU_AGGREGATE_PREDICATES:
+        return "native_metal_filter_cpu_aggregate"
     if predicate_name in {"fixed_radius_neighbors", "bounded_knn_rows", "knn_rows"}:
         return "native_mps_rt_2d_3d"
     if predicate_name == "ray_triangle_hit_count":
@@ -1729,6 +1791,10 @@ def run_apple_rt(
         return tuple(segment_intersection_apple_rt(left_records, right_records))
     if predicate_name == "conjunctive_scan":
         return tuple(conjunctive_scan_apple_rt(right_records, left_records))
+    if predicate_name == "grouped_count":
+        return tuple(grouped_count_apple_rt(right_records, left_records))
+    if predicate_name == "grouped_sum":
+        return tuple(grouped_sum_apple_rt(right_records, left_records))
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
@@ -1736,7 +1802,8 @@ def run_apple_rt(
             "2D/3D point-neighborhood workloads, point-in-polygon positive hits, "
             "2D point-nearest-segment, 2D segment-polygon workloads, "
             "bounded 2D polygon-pair area/Jaccard workloads, 2D overlay compose, "
-            "and numeric DB conjunctive_scan through Metal compute; "
+            "numeric DB conjunctive_scan through Metal compute, and grouped DB "
+            "aggregation through Metal predicate filtering plus CPU aggregation; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

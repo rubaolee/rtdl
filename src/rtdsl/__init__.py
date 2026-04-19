@@ -83,6 +83,8 @@ from .apple_rt_runtime import AppleRtRowView
 from .apple_rt_runtime import conjunctive_scan_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_2d_apple_rt
 from .apple_rt_runtime import fixed_radius_neighbors_3d_apple_rt
+from .apple_rt_runtime import grouped_count_apple_rt
+from .apple_rt_runtime import grouped_sum_apple_rt
 from .apple_rt_runtime import overlay_compose_apple_rt
 from .apple_rt_runtime import PreparedAppleRtRayTriangleClosestHit3D
 from .apple_rt_runtime import point_in_polygon_full_matrix_apple_rt
@@ -510,9 +512,11 @@ __all__ = [
     "GroupedQueryLayout",
     "grouped_count",
     "grouped_count_cpu",
+    "grouped_count_apple_rt",
     "grouped_count_hiprt",
     "grouped_sum",
     "grouped_sum_cpu",
+    "grouped_sum_apple_rt",
     "grouped_sum_hiprt",
     "hiprt_context_probe",
     "hiprt_version",

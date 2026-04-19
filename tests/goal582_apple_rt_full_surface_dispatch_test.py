@@ -208,7 +208,10 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
         self.assertEqual(modes["ray_triangle_closest_hit"], "native_mps_rt")
         self.assertEqual(modes["ray_triangle_hit_count"], "native_mps_rt_2d_3d")
         self.assertEqual(modes["segment_intersection"], "native_mps_rt")
-        self.assertEqual(modes["grouped_sum"], "cpu_reference_compat")
+        self.assertEqual(modes["conjunctive_scan"], "native_metal_compute")
+        self.assertEqual(modes["grouped_count"], "native_metal_filter_cpu_aggregate")
+        self.assertEqual(modes["grouped_sum"], "native_metal_filter_cpu_aggregate")
+        self.assertEqual(modes["bfs_discover"], "cpu_reference_compat")
         self.assertEqual(len(modes), 18)
 
     def test_segment_intersection_native_matches_cpu_reference(self) -> None:
@@ -306,13 +309,11 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
     def test_native_only_rejects_compatibility_paths(self) -> None:
         with self.assertRaises(NotImplementedError):
             rt.run_apple_rt(
-                grouped_sum_kernel,
+                bfs_kernel,
                 native_only=True,
-                query={"predicates": (("ship_date", "ge", 11),), "group_keys": ("region",), "value_field": "revenue"},
-                table=(
-                    {"row_id": 1, "region": "east", "ship_date": 10, "revenue": 5},
-                    {"row_id": 2, "region": "west", "ship_date": 12, "revenue": 8},
-                ),
+                frontier=(rt.FrontierVertex(vertex_id=0, level=0),),
+                graph=rt.csr_graph(row_offsets=(0, 1, 1), column_indices=(1,)),
+                visited=(0,),
             )
 
 

@@ -48,6 +48,10 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["conjunctive_scan"]["mode"], "native_metal_compute")
         self.assertEqual(by_predicate["conjunctive_scan"]["cpu_refinement"], "row_id_materialization_only")
         self.assertEqual(by_predicate["conjunctive_scan"]["native_only"], "supported_for_numeric_predicates")
+        self.assertEqual(by_predicate["grouped_count"]["mode"], "native_metal_filter_cpu_aggregate")
+        self.assertEqual(by_predicate["grouped_count"]["cpu_refinement"], "cpu_group_aggregation_after_metal_filter")
+        self.assertEqual(by_predicate["grouped_sum"]["mode"], "native_metal_filter_cpu_aggregate")
+        self.assertEqual(by_predicate["grouped_sum"]["cpu_refinement"], "cpu_group_aggregation_after_metal_filter")
 
     def test_compatibility_rows_are_not_marked_hardware_backed(self) -> None:
         native_candidates = {
@@ -74,7 +78,10 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
             },
         )
         for row in rt.apple_rt_support_matrix():
-            if row["predicate"] in native_candidates or row["mode"] == "native_metal_compute":
+            if row["predicate"] in native_candidates or row["mode"] in {
+                "native_metal_compute",
+                "native_metal_filter_cpu_aggregate",
+            }:
                 continue
             with self.subTest(predicate=row["predicate"]):
                 self.assertEqual(row["native_candidate_discovery"], "no")
