@@ -110,9 +110,11 @@ repeated-query `prepare_hiprt` currently covers prepared 3D ray/triangle
 hit-count, prepared 3D fixed-radius nearest-neighbor, prepared graph CSR paths,
 and prepared bounded DB table reuse.
 
-The released `v0.9.1` Apple RT slice also fits this direction, but it is
-narrower: `run_apple_rt` currently covers 3D `ray_triangle_closest_hit` through
-Apple Metal/MPS on macOS Apple Silicon only.
+The released `v0.9.1` Apple RT slice also fits this direction. It began with
+3D `ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon.
+Current v0.9.2 candidate work expands the native Apple slices to 3D hit-count
+and 2D segment-intersection and adds prepared/masked performance work, while the
+rest of the current Apple dispatcher remains compatibility mode.
 
 ## What RTDL Can Do But Is Not Intended To Become
 
@@ -246,8 +248,9 @@ and HIPRT still need native closest-hit kernels before RTDL can claim full
 four-backend RTXRMQ support.
 
 The released `v0.9.1` Apple RT slice adds one native closest-hit path through
-Apple Metal/MPS. That does not change the remaining OptiX, Vulkan, and HIPRT
-closest-hit gaps.
+Apple Metal/MPS, and current v0.9.2 candidate work adds prepared closest-hit
+reuse. That does not change the remaining OptiX, Vulkan, and HIPRT closest-hit
+gaps.
 
 ### HIPRT Backend Coverage
 
@@ -268,12 +271,14 @@ for 3D `ray_triangle_hit_count`. Goal590 adds native Apple MPS RT for 2D
 `segment_intersection` by tracing left segments against extruded right-segment
 quadrilaterals and then applying analytic intersection refinement. The current
 native modes are therefore 3D closest-hit, 3D hit-count, and 2D
-segment-intersection; the broader 2D geometry, nearest-neighbor, graph, and DB
+segment-intersection. Current v0.9.2 candidate performance work adds prepared
+closest-hit reuse and masked chunked nearest-hit traversal for hit-count and
+segment-intersection. The broader 2D geometry, nearest-neighbor, graph, and DB
 paths are currently `cpu_reference_compat`.
 
 It cannot yet claim broad native Apple RT parity, Apple hardware speedup
-evidence, non-macOS support, prepared Apple RT reuse, or hardware-backed Apple
-RT support for the broader workload matrices.
+evidence, non-macOS support, or hardware-backed Apple RT support for the
+broader workload matrices.
 
 ### Automatic Speedups For Every Workload
 

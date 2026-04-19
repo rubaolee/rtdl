@@ -140,14 +140,17 @@ Boundary:
 - No full Apple backend parity, performance-leading claim, or measured Apple
   hardware RT-core speedup is claimed yet.
 
-Post-`v0.9.1` mainline addendum:
+Current v0.9.2 candidate mainline addendum:
 
 - Goal582 makes all 18 current predicates callable through `run_apple_rt` on
   Apple Silicon macOS with explicit native-versus-compatibility modes.
 - Goal583 adds native Apple MPS RT for 3D `ray_triangle_hit_count`.
 - Goal590 adds native Apple MPS RT for 2D `segment_intersection`.
+- Goal596 adds prepared Apple RT closest-hit reuse.
+- Goal597 adds masked chunked traversal for Apple RT 3D hit-count.
+- Goal598 adds masked chunked traversal for Apple RT 2D segment-intersection.
 - All other Apple RT predicates remain `cpu_reference_compat`.
-- Backend maturity is documented in `/Users/rl2025/rtdl_python_only/docs/backend_maturity.md`; current Apple M4 measurements show Apple Metal/MPS RT is correctness-validated but unoptimized versus Embree.
+- Backend maturity is documented in `/Users/rl2025/rtdl_python_only/docs/backend_maturity.md`; current Apple M4 measurements show Apple Metal/MPS RT has local v0.9.2 overhead reductions for native slices but is still not a broad speedup or mature-backend claim.
 
 ## Prepared API Status
 

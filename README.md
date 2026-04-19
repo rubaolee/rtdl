@@ -21,6 +21,11 @@ backend line, exact bounded RTXRMQ-style closest-hit support on CPU reference,
 Apple Silicon, while preserving the documented platform and backend honesty
 boundaries.
 
+Current `main` also carries the v0.9.2 Apple RT performance line. That line
+keeps the v0.9.1 release boundary intact while adding prepared Apple closest-hit
+reuse and masked Apple MPS RT traversal for 3D hit-count and 2D
+segment-intersection.
+
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.
@@ -50,9 +55,10 @@ bounded DB-style analytical workloads.
 ## Version Status At A Glance
 
 - current released version: `v0.9.1`
-- current mainline release here: `v0.9.1`, which layers the released Apple RT
-  closest-hit slice on top of the `v0.9.0` HIPRT / closest-hit expansion, the
-  released `v0.8.0` app-building examples, and the bounded `v0.7.0` RT DB work
+- current mainline development line here: `v0.9.2` candidate Apple RT
+  performance work, layered on the released `v0.9.1` Apple RT closest-hit slice,
+  the `v0.9.0` HIPRT / closest-hit expansion, the released `v0.8.0`
+  app-building examples, and the bounded `v0.7.0` RT DB work
 - current released graph surface today:
   - `bfs`
   - `triangle_count`
@@ -111,7 +117,7 @@ bounded DB-style analytical workloads.
   - explicit release non-claims: no full Apple backend parity, no Apple speedup
     claim, and no non-closest-hit Apple RT workload support in the `v0.9.1`
     tag
-- current post-`v0.9.1` development line:
+- current `v0.9.2` Apple RT performance line:
   - Goal582 makes all 18 current RTDL predicates callable through
     `run_apple_rt` on Apple Silicon macOS
   - execution mode is explicit: 3D `ray_triangle_closest_hit`, 3D
@@ -120,10 +126,17 @@ bounded DB-style analytical workloads.
     `cpu_reference_compat`
   - `run_apple_rt(..., native_only=True)` rejects those compatibility paths
     instead of silently pretending they are Apple RT hardware execution
+  - Goal596 adds prepared Apple RT closest-hit reuse for repeated queries
+  - Goal597 replaces the hit-count per-triangle loop with masked chunked
+    nearest-hit traversal
+  - Goal598 replaces the segment-intersection per-right-segment AS loop with
+    masked chunked nearest-hit traversal and reports a stable local Apple M4
+    dense-fixture median reduction from 0.092515083 s to 0.031314438 s, while
+    still remaining about 4.17x slower than Embree on that fixture
   - backend maturity is documented separately: Embree is the only backend RTDL
     currently calls optimized/mature; Apple Metal/MPS RT is real and
-    correctness-validated for bounded slices, but currently unoptimized on local
-    Apple M4 measurements
+    correctness-validated for bounded native slices with measured v0.9.2
+    improvements, but not a broad speedup or mature-backend claim
 - previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -176,17 +189,20 @@ RTDL uses several backends behind one public kernel surface:
   - validated on the Linux NVIDIA CUDA path through HIPRT/Orochi; no AMD GPU
     validation, RT-core speedup, or CPU fallback is claimed
 - `Apple RT`:
-  - released `v0.9.1` backend slice on macOS Apple Silicon
+  - released `v0.9.1` closest-hit backend slice on macOS Apple Silicon
   - native mode currently exposes `run_apple_rt` for 3D
     `ray_triangle_closest_hit`, 3D `ray_triangle_hit_count`, and 2D
     `segment_intersection`
-  - post-`v0.9.1` development adds full-surface compatibility dispatch for all
+  - current v0.9.2 candidate work adds full-surface compatibility dispatch for all
     18 current predicates through `run_apple_rt`; predicates that are not in
     the native Apple set are marked `cpu_reference_compat`, not hardware-backed
     Apple RT
   - implemented through Apple Metal/MPS `MPSRayIntersector`
+  - current v0.9.2 candidate work adds prepared closest-hit reuse and masked
+    traversal for hit-count and segment-intersection to reduce repeated setup
+    overhead
   - no full parity or hardware-speedup claim is made; local Apple M4 evidence
-    currently shows Embree faster on the measured native slices
+    still shows Embree faster on hit-count and segment-intersection fixtures
 - `PostGIS` / `PostgreSQL`:
   - not RTDL backends
   - used as external correctness/timing anchors for some workload families
@@ -356,7 +372,8 @@ release status is tracked by the HIPRT matrix: `run_hiprt` has Linux parity
 coverage for 18 workloads across geometry, 2D geometry, nearest neighbor,
 graph, and bounded DB-style analytics.
 
-Released `v0.9.1` Apple RT path for Apple Silicon macOS:
+Released `v0.9.1` Apple RT path, plus current v0.9.2 Apple RT candidate
+improvements, on Apple Silicon macOS:
 
 ```bash
 make build-apple-rt
@@ -364,17 +381,21 @@ PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
 ```
 
 That example compares CPU Python reference rows against `run_apple_rt` for 3D
-closest-hit ray/triangle queries. It is a bounded released slice, not full
-Apple backend parity or a speedup claim.
+closest-hit ray/triangle queries. In current `main`, prepared closest-hit reuse
+is also available through `rt.prepare_apple_rt_ray_triangle_closest_hit(...)`.
+This remains bounded Apple RT support, not full Apple backend parity or a broad
+speedup claim.
 
 On current main after Goal582, `run_apple_rt` can also execute the full current
 18-predicate RTDL surface on Apple Silicon macOS through an explicit
 compatibility dispatch. Use `rt.apple_rt_support_matrix()` to see which
 predicates are `native_mps_rt` and which are `cpu_reference_compat`.
 
-Goal583 adds native Apple MPS RT execution for 3D `ray_triangle_hit_count`.
-The implementation uses MPS any-hit ray/triangle traversal per triangle, so it
-is correctness-oriented native coverage, not the final high-throughput design.
+Goal583 added native Apple MPS RT execution for 3D `ray_triangle_hit_count`.
+Goal597 then replaced the per-triangle loop with masked chunked nearest-hit
+traversal. Goal590 added native 2D `segment_intersection`; Goal598 then
+replaced the per-right-segment acceleration-structure loop with masked chunked
+nearest-hit traversal plus analytic refinement.
 
 Windows `cmd.exe`:
 
@@ -454,7 +475,7 @@ running HIPRT examples or the HIPRT matrix tests. This path is an active
 `v0.9.0` release path with the platform limits documented in the v0.9 support
 matrix.
 
-Optional `v0.9.1` Apple RT build step on Apple Silicon macOS:
+Optional Apple RT build step on Apple Silicon macOS:
 
 ```bash
 make build-apple-rt
@@ -462,12 +483,14 @@ make build-apple-rt
 
 After building, `examples/rtdl_apple_rt_closest_hit.py` and
 `tests/goal578_apple_rt_backend_test.py` can exercise the current Apple RT
-closest-hit slice.
+closest-hit slice. Current v0.9.2 candidate tests additionally cover prepared
+closest-hit, masked hit-count, and masked segment-intersection paths.
 
-For the post-`v0.9.1` full-surface dispatch check, run:
+For the current Apple RT dispatch and native-slice checks, run:
 
 ```bash
 PYTHONPATH=src:. python -m unittest tests.goal582_apple_rt_full_surface_dispatch_test -v
+PYTHONPATH=src:. python -m unittest tests.goal596_apple_rt_prepared_closest_hit_test tests.goal597_apple_rt_masked_hitcount_test tests.goal598_apple_rt_masked_segment_intersection_test -v
 ```
 
 Windows Embree note: install or unpack Embree for x64, set
@@ -531,8 +554,10 @@ Current mainline release line:
 - bounded `v0.7.0` RT DB work, released `v0.8.0` app-building examples, and
   released `v0.9.0` HIPRT / closest-hit expansion, with released `v0.9.1`
   Apple RT closest-hit support
-- post-`v0.9.1` main additionally carries Apple RT full-surface compatibility
-  dispatch and native Apple MPS RT for 3D hit-count and 2D segment-intersection
+- current `v0.9.2` candidate main additionally carries Apple RT full-surface
+  compatibility dispatch, native Apple MPS RT for 3D hit-count and 2D
+  segment-intersection, prepared closest-hit reuse, and masked Apple RT
+  traversal optimizations for hit-count and segment-intersection
 
 Newest released graph workload surface:
 
@@ -583,12 +608,15 @@ Release and preview layers inside the current repository:
   - `run_apple_rt` supports 3D `ray_triangle_closest_hit` through Apple
     Metal/MPS on macOS Apple Silicon
   - no full native Apple RT parity or speedup claim yet
-- post-`v0.9.1` main: Goal582 Apple RT full-surface compatibility dispatch
+- `v0.9.2` candidate main: Apple RT full-surface compatibility and performance
+  work
   - all 18 current predicates are callable through `run_apple_rt`
   - 3D closest-hit is `native_mps_rt`; 3D hit-count is
-    `native_mps_rt_3d_else_cpu_reference_compat`; 2D segment-intersection is
-    `native_mps_rt`; the rest are `cpu_reference_compat` until native Apple
-    implementations land
+    `native_mps_rt`; 2D segment-intersection is `native_mps_rt`; the rest are
+    `cpu_reference_compat` until native Apple implementations land
+  - prepared closest-hit reuse and masked traversal reduce overhead on the
+    local Apple M4 evidence, but Apple RT is not yet claimed as broadly faster
+    than Embree
 
 Current public demo artifact:
 
@@ -620,7 +648,8 @@ The repository currently includes:
   - OptiX: NVIDIA GPU ray-tracing backend
   - Vulkan: Vulkan ray-tracing GPU backend
   - Apple RT: macOS Apple Silicon Metal/MPS backend slices for 3D closest-hit,
-    3D hit-count, and 2D segment-intersection
+    3D hit-count, and 2D segment-intersection, including current v0.9.2
+    prepared/masked performance work
 - examples ranging from smallest first-run scripts to RTDL-plus-Python demos
 - accepted v0.8 app-building examples that show RTDL rows inside Python apps
 
@@ -687,7 +716,8 @@ Important honesty boundaries:
 - `v0.7.0` remains the bounded DB release; `v0.8.0` is the app-building
   release over that surface; `v0.9.0` adds HIPRT backend coverage and exact
   bounded closest-hit RMQ support under its support matrix; `v0.9.1` releases
-  the bounded Apple RT closest-hit line
+  the bounded Apple RT closest-hit line; current `main` carries v0.9.2
+  candidate Apple RT prepared/masked performance work
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.

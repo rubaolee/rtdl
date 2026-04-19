@@ -16,7 +16,7 @@ RTDL should not describe every implemented backend as optimized.
 | OptiX | Implemented for supported Linux/NVIDIA workloads | Real RT backend; performance is workload-dependent and not a broad speedup claim |
 | Vulkan | Implemented for supported workloads | Real backend and portability path; not consistently optimized |
 | HIPRT | Implemented for the accepted HIPRT matrix, including the current CUDA/NVIDIA compatibility path | Correctness-focused HIPRT integration; not a broad speedup claim |
-| Apple Metal/MPS RT | Implemented for bounded native slices | Correct but currently unoptimized; local Apple M4 data shows Embree faster |
+| Apple Metal/MPS RT | Implemented for bounded native slices | Correct with v0.9.2 overhead reductions; still not a broad speedup claim and Embree remains faster on current hit-count/segment fixtures |
 | CPU/Python reference | Correctness oracle and fallback | Not a performance backend |
 | Adaptive native engine | Paused work-in-progress | Not release evidence and not an optimized backend claim |
 
@@ -54,28 +54,41 @@ current native slices:
 - 3D `ray_triangle_hit_count`
 - 2D `segment_intersection`
 
-However, it is currently unoptimized. Local Apple M4 measurements against Embree
-show:
+The v0.9.1 Apple RT slice was correctness-first. Current v0.9.2 candidate work
+adds prepared closest-hit reuse and masked chunked traversal for hit-count and
+segment-intersection to reduce repeated setup overhead. Local Apple M4
+measurements against Embree after Goal598 show:
 
 | Workload | Embree median | Apple RT median | Apple RT vs Embree |
 | --- | ---: | ---: | ---: |
-| 3D `ray_triangle_closest_hit` | 0.000204 s | 0.001802 s | about 8.8x slower |
-| 3D `ray_triangle_hit_count` | 0.000203 s | 0.338369 s | about 1664x slower |
-| 2D `segment_intersection` | 0.010139 s | 0.095927 s | about 9.5x slower |
+| 3D `ray_triangle_closest_hit` | 0.002708896 s | 0.001413271 s | about 0.52x Apple/Embree, but unstable |
+| 3D `ray_triangle_hit_count` | 0.002438146 s | 0.114898792 s | about 47.13x slower |
+| 2D `segment_intersection` | 0.007503292 s | 0.031314438 s | about 4.17x slower |
 
 Evidence artifact:
 
 ```text
-/Users/rl2025/rtdl_python_only/docs/reports/apple_rt_vs_embree_perf_macos_2026-04-19.json
+/Users/rl2025/rtdl_python_only/docs/reports/goal598_post_masked_segment_intersection_perf_macos_2026-04-19.json
 ```
 
-The main reason is implementation structure: the current Apple hit-count and
-segment-intersection paths rebuild small MPS acceleration structures repeatedly,
-so setup and dispatch overhead dominate. Therefore the correct claim is:
+The segment-intersection path improved from the latest pre-Goal598 local
+artifact:
+
+| Artifact | Apple RT segment median | Apple RT vs Embree |
+| --- | ---: | ---: |
+| Goal597 post-hitcount artifact | 0.092515083 s | about 11.87x slower |
+| Goal598 post-segment artifact | 0.031314438 s | about 4.17x slower |
+
+The main reason for the remaining gap is still implementation maturity and
+dense-output enumeration cost. Goal597 and Goal598 reduce repeated
+acceleration-structure setup with masked chunked nearest-hit traversal, but they
+do not make the Apple backend broadly mature or generally faster than Embree.
+Therefore the correct claim is:
 
 > Apple Metal/MPS RT is implemented and correctness-validated for bounded native
-> slices, but currently unoptimized and not performance-competitive with Embree
-> on the local Apple M4 measurements.
+> slices. Current v0.9.2 work reduces Apple RT overhead for prepared closest-hit,
+> hit-count, and segment-intersection, but Apple RT is still a bounded backend
+> and not yet a broad performance-leading or mature-backend claim.
 
 ## Adaptive Native Engine
 
@@ -83,4 +96,3 @@ The adaptive native engine is paused work-in-progress. Earlier bounded pieces
 exist, but unfinished Goal589 work is not release evidence. Do not use adaptive
 engine files to support release claims unless that line is explicitly resumed,
 tested, reviewed, and committed.
-

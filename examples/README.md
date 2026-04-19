@@ -157,9 +157,12 @@ Current Apple RT boundary:
 - build it on Apple Silicon macOS with `make build-apple-rt`
 - this is the v0.9.1 released native slice: `run_apple_rt` uses Apple Metal/MPS
   RT for `ray_triangle_closest_hit` over 3D rays and 3D triangles
-- post-v0.9.1 Goal582 makes all 18 current predicates callable through
-  `run_apple_rt`, but non-closest-hit predicates are `cpu_reference_compat`
-- post-v0.9.1 Goal583 adds native Apple MPS RT execution for 3D
-  `ray_triangle_hit_count`
-- this is not a full native Apple backend parity claim and not a measured
-  hardware speedup claim
+- current v0.9.2 candidate work makes all 18 current predicates callable
+  through `run_apple_rt`, but predicates outside the native set are
+  `cpu_reference_compat`
+- current native Apple MPS RT slices are 3D `ray_triangle_closest_hit`, 3D
+  `ray_triangle_hit_count`, and 2D `segment_intersection`
+- current v0.9.2 candidate performance work adds prepared closest-hit reuse and
+  masked traversal for hit-count and segment-intersection
+- this is not a full native Apple backend parity claim and not a broad measured
+  Apple speedup claim

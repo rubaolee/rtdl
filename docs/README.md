@@ -139,12 +139,13 @@ Keep these current facts in mind while reading:
   `v0.8.0` app-building examples over existing RTDL features, and released
   `v0.9.0` HIPRT / closest-hit expansion, plus the released `v0.9.1` Apple RT
   closest-hit slice
-- current post-`v0.9.1` main also carries Goal582 Apple RT full-surface
+- current v0.9.2 candidate main also carries Goal582 Apple RT full-surface
   compatibility dispatch: all 18 current predicates are callable through
   `run_apple_rt` on Apple Silicon macOS; 3D closest-hit and 2D
-  segment-intersection are `native_mps_rt`, 3D hit-count is
-  `native_mps_rt_3d_else_cpu_reference_compat`, and the others are
-  `cpu_reference_compat`
+  segment-intersection are `native_mps_rt`, 3D hit-count is `native_mps_rt`,
+  and the others are `cpu_reference_compat`
+- current v0.9.2 candidate main adds prepared Apple closest-hit reuse and
+  masked Apple MPS RT traversal for 3D hit-count and 2D segment-intersection
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -199,6 +200,9 @@ Keep these current facts in mind while reading:
 - the released `v0.9.1` line adds Apple Metal/MPS `run_apple_rt`
   support for 3D `ray_triangle_closest_hit`; it does not claim full Apple
   backend parity or measured speedup yet
+- the current v0.9.2 candidate Apple RT line improves repeated-query/setup
+  overhead for the native Apple slices, but still does not claim broad Apple
+  backend maturity or global Apple speedup
 - the released `v0.2.0` surface remains a stable historical
   workload/documentation baseline
 - the released `v0.3.0` line is an application-style demo layer on top of that

@@ -14,6 +14,8 @@ It currently covers:
   path with explicit platform boundaries
 - the released `v0.9.1` Apple RT example, clearly marked as a
   bounded macOS/Apple-Silicon closest-hit slice
+- the current v0.9.2 candidate Apple RT native-slice work, clearly marked as
+  prepared/masked performance work rather than broad Apple speedup evidence
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -74,7 +76,7 @@ Before running any command below:
 - optional Embree build/probe: `make build-embree`
 - optional v0.9 HIPRT build on Linux:
   `make build-hiprt HIPRT_PREFIX=/path/to/hiprtSdk`
-- optional v0.9.1 Apple RT build on Apple Silicon macOS:
+- optional Apple RT build on Apple Silicon macOS:
   `make build-apple-rt`
 - Windows Embree users should set `RTDL_EMBREE_PREFIX` to an x64 Embree prefix
   and `RTDL_VCVARS64` if Visual Studio Build Tools are not in the default
@@ -188,9 +190,10 @@ Current HIPRT boundary:
 
 ## Apple RT Backend
 
-This released v0.9.1 path is for Apple Silicon macOS users. It is
-bounded by Goal578: one 3D closest-hit ray/triangle workload through Apple
-Metal/MPS `MPSRayIntersector`.
+This released v0.9.1 path is for Apple Silicon macOS users. It began as the
+Goal578 one-workload 3D closest-hit ray/triangle slice through Apple Metal/MPS
+`MPSRayIntersector`. Current v0.9.2 candidate work keeps that boundary honest
+while adding prepared/masked native-slice performance improvements.
 
 Build and run:
 
@@ -207,17 +210,22 @@ available, it checks approximate row parity for `run_apple_rt`.
 Current Apple RT boundary:
 
 - released `run_apple_rt` native support: 3D `ray_triangle_closest_hit`
-- post-`v0.9.1` Goal582 dispatch support: all 18 current predicates are
+- current v0.9.2 Goal582 dispatch support: all 18 current predicates are
   callable through `run_apple_rt`, with non-closest-hit predicates explicitly
   marked `cpu_reference_compat`
-- post-`v0.9.1` Goal583 native support: 3D `ray_triangle_hit_count` through
-  Apple MPS any-hit traversal
-- post-`v0.9.1` Goal590 native support: 2D `segment_intersection` through an
+- current native support: 3D `ray_triangle_hit_count` and 2D
+  `segment_intersection`
+- Goal596 prepared support: repeated 3D closest-hit queries can reuse prepared
+  Apple RT build data
+- Goal597/Goal598 masked traversal support: 3D hit-count and 2D
+  segment-intersection use chunked primitive masks to reduce repeated setup
+  overhead
+- Goal590 native support detail: 2D `segment_intersection` uses an
   Apple MPS ray-versus-extruded-segment traversal plus analytic intersection
   refinement
-- validated locally on Apple M4 through Goal578 focused tests and Gemini/Claude
-  reviews; Goal582 adds a full-surface dispatch parity test; Goal590 adds
-  focused native segment-intersection parity
+- validated locally on Apple M4 through focused tests and Gemini/Claude reviews
+  for the released closest-hit slice and current v0.9.2 candidate native
+  performance work
 - unsupported claims: full native Apple backend parity, Apple hardware speedup
   evidence, non-macOS support, and hardware-backed Apple support for the
   broader workload matrix

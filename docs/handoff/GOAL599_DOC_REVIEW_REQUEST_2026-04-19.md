@@ -1,0 +1,1 @@
+Please review `/Users/rl2025/rtdl_python_only/docs/reports/goal599_v0_9_2_apple_rt_public_doc_refresh_2026-04-19.md` and the listed public docs, then write an ACCEPT or BLOCK review to `/Users/rl2025/rtdl_python_only/docs/reports/goal599_external_doc_review_2026-04-19.md` on whether the v0.9.2 Apple RT public documentation is current, consistent, and honestly bounded.
