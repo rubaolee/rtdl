@@ -198,8 +198,13 @@ class Goal585AdaptiveBackendSkeletonTest(unittest.TestCase):
                 "grouped_sum",
             },
         )
-        self.assertTrue(all(row["mode"] == "cpu_reference_compat" for row in matrix))
-        self.assertTrue(all(row["native"] is False for row in matrix))
+        by_workload = {row["workload"]: row for row in matrix}
+        if rt.adaptive_available():
+            self.assertEqual(by_workload["ray_triangle_hit_count_3d"]["mode"], "native_adaptive_cpu_soa_3d")
+            self.assertTrue(by_workload["ray_triangle_hit_count_3d"]["native"])
+        else:
+            self.assertTrue(all(row["mode"] == "cpu_reference_compat" for row in matrix))
+            self.assertTrue(all(row["native"] is False for row in matrix))
 
     def test_all_18_workloads_route_to_reference_with_visible_modes(self) -> None:
         square = _square(1, 0.0, 0.0, 2.0, 2.0)
@@ -238,8 +243,12 @@ class Goal585AdaptiveBackendSkeletonTest(unittest.TestCase):
             with self.subTest(workload=workload):
                 mode = rt.adaptive_predicate_mode(kernel)
                 self.assertEqual(mode["workload"], workload)
-                self.assertEqual(mode["mode"], "cpu_reference_compat")
-                self.assertFalse(mode["native"])
+                if workload == "ray_triangle_hit_count_3d" and rt.adaptive_available():
+                    self.assertEqual(mode["mode"], "native_adaptive_cpu_soa_3d")
+                    self.assertTrue(mode["native"])
+                else:
+                    self.assertEqual(mode["mode"], "cpu_reference_compat")
+                    self.assertFalse(mode["native"])
                 self.assertEqual(rt.run_adaptive(kernel, **inputs), rt.run_cpu_python_reference(kernel, **inputs))
                 self.assertEqual(rt.prepare_adaptive(kernel, **inputs).run(), rt.run_cpu_python_reference(kernel, **inputs))
 

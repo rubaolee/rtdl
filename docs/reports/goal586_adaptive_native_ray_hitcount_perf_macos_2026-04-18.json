@@ -1,0 +1,33 @@
+{
+  "host": "macos_local",
+  "workload": "ray_triangle_hit_count_3d",
+  "ray_count": 512,
+  "triangle_count": 1024,
+  "candidate_pairs": 524288,
+  "adaptive_mode": {
+    "backend": "adaptive",
+    "workload": "ray_triangle_hit_count_3d",
+    "predicate": "ray_triangle_hit_count",
+    "family": "ray_triangle",
+    "mode": "native_adaptive_cpu_soa_3d",
+    "native": true,
+    "prepared_context": false
+  },
+  "native_adaptive_seconds": [
+    0.0023550830082967877,
+    0.002457040944136679,
+    0.002294874982908368,
+    0.0022591659799218178,
+    0.0022797499550506473
+  ],
+  "native_adaptive_median_seconds": 0.002294874982908368,
+  "cpu_python_reference_seconds": [
+    0.23890433297492564,
+    0.2411024160683155,
+    0.23898641706909984,
+    0.24349058407824486,
+    0.2392301670042798
+  ],
+  "cpu_python_reference_median_seconds": 0.2392301670042798,
+  "parity": true
+}

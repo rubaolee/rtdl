@@ -8,16 +8,61 @@ mode strings make that fact visible to callers.
 
 from __future__ import annotations
 
+import ctypes
+import functools
+import platform
 from dataclasses import asdict
 from dataclasses import dataclass
+from pathlib import Path
 
 from .ir import CompiledKernel
+from .reference import Ray3D
+from .reference import Triangle3D
+from .runtime import _normalize_records
+from .runtime import _project_rows
 from .runtime import _resolve_kernel
 from .runtime import run_cpu_python_reference
 
 
 ADAPTIVE_BACKEND_NAME = "adaptive"
 ADAPTIVE_COMPAT_MODE = "cpu_reference_compat"
+ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE = "native_adaptive_cpu_soa_3d"
+_ERROR_BUFFER_SIZE = 512
+
+
+class _RtdlAdaptiveRay3D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("ox", ctypes.c_double),
+        ("oy", ctypes.c_double),
+        ("oz", ctypes.c_double),
+        ("dx", ctypes.c_double),
+        ("dy", ctypes.c_double),
+        ("dz", ctypes.c_double),
+        ("tmax", ctypes.c_double),
+    ]
+
+
+class _RtdlAdaptiveTriangle3D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("z0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("z1", ctypes.c_double),
+        ("x2", ctypes.c_double),
+        ("y2", ctypes.c_double),
+        ("z2", ctypes.c_double),
+    ]
+
+
+class _RtdlAdaptiveRayHitCountRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("hit_count", ctypes.c_uint32),
+    ]
 
 
 @dataclass(frozen=True)
@@ -270,7 +315,7 @@ def adaptive_support_matrix() -> tuple[dict[str, object], ...]:
     Native adaptive acceleration must flip `native` to true in later goals.
     """
 
-    return tuple(row.to_dict() for row in _ADAPTIVE_WORKLOADS)
+    return tuple(_support_row_with_runtime_mode(row) for row in _ADAPTIVE_WORKLOADS)
 
 
 def adaptive_predicate_mode(kernel_fn_or_compiled) -> dict[str, object]:
@@ -279,14 +324,15 @@ def adaptive_predicate_mode(kernel_fn_or_compiled) -> dict[str, object]:
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     workload = _classify_workload(compiled)
     row = _WORKLOAD_BY_NAME[workload]
+    runtime_row = _support_row_with_runtime_mode(row)
     return {
         "backend": ADAPTIVE_BACKEND_NAME,
-        "workload": row.workload,
-        "predicate": row.predicate,
-        "family": row.family,
-        "mode": row.mode,
-        "native": row.native,
-        "prepared_context": row.prepared_context,
+        "workload": runtime_row["workload"],
+        "predicate": runtime_row["predicate"],
+        "family": runtime_row["family"],
+        "mode": runtime_row["mode"],
+        "native": runtime_row["native"],
+        "prepared_context": runtime_row["prepared_context"],
     }
 
 
@@ -299,7 +345,9 @@ def run_adaptive(kernel_fn_or_compiled, **inputs) -> tuple[dict[str, object], ..
     """
 
     compiled = _resolve_kernel(kernel_fn_or_compiled)
-    _classify_workload(compiled)
+    workload = _classify_workload(compiled)
+    if workload == "ray_triangle_hit_count_3d" and adaptive_available():
+        return _run_ray_triangle_hit_count_3d_native(compiled, inputs)
     return run_cpu_python_reference(compiled, **inputs)
 
 
@@ -348,3 +396,148 @@ def _classify_dimensional_workload(compiled: CompiledKernel, predicate: str) -> 
             raise ValueError("adaptive backend Goal585 matrix supports bounded_knn_rows_3d only")
         return "bounded_knn_rows_3d"
     raise ValueError(f"ambiguous adaptive backend predicate: {predicate!r}")
+
+
+def adaptive_available() -> bool:
+    try:
+        _adaptive_lib()
+    except Exception:
+        return False
+    return True
+
+
+def adaptive_version() -> tuple[int, int, int]:
+    lib = _adaptive_lib()
+    major = ctypes.c_int()
+    minor = ctypes.c_int()
+    patch = ctypes.c_int()
+    status = lib.rtdl_adaptive_get_version(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch))
+    if status != 0:
+        raise RuntimeError(f"rtdl_adaptive_get_version failed with status {status}")
+    return int(major.value), int(minor.value), int(patch.value)
+
+
+def _support_row_with_runtime_mode(row: AdaptiveWorkloadSupport) -> dict[str, object]:
+    payload = row.to_dict()
+    if row.workload == "ray_triangle_hit_count_3d" and adaptive_available():
+        payload["mode"] = ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE
+        payload["native"] = True
+    return payload
+
+
+def _run_ray_triangle_hit_count_3d_native(
+    compiled: CompiledKernel,
+    inputs: dict[str, object],
+) -> tuple[dict[str, object], ...]:
+    expected_inputs = {item.name: item for item in compiled.inputs}
+    missing = [name for name in expected_inputs if name not in inputs]
+    unexpected = [name for name in inputs if name not in expected_inputs]
+    if missing:
+        raise ValueError(f"missing RTDL adaptive inputs: {', '.join(sorted(missing))}")
+    if unexpected:
+        raise ValueError(f"unexpected RTDL adaptive inputs: {', '.join(sorted(unexpected))}")
+
+    normalized_inputs = {
+        name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
+        for name, payload in inputs.items()
+    }
+    rays_name = compiled.candidates.left.name
+    triangles_name = compiled.candidates.right.name
+    rays = normalized_inputs[rays_name]
+    triangles = normalized_inputs[triangles_name]
+    if any(not isinstance(item, Ray3D) for item in rays):
+        raise TypeError("native adaptive ray_triangle_hit_count_3d requires Ray3D inputs")
+    if any(not isinstance(item, Triangle3D) for item in triangles):
+        raise TypeError("native adaptive ray_triangle_hit_count_3d requires Triangle3D inputs")
+
+    ray_array = (_RtdlAdaptiveRay3D * len(rays))(
+        *(
+            _RtdlAdaptiveRay3D(
+                int(ray.id),
+                float(ray.ox),
+                float(ray.oy),
+                float(ray.oz),
+                float(ray.dx),
+                float(ray.dy),
+                float(ray.dz),
+                float(ray.tmax),
+            )
+            for ray in rays
+        )
+    )
+    triangle_array = (_RtdlAdaptiveTriangle3D * len(triangles))(
+        *(
+            _RtdlAdaptiveTriangle3D(
+                int(triangle.id),
+                float(triangle.x0),
+                float(triangle.y0),
+                float(triangle.z0),
+                float(triangle.x1),
+                float(triangle.y1),
+                float(triangle.z1),
+                float(triangle.x2),
+                float(triangle.y2),
+                float(triangle.z2),
+            )
+            for triangle in triangles
+        )
+    )
+    rows_ptr = ctypes.POINTER(_RtdlAdaptiveRayHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(_ERROR_BUFFER_SIZE)
+    status = _adaptive_lib().rtdl_adaptive_run_ray_hitcount_3d(
+        ray_array,
+        len(rays),
+        triangle_array,
+        len(triangles),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        _ERROR_BUFFER_SIZE,
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_adaptive_run_ray_hitcount_3d failed with status {status}: {detail}")
+    try:
+        rows = tuple(
+            {"ray_id": int(rows_ptr[index].ray_id), "hit_count": int(rows_ptr[index].hit_count)}
+            for index in range(row_count.value)
+        )
+    finally:
+        _adaptive_lib().rtdl_adaptive_free_rows(rows_ptr)
+    return _project_rows(compiled, rows)
+
+
+@functools.lru_cache(maxsize=1)
+def _adaptive_lib():
+    path = _adaptive_library_path()
+    lib = ctypes.CDLL(str(path))
+    lib.rtdl_adaptive_get_version.argtypes = [
+        ctypes.POINTER(ctypes.c_int),
+        ctypes.POINTER(ctypes.c_int),
+        ctypes.POINTER(ctypes.c_int),
+    ]
+    lib.rtdl_adaptive_get_version.restype = ctypes.c_int
+    lib.rtdl_adaptive_free_rows.argtypes = [ctypes.c_void_p]
+    lib.rtdl_adaptive_free_rows.restype = None
+    lib.rtdl_adaptive_run_ray_hitcount_3d.argtypes = [
+        ctypes.POINTER(_RtdlAdaptiveRay3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlAdaptiveTriangle3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlAdaptiveRayHitCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    lib.rtdl_adaptive_run_ray_hitcount_3d.restype = ctypes.c_int
+    return lib
+
+
+def _adaptive_library_path() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    extension = ".dylib" if platform.system() == "Darwin" else ".dll" if platform.system() == "Windows" else ".so"
+    path = repo_root / "build" / f"librtdl_adaptive{extension}"
+    if not path.exists():
+        raise RuntimeError(f"RTDL adaptive backend library is not built at {path}; run `make build-adaptive`")
+    return path

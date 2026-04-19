@@ -26,8 +26,11 @@ from .api import triangle_match
 from .api import traverse
 from .adaptive_runtime import ADAPTIVE_BACKEND_NAME
 from .adaptive_runtime import ADAPTIVE_COMPAT_MODE
+from .adaptive_runtime import ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE
+from .adaptive_runtime import adaptive_available
 from .adaptive_runtime import adaptive_predicate_mode
 from .adaptive_runtime import adaptive_support_matrix
+from .adaptive_runtime import adaptive_version
 from .adaptive_runtime import prepare_adaptive
 from .adaptive_runtime import PreparedAdaptiveExecution
 from .adaptive_runtime import run_adaptive
@@ -573,8 +576,11 @@ __all__ = [
     "arcgis_pages_to_cdb",
     "ADAPTIVE_BACKEND_NAME",
     "ADAPTIVE_COMPAT_MODE",
+    "ADAPTIVE_NATIVE_RAY_HITCOUNT_3D_MODE",
+    "adaptive_available",
     "adaptive_predicate_mode",
     "adaptive_support_matrix",
+    "adaptive_version",
     "build_arcgis_geojson_query_url",
     "build_arcgis_query_url",
     "build_arcgis_layer_url",
