@@ -82,6 +82,7 @@ from .apple_rt_runtime import AppleRtRowView
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_hit_count_apple_rt
 from .apple_rt_runtime import run_apple_rt
+from .apple_rt_runtime import segment_intersection_apple_rt
 from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
 from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
@@ -778,6 +779,7 @@ __all__ = [
     "schema_path",
     "scipy_available",
     "segment_intersection",
+    "segment_intersection_apple_rt",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows_hiprt",

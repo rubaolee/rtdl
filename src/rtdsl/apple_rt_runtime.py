@@ -14,13 +14,14 @@ from pathlib import Path
 
 from .ir import CompiledKernel
 from .reference import Ray3D as _CanonicalRay3D
+from .reference import Segment as _CanonicalSegment
 from .reference import Triangle3D as _CanonicalTriangle3D
 from .runtime import _normalize_records
 from .runtime import _run_cpu_python_reference_from_normalized
 from .runtime import _resolve_kernel
 from .runtime import _validate_kernel_for_cpu
 
-APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit", "ray_triangle_hit_count"})
+APPLE_RT_NATIVE_PREDICATES = frozenset({"ray_triangle_closest_hit", "ray_triangle_hit_count", "segment_intersection"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
         "bfs_discover",
@@ -72,6 +73,25 @@ class _RtdlTriangle3D(ctypes.Structure):
         ("x2", ctypes.c_double),
         ("y2", ctypes.c_double),
         ("z2", ctypes.c_double),
+    ]
+
+
+class _RtdlSegment(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+    ]
+
+
+class _RtdlLsiRow(ctypes.Structure):
+    _fields_ = [
+        ("left_id", ctypes.c_uint32),
+        ("right_id", ctypes.c_uint32),
+        ("intersection_point_x", ctypes.c_double),
+        ("intersection_point_y", ctypes.c_double),
     ]
 
 
@@ -191,6 +211,17 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_ray_hitcount_3d.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_lsi.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_lsi.restype = ctypes.c_int
 
 
 def _check_status(status: int, error_buffer: ctypes.Array[ctypes.c_char]) -> None:
@@ -244,6 +275,13 @@ def _pack_triangles_3d(triangles: tuple[_CanonicalTriangle3D, ...]):
     return records
 
 
+def _pack_segments(segments: tuple[_CanonicalSegment, ...]):
+    records = (_RtdlSegment * len(segments))()
+    for index, segment in enumerate(segments):
+        records[index] = _RtdlSegment(segment.id, segment.x0, segment.y0, segment.x1, segment.y1)
+    return records
+
+
 def ray_triangle_closest_hit_apple_rt(
     rays: tuple[_CanonicalRay3D, ...],
     triangles: tuple[_CanonicalTriangle3D, ...],
@@ -275,6 +313,40 @@ def ray_triangle_closest_hit_apple_rt(
         row_count=row_count.value,
         row_type=_RtdlRayClosestHitRow,
         field_names=("ray_id", "triangle_id", "t"),
+    )
+
+
+def segment_intersection_apple_rt(
+    left_segments: tuple[_CanonicalSegment, ...],
+    right_segments: tuple[_CanonicalSegment, ...],
+) -> AppleRtRowView:
+    if any(not isinstance(segment, _CanonicalSegment) for segment in left_segments):
+        raise ValueError("Apple RT segment_intersection currently requires 2D segments on the left")
+    if any(not isinstance(segment, _CanonicalSegment) for segment in right_segments):
+        raise ValueError("Apple RT segment_intersection currently requires 2D segments on the right")
+    library = _load_library()
+    left_records = _pack_segments(left_segments)
+    right_records = _pack_segments(right_segments)
+    rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_lsi(
+        left_records,
+        len(left_segments),
+        right_records,
+        len(right_segments),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return AppleRtRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlLsiRow,
+        field_names=("left_id", "right_id", "intersection_point_x", "intersection_point_y"),
     )
 
 
@@ -362,20 +434,22 @@ def run_apple_rt(
         name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
         for name, payload in inputs.items()
     }
-    rays = normalized[compiled.candidates.left.name]
-    triangles = normalized[compiled.candidates.right.name]
+    left_records = normalized[compiled.candidates.left.name]
+    right_records = normalized[compiled.candidates.right.name]
     if predicate_name == "ray_triangle_closest_hit" and all(
-        isinstance(ray, _CanonicalRay3D) for ray in rays
-    ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
-        return tuple(ray_triangle_closest_hit_apple_rt(rays, triangles))
+        isinstance(ray, _CanonicalRay3D) for ray in left_records
+    ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in right_records):
+        return tuple(ray_triangle_closest_hit_apple_rt(left_records, right_records))
     if predicate_name == "ray_triangle_hit_count" and all(
-        isinstance(ray, _CanonicalRay3D) for ray in rays
-    ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles):
-        return tuple(ray_triangle_hit_count_apple_rt(rays, triangles))
+        isinstance(ray, _CanonicalRay3D) for ray in left_records
+    ) and all(isinstance(triangle, _CanonicalTriangle3D) for triangle in right_records):
+        return tuple(ray_triangle_hit_count_apple_rt(left_records, right_records))
+    if predicate_name == "segment_intersection":
+        return tuple(segment_intersection_apple_rt(left_records, right_records))
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
-            "ray_triangle_closest_hit and 3D ray_triangle_hit_count; "
+            "ray_triangle_closest_hit, 3D ray_triangle_hit_count, and 2D segment_intersection; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

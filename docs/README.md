@@ -139,9 +139,10 @@ Keep these current facts in mind while reading:
   closest-hit slice
 - current post-`v0.9.1` main also carries Goal582 Apple RT full-surface
   compatibility dispatch: all 18 current predicates are callable through
-  `run_apple_rt` on Apple Silicon macOS; 3D closest-hit is `native_mps_rt`, 3D
-  hit-count is `native_mps_rt_3d_else_cpu_reference_compat`, and the others
-  are `cpu_reference_compat`
+  `run_apple_rt` on Apple Silicon macOS; 3D closest-hit and 2D
+  segment-intersection are `native_mps_rt`, 3D hit-count is
+  `native_mps_rt_3d_else_cpu_reference_compat`, and the others are
+  `cpu_reference_compat`
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`

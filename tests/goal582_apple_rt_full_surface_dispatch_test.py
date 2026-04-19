@@ -203,11 +203,32 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
     def test_support_matrix_marks_native_and_compatibility_modes(self) -> None:
         self.assertIn("apple_rt_predicate_mode", rt.__all__)
         self.assertIn("apple_rt_support_matrix", rt.__all__)
+        self.assertIn("segment_intersection_apple_rt", rt.__all__)
         modes = {row["predicate"]: row["mode"] for row in rt.apple_rt_support_matrix()}
         self.assertEqual(modes["ray_triangle_closest_hit"], "native_mps_rt")
         self.assertEqual(modes["ray_triangle_hit_count"], "native_mps_rt_3d_else_cpu_reference_compat")
+        self.assertEqual(modes["segment_intersection"], "native_mps_rt")
         self.assertEqual(modes["grouped_sum"], "cpu_reference_compat")
         self.assertEqual(len(modes), 18)
+
+    def test_segment_intersection_native_matches_cpu_reference(self) -> None:
+        inputs = {
+            "left": (
+                rt.Segment(1, 0.0, 0.0, 2.0, 2.0),
+                rt.Segment(2, 0.0, 3.0, 2.0, 3.0),
+                rt.Segment(3, -1.0, 1.0, 3.0, 1.0),
+            ),
+            "right": (
+                rt.Segment(10, 0.0, 2.0, 2.0, 0.0),
+                rt.Segment(12, 1.0, -1.0, 1.0, 3.0),
+                rt.Segment(11, 3.0, 0.0, 3.0, 2.0),
+            ),
+        }
+        actual = rt.run_apple_rt(segment_intersection_kernel, native_only=True, **inputs)
+        expected = rt.run_cpu_python_reference(segment_intersection_kernel, **inputs)
+        _assert_rows_almost_equal(self, actual, expected)
+        direct = tuple(rt.segment_intersection_apple_rt(inputs["left"], inputs["right"]))
+        _assert_rows_almost_equal(self, direct, expected)
 
     def test_all_current_predicates_are_callable_through_run_apple_rt(self) -> None:
         square = _square(1, 0.0, 0.0, 2.0, 2.0)

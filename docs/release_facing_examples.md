@@ -212,8 +212,12 @@ Current Apple RT boundary:
   marked `cpu_reference_compat`
 - post-`v0.9.1` Goal583 native support: 3D `ray_triangle_hit_count` through
   Apple MPS any-hit traversal
+- post-`v0.9.1` Goal590 native support: 2D `segment_intersection` through an
+  Apple MPS ray-versus-extruded-segment traversal plus analytic intersection
+  refinement
 - validated locally on Apple M4 through Goal578 focused tests and Gemini/Claude
-  reviews; Goal582 adds a full-surface dispatch parity test
+  reviews; Goal582 adds a full-surface dispatch parity test; Goal590 adds
+  focused native segment-intersection parity
 - unsupported claims: full native Apple backend parity, Apple hardware speedup
   evidence, non-macOS support, and hardware-backed Apple support for the
   broader workload matrix

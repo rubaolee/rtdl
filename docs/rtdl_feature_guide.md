@@ -55,6 +55,7 @@ Today it includes:
 - a post-`v0.9.1` Apple RT compatibility dispatcher for all current predicates,
   with explicit `native_mps_rt` versus `cpu_reference_compat` modes
 - native Apple MPS RT coverage for 3D `ray_triangle_hit_count` after Goal583
+- native Apple MPS RT coverage for 2D `segment_intersection` after Goal590
 
 Current supported workload families:
 
@@ -115,7 +116,8 @@ Current user-programming note:
 - post-`v0.9.1` Goal582 lets users call the rest of the current workload
   surface through `run_apple_rt` in compatibility mode while native Apple
   implementations are added one workload family at a time; Goal583 adds the
-  first expansion beyond closest-hit with 3D `ray_triangle_hit_count`
+  first expansion beyond closest-hit with 3D `ray_triangle_hit_count`; Goal590
+  adds native 2D `segment_intersection`
 - RTDL provides the query core there, while Python handles application logic and
   output
 
@@ -209,7 +211,8 @@ The current repo can:
   after `make build-apple-rt`
 - run the post-v0.9.1 Apple RT full-surface compatibility dispatch on macOS
   Apple Silicon, while using `native_only=True` when an app must reject
-  CPU-reference compatibility paths
+  CPU-reference compatibility paths; current native Apple MPS RT paths are 3D
+  closest-hit, 3D hit-count, and 2D segment-intersection
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
@@ -236,4 +239,4 @@ RTDL does not yet claim:
 - AMD GPU HIPRT validation, HIPRT CPU fallback, HIPRT RT-core speedup evidence,
   or OptiX/Vulkan/HIPRT native support for `ray_triangle_closest_hit`
 - full native Apple RT backend parity or Apple hardware speedup evidence beyond
-  the current bounded 3D closest-hit slice
+  the current bounded closest-hit, hit-count, and segment-intersection slices

@@ -1,0 +1,31 @@
+{
+  "date": "2026-04-19",
+  "host": "local Apple Silicon macOS",
+  "workload": "segment_intersection",
+  "left_count": 128,
+  "right_count": 128,
+  "candidate_pairs": 16384,
+  "hit_rows": 16384,
+  "parity": true,
+  "cpu_python_reference_seconds": [
+    0.010794209083542228,
+    0.012069999938830733,
+    0.014321874943561852,
+    0.00993174989707768,
+    0.010087582981213927,
+    0.010033958940766752,
+    0.012212708010338247
+  ],
+  "apple_rt_native_seconds": [
+    0.07345324999187142,
+    0.07089208299294114,
+    0.08148862503003329,
+    0.0844811659771949,
+    0.08903112495318055,
+    0.09599695901852101,
+    0.10711912496481091
+  ],
+  "cpu_python_reference_median_seconds": 0.010794209083542228,
+  "apple_rt_native_median_seconds": 0.0844811659771949,
+  "interpretation": "local smoke only; current native Apple MPS segment-intersection path is correctness-oriented and rebuilds a tiny MPS quadrilateral AS per right segment, so this is not a speedup claim"
+}
