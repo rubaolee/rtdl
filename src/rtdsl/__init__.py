@@ -24,6 +24,13 @@ from .api import segment_polygon_anyhit_rows
 from .api import segment_polygon_hitcount
 from .api import triangle_match
 from .api import traverse
+from .adaptive_runtime import ADAPTIVE_BACKEND_NAME
+from .adaptive_runtime import ADAPTIVE_COMPAT_MODE
+from .adaptive_runtime import adaptive_predicate_mode
+from .adaptive_runtime import adaptive_support_matrix
+from .adaptive_runtime import prepare_adaptive
+from .adaptive_runtime import PreparedAdaptiveExecution
+from .adaptive_runtime import run_adaptive
 from .baseline_contracts import BASELINE_FLOAT_ABS_TOL
 from .baseline_contracts import BASELINE_FLOAT_REL_TOL
 from .baseline_contracts import BASELINE_PRECISION_MODE
@@ -564,6 +571,10 @@ __all__ = [
     "evaluation_entries",
     "infer_workload",
     "arcgis_pages_to_cdb",
+    "ADAPTIVE_BACKEND_NAME",
+    "ADAPTIVE_COMPAT_MODE",
+    "adaptive_predicate_mode",
+    "adaptive_support_matrix",
     "build_arcgis_geojson_query_url",
     "build_arcgis_query_url",
     "build_arcgis_layer_url",
@@ -695,6 +706,7 @@ __all__ = [
     "download_monuseg_training_zip",
     "build_goal141_public_case",
     "prepare_embree",
+    "prepare_adaptive",
     "apple_rt_context_probe",
     "apple_rt_predicate_mode",
     "apple_rt_support_matrix",
@@ -705,6 +717,7 @@ __all__ = [
     "PreparedEmbreeDbDataset",
     "PreparedEmbreeExecution",
     "PreparedEmbreeKernel",
+    "PreparedAdaptiveExecution",
     "public_pathology_datasets",
     "ray_triangle_hit_count",
     "ray_triangle_closest_hit",
@@ -722,6 +735,7 @@ __all__ = [
     "refine",
     "run_baseline_benchmark",
     "run_baseline_case",
+    "run_adaptive",
     "run_embree",
     "run_apple_rt",
     "run_goal23_reproduction",
