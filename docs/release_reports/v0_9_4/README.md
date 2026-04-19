@@ -1,7 +1,6 @@
-# RTDL v0.9.4 Release Target Package
+# RTDL v0.9.4 Release Package
 
-Status: final full test/doc/audit gate passed, pending explicit release
-authorization.
+Status: released.
 
 `v0.9.4` absorbs the untagged internal `v0.9.2` and `v0.9.3` Apple RT evidence
 lines and adds Apple Metal compute/native-assisted coverage for bounded DB and
@@ -9,7 +8,7 @@ graph workloads.
 
 ## Scope
 
-This package records the current Apple RT expansion target on `main`:
+This package records the Apple RT expansion released as `v0.9.4`:
 
 - all 18 current RTDL predicates are callable through `run_apple_rt`
 - all 18 predicates have explicit native or native-assisted Apple execution

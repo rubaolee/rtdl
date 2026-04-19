@@ -15,16 +15,14 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.9.1`. It releases the accepted HIPRT
+The current released version is `v0.9.4`. It releases the accepted HIPRT
 backend line, exact bounded RTXRMQ-style closest-hit support on CPU reference,
-`run_cpu`, and Embree, plus the bounded Apple RT closest-hit slice on macOS
-Apple Silicon, while preserving the documented platform and backend honesty
-boundaries.
+`run_cpu`, Embree, and the Apple RT consolidation line on macOS Apple Silicon,
+while preserving the documented platform and backend honesty boundaries.
 
-Current `main` carries the next Apple RT release target, `v0.9.4`. The untagged
-`v0.9.2` candidate and `v0.9.3` native-coverage milestone are internal evidence
-lines absorbed into `v0.9.4`, not separate public releases. Until `v0.9.4` is
-authorized and tagged, the current released version remains `v0.9.1`.
+`v0.9.4` absorbs the untagged `v0.9.2` Apple performance candidate and
+`v0.9.3` Apple native-coverage milestone as internal evidence lines, not
+separate public releases.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -54,10 +52,10 @@ bounded DB-style analytical workloads.
 
 ## Version Status At A Glance
 
-- current released version: `v0.9.1`
-- current mainline development line here: `v0.9.4` Apple RT expansion target,
-  absorbing the untagged `v0.9.2` candidate and `v0.9.3` internal milestone on
-  top of the released `v0.9.1` Apple RT closest-hit slice, the `v0.9.0` HIPRT /
+- current released version: `v0.9.4`
+- current mainline state here: `v0.9.4` Apple RT consolidation, absorbing the
+  untagged `v0.9.2` candidate and `v0.9.3` internal milestone on top of the
+  released `v0.9.1` Apple RT closest-hit slice, the `v0.9.0` HIPRT /
   closest-hit expansion, the released `v0.8.0` app-building examples, and the
   bounded `v0.7.0` RT DB work
 - current released graph surface today:
@@ -118,7 +116,7 @@ bounded DB-style analytical workloads.
   - explicit release non-claims: no full Apple backend parity, no Apple speedup
     claim, and no non-closest-hit Apple RT workload support in the `v0.9.1`
     tag
-- current `v0.9.4` Apple RT release target:
+- current released `v0.9.4` Apple RT consolidation:
   - Goal582 made all 18 current RTDL predicates callable through
     `run_apple_rt` on Apple Silicon macOS, and Goals603-620 moved that surface
     to explicit native or native-assisted Apple execution modes
@@ -626,7 +624,7 @@ Release and preview layers inside the current repository:
 - `v0.9.3`: untagged internal native-coverage milestone, absorbed into `v0.9.4`
   - expanded Apple MPS RT geometry/native-assisted slices and associated
     correctness/performance evidence
-- `v0.9.4`: next public release target
+- `v0.9.4`: current public release
   - combines the untagged `v0.9.2`/`v0.9.3` Apple work with Apple Metal compute
     DB/graph slices, final release docs, full tests, and audit gates
   - Apple RT is not yet claimed as broadly faster than Embree
@@ -733,9 +731,9 @@ Important honesty boundaries:
 - `v0.7.0` remains the bounded DB release; `v0.8.0` is the app-building
   release over that surface; `v0.9.0` adds HIPRT backend coverage and exact
   bounded closest-hit RMQ support under its support matrix; `v0.9.1` releases
-  the bounded Apple RT closest-hit line; current `main` carries the `v0.9.4`
-  Apple RT release target absorbing the internal v0.9.2/v0.9.3 work plus
-  Apple Metal compute DB/graph coverage
+  the bounded Apple RT closest-hit line; `v0.9.4` releases the Apple RT
+  consolidation absorbing the internal v0.9.2/v0.9.3 work plus Apple Metal
+  compute DB/graph coverage
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.

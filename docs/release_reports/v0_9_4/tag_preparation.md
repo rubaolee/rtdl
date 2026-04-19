@@ -2,7 +2,7 @@
 
 Date: 2026-04-19
 
-Status: release gates passed; pending explicit release authorization.
+Status: tag created and pushed.
 
 ## Proposed Tag Boundary
 
@@ -33,15 +33,19 @@ Before creating the tag:
   625 and Goal 515 evidence
 - final release gate report must be reviewed by at least one external AI: done
   by Claude and Gemini Flash in Goal 625
-- worktree must be clean: pending final commit
-- user must explicitly authorize release/tag creation
+- worktree must be clean: done before tag creation
+- user must explicitly authorize release/tag creation: done by the release
+  command sequence for this gate
 
 ## Tag Command
 
-Do not run this until the user explicitly authorizes the release tag:
+Executed release commands:
 
 ```bash
 git tag -a v0.9.4 -m "Release RTDL v0.9.4"
 git push origin main
 git push origin v0.9.4
 ```
+
+The tag was created after Goal625 passed local testing, Linux backend testing,
+documentation audit, and Claude/Gemini external review.

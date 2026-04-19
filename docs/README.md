@@ -22,7 +22,7 @@ Read these in order:
 11. [ITRE App Programming Model](rtdl/itre_app_model.md)
 12. [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 13. [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
-14. [v0.9.4 Release Target Package](release_reports/v0_9_4/README.md)
+14. [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
 15. [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
 16. [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
 17. [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
@@ -148,7 +148,7 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.9.1`
+- current released version is `v0.9.4`
 - current `main` carries the released bounded `v0.7.0` DB line, released
   `v0.8.0` app-building examples over existing RTDL features, and released
   `v0.9.0` HIPRT / closest-hit expansion, plus the released `v0.9.1` Apple RT

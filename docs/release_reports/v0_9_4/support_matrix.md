@@ -2,8 +2,7 @@
 
 Date: 2026-04-19
 
-Status: release target support matrix, pending final full test/doc/audit gate
-and explicit release authorization.
+Status: released support matrix.
 
 ## Apple RT Dispatch Matrix
 

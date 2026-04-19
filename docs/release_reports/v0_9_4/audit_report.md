@@ -2,11 +2,11 @@
 
 Date: 2026-04-19
 
-Status: final pre-release audit package, pending explicit release authorization.
+Status: released audit package.
 
 ## Audit Scope
 
-This audit checks the `v0.9.4` release target for:
+This audit checks the `v0.9.4` release for:
 
 - total test evidence
 - public documentation consistency
@@ -29,15 +29,15 @@ This audit checks the `v0.9.4` release target for:
   backend code reorganization
 
 The released `v0.9.0` HIPRT surface remains part of the current project state.
-The released `v0.9.1` Apple closest-hit slice remains the latest tagged Apple
-release until `v0.9.4` is explicitly authorized and tagged.
+The released `v0.9.1` Apple closest-hit slice is superseded by the `v0.9.4`
+Apple consolidation release.
 
 ## Documentation Audit
 
 Public docs now state:
 
-- current released version is `v0.9.1`
-- current release target is `v0.9.4`
+- current released version is `v0.9.4`
+- `v0.9.2` and `v0.9.3` remain internal evidence lines, not public releases
 - `v0.9.2` and `v0.9.3` were internal evidence lines, not public releases
 - HIPRT and Apple RT are newer backend families
 - Apple DB and graph paths are Metal compute/native-assisted paths, not Apple
@@ -85,6 +85,4 @@ This audit rejects the following claims:
 ## Audit Verdict
 
 No release-blocking documentation or flow inconsistency is known after the
-Goal623 and Goal624 corrections. Final release readiness still requires the
-Goal625 final test/doc/audit gate and external AI review.
-
+Goal623, Goal624, and Goal625 corrections and reviews.
