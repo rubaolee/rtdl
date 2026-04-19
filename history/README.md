@@ -6,6 +6,8 @@ If you are asking whether RTDL has a full public history, start here:
 
 - [Complete History Map](COMPLETE_HISTORY.md)
 - [Revision Dashboard](revision_dashboard.md)
+- [Goal 66-493 Coverage Audit](GOAL_66_493_COVERAGE_AUDIT.md)
+- [Goal 66-493 Coverage CSV](goal_66_493_coverage.csv)
 
 The complete history map explains how to trace preserved evidence across
 structured revision rounds, release reports, ad hoc review notes, handoff files,
@@ -22,6 +24,11 @@ It is designed around two layers:
    `history/revisions/<round-slug>/`
 
    Each round directory stores the actual copied files for that review or revision cycle.
+
+   Important boundary: this is a structured round archive, not a one-directory-
+   per-goal ledger. Many historical goals are represented by goal archive files,
+   reports, ad hoc reviews, and git commits rather than by a dedicated directory
+   under `history/revisions/`.
 
 There is also a manager-facing summary file:
 
@@ -109,7 +116,7 @@ This hybrid layout is more practical than:
 ## Current State
 
 This archive began with the March 29, 2026 review-and-revision cycle and now
-contains later rounds through the `v0.9.0` release action:
+contains later rounds through the `v0.9.4` release action:
 
 - language/runtime bring-up
 - Embree validation and RayJoin-style reproduction work
@@ -119,7 +126,15 @@ contains later rounds through the `v0.9.0` release action:
   3C audit records
 - `v0.8.0` app-building release records
 - `v0.9.0` HIPRT / closest-hit release records
+- `v0.9.1` Apple Metal/MPS RT closest-hit release records
+- `v0.9.4` Apple RT compatibility, HIPRT/Apple documentation, and release-gate
+  repair records
 - ad hoc review memos and consensus notes that complement the structured rounds
+
+Goal629 added an explicit audit for the misleading public gap between Goal 65
+and Goal 493. The short answer is that `history/revisions/` is sparse by design,
+while most middle goals are preserved in `docs/history/goals/archive/`,
+`docs/reports/`, and `history/ad_hoc_reviews/`.
 
 The immutable rule still applies:
 

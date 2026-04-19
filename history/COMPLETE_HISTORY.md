@@ -1,7 +1,7 @@
 # RTDL Complete History Map
 
-Date: 2026-04-16
-Status: generated
+Date: 2026-04-19
+Status: generated history map with Goal629 gap-audit addendum
 
 This page answers the question a new visitor will ask: "Where is the full RTDL
 history?"
@@ -11,6 +11,13 @@ history artifacts, but `history/` is an index and archive, not a verbatim
 conversation transcript. The exact code evolution remains in git commits and
 tags; the reasoning, reviews, audits, and release evidence are preserved in the
 files indexed here.
+
+Goal629 adds a targeted answer for the common GitHub question: "Why are there
+almost no directories between Goal 65 and Goal 493 under `history/revisions/`?"
+That directory stores structured revision rounds, not one directory per goal.
+The missing-looking interval is mostly preserved in archived goal docs, reports,
+ad hoc reviews, and git history. See `GOAL_66_493_COVERAGE_AUDIT.md` and
+`goal_66_493_coverage.csv`.
 
 ## What Is Recorded
 
@@ -52,6 +59,8 @@ Use these layers together:
 - `v0.7.0`
 - `v0.8.0`
 - `v0.9.0`
+- `v0.9.1`
+- `v0.9.4`
 
 ## Current Top Revision Rounds
 
@@ -105,9 +114,14 @@ Use these layers together:
   underlying reports, rather than one revision directory per micro-goal.
 - Historical records are not rewritten to look current. Newer repair rounds are
   appended when earlier indexes become stale.
+- The Goal 66-493 audit is filename-based. It proves public discoverability by
+  direct artifact names; it does not claim every historical goal has a structured
+  revision-round directory.
 
 ## Machine Artifacts
 
 - JSON inventory: `/Users/rl2025/rtdl_python_only/docs/reports/goal495_complete_history_map_2026-04-16.json`
 - CSV file inventory: `/Users/rl2025/rtdl_python_only/docs/reports/goal495_complete_history_file_inventory_2026-04-16.csv`
 - Report: `/Users/rl2025/rtdl_python_only/docs/reports/goal495_complete_history_map_2026-04-16.md`
+- Goal 66-493 coverage audit: `/Users/rl2025/rtdl_python_only/history/GOAL_66_493_COVERAGE_AUDIT.md`
+- Goal 66-493 coverage ledger: `/Users/rl2025/rtdl_python_only/history/goal_66_493_coverage.csv`
