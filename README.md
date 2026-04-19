@@ -114,11 +114,16 @@ bounded DB-style analytical workloads.
 - current post-`v0.9.1` development line:
   - Goal582 makes all 18 current RTDL predicates callable through
     `run_apple_rt` on Apple Silicon macOS
-  - execution mode is explicit: 3D `ray_triangle_closest_hit` and 3D
-    `ray_triangle_hit_count` use native Apple Metal/MPS RT, while the other
-    predicates currently use `cpu_reference_compat`
+  - execution mode is explicit: 3D `ray_triangle_closest_hit`, 3D
+    `ray_triangle_hit_count`, and 2D `segment_intersection` use native Apple
+    Metal/MPS RT, while the other predicates currently use
+    `cpu_reference_compat`
   - `run_apple_rt(..., native_only=True)` rejects those compatibility paths
     instead of silently pretending they are Apple RT hardware execution
+  - backend maturity is documented separately: Embree is the only backend RTDL
+    currently calls optimized/mature; Apple Metal/MPS RT is real and
+    correctness-validated for bounded slices, but currently unoptimized on local
+    Apple M4 measurements
 - previous `v0.6.1` additions over `v0.5.0`:
   - the first released RTDL graph workload family
   - RTDL-kernel graph execution across CPU/oracle, Embree, OptiX, and Vulkan
@@ -128,6 +133,7 @@ For exact status:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
+- [Backend Maturity](docs/backend_maturity.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
 - [RTDL v0.8 Release Statement](docs/release_reports/v0_8/release_statement.md)
 - [RTDL v0.8 Support Matrix](docs/release_reports/v0_8/support_matrix.md)
@@ -172,13 +178,15 @@ RTDL uses several backends behind one public kernel surface:
 - `Apple RT`:
   - released `v0.9.1` backend slice on macOS Apple Silicon
   - native mode currently exposes `run_apple_rt` for 3D
-    `ray_triangle_closest_hit` and 3D `ray_triangle_hit_count`
+    `ray_triangle_closest_hit`, 3D `ray_triangle_hit_count`, and 2D
+    `segment_intersection`
   - post-`v0.9.1` development adds full-surface compatibility dispatch for all
-    18 current predicates through `run_apple_rt`; non-closest-hit predicates
-    that are not 3D hit-count are marked `cpu_reference_compat`, not
-    hardware-backed Apple RT
+    18 current predicates through `run_apple_rt`; predicates that are not in
+    the native Apple set are marked `cpu_reference_compat`, not hardware-backed
+    Apple RT
   - implemented through Apple Metal/MPS `MPSRayIntersector`
-  - no full parity or hardware-speedup claim is made yet
+  - no full parity or hardware-speedup claim is made; local Apple M4 evidence
+    currently shows Embree faster on the measured native slices
 - `PostGIS` / `PostgreSQL`:
   - not RTDL backends
   - used as external correctness/timing anchors for some workload families
@@ -516,13 +524,15 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.9.0`
+- `v0.9.1`
 
 Current mainline release line:
 
 - bounded `v0.7.0` RT DB work, released `v0.8.0` app-building examples, and
   released `v0.9.0` HIPRT / closest-hit expansion, with released `v0.9.1`
   Apple RT closest-hit support
+- post-`v0.9.1` main additionally carries Apple RT full-surface compatibility
+  dispatch and native Apple MPS RT for 3D hit-count and 2D segment-intersection
 
 Newest released graph workload surface:
 
@@ -576,8 +586,9 @@ Release and preview layers inside the current repository:
 - post-`v0.9.1` main: Goal582 Apple RT full-surface compatibility dispatch
   - all 18 current predicates are callable through `run_apple_rt`
   - 3D closest-hit is `native_mps_rt`; 3D hit-count is
-    `native_mps_rt_3d_else_cpu_reference_compat`; the rest are
-    `cpu_reference_compat` until native Apple implementations land
+    `native_mps_rt_3d_else_cpu_reference_compat`; 2D segment-intersection is
+    `native_mps_rt`; the rest are `cpu_reference_compat` until native Apple
+    implementations land
 
 Current public demo artifact:
 
@@ -608,7 +619,8 @@ The repository currently includes:
   - Embree: Intel CPU ray-tracing backend
   - OptiX: NVIDIA GPU ray-tracing backend
   - Vulkan: Vulkan ray-tracing GPU backend
-  - Apple RT: macOS Apple Silicon Metal/MPS backend slice for 3D closest-hit
+  - Apple RT: macOS Apple Silicon Metal/MPS backend slices for 3D closest-hit,
+    3D hit-count, and 2D segment-intersection
 - examples ranging from smallest first-run scripts to RTDL-plus-Python demos
 - accepted v0.8 app-building examples that show RTDL rows inside Python apps
 

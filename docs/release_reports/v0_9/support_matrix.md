@@ -135,9 +135,19 @@ Local Apple M4 evidence:
 Boundary:
 
 - Apple RT currently means the macOS Metal/MPS `MPSRayIntersector` path.
-- `run_apple_rt` currently supports only 3D `ray_triangle_closest_hit`.
+- The released `v0.9.1` tag supports Apple RT for 3D
+  `ray_triangle_closest_hit`.
 - No full Apple backend parity, performance-leading claim, or measured Apple
   hardware RT-core speedup is claimed yet.
+
+Post-`v0.9.1` mainline addendum:
+
+- Goal582 makes all 18 current predicates callable through `run_apple_rt` on
+  Apple Silicon macOS with explicit native-versus-compatibility modes.
+- Goal583 adds native Apple MPS RT for 3D `ray_triangle_hit_count`.
+- Goal590 adds native Apple MPS RT for 2D `segment_intersection`.
+- All other Apple RT predicates remain `cpu_reference_compat`.
+- Backend maturity is documented in `/Users/rl2025/rtdl_python_only/docs/backend_maturity.md`; current Apple M4 measurements show Apple Metal/MPS RT is correctness-validated but unoptimized versus Embree.
 
 ## Prepared API Status
 
