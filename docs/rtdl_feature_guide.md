@@ -55,19 +55,21 @@ Today it includes:
   the current 18-workload HIPRT matrix
 - a released `v0.9.1` Apple RT backend slice for 3D closest-hit ray/triangle
   traversal on macOS Apple Silicon
-- a current `v0.9.2` Apple RT compatibility dispatcher for all current predicates,
-  with explicit `native_mps_rt` versus `cpu_reference_compat` modes
-- native Apple MPS RT coverage for 3D `ray_triangle_hit_count` after Goal583
-- native Apple MPS RT coverage for 2D `segment_intersection` after Goal590
-- Apple RT prepared/masked performance improvements for the current native
-  slices after Goals596-598
+- a current `v0.9.4` Apple RT target with all 18 current predicates callable
+  through explicit native or native-assisted Apple modes
+- native Apple MPS RT coverage for supported geometry and nearest-neighbor
+  slices
+- Apple Metal compute/native-assisted coverage for bounded DB and graph slices
+- Apple RT prepared/masked performance improvements for the current ray
+  intersection slices after Goals596-598
 
 Backend maturity note: Embree is currently the only backend RTDL should call
 optimized or mature in public performance-facing claims. OptiX, Vulkan, HIPRT,
 and Apple Metal/MPS RT are real backend integrations with bounded correctness
 evidence, but they are not broad optimized-backend claims. Apple Metal/MPS RT
-now has v0.9.2 local overhead reductions for prepared closest-hit, hit-count,
-and segment-intersection, but still is not a broad Apple speedup claim.
+now has local overhead reductions for prepared closest-hit, hit-count, and
+segment-intersection, plus v0.9.4 Metal compute DB/graph coverage, but still is
+not a broad Apple speedup claim.
 
 Current supported workload families:
 
@@ -97,8 +99,9 @@ Current release layers:
   surface
 - `v0.9.0`: released HIPRT backend and exact bounded closest-hit expansion
 - `v0.9.1`: released Apple Metal/MPS RT backend slice for closest-hit
-- `v0.9.2` candidate on current `main`: Apple RT prepared/masked performance
-  work for the current native Apple slices
+- `v0.9.4` target on current `main`: full-surface Apple RT dispatch with
+  native/native-assisted geometry, nearest-neighbor, DB, and graph slices,
+  absorbing the internal v0.9.2/v0.9.3 evidence lines
 
 Plus:
 
@@ -127,12 +130,11 @@ Current user-programming note:
   `run_cpu`, and Embree; the released `v0.9.1` Apple RT slice exposes
   the same primitive for 3D rays/triangles through `run_apple_rt`; OptiX,
   Vulkan, and HIPRT do not yet expose this closest-hit primitive
-- current `v0.9.2` Goal582 lets users call the rest of the current workload
-  surface through `run_apple_rt` in compatibility mode while native Apple
-  implementations are added one workload family at a time; Goal583 adds the
-  first expansion beyond closest-hit with 3D `ray_triangle_hit_count`; Goal590
-  adds native 2D `segment_intersection`; Goals596-598 add prepared/masked
-  performance work for those native Apple slices
+- current `v0.9.4` Goals582-620 let users call the current 18-predicate
+  workload surface through `run_apple_rt` with explicit native or
+  native-assisted modes; geometry/nearest-neighbor slices use Apple MPS RT,
+  while bounded DB and graph slices use Apple Metal compute with disclosed CPU
+  refinement/aggregation/materialization where needed
 - RTDL provides the query core there, while Python handles application logic and
   output
 
@@ -224,11 +226,10 @@ The current repo can:
   prepared graph CSR paths, plus prepared bounded DB table reuse
 - run the v0.9.1 Apple RT closest-hit path on macOS Apple Silicon
   after `make build-apple-rt`
-- run the current v0.9.2 Apple RT full-surface compatibility dispatch on macOS
-  Apple Silicon, while using `native_only=True` when an app must reject
-  CPU-reference compatibility paths; current native Apple MPS RT paths are 3D
-  closest-hit, 3D hit-count, and 2D segment-intersection, with prepared
-  closest-hit reuse and masked traversal for hit-count and segment-intersection
+- run the current v0.9.4 Apple RT target surface on macOS Apple Silicon, while
+  using `native_only=True` when an app must reject unsupported shape/backend
+  combinations; current Apple modes include MPS RT geometry/nearest-neighbor
+  slices and Metal compute/native-assisted DB/graph slices
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages
@@ -254,5 +255,5 @@ RTDL does not yet claim:
 - RT-core hardware speedup from the GTX 1070 Linux app evidence
 - AMD GPU HIPRT validation, HIPRT CPU fallback, HIPRT RT-core speedup evidence,
   or OptiX/Vulkan/HIPRT native support for `ray_triangle_closest_hit`
-- full native Apple RT backend parity or Apple hardware speedup evidence beyond
-  the current bounded closest-hit, hit-count, and segment-intersection slices
+- broad Apple hardware speedup evidence or Apple backend maturity beyond the
+  current bounded native/native-assisted support matrix

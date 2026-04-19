@@ -4,8 +4,8 @@ This is the current public architecture page for users evaluating RTDL.
 Historical architecture reports are preserved elsewhere, but this page explains
 the released `v0.7.0` design, the released `v0.8.0` app-building layer, the
 released `v0.9.0` HIPRT / closest-hit expansion, and the released `v0.9.1`
-Apple RT closest-hit slice, plus the current v0.9.2 candidate Apple RT
-prepared/masked performance work on top of it.
+Apple RT closest-hit slice, plus the current `v0.9.4` Apple RT target work on
+top of it.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
@@ -57,14 +57,14 @@ The released `v0.9.1` Apple RT work provides `run_apple_rt` for 3D
 `ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon. It
 does not claim full Apple backend parity or performance speedup yet.
 
-The current v0.9.2 candidate Apple RT line makes `run_apple_rt` callable for
-all 18 current RTDL predicates on Apple Silicon macOS. That is a dispatch
-coverage step, not full hardware parity: 3D closest-hit is `native_mps_rt`, 3D
-hit-count is `native_mps_rt`, 2D segment-intersection is `native_mps_rt`, and
-other predicates are currently `cpu_reference_compat` and are rejected when
-`native_only=True`. The same line adds prepared closest-hit reuse and masked
-chunked traversal for hit-count and segment-intersection to reduce repeated
-Apple MPS RT setup overhead.
+The current `v0.9.4` Apple RT target makes `run_apple_rt` callable for all 18
+current RTDL predicates on Apple Silicon macOS with explicit native or
+native-assisted Apple modes. MPS RT covers the supported geometry and
+nearest-neighbor slices; Apple Metal compute covers the bounded DB and graph
+slices. Some paths still use CPU exact refinement, aggregation, uniqueness, or
+ordering after native candidate/filter work. The line also adds prepared
+closest-hit reuse and masked chunked traversal for hit-count and
+segment-intersection to reduce repeated Apple MPS RT setup overhead.
 
 ## What Python Owns
 
@@ -91,7 +91,7 @@ kernels and native backend paths, not in Python loops.
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
 | HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
-| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; current v0.9.2 candidate compatibility dispatch plus native closest-hit, hit-count, and segment-intersection slices |
+| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; current v0.9.4 target has full-surface native/native-assisted dispatch across 18 predicates |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 ## Workload Families
@@ -180,9 +180,9 @@ Do not read the current system as:
 - a claim that every platform has identical backend coverage
 - a claim that HIPRT is AMD-validated, RT-core-accelerated on the tested GTX
   1070 path, a CPU fallback backend, or a native closest-hit backend today
-- a claim that Apple RT has full native workload parity or broad measured
-  speedup beyond the current bounded closest-hit, hit-count, and
-  segment-intersection slices
+- a claim that Apple RT is broadly faster than Embree or mature across every
+  workload shape; current Apple support remains bounded by the explicit
+  native/native-assisted support matrix
 
 For exact release claims, read:
 
@@ -191,7 +191,9 @@ For exact release claims, read:
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9 Release Package](release_reports/v0_9/README.md)
-- [v0.9.2 Release Candidate Package](release_reports/v0_9_2/README.md)
+- [v0.9.4 Release Target Package](release_reports/v0_9_4/README.md)
+- [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
+- [v0.9.2 Internal Candidate Package](release_reports/v0_9_2/README.md)
 - [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.7 Release Statement](release_reports/v0_7/release_statement.md)

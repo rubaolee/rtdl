@@ -14,8 +14,9 @@ It currently covers:
   path with explicit platform boundaries
 - the released `v0.9.1` Apple RT example, clearly marked as a
   bounded macOS/Apple-Silicon closest-hit slice
-- the current v0.9.2 candidate Apple RT native-slice work, clearly marked as
-  prepared/masked performance work rather than broad Apple speedup evidence
+- the current `v0.9.4` Apple RT target work, clearly marked as bounded
+  native/native-assisted Apple execution rather than broad Apple speedup
+  evidence
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -192,8 +193,9 @@ Current HIPRT boundary:
 
 This released v0.9.1 path is for Apple Silicon macOS users. It began as the
 Goal578 one-workload 3D closest-hit ray/triangle slice through Apple Metal/MPS
-`MPSRayIntersector`. Current v0.9.2 candidate work keeps that boundary honest
-while adding prepared/masked native-slice performance improvements.
+`MPSRayIntersector`. Current `v0.9.4` target work keeps that boundary honest
+while adding prepared/masked performance improvements and native/native-assisted
+coverage for the broader 18-predicate surface.
 
 Build and run:
 
@@ -210,11 +212,11 @@ available, it checks approximate row parity for `run_apple_rt`.
 Current Apple RT boundary:
 
 - released `run_apple_rt` native support: 3D `ray_triangle_closest_hit`
-- current v0.9.2 Goal582 dispatch support: all 18 current predicates are
-  callable through `run_apple_rt`, with non-closest-hit predicates explicitly
-  marked `cpu_reference_compat`
-- current native support: 3D `ray_triangle_hit_count` and 2D
-  `segment_intersection`
+- current v0.9.4 target dispatch support: all 18 current predicates are
+  callable through `run_apple_rt` with explicit native or native-assisted modes
+- current Apple execution modes: MPS RT for supported geometry and
+  nearest-neighbor slices; Metal compute or native-assisted Metal filtering for
+  bounded DB and graph slices
 - Goal596 prepared support: repeated 3D closest-hit queries can reuse prepared
   Apple RT build data
 - Goal597/Goal598 masked traversal support: 3D hit-count and 2D
@@ -223,12 +225,13 @@ Current Apple RT boundary:
 - Goal590 native support detail: 2D `segment_intersection` uses an
   Apple MPS ray-versus-extruded-segment traversal plus analytic intersection
   refinement
-- validated locally on Apple M4 through focused tests and Gemini/Claude reviews
-  for the released closest-hit slice and current v0.9.2 candidate native
-  performance work
-- unsupported claims: full native Apple backend parity, Apple hardware speedup
-  evidence, non-macOS support, and hardware-backed Apple support for the
-  broader workload matrix
+- Goals617-620 support detail: bounded DB scan/grouped workloads and graph
+  BFS/triangle workloads use Apple Metal compute or Metal-filter-plus-CPU
+  materialization under explicit support-matrix modes
+- validated locally on Apple M4 through focused tests and external AI reviews
+  for the released closest-hit slice and current v0.9.4 target work
+- unsupported claims: broad Apple hardware speedup evidence, non-macOS support,
+  and Apple backend maturity comparable to Embree
 
 ## v0.4 nearest-neighbor examples
 

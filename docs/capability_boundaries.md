@@ -112,9 +112,9 @@ and prepared bounded DB table reuse.
 
 The released `v0.9.1` Apple RT slice also fits this direction. It began with
 3D `ray_triangle_closest_hit` through Apple Metal/MPS on macOS Apple Silicon.
-Current v0.9.2 candidate work expands the native Apple slices to 3D hit-count
-and 2D segment-intersection and adds prepared/masked performance work, while the
-rest of the current Apple dispatcher remains compatibility mode.
+Current v0.9.4 target work expands Apple execution to the full 18-predicate
+surface through explicit native or native-assisted modes: MPS RT for supported
+geometry/nearest-neighbor slices and Metal compute for bounded DB/graph slices.
 
 ## What RTDL Can Do But Is Not Intended To Become
 
@@ -248,9 +248,8 @@ and HIPRT still need native closest-hit kernels before RTDL can claim full
 four-backend RTXRMQ support.
 
 The released `v0.9.1` Apple RT slice adds one native closest-hit path through
-Apple Metal/MPS, and current v0.9.2 candidate work adds prepared closest-hit
-reuse. That does not change the remaining OptiX, Vulkan, and HIPRT closest-hit
-gaps.
+Apple Metal/MPS, and current v0.9.4 target work adds prepared closest-hit reuse.
+That does not change the remaining OptiX, Vulkan, and HIPRT closest-hit gaps.
 
 ### HIPRT Backend Coverage
 
@@ -266,19 +265,14 @@ nearest-neighbor, graph CSR, and bounded DB table paths.
 The released `v0.9.1` Apple RT slice can use `run_apple_rt` for 3D
 `ray_triangle_closest_hit` on Apple Silicon macOS after `make build-apple-rt`.
 Goal582 extends the dispatcher so all 18 current RTDL predicates are callable
-through `run_apple_rt` on Apple Silicon macOS. Goal583 adds native Apple MPS RT
-for 3D `ray_triangle_hit_count`. Goal590 adds native Apple MPS RT for 2D
-`segment_intersection` by tracing left segments against extruded right-segment
-quadrilaterals and then applying analytic intersection refinement. The current
-native modes are therefore 3D closest-hit, 3D hit-count, and 2D
-segment-intersection. Current v0.9.2 candidate performance work adds prepared
-closest-hit reuse and masked chunked nearest-hit traversal for hit-count and
-segment-intersection. The broader 2D geometry, nearest-neighbor, graph, and DB
-paths are currently `cpu_reference_compat`.
+through `run_apple_rt` on Apple Silicon macOS. Goals603-620 move that surface
+to explicit native or native-assisted modes: Apple MPS RT for supported
+geometry/nearest-neighbor slices, Apple Metal compute for bounded DB and graph
+slices, and disclosed CPU exact refinement, aggregation, uniqueness, or
+ordering where required.
 
-It cannot yet claim broad native Apple RT parity, Apple hardware speedup
-evidence, non-macOS support, or hardware-backed Apple RT support for the
-broader workload matrices.
+It cannot yet claim broad Apple hardware speedup evidence, non-macOS support,
+or mature-backend status comparable to Embree.
 
 ### Automatic Speedups For Every Workload
 

@@ -54,9 +54,10 @@ current native slices:
 - 3D `ray_triangle_hit_count`
 - 2D `segment_intersection`
 
-The v0.9.1 Apple RT slice was correctness-first. Current v0.9.2 candidate work
-adds prepared closest-hit reuse and masked chunked traversal for hit-count and
-segment-intersection to reduce repeated setup overhead. Local Apple M4
+The v0.9.1 Apple RT slice was correctness-first. Current v0.9.4 target work
+adds prepared closest-hit reuse, masked chunked traversal for hit-count and
+segment-intersection, expanded MPS RT geometry/nearest-neighbor slices, and
+Metal compute/native-assisted DB and graph slices. Local Apple M4
 measurements against Embree after Goal598 show:
 
 | Workload | Embree median | Apple RT median | Apple RT vs Embree |
@@ -86,9 +87,11 @@ do not make the Apple backend broadly mature or generally faster than Embree.
 Therefore the correct claim is:
 
 > Apple Metal/MPS RT is implemented and correctness-validated for bounded native
-> slices. Current v0.9.2 work reduces Apple RT overhead for prepared closest-hit,
-> hit-count, and segment-intersection, but Apple RT is still a bounded backend
-> and not yet a broad performance-leading or mature-backend claim.
+> and native-assisted slices. Internal v0.9.2/v0.9.3 work reduces Apple RT
+> overhead for prepared closest-hit, hit-count, and segment-intersection, and
+> current v0.9.4 work extends DB/graph coverage through Metal compute, but Apple
+> RT is still a bounded backend and not yet a broad performance-leading or
+> mature-backend claim.
 
 ## Adaptive Native Engine
 

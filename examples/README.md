@@ -157,12 +157,11 @@ Current Apple RT boundary:
 - build it on Apple Silicon macOS with `make build-apple-rt`
 - this is the v0.9.1 released native slice: `run_apple_rt` uses Apple Metal/MPS
   RT for `ray_triangle_closest_hit` over 3D rays and 3D triangles
-- current v0.9.2 candidate work makes all 18 current predicates callable
-  through `run_apple_rt`, but predicates outside the native set are
-  `cpu_reference_compat`
-- current native Apple MPS RT slices are 3D `ray_triangle_closest_hit`, 3D
-  `ray_triangle_hit_count`, and 2D `segment_intersection`
-- current v0.9.2 candidate performance work adds prepared closest-hit reuse and
-  masked traversal for hit-count and segment-intersection
-- this is not a full native Apple backend parity claim and not a broad measured
-  Apple speedup claim
+- current v0.9.4 target work makes all 18 current predicates callable through
+  `run_apple_rt` with explicit native or native-assisted Apple modes
+- native Apple execution currently uses MPS RT for supported geometry and
+  nearest-neighbor slices, plus Metal compute for bounded DB and graph slices
+- prepared closest-hit reuse and masked traversal reduce setup overhead for the
+  current Apple ray-intersection slices
+- this is not a broad measured Apple speedup claim; Embree remains the mature
+  performance baseline
