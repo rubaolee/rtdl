@@ -55,6 +55,10 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["bfs_discover"]["mode"], "native_metal_compute")
         self.assertEqual(by_predicate["bfs_discover"]["cpu_refinement"], "dedupe_and_sorted_row_materialization")
         self.assertEqual(by_predicate["bfs_discover"]["native_only"], "supported_for_csr_frontier_vertex_set")
+        self.assertEqual(by_predicate["triangle_match"]["mode"], "native_metal_compute")
+        self.assertEqual(by_predicate["triangle_match"]["cpu_refinement"], "unique_and_sorted_row_materialization")
+        self.assertEqual(by_predicate["triangle_match"]["native_only"], "supported_for_csr_edge_seeds")
+        self.assertEqual(by_predicate["triangle_match"]["native_shapes"], ("EdgeSet/CSRGraph",))
 
     def test_compatibility_rows_are_not_marked_hardware_backed(self) -> None:
         native_candidates = {

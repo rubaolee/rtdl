@@ -140,6 +140,17 @@ struct RtdlAppleBfsRow {
     uint32_t level;
 };
 
+struct RtdlAppleEdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct RtdlAppleTriangleRow {
+    uint32_t u;
+    uint32_t v;
+    uint32_t w;
+};
+
 struct AppleRtClosestHitPrepared {
     id<MTLDevice> device = nil;
     id<MTLCommandQueue> command_queue = nil;
@@ -1114,6 +1125,260 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_bfs_discover_compute(
         [visited_buffer release];
         [frontier_offsets_buffer release];
         [frontier_buffer release];
+        [column_indices_buffer release];
+        [row_offsets_buffer release];
+        [pipeline release];
+        [function release];
+        [library release];
+        [command_queue release];
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_triangle_match_compute(
+    const uint32_t* row_offsets,
+    size_t row_offset_count,
+    const uint32_t* column_indices,
+    size_t edge_count,
+    const RtdlAppleEdgeSeed* seeds,
+    size_t seed_count,
+    const uint32_t* seed_output_offsets,
+    size_t output_capacity,
+    RtdlAppleTriangleRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_triangle_match_compute");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if (seed_count == 0 || output_capacity == 0) {
+        return 0;
+    }
+    if (row_offsets == nullptr || column_indices == nullptr || seeds == nullptr || seed_output_offsets == nullptr) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_triangle_match_compute");
+        return 1;
+    }
+    if (row_offset_count < 2) {
+        set_message(error_out, error_size, "Apple RT triangle_match requires at least one graph vertex");
+        return 1;
+    }
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    if (row_offset_count - 1 > std::numeric_limits<uint32_t>::max() ||
+        seed_count > std::numeric_limits<uint32_t>::max() ||
+        output_capacity > std::numeric_limits<uint32_t>::max()) {
+        set_message(error_out, error_size, "Apple RT triangle_match currently supports at most uint32-sized inputs");
+        return 1;
+    }
+    if (row_offsets[0] != 0 || row_offsets[row_offset_count - 1] != edge_count) {
+        set_message(error_out, error_size, "Apple RT triangle_match row_offsets do not match edge count");
+        return 1;
+    }
+    for (size_t i = 1; i < row_offset_count; ++i) {
+        if (row_offsets[i] < row_offsets[i - 1] || row_offsets[i] > edge_count) {
+            set_message(error_out, error_size, "Apple RT triangle_match row_offsets must be non-decreasing and in range");
+            return 1;
+        }
+    }
+    for (size_t i = 0; i < edge_count; ++i) {
+        if (column_indices[i] >= vertex_count) {
+            set_message(error_out, error_size, "Apple RT triangle_match column index is out of range");
+            return 1;
+        }
+    }
+    for (size_t i = 0; i < seed_count; ++i) {
+        if (seeds[i].u >= vertex_count || seeds[i].v >= vertex_count) {
+            set_message(error_out, error_size, "Apple RT triangle_match seed vertex is out of range");
+            return 1;
+        }
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 2;
+        }
+        id<MTLCommandQueue> command_queue = [device newCommandQueue];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 3;
+        }
+        NSString* source =
+            @"#include <metal_stdlib>\n"
+             "using namespace metal;\n"
+             "struct EdgeSeed { uint u; uint v; };\n"
+             "struct TriangleRow { uint u; uint v; uint w; };\n"
+             "kernel void rtdl_triangle_match(device const uint* row_offsets [[buffer(0)]],\n"
+             "                                device const uint* column_indices [[buffer(1)]],\n"
+             "                                device const EdgeSeed* seeds [[buffer(2)]],\n"
+             "                                device const uint* seed_output_offsets [[buffer(3)]],\n"
+             "                                device TriangleRow* out [[buffer(4)]],\n"
+             "                                uint id [[thread_position_in_grid]]) {\n"
+             "    EdgeSeed seed = seeds[id];\n"
+             "    uint u = seed.u;\n"
+             "    uint v = seed.v;\n"
+             "    uint u_start = row_offsets[u];\n"
+             "    uint u_end = row_offsets[u + 1u];\n"
+             "    uint v_start = row_offsets[v];\n"
+             "    uint v_end = row_offsets[v + 1u];\n"
+             "    uint out_base = seed_output_offsets[id];\n"
+             "    for (uint edge = u_start; edge < u_end; ++edge) {\n"
+             "        uint w = column_indices[edge];\n"
+             "        bool matched = false;\n"
+             "        if (u < v && v < w) {\n"
+             "            for (uint probe = v_start; probe < v_end; ++probe) {\n"
+             "                if (column_indices[probe] == w) { matched = true; break; }\n"
+             "            }\n"
+             "        }\n"
+             "        uint out_index = out_base + (edge - u_start);\n"
+             "        out[out_index].u = matched ? u : 0xffffffffu;\n"
+             "        out[out_index].v = v;\n"
+             "        out[out_index].w = w;\n"
+             "    }\n"
+             "}\n";
+        NSError* compile_error = nil;
+        id<MTLLibrary> library = [device newLibraryWithSource:source options:nil error:&compile_error];
+        if (library == nil) {
+            std::string message = "Metal triangle_match library compilation failed";
+            if (compile_error != nil) {
+                message += ": ";
+                message += [[compile_error localizedDescription] UTF8String];
+            }
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 4;
+        }
+        id<MTLFunction> function = [library newFunctionWithName:@"rtdl_triangle_match"];
+        if (function == nil) {
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal triangle_match function not found");
+            return 4;
+        }
+        NSError* pipeline_error = nil;
+        id<MTLComputePipelineState> pipeline = [device newComputePipelineStateWithFunction:function error:&pipeline_error];
+        if (pipeline == nil) {
+            std::string message = "Metal triangle_match pipeline creation failed";
+            if (pipeline_error != nil) {
+                message += ": ";
+                message += [[pipeline_error localizedDescription] UTF8String];
+            }
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 4;
+        }
+
+        uint32_t empty_value = 0;
+        const size_t row_offset_bytes = row_offset_count * sizeof(uint32_t);
+        const size_t edge_bytes = std::max<size_t>(1, edge_count) * sizeof(uint32_t);
+        const size_t seed_bytes = seed_count * sizeof(RtdlAppleEdgeSeed);
+        const size_t seed_offset_bytes = (seed_count + 1) * sizeof(uint32_t);
+        const size_t out_bytes = output_capacity * sizeof(RtdlAppleTriangleRow);
+        id<MTLBuffer> row_offsets_buffer = [device newBufferWithBytes:row_offsets length:row_offset_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> column_indices_buffer = [device newBufferWithBytes:(edge_count == 0 ? &empty_value : column_indices) length:edge_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> seed_buffer = [device newBufferWithBytes:seeds length:seed_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> seed_offsets_buffer = [device newBufferWithBytes:seed_output_offsets length:seed_offset_bytes options:MTLResourceStorageModeShared];
+        id<MTLBuffer> out_buffer = [device newBufferWithLength:out_bytes options:MTLResourceStorageModeShared];
+        if (row_offsets_buffer == nil || column_indices_buffer == nil || seed_buffer == nil ||
+            seed_offsets_buffer == nil || out_buffer == nil) {
+            [out_buffer release];
+            [seed_offsets_buffer release];
+            [seed_buffer release];
+            [column_indices_buffer release];
+            [row_offsets_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal triangle_match buffer allocation failed");
+            return 5;
+        }
+        std::memset([out_buffer contents], 0xff, out_bytes);
+
+        id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+        id<MTLComputeCommandEncoder> encoder = [command_buffer computeCommandEncoder];
+        if (command_buffer == nil || encoder == nil) {
+            [out_buffer release];
+            [seed_offsets_buffer release];
+            [seed_buffer release];
+            [column_indices_buffer release];
+            [row_offsets_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, "Metal triangle_match command encoding failed");
+            return 3;
+        }
+        [encoder setComputePipelineState:pipeline];
+        [encoder setBuffer:row_offsets_buffer offset:0 atIndex:0];
+        [encoder setBuffer:column_indices_buffer offset:0 atIndex:1];
+        [encoder setBuffer:seed_buffer offset:0 atIndex:2];
+        [encoder setBuffer:seed_offsets_buffer offset:0 atIndex:3];
+        [encoder setBuffer:out_buffer offset:0 atIndex:4];
+        const NSUInteger threadgroup_width =
+            std::max<NSUInteger>(1, std::min<NSUInteger>(pipeline.maxTotalThreadsPerThreadgroup, seed_count));
+        [encoder dispatchThreads:MTLSizeMake(seed_count, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(threadgroup_width, 1, 1)];
+        [encoder endEncoding];
+        [command_buffer commit];
+        [command_buffer waitUntilCompleted];
+        if ([command_buffer error] != nil) {
+            std::string message = "Metal triangle_match command buffer failed: ";
+            message += [[[command_buffer error] localizedDescription] UTF8String];
+            [out_buffer release];
+            [seed_offsets_buffer release];
+            [seed_buffer release];
+            [column_indices_buffer release];
+            [row_offsets_buffer release];
+            [pipeline release];
+            [function release];
+            [library release];
+            [command_queue release];
+            set_message(error_out, error_size, message);
+            return 6;
+        }
+
+        const auto* all_rows = static_cast<const RtdlAppleTriangleRow*>([out_buffer contents]);
+        size_t matched_count = 0;
+        for (size_t index = 0; index < output_capacity; ++index) {
+            if (all_rows[index].u != std::numeric_limits<uint32_t>::max()) {
+                ++matched_count;
+            }
+        }
+        if (matched_count > 0) {
+            auto* out = static_cast<RtdlAppleTriangleRow*>(std::malloc(matched_count * sizeof(RtdlAppleTriangleRow)));
+            if (out == nullptr) {
+                [out_buffer release];
+                [seed_offsets_buffer release];
+                [seed_buffer release];
+                [column_indices_buffer release];
+                [row_offsets_buffer release];
+                [pipeline release];
+                [function release];
+                [library release];
+                [command_queue release];
+                set_message(error_out, error_size, "out of memory allocating Apple RT triangle_match rows");
+                return 7;
+            }
+            size_t out_index = 0;
+            for (size_t index = 0; index < output_capacity; ++index) {
+                if (all_rows[index].u != std::numeric_limits<uint32_t>::max()) {
+                    out[out_index++] = all_rows[index];
+                }
+            }
+            *rows_out = out;
+            *row_count_out = matched_count;
+        }
+
+        [out_buffer release];
+        [seed_offsets_buffer release];
+        [seed_buffer release];
         [column_indices_buffer release];
         [row_offsets_buffer release];
         [pipeline release];

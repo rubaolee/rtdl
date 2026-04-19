@@ -212,7 +212,7 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
         self.assertEqual(modes["grouped_count"], "native_metal_filter_cpu_aggregate")
         self.assertEqual(modes["grouped_sum"], "native_metal_filter_cpu_aggregate")
         self.assertEqual(modes["bfs_discover"], "native_metal_compute")
-        self.assertEqual(modes["triangle_match"], "cpu_reference_compat")
+        self.assertEqual(modes["triangle_match"], "native_metal_compute")
         self.assertEqual(len(modes), 18)
 
     def test_segment_intersection_native_matches_cpu_reference(self) -> None:
@@ -307,14 +307,14 @@ class Goal582AppleRtFullSurfaceDispatchTest(unittest.TestCase):
                 expected = rt.run_cpu_python_reference(kernel, **inputs)
                 _assert_rows_almost_equal(self, actual, expected)
 
-    def test_native_only_rejects_compatibility_paths(self) -> None:
-        with self.assertRaises(NotImplementedError):
-            rt.run_apple_rt(
-                triangle_match_kernel,
-                native_only=True,
-                seeds=((0, 1),),
-                graph=rt.csr_graph(row_offsets=(0, 1, 2), column_indices=(1, 0)),
-            )
+    def test_triangle_match_native_only_matches_cpu_reference(self) -> None:
+        inputs = {
+            "seeds": ((0, 1),),
+            "graph": rt.csr_graph(row_offsets=(0, 2, 4, 6), column_indices=(1, 2, 0, 2, 0, 1)),
+        }
+        actual = rt.run_apple_rt(triangle_match_kernel, native_only=True, **inputs)
+        expected = rt.run_cpu_python_reference(triangle_match_kernel, **inputs)
+        _assert_rows_almost_equal(self, actual, expected)
 
 
 if __name__ == "__main__":

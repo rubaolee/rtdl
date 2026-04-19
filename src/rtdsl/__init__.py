@@ -100,6 +100,7 @@ from .apple_rt_runtime import run_apple_rt
 from .apple_rt_runtime import segment_intersection_apple_rt
 from .apple_rt_runtime import segment_polygon_anyhit_rows_apple_rt
 from .apple_rt_runtime import segment_polygon_hitcount_apple_rt
+from .apple_rt_runtime import triangle_match_apple_rt
 from .external_baselines import build_postgis_fixed_radius_neighbors_sql
 from .external_baselines import build_postgis_fixed_radius_neighbors_3d_sql
 from .external_baselines import build_postgis_bounded_knn_rows_3d_sql
@@ -641,6 +642,7 @@ __all__ = [
     "PreparedOptixExecution",
     "PreparedOptixKernel",
     "run_optix",
+    "triangle_match_apple_rt",
     "triangle_match_hiprt",
     "VulkanRowView",
     "vulkan_version",

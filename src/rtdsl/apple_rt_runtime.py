@@ -22,6 +22,7 @@ from .db_reference import normalize_grouped_query
 from .db_reference import normalize_predicate_bundle
 from .graph_reference import CSRGraph as _CanonicalCSRGraph
 from .graph_reference import FrontierVertex as _CanonicalFrontierVertex
+from .graph_reference import normalize_edge_set
 from .graph_reference import normalize_frontier
 from .graph_reference import normalize_vertex_set
 from .graph_reference import validate_csr_graph
@@ -59,9 +60,10 @@ APPLE_RT_NATIVE_PREDICATES = frozenset(
         "segment_intersection",
         "segment_polygon_anyhit_rows",
         "segment_polygon_hitcount",
+        "triangle_match",
     }
 )
-APPLE_RT_METAL_COMPUTE_PREDICATES = frozenset({"bfs_discover", "conjunctive_scan"})
+APPLE_RT_METAL_COMPUTE_PREDICATES = frozenset({"bfs_discover", "conjunctive_scan", "triangle_match"})
 APPLE_RT_METAL_FILTER_CPU_AGGREGATE_PREDICATES = frozenset({"grouped_count", "grouped_sum"})
 APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
     {
@@ -199,6 +201,13 @@ _APPLE_RT_SUPPORT_NOTES = {
         "native_only": "supported_for_segment2d_polygon2d",
         "native_shapes": ("Segment2D/Polygon2D",),
         "notes": "Apple Metal/MPS polygon bounding-box traversal for segment candidates, then exact hit-count refinement.",
+    },
+    "triangle_match": {
+        "native_candidate_discovery": "no",
+        "cpu_refinement": "unique_and_sorted_row_materialization",
+        "native_only": "supported_for_csr_edge_seeds",
+        "native_shapes": ("EdgeSet/CSRGraph",),
+        "notes": "Apple Metal compute performs per-seed neighbor-list intersection; CPU preserves uniqueness and ordering.",
     },
     "conjunctive_scan": {
         "native_candidate_discovery": "no",
@@ -400,6 +409,21 @@ class _RtdlAppleBfsRow(ctypes.Structure):
     ]
 
 
+class _RtdlAppleEdgeSeed(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+    ]
+
+
+class _RtdlAppleTriangleRow(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+        ("w", ctypes.c_uint32),
+    ]
+
+
 _LIBRARY: ctypes.CDLL | None = None
 
 
@@ -519,6 +543,21 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_bfs_discover_compute.restype = ctypes.c_int
+    library.rtdl_apple_rt_run_triangle_match_compute.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlAppleEdgeSeed),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlAppleTriangleRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_apple_rt_run_triangle_match_compute.restype = ctypes.c_int
     library.rtdl_apple_rt_run_ray_closest_hit_3d.argtypes = [
         ctypes.POINTER(_RtdlRay3D),
         ctypes.c_size_t,
@@ -890,6 +929,72 @@ def bfs_discover_apple_rt(
         if bool(rows_ptr):
             library.rtdl_apple_rt_free_rows(rows_ptr)
     rows.sort(key=lambda row: (row["level"], row["dst_vertex"], row["src_vertex"]))
+    return tuple(rows)
+
+
+def triangle_match_apple_rt(
+    graph,
+    seeds,
+    *,
+    order: str = "id_ascending",
+    unique: bool = True,
+) -> tuple[dict[str, int], ...]:
+    """Run triangle matching with Apple Metal neighbor intersection and CPU uniqueness/order."""
+    if order != "id_ascending":
+        raise ValueError("triangle_match_apple_rt currently supports only order='id_ascending'")
+    graph_record = graph if isinstance(graph, _CanonicalCSRGraph) else _normalize_records("graph", "graph_csr", graph)
+    validate_csr_graph(graph_record)
+    seed_records = normalize_edge_set(seeds)
+    if not seed_records:
+        return ()
+
+    seed_output_offsets = [0]
+    for seed in seed_records:
+        if seed.u < 0 or seed.u >= graph_record.vertex_count or seed.v < 0 or seed.v >= graph_record.vertex_count:
+            raise ValueError("Apple RT triangle_match seed vertices must be valid graph vertex IDs")
+        degree = graph_record.row_offsets[seed.u + 1] - graph_record.row_offsets[seed.u]
+        seed_output_offsets.append(seed_output_offsets[-1] + degree)
+    output_capacity = seed_output_offsets[-1]
+    if output_capacity == 0:
+        return ()
+
+    library = _load_library()
+    row_offsets_array = (ctypes.c_uint32 * len(graph_record.row_offsets))(*graph_record.row_offsets)
+    column_indices_array = (ctypes.c_uint32 * max(1, len(graph_record.column_indices)))(*(graph_record.column_indices or (0,)))
+    seeds_array = (_RtdlAppleEdgeSeed * len(seed_records))(*[_RtdlAppleEdgeSeed(item.u, item.v) for item in seed_records])
+    seed_offsets_array = (ctypes.c_uint32 * len(seed_output_offsets))(*seed_output_offsets)
+    rows_ptr = ctypes.POINTER(_RtdlAppleTriangleRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_apple_rt_run_triangle_match_compute(
+        row_offsets_array,
+        len(graph_record.row_offsets),
+        column_indices_array,
+        len(graph_record.column_indices),
+        seeds_array,
+        len(seed_records),
+        seed_offsets_array,
+        output_capacity,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        rows = []
+        seen: set[tuple[int, int, int]] = set()
+        for index in range(row_count.value):
+            row = rows_ptr[index]
+            triangle = (int(row.u), int(row.v), int(row.w))
+            if unique and triangle in seen:
+                continue
+            seen.add(triangle)
+            rows.append({"u": triangle[0], "v": triangle[1], "w": triangle[2]})
+    finally:
+        if bool(rows_ptr):
+            library.rtdl_apple_rt_free_rows(rows_ptr)
+    rows.sort(key=lambda row: (row["u"], row["v"], row["w"]))
     return tuple(rows)
 
 
@@ -1926,6 +2031,15 @@ def run_apple_rt(
                 dedupe=bool(compiled.refine_op.predicate.options.get("dedupe", True)),
             )
         )
+    if predicate_name == "triangle_match":
+        return tuple(
+            triangle_match_apple_rt(
+                right_records,
+                left_records,
+                order=str(compiled.refine_op.predicate.options.get("order", "id_ascending")),
+                unique=bool(compiled.refine_op.predicate.options.get("unique", True)),
+            )
+        )
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
@@ -1935,7 +2049,8 @@ def run_apple_rt(
             "bounded 2D polygon-pair area/Jaccard workloads, 2D overlay compose, "
             "numeric DB conjunctive_scan through Metal compute, and grouped DB "
             "aggregation through Metal predicate filtering plus CPU aggregation, "
-            "and BFS discovery through Metal frontier expansion; "
+            "BFS discovery through Metal frontier expansion, and triangle matching "
+            "through Metal neighbor intersection; "
             f"`{predicate_name}` is available only through CPU reference compatibility dispatch"
         )
     return _run_cpu_python_reference_from_normalized(compiled, normalized)

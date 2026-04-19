@@ -1,0 +1,1 @@
+Review Goal620 by reading `/Users/rl2025/rtdl_python_only/docs/reports/goal620_v0_9_4_apple_graph_triangle_match_2026-04-19.md` and the changed files it lists, then write an ACCEPT/BLOCK verdict with any correctness, honesty-boundary, or release-flow concerns to `/Users/rl2025/rtdl_python_only/docs/reports/goal620_external_review_2026-04-19.md`.
