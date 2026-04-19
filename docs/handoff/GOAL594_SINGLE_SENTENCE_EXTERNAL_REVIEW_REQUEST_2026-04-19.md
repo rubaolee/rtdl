@@ -1,0 +1,1 @@
+Please review `/Users/rl2025/rtdl_python_only/docs/reports/goal594_v0_9_2_apple_rt_performance_plan_2026-04-19.md` and write an ACCEPT/BLOCK planning verdict on whether v0.9.2 should prioritize repeatable Apple RT performance evidence, prepared closest-hit, optimized hit-count, and bounded segment-intersection feasibility before public performance claims.
