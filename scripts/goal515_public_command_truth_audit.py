@@ -37,6 +37,11 @@ GOAL513_COMMANDS = [
     "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
 ]
 
+GOAL593_COMMANDS = [
+    "python examples/rtdl_hiprt_ray_triangle_hitcount.py",
+    "python examples/rtdl_apple_rt_closest_hit.py",
+]
+
 PUBLIC_VALIDATION_COMMAND_KEYS = {
     ("python -m unittest", "default"): "postgresql_validation_command",
 }
@@ -134,6 +139,9 @@ def build_coverage_maps() -> tuple[dict[str, str], dict[tuple[str, str], str]]:
     for command in GOAL513_COMMANDS:
         exact_keys.setdefault(command, "goal513_front_page_smoke_exact")
         family_keys.setdefault(command_key(command), "goal513_front_page_smoke_family")
+    for command in GOAL593_COMMANDS:
+        exact_keys.setdefault(command, "goal593_public_example_smoke_exact")
+        family_keys.setdefault(command_key(command), "goal593_public_example_smoke_family")
     family_keys.update(PUBLIC_VALIDATION_COMMAND_KEYS)
     return exact_keys, family_keys
 

@@ -130,8 +130,8 @@ class Goal546HiprtApiParitySkeletonTest(unittest.TestCase):
             pass
 
     def test_prepare_hiprt_rejects_unimplemented_peer_predicate(self) -> None:
-        with self.assertRaisesRegex(NotImplementedError, "fixed_radius_neighbors"):
-            rt.prepare_hiprt(fixed_radius_3d_kernel)
+        with self.assertRaisesRegex(NotImplementedError, "overlay_compose"):
+            rt.prepare_hiprt(overlay_kernel)
 
 
 if __name__ == "__main__":

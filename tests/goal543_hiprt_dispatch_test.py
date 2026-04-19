@@ -23,6 +23,15 @@ def unsupported_hiprt_2d_ray_triangle_kernel():
     return rt.emit(hits, fields=["ray_id", "hit_count"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def unsupported_hiprt_mismatched_ray_triangle_kernel():
+    rays = rt.input("rays", rt.Rays, layout=rt.Ray2DLayout, role="probe")
+    triangles = rt.input("triangles", rt.Triangles3D, layout=rt.Triangle3DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
+
+
 def _hiprt_available() -> bool:
     try:
         rt.hiprt_version()
@@ -45,9 +54,9 @@ def _case():
 
 
 class Goal543HiprtDispatchLocalValidationTest(unittest.TestCase):
-    def test_run_hiprt_rejects_unsupported_2d_shape_before_loading_backend(self) -> None:
-        with self.assertRaisesRegex(NotImplementedError, "Ray3DLayout and Triangle3DLayout"):
-            rt.run_hiprt(unsupported_hiprt_2d_ray_triangle_kernel, rays=(), triangles=())
+    def test_run_hiprt_rejects_mismatched_shape_before_loading_backend(self) -> None:
+        with self.assertRaisesRegex(NotImplementedError, "matching Ray2D/Triangle2D or Ray3D/Triangle3D"):
+            rt.run_hiprt(unsupported_hiprt_mismatched_ray_triangle_kernel, rays=(), triangles=())
 
     def test_prepare_hiprt_requires_build_triangles_only(self) -> None:
         rays, triangles = _case()

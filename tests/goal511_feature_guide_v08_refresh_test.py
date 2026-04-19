@@ -8,11 +8,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal511FeatureGuideV08RefreshTest(unittest.TestCase):
-    def test_feature_guide_carries_v08_app_building_state(self) -> None:
+    def test_feature_guide_carries_current_app_building_state(self) -> None:
         text = (REPO_ROOT / "docs" / "rtdl_feature_guide.md").read_text(encoding="utf-8")
 
-        self.assertIn("accepted `v0.8` app-building work", text)
-        self.assertIn("not a released support-matrix line yet", text)
+        self.assertIn("released `v0.8.0` app-building layer", text)
+        self.assertIn("`v0.9.2` candidate Apple RT performance line", text)
         self.assertIn("rtdl_hausdorff_distance_app.py", text)
         self.assertIn("rtdl_ann_candidate_app.py", text)
         self.assertIn("rtdl_outlier_detection_app.py", text)
