@@ -55,6 +55,10 @@ For the released v0.9.5 any-hit layer, this means:
 - `reduce_rows` is a Python standard-library helper over emitted rows, not a
   backend-native reduction.
 
+For a compact current-main backend table, including the post-release Vulkan and
+Apple RT any-hit work after Goals650-653, read
+[RTDL Current Main Support Matrix](current_main_support_matrix.md).
+
 ## Linux GPU Performance Notes
 
 The current Linux GPU evidence has two layers:

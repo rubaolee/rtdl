@@ -218,6 +218,7 @@ Do not read the current system as:
 For exact release claims, read:
 
 - [RTDL Capability Boundaries](capability_boundaries.md)
+- [Current Main Support Matrix](current_main_support_matrix.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)

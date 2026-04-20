@@ -14,14 +14,15 @@ Read these in order for the current public story:
 3. [Feature Guide](rtdl_feature_guide.md)
 4. [Capability Boundaries](capability_boundaries.md)
 5. [Backend Maturity](backend_maturity.md)
-6. [Quick Tutorial](quick_tutorial.md)
-7. [RTDL Tutorials](tutorials/README.md)
-8. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
-9. [Release-Facing Examples](release_facing_examples.md)
-10. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
-11. [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
-12. [v0.8 App Building](tutorials/v0_8_app_building.md)
-13. [ITRE App Programming Model](rtdl/itre_app_model.md)
+6. [Current Main Support Matrix](current_main_support_matrix.md)
+7. [Quick Tutorial](quick_tutorial.md)
+8. [RTDL Tutorials](tutorials/README.md)
+9. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+10. [Release-Facing Examples](release_facing_examples.md)
+11. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+12. [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
+13. [v0.8 App Building](tutorials/v0_8_app_building.md)
+14. [ITRE App Programming Model](rtdl/itre_app_model.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -40,10 +41,12 @@ write?", use this short path:
 5. read [v0.8 App Building](tutorials/v0_8_app_building.md) if you want to see
    RTDL kernels used inside Python applications
 6. check the exact current boundary in the
+   [Current Main Support Matrix](current_main_support_matrix.md)
+7. check the exact release boundary in the
    [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
-7. check the exact app-building boundary in the
+8. check the exact app-building boundary in the
    [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-8. check the exact released DB boundary in the
+9. check the exact released DB boundary in the
    [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 The public promise is authoring-burden reduction: RTDL hides backend-specific
@@ -69,6 +72,7 @@ audited release claims.
 - [Feature Guide](rtdl_feature_guide.md)
 - [Capability Boundaries](capability_boundaries.md)
 - [Backend Maturity](backend_maturity.md)
+- [Current Main Support Matrix](current_main_support_matrix.md)
 - [RTDL Tutorials](tutorials/README.md)
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
