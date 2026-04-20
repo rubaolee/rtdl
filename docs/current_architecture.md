@@ -106,7 +106,7 @@ kernels and native backend paths, not in Python loops.
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
 | HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
-| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; released v0.9.4 has full-surface native/native-assisted dispatch across 18 predicates, with DB/graph rows implemented through Metal compute/native-assisted modes rather than MPS ray traversal; v0.9.5 any-hit is compatibility dispatch, not native early-exit Apple RT |
+| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; released v0.9.4 has full-surface native/native-assisted dispatch across 18 predicates, with DB/graph rows implemented through Metal compute/native-assisted modes rather than MPS ray traversal; current `main` adds MPS RT 3D any-hit and MPS-prism 2D any-hit after rebuilding `librtdl_apple_rt`, while the released v0.9.5 tag itself used compatibility any-hit dispatch |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 Native backend code follows the modular layout used by Embree, OptiX, and

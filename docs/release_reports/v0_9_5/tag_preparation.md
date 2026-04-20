@@ -16,6 +16,11 @@ Tag `v0.9.5` represents:
 - no native-backend overclaim for `reduce_rows`;
 - no native early-exit claim for Vulkan or Apple RT.
 
+Post-release current `main` later adds native Vulkan any-hit and Apple RT
+native/native-assisted any-hit after backend library rebuilds. Those later
+changes are recorded in Goals650-653 and are not part of the released tag
+boundary described here.
+
 ## Required Before Tagging
 
 Before creating the tag, all requirements were satisfied:

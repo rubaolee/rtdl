@@ -4,6 +4,10 @@ Date: 2026-04-19
 
 Status: released support matrix for `v0.9.5`.
 
+This matrix is the released tag boundary. Post-release current `main` adds
+native Vulkan any-hit and Apple RT native/native-assisted any-hit after backend
+library rebuilds; those additions are recorded separately in Goals650-653.
+
 ## New v0.9.5 Surface
 
 | Feature | CPU Python reference | CPU/oracle | Embree | OptiX | Vulkan | HIPRT | Apple RT |
@@ -19,9 +23,12 @@ Status: released support matrix for `v0.9.5`.
 - OptiX native any-hit uses `optixTerminateRay()`.
 - HIPRT native any-hit uses a traversal loop that stops after the first
   accepted hit.
-- Vulkan and Apple RT support the row contract by projecting existing
-  hit-count rows. That is backend execution, but not native early-exit
-  performance evidence.
+- At the released tag boundary, Vulkan and Apple RT support the row contract by
+  projecting existing hit-count rows. That is backend execution, but not native
+  early-exit performance evidence for the tag.
+- Post-release current `main` adds native Vulkan any-hit and Apple RT
+  native/native-assisted any-hit after rebuilding the corresponding backend
+  libraries. Those are not retroactive claims about the `v0.9.5` tag.
 - `reduce_rows` is not a backend primitive. It runs in Python over rows already
   emitted by RTDL kernels or standard-library helpers.
 

@@ -1,0 +1,1 @@
+Review Goal653 by reading `/Users/rl2025/rtdl_python_only/docs/reports/goal653_current_main_anyhit_linux_validation_2026-04-20.md` and the referenced docs/tests, then write an ACCEPT/BLOCK verdict on whether the Linux current-main any-hit validation is sufficient and whether the v0.9.5 tag-vs-current-main documentation boundary is honest.

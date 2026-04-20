@@ -13,12 +13,19 @@ This package records the `v0.9.5` surface:
 
 - `rt.ray_triangle_any_hit(exact=False)` emits `{ray_id, any_hit}` rows.
 - OptiX, Embree, and HIPRT have native early-exit any-hit implementations.
-- Vulkan and Apple RT support the any-hit row contract through compatibility
-  dispatch by projecting existing hit-count rows.
+- At the `v0.9.5` tag boundary, Vulkan and Apple RT support the any-hit row
+  contract through compatibility dispatch by projecting existing hit-count
+  rows. In short: Vulkan and Apple RT support the any-hit row contract at the
+  tag boundary, but not through native early-exit kernels.
 - `rt.visibility_rows_cpu(...)` and `rt.visibility_rows(..., backend=...)`
   emit `{observer_id, target_id, visible}` rows for bounded line-of-sight apps.
 - `rt.reduce_rows(...)` reduces already-emitted rows in Python with `any`,
   `count`, `sum`, `min`, and `max`.
+
+Post-release current `main` extends this release surface with native Vulkan
+any-hit and Apple RT native/native-assisted any-hit after rebuilding the backend
+libraries; see Goal650, Goal651, Goal652, and Goal653 reports for that newer
+evidence.
 
 ## Start Here
 

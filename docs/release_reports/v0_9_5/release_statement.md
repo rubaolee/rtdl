@@ -13,6 +13,11 @@ The correct public statement is:
 > Apple RT support the any-hit row contract through compatibility dispatch, not
 > native early-exit kernels.
 
+This statement is the released `v0.9.5` tag boundary. Post-release current
+`main` adds native Vulkan any-hit and Apple RT native/native-assisted any-hit
+after rebuilding the relevant backend libraries; those additions are recorded
+in Goals650-653 and should not be read back into the released tag.
+
 ## What v0.9.5 May Claim
 
 - `ray_triangle_any_hit` is a public RTDL predicate that emits stable
@@ -23,8 +28,9 @@ The correct public statement is:
   native library exports the v0.9.5 symbols.
 - HIPRT uses a HIPRT traversal loop that stops after the first accepted hit
   where the loaded native library exports the v0.9.5 symbols.
-- Vulkan and Apple RT can execute the any-hit row contract by reusing their
-  existing hit-count paths and projecting `hit_count > 0`.
+- At the released tag boundary, Vulkan and Apple RT can execute the any-hit row
+  contract by reusing their existing hit-count paths and projecting
+  `hit_count > 0`.
 - `visibility_rows` is a bounded standard-library line-of-sight helper built
   on finite observer-target any-hit rays.
 - `reduce_rows` is a Python standard-library helper over emitted rows.

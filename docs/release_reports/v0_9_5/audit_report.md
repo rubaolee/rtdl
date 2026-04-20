@@ -30,14 +30,19 @@ Recorded test evidence:
 
 ## Documentation Audit
 
-Public docs now state:
+Public docs for the released tag state:
 
 - current `v0.9.5` surface includes any-hit, visibility rows, and emitted-row
   reductions;
 - OptiX, Embree, and HIPRT are native early-exit any-hit paths;
-- Vulkan and Apple RT are compatibility any-hit paths;
+- Vulkan and Apple RT are compatibility any-hit paths at the tag boundary;
 - `reduce_rows` is a Python helper, not native backend acceleration;
 - `v0.9.4` Apple DB/graph hardware boundaries still apply.
+
+Post-release current `main` adds native Vulkan any-hit and Apple RT
+native/native-assisted any-hit after backend library rebuilds. That newer
+current-main evidence is recorded in Goals650-653 and is not a retroactive
+claim about the released `v0.9.5` tag.
 
 ## Known Non-Claims
 
