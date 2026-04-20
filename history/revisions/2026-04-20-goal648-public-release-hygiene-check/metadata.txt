@@ -1,0 +1,11 @@
+slug: 2026-04-20-goal648-public-release-hygiene-check
+title: Goal648 public release hygiene check
+version: v0.9.5
+status: accepted
+started_on: 2026-04-20
+closed_on: 2026-04-20
+source_commit: c894a0b
+gemini_review: docs/reports/goal648_gemini_flash_review_2026-04-20.md
+codex_revision: docs/reports/goal648_public_release_hygiene_check_2026-04-20.md
+final_result: accepted
+summary: Refreshed public history indexes and clarified superseded internal v0.9.2 package after v0.9.5 release.

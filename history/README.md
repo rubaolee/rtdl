@@ -116,7 +116,8 @@ This hybrid layout is more practical than:
 ## Current State
 
 This archive began with the March 29, 2026 review-and-revision cycle and now
-contains later rounds through the `v0.9.4` release action:
+contains later rounds through the `v0.9.5` release and post-release
+fresh-checkout verification:
 
 - language/runtime bring-up
 - Embree validation and RayJoin-style reproduction work
@@ -129,6 +130,8 @@ contains later rounds through the `v0.9.4` release action:
 - `v0.9.1` Apple Metal/MPS RT closest-hit release records
 - `v0.9.4` Apple RT compatibility, HIPRT/Apple documentation, and release-gate
   repair records
+- `v0.9.5` bounded any-hit, visibility-row, emitted-row reduction,
+  post-release front-page refresh, and fresh-checkout verification records
 - ad hoc review memos and consensus notes that complement the structured rounds
 
 Goal629 added an explicit audit for the misleading public gap between Goal 65

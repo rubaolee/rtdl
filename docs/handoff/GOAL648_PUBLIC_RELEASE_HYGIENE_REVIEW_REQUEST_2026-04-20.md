@@ -1,0 +1,1 @@
+Review `/Users/rl2025/rtdl_python_only/docs/reports/goal648_public_release_hygiene_check_2026-04-20.md` plus the changed public history/release docs, then write an ACCEPT/BLOCK verdict to the requested response file on whether the GitHub-facing `v0.9.5` release hygiene and stale-history fixes are correct and honestly bounded.
