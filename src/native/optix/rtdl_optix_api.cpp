@@ -90,6 +90,38 @@ extern "C" int rtdl_optix_run_ray_hitcount_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_ray_anyhit(
+        const RtdlRay2D*    rays,      size_t ray_count,
+        const RtdlTriangle* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (ray_count == 0) return;
+        run_ray_anyhit_optix(rays, ray_count, triangles, triangle_count,
+                             rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_ray_anyhit_3d(
+        const RtdlRay3D*      rays,      size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow**  rows_out,  size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (ray_count == 0) return;
+        run_ray_anyhit_3d_optix(rays, ray_count, triangles, triangle_count,
+                                rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_segment_polygon_hitcount(
         const RtdlSegment*    segments,  size_t segment_count,
         const RtdlPolygonRef* polygons,  size_t polygon_count,

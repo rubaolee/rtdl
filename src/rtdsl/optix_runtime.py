@@ -137,6 +137,13 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlRayAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("any_hit", ctypes.c_uint32),
+    ]
+
+
 class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
     _fields_ = [
         ("segment_id", ctypes.c_uint32),
@@ -226,6 +233,16 @@ class OptixRowView:
             pass
 
 
+def _project_ray_hitcount_view_to_anyhit(rows: OptixRowView) -> tuple[dict[str, int], ...]:
+    return tuple(
+        {
+            "ray_id": int(rows.rows_ptr[index].ray_id),
+            "any_hit": 1 if int(rows.rows_ptr[index].hit_count) else 0,
+        }
+        for index in range(rows.row_count)
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Prepared-kernel API
 # ─────────────────────────────────────────────────────────────────────────────
@@ -237,6 +254,7 @@ class PreparedOptixKernel:
         "segment_intersection",
         "point_in_polygon",
         "overlay_compose",
+        "ray_triangle_any_hit",
         "ray_triangle_hit_count",
         "segment_polygon_hitcount",
         "segment_polygon_anyhit_rows",
@@ -312,6 +330,14 @@ class PreparedOptixExecution:
 
     def run_raw(self) -> OptixRowView:
         pred = self.compiled.refine_op.predicate.name
+        if pred == "ray_triangle_any_hit":
+            native = _find_optional_backend_symbol(self.library, "rtdl_optix_run_ray_anyhit")
+            if native is not None:
+                return _call_ray_anyhit_optix_packed(self.compiled, self.packed_inputs, self.library)
+            raise ValueError(
+                "OptiX raw mode requires a backend library exporting "
+                "rtdl_optix_run_ray_anyhit; rebuild with 'make build-optix'."
+            )
         dispatch = {
             "segment_intersection":   _call_lsi_optix_packed,
             "point_in_polygon":       _call_pip_optix_packed,
@@ -332,6 +358,20 @@ class PreparedOptixExecution:
         return fn(self.compiled, self.packed_inputs, self.library)
 
     def run(self) -> tuple:
+        pred = self.compiled.refine_op.predicate.name
+        if pred == "ray_triangle_any_hit":
+            if _find_optional_backend_symbol(self.library, "rtdl_optix_run_ray_anyhit") is not None:
+                rows = _call_ray_anyhit_optix_packed(self.compiled, self.packed_inputs, self.library)
+            else:
+                rows = _call_ray_hitcount_optix_packed(self.compiled, self.packed_inputs, self.library)
+                try:
+                    return _project_ray_hitcount_view_to_anyhit(rows)
+                finally:
+                    rows.close()
+            try:
+                return rows.to_dict_rows()
+            finally:
+                rows.close()
         rows = self.run_raw()
         try:
             return rows.to_dict_rows()
@@ -1381,6 +1421,45 @@ def _call_ray_hitcount_optix_packed(compiled: CompiledKernel, packed, lib) -> Op
         field_names=("ray_id", "hit_count"))
 
 
+def _call_ray_anyhit_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
+    rays      = packed[compiled.candidates.left.name]
+    triangles = packed[compiled.candidates.right.name]
+    rows_ptr  = ctypes.POINTER(_RtdlRayAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error     = ctypes.create_string_buffer(4096)
+    if rays.dimension != triangles.dimension:
+        raise ValueError("OptiX ray_triangle_any_hit requires rays and triangles to have the same dimension")
+    if rays.dimension == 3:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_anyhit_3d")
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_run_ray_anyhit_3d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        status = symbol(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    else:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_anyhit")
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_run_ray_anyhit. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        status = symbol(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    _check_status(status, error)
+    return OptixRowView(
+        library=lib, rows_ptr=rows_ptr,
+        row_count=row_count.value, row_type=_RtdlRayAnyHitRow,
+        field_names=("ray_id", "any_hit"))
+
+
 def _call_segment_polygon_hitcount_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     segments = packed[compiled.candidates.left.name]
     polygons = packed[compiled.candidates.right.name]
@@ -1693,6 +1772,26 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_ray3d.restype = ctypes.c_int
+    optional_anyhit = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_anyhit")
+    if optional_anyhit is not None:
+        optional_anyhit.argtypes = [
+            ctypes.POINTER(_RtdlRay2D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_anyhit.restype = ctypes.c_int
+    optional_anyhit3d = _find_optional_backend_symbol(lib, "rtdl_optix_run_ray_anyhit_3d")
+    if optional_anyhit3d is not None:
+        optional_anyhit3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_anyhit3d.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,

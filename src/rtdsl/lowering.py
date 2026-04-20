@@ -29,6 +29,7 @@ _EMIT_FIELD_TYPES = {
     "jaccard_similarity": "float",
     "ray_id": "uint32_t",
     "hit_count": "uint32_t",
+    "any_hit": "uint32_t",
     "segment_id": "uint32_t",
     "query_id": "uint32_t",
     "neighbor_id": "uint32_t",
@@ -67,6 +68,8 @@ def lower_to_execution_plan(kernel: CompiledKernel) -> RTExecutionPlan:
         return _lower_overlay(kernel, build_input, probe_input)
     if predicate.name == "ray_triangle_hit_count":
         return _lower_ray_triangle_hitcount(kernel, build_input, probe_input)
+    if predicate.name == "ray_triangle_any_hit":
+        return _lower_ray_triangle_any_hit(kernel, build_input, probe_input)
     if predicate.name == "segment_polygon_hitcount":
         return _lower_segment_polygon_hitcount(kernel, build_input, probe_input)
     if predicate.name == "segment_polygon_anyhit_rows":
@@ -693,6 +696,78 @@ def _lower_ray_triangle_hitcount(kernel: CompiledKernel, build_input, probe_inpu
             description="Trace each finite 2D ray against the build-side triangle BVH and count triangle hits.",
         ),
         bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`",
+    )
+
+
+def _lower_ray_triangle_any_hit(kernel: CompiledKernel, build_input, probe_input) -> RTExecutionPlan:
+    predicate = kernel.refine_op.predicate
+    if build_input.geometry.name != "triangles" or probe_input.geometry.name != "rays":
+        raise ValueError("the current ray any-hit lowering requires triangle build input and ray probe input")
+    if predicate.options.get("exact") is not False:
+        raise ValueError(
+            "the current ray any-hit lowering supports only float-based ray_triangle_any_hit predicates; "
+            "use ray_triangle_any_hit(exact=False)"
+        )
+
+    output_record = _build_output_record("RayAnyHitRecord", kernel.emit_op.fields)
+    build_buffer_name = _input_buffer_name(build_input)
+    probe_buffer_name = _input_buffer_name(probe_input)
+
+    return RTExecutionPlan(
+        kernel_name=kernel.name,
+        workload_kind="ray_tri_anyhit",
+        backend="rtdl",
+        precision=kernel.precision,
+        build_input=build_input,
+        probe_input=probe_input,
+        accel_kind=kernel.candidates.accel,
+        predicate=predicate.name,
+        exact_refine_mode="analytic_float_ray_triangle_any_hit",
+        emit_fields=kernel.emit_op.fields,
+        payload_registers=(
+            PayloadRegister(index=0, name="ray_index", encoding="u32"),
+            PayloadRegister(index=1, name="triangle_index", encoding="u32"),
+            PayloadRegister(index=2, name="any_hit", encoding="u32"),
+            PayloadRegister(index=3, name="hit_kind", encoding="u32"),
+        ),
+        launch_params=(
+            LaunchParam(name="traversable", c_type="OptixTraversableHandle", role="rt_accel"),
+            LaunchParam(name=build_buffer_name, c_type=f"const {build_input.layout.name}*", role="device_input_build"),
+            LaunchParam(name=probe_buffer_name, c_type=f"const {probe_input.layout.name}*", role="device_input_probe"),
+            LaunchParam(name="output_records", c_type=f"{output_record.name}*", role="device_output"),
+            LaunchParam(name="output_count", c_type="uint32_t*", role="device_counter"),
+            LaunchParam(name="output_capacity", c_type="uint32_t", role="device_limit"),
+            LaunchParam(name="probe_count", c_type="uint32_t", role="launch_size"),
+        ),
+        host_steps=(
+            f"Upload `{build_input.name}` triangles and `{probe_input.name}` rays using `{build_input.layout.name}` / `{probe_input.layout.name}` layouts.",
+            f"Build BVH over `{build_input.name}` triangles and export an OptixTraversableHandle.",
+            "Bind launch parameters with triangle buffers, ray buffers, output buffer, output capacity, and atomic output counter.",
+            "Launch one finite ray per probe and terminate traversal after the first accepted triangle hit.",
+            "Emit exactly one row per ray with any_hit=1 for a blocker and any_hit=0 otherwise.",
+        ),
+        device_programs=(
+            "__raygen__rtdl_ray_anyhit",
+            "__miss__rtdl_miss",
+            "__anyhit__rtdl_triangle_terminate",
+            "__intersection__rtdl_triangles",
+        ),
+        buffers=(
+            BufferSpec(name=build_buffer_name, element=build_input.layout.name, role="device_input_build"),
+            BufferSpec(name=probe_buffer_name, element=probe_input.layout.name, role="device_input_probe"),
+            BufferSpec(name="output_records", element=output_record.name, role="device_output"),
+            BufferSpec(name="output_count", element="uint32_t", role="device_counter"),
+            BufferSpec(name="output_capacity", element="uint32_t", role="device_limit"),
+        ),
+        output_record=output_record,
+        ray_spec=RaySpec(
+            origin=("probe.ox", "probe.oy", "0.0f"),
+            direction=("probe.dx", "probe.dy", "0.0f"),
+            tmin="0.0f",
+            tmax="probe.tmax",
+            description="Trace each finite ray against the build-side triangle BVH and stop after the first accepted hit.",
+        ),
+        bvh_policy=f"build over `{build_input.name}`, probe with `{probe_input.name}`; any-hit traversal is bounded by early termination",
     )
 
 

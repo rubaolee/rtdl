@@ -70,6 +70,11 @@ struct RtdlRayHitCountRow {
     uint32_t hit_count;
 };
 
+struct RtdlRayAnyHitRow {
+    uint32_t ray_id;
+    uint32_t any_hit;
+};
+
 struct RtdlSegment {
     uint32_t id;
     double x0;

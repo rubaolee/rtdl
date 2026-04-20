@@ -141,6 +141,10 @@ def ray_triangle_hit_count(*, exact: bool = False) -> Predicate:
     return Predicate(name="ray_triangle_hit_count", options={"exact": exact})
 
 
+def ray_triangle_any_hit(*, exact: bool = False) -> Predicate:
+    return Predicate(name="ray_triangle_any_hit", options={"exact": exact})
+
+
 def ray_triangle_closest_hit(*, exact: bool = False) -> Predicate:
     return Predicate(name="ray_triangle_closest_hit", options={"exact": exact})
 

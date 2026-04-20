@@ -52,6 +52,7 @@ _HIPRT_PEER_PREDICATES = {
     "point_in_polygon",
     "point_nearest_segment",
     "overlay_compose",
+    "ray_triangle_any_hit",
     "ray_triangle_hit_count",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
@@ -67,6 +68,7 @@ _HIPRT_PEER_PREDICATES = {
 
 _HIPRT_IMPLEMENTED_PREDICATES = {
     "ray_triangle_hit_count",
+    "ray_triangle_any_hit",
     "segment_intersection",
     "point_in_polygon",
     "point_nearest_segment",
@@ -88,6 +90,7 @@ _HIPRT_GOAL_BY_PREDICATE = {
     "point_in_polygon": "Goal 550 2D geometry expansion",
     "overlay_compose": "Goal 550 2D geometry expansion",
     "ray_triangle_hit_count": "Goal 550 for 2D, Goal 548/542 for 3D",
+    "ray_triangle_any_hit": "Goal 636 hit-count projection for 2D/3D",
     "segment_polygon_hitcount": "Goal 550 2D geometry expansion",
     "segment_polygon_anyhit_rows": "Goal 550 2D geometry expansion",
     "point_nearest_segment": "Goal 553 2D point-nearest-segment expansion",
@@ -160,6 +163,13 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
         ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlRayAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("any_hit", ctypes.c_uint32),
     ]
 
 
@@ -851,6 +861,169 @@ def ray_triangle_hit_count_2d_hiprt(
         )
     finally:
         _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+def _project_ray_hitcount_rows_to_anyhit(rows: tuple[dict[str, int], ...]) -> tuple[dict[str, int], ...]:
+    return tuple(
+        {"ray_id": int(row["ray_id"]), "any_hit": 1 if int(row["hit_count"]) else 0}
+        for row in rows
+    )
+
+
+def _hiprt_ray_anyhit_symbol(dimension: int):
+    name = f"rtdl_hiprt_run_ray_anyhit_{dimension}d"
+    symbol = getattr(_hiprt_lib(), name, None)
+    if symbol is None:
+        return None
+    if dimension == 2:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+    else:
+        symbol.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+    symbol.restype = ctypes.c_int
+    return symbol
+
+
+def ray_triangle_any_hit_2d_hiprt(
+    rays: tuple[_CanonicalRay2D, ...],
+    triangles: tuple[_CanonicalTriangle2D, ...],
+) -> tuple[dict[str, int], ...]:
+    symbol = _hiprt_ray_anyhit_symbol(2)
+    if symbol is None:
+        return _project_ray_hitcount_rows_to_anyhit(ray_triangle_hit_count_2d_hiprt(rays, triangles))
+    ray_records = tuple(rays)
+    triangle_records = tuple(triangles)
+    if any(not isinstance(ray, _CanonicalRay2D) for ray in ray_records):
+        raise TypeError("ray_triangle_any_hit_2d_hiprt currently supports only Ray2D inputs")
+    if any(not isinstance(triangle, _CanonicalTriangle2D) for triangle in triangle_records):
+        raise TypeError("ray_triangle_any_hit_2d_hiprt currently supports only Triangle2D inputs")
+
+    ray_array = (_RtdlRay2D * len(ray_records))(
+        *[_RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in ray_records]
+    )
+    triangle_array = (_RtdlTriangle * len(triangle_records))(
+        *[
+            _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
+            for item in triangle_records
+        ]
+    )
+    rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        ray_array,
+        len(ray_records),
+        triangle_array,
+        len(triangle_records),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_run_ray_anyhit_2d failed with status {status}: {detail}")
+    try:
+        return tuple(
+            {"ray_id": int(rows_ptr[index].ray_id), "any_hit": int(rows_ptr[index].any_hit)}
+            for index in range(row_count.value)
+        )
+    finally:
+        _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+def ray_triangle_any_hit_3d_hiprt(
+    rays: tuple[_CanonicalRay3D, ...],
+    triangles: tuple[_CanonicalTriangle3D, ...],
+) -> tuple[dict[str, int], ...]:
+    symbol = _hiprt_ray_anyhit_symbol(3)
+    if symbol is None:
+        return _project_ray_hitcount_rows_to_anyhit(ray_triangle_hit_count_hiprt(rays, triangles))
+    ray_records = tuple(rays)
+    triangle_records = tuple(triangles)
+    if any(not isinstance(ray, _CanonicalRay3D) for ray in ray_records):
+        raise TypeError("ray_triangle_any_hit_3d_hiprt currently supports only Ray3D inputs")
+    if any(not isinstance(triangle, _CanonicalTriangle3D) for triangle in triangle_records):
+        raise TypeError("ray_triangle_any_hit_3d_hiprt currently supports only Triangle3D inputs")
+
+    ray_array = (_RtdlRay3D * len(ray_records))(
+        *[
+            _RtdlRay3D(item.id, item.ox, item.oy, item.oz, item.dx, item.dy, item.dz, item.tmax)
+            for item in ray_records
+        ]
+    )
+    triangle_array = (_RtdlTriangle3D * len(triangle_records))(
+        *[
+            _RtdlTriangle3D(
+                item.id,
+                item.x0,
+                item.y0,
+                item.z0,
+                item.x1,
+                item.y1,
+                item.z1,
+                item.x2,
+                item.y2,
+                item.z2,
+            )
+            for item in triangle_records
+        ]
+    )
+    rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        ray_array,
+        len(ray_records),
+        triangle_array,
+        len(triangle_records),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_run_ray_anyhit_3d failed with status {status}: {detail}")
+    try:
+        return tuple(
+            {"ray_id": int(rows_ptr[index].ray_id), "any_hit": int(rows_ptr[index].any_hit)}
+            for index in range(row_count.value)
+        )
+    finally:
+        _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+def ray_triangle_any_hit_hiprt(
+    rays: tuple[_CanonicalRay2D | _CanonicalRay3D, ...],
+    triangles: tuple[_CanonicalTriangle2D | _CanonicalTriangle3D, ...],
+) -> tuple[dict[str, int], ...]:
+    if all(isinstance(ray, _CanonicalRay2D) for ray in rays) and all(
+        isinstance(triangle, _CanonicalTriangle2D) for triangle in triangles
+    ):
+        return ray_triangle_any_hit_2d_hiprt(rays, triangles)
+    if all(isinstance(ray, _CanonicalRay3D) for ray in rays) and all(
+        isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles
+    ):
+        return ray_triangle_any_hit_3d_hiprt(rays, triangles)
+    raise TypeError("ray_triangle_any_hit_hiprt requires matching Ray2D/Triangle2D or Ray3D/Triangle3D inputs")
 
 
 def _encode_polygon_arrays(polygons: tuple[_CanonicalPolygon, ...]):
@@ -2295,9 +2468,9 @@ def _validate_hiprt_kernel(compiled: CompiledKernel) -> tuple[str, tuple[str, st
     rays_input = compiled.candidates.left
     triangles_input = compiled.candidates.right
     if rays_input.geometry.name != "rays" or triangles_input.geometry.name != "triangles":
-        raise ValueError("HIPRT ray_triangle_hit_count requires ray probe input followed by triangle build input")
+        raise ValueError(f"HIPRT {predicate_name} requires ray probe input followed by triangle build input")
     if rays_input.role != "probe" or triangles_input.role != "build":
-        raise ValueError("HIPRT ray_triangle_hit_count requires rays role='probe' and triangles role='build'")
+        raise ValueError(f"HIPRT {predicate_name} requires rays role='probe' and triangles role='build'")
     if (rays_input.layout.name, triangles_input.layout.name) not in {
         ("Ray2D", "Triangle2D"),
         ("Ray3D", "Triangle3D"),
@@ -2331,10 +2504,12 @@ def run_hiprt(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
     compiled = _resolve_kernel(kernel_fn_or_compiled)
     predicate_name, input_names, options = _validate_hiprt_kernel(compiled)
     normalized_inputs = _validate_inputs(compiled, inputs)
-    if predicate_name == "ray_triangle_hit_count":
+    if predicate_name in {"ray_triangle_hit_count", "ray_triangle_any_hit"}:
         ray_rows = normalized_inputs[input_names[0]]
         triangle_rows = normalized_inputs[input_names[1]]
-        if options.get("layout_pair") == ("Ray2D", "Triangle2D"):
+        if predicate_name == "ray_triangle_any_hit":
+            rows = ray_triangle_any_hit_hiprt(ray_rows, triangle_rows)
+        elif options.get("layout_pair") == ("Ray2D", "Triangle2D"):
             rows = ray_triangle_hit_count_2d_hiprt(ray_rows, triangle_rows)
         else:
             rows = ray_triangle_hit_count_hiprt(ray_rows, triangle_rows)

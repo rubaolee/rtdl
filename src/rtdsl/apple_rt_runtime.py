@@ -56,6 +56,7 @@ APPLE_RT_NATIVE_PREDICATES = frozenset(
         "polygon_pair_overlap_area_rows",
         "polygon_set_jaccard",
         "ray_triangle_closest_hit",
+        "ray_triangle_any_hit",
         "ray_triangle_hit_count",
         "segment_intersection",
         "segment_polygon_anyhit_rows",
@@ -80,6 +81,7 @@ APPLE_RT_COMPATIBILITY_PREDICATES = frozenset(
         "polygon_pair_overlap_area_rows",
         "polygon_set_jaccard",
         "ray_triangle_closest_hit",
+        "ray_triangle_any_hit",
         "ray_triangle_hit_count",
         "segment_intersection",
         "segment_polygon_anyhit_rows",
@@ -180,6 +182,13 @@ _APPLE_RT_SUPPORT_NOTES = {
         "native_only": "supported_for_2d_and_3d",
         "native_shapes": ("Ray2D/Triangle2D", "Ray3D/Triangle3D"),
         "notes": "2D ray/triangle uses Apple Metal/MPS prism candidate traversal; 3D uses Apple Metal/MPS triangle traversal.",
+    },
+    "ray_triangle_any_hit": {
+        "native_candidate_discovery": "shape_dependent",
+        "cpu_refinement": "hit_count_projection_to_boolean",
+        "native_only": "supported_for_2d_and_3d",
+        "native_shapes": ("Ray2D/Triangle2D", "Ray3D/Triangle3D"),
+        "notes": "Uses the Apple Metal/MPS ray-triangle hit-count traversal and projects hit_count > 0 to any_hit; this is backend-backed compatibility, not a specialized early-exit shader.",
     },
     "segment_intersection": {
         "native_candidate_discovery": "yes",
@@ -1279,6 +1288,23 @@ def ray_triangle_hit_count_apple_rt(
     )
 
 
+def ray_triangle_any_hit_apple_rt(
+    rays: tuple[_CanonicalRay2D | _CanonicalRay3D, ...],
+    triangles: tuple[_CanonicalTriangle2D | _CanonicalTriangle3D, ...],
+) -> tuple[dict[str, int], ...]:
+    rows = ray_triangle_hit_count_apple_rt(rays, triangles)
+    try:
+        return tuple(
+            {
+                "ray_id": int(row["ray_id"]),
+                "any_hit": 1 if int(row["hit_count"]) else 0,
+            }
+            for row in rows
+        )
+    finally:
+        rows.close()
+
+
 def fixed_radius_neighbors_2d_apple_rt(
     query_points: tuple[_CanonicalPoint2D, ...],
     search_points: tuple[_CanonicalPoint2D, ...],
@@ -1842,7 +1868,7 @@ def apple_rt_predicate_mode(predicate_name: str) -> str:
         return "native_metal_filter_cpu_aggregate"
     if predicate_name in {"fixed_radius_neighbors", "bounded_knn_rows", "knn_rows"}:
         return "native_mps_rt_2d_3d"
-    if predicate_name == "ray_triangle_hit_count":
+    if predicate_name in {"ray_triangle_any_hit", "ray_triangle_hit_count"}:
         return "native_mps_rt_2d_3d"
     if predicate_name in APPLE_RT_NATIVE_PREDICATES:
         return "native_mps_rt"
@@ -1904,6 +1930,10 @@ def run_apple_rt(
         isinstance(ray, _CanonicalRay2D) for ray in left_records
     ) and all(isinstance(triangle, _CanonicalTriangle2D) for triangle in right_records):
         return tuple(ray_triangle_hit_count_apple_rt(left_records, right_records))
+    if predicate_name == "ray_triangle_any_hit" and all(
+        isinstance(ray, (_CanonicalRay2D, _CanonicalRay3D)) for ray in left_records
+    ) and all(isinstance(triangle, (_CanonicalTriangle2D, _CanonicalTriangle3D)) for triangle in right_records):
+        return ray_triangle_any_hit_apple_rt(left_records, right_records)
     if predicate_name == "fixed_radius_neighbors" and all(
         isinstance(point, _CanonicalPoint2D) for point in left_records
     ) and all(isinstance(point, _CanonicalPoint2D) for point in right_records):
@@ -2043,7 +2073,8 @@ def run_apple_rt(
     if native_only:
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
-            "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, 2D segment_intersection, "
+            "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, "
+            "2D/3D ray_triangle_any_hit through hit-count projection, 2D segment_intersection, "
             "2D/3D point-neighborhood workloads, point-in-polygon positive hits, "
             "2D point-nearest-segment, 2D segment-polygon workloads, "
             "bounded 2D polygon-pair area/Jaccard workloads, 2D overlay compose, "

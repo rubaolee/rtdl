@@ -1827,6 +1827,11 @@ struct RayHitCountPipeline {
     std::once_flag   init;
 };
 
+struct RayAnyHitPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
 struct SegPolyPipeline {
     PipelineHolder* pipe = nullptr;
     std::once_flag   init;
@@ -1865,6 +1870,8 @@ static PipPipeline         g_pip;
 static OverlayPipeline     g_overlay;
 static RayHitCountPipeline  g_rayhit;
 static RayHitCount3DPipeline g_rayhit3d;
+static RayAnyHitPipeline    g_rayanyhit;
+static RayAnyHitPipeline    g_rayanyhit3d;
 static SegPolyPipeline     g_segpoly;
 static DbScanPipeline      g_dbscan;
 static PnsCuFunction      g_pns;
@@ -1893,6 +1900,7 @@ struct GpuLsiRecord  { uint32_t left_id, right_id; float ix, iy; };
 struct GpuPipRecord  { uint32_t point_id, polygon_id, contains; };
 struct GpuOverlayFlags { uint32_t requires_lsi, requires_pip; };
 struct GpuRayHitRecord { uint32_t ray_id, hit_count; };
+struct GpuRayAnyHitRecord { uint32_t ray_id, any_hit; };
 struct GpuSegPolyRecord { uint32_t segment_id, hit_count; };
 struct GpuPnsRecord     { uint32_t point_id, segment_id; float distance; };
 struct GpuFrnRecord     { uint32_t query_id, neighbor_id; float distance; };

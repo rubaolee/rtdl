@@ -177,6 +177,21 @@ def ray_triangle_hit_count_cpu(
     return tuple(results)
 
 
+def ray_triangle_any_hit_cpu(
+    rays: tuple[Ray2D | Ray3D, ...],
+    triangles: tuple[Triangle | Triangle3D, ...],
+) -> tuple[dict[str, int], ...]:
+    results = []
+    for ray in rays:
+        any_hit = 0
+        for triangle in triangles:
+            if _finite_ray_hits_triangle(ray, triangle):
+                any_hit = 1
+                break
+        results.append({"ray_id": ray.id, "any_hit": any_hit})
+    return tuple(results)
+
+
 def ray_triangle_closest_hit_cpu(
     rays: tuple[Ray2D | Ray3D, ...],
     triangles: tuple[Triangle | Triangle3D, ...],
@@ -196,6 +211,86 @@ def ray_triangle_closest_hit_cpu(
         if best_t is not None and best_triangle_id is not None:
             results.append({"ray_id": int(ray.id), "triangle_id": best_triangle_id, "t": best_t})
     return tuple(results)
+
+
+def _point_dimension(point: Point | Point3D) -> int:
+    return 3 if isinstance(point, Point3D) else 2
+
+
+def _triangle_dimension(triangle: Triangle | Triangle3D) -> int:
+    return 3 if isinstance(triangle, Triangle3D) else 2
+
+
+def _make_visibility_ray(
+    ray_id: int,
+    observer: Point | Point3D,
+    target: Point | Point3D,
+) -> Ray2D | Ray3D:
+    if _point_dimension(observer) != _point_dimension(target):
+        raise ValueError("visibility_rows requires observers and targets with the same dimensionality")
+    if isinstance(observer, Point3D):
+        dx = target.x - observer.x
+        dy = target.y - observer.y
+        dz = target.z - observer.z
+        if dx == 0.0 and dy == 0.0 and dz == 0.0:
+            raise ValueError("visibility_rows requires distinct observer and target points")
+        return Ray3D(id=ray_id, ox=observer.x, oy=observer.y, oz=observer.z, dx=dx, dy=dy, dz=dz, tmax=1.0)
+    dx = target.x - observer.x
+    dy = target.y - observer.y
+    if dx == 0.0 and dy == 0.0:
+        raise ValueError("visibility_rows requires distinct observer and target points")
+    return Ray2D(id=ray_id, ox=observer.x, oy=observer.y, dx=dx, dy=dy, tmax=1.0)
+
+
+def visibility_rows_cpu(
+    observers: tuple[Point | Point3D, ...],
+    targets: tuple[Point | Point3D, ...],
+    blockers: tuple[Triangle | Triangle3D, ...],
+) -> tuple[dict[str, int], ...]:
+    rays, ray_pairs = visibility_ray_pairs(observers, targets, blockers)
+    any_hit_by_ray = {
+        int(row["ray_id"]): int(row["any_hit"])
+        for row in ray_triangle_any_hit_cpu(rays, blockers)
+    }
+    return visibility_rows_from_any_hit(ray_pairs, any_hit_by_ray)
+
+
+def visibility_ray_pairs(
+    observers: tuple[Point | Point3D, ...],
+    targets: tuple[Point | Point3D, ...],
+    blockers: tuple[Triangle | Triangle3D, ...],
+) -> tuple[tuple[Ray2D | Ray3D, ...], tuple[tuple[int, int, int], ...]]:
+    if not observers or not targets:
+        return (), ()
+    point_dimension = _point_dimension(observers[0])
+    if any(_point_dimension(point) != point_dimension for point in (*observers, *targets)):
+        raise ValueError("visibility_rows requires all observers and targets to share one dimensionality")
+    if blockers and any(_triangle_dimension(triangle) != point_dimension for triangle in blockers):
+        raise ValueError("visibility_rows blocker triangles must match observer/target dimensionality")
+
+    rays = []
+    ray_pairs = []
+    ray_id = 0
+    for observer in observers:
+        for target in targets:
+            rays.append(_make_visibility_ray(ray_id, observer, target))
+            ray_pairs.append((ray_id, int(observer.id), int(target.id)))
+            ray_id += 1
+    return tuple(rays), tuple(ray_pairs)
+
+
+def visibility_rows_from_any_hit(
+    ray_pairs: tuple[tuple[int, int, int], ...],
+    any_hit_by_ray: dict[int, int],
+) -> tuple[dict[str, int], ...]:
+    return tuple(
+        {
+            "observer_id": observer_id,
+            "target_id": target_id,
+            "visible": 0 if any_hit_by_ray.get(ray_id, 0) else 1,
+        }
+        for ray_id, observer_id, target_id in ray_pairs
+    )
 
 
 def fixed_radius_neighbors_cpu(

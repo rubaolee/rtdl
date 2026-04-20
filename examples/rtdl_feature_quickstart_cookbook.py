@@ -81,6 +81,15 @@ def ray_tri_hitcount_kernel():
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
+def ray_tri_anyhit_kernel():
+    rays = rt.input("rays", rt.Rays, role="probe")
+    triangles = rt.input("triangles", rt.Triangles, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_any_hit(exact=False))
+    return rt.emit(hits, fields=["ray_id", "any_hit"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
 def point_nearest_segment_kernel():
     points = rt.input("points", rt.Points, role="probe")
     segments = rt.input("segments", rt.Segments, role="build")
@@ -173,6 +182,55 @@ def run_cookbook() -> dict[str, object]:
                         y2=-1.0,
                     ),
                 ),
+            ),
+        ),
+        _recipe(
+            "ray_tri_anyhit",
+            "rays plus triangles",
+            "one any-hit blocker row per ray",
+            _run_reference(
+                ray_tri_anyhit_kernel,
+                rays=(
+                    rt.Ray2D(id=1, ox=0.0, oy=0.0, dx=1.0, dy=0.0, tmax=10.0),
+                    rt.Ray2D(id=2, ox=0.0, oy=0.0, dx=0.0, dy=1.0, tmax=2.0),
+                ),
+                triangles=(
+                    rt.Triangle(
+                        id=10,
+                        x0=3.0,
+                        y0=-1.0,
+                        x1=4.0,
+                        y1=1.0,
+                        x2=5.0,
+                        y2=-1.0,
+                    ),
+                ),
+            ),
+        ),
+        _recipe(
+            "visibility_rows",
+            "observer points plus target points plus blocker triangles",
+            "line-of-sight rows with visible=1/0",
+            rt.visibility_rows_cpu(
+                (rt.Point(id=1, x=0.0, y=0.0),),
+                (rt.Point(id=2, x=10.0, y=0.0),),
+                (rt.Triangle(id=10, x0=5.0, y0=-1.0, x1=5.0, y1=1.0, x2=6.0, y2=0.0),),
+            ),
+        ),
+        _recipe(
+            "reduce_rows",
+            "emitted app rows",
+            "grouped summary rows",
+            rt.reduce_rows(
+                (
+                    {"pose_id": 100, "link_id": 1, "any_hit": 0},
+                    {"pose_id": 100, "link_id": 2, "any_hit": 1},
+                    {"pose_id": 200, "link_id": 1, "any_hit": 0},
+                ),
+                group_by="pose_id",
+                op="any",
+                value="any_hit",
+                output_field="pose_blocked",
             ),
         ),
         _recipe(

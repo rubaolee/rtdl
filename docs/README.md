@@ -22,22 +22,26 @@ Read these in order:
 11. [ITRE App Programming Model](rtdl/itre_app_model.md)
 12. [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 13. [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
-14. [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
-15. [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
-16. [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
-17. [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
-18. [v0.9.2 Internal Candidate Package](release_reports/v0_9_2/README.md)
-19. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-20. [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
-21. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
-22. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-23. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-24. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+14. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+15. [v0.9.5 Release Statement](release_reports/v0_9_5/release_statement.md)
+16. [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
+17. [v0.9.5 Audit Report](release_reports/v0_9_5/audit_report.md)
+18. [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
+19. [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
+20. [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
+21. [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
+22. [v0.9.2 Internal Candidate Package](release_reports/v0_9_2/README.md)
+23. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
+24. [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
+25. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
+26. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
+27. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
+28. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 If you need the previous graph release line, also read:
 
-25. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-26. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+29. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
+30. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
 
 That is the intended public reading path.
 
@@ -88,6 +92,10 @@ audited release claims.
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+- [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+- [v0.9.5 Release Statement](release_reports/v0_9_5/release_statement.md)
+- [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
+- [v0.9.5 Audit Report](release_reports/v0_9_5/audit_report.md)
 - [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
 - [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
 - [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
@@ -112,6 +120,9 @@ audited release claims.
 
 - [v0.9 Release Package](release_reports/v0_9/README.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+- [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+- [v0.9.5 Release Statement](release_reports/v0_9_5/release_statement.md)
+- [v0.9.5 Audit Report](release_reports/v0_9_5/audit_report.md)
 - [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
 - [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
 - [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
@@ -148,17 +159,21 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.9.4`
+- current released version is `v0.9.5`
 - current `main` carries the released bounded `v0.7.0` DB line, released
   `v0.8.0` app-building examples over existing RTDL features, released
   `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1` Apple RT
-  closest-hit slice, and the released `v0.9.4` Apple RT consolidation
+  closest-hit slice, the released `v0.9.4` Apple RT consolidation, and the
+  released `v0.9.5` any-hit / visibility-row / emitted-row reduction slice
 - the untagged `v0.9.2` candidate and `v0.9.3` native-coverage milestone are
   internal evidence lines absorbed into `v0.9.4`, not separate public releases
 - released `v0.9.4` carries Apple RT full-surface compatibility,
   prepared closest-hit reuse, masked Apple MPS RT traversal, expanded Apple
   MPS RT geometry/native-assisted slices, and Apple Metal compute DB/graph
   slices under the published v0.9.4 release boundary
+- released `v0.9.5` carries `ray_triangle_any_hit`, `visibility_rows`, and
+  `reduce_rows`; OptiX, Embree, and HIPRT have native early-exit any-hit, while
+  Vulkan and Apple RT remain compatibility any-hit paths
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -217,6 +232,9 @@ Keep these current facts in mind while reading:
   evidence lines and now carries full-surface `run_apple_rt` dispatch with
   explicit native or native-assisted Apple modes for all 18 current predicates;
   this still does not claim broad Apple backend maturity or global Apple speedup
+- the released `v0.9.5` line adds bounded any-hit, visibility-row, and
+  emitted-row reduction support without claiming native early-exit for Vulkan
+  or Apple RT, and without claiming native backend acceleration for `reduce_rows`
 - the released `v0.2.0` surface remains a stable historical
   workload/documentation baseline
 - the released `v0.3.0` line is an application-style demo layer on top of that

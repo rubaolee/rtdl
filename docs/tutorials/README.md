@@ -29,6 +29,9 @@ RT stack.
 | 9 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
 | 10 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the released v0.9 HIPRT surface |
 | 11 | [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py) | See the released v0.9.1 Apple Metal/MPS closest-hit slice and the released v0.9.4 Apple RT consolidation |
+| 12 | [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py) | See the released v0.9.5 bounded any-hit row primitive |
+| 13 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | See observer-target line-of-sight rows built on any-hit |
+| 14 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | See deterministic Python standard-library reductions over emitted RTDL rows |
 
 ---
 
@@ -66,6 +69,10 @@ Learn the released workload families, what they emit, and when to choose each.
   - `conjunctive_scan`
   - `grouped_count`
   - `grouped_sum`
+- v0.9.5 standard helpers:
+  - `ray_triangle_any_hit`
+  - `visibility_rows`
+  - `reduce_rows`
 
 ### Track 3: Application demos
 
@@ -76,6 +83,9 @@ application.
 - [v0.8 App Building](v0_8_app_building.md)
 - [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
 - [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py)
+- [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py)
+- [Visibility Rows Example](../../examples/rtdl_visibility_rows.py)
+- [Reduce Rows Example](../../examples/rtdl_reduce_rows.py)
 
 ---
 
@@ -91,6 +101,7 @@ Once you finish the ladder, the next useful destinations are:
 - [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
 - [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
 - [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py)
+- [v0.9.5 Release Package](../release_reports/v0_9_5/README.md)
 
 Use the tutorials first. Use the reference pages when you want exact contracts,
 edge cases, and backend/status detail.

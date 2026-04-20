@@ -40,6 +40,7 @@ enum class QueryKind {
   kPip,
   kOverlay,
   kRayHitCount,
+  kRayAnyHit,
   kRayClosestHit,
   kSegmentPolygonHitCount,
   kGraphBfsExpand,
@@ -129,6 +130,16 @@ struct RayHitCountState3D {
   const RayQuery3D* ray;
   uint32_t* hit_count;
   std::unordered_set<uint32_t>* seen_triangle_ids;
+};
+
+struct RayAnyHitState {
+  const RayQuery2D* ray;
+  uint32_t* any_hit;
+};
+
+struct RayAnyHitState3D {
+  const RayQuery3D* ray;
+  uint32_t* any_hit;
 };
 
 struct RayClosestHitState3D {
@@ -356,6 +367,38 @@ void set_ray_3d(RTCRayHit* rayhit, const Vec3& origin, const Vec3& direction, fl
   for (unsigned i = 0; i < RTC_MAX_INSTANCE_LEVEL_COUNT; ++i) {
     rayhit->hit.instID[i] = RTC_INVALID_GEOMETRY_ID;
   }
+}
+
+void set_ray_occluded(RTCRay* ray, const Vec2& origin, const Vec2& direction, float tmax) {
+  std::memset(ray, 0, sizeof(RTCRay));
+  ray->org_x = origin.x;
+  ray->org_y = origin.y;
+  ray->org_z = 0.0f;
+  ray->tnear = 0.0f;
+  ray->dir_x = direction.x;
+  ray->dir_y = direction.y;
+  ray->dir_z = 0.0f;
+  ray->time = 0.0f;
+  ray->tfar = tmax;
+  ray->mask = 0xffffffffu;
+  ray->id = 0;
+  ray->flags = 0;
+}
+
+void set_ray_occluded_3d(RTCRay* ray, const Vec3& origin, const Vec3& direction, float tmax) {
+  std::memset(ray, 0, sizeof(RTCRay));
+  ray->org_x = origin.x;
+  ray->org_y = origin.y;
+  ray->org_z = origin.z;
+  ray->tnear = 0.0f;
+  ray->dir_x = direction.x;
+  ray->dir_y = direction.y;
+  ray->dir_z = direction.z;
+  ray->time = 0.0f;
+  ray->tfar = tmax;
+  ray->mask = 0xffffffffu;
+  ray->id = 0;
+  ray->flags = 0;
 }
 
 bool db_scalar_is_numeric(const RtdlDbScalar& value) {
@@ -778,6 +821,20 @@ void triangle_intersect(const RTCIntersectFunctionNArguments* args) {
   }
 }
 
+void triangle_occluded(const RTCOccludedFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kRayAnyHit || g_query_state == nullptr) {
+    return;
+  }
+  auto* data = static_cast<TriangleSceneData*>(args->geometryUserPtr);
+  auto* state = static_cast<RayAnyHitState*>(g_query_state);
+  const Triangle2D& triangle = (*data->triangles)[args->primID];
+  if (finite_ray_hits_triangle(*state->ray, triangle)) {
+    *state->any_hit = 1u;
+    auto* ray = reinterpret_cast<RTCRay*>(args->ray);
+    ray->tfar = -std::numeric_limits<float>::infinity();
+  }
+}
+
 void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
   if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
     return;
@@ -848,6 +905,20 @@ void triangle_intersect_3d(const RTCIntersectFunctionNArguments* args) {
       *state->best_t = hit_t;
       *state->best_triangle_id = triangle.id;
     }
+  }
+}
+
+void triangle_occluded_3d(const RTCOccludedFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_kind != QueryKind::kRayAnyHit || g_query_state == nullptr) {
+    return;
+  }
+  auto* data = static_cast<TriangleSceneData3D*>(args->geometryUserPtr);
+  auto* state = static_cast<RayAnyHitState3D*>(g_query_state);
+  const Triangle3D& triangle = (*data->triangles)[args->primID];
+  if (finite_ray_hits_triangle_3d(*state->ray, triangle)) {
+    *state->any_hit = 1u;
+    auto* ray = reinterpret_cast<RTCRay*>(args->ray);
+    ray->tfar = -std::numeric_limits<float>::infinity();
   }
 }
 

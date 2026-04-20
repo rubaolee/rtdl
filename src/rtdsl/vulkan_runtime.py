@@ -217,6 +217,16 @@ class VulkanRowView:
             pass
 
 
+def _project_ray_hitcount_view_to_anyhit(rows: VulkanRowView) -> tuple[dict[str, int], ...]:
+    return tuple(
+        {
+            "ray_id": int(rows.rows_ptr[index].ray_id),
+            "any_hit": 1 if int(rows.rows_ptr[index].hit_count) else 0,
+        }
+        for index in range(rows.row_count)
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Prepared-kernel API
 # ─────────────────────────────────────────────────────────────────────────────
@@ -228,6 +238,7 @@ class PreparedVulkanKernel:
         "segment_intersection",
         "point_in_polygon",
         "overlay_compose",
+        "ray_triangle_any_hit",
         "ray_triangle_hit_count",
         "segment_polygon_hitcount",
         "segment_polygon_anyhit_rows",
@@ -286,6 +297,11 @@ class PreparedVulkanExecution:
 
     def run_raw(self) -> VulkanRowView:
         pred = self.compiled.refine_op.predicate.name
+        if pred == "ray_triangle_any_hit":
+            raise ValueError(
+                "Vulkan raw mode is not supported for ray_triangle_any_hit "
+                "while it is projected from the backend hit-count row view"
+            )
         dispatch = {
             "segment_intersection":   _call_lsi_vulkan_packed,
             "point_in_polygon":       _call_pip_vulkan_packed,
@@ -306,6 +322,13 @@ class PreparedVulkanExecution:
         return fn(self.compiled, self.packed_inputs, self.library)
 
     def run(self) -> tuple:
+        pred = self.compiled.refine_op.predicate.name
+        if pred == "ray_triangle_any_hit":
+            rows = _call_ray_hitcount_vulkan_packed(self.compiled, self.packed_inputs, self.library)
+            try:
+                return _project_ray_hitcount_view_to_anyhit(rows)
+            finally:
+                rows.close()
         rows = self.run_raw()
         try:
             return rows.to_dict_rows()

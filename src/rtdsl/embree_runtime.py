@@ -250,6 +250,13 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     ]
 
 
+class _RtdlRayAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("any_hit", ctypes.c_uint32),
+    ]
+
+
 class _RtdlRayClosestHitRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
@@ -439,6 +446,16 @@ class EmbreeRowView:
             pass
 
 
+def _project_ray_hitcount_view_to_anyhit(rows: EmbreeRowView) -> tuple[dict[str, int], ...]:
+    return tuple(
+        {
+            "ray_id": int(rows.rows_ptr[index].ray_id),
+            "any_hit": 1 if int(rows.rows_ptr[index].hit_count) else 0,
+        }
+        for index in range(rows.row_count)
+    )
+
+
 class PreparedEmbreeKernel:
     def __init__(self, kernel_fn_or_compiled):
         compiled = _resolve_kernel(kernel_fn_or_compiled)
@@ -451,6 +468,7 @@ class PreparedEmbreeKernel:
             "segment_intersection",
             "point_in_polygon",
             "overlay_compose",
+            "ray_triangle_any_hit",
             "ray_triangle_hit_count",
             "ray_triangle_closest_hit",
             "segment_polygon_hitcount",
@@ -503,6 +521,14 @@ class PreparedEmbreeExecution:
 
     def run_raw(self) -> EmbreeRowView:
         predicate_name = self.compiled.refine_op.predicate.name
+        if predicate_name == "ray_triangle_any_hit":
+            native = _require_optional_embree_symbol(self.library, "rtdl_embree_run_ray_anyhit")
+            if native is not None:
+                return _call_ray_anyhit_embree_packed(self.compiled, self.packed_inputs, self.library)
+            raise ValueError(
+                "Embree raw mode requires a backend library exporting "
+                "rtdl_embree_run_ray_anyhit; rebuild with 'make build-embree'."
+            )
         if predicate_name == "segment_intersection":
             return _call_lsi_embree_packed(self.compiled, self.packed_inputs, self.library)
         if predicate_name == "point_in_polygon":
@@ -532,6 +558,20 @@ class PreparedEmbreeExecution:
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
 
     def run(self) -> tuple[dict[str, object], ...]:
+        predicate_name = self.compiled.refine_op.predicate.name
+        if predicate_name == "ray_triangle_any_hit":
+            if _require_optional_embree_symbol(self.library, "rtdl_embree_run_ray_anyhit") is not None:
+                rows = _call_ray_anyhit_embree_packed(self.compiled, self.packed_inputs, self.library)
+            else:
+                rows = _call_ray_hitcount_embree_packed(self.compiled, self.packed_inputs, self.library)
+                try:
+                    return _project_ray_hitcount_view_to_anyhit(rows)
+                finally:
+                    rows.close()
+            try:
+                return rows.to_dict_rows()
+            finally:
+                rows.close()
         rows = self.run_raw()
         try:
             return rows.to_dict_rows()
@@ -1895,6 +1935,55 @@ def _call_ray_hitcount_embree_packed(compiled: CompiledKernel, packed_inputs, li
     )
 
 
+def _call_ray_anyhit_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
+    rays_name = compiled.candidates.left.name
+    triangles_name = compiled.candidates.right.name
+    rays = packed_inputs[rays_name]
+    triangles = packed_inputs[triangles_name]
+
+    rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    if rays.dimension != triangles.dimension:
+        raise ValueError("Embree ray_triangle_any_hit requires rays and triangles to have the same dimension")
+    if rays.dimension == 3:
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_anyhit_3d")
+        if call is None:
+            raise RuntimeError("loaded Embree backend library does not export rtdl_embree_run_ray_anyhit_3d; rebuild the Embree backend from current main")
+        status = call(
+            rays.records,
+            rays.count,
+            triangles.records,
+            triangles.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        call = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_anyhit")
+        if call is None:
+            raise RuntimeError("loaded Embree backend library does not export rtdl_embree_run_ray_anyhit; rebuild the Embree backend from current main")
+        status = call(
+            rays.records,
+            rays.count,
+            triangles.records,
+            triangles.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    _check_status(status, error)
+    return EmbreeRowView(
+        library=library,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlRayAnyHitRow,
+        field_names=("ray_id", "any_hit"),
+    )
+
+
 def _call_ray_closest_hit_embree_packed(compiled: CompiledKernel, packed_inputs, library) -> EmbreeRowView:
     rays_name = compiled.candidates.left.name
     triangles_name = compiled.candidates.right.name
@@ -2769,6 +2858,34 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_ray3d.restype = ctypes.c_int
+
+    optional_anyhit = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_anyhit")
+    if optional_anyhit is not None:
+        optional_anyhit.argtypes = [
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_anyhit.restype = ctypes.c_int
+
+    optional_anyhit3d = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_anyhit_3d")
+    if optional_anyhit3d is not None:
+        optional_anyhit3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_anyhit3d.restype = ctypes.c_int
 
     optional_closest_3d = _require_optional_embree_symbol(library, "rtdl_embree_run_ray_closest_hit_3d")
     if optional_closest_3d is not None:

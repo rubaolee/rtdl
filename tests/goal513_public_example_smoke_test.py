@@ -33,6 +33,9 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
 
         cases = (
             ("examples/rtdl_segment_polygon_hitcount.py", "--backend", "cpu_python_reference", "--copies", "16"),
+            ("examples/rtdl_ray_triangle_any_hit.py",),
+            ("examples/rtdl_visibility_rows.py",),
+            ("examples/rtdl_reduce_rows.py",),
             ("examples/rtdl_graph_bfs.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_graph_triangle_count.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_db_conjunctive_scan.py", "--backend", "cpu_python_reference"),
@@ -51,7 +54,7 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
         for args in cases:
             with self.subTest(example=args[0]):
                 payload = run_json_example(*args)
-                self.assertTrue("app" in payload or "rows" in payload)
+                self.assertTrue("app" in payload or "rows" in payload or "workload" in payload)
 
     def test_front_page_v08_examples_report_oracle_or_boundary(self) -> None:
         hausdorff = run_json_example("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
@@ -76,6 +79,9 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
         self.assertGreaterEqual(payload["feature_count"], 19)
         recipe_names = {recipe["feature"] for recipe in payload["recipes"]}  # type: ignore[index]
         self.assertIn("hausdorff_distance_app", recipe_names)
+        self.assertIn("ray_tri_anyhit", recipe_names)
+        self.assertIn("visibility_rows", recipe_names)
+        self.assertIn("reduce_rows", recipe_names)
         self.assertIn("ann_candidate_app", recipe_names)
         self.assertIn("outlier_detection_app", recipe_names)
         self.assertIn("dbscan_clustering_app", recipe_names)

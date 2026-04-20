@@ -22,6 +22,9 @@ If you are new to RTDL, use these files first:
 | app-level outlier detection | `rtdl_outlier_detection_app.py` | points become fixed-radius neighbor rows and density-threshold outlier labels |
 | app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows and density-cluster labels |
 | app-level robot collision screening | `rtdl_robot_collision_screening_app.py` | link edge rays become pose collision flags |
+| bounded any-hit ray queries | `rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `any_hit` rows |
+| visibility / line-of-sight rows | `rtdl_visibility_rows.py` | observers, targets, and blockers become visibility rows |
+| emitted-row reductions | `rtdl_reduce_rows.py` | emitted rows become grouped app summary rows |
 | app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows |
 | graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices |
 | graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows |
@@ -41,6 +44,9 @@ If you are new to RTDL, use these files first:
 - `rtdl_outlier_detection_app.py`
 - `rtdl_dbscan_clustering_app.py`
 - `rtdl_robot_collision_screening_app.py`
+- `rtdl_ray_triangle_any_hit.py`
+- `rtdl_visibility_rows.py`
+- `rtdl_reduce_rows.py`
 - `rtdl_barnes_hut_force_app.py`
 - `rtdl_graph_bfs.py`
 - `rtdl_graph_triangle_count.py`
@@ -157,7 +163,7 @@ Current Apple RT boundary:
 - build it on Apple Silicon macOS with `make build-apple-rt`
 - this is the v0.9.1 released native slice: `run_apple_rt` uses Apple Metal/MPS
   RT for `ray_triangle_closest_hit` over 3D rays and 3D triangles
-- current v0.9.4 target work makes all 18 current predicates callable through
+- released v0.9.4 work makes all 18 current predicates callable through
   `run_apple_rt` with explicit native or native-assisted Apple modes
 - native Apple execution currently uses MPS RT for supported geometry and
   nearest-neighbor slices, plus Metal compute for bounded DB and graph slices
@@ -167,3 +173,13 @@ Current Apple RT boundary:
   current Apple ray-intersection slices
 - this is not a broad measured Apple speedup claim; Embree remains the mature
   performance baseline
+
+Current v0.9.5 example boundary:
+
+- `rtdl_ray_triangle_any_hit.py` shows bounded yes/no blocker rows. Native
+  early-exit is available on OptiX, Embree, and HIPRT; Vulkan and Apple RT use
+  compatibility projection when exposed for this feature.
+- `rtdl_visibility_rows.py` shows observer-target line-of-sight rows built on
+  any-hit.
+- `rtdl_reduce_rows.py` shows deterministic Python standard-library reductions
+  over already-emitted RTDL rows; it is not a native backend reduction.

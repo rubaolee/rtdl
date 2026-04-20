@@ -13,7 +13,7 @@ connects the kernel result to the rest of an application.
 
 | Category | Meaning | Examples |
 | --- | --- | --- |
-| Can do and intended | Released or directly aligned with the RTDL design | spatial joins, nearest-neighbor rows, graph BFS/triangle counting, bounded DB-style scans/groups |
+| Can do and intended | Released or directly aligned with the RTDL design | spatial joins, nearest-neighbor rows, graph BFS/triangle counting, bounded DB-style scans/groups, any-hit visibility rows, emitted-row reductions |
 | Can do but not intended as RTDL's role | Possible when RTDL is used as a kernel inside a larger Python app, but RTDL should not become the whole system | rendering demos, robotics app orchestration, database-style workflows, full simulations |
 | Cannot do yet | Missing language types, predicates, reductions, or backend lowering | full SQL DBMS behavior, general rendering, high-dimensional ANN/PQ, continuous swept-volume collision detection, general HIPRT or Apple RT backend coverage |
 
@@ -35,6 +35,7 @@ RTDL can express and run released geometry workloads such as:
 - polygon-set Jaccard under the documented bounded contract
 - point-nearest-segment rows
 - ray/triangle hit-count style kernels
+- ray/triangle any-hit blocker tests
 
 The intended use is not to replace a GIS system. The intended use is to make
 the ray-tracing-style candidate/refine kernel easier to write and run across
@@ -52,6 +53,10 @@ These are suitable for applications that need neighbor rows, ranked neighbor
 rows, or radius-bounded candidate rows. Python can then reduce, aggregate, or
 post-process those rows into application answers such as assignment decisions,
 Hausdorff-distance summaries, or local neighborhood metrics.
+
+Released `v0.9.5` adds `rt.reduce_rows(...)` for common emitted-row reductions:
+`any`, `count`, `sum`, `min`, and `max`. This is an intended standard-library
+helper for app ergonomics, not a native backend reduction or performance claim.
 
 The current v0.8 ANN candidate app is inside this nearest-neighbor boundary:
 Python selects a bounded candidate subset, RTDL ranks that subset with
@@ -115,6 +120,12 @@ The released `v0.9.1` Apple RT slice also fits this direction. It began with
 Released v0.9.4 work expands Apple execution to the full 18-predicate
 surface through explicit native or native-assisted modes: MPS RT for supported
 geometry/nearest-neighbor slices and Metal compute for bounded DB/graph slices.
+
+Released v0.9.5 work adds bounded any-hit and line-of-sight helpers. OptiX,
+Embree, and HIPRT have native early-exit any-hit paths. Vulkan and Apple RT can
+run compatibility dispatch by projecting existing hit-count traversal to a
+boolean `any_hit`, but RTDL does not claim native early-exit speedup for those
+two engines yet.
 
 ## What RTDL Can Do But Is Not Intended To Become
 
@@ -250,6 +261,18 @@ four-backend RTXRMQ support.
 The released `v0.9.1` Apple RT slice adds one native closest-hit path through
 Apple Metal/MPS, and released v0.9.4 work adds prepared closest-hit reuse.
 That does not change the remaining OptiX, Vulkan, and HIPRT closest-hit gaps.
+
+### Any-Hit / Visibility Coverage
+
+The released `v0.9.5` line includes bounded `ray_triangle_any_hit` and
+`visibility_rows` support. The language shape is intentionally small: finite
+rays, bounded triangle blockers, stable row output, and no continuous
+visibility field or rendering semantics.
+
+Current native early-exit coverage is OptiX, Embree, and HIPRT. Vulkan and
+Apple RT support this feature through compatibility dispatch over their
+existing hit-count paths. That is correct backend execution, but it is not
+native early-exit traversal and should not be used as a performance claim.
 
 ### HIPRT Backend Coverage
 

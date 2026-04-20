@@ -243,6 +243,74 @@ Required option:
 
 - `exact=False`
 
+Expected output fields:
+
+- `ray_id`
+- `hit_count`
+
+### `rt.ray_triangle_any_hit(exact=False)`
+
+Meaning:
+
+- finite 2D/3D ray vs triangle yes/no blocker testing under the current
+  float-based implementation
+- traversal may stop after the first accepted hit
+- OptiX, Embree, and HIPRT implement this as native early-exit any-hit when
+  the loaded backend libraries export `rtdl_optix_run_ray_anyhit`,
+  `rtdl_embree_run_ray_anyhit`, or `rtdl_hiprt_run_ray_anyhit`
+- other backend compatibility paths may implement this by running
+  `ray_triangle_hit_count` and projecting `hit_count > 0`; that is backend
+  execution, but not a native early-exit performance claim for those engines
+
+Required option:
+
+- `exact=False`
+
+Expected output fields:
+
+- `ray_id`
+- `any_hit`
+
+Use `ray_triangle_hit_count` when the number of hits matters, and use
+`ray_triangle_closest_hit` when the nearest blocker id or distance matters.
+
+### `rt.reduce_rows(rows, group_by=(), op=..., value=None, output_field=None)`
+
+Meaning:
+
+- reduce already-emitted RTDL rows into deterministic grouped summary rows
+- Python standard-library helper, not a kernel primitive and not a native RT
+  backend reduction
+- useful after `rt.emit(...)`, `rt.visibility_rows(...)`, nearest-neighbor row
+  workloads, and app-level candidate-generation helpers
+
+Supported operations:
+
+- `any`: requires `value`; emits `1` if any grouped value is truthy, otherwise `0`
+- `count`: does not accept `value`; counts rows per group
+- `sum`: requires `value`; sums grouped values
+- `min`: requires `value`; returns the grouped minimum
+- `max`: requires `value`; returns the grouped maximum
+
+Example:
+
+```python
+pose_flags = rt.reduce_rows(
+    edge_hit_rows,
+    group_by="pose_id",
+    op="any",
+    value="any_hit",
+    output_field="pose_blocked",
+)
+```
+
+Boundary:
+
+- `reduce_rows` runs in Python over materialized rows.
+- Do not describe it as OptiX, Embree, Vulkan, HIPRT, or Apple RT acceleration.
+- Native reductions are future work only if profiling shows Python reduction
+  dominates end-to-end app runtime.
+
 ### `rt.segment_polygon_hitcount(exact=False)`
 
 Meaning:

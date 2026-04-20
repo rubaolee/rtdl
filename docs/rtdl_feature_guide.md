@@ -25,11 +25,12 @@ performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v0.9.4`: the bounded `v0.7.0` DB package, the
+The current released state is `v0.9.5`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
-the released `v0.9.1` Apple RT closest-hit slice, and the released `v0.9.4`
-Apple RT consolidation.
+the released `v0.9.1` Apple RT closest-hit slice, the released `v0.9.4`
+Apple RT consolidation, and the released `v0.9.5` any-hit / visibility-row /
+emitted-row reduction layer.
 
 The released `v0.9.1` line adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
@@ -62,6 +63,13 @@ Today it includes:
 - Apple Metal compute/native-assisted coverage for bounded DB and graph slices
 - Apple RT prepared/masked performance improvements for the current ray
   intersection slices after Goals596-598
+- bounded `ray_triangle_any_hit` rows, with native early-exit implementations
+  on OptiX, Embree, and HIPRT and compatibility projection on Vulkan and Apple
+  RT
+- `visibility_rows_cpu` and `visibility_rows` helpers that turn
+  observer-target pairs into finite any-hit rays and emit line-of-sight rows
+- `reduce_rows` as a deterministic Python standard-library helper for
+  reducing emitted RTDL rows by `any`, `count`, `sum`, `min`, or `max`
 
 Backend maturity note: Embree is currently the only backend RTDL should call
 optimized or mature in public performance-facing claims. OptiX, Vulkan, HIPRT,
@@ -102,6 +110,9 @@ Current release layers:
 - `v0.9.4`: full-surface Apple RT dispatch with
   native/native-assisted geometry, nearest-neighbor, DB, and graph slices,
   absorbing the internal v0.9.2/v0.9.3 evidence lines
+- `v0.9.5`: bounded any-hit / visibility-row / emitted-row reduction surface;
+  native any-hit early-exit is implemented for OptiX, Embree, and HIPRT, while
+  Vulkan and Apple RT remain compatibility paths for this feature
 
 Plus:
 
@@ -137,6 +148,10 @@ Current user-programming note:
   refinement/aggregation/materialization where needed
 - RTDL provides the query core there, while Python handles application logic and
   output
+- the released `v0.9.5` line adds reusable app-building pieces:
+  `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`; `reduce_rows`
+  improves app ergonomics but is not a backend-native reduction or speedup
+  claim
 
 Current app-building performance note:
 
@@ -230,6 +245,10 @@ The current repo can:
   using `native_only=True` when an app must reject unsupported shape/backend
   combinations; current Apple modes include MPS RT geometry/nearest-neighbor
   slices and Metal compute/native-assisted DB/graph slices
+- run the released v0.9.5 bounded any-hit and visibility helpers; OptiX,
+  Embree, and HIPRT use native early-exit traversal, while Vulkan and Apple RT
+  expose compatibility dispatch without a native early-exit performance claim
+- reduce already-emitted RTDL rows in Python with `rt.reduce_rows(...)`
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host
 - close bounded four-system checks across PostGIS, native oracle, Embree, and OptiX on accepted packages

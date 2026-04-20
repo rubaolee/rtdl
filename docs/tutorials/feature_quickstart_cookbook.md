@@ -83,6 +83,49 @@ claims.
   - `examples/rtdl_feature_quickstart_cookbook.py`
   - [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
 
+### `ray_tri_anyhit`
+
+- Input: rays and triangles.
+- Output: one `any_hit` boolean row per ray.
+- Kernel predicate: `rt.ray_triangle_any_hit(exact=False)`.
+- Best fit: blocker, shadow, line-of-sight, and collision yes/no queries where
+  counting every hit is unnecessary.
+- Learn from:
+  - [Ray/Triangle Any Hit feature home](../features/ray_tri_anyhit/README.md)
+  - `examples/rtdl_ray_triangle_any_hit.py`
+
+### `visibility_rows`
+
+- Input: observer points, target points, and blocker triangles.
+- Output: `{observer_id, target_id, visible}` rows.
+- Standard-library helpers: `rt.visibility_rows_cpu(observers, targets, blockers)`
+  for the CPU oracle, or `rt.visibility_rows(..., backend="embree" | "optix" |
+  "vulkan" | "hiprt" | "apple_rt")` for backend dispatch.
+- Boundary: OptiX, Embree, and HIPRT use native any-hit when available; Vulkan
+  and Apple RT currently use compatibility dispatch and should not be described
+  as native early-exit speedup paths.
+- Learn from:
+  - [Visibility Rows feature home](../features/visibility_rows/README.md)
+  - `examples/rtdl_visibility_rows.py`
+
+### `reduce_rows`
+
+- Input: rows already emitted by RTDL kernels or standard-library helpers.
+- Output: deterministic grouped app summary rows.
+- Standard-library helper: `rt.reduce_rows(rows, group_by=..., op=..., value=...)`.
+- Supported operations: `any`, `count`, `sum`, `min`, and `max`.
+- Boundary: this is a Python helper over emitted rows, not a native RT backend
+  reduction or speedup claim.
+- Run:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
+```
+
+- Learn from:
+  - [Reduce Rows feature home](../features/reduce_rows/README.md)
+  - `examples/rtdl_reduce_rows.py`
+
 ### `robot_collision_screening_app`
 
 - Input: a small discrete pose batch represented as robot link edge rays plus obstacle triangles.

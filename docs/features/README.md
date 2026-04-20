@@ -22,6 +22,9 @@ Use these feature homes when you want to answer practical questions quickly:
 | segment/polygon candidate search | [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md) |
 | segment/polygon row materialization | [Segment/Polygon Any-Hit Rows](segment_polygon_anyhit_rows/README.md) |
 | bounded overlap/Jaccard cases | [Polygon-Pair Overlap Area Rows](polygon_pair_overlap_area_rows/README.md) and [Polygon-Set Jaccard](polygon_set_jaccard/README.md) |
+| bounded ray yes/no blocker tests | [Ray/Triangle Any Hit](ray_tri_anyhit/README.md) |
+| observer-target line-of-sight rows | [Visibility Rows](visibility_rows/README.md) |
+| emitted-row app reductions | [Reduce Rows](reduce_rows/README.md) |
 | bounded DB-style filtering and aggregation | [Database Workloads](db_workloads/README.md) |
 
 Across these features, the intended RTDL benefit is the same: write the
@@ -41,6 +44,9 @@ Current feature homes:
 - [PIP: Point In Polygon](pip/README.md)
 - [Overlay](overlay/README.md)
 - [Ray/Triangle Hit Count](ray_tri_hitcount/README.md)
+- [Ray/Triangle Any Hit](ray_tri_anyhit/README.md) (released in `v0.9.5`)
+- [Visibility Rows](visibility_rows/README.md) (released in `v0.9.5`)
+- [Reduce Rows](reduce_rows/README.md) (released in `v0.9.5`)
 - [Point/Nearest Segment](point_nearest_segment/README.md)
 - [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md)
 - [Segment/Polygon Any-Hit Rows](segment_polygon_anyhit_rows/README.md)

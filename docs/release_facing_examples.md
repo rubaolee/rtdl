@@ -17,6 +17,8 @@ It currently covers:
 - the released `v0.9.4` Apple RT consolidation, clearly marked as bounded
   native/native-assisted Apple execution rather than broad Apple speedup
   evidence
+- the released `v0.9.5` any-hit, visibility-row, and emitted-row reduction
+  examples, with native early-exit limited to OptiX, Embree, and HIPRT
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -48,6 +50,9 @@ If you want a guided learning order instead of a flat example list, start with:
 | App integration | `examples/rtdl_v0_7_db_app_demo.py` | Python app stays thin around the RTDL query core |
 | HIPRT example | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through `run_hiprt` / `prepare_hiprt` |
 | Apple RT example | `examples/rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through `run_apple_rt` |
+| Bounded any-hit blocker query | `examples/rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `{ray_id, any_hit}` rows |
+| Visibility / line-of-sight rows | `examples/rtdl_visibility_rows.py` | observers, targets, and blockers become `{observer_id, target_id, visible}` rows |
+| Emitted-row app reductions | `examples/rtdl_reduce_rows.py` | existing RTDL rows become deterministic grouped app summaries |
 
 This is the practical burden reduction: you choose the workload shape and
 backend flag; RTDL keeps traversal/refinement/result plumbing consistent.
@@ -104,6 +109,28 @@ PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
 Read the companion tutorial:
 
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+
+## v0.9.5 Any-Hit, Visibility, And Row Reduction
+
+Run the portable examples:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_ray_triangle_any_hit.py
+PYTHONPATH=src:. python examples/rtdl_visibility_rows.py
+PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
+```
+
+Current v0.9.5 boundary:
+
+- `ray_triangle_any_hit` is a bounded yes/no ray blocker primitive.
+- OptiX, Embree, and HIPRT have native early-exit any-hit implementations.
+- Vulkan and Apple RT may execute compatibility dispatch by projecting existing
+  hit-count traversal to `any_hit`; do not describe those paths as native
+  early-exit speedups.
+- `visibility_rows` is a standard-library line-of-sight helper built on
+  finite any-hit rays.
+- `reduce_rows` is a deterministic Python helper over emitted rows, not a
+  native backend reduction.
 
 ## v0.8 App-Building Examples
 

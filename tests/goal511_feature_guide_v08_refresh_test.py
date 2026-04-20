@@ -13,6 +13,7 @@ class Goal511FeatureGuideV08RefreshTest(unittest.TestCase):
 
         self.assertIn("released `v0.8.0` app-building layer", text)
         self.assertIn("released `v0.9.4` Apple RT line", text)
+        self.assertIn("released `v0.9.5` any-hit", text)
         self.assertIn("rtdl_hausdorff_distance_app.py", text)
         self.assertIn("rtdl_ann_candidate_app.py", text)
         self.assertIn("rtdl_outlier_detection_app.py", text)

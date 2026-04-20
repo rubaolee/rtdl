@@ -118,7 +118,7 @@ export LD_LIBRARY_PATH=/path/to/hiprtSdk/hiprt/linux64:${LD_LIBRARY_PATH:-}
 ```
 
 On Apple Silicon macOS, build the Apple RT backend before using the
-Apple RT closest-hit example or current v0.9.4 Apple RT native-slice tests:
+Apple RT closest-hit example or current Apple RT native/native-assisted tests:
 
 ```bash
 make build-apple-rt
@@ -176,6 +176,14 @@ def my_kernel():
 - `traverse` finds candidate pairs quickly with a BVH
 - `refine` applies the exact predicate
 - `emit` selects which fields appear in each output row
+
+For yes/no ray queries in the released `v0.9.5` line, use the same shape with
+`rt.ray_triangle_any_hit(exact=False)` and emit `["ray_id", "any_hit"]`.
+For line-of-sight applications, `rt.visibility_rows_cpu(...)` turns observers,
+targets, and blocker triangles into `{observer_id, target_id, visible}` rows.
+When the app needs a summary after emission, `rt.reduce_rows(...)` can reduce
+rows by `any`, `count`, `sum`, `min`, or `max`; it is a Python helper, not a
+native RT backend reduction.
 
 Then run it:
 

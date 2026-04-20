@@ -16,6 +16,7 @@ from .api import point_nearest_segment
 from .api import point_in_polygon
 from .api import polygon_pair_overlap_area_rows
 from .api import polygon_set_jaccard
+from .api import ray_triangle_any_hit
 from .api import ray_triangle_hit_count
 from .api import ray_triangle_closest_hit
 from .api import refine
@@ -94,6 +95,7 @@ from .apple_rt_runtime import point_nearest_segment_apple_rt
 from .apple_rt_runtime import polygon_pair_overlap_area_rows_apple_rt
 from .apple_rt_runtime import polygon_set_jaccard_apple_rt
 from .apple_rt_runtime import prepare_apple_rt_ray_triangle_closest_hit
+from .apple_rt_runtime import ray_triangle_any_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_hit_count_apple_rt
 from .apple_rt_runtime import run_apple_rt
@@ -124,6 +126,7 @@ from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import run_optix
+from .reduction_runtime import reduce_rows
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
 from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
 from .hiprt_runtime import bfs_expand_hiprt
@@ -147,6 +150,7 @@ from .hiprt_runtime import PreparedHiprtGraphCSR
 from .hiprt_runtime import PreparedHiprtGraphKernel
 from .hiprt_runtime import PreparedHiprtKernel
 from .hiprt_runtime import PreparedHiprtRayTriangleHitCount3D
+from .hiprt_runtime import ray_triangle_any_hit_hiprt
 from .hiprt_runtime import ray_triangle_hit_count_hiprt
 from .hiprt_runtime import run_hiprt
 from .hiprt_runtime import segment_polygon_anyhit_rows_hiprt
@@ -327,12 +331,17 @@ from .reference import polygon_set_jaccard_cpu
 from .reference import Ray2D
 from .reference import Ray3D
 from .reference import ray_triangle_hit_count_cpu
+from .reference import ray_triangle_any_hit_cpu
 from .reference import ray_triangle_closest_hit_cpu
 from .reference import Segment
 from .reference import segment_polygon_anyhit_rows_cpu
 from .reference import segment_polygon_hitcount_cpu
 from .reference import Triangle
 from .reference import Triangle3D
+from .reference import visibility_ray_pairs
+from .reference import visibility_rows_cpu
+from .reference import visibility_rows_from_any_hit
+from .visibility_runtime import visibility_rows
 from .graph_reference import bfs_expand_cpu
 from .db_reference import conjunctive_scan_cpu
 from .db_reference import grouped_count_cpu
@@ -588,6 +597,10 @@ __all__ = [
     "Triangle3DLayout",
     "Triangles3D",
     "validate_csr_graph",
+    "visibility_rows_cpu",
+    "visibility_rows",
+    "visibility_ray_pairs",
+    "visibility_rows_from_any_hit",
     "VertexFrontier",
     "VertexFrontierLayout",
     "VertexSet",
@@ -760,8 +773,12 @@ __all__ = [
     "PreparedEmbreeKernel",
     "PreparedAdaptiveExecution",
     "public_pathology_datasets",
+    "ray_triangle_any_hit",
     "ray_triangle_hit_count",
     "ray_triangle_closest_hit",
+    "ray_triangle_any_hit_cpu",
+    "ray_triangle_any_hit_apple_rt",
+    "ray_triangle_any_hit_hiprt",
     "ray_triangle_hit_count_cpu",
     "ray_triangle_closest_hit_cpu",
     "ray_triangle_closest_hit_apple_rt",
@@ -774,6 +791,7 @@ __all__ = [
     "rayjoin_public_assets",
     "representative_dataset_names",
     "refine",
+    "reduce_rows",
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_adaptive",

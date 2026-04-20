@@ -2072,6 +2072,100 @@ static void run_ray_hitcount_optix(
     *row_count_out = ray_count;
 }
 
+static std::string ray_anyhit_kernel_source_2d()
+{
+    std::string src(kRayHitCountKernelSrc);
+    const std::string old_body =
+        "extern \"C\" __global__ void __anyhit__rayhit_anyhit() {\n"
+        "    uint32_t count = optixGetPayload_1();\n"
+        "    optixSetPayload_1(count + 1u);\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    const std::string new_body =
+        "extern \"C\" __global__ void __anyhit__rayhit_anyhit() {\n"
+        "    optixSetPayload_1(1u);\n"
+        "    optixTerminateRay();\n"
+        "}\n";
+    const size_t pos = src.find(old_body);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit kernel");
+    src.replace(pos, old_body.size(), new_body);
+    return src;
+}
+
+static void run_ray_anyhit_optix(
+        const RtdlRay2D*    rays,      size_t ray_count,
+        const RtdlTriangle* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow** rows_out, size_t* row_count_out)
+{
+    std::call_once(g_rayanyhit.init, [&]() {
+        std::string src = ray_anyhit_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_kernel.cu");
+        g_rayanyhit.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+
+    std::vector<GpuRay>      gpu_rays(ray_count);
+    std::vector<GpuTriangle> gpu_tris(triangle_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = {(float)rays[i].ox, (float)rays[i].oy,
+                       (float)rays[i].dx, (float)rays[i].dy,
+                       (float)rays[i].tmax, rays[i].id};
+    for (size_t i = 0; i < triangle_count; ++i)
+        gpu_tris[i] = {(float)triangles[i].x0, (float)triangles[i].y0,
+                       (float)triangles[i].x1, (float)triangles[i].y1,
+                       (float)triangles[i].x2, (float)triangles[i].y2, triangles[i].id};
+
+    DevPtr d_rays(sizeof(GpuRay)      * ray_count);
+    DevPtr d_tris(sizeof(GpuTriangle) * triangle_count);
+    upload(d_rays.ptr, gpu_rays.data(), ray_count);
+    upload(d_tris.ptr, gpu_tris.data(), triangle_count);
+
+    std::vector<OptixAabb> aabbs(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i)
+        aabbs[i] = aabb_for_triangle(gpu_tris[i].x0, gpu_tris[i].y0,
+                                     gpu_tris[i].x1, gpu_tris[i].y1,
+                                     gpu_tris[i].x2, gpu_tris[i].y2);
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    DevPtr d_output(sizeof(GpuRayAnyHitRecord) * ray_count);
+
+    RayHitCountLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.rays        = reinterpret_cast<const GpuRay*>(d_rays.ptr);
+    lp.triangles   = reinterpret_cast<const GpuTriangle*>(d_tris.ptr);
+    lp.output      = reinterpret_cast<GpuRayHitRecord*>(d_output.ptr);
+    lp.ray_count   = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayHitCountLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayHitCountLaunchParams),
+                             &g_rayanyhit.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<GpuRayAnyHitRecord> gpu_rows(ray_count);
+    download(gpu_rows.data(), d_output.ptr, ray_count);
+
+    auto* out = static_cast<RtdlRayAnyHitRow*>(
+        std::malloc(sizeof(RtdlRayAnyHitRow) * ray_count));
+    if (!out && ray_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < ray_count; ++i) {
+        out[i].ray_id = gpu_rows[i].ray_id;
+        out[i].any_hit = gpu_rows[i].any_hit ? 1u : 0u;
+    }
+    *rows_out      = out;
+    *row_count_out = ray_count;
+}
+
 // ---------- 3-D ray-triangle hit count (OptiX-accelerated) ------------------
 
 struct RayHitCount3DLaunchParams {
@@ -2194,6 +2288,133 @@ static void run_ray_hitcount_3d_optix(
     for (size_t i = 0; i < ray_count; ++i) {
         out[i].ray_id    = gpu_rows[i].ray_id;
         out[i].hit_count = exact_counts[i];
+    }
+    *rows_out      = out;
+    *row_count_out = ray_count;
+}
+
+static std::string ray_anyhit_kernel_source_3d()
+{
+    std::string src(kRayHitCount3DKernelSrc);
+    const std::string old_body =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    // Count this hit and keep traversing all triangles.\n"
+        "    uint32_t count = optixGetPayload_1();\n"
+        "    optixSetPayload_1(count + 1u);\n"
+        "    optixIgnoreIntersection();\n"
+        "}\n";
+    const std::string new_body =
+        "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
+        "    optixSetPayload_1(1u);\n"
+        "    optixTerminateRay();\n"
+        "}\n";
+    const size_t pos = src.find(old_body);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 3-D any-hit kernel");
+    src.replace(pos, old_body.size(), new_body);
+    return src;
+}
+
+static void run_ray_anyhit_3d_optix(
+        const RtdlRay3D*      rays,      size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow**  rows_out,  size_t* row_count_out)
+{
+    std::call_once(g_rayanyhit3d.init, [&]() {
+        std::string src = ray_anyhit_kernel_source_3d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit3d_kernel.cu");
+        g_rayanyhit3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit3d_probe",
+            "__miss__rayhit3d_miss",
+            "__intersection__rayhit3d_isect",
+            "__anyhit__rayhit3d_anyhit",
+            nullptr, 2).release();
+    });
+
+    std::vector<GpuRay3DHost> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        float dx = static_cast<float>(rays[i].dx);
+        float dy = static_cast<float>(rays[i].dy);
+        float dz = static_cast<float>(rays[i].dz);
+        float len = std::sqrt(dx*dx + dy*dy + dz*dz);
+        if (len > 1.0e-10f) {
+            gpu_rays[i] = {
+                static_cast<float>(rays[i].ox),
+                static_cast<float>(rays[i].oy),
+                static_cast<float>(rays[i].oz),
+                dx / len, dy / len, dz / len,
+                static_cast<float>(rays[i].tmax) * len,
+                rays[i].id
+            };
+        } else {
+            gpu_rays[i] = {
+                static_cast<float>(rays[i].ox),
+                static_cast<float>(rays[i].oy),
+                static_cast<float>(rays[i].oz),
+                0.0f, 0.0f, 0.0f, 0.0f, rays[i].id
+            };
+        }
+    }
+
+    std::vector<GpuTriangle3DHost> gpu_tris(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        gpu_tris[i] = {
+            static_cast<float>(triangles[i].x0),
+            static_cast<float>(triangles[i].y0),
+            static_cast<float>(triangles[i].z0),
+            static_cast<float>(triangles[i].x1),
+            static_cast<float>(triangles[i].y1),
+            static_cast<float>(triangles[i].z1),
+            static_cast<float>(triangles[i].x2),
+            static_cast<float>(triangles[i].y2),
+            static_cast<float>(triangles[i].z2),
+            triangles[i].id
+        };
+    }
+
+    DevPtr d_rays(sizeof(GpuRay3DHost)      * ray_count);
+    DevPtr d_tris(sizeof(GpuTriangle3DHost) * triangle_count);
+    upload(d_rays.ptr, gpu_rays.data(), ray_count);
+    upload(d_tris.ptr, gpu_tris.data(), triangle_count);
+
+    std::vector<OptixAabb> aabbs(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        aabbs[i] = aabb_for_triangle_3d(
+            gpu_tris[i].x0, gpu_tris[i].y0, gpu_tris[i].z0,
+            gpu_tris[i].x1, gpu_tris[i].y1, gpu_tris[i].z1,
+            gpu_tris[i].x2, gpu_tris[i].y2, gpu_tris[i].z2);
+    }
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    DevPtr d_output(sizeof(GpuRayAnyHitRecord) * ray_count);
+
+    RayHitCount3DLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.rays        = reinterpret_cast<const GpuRay3DHost*>(d_rays.ptr);
+    lp.triangles   = reinterpret_cast<const GpuTriangle3DHost*>(d_tris.ptr);
+    lp.output      = reinterpret_cast<GpuRayHitRecord*>(d_output.ptr);
+    lp.ray_count   = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayHitCount3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit3d.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(RayHitCount3DLaunchParams),
+                             &g_rayanyhit3d.pipe->sbt,
+                             static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<GpuRayAnyHitRecord> gpu_rows(ray_count);
+    download(gpu_rows.data(), d_output.ptr, ray_count);
+
+    auto* out = static_cast<RtdlRayAnyHitRow*>(
+        std::malloc(sizeof(RtdlRayAnyHitRow) * ray_count));
+    if (!out && ray_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < ray_count; ++i) {
+        out[i].ray_id = gpu_rows[i].ray_id;
+        out[i].any_hit = gpu_rows[i].any_hit ? 1u : 0u;
     }
     *rows_out      = out;
     *row_count_out = ray_count;

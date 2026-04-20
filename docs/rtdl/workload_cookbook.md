@@ -106,6 +106,48 @@ def central_ray_triangle_stats():
     return rt.emit(hits, fields=["ray_id", "hit_count"])
 ```
 
+## Ray/Triangle Any Hit
+
+Use this when rays probe a triangle set and you only need a yes/no blocker
+answer per ray.
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def central_ray_triangle_blockers():
+    rays = rt.input("rays", rt.Rays, role="probe")
+    triangles = rt.input("triangles", rt.Triangles, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_any_hit(exact=False))
+    return rt.emit(hits, fields=["ray_id", "any_hit"])
+```
+
+For line-of-sight applications, `rt.visibility_rows_cpu(observers, targets,
+blockers)` builds finite observer-target rays and returns
+`{observer_id, target_id, visible}` rows using the same any-hit truth path.
+Use `rt.visibility_rows(..., backend="embree")` or another backend name when
+you want the helper to dispatch through a real backend. OptiX, Embree, and
+HIPRT use native early-exit any-hit when available; Vulkan and Apple RT may
+project `hit_count > 0` to `any_hit`, so those paths remain
+compatibility/parity rather than native early-exit speedup claims.
+
+When the app needs a compact decision after row emission, use
+`rt.reduce_rows(...)`:
+
+```python
+pose_flags = rt.reduce_rows(
+    edge_hit_rows,
+    group_by="pose_id",
+    op="any",
+    value="any_hit",
+    output_field="pose_blocked",
+)
+```
+
+This keeps app reduction explicit and deterministic. It is a Python
+standard-library helper over emitted rows, not a native RT backend reduction.
+
 ## Segment/Polygon Hit Count
 
 ```python

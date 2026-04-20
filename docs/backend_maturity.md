@@ -45,6 +45,14 @@ Their correct public framing is:
 - reference/oracle parity where tested
 - measured performance varies by workload, host, and implementation maturity
 
+For the released v0.9.5 any-hit layer, this means:
+
+- OptiX, Embree, and HIPRT have native early-exit any-hit implementations.
+- Vulkan and Apple RT expose compatibility dispatch by running their existing
+  hit-count traversal and projecting `hit_count > 0`.
+- `reduce_rows` is a Python standard-library helper over emitted rows, not a
+  backend-native reduction.
+
 ## Linux GPU Performance Notes
 
 The current Linux GPU evidence has two layers:

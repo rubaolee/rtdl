@@ -11,8 +11,8 @@
 
 ## 3. Checkout
 - **Repository Path:** `/Users/rl2025/rtdl_python_only`
-- **Commit Hash:** `b99d6eac0e69dcac4f4c492a4a6221d29d64d092`
-- **Tag Status:** `v0.9.4` (detached HEAD)
+- **Commit Hash:** `a64ced4b` (Latest `main` after second fix attempt)
+- **Tag Status:** `main` tracking `v0.9.4` context
 - **Status:** Clean
 
 ## 4. Commands Run
@@ -20,7 +20,7 @@
 ### Portable Tests (macOS)
 | Command | Status | Notes |
 | :--- | :--- | :--- |
-| `python3 -m unittest discover -s tests -p '*_test.py' -v` | 🔴 **FAILED** | 1178 tests run. 2 Failures, 5 Errors, 171 Skipped. (See Blockers section). |
+| `python3 -m unittest discover -s tests -p '*_test.py' -v` | 🔴 **FAILED** | 1178 tests run. 0 Failures, 1 Error, 175 Skipped. |
 | `python3 scripts/goal497_public_entry_smoke_check.py` | 🟢 **PASSED** | Exit Code: 0 |
 | `python3 scripts/goal515_public_command_truth_audit.py` | 🟢 **PASSED** | Exit Code: 0 |
 
@@ -34,7 +34,7 @@
 
 ## 5. Correctness Findings
 - **Apple RT Capabilities:** The Apple RT execution slice is surprisingly immaculate. The full 18-surface dispatch, bounding DB workloads through compute, and closest-hit verifications demonstrate robust correctness natively on Apple Silicon.
-- **Failures:** The `v0.9.4` tagged pipeline is fundamentally broken on a fresh checkout due to hardcoded C++ compilation commands in the tests omitting required `-I`/`-L` dependency paths (specifically `geos_c`) on the standard macOS rollout, resulting in 5 cascading compilation `CalledProcessError` exceptions.
+- **Failures:** The latest commit (`a64ced4b`) successfully fixed the `goal207` floating-point precision mismatch and properly skipped native compilation blockers in `goal17`, `goal19`, and `report_smoke`. However, a solitary compilation exception `CalledProcessError` remains inside `tests.goal15_compare_test.py`, crashing the required base test sweep.
 
 ## 6. Documentation Findings
 - **Honesty Constraints:** The documentation complies perfectly with the strict formatting requirements. 
@@ -50,24 +50,14 @@ The tag preparation and overarching documentation flows correctly identify `v0.9
 
 ## 9. Blockers
 
-1. **Stale Release Assertion Test**
-   - **File:** `tests/goal532_v0_8_release_authorization_test.py`
+1. **C++ Compilation Error Trailing Exception**
+   - **File:** `tests/goal15_compare_test.py` -> `test_native_compare_matches_rtdl_on_small_uniform_cases`
    - **Reproduction:** Run `python3 -m unittest discover`
-   - **Expected:** Test gracefully understands `v0.9.4` is the new release boundary.
-   - **Actual:** `FAIL: test_public_docs_identify_v091_as_current_release_and_v08_as_released_layer`. Test asserts `v0.9.1` is still current.
-   - **Severity:** High (Release state paradox).
+   - **Expected:** C++ helper modules compile correctly or the test gracefully skips if Native dependencies (`-lgeos_c`) are missing (as successfully implemented in `goal17`, `goal19`, etc.).
+   - **Actual:** 1 explicit `ERROR`. Throws `subprocess.CalledProcessError: Command '['c++', '-std=c++17', ... '-lgeos_c' ... ] returned non-zero exit status 1`.
+   - **Severity:** Critical (Crashes minimum portable verification suite pipeline).
 
-2. **C++ Compilation Errors in Compare Tests**
-   - **File:** `tests/goal15_compare_test.py`, `goal17_prepared_runtime_test.py`, `goal19_compare_test.py`, `report_smoke_test.py`
-   - **Reproduction:** Run `python3 -m unittest discover`
-   - **Expected:** C++ helper modules compile correctly against Embree/GEOS on standard macOS.
-   - **Actual:** 5 explicit `ERROR`s throwing `subprocess.CalledProcessError: Command '['c++', '-std=c++17', ... '-lgeos_c' ... returned non-zero exit status 1`.
-   - **Severity:** Critical (Breaks base validation pipeline entirely).
-
-3. **External Baseline Failure**
-   - **File:** `tests/goal207_knn_rows_external_baselines_test.py`
-   - **Actual:** `FAIL: test_natural_earth_case_runs_through_fake_scipy_baseline`. Yields a 652-character diff error.
-   - **Severity:** High.
+*(Note: The stale `goal532` version assertion, external baseline float mismatch, and the other 4 compilation `ERROR`s were successfully patched by commit `a64ced4b`... but this final `ERROR` block persists).*
 
 ## 10. Non-Blocking Notes
 - The separation of native backends under `src/native/` works cleanly for `rtdl_apple_rt.mm`. The module imports natively without polluting the python tree.

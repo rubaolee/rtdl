@@ -3,9 +3,9 @@
 This is the current public architecture page for users evaluating RTDL.
 Historical architecture reports are preserved elsewhere, but this page explains
 the released `v0.7.0` design, the released `v0.8.0` app-building layer, the
-released `v0.9.0` HIPRT / closest-hit expansion, and the released `v0.9.1`
-Apple RT closest-hit slice, plus the released `v0.9.4` Apple RT consolidation
-on top of it.
+released `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1`
+Apple RT closest-hit slice, the released `v0.9.4` Apple RT consolidation, and
+the released `v0.9.5` any-hit / visibility-row / emitted-row reduction layer.
 
 For a direct capability boundary, including what RTDL can do, can help with but
 should not become, and cannot do yet, read
@@ -71,6 +71,16 @@ Embree, OptiX, and Vulkan. It does not mean the Apple backend uses Apple
 ray-tracing hardware for every predicate: Apple DB and graph support currently
 uses Metal compute/native-assisted kernels.
 
+The released `v0.9.5` layer adds a small reusable app-programming surface on
+top of that backend set. `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows;
+OptiX, Embree, and HIPRT have native early-exit implementations that stop after
+the first accepted hit. Vulkan and Apple RT expose bounded compatibility
+dispatch by projecting existing hit-count traversal to `any_hit`, which is real
+backend execution but not a native early-exit speedup claim. `visibility_rows`
+builds finite observer-target rays over the any-hit primitive, and
+`reduce_rows` is a deterministic Python standard-library helper over already
+emitted rows.
+
 ## What Python Owns
 
 Python remains the application layer:
@@ -96,7 +106,7 @@ kernels and native backend paths, not in Python loops.
 | OptiX | NVIDIA GPU ray-tracing backend on supported Linux/GPU hosts |
 | Vulkan | portable GPU ray-tracing backend on supported Linux/GPU hosts |
 | HIPRT | released Linux HIPRT-SDK path for the v0.9 18-workload `run_hiprt` matrix |
-| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; released v0.9.4 has full-surface native/native-assisted dispatch across 18 predicates, with DB/graph rows implemented through Metal compute/native-assisted modes rather than MPS ray traversal |
+| Apple RT | released macOS Apple Silicon Metal/MPS slice for 3D closest-hit; released v0.9.4 has full-surface native/native-assisted dispatch across 18 predicates, with DB/graph rows implemented through Metal compute/native-assisted modes rather than MPS ray traversal; v0.9.5 any-hit is compatibility dispatch, not native early-exit Apple RT |
 | PostGIS / PostgreSQL | external correctness and timing baselines, not RTDL backends |
 
 Native backend code follows the modular layout used by Embree, OptiX, and
@@ -119,6 +129,9 @@ Current released public workload families include:
 - DB-style analytics: bounded conjunctive scan, grouped count, and grouped sum
 - closest-hit: exact bounded RTXRMQ-style range-minimum query on CPU reference,
   `run_cpu`, and Embree
+- any-hit and visibility: bounded ray/triangle yes-no blocker tests and
+  observer-target line-of-sight rows
+- emitted-row reductions: Python standard-library reductions over RTDL rows
 
 The released HIPRT backend covers the v0.9 18-workload `run_hiprt` matrix.
 The prepared HIPRT API is narrower: `prepare_hiprt` currently covers Ray3D
@@ -197,6 +210,9 @@ Do not read the current system as:
 - a claim that Apple RT is broadly faster than Embree or mature across every
   workload shape; current Apple support remains bounded by the explicit
   native/native-assisted support matrix
+- a claim that Vulkan or Apple RT currently provide native early-exit any-hit
+  traversal
+- a claim that `reduce_rows` is a native backend reduction
 
 For exact release claims, read:
 
@@ -205,6 +221,9 @@ For exact release claims, read:
 - [ITRE App Programming Model](rtdl/itre_app_model.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9 Release Package](release_reports/v0_9/README.md)
+- [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+- [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
+- [v0.9.5 Audit Report](release_reports/v0_9_5/audit_report.md)
 - [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
 - [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
 - [v0.9.2 Internal Candidate Package](release_reports/v0_9_2/README.md)

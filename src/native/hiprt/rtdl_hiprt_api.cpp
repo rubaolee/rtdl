@@ -183,6 +183,128 @@ extern "C" int rtdl_hiprt_run_ray_hitcount_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_run_ray_anyhit_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (rows_out == nullptr || row_count_out == nullptr) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        if ((ray_count > 0 && rays == nullptr) || (triangle_count > 0 && triangles == nullptr)) {
+            throw std::runtime_error("input pointers must not be null when counts are nonzero");
+        }
+        if (ray_count == 0) {
+            std::vector<RtdlRayAnyHitRow> empty;
+            *rows_out = copy_rows_to_heap(empty);
+            *row_count_out = 0;
+            return;
+        }
+        if (triangle_count == 0) {
+            std::vector<RtdlRayAnyHitRow> output;
+            output.reserve(ray_count);
+            for (size_t i = 0; i < ray_count; ++i) {
+                output.push_back({rays[i].id, 0u});
+            }
+            *rows_out = copy_rows_to_heap(output);
+            *row_count_out = output.size();
+            return;
+        }
+
+        std::vector<hiprtFloat3> vertices;
+        vertices.reserve(triangle_count * 3);
+        for (size_t i = 0; i < triangle_count; ++i) {
+            vertices.push_back({static_cast<float>(triangles[i].x0), static_cast<float>(triangles[i].y0), static_cast<float>(triangles[i].z0)});
+            vertices.push_back({static_cast<float>(triangles[i].x1), static_cast<float>(triangles[i].y1), static_cast<float>(triangles[i].z1)});
+            vertices.push_back({static_cast<float>(triangles[i].x2), static_cast<float>(triangles[i].y2), static_cast<float>(triangles[i].z2)});
+        }
+        std::vector<RtdlHiprtRay3DDevice> ray_values;
+        ray_values.reserve(ray_count);
+        for (size_t i = 0; i < ray_count; ++i) {
+            ray_values.push_back({
+                rays[i].id,
+                static_cast<float>(rays[i].ox),
+                static_cast<float>(rays[i].oy),
+                static_cast<float>(rays[i].oz),
+                static_cast<float>(rays[i].dx),
+                static_cast<float>(rays[i].dy),
+                static_cast<float>(rays[i].dz),
+                static_cast<float>(rays[i].tmax),
+            });
+        }
+
+        HiprtRuntime runtime = create_runtime();
+        hiprtSetLogLevel(hiprtLogLevelError);
+
+        DeviceAllocation vertex_device(vertices.size() * sizeof(hiprtFloat3));
+        copy_host_to_device(vertex_device, vertices);
+
+        hiprtTriangleMeshPrimitive mesh{};
+        mesh.triangleCount = static_cast<uint32_t>(triangle_count);
+        mesh.triangleStride = sizeof(hiprtInt3);
+        mesh.triangleIndices = nullptr;
+        mesh.vertexCount = static_cast<uint32_t>(vertices.size());
+        mesh.vertexStride = sizeof(hiprtFloat3);
+        mesh.vertices = vertex_device.get();
+
+        hiprtGeometryBuildInput geom_input{};
+        geom_input.type = hiprtPrimitiveTypeTriangleMesh;
+        geom_input.primitive.triangleMesh = mesh;
+
+        hiprtBuildOptions options{};
+        options.buildFlags = hiprtBuildFlagBitPreferFastBuild;
+        size_t temp_size = 0;
+        check_hiprt("hiprtGetGeometryBuildTemporaryBufferSize", hiprtGetGeometryBuildTemporaryBufferSize(runtime.context, geom_input, options, temp_size));
+        DeviceAllocation temp_device(temp_size);
+        hiprtGeometry geometry{};
+        check_hiprt("hiprtCreateGeometry", hiprtCreateGeometry(runtime.context, geom_input, options, geometry));
+        try {
+            check_hiprt(
+                "hiprtBuildGeometry",
+                hiprtBuildGeometry(runtime.context, hiprtBuildOperationBuild, geom_input, options, temp_device.get(), 0, geometry));
+
+            DeviceAllocation ray_device(ray_values.size() * sizeof(RtdlHiprtRay3DDevice));
+            copy_host_to_device(ray_device, ray_values);
+            std::vector<RtdlRayAnyHitRow> output(ray_count);
+            DeviceAllocation output_device(output.size() * sizeof(RtdlRayAnyHitRow));
+
+            const std::string source = ray_anyhit_kernel_source_3d();
+            oroFunction kernel = build_trace_kernel_from_source(
+                runtime.context,
+                source.c_str(),
+                "rtdl_hiprt_ray_anyhit_3d.cu",
+                "RtdlRayAnyhit3DKernel");
+            uint32_t block_size = 128;
+            uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
+            void* ray_device_ptr = ray_device.get();
+            void* output_device_ptr = output_device.get();
+            uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);
+            void* args[] = {&geometry, &ray_device_ptr, &ray_count_u32, &output_device_ptr};
+            check_oro(
+                "oroModuleLaunchKernel",
+                oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+            copy_device_to_host(output, output_device);
+
+            *rows_out = copy_rows_to_heap(output);
+            *row_count_out = output.size();
+            check_hiprt("hiprtDestroyGeometry", hiprtDestroyGeometry(runtime.context, geometry));
+            geometry = nullptr;
+        } catch (...) {
+            if (geometry != nullptr) {
+                hiprtDestroyGeometry(runtime.context, geometry);
+            }
+            throw;
+        }
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_fixed_radius_neighbors_3d(
     const RtdlPoint3D* queries,
     size_t query_count,
@@ -325,6 +447,25 @@ extern "C" int rtdl_hiprt_run_ray_hitcount_2d(
         *rows_out = nullptr;
         *row_count_out = 0;
         run_ray_hitcount_2d(rays, ray_count, triangles, triangle_count, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_hiprt_run_ray_anyhit_2d(
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    const RtdlTriangle* triangles,
+    size_t triangle_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (rows_out == nullptr || row_count_out == nullptr) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_ray_anyhit_2d(rays, ray_count, triangles, triangle_count, rows_out, row_count_out);
     }, error_out, error_size);
 }
 

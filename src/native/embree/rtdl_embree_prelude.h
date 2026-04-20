@@ -125,6 +125,11 @@ struct RtdlRayHitCountRow {
   uint32_t hit_count;
 };
 
+struct RtdlRayAnyHitRow {
+  uint32_t ray_id;
+  uint32_t any_hit;
+};
+
 struct RtdlRayClosestHitRow {
   uint32_t ray_id;
   uint32_t triangle_id;
@@ -275,6 +280,24 @@ int rtdl_embree_run_ray_hitcount_3d(
     const RtdlTriangle3D* triangles,
     size_t triangle_count,
     RtdlRayHitCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_ray_anyhit(
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    const RtdlTriangle* triangles,
+    size_t triangle_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_ray_anyhit_3d(
+    const RtdlRay3D* rays,
+    size_t ray_count,
+    const RtdlTriangle3D* triangles,
+    size_t triangle_count,
+    RtdlRayAnyHitRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);

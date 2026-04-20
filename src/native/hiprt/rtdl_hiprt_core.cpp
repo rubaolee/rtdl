@@ -652,6 +652,14 @@ RtdlRayHitCountRow* copy_rows_to_heap(const std::vector<RtdlRayHitCountRow>& out
     return reinterpret_cast<RtdlRayHitCountRow*>(rows);
 }
 
+RtdlRayAnyHitRow* copy_rows_to_heap(const std::vector<RtdlRayAnyHitRow>& output) {
+    auto* rows = new unsigned char[output.size() * sizeof(RtdlRayAnyHitRow)];
+    if (!output.empty()) {
+        std::memcpy(rows, output.data(), output.size() * sizeof(RtdlRayAnyHitRow));
+    }
+    return reinterpret_cast<RtdlRayAnyHitRow*>(rows);
+}
+
 RtdlLsiRow* copy_lsi_rows_to_heap(const std::vector<RtdlLsiRow>& output) {
     auto* rows = new unsigned char[output.size() * sizeof(RtdlLsiRow)];
     if (!output.empty()) {
@@ -748,6 +756,33 @@ RtdlDbGroupedSumRow* copy_db_grouped_sum_rows_to_heap(const std::vector<RtdlDbGr
         std::memcpy(rows, output.data(), output.size() * sizeof(RtdlDbGroupedSumRow));
     }
     return reinterpret_cast<RtdlDbGroupedSumRow*>(rows);
+}
+
+std::string replace_all_copy(std::string src, const std::string& from, const std::string& to) {
+    size_t pos = 0;
+    while ((pos = src.find(from, pos)) != std::string::npos) {
+        src.replace(pos, from.size(), to);
+        pos += to.size();
+    }
+    return src;
+}
+
+std::string ray_anyhit_kernel_source_3d() {
+    std::string src = ray_hitcount_kernel_source();
+    src = replace_all_copy(src, "RtdlRayHitcount3DKernel", "RtdlRayAnyhit3DKernel");
+    src = replace_all_copy(src, "RtdlRayHitCountRow", "RtdlRayAnyHitRow");
+    src = replace_all_copy(src, "hit_count", "any_hit");
+    src = replace_all_copy(src, "++any_hit;", "any_hit = 1u;\n            break;");
+    return src;
+}
+
+std::string ray_anyhit_kernel_source_2d() {
+    std::string src = ray_hitcount_2d_kernel_source();
+    src = replace_all_copy(src, "RtdlRayHitcount2DKernel", "RtdlRayAnyhit2DKernel");
+    src = replace_all_copy(src, "RtdlRayHitCountRow", "RtdlRayAnyHitRow");
+    src = replace_all_copy(src, "hit_count", "any_hit");
+    src = replace_all_copy(src, "++any_hit;", "any_hit = 1u;\n            break;");
+    return src;
 }
 
 void run_prepared_ray_hitcount_3d(
@@ -1651,6 +1686,110 @@ void run_ray_hitcount_2d(
 
         std::vector<RtdlRayHitCountRow> output(ray_count);
         DeviceAllocation output_device(output.size() * sizeof(RtdlRayHitCountRow));
+        void* ray_device_ptr = ray_device.get();
+        void* output_device_ptr = output_device.get();
+        uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);
+        uint32_t block_size = 128;
+        uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
+        void* args[] = {
+            &geometry,
+            &ray_device_ptr,
+            &ray_count_u32,
+            &output_device_ptr,
+            &func_table,
+        };
+        check_oro(
+            "oroModuleLaunchKernel",
+            oroModuleLaunchKernel(kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+        copy_device_to_host(output, output_device);
+
+        *rows_out = copy_rows_to_heap(output);
+        *row_count_out = output.size();
+    } catch (...) {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+        }
+        throw;
+    }
+    if (func_table != nullptr) {
+        hiprtDestroyFuncTable(runtime.context, func_table);
+    }
+    if (geometry != nullptr) {
+        hiprtDestroyGeometry(runtime.context, geometry);
+    }
+}
+
+void run_ray_anyhit_2d(
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    const RtdlTriangle* triangles,
+    size_t triangle_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out) {
+    if (ray_count > std::numeric_limits<uint32_t>::max() || triangle_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT 2D ray_triangle_any_hit currently supports at most 2^32-1 rays/triangles");
+    }
+    if (ray_count > 0 && rays == nullptr) {
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    }
+    if (triangle_count > 0 && triangles == nullptr) {
+        throw std::runtime_error("triangle pointer must not be null when triangle_count is nonzero");
+    }
+    if (ray_count == 0) {
+        std::vector<RtdlRayAnyHitRow> empty;
+        *rows_out = copy_rows_to_heap(empty);
+        *row_count_out = 0;
+        return;
+    }
+    if (triangle_count == 0) {
+        std::vector<RtdlRayAnyHitRow> output;
+        output.reserve(ray_count);
+        for (size_t i = 0; i < ray_count; ++i) {
+            output.push_back({rays[i].id, 0u});
+        }
+        *rows_out = copy_rows_to_heap(output);
+        *row_count_out = output.size();
+        return;
+    }
+
+    std::vector<RtdlHiprtRay2DDevice> ray_values = encode_rays_2d(rays, ray_count);
+    std::vector<RtdlHiprtTriangle2DDevice> triangle_values = encode_triangles_2d(triangles, triangle_count);
+    std::vector<RtdlHiprtAabb> aabb_values = encode_triangle_2d_aabbs(triangle_values.data(), triangle_values.size());
+
+    HiprtRuntime runtime = create_runtime();
+    hiprtSetLogLevel(hiprtLogLevelError);
+
+    DeviceAllocation ray_device(ray_values.size() * sizeof(RtdlHiprtRay2DDevice));
+    DeviceAllocation triangle_device(triangle_values.size() * sizeof(RtdlHiprtTriangle2DDevice));
+    DeviceAllocation aabb_device(aabb_values.size() * sizeof(RtdlHiprtAabb));
+    copy_host_to_device(ray_device, ray_values);
+    copy_host_to_device(triangle_device, triangle_values);
+    copy_host_to_device(aabb_device, aabb_values);
+
+    hiprtGeometry geometry = build_aabb_geometry(runtime.context, aabb_device, aabb_values.size());
+    hiprtFuncTable func_table{};
+    try {
+        hiprtFuncNameSet func_name_set{};
+        func_name_set.intersectFuncName = "intersectRtdlTriangle2D";
+        hiprtFuncDataSet func_data_set{};
+        func_data_set.intersectFuncData = triangle_device.get();
+        check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
+        check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
+        const std::string source = ray_anyhit_kernel_source_2d();
+        oroFunction kernel = build_trace_kernel_from_source(
+            runtime.context,
+            source.c_str(),
+            "rtdl_hiprt_ray_anyhit_2d.cu",
+            "RtdlRayAnyhit2DKernel",
+            &func_name_set,
+            1,
+            1);
+
+        std::vector<RtdlRayAnyHitRow> output(ray_count);
+        DeviceAllocation output_device(output.size() * sizeof(RtdlRayAnyHitRow));
         void* ray_device_ptr = ray_device.get();
         void* output_device_ptr = output_device.get();
         uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);

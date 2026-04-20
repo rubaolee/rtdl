@@ -9,7 +9,7 @@ from tests.goal582_apple_rt_full_surface_dispatch_test import ray_hitcount_kerne
 class Goal603AppleRtNativeContractTest(unittest.TestCase):
     def test_support_matrix_exposes_native_coverage_contract_fields(self) -> None:
         rows = rt.apple_rt_support_matrix()
-        self.assertEqual(len(rows), 18)
+        self.assertEqual(len(rows), 19)
         required = {
             "predicate",
             "mode",
@@ -31,6 +31,9 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_candidate_discovery"], "shape_dependent")
         self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_only"], "supported_for_2d_and_3d")
         self.assertEqual(by_predicate["ray_triangle_hit_count"]["native_shapes"], ("Ray2D/Triangle2D", "Ray3D/Triangle3D"))
+        self.assertEqual(by_predicate["ray_triangle_any_hit"]["native_candidate_discovery"], "shape_dependent")
+        self.assertEqual(by_predicate["ray_triangle_any_hit"]["cpu_refinement"], "hit_count_projection_to_boolean")
+        self.assertIn("not a specialized early-exit shader", by_predicate["ray_triangle_any_hit"]["notes"])
         self.assertEqual(by_predicate["segment_intersection"]["native_candidate_discovery"], "yes")
         self.assertEqual(by_predicate["segment_intersection"]["cpu_refinement"], "exact_intersection_point")
         self.assertEqual(by_predicate["point_nearest_segment"]["native_candidate_discovery"], "yes")
@@ -77,6 +80,7 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
                 "overlay_compose",
                 "polygon_pair_overlap_area_rows",
                 "polygon_set_jaccard",
+                "ray_triangle_any_hit",
                 "ray_triangle_closest_hit",
                 "ray_triangle_hit_count",
                 "segment_intersection",

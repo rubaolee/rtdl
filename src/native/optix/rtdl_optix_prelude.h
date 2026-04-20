@@ -141,6 +141,10 @@ struct RtdlRayHitCountRow {
     uint32_t ray_id, hit_count;
 };
 
+struct RtdlRayAnyHitRow {
+    uint32_t ray_id, any_hit;
+};
+
 struct RtdlSegmentPolygonHitCountRow {
     uint32_t segment_id, hit_count;
 };
@@ -259,6 +263,16 @@ int  rtdl_optix_run_ray_hitcount_3d(
          const RtdlRay3D*    rays,      size_t ray_count,
          const RtdlTriangle3D* triangles, size_t triangle_count,
          RtdlRayHitCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_ray_anyhit(
+         const RtdlRay2D*    rays,      size_t ray_count,
+         const RtdlTriangle* triangles, size_t triangle_count,
+         RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_ray_anyhit_3d(
+         const RtdlRay3D*    rays,      size_t ray_count,
+         const RtdlTriangle3D* triangles, size_t triangle_count,
+         RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_segment_polygon_hitcount(
          const RtdlSegment*   segments,  size_t segment_count,
