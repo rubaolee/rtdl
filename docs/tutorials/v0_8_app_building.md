@@ -165,10 +165,11 @@ RTDL neighbor-row generation plus Python graph expansion.
 RTDL owns:
 
 - fixed-radius neighbor rows over the point cloud
+- grouped neighbor-count reduction with `rt.reduce_rows(count)`
 
 Python owns:
 
-- DBSCAN core-point detection
+- DBSCAN core-point classification from reduced counts
 - cluster expansion
 - border/noise labeling
 - brute-force oracle comparison
@@ -194,14 +195,15 @@ collide with obstacle geometry.
 
 RTDL owns:
 
-- ray/triangle hit-count rows for link edge rays
+- ray/triangle any-hit rows for link edge rays
+- pose-level boolean reduction with `rt.reduce_rows(any)`
 
 Python owns:
 
 - pose batch construction
 - link edge-ray generation
 - pose/link metadata
-- hit aggregation into collision flags
+- witness edge/ray summaries
 
 Boundary:
 
@@ -213,10 +215,10 @@ Boundary:
 Linux performance evidence:
 
 - [Goal509 Robot/Barnes-Hut Linux Performance Report](../reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
-- bounded readout: CPU, Embree, and OptiX match the CPU hit-count oracle for
-  robot collision screening; Embree is the strongest measured backend on the
-  Linux host; Vulkan is not exposed for this app because it fails per-edge
-  hit-count parity
+- bounded readout: Goal509 recorded the earlier hit-count formulation. The
+  current app has been rewritten to v0.9.5 any-hit plus `reduce_rows`; keep
+  native early-exit speedup claims limited to engines that actually implement
+  native any-hit.
 
 ## App 6: Barnes-Hut Force Approximation
 
@@ -261,7 +263,10 @@ Python handles orchestration and reductions:
   owns candidate-set construction and approximation-quality evaluation.
 - `fixed_radius_neighbors` supports density-neighborhood apps such as DBSCAN.
 - `fixed_radius_neighbors` supports density-threshold outlier detection.
-- `ray_triangle_hit_count` supports bounded collision-screening apps.
+- `ray_triangle_any_hit` plus `rt.reduce_rows(any)` supports bounded
+  collision-screening apps when only yes/no collision flags are required.
+- `rt.reduce_rows(count)` supports density/core-count app glue without adding
+  clustering expansion to the language core.
 - `fixed_radius_neighbors` supports candidate discovery in a hierarchical
   approximation app.
 

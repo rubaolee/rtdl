@@ -19,9 +19,9 @@ If you are new to RTDL, use these files first:
 | nearest-neighbor search | `rtdl_fixed_radius_neighbors.py` | points/queries become neighbor rows |
 | app-level Hausdorff distance | `rtdl_hausdorff_distance_app.py` | two point sets become directed nearest-neighbor rows and one distance |
 | app-level ANN candidate search | `rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become approximate nearest rows |
-| app-level outlier detection | `rtdl_outlier_detection_app.py` | points become fixed-radius neighbor rows and density-threshold outlier labels |
-| app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows and density-cluster labels |
-| app-level robot collision screening | `rtdl_robot_collision_screening_app.py` | link edge rays become pose collision flags |
+| app-level outlier detection | `rtdl_outlier_detection_app.py` | points become fixed-radius neighbor rows, reduced density counts, and outlier labels |
+| app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows, reduced core counts, and density-cluster labels |
+| app-level robot collision screening | `rtdl_robot_collision_screening_app.py` | link edge rays become any-hit rows and reduced pose collision flags |
 | bounded any-hit ray queries | `rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `any_hit` rows |
 | visibility / line-of-sight rows | `rtdl_visibility_rows.py` | observers, targets, and blockers become visibility rows |
 | emitted-row reductions | `rtdl_reduce_rows.py` | emitted rows become grouped app summary rows |
@@ -136,8 +136,10 @@ Current v0.8 app example boundary:
   characterization for this app; it is not a claim against scikit-learn DBSCAN
   or production clustering systems
 - `rtdl_robot_collision_screening_app.py` runs on `cpu_python_reference`,
-  `cpu`, `embree`, and `optix`; `vulkan` is intentionally not exposed because
-  Goal509 found a per-edge hit-count parity mismatch for this app
+  `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
+  plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed
+  in this app until the app has a dedicated Vulkan parity/performance gate on
+  the any-hit formulation
 - `rtdl_barnes_hut_force_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, and `vulkan`; Goal509 records candidate-generation timing
   separately from Python force-reduction timing

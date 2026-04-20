@@ -236,7 +236,7 @@ def run_cookbook() -> dict[str, object]:
         _recipe(
             "robot_collision_screening_app",
             "robot link edge rays plus obstacle triangles",
-            "pose collision flags reduced from ray/triangle hit counts",
+            "pose collision flags reduced from ray/triangle any-hit rows",
             {
                 "colliding_pose_ids": robot_collision_result["colliding_pose_ids"],
                 "matches_oracle": robot_collision_result["matches_oracle"],
@@ -339,7 +339,7 @@ def run_cookbook() -> dict[str, object]:
         _recipe(
             "dbscan_clustering_app",
             "one point cloud",
-            "fixed-radius neighbor rows expanded into density-cluster labels",
+            "fixed-radius neighbor rows reduced to core counts and expanded into density-cluster labels",
             {
                 "cluster_sizes": dbscan_result["cluster_sizes"],
                 "noise_point_ids": dbscan_result["noise_point_ids"],

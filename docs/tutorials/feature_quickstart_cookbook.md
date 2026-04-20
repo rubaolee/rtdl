@@ -27,7 +27,7 @@ claims.
 | points and polygons | containment rows | `pip` |
 | polygons and polygons | overlap seed rows for later exact work | `overlay` |
 | rays and triangles | per-ray hit counts | `ray_tri_hitcount` |
-| robot link edge rays and obstacle triangles | bounded pose collision flags | `robot_collision_screening_app` |
+| robot link edge rays and obstacle triangles | any-hit rows reduced to bounded pose collision flags | `robot_collision_screening_app` |
 | bodies and Python-built quadtree nodes | approximate force vectors | `barnes_hut_force_app` |
 | points and segments | nearest segment and distance rows | `point_nearest_segment` |
 | segments and polygons | per-segment hit counts | `segment_polygon_hitcount` |
@@ -129,11 +129,14 @@ PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 ### `robot_collision_screening_app`
 
 - Input: a small discrete pose batch represented as robot link edge rays plus obstacle triangles.
-- RTDL output: per-edge `ray_id`, `hit_count` rows.
-- Python output: pose-level collision flags and colliding pose IDs.
+- RTDL output: per-edge `ray_id`, `any_hit` rows.
+- Standard-library helper: `rt.reduce_rows(any)` converts per-edge rows into pose-level collision flags.
+- Python output: colliding pose IDs plus witness edge/ray summaries.
 - Boundary: this is bounded 2D discrete-pose screening, not continuous collision detection, full robot kinematics, or a full mesh collision engine.
 - Linux performance evidence: Goal509 accepts CPU, Embree, and OptiX for this
-  app and rejects Vulkan until per-edge hit-count parity is fixed.
+  app on the earlier hit-count formulation; v0.9.5 rewrites the app to any-hit
+  plus `reduce_rows` without making a new Vulkan or Apple native early-exit
+  speedup claim.
 - Run:
 
 ```bash
@@ -142,7 +145,8 @@ PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend
 
 - Learn from:
   - `examples/rtdl_robot_collision_screening_app.py`
-  - [Ray/Triangle Hit Count feature home](../features/ray_tri_hitcount/README.md)
+  - [Ray/Triangle Any Hit feature home](../features/ray_tri_anyhit/README.md)
+  - [Reduce Rows feature home](../features/reduce_rows/README.md)
   - [Goal509 Robot/Barnes-Hut Linux Performance Report](../reports/goal509_robot_barnes_linux_perf_report_2026-04-17.md)
 
 ### `barnes_hut_force_app`
@@ -260,7 +264,8 @@ PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 
 - Input: two point sets.
 - RTDL output: k=1 nearest-neighbor rows in both directions.
-- Python output: directed and undirected Hausdorff distance scalars plus witness IDs.
+- Standard-library helper: `rt.reduce_rows(max)` computes directed Hausdorff distance scalars.
+- Python output: undirected distance selection plus witness IDs.
 - Boundary: this is an app pattern over `knn_rows`, not a new built-in RTDL primitive.
 - Linux performance evidence: Goal507 covers Embree, OptiX, Vulkan, SciPy
   `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`; the

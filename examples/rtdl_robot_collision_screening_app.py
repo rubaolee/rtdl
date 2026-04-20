@@ -13,7 +13,7 @@ import rtdsl as rt
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
-def robot_edge_ray_hitcount_kernel():
+def robot_edge_any_hit_kernel():
     edge_rays = rt.input("edge_rays", rt.Rays, layout=rt.Ray2DLayout, role="probe")
     obstacle_triangles = rt.input(
         "obstacle_triangles",
@@ -22,8 +22,8 @@ def robot_edge_ray_hitcount_kernel():
         role="build",
     )
     candidates = rt.traverse(edge_rays, obstacle_triangles, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
-    return rt.emit(hits, fields=["ray_id", "hit_count"])
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_any_hit(exact=False))
+    return rt.emit(hits, fields=["ray_id", "any_hit"])
 
 
 def _rect_triangles(rect_id: int, x0: float, y0: float, x1: float, y1: float) -> tuple[rt.Triangle, rt.Triangle]:
@@ -96,14 +96,34 @@ def make_demo_case() -> dict[str, object]:
 def _run_backend(backend: str, edge_rays: tuple[rt.Ray2D, ...], obstacle_triangles: tuple[rt.Triangle, ...]):
     inputs = {"edge_rays": edge_rays, "obstacle_triangles": obstacle_triangles}
     if backend == "cpu_python_reference":
-        return rt.run_cpu_python_reference(robot_edge_ray_hitcount_kernel, **inputs)
+        return rt.run_cpu_python_reference(robot_edge_any_hit_kernel, **inputs)
     if backend == "cpu":
-        return rt.run_cpu(robot_edge_ray_hitcount_kernel, **inputs)
+        return rt.run_cpu(robot_edge_any_hit_kernel, **inputs)
     if backend == "embree":
-        return rt.run_embree(robot_edge_ray_hitcount_kernel, **inputs)
+        return rt.run_embree(robot_edge_any_hit_kernel, **inputs)
     if backend == "optix":
-        return rt.run_optix(robot_edge_ray_hitcount_kernel, **inputs)
+        return rt.run_optix(robot_edge_any_hit_kernel, **inputs)
     raise ValueError(f"unsupported backend `{backend}`")
+
+
+def _attach_pose_metadata(
+    rows: tuple[dict[str, object], ...],
+    ray_metadata: dict[int, dict[str, int]],
+) -> tuple[dict[str, object], ...]:
+    enriched_rows: list[dict[str, object]] = []
+    for row in rows:
+        ray_id = int(row["ray_id"])
+        metadata = ray_metadata[ray_id]
+        enriched_rows.append(
+            {
+                "ray_id": ray_id,
+                "pose_id": metadata["pose_id"],
+                "link_id": metadata["link_id"],
+                "edge_id": metadata["edge_id"],
+                "any_hit": int(bool(row["any_hit"])),
+            }
+        )
+    return tuple(enriched_rows)
 
 
 def _summarize_collisions(
@@ -111,29 +131,44 @@ def _summarize_collisions(
     poses: tuple[dict[str, object], ...],
     ray_metadata: dict[int, dict[str, int]],
 ) -> dict[str, object]:
+    enriched_rows = _attach_pose_metadata(rows, ray_metadata)
+    pose_flags = {
+        int(row["pose_id"]): bool(row["collides"])
+        for row in rt.reduce_rows(
+            enriched_rows,
+            group_by="pose_id",
+            op="any",
+            value="any_hit",
+            output_field="collides",
+        )
+    }
     pose_summaries = {
         int(pose["pose_id"]): {
             "pose_id": int(pose["pose_id"]),
             "label": str(pose["label"]),
-            "collides": False,
+            "collides": pose_flags.get(int(pose["pose_id"]), False),
             "hit_edge_count": 0,
             "hit_ray_ids": [],
         }
         for pose in poses
     }
-    for row in rows:
+    for row in enriched_rows:
         ray_id = int(row["ray_id"])
-        hit_count = int(row["hit_count"])
-        if hit_count <= 0:
+        any_hit = bool(row["any_hit"])
+        if not any_hit:
             continue
-        pose_id = ray_metadata[ray_id]["pose_id"]
+        pose_id = int(row["pose_id"])
         summary = pose_summaries[pose_id]
-        summary["collides"] = True
         summary["hit_edge_count"] = int(summary["hit_edge_count"]) + 1
         summary["hit_ray_ids"].append(ray_id)
 
     colliding_pose_ids = sorted(pose_id for pose_id, summary in pose_summaries.items() if summary["collides"])
     return {
+        "edge_any_hit_rows": enriched_rows,
+        "pose_collision_flags": tuple(
+            {"pose_id": pose_id, "collides": bool(pose_summaries[pose_id]["collides"])}
+            for pose_id in sorted(pose_summaries)
+        ),
         "colliding_pose_ids": colliding_pose_ids,
         "pose_summaries": [pose_summaries[pose_id] for pose_id in sorted(pose_summaries)],
     }
@@ -147,7 +182,7 @@ def run_app(backend: str = "cpu_python_reference") -> dict[str, object]:
     ray_metadata = case["ray_metadata"]
 
     rows = _run_backend(backend, edge_rays, obstacle_triangles)
-    oracle_rows = rt.ray_triangle_hit_count_cpu(edge_rays, obstacle_triangles)
+    oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
     summary = _summarize_collisions(rows, poses, ray_metadata)
     oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
 
@@ -158,18 +193,20 @@ def run_app(backend: str = "cpu_python_reference") -> dict[str, object]:
         "edge_ray_count": len(edge_rays),
         "obstacle_triangle_count": len(obstacle_triangles),
         "rows": rows,
+        "edge_any_hit_rows": summary["edge_any_hit_rows"],
+        "pose_collision_flags": summary["pose_collision_flags"],
         "colliding_pose_ids": summary["colliding_pose_ids"],
         "pose_summaries": summary["pose_summaries"],
         "oracle": oracle_summary,
         "matches_oracle": summary == oracle_summary,
-        "rtdl_role": "RTDL emits per-edge ray/triangle hit counts; Python maps edge rays back to pose/link collision flags.",
+        "rtdl_role": "RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries.",
         "boundary": "Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine.",
     }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Paper-derived discrete robot collision screening app using RTDL ray/triangle hit counts."
+        description="Paper-derived discrete robot collision screening app using RTDL ray/triangle any-hit rows."
     )
     parser.add_argument(
         "--backend",

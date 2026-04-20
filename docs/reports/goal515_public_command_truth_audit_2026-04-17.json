@@ -1530,7 +1530,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 140,
+      "line": 143,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -1540,7 +1540,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 160,
+      "line": 164,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -1550,7 +1550,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 184,
+      "line": 188,
       "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "program": "examples/rtdl_segment_polygon_hitcount.py",
@@ -1560,7 +1560,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 198,
+      "line": 202,
       "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference",
       "program": "examples/rtdl_segment_polygon_anyhit_rows.py",
@@ -1570,7 +1570,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 212,
+      "line": 216,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -1580,7 +1580,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 225,
+      "line": 229,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -1590,7 +1590,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 238,
+      "line": 242,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1600,7 +1600,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 252,
+      "line": 256,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "program": "examples/rtdl_knn_rows.py",
@@ -1610,7 +1610,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 273,
+      "line": 278,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -1620,7 +1620,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 288,
+      "line": 293,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_bfs.py",
@@ -1630,7 +1630,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 301,
+      "line": 306,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -1640,7 +1640,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 314,
+      "line": 319,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -1650,7 +1650,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 328,
+      "line": 333,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -1660,7 +1660,7 @@
     },
     {
       "path": "docs/tutorials/feature_quickstart_cookbook.md",
-      "line": 342,
+      "line": 347,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_sum.py",

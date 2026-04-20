@@ -31,7 +31,7 @@ class Goal506PublicEntryV08AlignmentTest(unittest.TestCase):
         self.assertIn("Hausdorff distance app using `knn_rows(k=1)`", docs_index)
         self.assertIn("ANN candidate search app using `knn_rows(k=1)`", docs_index)
         self.assertIn("outlier detection and DBSCAN clustering apps", docs_index)
-        self.assertIn("robot collision screening app using `ray_triangle_hit_count`", docs_index)
+        self.assertIn("robot collision screening app using `ray_triangle_any_hit`", docs_index)
         self.assertIn("Barnes-Hut force approximation app using `fixed_radius_neighbors`", docs_index)
         self.assertIn("without\n    claiming new backend or language internals", docs_index)
 
@@ -42,7 +42,7 @@ class Goal506PublicEntryV08AlignmentTest(unittest.TestCase):
         self.assertIn("Hausdorff distance over `knn_rows`", architecture)
         self.assertIn("ANN candidate search over `knn_rows`", architecture)
         self.assertIn("outlier detection and DBSCAN over", architecture)
-        self.assertIn("robot collision screening over `ray_triangle_hit_count`", architecture)
+        self.assertIn("robot collision\nscreening over `ray_triangle_any_hit`", architecture)
         self.assertIn("Barnes-Hut force\napproximation over `fixed_radius_neighbors`", architecture)
         self.assertIn("[v0.8 App Building](tutorials/v0_8_app_building.md)", architecture)
 

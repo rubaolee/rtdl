@@ -1,0 +1,1 @@
+Review Goal649 by reading `/Users/rl2025/rtdl_python_only/docs/reports/goal649_app_rewrite_anyhit_reduce_rows_2026-04-20.md` and the referenced changed files, then write an ACCEPT/BLOCK verdict focused on whether the app rewrites correctly use `ray_triangle_any_hit` and `rt.reduce_rows` without overclaiming native backend acceleration.

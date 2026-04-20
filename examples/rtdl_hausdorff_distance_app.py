@@ -92,15 +92,23 @@ def _directed_from_rows(rows: Iterable[dict[str, object]], label: str) -> dict[s
     if not nearest_rows:
         raise ValueError(f"directed Hausdorff pass `{label}` produced no nearest-neighbor rows")
 
+    distance_rows = rt.reduce_rows(
+        nearest_rows,
+        op="max",
+        value="distance",
+        output_field="directed_distance",
+    )
+    directed_distance = float(distance_rows[0]["directed_distance"])
     witness = max(
         nearest_rows,
         key=lambda row: (float(row["distance"]), -int(row["query_id"]), -int(row["neighbor_id"])),
     )
     return {
-        "distance": float(witness["distance"]),
+        "distance": directed_distance,
         "source_id": int(witness["query_id"]),
         "target_id": int(witness["neighbor_id"]),
         "row_count": len(nearest_rows),
+        "distance_reduction_rows": distance_rows,
     }
 
 
@@ -188,7 +196,7 @@ def run_app(backend: str = "cpu_python_reference", copies: int = 1) -> dict[str,
             rel_tol=1e-5,
             abs_tol=1e-5,
         ),
-        "rtdl_role": "RTDL emits k=1 nearest-neighbor rows; Python reduces them to directed and undirected Hausdorff scalars.",
+        "rtdl_role": "RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed Hausdorff distances, while Python keeps witness selection and undirected comparison.",
     }
 
 

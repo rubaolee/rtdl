@@ -89,6 +89,23 @@ def _neighbors_by_point(
     return neighborhoods
 
 
+def _neighbor_counts_by_point(
+    points: tuple[rt.Point, ...],
+    rows: Iterable[dict[str, object]],
+) -> dict[int, int]:
+    counts: dict[int, int] = {point.id: 0 for point in points}
+    for row in rt.reduce_rows(
+        tuple(rows),
+        group_by="query_id",
+        op="count",
+        output_field="neighbor_count",
+    ):
+        query_id = int(row["query_id"])
+        if query_id in counts:
+            counts[query_id] = int(row["neighbor_count"])
+    return counts
+
+
 def cluster_from_neighbor_rows(
     points: tuple[rt.Point, ...],
     rows: Iterable[dict[str, object]],
@@ -98,8 +115,10 @@ def cluster_from_neighbor_rows(
     if min_points < 1:
         raise ValueError("min_points must be at least 1")
 
-    neighborhoods = _neighbors_by_point(points, rows)
-    core_ids = {point_id for point_id, neighbor_ids in neighborhoods.items() if len(neighbor_ids) >= min_points}
+    neighbor_rows = tuple(rows)
+    neighborhoods = _neighbors_by_point(points, neighbor_rows)
+    neighbor_counts = _neighbor_counts_by_point(points, neighbor_rows)
+    core_ids = {point_id for point_id, count in neighbor_counts.items() if count >= min_points}
     labels: dict[int, int] = {}
     cluster_id = 0
 
@@ -127,7 +146,7 @@ def cluster_from_neighbor_rows(
             "point_id": point_id,
             "cluster_id": labels.get(point_id, NOISE_CLUSTER_ID),
             "is_core": point_id in core_ids,
-            "neighbor_count": len(neighborhoods[point_id]),
+            "neighbor_count": neighbor_counts[point_id],
         }
         for point_id in sorted(neighborhoods)
     )
@@ -180,7 +199,7 @@ def run_app(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[s
         "noise_point_ids": [int(row["point_id"]) for row in cluster_rows if int(row["cluster_id"]) == NOISE_CLUSTER_ID],
         "oracle_cluster_rows": oracle_rows,
         "matches_oracle": cluster_rows == oracle_rows,
-        "rtdl_role": "RTDL emits fixed-radius neighbor rows; Python expands DBSCAN core, border, and noise labels.",
+        "rtdl_role": "RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates, and Python expands DBSCAN core, border, and noise labels.",
         "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives.",
     }
 

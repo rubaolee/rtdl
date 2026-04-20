@@ -155,8 +155,8 @@ The current `v0.8.0` app-building release demonstrates how those released
 features can be used inside Python applications without changing language
 internals first. Current examples include Hausdorff distance over `knn_rows`,
 ANN candidate search over `knn_rows`, outlier detection and DBSCAN over
-`fixed_radius_neighbors`, robot collision screening over `ray_triangle_hit_count`,
-and Barnes-Hut force
+`fixed_radius_neighbors` plus `rt.reduce_rows(count)`, robot collision
+screening over `ray_triangle_any_hit` plus `rt.reduce_rows(any)`, and Barnes-Hut force
 approximation over `fixed_radius_neighbors`.
 
 The programming-model claim is intentionally bounded: the accepted

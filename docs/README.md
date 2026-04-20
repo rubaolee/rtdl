@@ -188,14 +188,16 @@ Keep these current facts in mind while reading:
   - release-readiness and staging-authorization evidence through Goal 492
   - the final `v0.7.0` release action recorded after explicit user authorization
 - the released `v0.8.0` app-building line currently adds:
-  - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
+  - Hausdorff distance app using `knn_rows(k=1)` plus `rt.reduce_rows(max)`
+    for directed distance reduction
   - ANN candidate search app using `knn_rows(k=1)` over a Python-selected
     approximate candidate set
   - outlier detection and DBSCAN clustering apps using
-    `fixed_radius_neighbors` plus Python density/count and cluster-expansion
-    logic
-  - robot collision screening app using `ray_triangle_hit_count` plus Python
-    pose/link aggregation
+    `fixed_radius_neighbors` plus `rt.reduce_rows(count)` for density/core
+    counts before Python thresholding or cluster expansion
+  - robot collision screening app using `ray_triangle_any_hit` plus
+    `rt.reduce_rows(any)` for pose collision flags before Python witness
+    reporting
   - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus
     Python quadtree/opening-rule/force reduction
   - bounded Linux performance evidence for the app line through Goal507,

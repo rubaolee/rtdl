@@ -88,23 +88,23 @@ bounded DB-style analytical workloads.
   - app-level and kernel-form DB demos
   - release-readiness and staging-authorization evidence through Goal 492
 - current released `v0.8.0` app-building surface:
-  - Hausdorff distance app using `knn_rows(k=1)` plus Python reduction
+  - Hausdorff distance app using `knn_rows(k=1)` plus `rt.reduce_rows(max)`
     - Linux performance evidence now covers Embree, OptiX, Vulkan, SciPy
       `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`
   - ANN candidate search app using `knn_rows(k=1)` over a Python-selected
     approximate candidate set, with recall and distance-ratio reporting
   - outlier detection and DBSCAN clustering apps using
-    `fixed_radius_neighbors` plus Python density/count and cluster-expansion
-    logic
+    `fixed_radius_neighbors` plus `rt.reduce_rows(count)` before Python
+    density thresholding or cluster-expansion logic
     - Linux Goal524 evidence now characterizes CPU/oracle, Embree, OptiX, and
       Vulkan timing for these three Stage-1 proximity apps, with no
       external-baseline speedup claim because SciPy was not installed in that
       validation checkout
-  - robot collision screening app using `ray_triangle_hit_count` plus Python
-    pose/link aggregation
-    - Linux performance evidence now covers CPU, Embree, and OptiX as accepted
-      correctness-matching backends; Vulkan is explicitly rejected for this app
-      until its per-edge hit-count parity defect is fixed
+  - robot collision screening app using `ray_triangle_any_hit` plus
+    `rt.reduce_rows(any)` before Python pose/link witness reporting
+    - earlier Linux Goal509 evidence covered the hit-count formulation on CPU,
+      Embree, and OptiX; the current any-hit formulation should keep Vulkan and
+      Apple claims bounded until dedicated parity/performance gates exist
   - exact bounded RTXRMQ-style range-minimum query app using the new
     `ray_triangle_closest_hit` primitive plus Python result decoding
     - Linux Goal573 evidence covers CPU reference and Embree correctness and
@@ -622,9 +622,9 @@ Release and preview layers inside the current repository:
     force approximation
   - Hausdorff now has bounded Linux Embree/OptiX/Vulkan performance evidence
     against SciPy, scikit-learn, and FAISS nearest-neighbor baselines
-  - robot collision screening now has bounded Linux CPU/Embree/OptiX
-    performance evidence; Vulkan is not exposed for that app because it fails
-    hit-count parity
+  - robot collision screening now uses v0.9.5 any-hit plus `reduce_rows`; the
+    earlier bounded Linux CPU/Embree/OptiX evidence applies to the hit-count
+    formulation, so new backend speedup claims need fresh gates
   - Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence with
     candidate generation separated from Python force reduction
   - Stage-1 proximity apps now have bounded Linux CPU/Embree/OptiX/Vulkan

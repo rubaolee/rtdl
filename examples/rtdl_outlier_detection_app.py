@@ -73,10 +73,15 @@ def density_rows_from_neighbor_rows(
     min_neighbors_including_self: int = MIN_NEIGHBORS_INCLUDING_SELF,
 ) -> tuple[dict[str, object], ...]:
     counts: dict[int, int] = {point.id: 0 for point in points}
-    for row in rows:
+    for row in rt.reduce_rows(
+        tuple(rows),
+        group_by="query_id",
+        op="count",
+        output_field="neighbor_count",
+    ):
         query_id = int(row["query_id"])
         if query_id in counts:
-            counts[query_id] += 1
+            counts[query_id] = int(row["neighbor_count"])
 
     return tuple(
         {
@@ -127,7 +132,7 @@ def run_app(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[s
         "outlier_point_ids": outlier_ids,
         "oracle_density_rows": oracle_rows,
         "matches_oracle": density_rows == oracle_rows,
-        "rtdl_role": "RTDL emits fixed-radius neighbor rows; Python converts local density counts into outlier labels.",
+        "rtdl_role": "RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold.",
         "boundary": "Bounded density-threshold outlier demo only; RTDL does not yet expose density scoring as a language primitive.",
     }
 
