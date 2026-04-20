@@ -849,6 +849,265 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_hitcount_2d(
     }
 }
 
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_anyhit_2d(
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    const RtdlTriangle2D* triangles,
+    size_t triangle_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+        set_message(error_out, error_size, "null output passed to rtdl_apple_rt_run_ray_anyhit_2d");
+        return 1;
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    if ((ray_count > 0 && rays == nullptr) || (triangle_count > 0 && triangles == nullptr)) {
+        set_message(error_out, error_size, "null input passed to rtdl_apple_rt_run_ray_anyhit_2d");
+        return 1;
+    }
+    if (ray_count == 0) {
+        return 0;
+    }
+
+    std::vector<uint32_t> any_hits(ray_count, 0);
+    if (triangle_count == 0) {
+        auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(ray_count * sizeof(RtdlRayAnyHitRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT 2D any-hit rows");
+            return 2;
+        }
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = RtdlRayAnyHitRow{rays[i].id, 0u};
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
+        return 0;
+    }
+
+    @autoreleasepool {
+        id<MTLDevice> device = [MTLCreateSystemDefaultDevice() autorelease];
+        if (device == nil) {
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 3;
+        }
+        id<MTLCommandQueue> command_queue = [[device newCommandQueue] autorelease];
+        if (command_queue == nil) {
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 4;
+        }
+
+        std::vector<MPSRayOriginMaskDirectionMaxDistance> mps_rays(ray_count);
+        for (size_t i = 0; i < ray_count; ++i) {
+            if (!valid_ray_2d(rays[i])) {
+                mps_rays[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
+                mps_rays[i].mask = 0;
+                mps_rays[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
+                mps_rays[i].maxDistance = -1.0f;
+                any_hits[i] = 0;
+                continue;
+            }
+            mps_rays[i].origin = MPSPackedFloat3(static_cast<float>(rays[i].ox), static_cast<float>(rays[i].oy), -1.0f);
+            mps_rays[i].mask = 0xFFFFFFFFu;
+            mps_rays[i].direction = MPSPackedFloat3(
+                static_cast<float>(rays[i].dx * rays[i].tmax),
+                static_cast<float>(rays[i].dy * rays[i].tmax),
+                2.0f);
+            mps_rays[i].maxDistance = 1.000001f;
+        }
+
+        id<MTLBuffer> ray_buffer = [[device newBufferWithBytes:mps_rays.data()
+                                                        length:mps_rays.size() * sizeof(MPSRayOriginMaskDirectionMaxDistance)
+                                                       options:MTLResourceStorageModeShared] autorelease];
+        if (ray_buffer == nil) {
+            set_message(error_out, error_size, "Metal ray buffer creation failed");
+            return 5;
+        }
+
+        id<MTLBuffer> intersection_buffer = [[device newBufferWithLength:ray_count * sizeof(MPSIntersectionDistancePrimitiveIndex)
+                                                                  options:MTLResourceStorageModeShared] autorelease];
+        if (intersection_buffer == nil) {
+            set_message(error_out, error_size, "Metal intersection buffer creation failed");
+            return 6;
+        }
+
+        MPSRayIntersector* intersector = [[[MPSRayIntersector alloc] initWithDevice:device] autorelease];
+        if (intersector == nil) {
+            set_message(error_out, error_size, "MPSRayIntersector initialization failed");
+            return 7;
+        }
+        intersector.cullMode = MTLCullModeNone;
+        intersector.rayDataType = MPSRayDataTypeOriginMaskDirectionMaxDistance;
+        intersector.rayMaskOptions = MPSRayMaskOptionPrimitive;
+        intersector.rayMaskOperator = MPSRayMaskOperatorAnd;
+        intersector.intersectionDataType = MPSIntersectionDataTypeDistancePrimitiveIndex;
+        intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
+        intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
+
+        constexpr size_t chunk_size = 32;
+        size_t unresolved_valid_rays = 0;
+        for (size_t i = 0; i < ray_count; ++i) {
+            if (valid_ray_2d(rays[i])) {
+                unresolved_valid_rays += 1;
+            }
+        }
+
+        for (size_t chunk_begin = 0; chunk_begin < triangle_count && unresolved_valid_rays > 0; chunk_begin += chunk_size) {
+            const size_t chunk_count = std::min(chunk_size, triangle_count - chunk_begin);
+            const uint32_t full_chunk_mask = chunk_count == 32 ? 0xFFFFFFFFu : ((1u << chunk_count) - 1u);
+
+            auto* gpu_rays = static_cast<MPSRayOriginMaskDirectionMaxDistance*>([ray_buffer contents]);
+            for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+                gpu_rays[ray_index].mask = (valid_ray_2d(rays[ray_index]) && any_hits[ray_index] == 0u) ? full_chunk_mask : 0u;
+            }
+
+            std::vector<MPSPackedFloat3> vertices;
+            std::vector<uint32_t> primitive_masks;
+            std::vector<size_t> primitive_triangle_offsets;
+            vertices.reserve(chunk_count * 24);
+            primitive_masks.reserve(chunk_count * 8);
+            primitive_triangle_offsets.reserve(chunk_count * 8);
+
+            auto add_triangle = [&](float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz, uint32_t mask, size_t local_index) {
+                vertices.emplace_back(ax, ay, az);
+                vertices.emplace_back(bx, by, bz);
+                vertices.emplace_back(cx, cy, cz);
+                primitive_masks.push_back(mask);
+                primitive_triangle_offsets.push_back(local_index);
+            };
+
+            for (size_t local_index = 0; local_index < chunk_count; ++local_index) {
+                const RtdlTriangle2D& tri = triangles[chunk_begin + local_index];
+                const uint32_t mask = 1u << local_index;
+                const float x0 = static_cast<float>(tri.x0);
+                const float y0 = static_cast<float>(tri.y0);
+                const float x1 = static_cast<float>(tri.x1);
+                const float y1 = static_cast<float>(tri.y1);
+                const float x2 = static_cast<float>(tri.x2);
+                const float y2 = static_cast<float>(tri.y2);
+                constexpr float z0 = -1.0f;
+                constexpr float z1 = 1.0f;
+
+                add_triangle(x0, y0, z0, x1, y1, z0, x2, y2, z0, mask, local_index);
+                add_triangle(x0, y0, z1, x2, y2, z1, x1, y1, z1, mask, local_index);
+
+                add_triangle(x0, y0, z0, x1, y1, z0, x1, y1, z1, mask, local_index);
+                add_triangle(x0, y0, z0, x1, y1, z1, x0, y0, z1, mask, local_index);
+                add_triangle(x1, y1, z0, x2, y2, z0, x2, y2, z1, mask, local_index);
+                add_triangle(x1, y1, z0, x2, y2, z1, x1, y1, z1, mask, local_index);
+                add_triangle(x2, y2, z0, x0, y0, z0, x0, y0, z1, mask, local_index);
+                add_triangle(x2, y2, z0, x0, y0, z1, x2, y2, z1, mask, local_index);
+            }
+
+            id<MTLBuffer> vertex_buffer = [device newBufferWithBytes:vertices.data()
+                                                              length:vertices.size() * sizeof(MPSPackedFloat3)
+                                                             options:MTLResourceStorageModeShared];
+            if (vertex_buffer == nil) {
+                set_message(error_out, error_size, "Metal 2D any-hit prism vertex buffer creation failed");
+                return 8;
+            }
+            id<MTLBuffer> mask_buffer = [device newBufferWithBytes:primitive_masks.data()
+                                                            length:primitive_masks.size() * sizeof(uint32_t)
+                                                           options:MTLResourceStorageModeShared];
+            if (mask_buffer == nil) {
+                [vertex_buffer release];
+                set_message(error_out, error_size, "Metal 2D any-hit primitive mask buffer creation failed");
+                return 9;
+            }
+
+            MPSTriangleAccelerationStructure* accel = [[MPSTriangleAccelerationStructure alloc] initWithDevice:device];
+            if (accel == nil) {
+                [mask_buffer release];
+                [vertex_buffer release];
+                set_message(error_out, error_size, "MPSTriangleAccelerationStructure initialization failed for 2D any-hit");
+                return 10;
+            }
+            accel.vertexBuffer = vertex_buffer;
+            accel.vertexStride = sizeof(MPSPackedFloat3);
+            accel.maskBuffer = mask_buffer;
+            accel.triangleCount = primitive_masks.size();
+            [accel rebuild];
+
+            for (size_t pass = 0; pass < chunk_count && unresolved_valid_rays > 0; ++pass) {
+                id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+                if (command_buffer == nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, "Metal command buffer creation failed");
+                    return 11;
+                }
+                [intersector encodeIntersectionToCommandBuffer:command_buffer
+                                              intersectionType:MPSIntersectionTypeNearest
+                                                     rayBuffer:ray_buffer
+                                               rayBufferOffset:0
+                                            intersectionBuffer:intersection_buffer
+                                      intersectionBufferOffset:0
+                                                      rayCount:ray_count
+                                         accelerationStructure:accel];
+                [command_buffer commit];
+                [command_buffer waitUntilCompleted];
+                NSError* error = [command_buffer error];
+                if (error != nil) {
+                    [accel release];
+                    [mask_buffer release];
+                    [vertex_buffer release];
+                    set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+                    return 12;
+                }
+                const auto* gpu_intersections = static_cast<const MPSIntersectionDistancePrimitiveIndex*>([intersection_buffer contents]);
+                size_t active_candidates = 0;
+                size_t active_masks = 0;
+                for (size_t ray_index = 0; ray_index < ray_count; ++ray_index) {
+                    if (any_hits[ray_index] != 0u) {
+                        continue;
+                    }
+                    const float distance = gpu_intersections[ray_index].distance;
+                    const uint32_t primitive_index = gpu_intersections[ray_index].primitiveIndex;
+                    if (distance >= 0.0f && distance <= 1.000001f && primitive_index < primitive_triangle_offsets.size()) {
+                        const size_t local_index = primitive_triangle_offsets[primitive_index];
+                        const uint32_t bit = 1u << local_index;
+                        if ((gpu_rays[ray_index].mask & bit) != 0u) {
+                            const RtdlTriangle2D& tri = triangles[chunk_begin + local_index];
+                            if (ray_hits_triangle_2d(rays[ray_index], tri)) {
+                                any_hits[ray_index] = 1u;
+                                gpu_rays[ray_index].mask = 0u;
+                                unresolved_valid_rays -= 1;
+                            } else {
+                                gpu_rays[ray_index].mask &= ~bit;
+                            }
+                            active_candidates += 1;
+                        }
+                    }
+                    if (gpu_rays[ray_index].mask != 0u) {
+                        active_masks += 1;
+                    }
+                }
+                if (active_candidates == 0 || active_masks == 0) {
+                    break;
+                }
+            }
+            [accel release];
+            [mask_buffer release];
+            [vertex_buffer release];
+        }
+
+        auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(ray_count * sizeof(RtdlRayAnyHitRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT 2D any-hit rows");
+            return 13;
+        }
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = RtdlRayAnyHitRow{rays[i].id, any_hits[i]};
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
+        return 0;
+    }
+}
+
 extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_fixed_radius_neighbors_2d(
     const RtdlPoint2D* queries,
     size_t query_count,

@@ -27,10 +27,11 @@ reduction slice.
 rows. The released `v0.9.5` tag has native any-hit paths for OptiX, Embree, and
 HIPRT. Current `main` additionally has a post-release Vulkan native any-hit path
 when `librtdl_vulkan` is rebuilt from current source, and a post-release Apple
-MPS RT 3D any-hit path based on nearest-intersection existence. Apple RT 2D
-any-hit still uses compatibility dispatch by projecting hit-count traversal to
-`any_hit`. `reduce_rows` is a standard-library helper, not a native RT backend
-reduction.
+MPS RT 3D any-hit path based on nearest-intersection existence. Current `main`
+also adds Apple RT 2D any-hit through MPS prism traversal with per-ray mask
+early-exit plus exact 2D acceptance when the Apple library is rebuilt from
+current source. `reduce_rows` is a standard-library helper, not a native RT
+backend reduction.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -69,8 +70,8 @@ bounded DB-style analytical workloads.
     termination after the first accepted triangle hit
   - OptiX, Embree, and HIPRT have native early-exit any-hit implementations in
     the released tag; current `main` also adds native Vulkan any-hit after
-    rebuilding `librtdl_vulkan` and Apple MPS RT 3D any-hit; Apple RT 2D
-    remains a bounded compatibility path for any-hit
+    rebuilding `librtdl_vulkan`, Apple MPS RT 3D any-hit, and Apple RT 2D
+    MPS-prism any-hit with per-ray early exit after rebuilding `librtdl_apple_rt`
   - `visibility_rows_cpu` emits `{observer_id, target_id, visible}` rows by
     turning observer-target pairs into finite any-hit rays
   - `reduce_rows` reduces emitted rows by `any`, `count`, `sum`, `min`, or
@@ -594,8 +595,8 @@ Current mainline release line:
 - released `v0.9.5` additionally carries bounded any-hit / visibility-row /
   emitted-row reduction support, with native early-exit any-hit for OptiX,
   Embree, and HIPRT; current `main` adds post-release native Vulkan any-hit and
-  Apple MPS RT 3D any-hit, while Apple RT 2D remains compatibility any-hit
-  dispatch
+  Apple MPS RT 3D any-hit plus Apple RT 2D MPS-prism any-hit after rebuilding
+  `librtdl_apple_rt`
 
 Newest released graph workload surface:
 
@@ -660,8 +661,8 @@ Release and preview layers inside the current repository:
   - adds `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`
   - native early-exit any-hit exists for OptiX, Embree, HIPRT, and post-release
     current-main Vulkan when the backend library is rebuilt
-  - Apple RT has current-main 3D MPS RT any-hit; Apple RT 2D remains a
-    compatibility any-hit path
+  - Apple RT has current-main 3D MPS RT any-hit plus current-main 2D
+    MPS-prism any-hit when `librtdl_apple_rt` is rebuilt from source
   - `reduce_rows` is a Python helper over emitted rows, not native backend
     acceleration
 

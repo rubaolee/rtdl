@@ -75,13 +75,11 @@ The released `v0.9.5` layer adds a small reusable app-programming surface on
 top of that backend set. `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows;
 OptiX, Embree, and HIPRT have native early-exit implementations in the released
 tag. Current `main` additionally has post-release native Vulkan any-hit when the
-Vulkan backend library is rebuilt from current source and Apple MPS RT 3D
-any-hit based on nearest-intersection existence. Apple RT 2D still exposes
-bounded compatibility dispatch by projecting existing hit-count traversal to
-`any_hit`, which is real backend execution but not a native early-exit Apple 2D
-speedup claim. `visibility_rows` builds finite observer-target rays over the
-any-hit primitive, and `reduce_rows` is a deterministic Python standard-library
-helper over already emitted rows.
+Vulkan backend library is rebuilt from current source, Apple MPS RT 3D any-hit
+based on nearest-intersection existence, and Apple RT 2D MPS-prism any-hit with
+per-ray mask early-exit plus exact 2D acceptance. `visibility_rows` builds
+finite observer-target rays over the any-hit primitive, and `reduce_rows` is a
+deterministic Python standard-library helper over already emitted rows.
 
 ## What Python Owns
 
@@ -212,8 +210,9 @@ Do not read the current system as:
 - a claim that Apple RT is broadly faster than Embree or mature across every
   workload shape; current Apple support remains bounded by the explicit
   native/native-assisted support matrix
-- a claim that Apple RT 2D currently provides native early-exit any-hit
-  traversal
+- a claim that Apple RT any-hit is programmable shader-level any-hit; current
+  Apple 2D any-hit is MPS-prism traversal with exact CPU acceptance and current
+  Apple 3D any-hit is MPS nearest-intersection existence
 - a claim that `reduce_rows` is a native backend reduction
 
 For exact release claims, read:

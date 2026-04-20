@@ -258,9 +258,9 @@ Meaning:
 - OptiX, Embree, and HIPRT implement this as native early-exit any-hit when
   the loaded backend libraries export `rtdl_optix_run_ray_anyhit`,
   `rtdl_embree_run_ray_anyhit`, or `rtdl_hiprt_run_ray_anyhit`
-- other backend compatibility paths may implement this by running
-  `ray_triangle_hit_count` and projecting `hit_count > 0`; that is backend
-  execution, but not a native early-exit performance claim for those engines
+- stale backend libraries may implement this by running `ray_triangle_hit_count`
+  and projecting `hit_count > 0`; that is backend execution, but not a native
+  early-exit performance claim for that stale binary
 
 Required option:
 

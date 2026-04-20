@@ -61,9 +61,8 @@ Use `python3` instead if that is what your shell exposes.
   pipeline and raw row ABI when `librtdl_vulkan` is rebuilt from current source.
 - Current `main` adds Apple MPS RT 3D any-hit by querying nearest-intersection
   existence instead of counting all hits.
-- Apple RT 2D currently uses bounded backend compatibility dispatch by
-  projecting `ray_triangle_hit_count` to `any_hit`; this proves backend
-  execution and parity, not native early-exit Apple 2D performance.
-- Additional Apple 2D native early-exit work remains future backend performance
-  work.
+- Current `main` adds Apple RT 2D MPS-prism any-hit with per-ray mask
+  early-exit plus exact 2D acceptance when `librtdl_apple_rt` is rebuilt.
+- Apple any-hit remains native-assisted MPS traversal, not programmable
+  shader-level any-hit.
 - The implementation is float-based and bounded; it is not a rendering API.

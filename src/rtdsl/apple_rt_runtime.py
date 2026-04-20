@@ -185,10 +185,10 @@ _APPLE_RT_SUPPORT_NOTES = {
     },
     "ray_triangle_any_hit": {
         "native_candidate_discovery": "shape_dependent",
-        "cpu_refinement": "3d_row_materialization_or_2d_hit_count_projection",
+        "cpu_refinement": "2d_exact_acceptance_or_3d_row_materialization",
         "native_only": "supported_for_2d_and_3d",
         "native_shapes": ("Ray2D/Triangle2D", "Ray3D/Triangle3D"),
-        "notes": "Current main uses Apple Metal/MPS nearest-intersection any-hit for 3D when the loaded library exports it; 2D still uses the Apple hit-count traversal and projects hit_count > 0 to any_hit.",
+        "notes": "Current main uses Apple Metal/MPS nearest-intersection any-hit for 3D and MPS prism traversal with per-ray mask early-exit plus exact 2D acceptance for 2D when the loaded library exports the symbols; stale libraries fall back to hit-count projection.",
     },
     "segment_intersection": {
         "native_candidate_discovery": "yes",
@@ -629,6 +629,19 @@ def _configure_library(library: ctypes.CDLL) -> None:
             ctypes.c_size_t,
         ]
         optional_anyhit_3d.restype = ctypes.c_int
+    optional_anyhit_2d = getattr(library, "rtdl_apple_rt_run_ray_anyhit_2d", None)
+    if optional_anyhit_2d is not None:
+        optional_anyhit_2d.argtypes = [
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_anyhit_2d.restype = ctypes.c_int
     library.rtdl_apple_rt_run_ray_hitcount_2d.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
         ctypes.c_size_t,
@@ -1312,6 +1325,39 @@ def ray_triangle_any_hit_apple_rt(
     rays: tuple[_CanonicalRay2D | _CanonicalRay3D, ...],
     triangles: tuple[_CanonicalTriangle2D | _CanonicalTriangle3D, ...],
 ) -> tuple[dict[str, int], ...]:
+    if all(isinstance(ray, _CanonicalRay2D) for ray in rays) and all(
+        isinstance(triangle, _CanonicalTriangle2D) for triangle in triangles
+    ):
+        library = _load_library()
+        native_anyhit = getattr(library, "rtdl_apple_rt_run_ray_anyhit_2d", None)
+        if native_anyhit is not None:
+            ray_records = _pack_rays_2d(rays)
+            triangle_records = _pack_triangles_2d(triangles)
+            rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+            row_count = ctypes.c_size_t()
+            error = ctypes.create_string_buffer(4096)
+            status = native_anyhit(
+                ray_records,
+                len(rays),
+                triangle_records,
+                len(triangles),
+                ctypes.byref(rows_ptr),
+                ctypes.byref(row_count),
+                error,
+                len(error),
+            )
+            _check_status(status, error)
+            rows = AppleRtRowView(
+                library=library,
+                rows_ptr=rows_ptr,
+                row_count=row_count.value,
+                row_type=_RtdlRayAnyHitRow,
+                field_names=("ray_id", "any_hit"),
+            )
+            try:
+                return tuple(rows)
+            finally:
+                rows.close()
     if all(isinstance(ray, _CanonicalRay3D) for ray in rays) and all(
         isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles
     ):
@@ -2127,7 +2173,7 @@ def run_apple_rt(
         raise NotImplementedError(
             "Apple RT native MPS execution currently supports only 3D "
             "ray_triangle_closest_hit, 2D/3D ray_triangle_hit_count, "
-            "2D/3D ray_triangle_any_hit through hit-count projection, 2D segment_intersection, "
+            "2D/3D ray_triangle_any_hit with stale-library hit-count projection fallback, 2D segment_intersection, "
             "2D/3D point-neighborhood workloads, point-in-polygon positive hits, "
             "2D point-nearest-segment, 2D segment-polygon workloads, "
             "bounded 2D polygon-pair area/Jaccard workloads, 2D overlay compose, "

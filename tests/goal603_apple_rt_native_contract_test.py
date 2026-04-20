@@ -34,10 +34,10 @@ class Goal603AppleRtNativeContractTest(unittest.TestCase):
         self.assertEqual(by_predicate["ray_triangle_any_hit"]["native_candidate_discovery"], "shape_dependent")
         self.assertEqual(
             by_predicate["ray_triangle_any_hit"]["cpu_refinement"],
-            "3d_row_materialization_or_2d_hit_count_projection",
+            "2d_exact_acceptance_or_3d_row_materialization",
         )
         self.assertIn("nearest-intersection any-hit for 3D", by_predicate["ray_triangle_any_hit"]["notes"])
-        self.assertIn("2D still uses the Apple hit-count traversal", by_predicate["ray_triangle_any_hit"]["notes"])
+        self.assertIn("per-ray mask early-exit plus exact 2D acceptance", by_predicate["ray_triangle_any_hit"]["notes"])
         self.assertEqual(by_predicate["segment_intersection"]["native_candidate_discovery"], "yes")
         self.assertEqual(by_predicate["segment_intersection"]["cpu_refinement"], "exact_intersection_point")
         self.assertEqual(by_predicate["point_nearest_segment"]["native_candidate_discovery"], "yes")

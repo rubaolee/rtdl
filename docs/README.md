@@ -159,8 +159,8 @@ Keep these current facts in mind while reading:
 - released `v0.9.5` carries `ray_triangle_any_hit`, `visibility_rows`, and
   `reduce_rows`; OptiX, Embree, and HIPRT have native early-exit any-hit in the
   released tag; current `main` adds post-release native Vulkan any-hit when the
-  backend library is rebuilt and Apple MPS RT 3D any-hit; Apple RT 2D remains a
-  compatibility any-hit path
+  backend library is rebuilt plus Apple MPS RT 3D any-hit and Apple RT 2D
+  MPS-prism any-hit when the Apple backend library is rebuilt
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -223,8 +223,8 @@ Keep these current facts in mind while reading:
   this still does not claim broad Apple backend maturity or global Apple speedup
 - the released `v0.9.5` line adds bounded any-hit, visibility-row, and
   emitted-row reduction support without claiming native backend acceleration
-  for `reduce_rows`; post-release current `main` adds native Vulkan any-hit and
-  Apple MPS RT 3D any-hit, while Apple RT 2D remains compatibility dispatch
+  for `reduce_rows`; post-release current `main` adds native Vulkan any-hit,
+  Apple MPS RT 3D any-hit, and Apple RT 2D MPS-prism any-hit
 - the released `v0.2.0` surface remains a stable historical
   workload/documentation baseline
 - the released `v0.3.0` line is an application-style demo layer on top of that

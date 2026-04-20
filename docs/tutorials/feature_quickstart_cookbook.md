@@ -101,10 +101,10 @@ claims.
 - Standard-library helpers: `rt.visibility_rows_cpu(observers, targets, blockers)`
   for the CPU oracle, or `rt.visibility_rows(..., backend="embree" | "optix" |
   "vulkan" | "hiprt" | "apple_rt")` for backend dispatch.
-- Boundary: OptiX, Embree, HIPRT, current-main Vulkan, and current-main Apple
-  RT 3D use native any-hit when the loaded backend libraries export it. Apple
-  RT 2D currently uses compatibility dispatch and should not be described as a
-  native early-exit speedup path.
+- Boundary: OptiX, Embree, HIPRT, current-main Vulkan, current-main Apple RT
+  3D, and current-main Apple RT 2D use native/native-assisted any-hit when the
+  loaded backend libraries export it. Apple RT 2D uses MPS prism traversal
+  with exact 2D acceptance, not programmable shader-level any-hit.
 - Learn from:
   - [Visibility Rows feature home](../features/visibility_rows/README.md)
   - `examples/rtdl_visibility_rows.py`
