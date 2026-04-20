@@ -54,7 +54,8 @@ class Goal505V08AppSuiteTest(unittest.TestCase):
 
         self.assertIn("RTDL emits k=1 nearest-neighbor rows", hausdorff["rtdl_role"])
         self.assertIn("Python-selected candidate subset", ann["rtdl_role"])
-        self.assertIn("density counts into outlier labels", outlier["rtdl_role"])
+        self.assertIn("rt.reduce_rows(count)", outlier["rtdl_role"])
+        self.assertIn("outlier threshold", outlier["rtdl_role"])
         self.assertIn("RTDL emits fixed-radius neighbor rows", dbscan["rtdl_role"])
         self.assertIn("not continuous CCD", collision["boundary"])
         self.assertIn("RTDL does not yet expose hierarchical tree-node primitives", barnes_hut["boundary"])

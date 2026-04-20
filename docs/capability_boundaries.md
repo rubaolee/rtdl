@@ -124,9 +124,10 @@ geometry/nearest-neighbor slices and Metal compute for bounded DB/graph slices.
 Released v0.9.5 work adds bounded any-hit and line-of-sight helpers. OptiX,
 Embree, and HIPRT have native early-exit any-hit paths in the released tag.
 Current `main` adds post-release native Vulkan any-hit when the backend library
-is rebuilt from current source. Apple RT can run compatibility dispatch by
+is rebuilt from current source, plus Apple MPS RT 3D any-hit by
+nearest-intersection existence. Apple RT 2D can run compatibility dispatch by
 projecting existing hit-count traversal to a boolean `any_hit`, but RTDL does
-not claim native early-exit Apple speedup yet.
+not claim native early-exit Apple 2D speedup yet.
 
 ## What RTDL Can Do But Is Not Intended To Become
 

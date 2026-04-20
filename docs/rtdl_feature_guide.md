@@ -112,8 +112,9 @@ Current release layers:
   absorbing the internal v0.9.2/v0.9.3 evidence lines
 - `v0.9.5`: bounded any-hit / visibility-row / emitted-row reduction surface;
   native any-hit early-exit is implemented for OptiX, Embree, and HIPRT in the
-  released tag; current `main` adds post-release native Vulkan any-hit; Apple RT
-  remains a compatibility path for this feature
+  released tag; current `main` adds post-release native Vulkan any-hit and
+  Apple MPS RT 3D any-hit; Apple RT 2D remains a compatibility path for this
+  feature
 
 Plus:
 
@@ -248,8 +249,9 @@ The current repo can:
   slices and Metal compute/native-assisted DB/graph slices
 - run the released v0.9.5 bounded any-hit and visibility helpers; OptiX,
   Embree, and HIPRT use native early-exit traversal in the released tag, current
-  `main` adds native Vulkan any-hit after rebuilding the backend, and Apple RT
-  remains compatibility dispatch without a native early-exit performance claim
+  `main` adds native Vulkan any-hit after rebuilding the backend plus Apple MPS
+  RT 3D any-hit, and Apple RT 2D remains compatibility dispatch without a
+  native early-exit performance claim
 - reduce already-emitted RTDL rows in Python with `rt.reduce_rows(...)`
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host

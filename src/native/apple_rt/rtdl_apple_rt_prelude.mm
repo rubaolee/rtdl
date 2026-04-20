@@ -98,6 +98,11 @@ struct RtdlRayHitCountRow {
     uint32_t hit_count;
 };
 
+struct RtdlRayAnyHitRow {
+    uint32_t ray_id;
+    uint32_t any_hit;
+};
+
 struct RtdlNeighborRow {
     uint32_t query_id;
     uint32_t neighbor_id;

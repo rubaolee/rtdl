@@ -28,7 +28,7 @@ from examples.rtdl_barnes_hut_force_app import brute_force_forces
 from examples.rtdl_barnes_hut_force_app import build_one_level_quadtree
 from examples.rtdl_barnes_hut_force_app import Body
 from examples.rtdl_barnes_hut_force_app import QuadNode
-from examples.rtdl_robot_collision_screening_app import robot_edge_ray_hitcount_kernel
+from examples.rtdl_robot_collision_screening_app import robot_edge_any_hit_kernel
 
 
 BACKENDS = ("cpu", "embree", "optix", "vulkan")
@@ -142,9 +142,14 @@ def make_robot_case(pose_count: int, obstacle_count: int) -> dict[str, object]:
 
 
 def _robot_summary(rows: tuple[dict[str, object], ...]) -> dict[str, object]:
-    hit_rows = sum(1 for row in rows if int(row["hit_count"]) > 0)
-    total_hits = sum(int(row["hit_count"]) for row in rows)
-    colliding_poses = sorted({int(row["ray_id"]) // 10 for row in rows if int(row["hit_count"]) > 0})
+    def _hit_value(row: dict[str, object]) -> int:
+        if "any_hit" in row:
+            return int(row["any_hit"])
+        return 1 if int(row["hit_count"]) > 0 else 0
+
+    hit_rows = sum(1 for row in rows if _hit_value(row) > 0)
+    total_hits = sum(_hit_value(row) for row in rows)
+    colliding_poses = sorted({int(row["ray_id"]) // 10 for row in rows if _hit_value(row) > 0})
     return {"row_count": len(rows), "hit_rows": hit_rows, "total_hits": total_hits, "colliding_pose_count": len(colliding_poses)}
 
 
@@ -152,14 +157,14 @@ def run_robot_perf(sizes: tuple[int, ...], obstacle_count: int, iterations: int,
     cases = []
     for pose_count in sizes:
         case = make_robot_case(pose_count, obstacle_count)
-        oracle = _robot_summary(tuple(rt.ray_triangle_hit_count_cpu(case["edge_rays"], case["obstacle_triangles"])))
+        oracle = _robot_summary(tuple(rt.ray_triangle_any_hit_cpu(case["edge_rays"], case["obstacle_triangles"])))
         measurements = []
         for backend in backends:
             measurements.append(
                 _measure(
                     f"robot_{backend}",
                     lambda backend=backend, case=case: {
-                        **_robot_summary(tuple(_run_kernel_backend(backend, robot_edge_ray_hitcount_kernel, **case))),
+                        **_robot_summary(tuple(_run_kernel_backend(backend, robot_edge_any_hit_kernel, **case))),
                     },
                     iterations,
                 )

@@ -1,0 +1,1 @@
+Review Goal651 by reading `/Users/rl2025/rtdl_python_only/docs/reports/goal651_apple_rt_3d_anyhit_native_assisted_2026-04-20.md` and the referenced Apple/Python/test/doc changes, then write an ACCEPT/BLOCK verdict focused on whether Apple RT 3D any-hit is genuinely MPS RT-backed and whether Apple RT 2D remains honestly scoped as compatibility.

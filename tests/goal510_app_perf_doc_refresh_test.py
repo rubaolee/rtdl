@@ -13,8 +13,8 @@ class Goal510AppPerfDocRefreshTest(unittest.TestCase):
 
         self.assertIn("Robot/Barnes-Hut Linux Performance Evidence", text)
         self.assertIn("goal509_robot_barnes_linux_perf_report_2026-04-17.md", text)
-        self.assertIn("robot collision screening now has bounded Linux CPU/Embree/OptiX", text)
-        self.assertIn("Vulkan is not exposed for that app because it fails", text)
+        self.assertIn("earlier Linux Goal509 evidence covered the hit-count formulation", text)
+        self.assertIn("new backend speedup claims need fresh gates", text)
         self.assertIn("Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan", text)
 
     def test_release_examples_explain_goal509_and_cli_boundaries(self) -> None:
@@ -37,7 +37,8 @@ class Goal510AppPerfDocRefreshTest(unittest.TestCase):
             self.assertIn("Vulkan", text)
             self.assertTrue("force-reduction" in text or "force\n  reduction" in text)
 
-        self.assertIn("vulkan` is intentionally not exposed", examples)
+        self.assertIn("`vulkan` is not exposed", examples)
+        self.assertIn("dedicated Vulkan parity/performance gate", examples)
         self.assertIn("candidate-generation timing\n  separately from Python force-reduction timing", examples)
 
 

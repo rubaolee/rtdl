@@ -129,9 +129,10 @@ blockers)` builds finite observer-target rays and returns
 Use `rt.visibility_rows(..., backend="embree")` or another backend name when
 you want the helper to dispatch through a real backend. OptiX, Embree, HIPRT,
 and current-main Vulkan use native early-exit any-hit when the loaded backend
-libraries export it. Apple RT may project `hit_count > 0` to `any_hit`, so that
-path remains compatibility/parity rather than a native early-exit Apple speedup
-claim.
+libraries export it. Current-main Apple RT 3D can use MPS RT
+nearest-intersection any-hit. Apple RT 2D may project `hit_count > 0` to
+`any_hit`, so that 2D path remains compatibility/parity rather than a native
+early-exit Apple speedup claim.
 
 When the app needs a compact decision after row emission, use
 `rt.reduce_rows(...)`:

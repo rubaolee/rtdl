@@ -125,9 +125,10 @@ Current v0.9.5 boundary:
 - `ray_triangle_any_hit` is a bounded yes/no ray blocker primitive.
 - OptiX, Embree, HIPRT, and current-main Vulkan have native early-exit any-hit
   implementations when the loaded backend libraries export them.
-- Apple RT may execute compatibility dispatch by projecting existing hit-count
-  traversal to `any_hit`; do not describe that path as a native early-exit
-  speedup.
+- Apple RT 3D on current `main` may use MPS RT nearest-intersection any-hit.
+  Apple RT 2D may execute compatibility dispatch by projecting existing
+  hit-count traversal to `any_hit`; do not describe the 2D path as a native
+  early-exit speedup.
 - `visibility_rows` is a standard-library line-of-sight helper built on
   finite any-hit rays.
 - `reduce_rows` is a deterministic Python helper over emitted rows, not a

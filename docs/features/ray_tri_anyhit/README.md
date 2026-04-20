@@ -59,9 +59,11 @@ Use `python3` instead if that is what your shell exposes.
   the first reported accepted hit.
 - Current `main` adds native Vulkan any-hit through a dedicated Vulkan RT
   pipeline and raw row ABI when `librtdl_vulkan` is rebuilt from current source.
-- Apple RT currently uses bounded backend compatibility dispatch by projecting
-  `ray_triangle_hit_count` to `any_hit`; this proves backend execution and
-  parity, not native early-exit Apple performance.
-- Additional Apple native early-exit work remains future backend performance
+- Current `main` adds Apple MPS RT 3D any-hit by querying nearest-intersection
+  existence instead of counting all hits.
+- Apple RT 2D currently uses bounded backend compatibility dispatch by
+  projecting `ray_triangle_hit_count` to `any_hit`; this proves backend
+  execution and parity, not native early-exit Apple 2D performance.
+- Additional Apple 2D native early-exit work remains future backend performance
   work.
 - The implementation is float-based and bounded; it is not a rendering API.

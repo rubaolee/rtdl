@@ -185,10 +185,10 @@ _APPLE_RT_SUPPORT_NOTES = {
     },
     "ray_triangle_any_hit": {
         "native_candidate_discovery": "shape_dependent",
-        "cpu_refinement": "hit_count_projection_to_boolean",
+        "cpu_refinement": "3d_row_materialization_or_2d_hit_count_projection",
         "native_only": "supported_for_2d_and_3d",
         "native_shapes": ("Ray2D/Triangle2D", "Ray3D/Triangle3D"),
-        "notes": "Uses the Apple Metal/MPS ray-triangle hit-count traversal and projects hit_count > 0 to any_hit; this is backend-backed compatibility, not a specialized early-exit shader.",
+        "notes": "Current main uses Apple Metal/MPS nearest-intersection any-hit for 3D when the loaded library exports it; 2D still uses the Apple hit-count traversal and projects hit_count > 0 to any_hit.",
     },
     "segment_intersection": {
         "native_candidate_discovery": "yes",
@@ -359,6 +359,13 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
         ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlRayAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("any_hit", ctypes.c_uint32),
     ]
 
 
@@ -609,6 +616,19 @@ def _configure_library(library: ctypes.CDLL) -> None:
         ctypes.c_size_t,
     ]
     library.rtdl_apple_rt_run_ray_hitcount_3d.restype = ctypes.c_int
+    optional_anyhit_3d = getattr(library, "rtdl_apple_rt_run_ray_anyhit_3d", None)
+    if optional_anyhit_3d is not None:
+        optional_anyhit_3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_anyhit_3d.restype = ctypes.c_int
     library.rtdl_apple_rt_run_ray_hitcount_2d.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
         ctypes.c_size_t,
@@ -1292,6 +1312,39 @@ def ray_triangle_any_hit_apple_rt(
     rays: tuple[_CanonicalRay2D | _CanonicalRay3D, ...],
     triangles: tuple[_CanonicalTriangle2D | _CanonicalTriangle3D, ...],
 ) -> tuple[dict[str, int], ...]:
+    if all(isinstance(ray, _CanonicalRay3D) for ray in rays) and all(
+        isinstance(triangle, _CanonicalTriangle3D) for triangle in triangles
+    ):
+        library = _load_library()
+        native_anyhit = getattr(library, "rtdl_apple_rt_run_ray_anyhit_3d", None)
+        if native_anyhit is not None:
+            ray_records = _pack_rays_3d(rays)
+            triangle_records = _pack_triangles_3d(triangles)
+            rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+            row_count = ctypes.c_size_t()
+            error = ctypes.create_string_buffer(4096)
+            status = native_anyhit(
+                ray_records,
+                len(rays),
+                triangle_records,
+                len(triangles),
+                ctypes.byref(rows_ptr),
+                ctypes.byref(row_count),
+                error,
+                len(error),
+            )
+            _check_status(status, error)
+            rows = AppleRtRowView(
+                library=library,
+                rows_ptr=rows_ptr,
+                row_count=row_count.value,
+                row_type=_RtdlRayAnyHitRow,
+                field_names=("ray_id", "any_hit"),
+            )
+            try:
+                return tuple(rows)
+            finally:
+                rows.close()
     rows = ray_triangle_hit_count_apple_rt(rays, triangles)
     try:
         return tuple(

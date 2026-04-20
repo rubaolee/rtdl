@@ -49,7 +49,8 @@ For the released v0.9.5 any-hit layer, this means:
 
 - OptiX, Embree, HIPRT, and current-main Vulkan have native early-exit any-hit
   implementations when the loaded backend libraries export them.
-- Apple RT exposes compatibility dispatch by running its existing hit-count
+- Apple RT 3D on current `main` can use MPS RT nearest-intersection any-hit.
+  Apple RT 2D exposes compatibility dispatch by running its existing hit-count
   traversal and projecting `hit_count > 0`.
 - `reduce_rows` is a Python standard-library helper over emitted rows, not a
   backend-native reduction.
