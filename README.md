@@ -1,24 +1,24 @@
 # RTDL
 
-RTDL is a language/runtime for expressing workloads that can be accelerated by
-ray tracing, including workloads that map well to ray-tracing cores on modern
-GPUs.
+RTDL is a Python-hosted language/runtime for non-graphical workloads that can
+be expressed as ray-tracing-style search: build an acceleration structure,
+traverse it, refine candidate hits, and emit stable rows for an application.
 
 It gives you:
 
-- built-in workload primitives for released workload families in the current repository
+- built-in workload primitives for released workload families
 - a Python-hosted DSL for writing kernels
 - multiple execution backends behind one public surface
-- a clean model where RTDL owns the heavy accelerated work and Python owns the surrounding application logic
+- a clean model where RTDL owns traversal/refinement and Python owns app logic
 
 The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.9.5`. It releases the accepted HIPRT
-backend line, exact bounded RTXRMQ-style closest-hit support on CPU reference,
-`run_cpu`, Embree, the Apple RT consolidation line on macOS Apple Silicon, and
-the bounded any-hit / visibility-row / emitted-row reduction slice.
+The current released version is `v0.9.5`. The release includes the existing
+HIPRT line, exact bounded closest-hit support, Apple RT consolidation on macOS
+Apple Silicon, and the new bounded any-hit / visibility-row / emitted-row
+reduction slice.
 
 `v0.9.5` adds bounded any-hit / early-exit traversal as
 `rt.ray_triangle_any_hit(exact=False)`, line-of-sight helpers
@@ -31,10 +31,6 @@ traversal and projecting `hit_count > 0` to `any_hit`; that is real backend
 execution, but it is not a native early-exit performance claim for those
 engines. `reduce_rows` is a standard-library helper, not a native RT backend
 reduction.
-
-`v0.9.4` absorbs the untagged `v0.9.2` Apple performance candidate and
-`v0.9.3` Apple native-coverage milestone as internal evidence lines, not
-separate public releases.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -65,12 +61,9 @@ bounded DB-style analytical workloads.
 ## Version Status At A Glance
 
 - current released version: `v0.9.5`
-- current mainline state here: released `v0.9.5` bounded any-hit, visibility
-  row, and emitted-row reduction work on top of `v0.9.4` Apple RT consolidation, absorbing the
-  untagged `v0.9.2` candidate and `v0.9.3` internal milestone on top of the
-  released `v0.9.1` Apple RT closest-hit slice, the `v0.9.0` HIPRT /
-  closest-hit expansion, the released `v0.8.0` app-building examples, and the
-  bounded `v0.7.0` RT DB work
+- current mainline state: released `v0.9.5` bounded any-hit, visibility-row,
+  and emitted-row reduction work on top of the released v0.7 DB, v0.8 app,
+  v0.9 HIPRT/closest-hit, and v0.9.4 Apple RT consolidation lines
 - released `v0.9.5` surface:
   - `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows and allows early
     termination after the first accepted triangle hit

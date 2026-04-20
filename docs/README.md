@@ -7,7 +7,7 @@ the current live path only.
 
 ## New User Path
 
-Read these in order:
+Read these in order for the current public story:
 
 1. [Project Front Page](../README.md)
 2. [Current Architecture](current_architecture.md)
@@ -18,30 +18,13 @@ Read these in order:
 7. [RTDL Tutorials](tutorials/README.md)
 8. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 9. [Release-Facing Examples](release_facing_examples.md)
-10. [v0.8 App Building](tutorials/v0_8_app_building.md)
-11. [ITRE App Programming Model](rtdl/itre_app_model.md)
-12. [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
-13. [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
-14. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
-15. [v0.9.5 Release Statement](release_reports/v0_9_5/release_statement.md)
-16. [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
-17. [v0.9.5 Audit Report](release_reports/v0_9_5/audit_report.md)
-18. [v0.9.4 Release Package](release_reports/v0_9_4/README.md)
-19. [v0.9.4 Release Statement](release_reports/v0_9_4/release_statement.md)
-20. [v0.9.4 Apple RT Support Matrix](release_reports/v0_9_4/support_matrix.md)
-21. [v0.9.4 Audit Report](release_reports/v0_9_4/audit_report.md)
-22. [v0.9.2 Internal Candidate Package](release_reports/v0_9_2/README.md)
-23. [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-24. [Apple RT Closest-Hit Example](../examples/rtdl_apple_rt_closest_hit.py)
-25. [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
-26. [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-27. [v0.7 Release Statement](release_reports/v0_7/release_statement.md)
-28. [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
+10. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+11. [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
+12. [v0.8 App Building](tutorials/v0_8_app_building.md)
+13. [ITRE App Programming Model](rtdl/itre_app_model.md)
 
-If you need the previous graph release line, also read:
-
-29. [v0.6 Release Statement](release_reports/v0_6/release_statement.md)
-30. [v0.6 Support Matrix](release_reports/v0_6/support_matrix.md)
+Older release packages remain linked below for auditability, but they are not
+the recommended first path for a new user.
 
 That is the intended public reading path.
 
@@ -56,9 +39,11 @@ write?", use this short path:
 4. run one runnable example from [Release-Facing Examples](release_facing_examples.md)
 5. read [v0.8 App Building](tutorials/v0_8_app_building.md) if you want to see
    RTDL kernels used inside Python applications
-6. check the exact app-building boundary in the
+6. check the exact current boundary in the
+   [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)
+7. check the exact app-building boundary in the
    [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-7. check the exact released DB boundary in the
+8. check the exact released DB boundary in the
    [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 The public promise is authoring-burden reduction: RTDL hides backend-specific

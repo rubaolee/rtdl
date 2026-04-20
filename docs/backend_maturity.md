@@ -125,7 +125,7 @@ Therefore the correct claim is:
 > Apple Metal/MPS RT is implemented and correctness-validated for bounded native
 > and native-assisted slices. Internal v0.9.2/v0.9.3 work reduces Apple RT
 > overhead for prepared closest-hit, hit-count, and segment-intersection, and
-> current v0.9.4 work extends DB/graph coverage through Metal compute, but Apple
+> released v0.9.4 work extends DB/graph coverage through Metal compute, but Apple
 > RT is still a bounded backend and not yet a broad performance-leading or
 > mature-backend claim.
 
