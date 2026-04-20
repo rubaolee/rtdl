@@ -117,7 +117,8 @@ This hybrid layout is more practical than:
 
 This archive began with the March 29, 2026 review-and-revision cycle and now
 contains later rounds through the `v0.9.5` release and post-release
-fresh-checkout verification:
+fresh-checkout verification, plus the Goals650-656 current-main any-hit,
+documentation, and full-test catch-up:
 
 - language/runtime bring-up
 - Embree validation and RayJoin-style reproduction work
@@ -132,6 +133,9 @@ fresh-checkout verification:
   repair records
 - `v0.9.5` bounded any-hit, visibility-row, emitted-row reduction,
   post-release front-page refresh, and fresh-checkout verification records
+- Goals650-656 current-main native/native-assisted any-hit backend work,
+  current-main support matrix, tutorial/example boundary refresh, and
+  post-doc-refresh full local test evidence
 - ad hoc review memos and consensus notes that complement the structured rounds
 
 Goal629 added an explicit audit for the misleading public gap between Goal 65

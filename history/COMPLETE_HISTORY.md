@@ -1,7 +1,7 @@
 # RTDL Complete History Map
 
 Date: 2026-04-20
-Status: generated history map with Goal629 gap-audit addendum and Goal648 public-release hygiene refresh
+Status: generated history map with Goal629 gap-audit addendum, Goal648 public-release hygiene refresh, and Goals650-656 current-main catch-up
 
 This page answers the question a new visitor will ask: "Where is the full RTDL
 history?"
@@ -21,13 +21,13 @@ ad hoc reviews, and git history. See `GOAL_66_493_COVERAGE_AUDIT.md` and
 
 ## What Is Recorded
 
-- Structured revision rounds: `108`
-- Archived files in `history/history.db`: `1133`
+- Structured revision rounds: `109`
+- Archived files in `history/history.db`: `1137`
 - External report snapshots: `193`
-- Project snapshots: `940`
-- Tracked `docs/reports/` artifacts: `1926`
+- Project snapshots: `943`
+- Tracked `docs/reports/` artifacts: `1946`
 - Tracked `history/ad_hoc_reviews/` artifacts: `695`
-- Tracked AI handoff files: `522`
+- Tracked AI handoff files: `530`
 - Tracked release tags: `13`
 
 ## How To Read The History
@@ -67,6 +67,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals650-656 current-main any-hit, documentation, and test catch-up | `accepted` | `2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup` |
 | `v0.9.5` | 2026-04-19 | `accepted` | Goal647 fresh checkout post-release verification | `accepted` | `docs/reports/goal647_fresh_checkout_post_release_verification_2026-04-19.md` |
 | `v0.9.5` | 2026-04-19 | `accepted` | Goal646 public front-page doc refresh | `accepted` | `docs/reports/goal646_post_release_public_front_page_doc_update_2026-04-19.md` |
 | `v0.9.5` | 2026-04-19 | `released` | Goal645 v0.9.5 release action and package | `released` | `docs/release_reports/v0_9_5/README.md` |
@@ -105,7 +106,7 @@ Use these layers together:
 | `script` | 135 |
 | `source` | 92 |
 | `structured_history_archive` | 1595 |
-| `test` | 285 |
+| `test` | 290 |
 | `tutorial` | 11 |
 
 ## Boundaries

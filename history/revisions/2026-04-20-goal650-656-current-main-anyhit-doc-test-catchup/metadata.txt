@@ -1,0 +1,11 @@
+slug: 2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup
+title: Goals650-656 current-main any-hit, documentation, and test catch-up
+version: v0.9.5-current-main
+status: accepted
+started_on: 2026-04-20
+closed_on: 2026-04-20
+source_commit: 8d96924
+gemini_review: docs/reports/goal656_gemini_flash_review_2026-04-20.md
+codex_revision: docs/reports/goal656_post_doc_refresh_full_local_test_2026-04-20.md
+final_result: accepted
+summary: Registered post-v0.9.5 current-main native/native-assisted any-hit backend work, public support-matrix/docs refresh, and post-doc-refresh full local test gate.

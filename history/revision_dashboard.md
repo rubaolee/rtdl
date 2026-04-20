@@ -4,15 +4,16 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 108
-- Archived files: 1135
+- Revision rounds: 109
+- Archived files: 1137
 - External reports: 193
-- Project snapshots: 942
+- Project snapshots: 943
 
 ## Rounds
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.9.5-current-main | 2026-04-20 | accepted | Goals650-656 current-main any-hit, documentation, and test catch-up | docs/reports/goal656_gemini_flash_review_2026-04-20.md | docs/reports/goal656_post_doc_refresh_full_local_test_2026-04-20.md | accepted | `8d96924` | `2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup` |
 | v0.9.5 | 2026-04-20 | accepted | Goal648 public release hygiene check | docs/reports/goal648_gemini_flash_review_2026-04-20.md | docs/reports/goal648_public_release_hygiene_check_2026-04-20.md | accepted | `c894a0b` | `2026-04-20-goal648-public-release-hygiene-check` |
 | v0.8 | 2026-04-18 | accepted | Goal532 v0.8 release authorization and tagging | docs/reports/goal532_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal532-v0_8-release-authorization-and-tagging.md | accepted | `37084a6b587e5ef4a22b0fbfd177d4d1c631c151` | `2026-04-18-goal532-v0_8-release-authorization-and-tagging` |
 | v0.8 | 2026-04-18 | accepted | Goal531 v0.8 release-candidate public links | docs/reports/goal531_gemini_review_2026-04-18.md | history/ad_hoc_reviews/2026-04-18-codex-consensus-goal531-v0_8-release-candidate-public-links.md | accepted | `bf3cc8c` | `2026-04-18-goal531-v0_8-release-candidate-public-links` |
