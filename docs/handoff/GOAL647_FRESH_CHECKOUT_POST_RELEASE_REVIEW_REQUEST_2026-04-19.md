@@ -1,0 +1,1 @@
+Review `/Users/rl2025/rtdl_python_only/docs/reports/goal647_fresh_checkout_post_release_verification_2026-04-19.md` and the referenced fresh-checkout evidence, then write a concise ACCEPT/BLOCK verdict to the requested review file, checking whether the v0.9.5 tag and current main are honestly verified for public fresh-checkout use.
