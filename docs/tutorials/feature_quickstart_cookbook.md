@@ -101,9 +101,10 @@ claims.
 - Standard-library helpers: `rt.visibility_rows_cpu(observers, targets, blockers)`
   for the CPU oracle, or `rt.visibility_rows(..., backend="embree" | "optix" |
   "vulkan" | "hiprt" | "apple_rt")` for backend dispatch.
-- Boundary: OptiX, Embree, and HIPRT use native any-hit when available; Vulkan
-  and Apple RT currently use compatibility dispatch and should not be described
-  as native early-exit speedup paths.
+- Boundary: OptiX, Embree, HIPRT, and current-main Vulkan use native any-hit
+  when the loaded backend libraries export it. Apple RT currently uses
+  compatibility dispatch and should not be described as a native early-exit
+  speedup path.
 - Learn from:
   - [Visibility Rows feature home](../features/visibility_rows/README.md)
   - `examples/rtdl_visibility_rows.py`

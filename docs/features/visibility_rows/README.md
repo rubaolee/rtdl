@@ -52,9 +52,10 @@ same dimensionality.
 - `visibility_rows(..., backend=...)` can use real backend dispatch through
   `ray_triangle_any_hit`.
 - Backend visibility dispatch currently inherits the any-hit boundary:
-  OptiX, Embree, and HIPRT use native early-exit any-hit when the loaded
-  libraries export it, while Vulkan and Apple RT may compute `hit_count > 0`,
-  proving backend execution and parity but not native early-exit performance.
+  OptiX, Embree, HIPRT, and current-main Vulkan use native early-exit any-hit
+  when the loaded libraries export it, while Apple RT may compute
+  `hit_count > 0`, proving backend execution and parity but not native
+  early-exit Apple performance.
 - It is intended for line-of-sight, visibility, blocker, and simple shadow-test
   application logic.
 - It is not a full renderer, scene graph, dynamic occlusion system, or path

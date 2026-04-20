@@ -157,8 +157,9 @@ Keep these current facts in mind while reading:
   MPS RT geometry/native-assisted slices, and Apple Metal compute DB/graph
   slices under the published v0.9.4 release boundary
 - released `v0.9.5` carries `ray_triangle_any_hit`, `visibility_rows`, and
-  `reduce_rows`; OptiX, Embree, and HIPRT have native early-exit any-hit, while
-  Vulkan and Apple RT remain compatibility any-hit paths
+  `reduce_rows`; OptiX, Embree, and HIPRT have native early-exit any-hit in the
+  released tag; current `main` adds post-release native Vulkan any-hit when the
+  backend library is rebuilt; Apple RT remains a compatibility any-hit path
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`
@@ -220,8 +221,9 @@ Keep these current facts in mind while reading:
   explicit native or native-assisted Apple modes for all 18 current predicates;
   this still does not claim broad Apple backend maturity or global Apple speedup
 - the released `v0.9.5` line adds bounded any-hit, visibility-row, and
-  emitted-row reduction support without claiming native early-exit for Vulkan
-  or Apple RT, and without claiming native backend acceleration for `reduce_rows`
+  emitted-row reduction support without claiming native backend acceleration
+  for `reduce_rows`; post-release current `main` adds native Vulkan any-hit,
+  while Apple RT remains compatibility dispatch
 - the released `v0.2.0` surface remains a stable historical
   workload/documentation baseline
 - the released `v0.3.0` line is an application-style demo layer on top of that

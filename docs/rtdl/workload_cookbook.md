@@ -127,10 +127,11 @@ For line-of-sight applications, `rt.visibility_rows_cpu(observers, targets,
 blockers)` builds finite observer-target rays and returns
 `{observer_id, target_id, visible}` rows using the same any-hit truth path.
 Use `rt.visibility_rows(..., backend="embree")` or another backend name when
-you want the helper to dispatch through a real backend. OptiX, Embree, and
-HIPRT use native early-exit any-hit when available; Vulkan and Apple RT may
-project `hit_count > 0` to `any_hit`, so those paths remain
-compatibility/parity rather than native early-exit speedup claims.
+you want the helper to dispatch through a real backend. OptiX, Embree, HIPRT,
+and current-main Vulkan use native early-exit any-hit when the loaded backend
+libraries export it. Apple RT may project `hit_count > 0` to `any_hit`, so that
+path remains compatibility/parity rather than a native early-exit Apple speedup
+claim.
 
 When the app needs a compact decision after row emission, use
 `rt.reduce_rows(...)`:

@@ -123,10 +123,11 @@ PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 Current v0.9.5 boundary:
 
 - `ray_triangle_any_hit` is a bounded yes/no ray blocker primitive.
-- OptiX, Embree, and HIPRT have native early-exit any-hit implementations.
-- Vulkan and Apple RT may execute compatibility dispatch by projecting existing
-  hit-count traversal to `any_hit`; do not describe those paths as native
-  early-exit speedups.
+- OptiX, Embree, HIPRT, and current-main Vulkan have native early-exit any-hit
+  implementations when the loaded backend libraries export them.
+- Apple RT may execute compatibility dispatch by projecting existing hit-count
+  traversal to `any_hit`; do not describe that path as a native early-exit
+  speedup.
 - `visibility_rows` is a standard-library line-of-sight helper built on
   finite any-hit rays.
 - `reduce_rows` is a deterministic Python helper over emitted rows, not a

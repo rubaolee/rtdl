@@ -7,7 +7,7 @@ Public API mirrors optix_runtime.py (just substitute "vulkan" for "optix"):
 
 Current Vulkan-native workload surface:
   segment_intersection, point_in_polygon, overlay_compose,
-  ray_triangle_hit_count, segment_polygon_hitcount,
+  ray_triangle_hit_count, ray_triangle_any_hit, segment_polygon_hitcount,
   segment_polygon_anyhit_rows, point_nearest_segment,
   fixed_radius_neighbors, bounded_knn_rows, knn_rows
 
@@ -125,6 +125,13 @@ class _RtdlRayHitCountRow(ctypes.Structure):
     _fields_ = [
         ("ray_id",    ctypes.c_uint32),
         ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlRayAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("any_hit", ctypes.c_uint32),
     ]
 
 
@@ -298,9 +305,12 @@ class PreparedVulkanExecution:
     def run_raw(self) -> VulkanRowView:
         pred = self.compiled.refine_op.predicate.name
         if pred == "ray_triangle_any_hit":
+            native = _find_optional_backend_symbol(self.library, "rtdl_vulkan_run_ray_anyhit")
+            if native is not None:
+                return _call_ray_anyhit_vulkan_packed(self.compiled, self.packed_inputs, self.library)
             raise ValueError(
                 "Vulkan raw mode is not supported for ray_triangle_any_hit "
-                "while it is projected from the backend hit-count row view"
+                "when using an older library that projects from hit-count rows"
             )
         dispatch = {
             "segment_intersection":   _call_lsi_vulkan_packed,
@@ -324,6 +334,12 @@ class PreparedVulkanExecution:
     def run(self) -> tuple:
         pred = self.compiled.refine_op.predicate.name
         if pred == "ray_triangle_any_hit":
+            if _find_optional_backend_symbol(self.library, "rtdl_vulkan_run_ray_anyhit") is not None:
+                rows = _call_ray_anyhit_vulkan_packed(self.compiled, self.packed_inputs, self.library)
+                try:
+                    return rows.to_dict_rows()
+                finally:
+                    rows.close()
             rows = _call_ray_hitcount_vulkan_packed(self.compiled, self.packed_inputs, self.library)
             try:
                 return _project_ray_hitcount_view_to_anyhit(rows)
@@ -1149,6 +1165,45 @@ def _call_ray_hitcount_vulkan_packed(compiled: CompiledKernel, packed, lib) -> V
         field_names=("ray_id", "hit_count"))
 
 
+def _call_ray_anyhit_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
+    rays = packed[compiled.candidates.left.name]
+    triangles = packed[compiled.candidates.right.name]
+    rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    if rays.dimension != triangles.dimension:
+        raise ValueError("Vulkan ray_triangle_any_hit requires rays and triangles to have the same dimension")
+    if rays.dimension == 3:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_anyhit_3d")
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded Vulkan backend library does not export rtdl_vulkan_run_ray_anyhit_3d. "
+                "Rebuild it with 'make build-vulkan' from current main."
+            )
+        status = symbol(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    else:
+        symbol = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_anyhit")
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded Vulkan backend library does not export rtdl_vulkan_run_ray_anyhit. "
+                "Rebuild it with 'make build-vulkan' from current main."
+            )
+        status = symbol(
+            rays.records, rays.count,
+            triangles.records, triangles.count,
+            ctypes.byref(rows_ptr), ctypes.byref(row_count),
+            error, len(error))
+    _check_status(status, error)
+    return VulkanRowView(
+        library=lib, rows_ptr=rows_ptr,
+        row_count=row_count.value, row_type=_RtdlRayAnyHitRow,
+        field_names=("ray_id", "any_hit"))
+
+
 def _call_segment_polygon_hitcount_vulkan_packed(compiled: CompiledKernel, packed, lib) -> VulkanRowView:
     segments = packed[compiled.candidates.left.name]
     polygons = packed[compiled.candidates.right.name]
@@ -1461,6 +1516,26 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_ray3d.restype = ctypes.c_int
+    optional_anyhit = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_anyhit")
+    if optional_anyhit is not None:
+        optional_anyhit.argtypes = [
+            ctypes.POINTER(_RtdlRay2D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_anyhit.restype = ctypes.c_int
+    optional_anyhit3d = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_anyhit_3d")
+    if optional_anyhit3d is not None:
+        optional_anyhit3d.argtypes = [
+            ctypes.POINTER(_RtdlRay3D), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlTriangle3D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_anyhit3d.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_vulkan_run_segment_polygon_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,

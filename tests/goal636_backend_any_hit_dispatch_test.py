@@ -85,8 +85,27 @@ class Goal636BackendAnyHitDispatchTest(unittest.TestCase):
         expected = rt.run_cpu(ray_triangle_any_hit_2d_kernel, **case)
 
         self.assertEqual(rt.run_vulkan(ray_triangle_any_hit_2d_kernel, **case), expected)
-        with self.assertRaisesRegex(ValueError, "raw mode is not supported"):
-            rt.run_vulkan(ray_triangle_any_hit_2d_kernel, result_mode="raw", **case)
+        try:
+            raw_rows = rt.run_vulkan(ray_triangle_any_hit_2d_kernel, result_mode="raw", **case)
+        except ValueError as exc:
+            self.assertIn("raw mode is not supported", str(exc))
+        else:
+            try:
+                self.assertEqual(raw_rows.to_dict_rows(), expected)
+            finally:
+                raw_rows.close()
+
+    @unittest.skipUnless(_available(rt.vulkan_version), "Vulkan backend is not available")
+    def test_vulkan_any_hit_3d_matches_cpu(self) -> None:
+        case = _case_3d()
+        expected = rt.run_cpu(ray_triangle_any_hit_3d_kernel, **case)
+
+        self.assertEqual(rt.run_vulkan(ray_triangle_any_hit_3d_kernel, **case), expected)
+        raw_rows = rt.run_vulkan(ray_triangle_any_hit_3d_kernel, result_mode="raw", **case)
+        try:
+            self.assertEqual(raw_rows.to_dict_rows(), expected)
+        finally:
+            raw_rows.close()
 
     @unittest.skipUnless(_available(rt.hiprt_context_probe), "HIPRT backend is not available")
     def test_hiprt_any_hit_matches_cpu_for_2d_and_3d(self) -> None:

@@ -57,9 +57,11 @@ Use `python3` instead if that is what your shell exposes.
 - Embree has a native early-exit any-hit path using `rtcOccluded1`.
 - HIPRT has a native any-hit path that breaks its HIPRT traversal loop after
   the first reported accepted hit.
-- Vulkan and Apple RT currently use bounded backend compatibility dispatch by
-  projecting `ray_triangle_hit_count` to `any_hit`; this proves backend
-  execution and parity, not native early-exit performance.
-- Additional native backend-specific early-exit kernels remain future backend
-  performance work.
+- Current `main` adds native Vulkan any-hit through a dedicated Vulkan RT
+  pipeline and raw row ABI when `librtdl_vulkan` is rebuilt from current source.
+- Apple RT currently uses bounded backend compatibility dispatch by projecting
+  `ray_triangle_hit_count` to `any_hit`; this proves backend execution and
+  parity, not native early-exit Apple performance.
+- Additional Apple native early-exit work remains future backend performance
+  work.
 - The implementation is float-based and bounded; it is not a rendering API.

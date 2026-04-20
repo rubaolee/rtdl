@@ -1,0 +1,1 @@
+Review Goal650 by reading `/Users/rl2025/rtdl_python_only/docs/reports/goal650_vulkan_native_early_exit_anyhit_2026-04-20.md` and the referenced Vulkan/Python/test/doc changes, then write an ACCEPT/BLOCK verdict focused on whether Vulkan now has genuine native early-exit any-hit and whether Apple RT remains honestly scoped as compatibility.

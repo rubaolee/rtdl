@@ -73,13 +73,14 @@ uses Metal compute/native-assisted kernels.
 
 The released `v0.9.5` layer adds a small reusable app-programming surface on
 top of that backend set. `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows;
-OptiX, Embree, and HIPRT have native early-exit implementations that stop after
-the first accepted hit. Vulkan and Apple RT expose bounded compatibility
-dispatch by projecting existing hit-count traversal to `any_hit`, which is real
-backend execution but not a native early-exit speedup claim. `visibility_rows`
-builds finite observer-target rays over the any-hit primitive, and
-`reduce_rows` is a deterministic Python standard-library helper over already
-emitted rows.
+OptiX, Embree, and HIPRT have native early-exit implementations in the released
+tag. Current `main` additionally has post-release native Vulkan any-hit when the
+Vulkan backend library is rebuilt from current source. Apple RT still exposes
+bounded compatibility dispatch by projecting existing hit-count traversal to
+`any_hit`, which is real backend execution but not a native early-exit Apple
+speedup claim. `visibility_rows` builds finite observer-target rays over the
+any-hit primitive, and `reduce_rows` is a deterministic Python standard-library
+helper over already emitted rows.
 
 ## What Python Owns
 
@@ -210,8 +211,7 @@ Do not read the current system as:
 - a claim that Apple RT is broadly faster than Embree or mature across every
   workload shape; current Apple support remains bounded by the explicit
   native/native-assisted support matrix
-- a claim that Vulkan or Apple RT currently provide native early-exit any-hit
-  traversal
+- a claim that Apple RT currently provides native early-exit any-hit traversal
 - a claim that `reduce_rows` is a native backend reduction
 
 For exact release claims, read:

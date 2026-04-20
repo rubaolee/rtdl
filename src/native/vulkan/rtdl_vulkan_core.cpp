@@ -1634,6 +1634,55 @@ void main() {
 }
 )GLSL";
 
+// ---------- RayAnyHit shaders ------------------------------------------------
+// Same 2D custom-intersection geometry as RayHitCount, but the any-hit shader
+// terminates traversal after the first accepted hit.
+
+static const char* kRahRgen = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(set=0, binding=0) uniform accelerationStructureEXT tlas;
+layout(set=0, binding=3, std140) uniform Params { uint nrays; uint pad0; };
+layout(set=0, binding=4, std430) readonly buffer RayBuf { float data[]; } rays;
+layout(set=0, binding=1, std430) buffer OutBuf { uint data[]; } output_buf;
+layout(location=0) rayPayloadEXT uint anyHit;
+void main() {
+    uint idx = gl_LaunchIDEXT.x;
+    if (idx >= nrays) return;
+    uint base = idx * 6u;
+    float ox = rays.data[base+0u], oy = rays.data[base+1u];
+    float dx = rays.data[base+2u], dy = rays.data[base+3u];
+    float tmax = rays.data[base+4u];
+    uint  ray_id = floatBitsToUint(rays.data[base+5u]);
+    float len = sqrt(dx*dx + dy*dy);
+    anyHit = 0u;
+    if (len >= 1e-10) {
+        traceRayEXT(tlas, gl_RayFlagsNoneEXT, 0xFF, 0, 1, 0,
+                    vec3(ox, oy, 0.0), 0.0, vec3(dx/len, dy/len, 0.0), tmax*len, 0);
+    }
+    uint obase = idx * 2u;
+    output_buf.data[obase+0u] = ray_id;
+    output_buf.data[obase+1u] = anyHit;
+}
+)GLSL";
+
+static const char* kRahRmiss = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(location=0) rayPayloadInEXT uint anyHit;
+void main() {}
+)GLSL";
+
+static const char* kRahRahit = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(location=0) rayPayloadInEXT uint anyHit;
+void main() {
+    anyHit = 1u;
+    terminateRayEXT;
+}
+)GLSL";
+
 // ---------- RayHitCount3D shaders (native Vulkan triangle geometry) -----------
 // Build: BLAS from VK_GEOMETRY_TYPE_TRIANGLES_KHR — hardware handles intersection.
 // No intersection shader needed. Any-hit counts all hits; ignoreIntersectionEXT
@@ -1679,6 +1728,48 @@ layout(location=0) rayPayloadInEXT uint hitCount;
 void main() {
     hitCount += 1u;
     ignoreIntersectionEXT;
+}
+)GLSL";
+
+static const char* kRah3dRgen = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(set=0, binding=0) uniform accelerationStructureEXT tlas;
+layout(set=0, binding=3, std140) uniform Params { uint nrays; uint pad0; };
+layout(set=0, binding=4, std430) readonly buffer RayBuf { float data[]; } rays;
+layout(set=0, binding=1, std430) buffer OutBuf { uint data[]; } output_buf;
+layout(location=0) rayPayloadEXT uint anyHit;
+void main() {
+    uint idx = gl_LaunchIDEXT.x;
+    if (idx >= nrays) return;
+    uint base = idx * 8u;
+    float ox = rays.data[base+0u], oy = rays.data[base+1u], oz = rays.data[base+2u];
+    float dx = rays.data[base+3u], dy = rays.data[base+4u], dz = rays.data[base+5u];
+    float tmax  = rays.data[base+6u];
+    uint ray_id = floatBitsToUint(rays.data[base+7u]);
+    anyHit = 0u;
+    traceRayEXT(tlas, gl_RayFlagsNoneEXT, 0xFF, 0, 1, 0,
+                vec3(ox, oy, oz), 0.0, vec3(dx, dy, dz), tmax, 0);
+    uint obase = idx * 2u;
+    output_buf.data[obase+0u] = ray_id;
+    output_buf.data[obase+1u] = anyHit;
+}
+)GLSL";
+
+static const char* kRah3dRmiss = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(location=0) rayPayloadInEXT uint anyHit;
+void main() {}
+)GLSL";
+
+static const char* kRah3dRahit = R"GLSL(
+#version 460
+#extension GL_EXT_ray_tracing : require
+layout(location=0) rayPayloadInEXT uint anyHit;
+void main() {
+    anyHit = 1u;
+    terminateRayEXT;
 }
 )GLSL";
 
@@ -2697,6 +2788,7 @@ static RtPipeline*      g_pip_pos_count_pipe = nullptr;
 static RtPipeline*      g_pip_pos_pipe= nullptr;
 static RtPipeline*      g_overlay_pipe= nullptr;
 static RtPipeline*      g_rhc_pipe    = nullptr;
+static RtPipeline*      g_rah_pipe    = nullptr;
 static RtPipeline*      g_sph_pipe    = nullptr;
 static ComputePipeline* g_pns_pipe    = nullptr;
 static ComputePipeline* g_frn_pipe    = nullptr;
@@ -2705,10 +2797,11 @@ static ComputePipeline* g_knn_pipe    = nullptr;
 static ComputePipeline* g_knn3d_pipe  = nullptr;
 static RtPipeline*      g_dbscan_pipe = nullptr;
 static std::once_flag   g_lsi_init, g_pip_init, g_pip_pos_count_init, g_pip_pos_init, g_overlay_init;
-static std::once_flag   g_rhc_init, g_sph_init, g_pns_init, g_frn_init, g_knn_init;
+static std::once_flag   g_rhc_init, g_rah_init, g_sph_init, g_pns_init, g_frn_init, g_knn_init;
 static std::once_flag   g_frn3d_init, g_knn3d_init;
 static RtPipeline*      g_rhc3d_pipe = nullptr;
-static std::once_flag   g_rhc3d_init;
+static RtPipeline*      g_rah3d_pipe = nullptr;
+static std::once_flag   g_rhc3d_init, g_rah3d_init;
 static std::once_flag   g_dbscan_init;
 
 // ── Workload run functions ───────────────────────────────────────────────────
@@ -4058,6 +4151,90 @@ static void run_ray_hitcount_vulkan(
     *row_count_out = ray_count;
 }
 
+static void run_ray_anyhit_vulkan(
+        const RtdlRay2D*    rays,      size_t ray_count,
+        const RtdlTriangle* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow** rows_out, size_t* row_count_out)
+{
+    VkContext* ctx = get_context();
+    std::call_once(g_rah_init, [ctx]() {
+        g_rah_pipe = new RtPipeline(build_rt_pipeline(
+            ctx, kRahRgen, kRahRmiss, kRhcRint, kRahRahit,
+            "rah.rgen", "rah.rmiss", "rah.rint", "rah.rahit", 6));
+    });
+
+    std::vector<GpuRay>      gpu_rays(ray_count);
+    std::vector<GpuTriangle> gpu_tris(triangle_count);
+    for (size_t i = 0; i < ray_count; ++i)
+        gpu_rays[i] = {(float)rays[i].ox,(float)rays[i].oy,
+                       (float)rays[i].dx,(float)rays[i].dy,
+                       (float)rays[i].tmax, rays[i].id};
+    for (size_t i = 0; i < triangle_count; ++i)
+        gpu_tris[i] = {(float)triangles[i].x0,(float)triangles[i].y0,
+                       (float)triangles[i].x1,(float)triangles[i].y1,
+                       (float)triangles[i].x2,(float)triangles[i].y2,
+                       triangles[i].id};
+
+    VkDeviceSize ray_sz = sizeof(GpuRay)      * ray_count;
+    VkDeviceSize tri_sz = sizeof(GpuTriangle) * triangle_count;
+    BufMem d_rays = alloc_buffer(ctx, ray_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_tris = alloc_buffer(ctx, tri_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    upload_to_buf(ctx, d_rays, gpu_rays.data(), ray_sz);
+    upload_to_buf(ctx, d_tris, gpu_tris.data(), tri_sz);
+
+    std::vector<GpuAabb> aabbs(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        float xmin = std::min({gpu_tris[i].x0, gpu_tris[i].x1, gpu_tris[i].x2});
+        float ymin = std::min({gpu_tris[i].y0, gpu_tris[i].y1, gpu_tris[i].y2});
+        float xmax = std::max({gpu_tris[i].x0, gpu_tris[i].x1, gpu_tris[i].x2});
+        float ymax = std::max({gpu_tris[i].y0, gpu_tris[i].y1, gpu_tris[i].y2});
+        aabbs[i] = { xmin-kAabbEps, ymin-kAabbEps, -0.5f, xmax+kAabbEps, ymax+kAabbEps, 0.5f };
+    }
+    AccelResult blas = build_aabb_blas(ctx, aabbs);
+    AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
+
+    BufMem d_output = alloc_buffer(ctx, sizeof(GpuRayHitRecord) * ray_count,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    zero_buf(ctx, d_output);
+
+    struct { uint32_t nrays, pad0; } params{ (uint32_t)ray_count, 0 };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_rah_pipe->dset_layout, 6, true);
+    bind_tlas(ctx,       ds.set, tlas.handle, 0);
+    bind_ssbo(ctx->device, ds.set, d_output.buffer, sizeof(GpuRayHitRecord) * ray_count, 1);
+    BufMem d_dummy = alloc_buffer(ctx, 4, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    bind_ssbo(ctx->device, ds.set, d_dummy.buffer, 4, 2);
+    bind_ubo (ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+    bind_ssbo(ctx->device, ds.set, d_rays.buffer, ray_sz, 4);
+    bind_ssbo(ctx->device, ds.set, d_tris.buffer, tri_sz, 5);
+
+    dispatch_rt(ctx, *g_rah_pipe, ds.set, (uint32_t)ray_count);
+
+    std::vector<GpuRayHitRecord> gpu_rows(ray_count);
+    download_from_buf(ctx, gpu_rows.data(), d_output, sizeof(GpuRayHitRecord) * ray_count);
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_rays); free_buf(ctx, d_tris);
+    free_buf(ctx, d_output); free_buf(ctx, d_params); free_buf(ctx, d_dummy);
+    destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
+
+    auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(sizeof(RtdlRayAnyHitRow) * ray_count));
+    if (!out && ray_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < ray_count; ++i)
+        out[i] = { gpu_rows[i].ray_id, gpu_rows[i].hit_count ? 1u : 0u };
+    *rows_out      = out;
+    *row_count_out = ray_count;
+}
+
 // ---------- SegmentPolygonHitcount -------------------------------------------
 
 static void run_segment_polygon_hitcount_vulkan(
@@ -4961,6 +5138,86 @@ static void run_ray_hitcount_3d_vulkan(
         }
         out[i] = { gpu_rows[i].ray_id, exact_hit_count };
     }
+    *rows_out      = out;
+    *row_count_out = ray_count;
+}
+
+static void run_ray_anyhit_3d_vulkan(
+        const RtdlRay3D* rays, size_t ray_count,
+        const RtdlTriangle3D* triangles, size_t triangle_count,
+        RtdlRayAnyHitRow** rows_out, size_t* row_count_out)
+{
+    if (ray_count == 0) {
+        *rows_out = nullptr; *row_count_out = 0; return;
+    }
+
+    VkContext* ctx = get_context();
+    std::call_once(g_rah3d_init, [ctx]() {
+        g_rah3d_pipe = new RtPipeline(build_rt_pipeline_triangle(
+            ctx, kRah3dRgen, kRah3dRmiss, kRah3dRahit,
+            "rah3d.rgen", "rah3d.rmiss", "rah3d.rahit", 5));
+    });
+
+    std::vector<GpuRay3D> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        gpu_rays[i] = { (float)rays[i].ox, (float)rays[i].oy, (float)rays[i].oz,
+                        (float)rays[i].dx, (float)rays[i].dy, (float)rays[i].dz,
+                        (float)rays[i].tmax, rays[i].id };
+    }
+
+    std::vector<float> vert_data(triangle_count * 9u);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        float* v = &vert_data[i * 9u];
+        v[0]=(float)triangles[i].x0; v[1]=(float)triangles[i].y0; v[2]=(float)triangles[i].z0;
+        v[3]=(float)triangles[i].x1; v[4]=(float)triangles[i].y1; v[5]=(float)triangles[i].z1;
+        v[6]=(float)triangles[i].x2; v[7]=(float)triangles[i].y2; v[8]=(float)triangles[i].z2;
+    }
+
+    VkDeviceSize ray_sz = sizeof(GpuRay3D) * ray_count;
+    BufMem d_rays = alloc_buffer(ctx, ray_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    upload_to_buf(ctx, d_rays, gpu_rays.data(), ray_sz);
+
+    AccelResult blas = build_triangle_blas_3d(ctx, vert_data);
+    AccelResult tlas = build_tlas(ctx, blas.handle, blas.device_addr);
+
+    VkDeviceSize out_sz = sizeof(GpuRayHitRecord) * ray_count;
+    BufMem d_output = alloc_buffer(ctx, out_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    zero_buf(ctx, d_output);
+
+    struct { uint32_t nrays, pad0; } params{ (uint32_t)ray_count, 0u };
+    BufMem d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    void* mp; vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp);
+    std::memcpy(mp, &params, sizeof(params)); vkUnmapMemory(ctx->device, d_params.memory);
+
+    BufMem d_dummy = alloc_buffer(ctx, 4u, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+    DescriptorSet ds = alloc_descriptor_set(ctx, g_rah3d_pipe->dset_layout, 5, true);
+    bind_tlas  (ctx,         ds.set, tlas.handle,     0);
+    bind_ssbo  (ctx->device, ds.set, d_output.buffer, out_sz,       1);
+    bind_ssbo  (ctx->device, ds.set, d_dummy.buffer,  4u,           2);
+    bind_ubo   (ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+    bind_ssbo  (ctx->device, ds.set, d_rays.buffer,   ray_sz,       4);
+
+    dispatch_rt(ctx, *g_rah3d_pipe, ds.set, (uint32_t)ray_count);
+
+    std::vector<GpuRayHitRecord> gpu_rows(ray_count);
+    download_from_buf(ctx, gpu_rows.data(), d_output, out_sz);
+
+    vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    free_buf(ctx, d_rays); free_buf(ctx, d_output);
+    free_buf(ctx, d_params); free_buf(ctx, d_dummy);
+    destroy_accel(ctx, tlas); destroy_accel(ctx, blas);
+
+    auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(sizeof(RtdlRayAnyHitRow) * ray_count));
+    if (!out) throw std::bad_alloc();
+    for (size_t i = 0; i < ray_count; ++i)
+        out[i] = { gpu_rows[i].ray_id, gpu_rows[i].hit_count ? 1u : 0u };
     *rows_out      = out;
     *row_count_out = ray_count;
 }

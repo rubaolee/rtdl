@@ -24,13 +24,13 @@ reduction slice.
 `rt.ray_triangle_any_hit(exact=False)`, line-of-sight helpers
 (`rt.visibility_rows_cpu(...)` / `rt.visibility_rows(...)`), and
 `rt.reduce_rows(...)` for deterministic Python-side reductions over emitted
-rows. OptiX, Embree, and HIPRT have native any-hit paths that stop their backend
-traversal loop after the first accepted triangle hit. Vulkan and Apple RT may
-still provide compatibility dispatch by running their existing hit-count
-traversal and projecting `hit_count > 0` to `any_hit`; that is real backend
-execution, but it is not a native early-exit performance claim for those
-engines. `reduce_rows` is a standard-library helper, not a native RT backend
-reduction.
+rows. The released `v0.9.5` tag has native any-hit paths for OptiX, Embree, and
+HIPRT. Current `main` additionally has a post-release Vulkan native any-hit path
+when `librtdl_vulkan` is rebuilt from current source. Apple RT still provides
+compatibility dispatch by running its existing hit-count traversal and
+projecting `hit_count > 0` to `any_hit`; that is real backend execution, but it
+is not a native early-exit Apple performance claim. `reduce_rows` is a
+standard-library helper, not a native RT backend reduction.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -67,9 +67,10 @@ bounded DB-style analytical workloads.
 - released `v0.9.5` surface:
   - `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows and allows early
     termination after the first accepted triangle hit
-  - OptiX, Embree, and HIPRT have native early-exit any-hit implementations;
-    Vulkan and Apple RT are still bounded compatibility paths unless a later
-    goal upgrades them
+  - OptiX, Embree, and HIPRT have native early-exit any-hit implementations in
+    the released tag; current `main` also adds native Vulkan any-hit after
+    rebuilding `librtdl_vulkan`; Apple RT remains a bounded compatibility path
+    for any-hit
   - `visibility_rows_cpu` emits `{observer_id, target_id, visible}` rows by
     turning observer-target pairs into finite any-hit rays
   - `reduce_rows` reduces emitted rows by `any`, `count`, `sum`, `min`, or
@@ -592,7 +593,8 @@ Current mainline release line:
   `v0.9.3` evidence lines
 - released `v0.9.5` additionally carries bounded any-hit / visibility-row /
   emitted-row reduction support, with native early-exit any-hit for OptiX,
-  Embree, and HIPRT and compatibility any-hit dispatch for Vulkan and Apple RT
+  Embree, and HIPRT; current `main` adds post-release native Vulkan any-hit,
+  while Apple RT remains compatibility any-hit dispatch
 
 Newest released graph workload surface:
 
@@ -655,8 +657,9 @@ Release and preview layers inside the current repository:
   - Apple RT is not yet claimed as broadly faster than Embree
 - `v0.9.5`: current public release
   - adds `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`
-  - native early-exit any-hit exists for OptiX, Embree, and HIPRT
-  - Vulkan and Apple RT remain compatibility any-hit paths
+  - native early-exit any-hit exists for OptiX, Embree, HIPRT, and post-release
+    current-main Vulkan when the backend library is rebuilt
+  - Apple RT remains a compatibility any-hit path
   - `reduce_rows` is a Python helper over emitted rows, not native backend
     acceleration
 
