@@ -9,6 +9,8 @@ data loading, post-processing, presentation, and output.
 If you first need the boundary between "RTDL can do this" and "RTDL is not
 intended to become this whole system", read
 [RTDL Capability Boundaries](capability_boundaries.md).
+For the latest current-main backend table after the released tag, read
+[RTDL Current Main Support Matrix](current_main_support_matrix.md).
 
 The point is to avoid writing the same ray-tracing workload plumbing again for
 each backend. A typical RT workload needs acceleration-structure setup,

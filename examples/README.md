@@ -90,6 +90,7 @@ points for external users.
 For release-facing examples and commands, prefer the docs entry points:
 
 - `../README.md`
+- `../docs/current_main_support_matrix.md`
 - `../docs/quick_tutorial.md`
 - `../docs/tutorials/README.md`
 - `../docs/release_facing_examples.md`
@@ -179,8 +180,14 @@ Current Apple RT boundary:
 Current v0.9.5 example boundary:
 
 - `rtdl_ray_triangle_any_hit.py` shows bounded yes/no blocker rows. Native
-  early-exit is available on OptiX, Embree, and HIPRT; Vulkan and Apple RT use
-  compatibility projection when exposed for this feature.
+  early-exit is available on OptiX, Embree, and HIPRT at the released `v0.9.5`
+  tag boundary.
+- Current `main` also has native Vulkan any-hit and Apple RT
+  native/native-assisted any-hit after rebuilding `librtdl_vulkan` and
+  `librtdl_apple_rt` from current source.
+- Apple RT 3D uses MPS RT nearest-intersection existence; Apple RT 2D uses
+  MPS-prism traversal with per-ray early exit plus exact 2D acceptance. This is
+  not programmable shader-level Apple any-hit.
 - `rtdl_visibility_rows.py` shows observer-target line-of-sight rows built on
   any-hit.
 - `rtdl_reduce_rows.py` shows deterministic Python standard-library reductions

@@ -18,7 +18,9 @@ It currently covers:
   native/native-assisted Apple execution rather than broad Apple speedup
   evidence
 - the released `v0.9.5` any-hit, visibility-row, and emitted-row reduction
-  examples, with native early-exit limited to OptiX, Embree, and HIPRT
+  examples; the released tag has native early-exit on OptiX, Embree, and HIPRT,
+  while current `main` also has native/native-assisted Vulkan and Apple RT
+  any-hit after rebuilding the backend libraries
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -27,6 +29,7 @@ If you want a guided learning order instead of a flat example list, start with:
 
 - [RTDL Tutorials](tutorials/README.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
+- [Current Main Support Matrix](current_main_support_matrix.md)
 
 ## Choose By Job
 
@@ -123,12 +126,14 @@ PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 Current v0.9.5 boundary:
 
 - `ray_triangle_any_hit` is a bounded yes/no ray blocker primitive.
-- OptiX, Embree, HIPRT, and current-main Vulkan have native early-exit any-hit
-  implementations when the loaded backend libraries export them.
+- At the released `v0.9.5` tag boundary, native early-exit exists for OptiX,
+  Embree, and HIPRT.
+- On current `main`, OptiX, Embree, HIPRT, and Vulkan have native early-exit
+  any-hit implementations when the loaded backend libraries export them.
 - Apple RT 3D on current `main` may use MPS RT nearest-intersection any-hit.
-  Apple RT 2D on current `main` may use MPS prism traversal with per-ray
-  early-exit plus exact 2D acceptance when `librtdl_apple_rt` is rebuilt; do
-  not describe Apple any-hit as programmable shader-level any-hit.
+- Apple RT 2D on current `main` may use MPS prism traversal with per-ray
+  early-exit plus exact 2D acceptance when `librtdl_apple_rt` is rebuilt.
+- Do not describe Apple any-hit as programmable shader-level any-hit.
 - `visibility_rows` is a standard-library line-of-sight helper built on
   finite any-hit rays.
 - `reduce_rows` is a deterministic Python helper over emitted rows, not a
