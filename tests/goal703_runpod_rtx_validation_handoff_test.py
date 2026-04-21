@@ -16,8 +16,13 @@ class Goal703RunpodRtxValidationHandoffTest(unittest.TestCase):
             "OPTIX_PREFIX",
             "include/optix.h",
             "git clone",
+            "libc6-dev-i386",
+            "libgeos-dev",
+            "RTDL_OPTIX_PTX_COMPILER",
             "goal698_rtx_cloud_validation_commands.sh",
             "goal699_rtx_profile_report.py",
+            "--profile-json",
+            "--environment",
             "goal703_runpod_rtx_profile_report_",
         ):
             with self.subTest(phrase=phrase):
@@ -47,6 +52,9 @@ class Goal703RunpodRtxValidationHandoffTest(unittest.TestCase):
             "Avoid T4",
             "Use Secure Cloud first",
             "Make the NVIDIA OptiX SDK headers available",
+            "libc6-dev-i386",
+            "NVIDIA RTX A5000",
+            "RTDL_OPTIX_PTX_COMPILER=nvcc",
             "Do not claim broad RTDL speedup",
             "KNN, Hausdorff, ANN, Barnes-Hut, graph, or DB",
             "terminate the Pod",

@@ -1,0 +1,193 @@
+{
+  "backend": "optix",
+  "cases": [
+    {
+      "app": "outlier_detection",
+      "iterations": 5,
+      "last_output": {
+        "app": "outlier_detection",
+        "comparison_kind": "full_density_rows",
+        "copies": 128,
+        "matches_oracle": true,
+        "native_summary_row_count": 0,
+        "neighbor_row_count": 2560,
+        "path": "rows",
+        "point_count": 1024
+      },
+      "mode": "optix",
+      "path": "rows",
+      "phase_stats": {
+        "backend_execute_or_materialize_rows": {
+          "max_sec": 0.652276252862066,
+          "median_sec": 0.004152040928602219,
+          "min_sec": 0.003189625684171915
+        },
+        "oracle_validate": {
+          "max_sec": 0.21510025998577476,
+          "median_sec": 0.2103641228750348,
+          "min_sec": 0.16893126303330064
+        },
+        "python_input_construction": {
+          "max_sec": 0.0013080602511763573,
+          "median_sec": 0.001235269010066986,
+          "min_sec": 0.0009759929962456226
+        },
+        "python_postprocess": {
+          "max_sec": 0.005168883129954338,
+          "median_sec": 0.004815435968339443,
+          "min_sec": 0.003892304841428995
+        },
+        "total": {
+          "max_sec": 0.8692200710065663,
+          "median_sec": 0.22542556189000607,
+          "min_sec": 0.17706311913207173
+        }
+      }
+    },
+    {
+      "app": "outlier_detection",
+      "iterations": 5,
+      "last_output": {
+        "app": "outlier_detection",
+        "comparison_kind": "outlier_flags_only",
+        "copies": 128,
+        "matches_oracle": true,
+        "native_summary_row_count": 1024,
+        "neighbor_row_count": 0,
+        "path": "rt_count_threshold",
+        "point_count": 1024
+      },
+      "mode": "optix",
+      "path": "rt_count_threshold",
+      "phase_stats": {
+        "backend_execute_or_materialize_rows": {
+          "max_sec": 0.5618273690342903,
+          "median_sec": 0.00336388498544693,
+          "min_sec": 0.0032453490421175957
+        },
+        "oracle_validate": {
+          "max_sec": 0.18019855115562677,
+          "median_sec": 0.16917320294305682,
+          "min_sec": 0.16863900097087026
+        },
+        "python_input_construction": {
+          "max_sec": 0.0010681860148906708,
+          "median_sec": 0.0009817923419177532,
+          "min_sec": 0.0009799976833164692
+        },
+        "python_postprocess": {
+          "max_sec": 0.0010945401154458523,
+          "median_sec": 0.0008059977553784847,
+          "min_sec": 0.000771649181842804
+        },
+        "total": {
+          "max_sec": 0.7443207493051887,
+          "median_sec": 0.1744597340002656,
+          "min_sec": 0.17387986881658435
+        }
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "iterations": 5,
+      "last_output": {
+        "app": "dbscan_clustering",
+        "cluster_row_count": 1024,
+        "comparison_kind": "full_cluster_rows",
+        "copies": 128,
+        "matches_oracle": true,
+        "native_summary_row_count": 0,
+        "neighbor_row_count": 3328,
+        "path": "rows",
+        "point_count": 1024
+      },
+      "mode": "optix",
+      "path": "rows",
+      "phase_stats": {
+        "backend_execute_or_materialize_rows": {
+          "max_sec": 0.004430525004863739,
+          "median_sec": 0.0036341240629553795,
+          "min_sec": 0.0034959339536726475
+        },
+        "oracle_validate": {
+          "max_sec": 0.17510595079511404,
+          "median_sec": 0.17153085488826036,
+          "min_sec": 0.1678649359382689
+        },
+        "python_input_construction": {
+          "max_sec": 0.0010205390863120556,
+          "median_sec": 0.0010079490020871162,
+          "min_sec": 0.000983932986855507
+        },
+        "python_postprocess": {
+          "max_sec": 0.0072336457669734955,
+          "median_sec": 0.007136090192943811,
+          "min_sec": 0.006989751011133194
+        },
+        "total": {
+          "max_sec": 0.1876172898337245,
+          "median_sec": 0.18394778622314334,
+          "min_sec": 0.17979004699736834
+        }
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "iterations": 5,
+      "last_output": {
+        "app": "dbscan_clustering",
+        "cluster_row_count": 0,
+        "comparison_kind": "core_flags_only",
+        "copies": 128,
+        "matches_oracle": true,
+        "native_summary_row_count": 1024,
+        "neighbor_row_count": 0,
+        "path": "rt_core_flags",
+        "point_count": 1024
+      },
+      "mode": "optix",
+      "path": "rt_core_flags",
+      "phase_stats": {
+        "backend_execute_or_materialize_rows": {
+          "max_sec": 0.0037181577645242214,
+          "median_sec": 0.0034657479263842106,
+          "min_sec": 0.003410093951970339
+        },
+        "oracle_core_flag_validate": {
+          "max_sec": 0.16065316693857312,
+          "median_sec": 0.15791472233831882,
+          "min_sec": 0.15378379821777344
+        },
+        "oracle_validate": {
+          "max_sec": 0.1767216227017343,
+          "median_sec": 0.17194382287561893,
+          "min_sec": 0.1676539871841669
+        },
+        "python_input_construction": {
+          "max_sec": 0.001036378089338541,
+          "median_sec": 0.0009915148839354515,
+          "min_sec": 0.0009855637326836586
+        },
+        "python_postprocess": {
+          "max_sec": 0.0008203787729144096,
+          "median_sec": 0.0007996158674359322,
+          "min_sec": 0.000794560182839632
+        },
+        "total": {
+          "max_sec": 0.34047249890863895,
+          "median_sec": 0.3344504996202886,
+          "min_sec": 0.3271011169999838
+        }
+      }
+    }
+  ],
+  "classification_change": false,
+  "copies": 128,
+  "date": "2026-04-21",
+  "goal": "Goal697 OptiX fixed-radius app-level phase profiler",
+  "hardware_boundary": "This is RTX-ready app-level phase instrumentation. A dry run uses CPU oracle paths; an OptiX run requires a built RTDL OptiX library and suitable NVIDIA hardware. GTX 1070 timing is not RT-core timing.",
+  "iterations": 5,
+  "mode": "optix",
+  "native_subphase_boundary": "The current native fixed-radius ABI returns whole-call results only. Packing/BVH build, OptiX launch, and copy-back are not separately timed until the native API exposes counters.",
+  "rtx_speedup_claim": false
+}

@@ -12,6 +12,7 @@ CUDA_PREFIX="${CUDA_PREFIX:-/usr/local/cuda}"
 NVCC="${NVCC:-${CUDA_PREFIX}/bin/nvcc}"
 COPIES="${COPIES:-128}"
 ITERATIONS="${ITERATIONS:-5}"
+RUNPOD_INSTALL_PACKAGES="${RUNPOD_INSTALL_PACKAGES:-1}"
 
 echo "Goal703 RunPod RTDL RTX validation bootstrap"
 echo "checkout_dir=${CHECKOUT_DIR}"
@@ -34,6 +35,14 @@ if [ ! -x "${NVCC}" ]; then
 fi
 
 "${NVCC}" --version
+
+if [ "${RUNPOD_INSTALL_PACKAGES}" = "1" ] && command -v apt-get >/dev/null 2>&1 && [ "$(id -u)" = "0" ]; then
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    libc6-dev-i386 \
+    libgeos-dev \
+    pkg-config
+fi
 
 if [ ! -f "${OPTIX_PREFIX}/include/optix.h" ]; then
   cat >&2 <<EOF
@@ -61,12 +70,15 @@ chmod +x scripts/goal698_rtx_cloud_validation_commands.sh
 OPTIX_PREFIX="${OPTIX_PREFIX}" \
 CUDA_PREFIX="${CUDA_PREFIX}" \
 NVCC="${NVCC}" \
+RTDL_NVCC="${NVCC}" \
+RTDL_OPTIX_PTX_COMPILER="${RTDL_OPTIX_PTX_COMPILER:-nvcc}" \
 COPIES="${COPIES}" \
 ITERATIONS="${ITERATIONS}" \
 scripts/goal698_rtx_cloud_validation_commands.sh
 
 python3 scripts/goal699_rtx_profile_report.py \
-  --input "docs/reports/goal698_rtx_cloud_fixed_radius_phase_profile_$(date +%Y-%m-%d).json" \
+  --profile-json "docs/reports/goal698_rtx_cloud_fixed_radius_phase_profile_$(date +%Y-%m-%d).json" \
+  --environment "docs/reports/goal698_rtx_cloud_environment_$(date +%Y-%m-%d).txt" \
   --output "docs/reports/goal703_runpod_rtx_profile_report_$(date +%Y-%m-%d).md"
 
 echo

@@ -61,6 +61,8 @@ make build-optix \
 
 export PYTHONPATH="src:."
 export RTDL_OPTIX_LIB="${RTDL_OPTIX_LIB:-$(pwd)/build/librtdl_optix.so}"
+export RTDL_NVCC="${RTDL_NVCC:-${NVCC}}"
+export RTDL_OPTIX_PTX_COMPILER="${RTDL_OPTIX_PTX_COMPILER:-nvcc}"
 
 python3 - <<'PY'
 import json

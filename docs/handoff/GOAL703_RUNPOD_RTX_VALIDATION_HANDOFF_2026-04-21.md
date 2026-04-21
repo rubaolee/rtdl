@@ -51,6 +51,16 @@ NVCC=/usr/bin/nvcc \
 bash /tmp/goal703_runpod_rtx_validation_commands.sh
 ```
 
+The helper installs the Ubuntu packages RTDL needed on the first RunPod RTX
+A5000 pod:
+
+- `libc6-dev-i386`, needed by CUDA/NVRTC/NVCC header resolution on the tested image
+- `libgeos-dev`, needed by RTDL's native oracle correctness path
+- `pkg-config`, used by native dependency discovery
+
+Set `RUNPOD_INSTALL_PACKAGES=0` if the image is prebuilt and should not run
+`apt-get`.
+
 If OptiX is extracted somewhere else:
 
 ```bash
@@ -65,6 +75,11 @@ The script writes these files inside the RTDL checkout:
 - `docs/reports/goal698_rtx_cloud_environment_YYYY-MM-DD.txt`
 - `docs/reports/goal698_rtx_cloud_fixed_radius_phase_profile_YYYY-MM-DD.json`
 - `docs/reports/goal703_runpod_rtx_profile_report_YYYY-MM-DD.md`
+
+The first successful RunPod validation was on an NVIDIA RTX A5000 pod at RTDL
+commit `09147a6`. The environment required OptiX headers from
+`NVIDIA/optix-dev` tag `v9.0.0`, CUDA 12.4 `nvcc`, and the runtime PTX compiler
+override `RTDL_OPTIX_PTX_COMPILER=nvcc`.
 
 Copy all three files back before terminating the Pod.
 
@@ -111,4 +126,3 @@ If the script stops before cloning RTDL, the likely causes are:
 - OptiX SDK headers were not extracted.
 
 If the script stops during `make build-optix`, keep the full terminal output. That is a real build-environment issue and should be handled as a validation blocker, not ignored.
-

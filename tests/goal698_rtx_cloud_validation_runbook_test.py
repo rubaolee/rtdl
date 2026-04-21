@@ -16,6 +16,8 @@ class Goal698RtxCloudValidationRunbookTest(unittest.TestCase):
             "include/optix.h",
             "make build-optix",
             "RTDL_OPTIX_LIB",
+            "RTDL_NVCC",
+            "RTDL_OPTIX_PTX_COMPILER",
             "goal697_optix_fixed_radius_phase_profiler.py",
             "goal698_rtx_cloud_environment_",
             "goal698_rtx_cloud_fixed_radius_phase_profile_",
