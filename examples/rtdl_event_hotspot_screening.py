@@ -62,14 +62,45 @@ def _run_rows(backend: str, case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict
     raise ValueError(f"unsupported backend `{backend}`")
 
 
-def run_case(backend: str, *, copies: int = 1) -> dict[str, object]:
+def _run_embree_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
+    count_rows = rt.fixed_radius_count_threshold_2d_embree(
+        case["events"],
+        case["events"],
+        radius=RADIUS,
+        threshold=0,
+    )
+    return tuple(
+        {
+            "query_id": int(row["query_id"]),
+            "neighbor_count": max(0, int(row["neighbor_count"]) - 1),
+        }
+        for row in count_rows
+    )
+
+
+def run_case(
+    backend: str,
+    *,
+    copies: int = 1,
+    embree_summary_mode: str = "rows",
+) -> dict[str, object]:
     case = make_event_hotspot_case(copies=copies)
-    raw_rows = _run_rows(backend, case)
-    rows = tuple(row for row in raw_rows if int(row["query_id"]) != int(row["neighbor_id"]))
-    neighbor_counts: dict[int, int] = {point.id: 0 for point in case["events"]}
-    for row in rows:
-        query_id = int(row["query_id"])
-        neighbor_counts[query_id] = neighbor_counts.get(query_id, 0) + 1
+    if embree_summary_mode not in {"rows", "count_summary"}:
+        raise ValueError("embree_summary_mode must be 'rows' or 'count_summary'")
+    rows: tuple[dict[str, object], ...]
+    summary_rows: tuple[dict[str, int], ...]
+    if backend == "embree" and embree_summary_mode == "count_summary":
+        rows = ()
+        summary_rows = _run_embree_count_summary(case)
+        neighbor_counts = {int(row["query_id"]): int(row["neighbor_count"]) for row in summary_rows}
+    else:
+        raw_rows = _run_rows(backend, case)
+        rows = tuple(row for row in raw_rows if int(row["query_id"]) != int(row["neighbor_id"]))
+        summary_rows = ()
+        neighbor_counts: dict[int, int] = {point.id: 0 for point in case["events"]}
+        for row in rows:
+            query_id = int(row["query_id"])
+            neighbor_counts[query_id] = neighbor_counts.get(query_id, 0) + 1
     hotspots = [
         {"event_id": event_id, "neighbor_count": neighbor_count}
         for event_id, neighbor_count in neighbor_counts.items()
@@ -84,9 +115,11 @@ def run_case(backend: str, *, copies: int = 1) -> dict[str, object]:
         "copies": copies,
         "event_count": len(case["events"]),
         "rows": list(rows),
+        "summary_rows": summary_rows,
         "neighbor_count_by_event": dict(sorted(neighbor_counts.items())),
         "hotspots": hotspots,
         "hotspot_threshold": HOTSPOT_THRESHOLD,
+        "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
     }
 
 
@@ -100,8 +133,20 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument(
+        "--embree-summary-mode",
+        choices=("rows", "count_summary"),
+        default="rows",
+        help="Embree-only: emit neighbor rows or compact native count summaries",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(args.backend, copies=args.copies, embree_summary_mode=args.embree_summary_mode),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
