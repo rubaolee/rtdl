@@ -33,6 +33,28 @@ struct EmbreeDbDatasetImpl {
   EmbreeDbDatasetImpl() : row_count(0), scene_data {&boxes}, device(), holder(device.device) {}
 };
 
+struct PreparedFixedRadiusCountThreshold2DImpl {
+  std::vector<Point2D> search_values;
+  PointSceneData scene_data;
+  EmbreeDevice device;
+  SceneHolder holder;
+
+  explicit PreparedFixedRadiusCountThreshold2DImpl(std::vector<Point2D> points)
+      : search_values(std::move(points)),
+        scene_data {&search_values},
+        device(),
+        holder(device.device) {
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(search_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &scene_data);
+    rtcSetGeometryBoundsFunction(holder.geometry, point_bounds, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+  }
+};
+
 size_t embree_hardware_threads() {
   const unsigned int detected = std::thread::hardware_concurrency();
   return std::max<size_t>(1, static_cast<size_t>(detected == 0 ? 1 : detected));
@@ -1493,13 +1515,15 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_count_threshold(
     run_query_index_ranges(query_values.size(), [&](size_t begin, size_t end) {
       for (size_t query_index = begin; query_index < end; ++query_index) {
         const Point2D& query = query_values[query_index];
+        std::unordered_set<uint32_t> seen_neighbor_ids;
         FixedRadiusCountThresholdQueryState state {
             &query,
             &search_values,
             radius * radius,
             threshold,
             0u,
-            0u};
+            0u,
+            &seen_neighbor_ids};
         RTCPointQuery point_query;
         point_query.x = static_cast<float>(query.p.x);
         point_query.y = static_cast<float>(query.p.y);
@@ -1520,6 +1544,102 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_count_threshold(
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_count_threshold_2d_create(
+    const RtdlPoint* search_points,
+    size_t search_count,
+    RtdlEmbreeFixedRadiusCountThreshold2D** handle_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle_out == nullptr) {
+      throw std::runtime_error("handle_out must not be null");
+    }
+    *handle_out = nullptr;
+    std::vector<Point2D> search_values;
+    search_values.reserve(search_count);
+    for (size_t i = 0; i < search_count; ++i) {
+      search_values.push_back({search_points[i].id, {search_points[i].x, search_points[i].y}});
+    }
+    auto* impl = new PreparedFixedRadiusCountThreshold2DImpl(std::move(search_values));
+    *handle_out = reinterpret_cast<RtdlEmbreeFixedRadiusCountThreshold2D*>(impl);
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT int rtdl_embree_fixed_radius_count_threshold_2d_run(
+    RtdlEmbreeFixedRadiusCountThreshold2D* handle,
+    const RtdlPoint* query_points,
+    size_t query_count,
+    double radius,
+    size_t threshold,
+    RtdlFixedRadiusCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (handle == nullptr) {
+      throw std::runtime_error("prepared fixed_radius_count_threshold handle must not be null");
+    }
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (radius < 0.0) {
+      throw std::runtime_error("fixed_radius_count_threshold radius must be non-negative");
+    }
+    if (threshold > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+      throw std::runtime_error("fixed_radius_count_threshold threshold exceeds uint32 limit");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    auto* impl = reinterpret_cast<PreparedFixedRadiusCountThreshold2DImpl*>(handle);
+
+    std::vector<Point2D> query_values;
+    query_values.reserve(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y}});
+    }
+
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    std::vector<RtdlFixedRadiusCountRow> rows(query_values.size());
+    run_query_index_ranges(query_values.size(), [&](size_t begin, size_t end) {
+      for (size_t query_index = begin; query_index < end; ++query_index) {
+        const Point2D& query = query_values[query_index];
+        std::unordered_set<uint32_t> seen_neighbor_ids;
+        FixedRadiusCountThresholdQueryState state {
+            &query,
+            &impl->search_values,
+            radius * radius,
+            threshold,
+            0u,
+            0u,
+            &seen_neighbor_ids};
+        RTCPointQuery point_query;
+        point_query.x = static_cast<float>(query.p.x);
+        point_query.y = static_cast<float>(query.p.y);
+        point_query.z = 0.0f;
+        point_query.time = 0.0f;
+        point_query.radius = static_cast<float>(radius + kFixedRadiusCandidateEps);
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        g_query_kind = QueryKind::kFixedRadiusCountThreshold;
+        rtcPointQuery(impl->holder.scene, &point_query, &context, point_point_query_collect, &state);
+        g_query_kind = QueryKind::kNone;
+        rows[query_index] = {
+            query.id,
+            state.neighbor_count,
+            state.threshold_reached};
+      }
+    });
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_EMBREE_EXPORT void rtdl_embree_fixed_radius_count_threshold_2d_destroy(
+    RtdlEmbreeFixedRadiusCountThreshold2D* handle) {
+  auto* impl = reinterpret_cast<PreparedFixedRadiusCountThreshold2DImpl*>(handle);
+  delete impl;
 }
 
 RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(

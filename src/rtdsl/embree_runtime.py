@@ -1131,6 +1131,122 @@ def fixed_radius_count_threshold_2d_embree(
         view.close()
 
 
+class PreparedEmbreeFixedRadiusCountThreshold2D:
+    """Reusable Embree BVH for repeated 2-D fixed-radius count-threshold queries."""
+
+    def __init__(self, search_points) -> None:
+        self._library = _load_configured_embree_library()
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        create = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_count_threshold_2d_create",
+        )
+        if create is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_fixed_radius_count_threshold_2d_create; "
+                "rebuild the Embree backend from current main"
+            )
+        packed_search = pack_points(records=search_points, dimension=2)
+        error = ctypes.create_string_buffer(4096)
+        status = create(
+            packed_search.records,
+            packed_search.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        destroy = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_count_threshold_2d_destroy",
+        )
+        if destroy is not None and self._handle:
+            destroy(self._handle)
+        self._closed = True
+        self._handle = ctypes.c_void_p()
+
+    def __enter__(self) -> "PreparedEmbreeFixedRadiusCountThreshold2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def run(
+        self,
+        query_points,
+        *,
+        radius: float,
+        threshold: int = 0,
+    ) -> tuple[dict[str, int], ...]:
+        if self._closed:
+            raise RuntimeError("prepared Embree fixed-radius count-threshold handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        run = _require_optional_embree_symbol(
+            self._library,
+            "rtdl_embree_fixed_radius_count_threshold_2d_run",
+        )
+        if run is None:
+            raise RuntimeError(
+                "loaded Embree backend library does not export "
+                "rtdl_embree_fixed_radius_count_threshold_2d_run; "
+                "rebuild the Embree backend from current main"
+            )
+        packed_queries = pack_points(records=query_points, dimension=2)
+        rows_ptr = ctypes.POINTER(_RtdlFixedRadiusCountRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = EmbreeRowView(
+            library=self._library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlFixedRadiusCountRow,
+            field_names=("query_id", "neighbor_count", "threshold_reached"),
+        )
+        try:
+            return tuple(
+                {
+                    "query_id": int(row["query_id"]),
+                    "neighbor_count": int(row["neighbor_count"]),
+                    "threshold_reached": int(row["threshold_reached"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+
+def prepare_embree_fixed_radius_count_threshold_2d(search_points) -> PreparedEmbreeFixedRadiusCountThreshold2D:
+    """Prepare a reusable Embree fixed-radius summary object for repeated app probes."""
+    return PreparedEmbreeFixedRadiusCountThreshold2D(search_points)
+
+
 def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, result_mode: str):
     predicate_name = compiled.refine_op.predicate.name
     if predicate_name == "conjunctive_scan":
@@ -3147,6 +3263,46 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_frn_count.restype = ctypes.c_int
+
+    optional_frn_count_create = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_count_threshold_2d_create",
+    )
+    if optional_frn_count_create is not None:
+        optional_frn_count_create.argtypes = [
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_frn_count_create.restype = ctypes.c_int
+
+    optional_frn_count_run = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_count_threshold_2d_run",
+    )
+    if optional_frn_count_run is not None:
+        optional_frn_count_run.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_frn_count_run.restype = ctypes.c_int
+
+    optional_frn_count_destroy = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_fixed_radius_count_threshold_2d_destroy",
+    )
+    if optional_frn_count_destroy is not None:
+        optional_frn_count_destroy.argtypes = [ctypes.c_void_p]
+        optional_frn_count_destroy.restype = None
 
     library.rtdl_embree_run_knn_rows.argtypes = [
         ctypes.POINTER(_RtdlPoint),

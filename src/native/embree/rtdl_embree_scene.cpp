@@ -195,6 +195,7 @@ struct FixedRadiusCountThresholdQueryState {
   size_t threshold;
   uint32_t neighbor_count;
   uint32_t threshold_reached;
+  std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
 struct KnnRowsQueryState {
@@ -769,10 +770,14 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
       return false;
     }
     const Point2D& search_point = (*state->search_points)[args->primID];
+    if (state->seen_neighbor_ids->find(search_point.id) != state->seen_neighbor_ids->end()) {
+      return false;
+    }
     double dx = search_point.p.x - state->query->p.x;
     double dy = search_point.p.y - state->query->p.y;
     double distance_squared = dx * dx + dy * dy;
     if (distance_squared <= state->radius_squared) {
+      state->seen_neighbor_ids->insert(search_point.id);
       ++state->neighbor_count;
       if (state->threshold > 0 && state->neighbor_count >= state->threshold) {
         state->threshold_reached = 1u;

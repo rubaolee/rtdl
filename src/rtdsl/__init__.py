@@ -79,6 +79,8 @@ from .embree_runtime import embree_thread_config
 from .embree_runtime import embree_version
 from .embree_runtime import EmbreeThreadConfig
 from .embree_runtime import fixed_radius_count_threshold_2d_embree
+from .embree_runtime import prepare_embree_fixed_radius_count_threshold_2d
+from .embree_runtime import PreparedEmbreeFixedRadiusCountThreshold2D
 from .engine_feature_matrix import assert_engine_feature_supported
 from .engine_feature_matrix import engine_feature_support
 from .engine_feature_matrix import engine_feature_support_matrix
@@ -682,9 +684,11 @@ __all__ = [
     "fixed_radius_neighbors_3d_hiprt",
     "fixed_radius_neighbors_cpu",
     "fixed_radius_count_threshold_2d_embree",
+    "prepare_embree_fixed_radius_count_threshold_2d",
     "knn_rows_cpu",
     "EmbreeRowView",
     "EmbreeThreadConfig",
+    "PreparedEmbreeFixedRadiusCountThreshold2D",
     "configure_embree",
     "embree_thread_config",
     "embree_version",

@@ -1,0 +1,289 @@
+{
+  "boundary": "Measures prepared Embree fixed-radius count-threshold run-only time against one-shot summary calls over the same search/query set; prepare time is reported separately and whole-app JSON/oracle work is excluded.",
+  "cases": [
+    {
+      "copies": 512,
+      "dbscan": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.007707332959398627,
+          "median_sec": 0.00699233403429389,
+          "min_sec": 0.006785042001865804,
+          "repeat_count": 3,
+          "row_count": 4096,
+          "samples_sec": [
+            0.007707332959398627,
+            0.00699233403429389,
+            0.006785042001865804
+          ]
+        },
+        "prepare_sec": 0.0031176250195130706,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.005546665983274579,
+          "median_sec": 0.004064041073434055,
+          "min_sec": 0.004001124994829297,
+          "repeat_count": 3,
+          "row_count": 4096,
+          "samples_sec": [
+            0.005546665983274579,
+            0.004064041073434055,
+            0.004001124994829297
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.720537245551377
+      },
+      "dbscan_point_count": 4096,
+      "outlier": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.007210458978079259,
+          "median_sec": 0.00679066707380116,
+          "min_sec": 0.006688917055726051,
+          "repeat_count": 3,
+          "row_count": 4096,
+          "samples_sec": [
+            0.00679066707380116,
+            0.007210458978079259,
+            0.006688917055726051
+          ]
+        },
+        "prepare_sec": 0.017397125018760562,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.003997124964371324,
+          "median_sec": 0.003923209034837782,
+          "min_sec": 0.00391229207161814,
+          "repeat_count": 3,
+          "row_count": 4096,
+          "samples_sec": [
+            0.003923209034837782,
+            0.003997124964371324,
+            0.00391229207161814
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.7308960632738606
+      },
+      "outlier_point_count": 4096
+    },
+    {
+      "copies": 2048,
+      "dbscan": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.030311124981381,
+          "median_sec": 0.02709983300883323,
+          "min_sec": 0.026845374959520996,
+          "repeat_count": 3,
+          "row_count": 16384,
+          "samples_sec": [
+            0.026845374959520996,
+            0.02709983300883323,
+            0.030311124981381
+          ]
+        },
+        "prepare_sec": 0.011447875062003732,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.018539083073846996,
+          "median_sec": 0.016351333004422486,
+          "min_sec": 0.015722083975560963,
+          "repeat_count": 3,
+          "row_count": 16384,
+          "samples_sec": [
+            0.015722083975560963,
+            0.016351333004422486,
+            0.018539083073846996
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.6573470188334882
+      },
+      "dbscan_point_count": 16384,
+      "outlier": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.030221040942706168,
+          "median_sec": 0.027005332987755537,
+          "min_sec": 0.026921584038063884,
+          "repeat_count": 3,
+          "row_count": 16384,
+          "samples_sec": [
+            0.030221040942706168,
+            0.026921584038063884,
+            0.027005332987755537
+          ]
+        },
+        "prepare_sec": 0.01249804103281349,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.018831999972462654,
+          "median_sec": 0.016183166997507215,
+          "min_sec": 0.01561433298047632,
+          "repeat_count": 3,
+          "row_count": 16384,
+          "samples_sec": [
+            0.01561433298047632,
+            0.018831999972462654,
+            0.016183166997507215
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.6687297975677642
+      },
+      "outlier_point_count": 16384
+    },
+    {
+      "copies": 8192,
+      "dbscan": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.10699983302038163,
+          "median_sec": 0.10590008308645338,
+          "min_sec": 0.10447195800952613,
+          "repeat_count": 3,
+          "row_count": 65536,
+          "samples_sec": [
+            0.10447195800952613,
+            0.10590008308645338,
+            0.10699983302038163
+          ]
+        },
+        "prepare_sec": 0.037939124973490834,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.07458570797462016,
+          "median_sec": 0.07319324999116361,
+          "min_sec": 0.0701432500500232,
+          "repeat_count": 3,
+          "row_count": 65536,
+          "samples_sec": [
+            0.0701432500500232,
+            0.07319324999116361,
+            0.07458570797462016
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.446855865796892
+      },
+      "dbscan_point_count": 65536,
+      "outlier": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.11028754198923707,
+          "median_sec": 0.10833320894744247,
+          "min_sec": 0.10610470804385841,
+          "repeat_count": 3,
+          "row_count": 65536,
+          "samples_sec": [
+            0.10833320894744247,
+            0.10610470804385841,
+            0.11028754198923707
+          ]
+        },
+        "prepare_sec": 0.034306167042814195,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.07252300006803125,
+          "median_sec": 0.07231262500863522,
+          "min_sec": 0.07021979195997119,
+          "repeat_count": 3,
+          "row_count": 65536,
+          "samples_sec": [
+            0.07021979195997119,
+            0.07231262500863522,
+            0.07252300006803125
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.4981230308608746
+      },
+      "outlier_point_count": 65536
+    },
+    {
+      "copies": 32768,
+      "dbscan": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.48154449998401105,
+          "median_sec": 0.4693977079587057,
+          "min_sec": 0.45744554104749113,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            0.4693977079587057,
+            0.48154449998401105,
+            0.45744554104749113
+          ]
+        },
+        "prepare_sec": 0.20703200006391853,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.3655303749255836,
+          "median_sec": 0.3533979579806328,
+          "min_sec": 0.34636437508743256,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            0.34636437508743256,
+            0.3655303749255836,
+            0.3533979579806328
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.3282411438959987
+      },
+      "dbscan_point_count": 262144,
+      "outlier": {
+        "one_shot": {
+          "label": "one_shot_summary",
+          "max_sec": 0.47829195903614163,
+          "median_sec": 0.47742624999955297,
+          "min_sec": 0.4655725829070434,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            0.4655725829070434,
+            0.47742624999955297,
+            0.47829195903614163
+          ]
+        },
+        "prepare_sec": 0.16073758399579674,
+        "prepared_run_only": {
+          "label": "prepared_summary_run_only",
+          "max_sec": 0.32826725009363145,
+          "median_sec": 0.3210160000016913,
+          "min_sec": 0.3197647499619052,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            0.32826725009363145,
+            0.3210160000016913,
+            0.3197647499619052
+          ]
+        },
+        "prepared_run_speedup_vs_one_shot": 1.487235059925479
+      },
+      "outlier_point_count": 262144
+    }
+  ],
+  "copies": [
+    512,
+    2048,
+    8192,
+    32768
+  ],
+  "embree_threads": {
+    "auto": true,
+    "effective_threads": 10,
+    "requested": "auto",
+    "source": "api"
+  },
+  "embree_version": [
+    4,
+    4,
+    0
+  ],
+  "goal": 717,
+  "host": "Rs-MacBook-Air.local",
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "python": "3.14.0",
+  "repeats": 3,
+  "valid": true,
+  "warmups": 1
+}
