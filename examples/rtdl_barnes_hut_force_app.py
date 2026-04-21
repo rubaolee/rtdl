@@ -58,6 +58,24 @@ def make_bodies() -> tuple[Body, ...]:
     )
 
 
+def make_generated_bodies(body_count: int) -> tuple[Body, ...]:
+    if body_count < 1:
+        raise ValueError("body_count must be positive")
+    grid = int(math.ceil(math.sqrt(body_count)))
+    bodies: list[Body] = []
+    for index in range(body_count):
+        gx = index % grid
+        gy = index // grid
+        x = (gx / max(1, grid - 1)) * 4.0 - 2.0
+        y = (gy / max(1, grid - 1)) * 4.0 - 2.0
+        # Deterministic perturbation prevents exact distance ties in perf runs.
+        x += ((index * 17) % 11 - 5) * 0.001
+        y += ((index * 31) % 13 - 6) * 0.001
+        mass = 1.0 + (index % 7) * 0.1
+        bodies.append(Body(id=index + 1, x=x, y=y, mass=mass))
+    return tuple(bodies)
+
+
 def build_one_level_quadtree(bodies: tuple[Body, ...]) -> tuple[QuadNode, ...]:
     if not bodies:
         raise ValueError("Barnes-Hut app requires at least one body")
@@ -227,21 +245,59 @@ def _force_error_rows(
     return tuple(errors)
 
 
-def run_app(backend: str = "cpu_python_reference", *, theta: float = THETA) -> dict[str, object]:
-    bodies = make_bodies()
+def _candidate_summary(candidate_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    return {
+        "candidate_row_count": len(candidate_rows),
+        "body_count_with_candidates": len({int(row["query_id"]) for row in candidate_rows}),
+        "node_count_seen": len({int(row["neighbor_id"]) for row in candidate_rows}),
+    }
+
+
+def _force_summary(force_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    return {
+        "force_row_count": len(force_rows),
+        "accepted_node_total": sum(len(row["accepted_node_ids"]) for row in force_rows),
+        "exact_body_total": sum(len(row["exact_body_ids"]) for row in force_rows),
+    }
+
+
+def run_app(
+    backend: str = "cpu_python_reference",
+    *,
+    theta: float = THETA,
+    body_count: int | None = None,
+    output_mode: str = "full",
+) -> dict[str, object]:
+    if output_mode not in {"full", "candidate_summary", "force_summary"}:
+        raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
+    bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
     nodes = build_one_level_quadtree(bodies)
     candidate_rows = _run_node_candidates(backend, bodies, nodes)
-    approximate_rows = approximate_forces_from_candidates(bodies, nodes, candidate_rows, theta=theta)
-    exact_forces = brute_force_forces(bodies)
-    error_rows = _force_error_rows(approximate_rows, exact_forces)
-
-    return {
+    candidate_summary = _candidate_summary(tuple(candidate_rows))
+    base_payload = {
         "app": "barnes_hut_force_app",
         "backend": backend,
         "theta": theta,
         "body_count": len(bodies),
         "node_count": len(nodes),
-        "candidate_row_count": len(candidate_rows),
+        **candidate_summary,
+        "output_mode": output_mode,
+        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+    }
+    if output_mode == "candidate_summary":
+        return base_payload
+
+    approximate_rows = approximate_forces_from_candidates(bodies, nodes, candidate_rows, theta=theta)
+    base_payload.update(_force_summary(approximate_rows))
+    if output_mode == "force_summary":
+        return base_payload
+
+    exact_forces = brute_force_forces(bodies)
+    error_rows = _force_error_rows(approximate_rows, exact_forces)
+
+    return {
+        **base_payload,
         "candidate_rows": candidate_rows,
         "force_rows": approximate_rows,
         "exact_force_rows": [
@@ -250,8 +306,6 @@ def run_app(backend: str = "cpu_python_reference", *, theta: float = THETA) -> d
         ],
         "error_rows": error_rows,
         "max_relative_error": max(row["relative_error"] for row in error_rows),
-        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
-        "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions.",
     }
 
 
@@ -265,8 +319,21 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--theta", type=float, default=THETA)
+    parser.add_argument("--body-count", type=int, default=None, help="use a generated scalable body fixture")
+    parser.add_argument(
+        "--output-mode",
+        choices=("full", "candidate_summary", "force_summary"),
+        default="full",
+        help="choose full rows, RTDL candidate summary only, or force-reduction summary",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, theta=args.theta), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(args.backend, theta=args.theta, body_count=args.body_count, output_mode=args.output_mode),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

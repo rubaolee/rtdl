@@ -1,0 +1,114 @@
+{
+  "app": "barnes_hut_force_app",
+  "boundary": "candidate_summary measures the RTDL candidate-generation slice only. force_summary includes Python Barnes-Hut opening-rule and force reduction. This is not a fully native Barnes-Hut force engine.",
+  "cases": [
+    {
+      "body_count": 256,
+      "cpu_candidate_summary": {
+        "backend": "cpu_python_reference",
+        "body_count": 256,
+        "json_bytes_median": 655,
+        "max_seconds": 0.002946374996099621,
+        "median_seconds": 0.002080345991998911,
+        "min_seconds": 0.002055990044027567,
+        "output_mode": "candidate_summary",
+        "repeats": 3
+      },
+      "embree_candidate_summary": {
+        "backend": "embree",
+        "body_count": 256,
+        "json_bytes_median": 641,
+        "max_seconds": 0.013955170987173915,
+        "median_seconds": 0.0027805280406028032,
+        "min_seconds": 0.0026265070191584527,
+        "output_mode": "candidate_summary",
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 0.7481837843821576
+      },
+      "embree_force_summary": {
+        "backend": "embree",
+        "body_count": 256,
+        "json_bytes_median": 716,
+        "max_seconds": 0.0242640069918707,
+        "median_seconds": 0.023292994999792427,
+        "min_seconds": 0.023040814965497702,
+        "output_mode": "force_summary",
+        "repeats": 3,
+        "slowdown_vs_candidate_summary": 8.377183995145984
+      }
+    },
+    {
+      "body_count": 1024,
+      "cpu_candidate_summary": {
+        "backend": "cpu_python_reference",
+        "body_count": 1024,
+        "json_bytes_median": 657,
+        "max_seconds": 0.009248403017409146,
+        "median_seconds": 0.008149518980644643,
+        "min_seconds": 0.0080658650258556,
+        "output_mode": "candidate_summary",
+        "repeats": 3
+      },
+      "embree_candidate_summary": {
+        "backend": "embree",
+        "body_count": 1024,
+        "json_bytes_median": 643,
+        "max_seconds": 0.01372989098308608,
+        "median_seconds": 0.008629603951703757,
+        "min_seconds": 0.008613276004325598,
+        "output_mode": "candidate_summary",
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 0.9443676704347098
+      },
+      "embree_force_summary": {
+        "backend": "embree",
+        "body_count": 1024,
+        "json_bytes_median": 720,
+        "max_seconds": 0.32378256000811234,
+        "median_seconds": 0.31865435402141884,
+        "min_seconds": 0.3181716140243225,
+        "output_mode": "force_summary",
+        "repeats": 3,
+        "slowdown_vs_candidate_summary": 36.925721713857605
+      }
+    },
+    {
+      "body_count": 4096,
+      "cpu_candidate_summary": {
+        "backend": "cpu_python_reference",
+        "body_count": 4096,
+        "json_bytes_median": 658,
+        "max_seconds": 0.04008328198688105,
+        "median_seconds": 0.03541798598598689,
+        "min_seconds": 0.03347984602442011,
+        "output_mode": "candidate_summary",
+        "repeats": 3
+      },
+      "embree_candidate_summary": {
+        "backend": "embree",
+        "body_count": 4096,
+        "json_bytes_median": 644,
+        "max_seconds": 0.037574336980469525,
+        "median_seconds": 0.03203157696407288,
+        "min_seconds": 0.03134856297401711,
+        "output_mode": "candidate_summary",
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 1.1057209585938355
+      },
+      "embree_force_summary": {
+        "backend": "embree",
+        "body_count": 4096,
+        "json_bytes_median": 724,
+        "max_seconds": 5.1902057899860665,
+        "median_seconds": 5.166539155994542,
+        "min_seconds": 5.138449612015393,
+        "output_mode": "force_summary",
+        "repeats": 3,
+        "slowdown_vs_candidate_summary": 161.29518574091475
+      }
+    }
+  ],
+  "goal": 734,
+  "measurement": "run_app plus json.dumps wall-clock seconds",
+  "repeats": 3
+}
