@@ -71,6 +71,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_service_coverage_gaps.py` | `--embree-summary-mode gap_summary` | covered/uncovered household summary rows | omits clinic ids, distances, and clinic-load counts |
 | `examples/rtdl_event_hotspot_screening.py` | `--embree-summary-mode count_summary` | one neighbor-count row per event plus hotspot flags | omits neighbor-pair rows and distances |
 | `examples/rtdl_hausdorff_distance_app.py` | `--embree-result-mode directed_summary` | directed Hausdorff distance and witness summaries | omits full KNN rows |
+| `examples/rtdl_segment_polygon_anyhit_rows.py` | `--output-mode segment_counts` / `segment_flags` | one hit-count or any-hit flag row per segment | omits polygon ids and pair rows |
 
 ## DB-Style App Examples
 

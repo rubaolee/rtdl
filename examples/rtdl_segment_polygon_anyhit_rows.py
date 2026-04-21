@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+from examples.reference.rtdl_release_reference import segment_polygon_hitcount_reference
 from examples.reference.rtdl_release_reference import segment_polygon_anyhit_rows_reference
 from rtdsl.baseline_runner import load_representative_case
 
@@ -42,31 +43,80 @@ def _summarize_rows(rows: tuple[dict[str, object], ...], segments: tuple[object,
     }
 
 
+def _run_anyhit_rows(backend: str, case) -> tuple[dict[str, object], ...]:
+    if backend == "cpu_python_reference":
+        return rt.run_cpu_python_reference(segment_polygon_anyhit_rows_reference, **case.inputs)
+    if backend == "cpu":
+        return rt.run_cpu(segment_polygon_anyhit_rows_reference, **case.inputs)
+    if backend == "embree":
+        return rt.run_embree(segment_polygon_anyhit_rows_reference, **case.inputs)
+    if backend == "optix":
+        return rt.run_optix(segment_polygon_anyhit_rows_reference, **case.inputs)
+    if backend == "vulkan":
+        return rt.run_vulkan(segment_polygon_anyhit_rows_reference, **case.inputs)
+    raise ValueError(f"unsupported backend `{backend}`")
+
+
+def _run_hitcount_rows(backend: str, case) -> tuple[dict[str, object], ...]:
+    if backend == "cpu_python_reference":
+        return rt.run_cpu_python_reference(segment_polygon_hitcount_reference, **case.inputs)
+    if backend == "cpu":
+        return rt.run_cpu(segment_polygon_hitcount_reference, **case.inputs)
+    if backend == "embree":
+        return rt.run_embree(segment_polygon_hitcount_reference, **case.inputs)
+    if backend == "optix":
+        return rt.run_optix(segment_polygon_hitcount_reference, **case.inputs)
+    if backend == "vulkan":
+        return rt.run_vulkan(segment_polygon_hitcount_reference, **case.inputs)
+    raise ValueError(f"unsupported backend `{backend}`")
+
+
+def _summarize_hitcount_rows(rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    counts = {
+        int(row["segment_id"]): int(row["hit_count"])
+        for row in rows
+    }
+    return {
+        "segment_flags": tuple(
+            {"segment_id": segment_id, "any_hit": int(hit_count > 0)}
+            for segment_id, hit_count in sorted(counts.items())
+        ),
+        "segment_counts": tuple(
+            {"segment_id": segment_id, "hit_count": hit_count}
+            for segment_id, hit_count in sorted(counts.items())
+        ),
+    }
+
+
 def run_case(backend: str, dataset: str, output_mode: str = "rows") -> dict[str, object]:
     if output_mode not in {"rows", "segment_flags", "segment_counts"}:
         raise ValueError("output_mode must be 'rows', 'segment_flags', or 'segment_counts'")
     case = load_representative_case("segment_polygon_anyhit_rows", dataset)
-    if backend == "cpu_python_reference":
-        rows = rt.run_cpu_python_reference(segment_polygon_anyhit_rows_reference, **case.inputs)
-    elif backend == "cpu":
-        rows = rt.run_cpu(segment_polygon_anyhit_rows_reference, **case.inputs)
-    elif backend == "embree":
-        rows = rt.run_embree(segment_polygon_anyhit_rows_reference, **case.inputs)
-    elif backend == "optix":
-        rows = rt.run_optix(segment_polygon_anyhit_rows_reference, **case.inputs)
-    elif backend == "vulkan":
-        rows = rt.run_vulkan(segment_polygon_anyhit_rows_reference, **case.inputs)
+    if output_mode == "rows":
+        rows = _run_anyhit_rows(backend, case)
+        summary = _summarize_rows(rows, case.inputs["segments"])
+        row_count = len(rows)
+        summary_source = "segment_polygon_anyhit_rows"
     else:
-        raise ValueError(f"unsupported backend `{backend}`")
-    summary = _summarize_rows(rows, case.inputs["segments"])
+        rows = _run_hitcount_rows(backend, case)
+        summary = _summarize_hitcount_rows(rows)
+        row_count = len(rows)
+        summary_source = "segment_polygon_hitcount"
     payload: dict[str, object] = {
         "app": "segment_polygon_anyhit_rows",
         "backend": backend,
         "dataset": dataset,
         "output_mode": output_mode,
-        "row_count": len(rows),
+        "row_count": row_count,
+        "summary_source": summary_source,
         "optix_performance": _optix_performance(),
-        "boundary": "OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.",
+        "boundary": (
+            "Rows mode emits segment/polygon pair rows. Compact segment_flags and "
+            "segment_counts use the RTDL segment_polygon_hitcount primitive to avoid "
+            "materializing full pair rows. OptiX app exposure is still classified "
+            "separately from RT-core performance; use optix_performance for the "
+            "current classification."
+        ),
     }
     if output_mode == "rows":
         payload["rows"] = rows

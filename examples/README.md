@@ -168,6 +168,10 @@ Current v0.8 app example boundary:
 - `rtdl_barnes_hut_force_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, and `vulkan`; Goal509 records candidate-generation timing
   separately from Python force-reduction timing
+- `rtdl_segment_polygon_anyhit_rows.py` keeps full pair-row output in
+  `--output-mode rows`. Its compact `segment_flags` and `segment_counts` modes
+  use the RTDL `segment_polygon_hitcount` primitive to avoid materializing full
+  segment/polygon pair rows when polygon ids are not needed
 
 Current HIPRT boundary:
 

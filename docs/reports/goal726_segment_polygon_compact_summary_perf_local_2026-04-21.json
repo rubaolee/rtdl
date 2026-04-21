@@ -1,0 +1,77 @@
+{
+  "backend": "embree",
+  "boundary": "Compares segment_polygon_anyhit_rows rows mode against compact segment_counts mode. Compact mode now uses the RTDL segment_polygon_hitcount primitive and does not emit pair rows.",
+  "cases": [
+    {
+      "backend": "embree",
+      "copies": 256,
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+      "rows_all_sec": [
+        0.004887834074907005,
+        0.007204708992503583,
+        0.010537832975387573
+      ],
+      "rows_best_sec": 0.004887834074907005,
+      "rows_row_count": 2816,
+      "rows_summary_source": "segment_polygon_anyhit_rows",
+      "segment_counts_all_sec": [
+        0.005443290923722088,
+        0.006373125012032688,
+        0.006278084008954465
+      ],
+      "segment_counts_best_sec": 0.005443290923722088,
+      "segment_counts_row_count": 2560,
+      "segment_counts_summary_source": "segment_polygon_hitcount",
+      "speedup_vs_rows": 0.8979556932380044
+    },
+    {
+      "backend": "embree",
+      "copies": 1024,
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x1024",
+      "rows_all_sec": [
+        0.03650737495627254,
+        0.030886582913808525,
+        0.0318796670762822
+      ],
+      "rows_best_sec": 0.030886582913808525,
+      "rows_row_count": 11264,
+      "rows_summary_source": "segment_polygon_anyhit_rows",
+      "segment_counts_all_sec": [
+        0.028462750022299588,
+        0.020426124916411936,
+        0.025663290987722576
+      ],
+      "segment_counts_best_sec": 0.020426124916411936,
+      "segment_counts_row_count": 10240,
+      "segment_counts_summary_source": "segment_polygon_hitcount",
+      "speedup_vs_rows": 1.5121117216409385
+    },
+    {
+      "backend": "embree",
+      "copies": 4096,
+      "dataset": "derived/br_county_subset_segment_polygon_tiled_x4096",
+      "rows_all_sec": [
+        0.14984766603447497,
+        0.11260320898145437,
+        0.10518270800821483
+      ],
+      "rows_best_sec": 0.10518270800821483,
+      "rows_row_count": 45056,
+      "rows_summary_source": "segment_polygon_anyhit_rows",
+      "segment_counts_all_sec": [
+        0.12965470796916634,
+        0.11388941702898592,
+        0.11985112493857741
+      ],
+      "segment_counts_best_sec": 0.11388941702898592,
+      "segment_counts_row_count": 40960,
+      "segment_counts_summary_source": "segment_polygon_hitcount",
+      "speedup_vs_rows": 0.9235512021406242
+    }
+  ],
+  "geomean_speedup_vs_rows": 1.0783669989100633,
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "python": "3.14.0",
+  "repeats": 3,
+  "suite": "goal726_segment_polygon_compact_summary_perf"
+}
