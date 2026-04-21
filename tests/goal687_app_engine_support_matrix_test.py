@@ -13,7 +13,7 @@ DOC = REPO_ROOT / "docs" / "app_engine_support_matrix.md"
 class Goal687AppEngineSupportMatrixTest(unittest.TestCase):
     def test_every_public_app_has_status_for_every_app_engine(self) -> None:
         matrix = rt.app_engine_support_matrix()
-        self.assertGreaterEqual(len(matrix), 20)
+        self.assertGreaterEqual(len(matrix), 15)
 
         for app, entries in matrix.items():
             with self.subTest(app=app):
@@ -56,11 +56,6 @@ class Goal687AppEngineSupportMatrixTest(unittest.TestCase):
             "examples/rtdl_dbscan_clustering_app.py": "dbscan_clustering",
             "examples/rtdl_robot_collision_screening_app.py": "robot_collision_screening",
             "examples/rtdl_barnes_hut_force_app.py": "barnes_hut_force_app",
-            "examples/rtdl_sales_risk_screening.py": "sales_risk_screening",
-            "examples/rtdl_v0_7_db_app_demo.py": "regional_order_dashboard",
-            "examples/rtdl_v0_7_db_kernel_app_demo.py": "regional_order_dashboard_kernel_form",
-            "examples/rtdl_apple_rt_closest_hit.py": "apple_rt_closest_hit",
-            "examples/rtdl_apple_rt_visibility_count.py": "apple_rt_visibility_count",
             "examples/rtdl_hiprt_ray_triangle_hitcount.py": "hiprt_ray_triangle_hitcount",
         }
 
@@ -77,6 +72,18 @@ class Goal687AppEngineSupportMatrixTest(unittest.TestCase):
             for engine, support in entries.items():
                 with self.subTest(app=app, engine=engine):
                     self.assertEqual(rows[app][engine], support.status)
+
+    def test_retired_scenario_specific_apps_are_not_public_matrix_rows(self) -> None:
+        matrix = rt.app_engine_support_matrix()
+        retired = {
+            "sales_risk_screening",
+            "regional_order_dashboard",
+            "regional_order_dashboard_kernel_form",
+            "apple_rt_closest_hit",
+            "apple_rt_visibility_count",
+        }
+
+        self.assertTrue(retired.isdisjoint(matrix))
 
     def test_public_docs_link_app_engine_support_matrix(self) -> None:
         for rel_path in (

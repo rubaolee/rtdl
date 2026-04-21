@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for current `main` after Goal686.
+Status: public app-level support map for current `main` after Goal688.
 
 This matrix answers which engines each public app entry point exposes today. It is intentionally app-level, not just feature-level: an underlying RTDL primitive may support an engine while a particular app CLI does not expose that engine yet.
 
@@ -37,11 +37,6 @@ The machine-readable source of truth is `rtdsl.app_engine_support_matrix()`.
 | `examples/rtdl_dbscan_clustering_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_robot_collision_screening_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_barnes_hut_force_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/rtdl_sales_risk_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/rtdl_v0_7_db_app_demo.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/rtdl_v0_7_db_kernel_app_demo.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/rtdl_apple_rt_closest_hit.py` | `portable_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native` |
-| `examples/rtdl_apple_rt_visibility_count.py` | `partial_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native_assisted` |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `portable_cpu_oracle` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |
 
 ## Notes
@@ -63,12 +58,12 @@ The machine-readable source of truth is `rtdsl.app_engine_support_matrix()`.
 - `dbscan_clustering`: DBSCAN app exposes CPU, Embree, OptiX, Vulkan, and SciPy baseline.
 - `robot_collision_screening`: Discrete collision app exposes CPU, Embree, and OptiX; Vulkan is intentionally not exposed until a dedicated any-hit app gate exists.
 - `barnes_hut_force_app`: Candidate-generation app exposes CPU, Embree, OptiX, and Vulkan.
-- `sales_risk_screening`: Scenario-specific DB app exposes CPU, Embree, OptiX, and Vulkan.
-- `regional_order_dashboard`: Scenario-specific prepared DB app exposes CPU, Embree, OptiX, and Vulkan.
-- `regional_order_dashboard_kernel_form`: Kernel-form DB demo exposes CPU, Embree, OptiX, and Vulkan.
-- `apple_rt_closest_hit`: Scenario-specific Apple RT closest-hit demo.
-- `apple_rt_visibility_count`: Scenario-specific prepared/prepacked Apple RT visibility-count demo.
 - `hiprt_ray_triangle_hitcount`: Scenario-specific HIPRT hit-count demo; HIPRT evidence is SDK/Orochi on tested hosts, not AMD GPU validation.
+
+Retired compatibility helpers:
+
+- `examples/rtdl_sales_risk_screening.py`, `examples/rtdl_v0_7_db_app_demo.py`, and `examples/rtdl_v0_7_db_kernel_app_demo.py` remain runnable for compatibility and historical tests, but the public DB app row is now only `examples/rtdl_database_analytics_app.py`.
+- `examples/rtdl_apple_rt_closest_hit.py` and `examples/rtdl_apple_rt_visibility_count.py` remain runnable helper/scenario files, but the public Apple app row is now only `examples/rtdl_apple_rt_demo_app.py`.
 
 ## Boundaries
 

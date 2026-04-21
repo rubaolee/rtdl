@@ -134,7 +134,7 @@ Current user-programming note:
 - users can already combine RTDL kernels with Python application logic
 - current examples of that pattern include:
   - [rtdl_lit_ball_demo.py](../examples/visual_demo/rtdl_lit_ball_demo.py)
-  - [rtdl_v0_7_db_app_demo.py](../examples/rtdl_v0_7_db_app_demo.py)
+  - [rtdl_database_analytics_app.py](../examples/rtdl_database_analytics_app.py)
   - [rtdl_hausdorff_distance_app.py](../examples/rtdl_hausdorff_distance_app.py)
   - [rtdl_ann_candidate_app.py](../examples/rtdl_ann_candidate_app.py)
   - [rtdl_outlier_detection_app.py](../examples/rtdl_outlier_detection_app.py)

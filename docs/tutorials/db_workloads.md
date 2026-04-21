@@ -112,27 +112,28 @@ What happens:
 - a single group key partitions the surviving rows
 - RTDL emits grouped numeric sums
 
-## 4. App-Style DB Demo
+## 4. Unified DB App Demo
 
 Run:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend embree
 ```
 
 On Linux GPU hosts with the backend libraries built:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend vulkan
 ```
 
-The app demo shows a denormalized order table becoming matched row IDs,
-grouped counts, and grouped sums. The kernel-form demo shows the corresponding
+The unified app demo shows denormalized order tables becoming matched row IDs,
+grouped counts, grouped sums, and app summaries. The retired scenario-specific
+compatibility files still exist for historical tests, but the unified app is
+the public tutorial entry point. The old kernel-form demo showed the
+corresponding
 `input -> traverse -> refine -> emit` structure for the same bounded DB surface.
 
 ## 5. PostgreSQL Correctness On Linux

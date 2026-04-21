@@ -47,7 +47,7 @@ def run_app(backend: str, scenario: str = "all") -> dict[str, Any]:
             "scan and grouped aggregate rows",
             "Python-owned dashboard or risk-summary JSON",
         ],
-        "unifies": [
+        "retired_compatibility_helpers": [
             "examples/rtdl_v0_7_db_app_demo.py",
             "examples/rtdl_sales_risk_screening.py",
         ],

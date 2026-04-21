@@ -32,14 +32,10 @@ If you are new to RTDL, use these files first:
 | DB-style filtering | `rtdl_db_conjunctive_scan.py` | rows plus predicates become matching row IDs |
 | DB-style aggregation | `rtdl_db_grouped_count.py` / `rtdl_db_grouped_sum.py` | rows plus predicates become grouped aggregates |
 | unified database app | `rtdl_database_analytics_app.py` | order rows become regional dashboard rows and sales-risk summaries |
-| app-level use | `rtdl_v0_7_db_app_demo.py` | a Python app delegates the query core to RTDL |
-| app-level DB screening | `rtdl_sales_risk_screening.py` | orders plus predicates become risky order IDs and grouped regional summaries |
 | app-level road/polygon screening | `rtdl_road_hazard_screening.py` | road segments plus hazard polygons become per-road hit counts |
 | spatial join apps | `rtdl_service_coverage_gaps.py`, `rtdl_event_hotspot_screening.py`, `rtdl_facility_knn_assignment.py` | locations become coverage gaps, event hotspots, or nearest facility assignments |
 | HIPRT example | `rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through the prepared HIPRT path |
 | unified Apple RT demo | `rtdl_apple_rt_demo_app.py` | Apple closest-hit and visibility-count scenarios become one app JSON result |
-| Apple RT example | `rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through the Apple Metal/MPS path |
-| Apple RT visibility count | `rtdl_apple_rt_visibility_count.py` | 2D rays and blocker triangles become one scalar blocked-ray count through a prepared/prepacked Apple RT path |
 
 - `rtdl_hello_world.py`
 - `rtdl_hello_world_backends.py`
@@ -62,13 +58,8 @@ If you are new to RTDL, use these files first:
 - `rtdl_db_grouped_count.py`
 - `rtdl_db_grouped_sum.py`
 - `rtdl_database_analytics_app.py`
-- `rtdl_v0_7_db_app_demo.py`
-- `rtdl_v0_7_db_kernel_app_demo.py`
 - `rtdl_hiprt_ray_triangle_hitcount.py`
 - `rtdl_apple_rt_demo_app.py`
-- `rtdl_apple_rt_closest_hit.py`
-- `rtdl_apple_rt_visibility_count.py`
-- `rtdl_sales_risk_screening.py`
 - `rtdl_service_coverage_gaps.py`
 - `rtdl_event_hotspot_screening.py`
 - `rtdl_facility_knn_assignment.py`
@@ -116,13 +107,12 @@ Current DB example boundary:
   - `embree`
   - `optix`
   - `vulkan`
-- `rtdl_v0_7_db_app_demo.py` is the app-level demo: it shows one
-  denormalized order table becoming matched row IDs, grouped counts, and
-  grouped sums through the v0.7 bounded DB workload surface
-- `rtdl_v0_7_db_kernel_app_demo.py` is the kernel-form companion demo: it
-  shows `rt.input(..., role="probe")`, `rt.input(..., role="build")`,
-  `rt.traverse(..., accel="bvh")`, `rt.refine(...)`, and `rt.emit(...)` around
-  the same bounded DB workload surface
+- `rtdl_database_analytics_app.py` is the single public DB app entry point:
+  it unifies the regional dashboard and sales-risk scenarios over the v0.7
+  bounded DB workload surface
+- `rtdl_v0_7_db_app_demo.py`, `rtdl_v0_7_db_kernel_app_demo.py`, and
+  `rtdl_sales_risk_screening.py` remain runnable compatibility helpers, but
+  they are retired from the public start-here app list
 - PostgreSQL remains a Linux correctness/performance anchor, not a public
   example backend flag
 
@@ -177,9 +167,9 @@ Current HIPRT boundary:
 
 Current Apple RT boundary:
 
-- `rtdl_apple_rt_closest_hit.py` runs a 3D ray/triangle closest-hit kernel
-  through CPU Python reference first, then attempts Apple RT if the macOS
-  `build/librtdl_apple_rt.dylib` library is available
+- `rtdl_apple_rt_demo_app.py` is the single public Apple RT app entry point:
+  it runs the closest-hit and visibility-count scenarios through one JSON
+  app result
 - build it on Apple Silicon macOS with `make build-apple-rt`
 - this is the v0.9.1 released native slice: `run_apple_rt` uses Apple Metal/MPS
   RT for `ray_triangle_closest_hit` over 3D rays and 3D triangles
@@ -193,6 +183,9 @@ Current Apple RT boundary:
   current Apple ray-intersection slices
 - this is not a broad measured Apple speedup claim; Embree remains the mature
   performance baseline
+- `rtdl_apple_rt_closest_hit.py` and `rtdl_apple_rt_visibility_count.py`
+  remain runnable compatibility helpers, but they are retired from the public
+  start-here app list
 
 Current v0.9.6 example boundary:
 
@@ -204,9 +197,9 @@ Current v0.9.6 example boundary:
 - Apple RT 3D uses MPS RT nearest-intersection existence; Apple RT 2D uses
   MPS-prism traversal with per-ray early exit plus exact 2D acceptance. This is
   not programmable shader-level Apple any-hit.
-- `rtdl_apple_rt_visibility_count.py` demonstrates the released `v0.9.6`
-  prepared/prepacked Apple RT 2D path for scalar blocked-ray counts. It is an
-  app-level count contract, not full emitted-row output.
+- `rtdl_apple_rt_demo_app.py` demonstrates the released Apple RT closest-hit
+  and prepared/prepacked visibility-count app paths. The visibility-count
+  scenario is an app-level count contract, not full emitted-row output.
 - `v0.9.6` also includes prepared repeated-query 2D any-hit helpers for
   OptiX, HIPRT, and Vulkan. These are performance-oriented backend helpers for
   stable triangle sets and repeated ray batches, not separate beginner example

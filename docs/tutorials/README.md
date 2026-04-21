@@ -30,7 +30,6 @@ RT stack.
 | 10 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the released v0.9 HIPRT surface |
 | 11 | [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py) | See Apple RT closest-hit and visibility-count scenarios from one demo entry point |
 | 12 | [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py) | See the released v0.9.5 bounded any-hit row primitive |
-| 13 | [Apple RT Visibility-Count Example](../../examples/rtdl_apple_rt_visibility_count.py) | See the released v0.9.6 prepared/prepacked scalar visibility-count app path |
 | 13 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | See observer-target line-of-sight rows built on any-hit |
 | 14 | [Reduce Rows Example](../../examples/rtdl_reduce_rows.py) | See deterministic Python standard-library reductions over emitted RTDL rows |
 
@@ -84,7 +83,6 @@ application.
 - [v0.8 App Building](v0_8_app_building.md)
 - [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
 - [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py)
-- [Apple RT Closest-Hit Scenario](../../examples/rtdl_apple_rt_closest_hit.py)
 - [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py)
 - [Visibility Rows Example](../../examples/rtdl_visibility_rows.py)
 - [Reduce Rows Example](../../examples/rtdl_reduce_rows.py)

@@ -99,7 +99,7 @@ def run_app(scenario: str = "all") -> dict[str, Any]:
         "app": "apple_rt_demo",
         "scenario": scenario,
         "sections": sections,
-        "unifies": [
+        "retired_compatibility_helpers": [
             "examples/rtdl_apple_rt_closest_hit.py",
             "examples/rtdl_apple_rt_visibility_count.py",
         ],

@@ -60,13 +60,9 @@ If you want a guided learning order instead of a flat example list, start with:
 | Bounded DB filter | `examples/rtdl_db_conjunctive_scan.py` | denormalized rows plus predicates become row IDs |
 | Bounded DB aggregate | `examples/rtdl_db_grouped_count.py` / `examples/rtdl_db_grouped_sum.py` | filtered rows become grouped results |
 | Unified DB app | `examples/rtdl_database_analytics_app.py` | regional dashboard and sales-risk scenarios become one app JSON result |
-| App integration | `examples/rtdl_v0_7_db_app_demo.py` | Python app stays thin around the RTDL query core |
-| App-level DB screening | `examples/rtdl_sales_risk_screening.py` | orders plus predicates become risky IDs and grouped regional summaries |
 | App-level road/polygon screening | `examples/rtdl_road_hazard_screening.py` | road segments plus hazard polygons become per-road hit counts |
 | HIPRT example | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through `run_hiprt` / `prepare_hiprt` |
 | Unified Apple RT demo | `examples/rtdl_apple_rt_demo_app.py` | closest-hit and visibility-count scenarios become one app JSON result |
-| Apple RT example | `examples/rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through `run_apple_rt` |
-| Apple RT visibility count | `examples/rtdl_apple_rt_visibility_count.py` | 2D rays and blocker triangles become one scalar blocked-ray count through a prepared/prepacked Apple RT path |
 | Bounded any-hit blocker query | `examples/rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `{ray_id, any_hit}` rows |
 | Visibility / line-of-sight rows | `examples/rtdl_visibility_rows.py` | observers, targets, and blockers become `{observer_id, target_id, visible}` rows |
 | Emitted-row app reductions | `examples/rtdl_reduce_rows.py` | existing RTDL rows become deterministic grouped app summaries |
@@ -256,14 +252,14 @@ Build and run:
 
 ```bash
 make build-apple-rt
-PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
-PYTHONPATH=src:. python examples/rtdl_apple_rt_visibility_count.py
+PYTHONPATH=src:. python examples/rtdl_apple_rt_demo_app.py
 ```
 
-The example first computes a CPU Python reference answer, then attempts Apple
-RT. If the Apple RT backend library is unavailable, it prints a JSON result
-with `apple_rt_available: false` and exits successfully. If Apple RT is
-available, it checks approximate row parity for `run_apple_rt`.
+The unified demo first computes the available CPU Python reference portion,
+then attempts Apple RT. If the Apple RT backend library is unavailable, it
+prints a JSON result with `apple_rt_available: false` for the hardware-gated
+section and exits successfully. If Apple RT is available, it checks approximate
+row parity where a CPU reference exists.
 
 Current Apple RT boundary:
 
@@ -281,9 +277,10 @@ Current Apple RT boundary:
 - Goal597/Goal598 masked traversal support: 3D hit-count and 2D
   segment-intersection use chunked primitive masks to reduce repeated setup
   overhead
-- v0.9.6 visibility-count support: `rtdl_apple_rt_visibility_count.py`
-  uses a prepared 2D Apple RT scene and prepacked rays to return a scalar
-  blocked-ray count for repeated visibility/collision apps
+- v0.9.6 visibility-count support is exposed through
+  `rtdl_apple_rt_demo_app.py`; the underlying compatibility helper uses a
+  prepared 2D Apple RT scene and prepacked rays to return a scalar blocked-ray
+  count for repeated visibility/collision apps
 - Goal590 native support detail: 2D `segment_intersection` uses an
   Apple MPS ray-versus-extruded-segment traversal plus analytic intersection
   refinement
@@ -488,9 +485,7 @@ Kernel examples:
 
 App-style example:
 
-- [rtdl_sales_risk_screening.py](../examples/rtdl_sales_risk_screening.py)
-- [rtdl_v0_7_db_app_demo.py](../examples/rtdl_v0_7_db_app_demo.py)
-- [rtdl_v0_7_db_kernel_app_demo.py](../examples/rtdl_v0_7_db_kernel_app_demo.py)
+- [rtdl_database_analytics_app.py](../examples/rtdl_database_analytics_app.py)
 
 Run:
 
@@ -507,11 +502,9 @@ PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend embree
 PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend embree
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend embree
 
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend cpu
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend embree
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend embree
 ```
 
 On Linux hosts with the GPU stack enabled:
@@ -526,8 +519,8 @@ PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend vulkan
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend vulkan
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend optix
-PYTHONPATH=src:. python examples/rtdl_sales_risk_screening.py --backend vulkan
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend vulkan
 ```
 
 Current honesty boundary:

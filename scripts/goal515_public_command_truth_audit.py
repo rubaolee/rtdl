@@ -35,8 +35,6 @@ GOAL513_COMMANDS = [
     "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
     "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
     "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
-    "python examples/rtdl_v0_7_db_app_demo.py --backend auto",
-    "python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto",
     "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
     "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
     "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
@@ -44,8 +42,7 @@ GOAL513_COMMANDS = [
 
 GOAL593_COMMANDS = [
     "python examples/rtdl_hiprt_ray_triangle_hitcount.py",
-    "python examples/rtdl_apple_rt_closest_hit.py",
-    "python examples/rtdl_apple_rt_visibility_count.py",
+    "python examples/rtdl_apple_rt_demo_app.py",
 ]
 
 PUBLIC_VALIDATION_COMMAND_KEYS = {

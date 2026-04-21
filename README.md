@@ -393,8 +393,6 @@ PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_py
 PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 ```
 
 Then try the released `v0.8.0` app-building line. These apps use existing RTDL
@@ -429,8 +427,7 @@ Released Apple RT path on Apple Silicon macOS:
 
 ```bash
 make build-apple-rt
-PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
-PYTHONPATH=src:. python examples/rtdl_apple_rt_visibility_count.py
+PYTHONPATH=src:. python examples/rtdl_apple_rt_demo_app.py
 ```
 
 That example compares CPU Python reference rows against `run_apple_rt` for 3D
@@ -463,11 +460,10 @@ python examples\rtdl_hello_world.py
 python examples\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 python examples\rtdl_graph_bfs.py --backend cpu_python_reference
 python examples\rtdl_graph_triangle_count.py --backend cpu_python_reference
+python examples\rtdl_database_analytics_app.py --backend cpu_python_reference
 python examples\rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 python examples\rtdl_db_grouped_count.py --backend cpu_python_reference
 python examples\rtdl_db_grouped_sum.py --backend cpu_python_reference
-python examples\rtdl_v0_7_db_app_demo.py --backend auto
-python examples\rtdl_v0_7_db_kernel_app_demo.py --backend auto
 python examples\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 python examples\rtdl_ann_candidate_app.py --backend cpu_python_reference
 python examples\rtdl_outlier_detection_app.py --backend cpu_python_reference
@@ -484,11 +480,10 @@ python examples/rtdl_hello_world.py
 python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16
 python examples/rtdl_graph_bfs.py --backend cpu_python_reference
 python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
+python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
 python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
 python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
-python examples/rtdl_v0_7_db_app_demo.py --backend auto
-python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
 python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
 python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference
 python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference
@@ -539,11 +534,13 @@ Optional Apple RT build step on Apple Silicon macOS:
 make build-apple-rt
 ```
 
-After building, `examples/rtdl_apple_rt_closest_hit.py` and
-`tests/goal578_apple_rt_backend_test.py` can exercise the current Apple RT
-closest-hit slice. Released v0.9.4 tests additionally cover prepared
-closest-hit, masked hit-count, masked segment-intersection, expanded geometry
-and nearest-neighbor slices, and Metal compute DB/graph paths.
+After building, `examples/rtdl_apple_rt_demo_app.py` can exercise the current
+public Apple RT app surface. The older `examples/rtdl_apple_rt_closest_hit.py`
+and `examples/rtdl_apple_rt_visibility_count.py` files remain compatibility
+helpers for focused tests, but the unified app is the public entry point.
+Released v0.9.4 tests additionally cover prepared closest-hit, masked
+hit-count, masked segment-intersection, expanded geometry and nearest-neighbor
+slices, and Metal compute DB/graph paths.
 
 For the current Apple RT dispatch and native-slice checks, run:
 

@@ -57,16 +57,14 @@ analytical row workloads without claiming to be a DBMS.
 | App | File | What data becomes | Boundary |
 | --- | --- | --- | --- |
 | Unified database analytics | `examples/rtdl_database_analytics_app.py` | order tables become regional dashboard rows and sales-risk summaries | primary DB app entry point |
-| Sales risk screening | `examples/rtdl_sales_risk_screening.py` | orders plus predicates become risky order IDs, grouped counts, and grouped revenue | bounded DB kernels inside app logic |
-| Regional order dashboard | `examples/rtdl_v0_7_db_app_demo.py` | a denormalized order table becomes scan and grouped JSON results | app-level prepared dataset demo |
-| DB kernel-form demo | `examples/rtdl_v0_7_db_kernel_app_demo.py` | the same order workload becomes explicit RTDL kernel-form rows | kernel syntax demonstration |
 | Conjunctive scan | `examples/rtdl_db_conjunctive_scan.py` | rows plus predicates become matching row IDs | bounded filter primitive |
 | Grouped count | `examples/rtdl_db_grouped_count.py` | filtered rows become grouped counts | bounded aggregate primitive |
 | Grouped sum | `examples/rtdl_db_grouped_sum.py` | filtered rows become grouped sums | bounded aggregate primitive |
 
 `examples/rtdl_database_analytics_app.py` is the preferred user-facing DB app
 because it unifies the regional dashboard and sales-risk screening scenarios.
-The older scenario-specific files remain runnable compatibility examples.
+The older scenario-specific files remain runnable compatibility helpers for
+historical tests and imports, but they are retired from the public app catalog.
 
 ## Graph App Examples
 
@@ -88,9 +86,11 @@ analytics system.
 | Any-hit blocker rows | `examples/rtdl_ray_triangle_any_hit.py` | rays plus triangles become `{ray_id, any_hit}` rows | bounded yes/no blocker primitive |
 | Visibility rows | `examples/rtdl_visibility_rows.py` | observers, targets, and blockers become visibility rows | standard-library line-of-sight helper |
 | Unified Apple RT demo | `examples/rtdl_apple_rt_demo_app.py` | Apple RT closest-hit and visibility-count scenarios become one app JSON result | primary Apple RT demo entry point |
-| Apple RT visibility count | `examples/rtdl_apple_rt_visibility_count.py` | repeated 2D rays plus blockers become one scalar blocked-ray count | scenario-specific prepared/prepacked Apple RT count path |
-| Apple RT closest hit | `examples/rtdl_apple_rt_closest_hit.py` | 3D rays plus triangles become nearest-hit rows | scenario-specific Apple Metal/MPS RT closest-hit slice |
 | HIPRT hit count | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays plus triangles become per-ray hit counts | Linux HIPRT SDK path |
+
+The older Apple RT closest-hit and visibility-count scenario files remain
+runnable compatibility helpers, but users should start from the unified Apple
+RT demo app.
 
 ## Beginner And Reference Examples
 

@@ -261,12 +261,11 @@ helper names are backend-specific and the performance claims are limited to
 the measured repeated-query cases.
 
 If your Apple Silicon Mac is configured for the Apple RT backend, use the
-dedicated closest-hit example first, then the prepared visibility-count app
-example if you want the released v0.9.6 scalar count path:
+unified Apple RT demo app. It runs the closest-hit and prepared
+visibility-count scenarios from one public entry point:
 
 ```bash
-PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
-PYTHONPATH=src:. python examples/rtdl_apple_rt_visibility_count.py
+PYTHONPATH=src:. python examples/rtdl_apple_rt_demo_app.py
 ```
 
 What stays the same:
@@ -345,16 +344,15 @@ Optional bounded `v0.7.0` DB release examples:
 PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_app_demo.py --backend auto
-PYTHONPATH=src:. python examples/rtdl_v0_7_db_kernel_app_demo.py --backend auto
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
 ```
 
 These DB examples are analytical RTDL kernels over denormalized rows. They are
 not SQL execution and RTDL is not a database system.
 
-The two `rtdl_v0_7_*_demo.py` scripts show the app-level and kernel-form usage
-of the same bounded DB surface. They are release-facing examples, not a DBMS
-claim.
+`rtdl_database_analytics_app.py` is the public DB app entry point. The older
+scenario-specific DB demo scripts remain compatibility helpers, not the
+recommended tutorial path.
 
 Or jump directly to the full hub:
 
@@ -368,11 +366,11 @@ Or jump directly to the full hub:
 - `rt.run_cpu_python_reference(...)` is the easiest runner to start with
 - switching backends changes execution, not the public kernel shape
 
-Apple RT visibility-count note:
+Apple RT demo note:
 
-- `examples/rtdl_apple_rt_visibility_count.py` uses a prepared Apple RT 2D
-  scene plus prepacked rays to return one scalar blocked-ray count.
-- In `v0.9.6`, it is the Mac-facing prepared/prepacked visibility-count example
-  for repeated visibility/collision apps on Apple Silicon.
+- `examples/rtdl_apple_rt_demo_app.py` is the public Apple RT app entry point.
+- In `v0.9.6`, it covers the Mac-facing closest-hit and prepared/prepacked
+  visibility-count scenarios for repeated visibility/collision apps on Apple
+  Silicon.
 - It is not a claim that Apple RT is faster for full emitted-row output or for
   DB/graph workloads.

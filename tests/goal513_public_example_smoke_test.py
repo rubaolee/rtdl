@@ -43,8 +43,6 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
             ("examples/rtdl_db_conjunctive_scan.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_db_grouped_count.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_db_grouped_sum.py", "--backend", "cpu_python_reference"),
-            ("examples/rtdl_v0_7_db_app_demo.py", "--backend", "auto"),
-            ("examples/rtdl_v0_7_db_kernel_app_demo.py", "--backend", "auto"),
             ("examples/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference"),
             ("examples/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference"),

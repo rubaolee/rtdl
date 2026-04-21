@@ -103,8 +103,6 @@ audited release claims.
 - [Release-Facing Examples](release_facing_examples.md)
 - [HIPRT Example](../examples/rtdl_hiprt_ray_triangle_hitcount.py)
 - [Unified Apple RT Demo App](../examples/rtdl_apple_rt_demo_app.py)
-- [Apple RT Closest-Hit Scenario](../examples/rtdl_apple_rt_closest_hit.py)
-- [Apple RT Visibility-Count Scenario](../examples/rtdl_apple_rt_visibility_count.py)
 - [RTDL Language Docs Index](rtdl/README.md)
 - [Feature Homes](features/README.md)
 - [Workloads And Research Foundations](workloads_and_research_foundations.md)
