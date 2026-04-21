@@ -34,7 +34,34 @@ def _stats(samples: list[float]) -> dict[str, float]:
     }
 
 
-def profile_robot_collision(iterations: int, backend: str, summary_mode: str) -> dict[str, object]:
+def _summarize_robot_payload(payload: dict[str, object]) -> dict[str, object]:
+    output_mode = str(payload.get("output_mode", "full"))
+    summary: dict[str, object] = {
+        "matches_oracle": bool(payload["matches_oracle"]),
+        "output_mode": output_mode,
+    }
+    if output_mode == "full":
+        summary.update(
+            {
+                "row_count": len(payload["rows"]),
+                "colliding_pose_count": len(payload["colliding_pose_ids"]),
+            }
+        )
+    elif output_mode == "pose_flags":
+        summary.update(
+            {
+                "pose_flag_count": len(payload["pose_collision_flags"]),
+                "colliding_pose_count": int(payload["colliding_pose_count"]),
+            }
+        )
+    elif output_mode == "hit_count":
+        summary["hit_edge_count"] = int(payload["hit_edge_count"])
+    else:
+        raise ValueError(f"unsupported robot output_mode `{output_mode}`")
+    return summary
+
+
+def profile_robot_collision(iterations: int, backend: str, summary_mode: str, output_mode: str) -> dict[str, object]:
     phase_samples: dict[str, list[float]] = {
         "python_input_construction": [],
         "native_prepare_scene": [],
@@ -62,22 +89,16 @@ def profile_robot_collision(iterations: int, backend: str, summary_mode: str) ->
                     hit_count, elapsed = _time_call(lambda: prepared_scene.count(prepared_rays))
                     phase_samples["native_execute"].append(elapsed)
                     phase_samples["copy_back_and_scalar_materialize"].append(0.0)
-                    outputs.append({"hit_edge_count": int(hit_count)})
+                    outputs.append({"output_mode": "hit_count", "hit_edge_count": int(hit_count)})
                 finally:
                     prepared_rays.close()
             finally:
                 prepared_scene.close()
         else:
-            payload, elapsed = _time_call(lambda: robot_app.run_app(backend, "rows"))
+            payload, elapsed = _time_call(lambda: robot_app.run_app(backend, "rows", output_mode))
             phase_samples["native_execute"].append(elapsed)
             phase_samples["copy_back_and_scalar_materialize"].append(0.0)
-            outputs.append(
-                {
-                    "matches_oracle": bool(payload["matches_oracle"]),
-                    "row_count": len(payload["rows"]),
-                    "colliding_pose_count": len(payload["colliding_pose_ids"]),
-                }
-            )
+            outputs.append(_summarize_robot_payload(payload))
 
         phase_samples["total"].append(time.perf_counter() - total_start)
 
@@ -85,11 +106,12 @@ def profile_robot_collision(iterations: int, backend: str, summary_mode: str) ->
         "app": "robot_collision_screening",
         "backend": backend,
         "summary_mode": summary_mode,
+        "output_mode": "hit_count" if summary_mode == "prepared_count" else output_mode,
         "iterations": iterations,
         "optix_performance_class": rt.optix_app_performance_support("robot_collision_screening").performance_class,
         "phase_stats": {phase: _stats(samples) for phase, samples in phase_samples.items()},
         "last_output": outputs[-1] if outputs else {},
-        "boundary": "Prepared OptiX count mode reports scalar hit-edge count only. It avoids Python row materialization but does not emit pose-level witness rows.",
+        "boundary": "Rows mode can now profile full, pose_flags, and hit_count app outputs. Compact row-mode outputs reduce Python/JSON output volume but still execute the row path internally; prepared OptiX count mode reports a native scalar hit-edge count only and does not emit pose-level witness rows.",
     }
 
 
@@ -112,6 +134,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--app", choices=("robot_collision_screening",), default="robot_collision_screening")
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--summary-mode", choices=("rows", "prepared_count"), default="rows")
+    parser.add_argument(
+        "--output-mode",
+        choices=("full", "pose_flags", "hit_count"),
+        default="full",
+        help="Rows-mode app output to profile. Prepared count always reports hit_count.",
+    )
     parser.add_argument("--iterations", type=int, default=3)
     args = parser.parse_args(argv)
 
@@ -123,7 +151,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.summary_mode == "prepared_count" and args.backend != "optix":
         raise ValueError("--summary-mode prepared_count requires --backend optix")
 
-    print(json.dumps(profile_robot_collision(args.iterations, args.backend, args.summary_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            profile_robot_collision(args.iterations, args.backend, args.summary_mode, args.output_mode),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
