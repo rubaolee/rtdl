@@ -22,3 +22,18 @@ The Embree all-app compact performance closure is accepted for the following rea
     *   Crucially, it explicitly checks that the `APP_CASES` within the main performance script (`goal714_embree_app_thread_perf.py`) are correctly configured to employ these new compact summary arguments for scaled applications, ensuring that the performance measurements are conducted as intended.
 
 The changes collectively represent a significant and well-verified improvement in how Embree app performance is characterized, providing a clearer view of its native contributions.
+
+## Linux addendum review
+
+The Linux addendum in `docs/reports/goal741_embree_all_app_compact_perf_closure_2026-04-21.md` and the corresponding JSON data in `docs/reports/goal741_embree_all_app_perf_linux_2026-04-21.json` have been reviewed.
+
+**Consistency Verification:**
+All numerical data presented in the "Linux Evidence" table within the markdown report, specifically "CPU/reference sec", "Embree 1-thread sec", "Embree auto sec", and "Auto vs 1-thread", are consistent with the values found in the `goal741_embree_all_app_perf_linux_2026-04-21.json` file when rounded to the precision used in the markdown table.
+
+**Overclaiming Assessment:**
+The "Interpretation" section of the markdown report accurately reflects the performance speedups observed in the Linux JSON data for `facility_knn_assignment`, `hausdorff_distance`, and `ann_candidate_search`. The observation that "The Linux run confirms the same pattern with slightly larger absolute times" is also validated by comparing the macOS and Linux performance data.
+
+**Conclusion:**
+The Linux addendum is consistent with the provided JSON data and does not contain any overclaims.
+
+**Verdict: ACCEPT**

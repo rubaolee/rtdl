@@ -1,0 +1,862 @@
+{
+  "apps": [
+    {
+      "app": "database_analytics",
+      "boundary": "copy-scaled public DB fixtures in compact summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.259750385012012,
+        "error": null,
+        "ok": true,
+        "payload_hash": "659275326880fed46284fd5777ebe3a4e9bedfb56370d77a11321471df596f74"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.28541117801796645,
+          "median_sec": 0.28541117801796645,
+          "min_sec": 0.28541117801796645,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.28541117801796645
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.28541117801796645,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.28422089002560824,
+          "median_sec": 0.28422089002560824,
+          "min_sec": 0.28422089002560824,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.28422089002560824
+          ],
+          "speedup_vs_1_thread": 1.0041878976321936,
+          "threads": "auto",
+          "total_sample_sec": 0.28422089002560824,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "db",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "graph_analytics",
+      "boundary": "copy-scaled public graph fixture in compact summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.20044389000395313,
+        "error": null,
+        "ok": true,
+        "payload_hash": "a700193cc5c00db3aa847facf99900f948766acae45f88e219edbedb10e88368"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.23116456001298502,
+          "median_sec": 0.23116456001298502,
+          "min_sec": 0.23116456001298502,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.23116456001298502
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.23116456001298502,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.23202621599193662,
+          "median_sec": 0.23202621599193662,
+          "min_sec": 0.23202621599193662,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.23202621599193662
+          ],
+          "speedup_vs_1_thread": 0.9962863852463053,
+          "threads": "auto",
+          "total_sample_sec": 0.23202621599193662,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "graph",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "service_coverage_gaps",
+      "boundary": "copy-scaled fixed-radius app fixture",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 3.141264321980998,
+        "error": null,
+        "ok": true,
+        "payload_hash": "2cbd43a466edc810aec2942ae0a6cf94d82d5e011fe83c2752f388ef098774f9"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.2737043430097401,
+          "median_sec": 0.2737043430097401,
+          "min_sec": 0.2737043430097401,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.2737043430097401
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.2737043430097401,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.2729647990199737,
+          "median_sec": 0.2729647990199737,
+          "min_sec": 0.2729647990199737,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.2729647990199737
+          ],
+          "speedup_vs_1_thread": 1.0027093016843989,
+          "threads": "auto",
+          "total_sample_sec": 0.2729647990199737,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "event_hotspot_screening",
+      "boundary": "copy-scaled fixed-radius app fixture",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 9.08861173398327,
+        "error": null,
+        "ok": true,
+        "payload_hash": "29d0e0b345f10790e59a991ca6a90b450c23fa2a343dcae97871c306b4b9ed8f"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.3495644429931417,
+          "median_sec": 0.3495644429931417,
+          "min_sec": 0.3495644429931417,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.3495644429931417
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.3495644429931417,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.35186538205016404,
+          "median_sec": 0.35186538205016404,
+          "min_sec": 0.35186538205016404,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.35186538205016404
+          ],
+          "speedup_vs_1_thread": 0.9934607404581384,
+          "threads": "auto",
+          "total_sample_sec": 0.35186538205016404,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "facility_knn_assignment",
+      "boundary": "copy-scaled KNN app fixture in compact nearest-assignment summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 7.977701597032137,
+        "error": null,
+        "ok": true,
+        "payload_hash": "09e982e18122bfa9b898f57d1322a673e819a219a05b2f0030026ad4dc7a9f01"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.8741010259836912,
+          "median_sec": 0.8741010259836912,
+          "min_sec": 0.8741010259836912,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.8741010259836912
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.8741010259836912,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.400449602981098,
+          "median_sec": 0.400449602981098,
+          "min_sec": 0.400449602981098,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.400449602981098
+          ],
+          "speedup_vs_1_thread": 2.1827990825226276,
+          "threads": "auto",
+          "total_sample_sec": 0.400449602981098,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "road_hazard_screening",
+      "boundary": "copy-scaled segment/polygon app fixture in compact priority-count mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.24881469196407124,
+        "error": null,
+        "ok": true,
+        "payload_hash": "110b90a53d219d38b0ada346e26f7a813f6da2e85110c3c9115c9d35a9ed3306"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.22171124099986628,
+          "median_sec": 0.22171124099986628,
+          "min_sec": 0.22171124099986628,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.22171124099986628
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.22171124099986628,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.221991017984692,
+          "median_sec": 0.221991017984692,
+          "min_sec": 0.221991017984692,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.221991017984692
+          ],
+          "speedup_vs_1_thread": 0.9987396923201414,
+          "threads": "auto",
+          "total_sample_sec": 0.221991017984692,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "segment_polygon",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "boundary": "small public app fixture",
+      "copies": 1,
+      "cpu_reference": {
+        "elapsed_sec": 0.18669335899176076,
+        "error": null,
+        "ok": true,
+        "payload_hash": "9ed5bf33116f98e5f66e1fab01b805d63765d05997944a8a669ea26d2787f74e"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.20417618000647053,
+          "median_sec": 0.20019748152117245,
+          "min_sec": 0.19621878303587437,
+          "ok": true,
+          "repeat_count": 2,
+          "samples_sec": [
+            0.19621878303587437,
+            0.20417618000647053
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.4003949630423449,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.19678669900167733,
+          "median_sec": 0.1965088600118179,
+          "min_sec": 0.19623102102195844,
+          "ok": true,
+          "repeat_count": 2,
+          "samples_sec": [
+            0.19623102102195844,
+            0.19678669900167733
+          ],
+          "speedup_vs_1_thread": 1.0187707643774064,
+          "threads": "auto",
+          "total_sample_sec": 0.3930177200236358,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "segment_polygon",
+      "scalable": false,
+      "valid": true
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "boundary": "copy-scaled segment/polygon any-hit app fixture in compact segment-count mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.3192589670070447,
+        "error": null,
+        "ok": true,
+        "payload_hash": "677fdd993caa7b535d8c04679b928de6acd4768857ff2eb60cac3f5f4563aea1"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.2940965809975751,
+          "median_sec": 0.2940965809975751,
+          "min_sec": 0.2940965809975751,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.2940965809975751
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.2940965809975751,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.29581292101647705,
+          "median_sec": 0.29581292101647705,
+          "min_sec": 0.29581292101647705,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.29581292101647705
+          ],
+          "speedup_vs_1_thread": 0.994197886917839,
+          "threads": "auto",
+          "total_sample_sec": 0.29581292101647705,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "segment_polygon",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "boundary": "copy-scaled native-assisted candidate discovery plus CPU exact area summary",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.3179894189815968,
+        "error": null,
+        "ok": true,
+        "payload_hash": "286791990513314b7a1244f96d2a9fa9df7b4f054fcd8426a873e85e79b26abc"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.41392287897178903,
+          "median_sec": 0.41392287897178903,
+          "min_sec": 0.41392287897178903,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.41392287897178903
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.41392287897178903,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.41290527302771807,
+          "median_sec": 0.41290527302771807,
+          "min_sec": 0.41290527302771807,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.41290527302771807
+          ],
+          "speedup_vs_1_thread": 1.0024645021765142,
+          "threads": "auto",
+          "total_sample_sec": 0.41290527302771807,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "polygon_overlap",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "boundary": "native-assisted candidate discovery plus CPU exact Jaccard refinement",
+      "copies": 1,
+      "cpu_reference": {
+        "elapsed_sec": 0.1861366219818592,
+        "error": null,
+        "ok": true,
+        "payload_hash": "94b53454064bae6f8b81d44333997869f1ec3c01115cfdb20e74c0644ba98f51"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.19652839400805533,
+          "median_sec": 0.1960987700149417,
+          "min_sec": 0.19566914602182806,
+          "ok": true,
+          "repeat_count": 2,
+          "samples_sec": [
+            0.19566914602182806,
+            0.19652839400805533
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.3921975400298834,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.19597455498296767,
+          "median_sec": 0.1957559789880179,
+          "min_sec": 0.1955374029930681,
+          "ok": true,
+          "repeat_count": 2,
+          "samples_sec": [
+            0.1955374029930681,
+            0.19597455498296767
+          ],
+          "speedup_vs_1_thread": 1.0017511139567532,
+          "threads": "auto",
+          "total_sample_sec": 0.3915119579760358,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "polygon_overlap",
+      "scalable": false,
+      "valid": true
+    },
+    {
+      "app": "hausdorff_distance",
+      "boundary": "copy-scaled nearest-neighbor app fixture with Embree directed-summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.1903836490237154,
+        "error": null,
+        "ok": true,
+        "payload_hash": "1082d2498c7eea07988b5f6eb0cfa8a1fe2f567feb54435432001f4afa28c24a"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 1.1455680740182288,
+          "median_sec": 1.1455680740182288,
+          "min_sec": 1.1455680740182288,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            1.1455680740182288
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 1.1455680740182288,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.4563311850070022,
+          "median_sec": 0.4563311850070022,
+          "min_sec": 0.4563311850070022,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.4563311850070022
+          ],
+          "speedup_vs_1_thread": 2.5103874371431587,
+          "threads": "auto",
+          "total_sample_sec": 0.4563311850070022,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "ann_candidate_search",
+      "boundary": "copy-scaled KNN app fixture in compact candidate-rerank summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 4.573851524037309,
+        "error": null,
+        "ok": true,
+        "payload_hash": "8ee4bdfc3a082c9a2633f757db749864e974d3f5ecab55538e8505dca68a0a72"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.5678776120184921,
+          "median_sec": 0.5678776120184921,
+          "min_sec": 0.5678776120184921,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.5678776120184921
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.5678776120184921,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.3121724969823845,
+          "median_sec": 0.3121724969823845,
+          "min_sec": 0.3121724969823845,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.3121724969823845
+          ],
+          "speedup_vs_1_thread": 1.8191148083443647,
+          "threads": "auto",
+          "total_sample_sec": 0.3121724969823845,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "outlier_detection",
+      "boundary": "copy-scaled fixed-radius app fixture in compact density-summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.25601471902336925,
+        "error": null,
+        "ok": true,
+        "payload_hash": "4ef4da5d8780e4bbc24ef9bc3c40c20269f4d2c9cff1e666f651fa66b597ff28"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.30998225801158696,
+          "median_sec": 0.30998225801158696,
+          "min_sec": 0.30998225801158696,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.30998225801158696
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.30998225801158696,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.30773956602206454,
+          "median_sec": 0.30773956602206454,
+          "min_sec": 0.30773956602206454,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.30773956602206454
+          ],
+          "speedup_vs_1_thread": 1.0072876296620292,
+          "threads": "auto",
+          "total_sample_sec": 0.30773956602206454,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "dbscan_clustering",
+      "boundary": "copy-scaled fixed-radius app fixture in compact DBSCAN core-flag mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.25815320102265105,
+        "error": null,
+        "ok": true,
+        "payload_hash": "813b2e6ab3a328e43b54bd5652eac3a758cb2d051ebc2c48080d50e983456be7"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.3127861969987862,
+          "median_sec": 0.3127861969987862,
+          "min_sec": 0.3127861969987862,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.3127861969987862
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.3127861969987862,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.3086162239778787,
+          "median_sec": 0.3086162239778787,
+          "min_sec": 0.3086162239778787,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.3086162239778787
+          ],
+          "speedup_vs_1_thread": 1.013511839938805,
+          "threads": "auto",
+          "total_sample_sec": 0.3086162239778787,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "robot_collision_screening",
+      "boundary": "copy-scaled ray/triangle app fixture in compact hit-count mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 5.037175184988882,
+        "error": null,
+        "ok": true,
+        "payload_hash": "d2bd502a977abfda454ad73183ad29043a4674452279ad695e3a6996605e83ad"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 2.655876442033332,
+          "median_sec": 2.655876442033332,
+          "min_sec": 2.655876442033332,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            2.655876442033332
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 2.655876442033332,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 2.689898158016149,
+          "median_sec": 2.689898158016149,
+          "min_sec": 2.689898158016149,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            2.689898158016149
+          ],
+          "speedup_vs_1_thread": 0.9873520430944832,
+          "threads": "auto",
+          "total_sample_sec": 2.689898158016149,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "ray",
+      "scalable": true,
+      "valid": true
+    },
+    {
+      "app": "barnes_hut_force",
+      "boundary": "copy-scaled Barnes-Hut node-candidate app fixture in compact candidate-summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.19769802101654932,
+        "error": null,
+        "ok": true,
+        "payload_hash": "28cfbb8d4f378b0900c432054d318e9105d67edc3a790528e4d814c1c09da76a"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.2056220140075311,
+          "median_sec": 0.2056220140075311,
+          "min_sec": 0.2056220140075311,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.2056220140075311
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.2056220140075311,
+          "warmup_errors": [],
+          "warmups": 0
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 8,
+          "errors": [],
+          "max_sec": 0.20944176096236333,
+          "median_sec": 0.20944176096236333,
+          "min_sec": 0.20944176096236333,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.20944176096236333
+          ],
+          "speedup_vs_1_thread": 0.9817622477137278,
+          "threads": "auto",
+          "total_sample_sec": 0.20944176096236333,
+          "warmup_errors": [],
+          "warmups": 0
+        }
+      ],
+      "group": "spatial_point",
+      "scalable": true,
+      "valid": true
+    }
+  ],
+  "goal": 714,
+  "host": {
+    "label": "lestat-lx1",
+    "machine": "x86_64",
+    "os_cpu_count": 8,
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "python": "3.12.3"
+  },
+  "methodology": {
+    "boundary": "This is app-level wall-clock timing. It includes Python CLI startup, JSON materialization, and app postprocess; it is not pure native traversal timing.",
+    "copies_for_scalable_apps": 1024,
+    "max_repeats": 2,
+    "min_sample_sec": 0.2,
+    "threads": [
+      "1",
+      "auto"
+    ],
+    "timeout_sec": 300.0,
+    "warmups_before_sample_window": 0
+  },
+  "valid": true
+}

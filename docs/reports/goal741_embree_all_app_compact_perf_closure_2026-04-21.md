@@ -49,6 +49,43 @@ Result:
 | robot_collision_screening | 2.351 | 1.259 | 1.258 | 1.00x |
 | barnes_hut_force | 0.112 | 0.121 | 0.120 | 1.01x |
 
+## Linux Evidence
+
+Clean temp checkout on `lestat-lx1`:
+
+```bash
+rm -rf /tmp/rtdl_goal741_embree
+git clone --depth 1 https://github.com/rubaolee/rtdl.git /tmp/rtdl_goal741_embree
+cd /tmp/rtdl_goal741_embree
+PYTHONPATH=src:. python3 scripts/goal714_embree_app_thread_perf.py --host-label lestat-lx1 --apps all --copies 1024 --threads 1,auto --warmups 0 --min-sample-sec 0.2 --max-repeats 2 --timeout 300 --output docs/reports/goal741_embree_all_app_perf_linux_2026-04-21.json
+```
+
+Result:
+
+- `valid: true`
+- Host: `lestat-lx1`, Linux x86_64, 8 logical CPUs, Python 3.12.3
+- Source commit: `dc80cb7`
+- Parity: every Embree payload matched the CPU/reference semantic payload under the harness canonical comparison.
+
+| App | CPU/reference sec | Embree 1-thread sec | Embree auto sec | Auto vs 1-thread |
+|---|---:|---:|---:|---:|
+| database_analytics | 0.260 | 0.285 | 0.284 | 1.00x |
+| graph_analytics | 0.200 | 0.231 | 0.232 | 1.00x |
+| service_coverage_gaps | 3.141 | 0.274 | 0.273 | 1.00x |
+| event_hotspot_screening | 9.089 | 0.350 | 0.352 | 0.99x |
+| facility_knn_assignment | 7.978 | 0.874 | 0.400 | 2.18x |
+| road_hazard_screening | 0.249 | 0.222 | 0.222 | 1.00x |
+| segment_polygon_hitcount | 0.187 | 0.200 | 0.197 | 1.02x |
+| segment_polygon_anyhit_rows | 0.319 | 0.294 | 0.296 | 0.99x |
+| polygon_pair_overlap_area_rows | 0.318 | 0.414 | 0.413 | 1.00x |
+| polygon_set_jaccard | 0.186 | 0.196 | 0.196 | 1.00x |
+| hausdorff_distance | 0.190 | 1.146 | 0.456 | 2.51x |
+| ann_candidate_search | 4.574 | 0.568 | 0.312 | 1.82x |
+| outlier_detection | 0.256 | 0.310 | 0.308 | 1.01x |
+| dbscan_clustering | 0.258 | 0.313 | 0.309 | 1.01x |
+| robot_collision_screening | 5.037 | 2.656 | 2.690 | 0.99x |
+| barnes_hut_force | 0.198 | 0.206 | 0.209 | 0.98x |
+
 ## Interpretation
 
 The Embree work is now technically healthier because the app-level harness no longer confuses RTDL/Embree traversal work with Python expansion or validation work.
@@ -66,6 +103,10 @@ Clear multi-thread wins on this Mac:
 - facility KNN assignment: `2.18x`
 - Hausdorff directed summary: `2.82x`
 - ANN candidate rerank: `1.72x`
+
+The Linux run confirms the same pattern with slightly larger absolute times:
+facility KNN assignment `2.18x`, Hausdorff directed summary `2.51x`, and ANN
+candidate rerank `1.82x` versus Embree 1-thread.
 
 Limited or no auto-thread wins:
 
@@ -86,6 +127,14 @@ The changes do not claim that every app is now a full native Embree implementati
 ## Verification
 
 Focused tests:
+
+```bash
+PYTHONPATH=src:. python3 -m unittest tests.goal741_embree_compact_app_perf_harness_test tests.goal738_graph_app_scaled_summary_test tests.goal739_db_app_scaled_summary_test -v
+```
+
+Result: `12` tests OK.
+
+Linux focused tests in the clean temp checkout:
 
 ```bash
 PYTHONPATH=src:. python3 -m unittest tests.goal741_embree_compact_app_perf_harness_test tests.goal738_graph_app_scaled_summary_test tests.goal739_db_app_scaled_summary_test -v
