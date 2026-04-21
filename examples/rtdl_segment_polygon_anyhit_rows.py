@@ -60,6 +60,7 @@ def run_case(backend: str, dataset: str, output_mode: str = "rows") -> dict[str,
         raise ValueError(f"unsupported backend `{backend}`")
     summary = _summarize_rows(rows, case.inputs["segments"])
     payload: dict[str, object] = {
+        "app": "segment_polygon_anyhit_rows",
         "backend": backend,
         "dataset": dataset,
         "output_mode": output_mode,

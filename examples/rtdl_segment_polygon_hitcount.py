@@ -34,6 +34,7 @@ def run_case(backend: str, dataset: str) -> dict[str, object]:
     else:
         raise ValueError(f"unsupported backend `{backend}`")
     return {
+        "app": "segment_polygon_hitcount",
         "backend": backend,
         "dataset": dataset,
         "row_count": len(rows),
