@@ -55,6 +55,33 @@ class OptixAppPerformanceSupport:
     note: str
 
 
+@dataclass(frozen=True)
+class OptixAppBenchmarkReadiness:
+    app: str
+    status: str
+    next_goal: str
+    benchmark_contract: str
+    blocker: str
+    allowed_claim: str
+
+
+READY_FOR_RTX_CLAIM_REVIEW = "ready_for_rtx_claim_review"
+NEEDS_PHASE_CONTRACT = "needs_phase_contract"
+NEEDS_INTERFACE_TUNING = "needs_interface_tuning"
+NEEDS_NATIVE_KERNEL_TUNING = "needs_native_kernel_tuning"
+NEEDS_POSTPROCESS_SPLIT = "needs_postprocess_split"
+EXCLUDE_FROM_RTX_APP_BENCHMARK = "exclude_from_rtx_app_benchmark"
+
+OPTIX_APP_BENCHMARK_READINESS_STATUSES = (
+    READY_FOR_RTX_CLAIM_REVIEW,
+    NEEDS_PHASE_CONTRACT,
+    NEEDS_INTERFACE_TUNING,
+    NEEDS_NATIVE_KERNEL_TUNING,
+    NEEDS_POSTPROCESS_SPLIT,
+    EXCLUDE_FROM_RTX_APP_BENCHMARK,
+)
+
+
 def _support(app: str, engine: str, status: str, note: str) -> AppEngineSupport:
     return AppEngineSupport(app=app, engine=engine, status=status, note=note)
 
@@ -366,6 +393,172 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
 }
 
 
+def _readiness(
+    app: str,
+    status: str,
+    next_goal: str,
+    benchmark_contract: str,
+    blocker: str,
+    allowed_claim: str,
+) -> OptixAppBenchmarkReadiness:
+    return OptixAppBenchmarkReadiness(
+        app=app,
+        status=status,
+        next_goal=next_goal,
+        benchmark_contract=benchmark_contract,
+        blocker=blocker,
+        allowed_claim=allowed_claim,
+    )
+
+
+_OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
+    "database_analytics": _readiness(
+        "database_analytics",
+        NEEDS_INTERFACE_TUNING,
+        "Goal706",
+        "prepared dataset timing must split packing, BVH/build, launch/traversal, copy-back, exact filtering, grouping, and Python materialization",
+        "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
+        "correctness-capable OptiX DB path only; no RTX app speedup claim yet",
+    ),
+    "graph_analytics": _readiness(
+        "graph_analytics",
+        NEEDS_NATIVE_KERNEL_TUNING,
+        "Goal707",
+        "BFS and triangle-count must run native GPU/OptiX traversal or be explicitly excluded from RTX app benchmarking",
+        "current OptiX-facing graph paths are host-indexed correctness paths",
+        "no RTX graph acceleration claim today",
+    ),
+    "apple_rt_demo": _readiness(
+        "apple_rt_demo",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "Apple-specific benchmark only; do not include in NVIDIA RTX cloud comparison",
+        "OptiX is not an applicable app entry point",
+        "Apple RT demo claim only, not NVIDIA OptiX",
+    ),
+    "service_coverage_gaps": _readiness(
+        "service_coverage_gaps",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "not an OptiX-exposed app today",
+        "public app CLI does not expose OptiX",
+        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+    ),
+    "event_hotspot_screening": _readiness(
+        "event_hotspot_screening",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "not an OptiX-exposed app today",
+        "public app CLI does not expose OptiX",
+        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+    ),
+    "facility_knn_assignment": _readiness(
+        "facility_knn_assignment",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "not an OptiX-exposed app today",
+        "public app CLI does not expose OptiX",
+        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+    ),
+    "road_hazard_screening": _readiness(
+        "road_hazard_screening",
+        NEEDS_NATIVE_KERNEL_TUNING,
+        "Goal708",
+        "segment/polygon OptiX benchmark must use the native any-hit/hit-count path and compact outputs, not host-indexed fallback",
+        "default app path remains host-indexed fallback",
+        "no RTX road-hazard speedup claim today",
+    ),
+    "segment_polygon_hitcount": _readiness(
+        "segment_polygon_hitcount",
+        NEEDS_NATIVE_KERNEL_TUNING,
+        "Goal708",
+        "native OptiX hit-count mode must be the measured path and must be separated from host-indexed fallback",
+        "default app path remains host-indexed fallback",
+        "no RTX segment/polygon hit-count speedup claim today",
+    ),
+    "segment_polygon_anyhit_rows": _readiness(
+        "segment_polygon_anyhit_rows",
+        NEEDS_NATIVE_KERNEL_TUNING,
+        "Goal708",
+        "benchmark must first promote and gate a native OptiX any-hit path, then compare row output against compact segment flags/counts",
+        "default app path remains host-indexed fallback, and pair-row output volume can dominate after native traversal is promoted",
+        "no RTX pair-row speedup claim today",
+    ),
+    "polygon_pair_overlap_area_rows": _readiness(
+        "polygon_pair_overlap_area_rows",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "CPU-reference script only today",
+        "public app CLI does not expose OptiX",
+        "CPU correctness app only",
+    ),
+    "polygon_set_jaccard": _readiness(
+        "polygon_set_jaccard",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "CPU-reference script only today",
+        "public app CLI does not expose OptiX",
+        "CPU correctness app only",
+    ),
+    "hausdorff_distance": _readiness(
+        "hausdorff_distance",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "Goal709",
+        "must be redesigned or explicitly benchmarked as CUDA/GPU compute, not RT-core traversal",
+        "current OptiX path is CUDA-through-OptiX KNN rows",
+        "GPU-compute comparison only; no RT-core acceleration claim",
+    ),
+    "ann_candidate_search": _readiness(
+        "ann_candidate_search",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "Goal709",
+        "must be benchmarked against ANN/KNN baselines as GPU compute unless a true traversal design is implemented",
+        "current OptiX path is CUDA-through-OptiX KNN rows",
+        "GPU-compute comparison only; no RT-core acceleration claim",
+    ),
+    "outlier_detection": _readiness(
+        "outlier_detection",
+        NEEDS_PHASE_CONTRACT,
+        "Goal710",
+        "validation-free RTX timing must split rows versus rt_count_threshold summary, backend/materialization, postprocess, and oracle validation",
+        "RunPod RTX A5000 evidence is promising, but the current profiler is app-level and still mixes validation/postprocess costs",
+        "candidate fixed-radius summary speedup claim only after phase-clean RTX rerun and review",
+    ),
+    "dbscan_clustering": _readiness(
+        "dbscan_clustering",
+        NEEDS_POSTPROCESS_SPLIT,
+        "Goal711",
+        "core-flag summary timing must be separated from Python cluster expansion and validation",
+        "RunPod RTX A5000 backend timing is near parity, but total app timing is slower because validation/postprocess dominates",
+        "core-flag summary claim only; no full DBSCAN acceleration claim yet",
+    ),
+    "robot_collision_screening": _readiness(
+        "robot_collision_screening",
+        NEEDS_PHASE_CONTRACT,
+        "Goal712",
+        "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
+        "best OptiX traversal candidate, but RTX A5000 cloud timing has not been run after compact output/profiler polish",
+        "flagship candidate; no final app speedup claim until RTX rerun",
+    ),
+    "barnes_hut_force_app": _readiness(
+        "barnes_hut_force_app",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "Goal709",
+        "must be benchmarked as CUDA/GPU compute or redesigned around a valid traversal primitive",
+        "current app is CUDA-through-OptiX plus Python tree/opening-rule/reduction work",
+        "no RT-core Barnes-Hut claim today",
+    ),
+    "hiprt_ray_triangle_hitcount": _readiness(
+        "hiprt_ray_triangle_hitcount",
+        EXCLUDE_FROM_RTX_APP_BENCHMARK,
+        "none",
+        "HIPRT-specific app; not an OptiX app benchmark candidate",
+        "public app CLI does not expose OptiX",
+        "HIPRT validation only, not NVIDIA OptiX",
+    ),
+}
+
+
 def public_apps() -> tuple[str, ...]:
     return tuple(_APP_MATRIX)
 
@@ -390,3 +583,14 @@ def optix_app_performance_support(app: str) -> OptixAppPerformanceSupport:
 
 def optix_app_performance_matrix() -> dict[str, OptixAppPerformanceSupport]:
     return dict(_OPTIX_PERFORMANCE_MATRIX)
+
+
+def optix_app_benchmark_readiness(app: str) -> OptixAppBenchmarkReadiness:
+    try:
+        return _OPTIX_BENCHMARK_READINESS_MATRIX[app]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL app: app={app!r}") from exc
+
+
+def optix_app_benchmark_readiness_matrix() -> dict[str, OptixAppBenchmarkReadiness]:
+    return dict(_OPTIX_BENCHMARK_READINESS_MATRIX)

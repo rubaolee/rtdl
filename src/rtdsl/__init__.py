@@ -84,7 +84,10 @@ from .engine_feature_matrix import RTDL_ENGINES
 from .app_support_matrix import app_engine_support
 from .app_support_matrix import (
     OPTIX_APP_PERFORMANCE_CLASSES,
+    OPTIX_APP_BENCHMARK_READINESS_STATUSES,
     app_engine_support_matrix,
+    optix_app_benchmark_readiness,
+    optix_app_benchmark_readiness_matrix,
     optix_app_performance_matrix,
     optix_app_performance_support,
 )
@@ -846,6 +849,9 @@ __all__ = [
     "optix_app_performance_matrix",
     "optix_app_performance_support",
     "OPTIX_APP_PERFORMANCE_CLASSES",
+    "optix_app_benchmark_readiness",
+    "optix_app_benchmark_readiness_matrix",
+    "OPTIX_APP_BENCHMARK_READINESS_STATUSES",
     "public_apps",
     "run_baseline_benchmark",
     "run_baseline_case",

@@ -111,3 +111,53 @@ Retired compatibility helpers:
 - HIPRT evidence remains bounded by the documented HIPRT SDK/Orochi validation path and is not AMD GPU validation unless explicitly stated elsewhere.
 - Apple RT DB and graph support in the lower-level feature matrix is native-assisted/Metal-compute scoped, not Apple MPS ray-tracing traversal for DB/graph.
 - App-level Python orchestration and `rt.reduce_rows(...)` remain Python-owned unless a native backend helper is explicitly named.
+
+## OptiX RTX Benchmark Readiness
+
+Status: conservative gate before paying for another RTX cloud benchmark.
+
+The machine-readable source of truth is
+`rtdsl.optix_app_benchmark_readiness_matrix()`.
+
+This table answers a narrower question than the app engine matrix: which apps
+are actually ready for a serious NVIDIA RTX performance claim review after the
+current tuning work? The answer is intentionally conservative. A CLI exposing
+`--backend optix` is not enough; the measured path must isolate the native
+OptiX traversal or native summary work from Python packing, dict-row
+materialization, validation, and post-processing.
+
+| Status | Meaning |
+| --- | --- |
+| `ready_for_rtx_claim_review` | The app has enough phase-clean RTX evidence to enter claim review. This is not automatic release authorization. |
+| `needs_phase_contract` | The app is a credible RTX candidate, but timing must split preparation, traversal, materialization, postprocess, and validation before a cloud benchmark is trusted. |
+| `needs_interface_tuning` | Native/backend work exists, but Python/interface, row materialization, or host-side reduction can dominate the app result. |
+| `needs_native_kernel_tuning` | The public OptiX app path still needs native GPU/OptiX kernel work or must stay classified as fallback. |
+| `needs_postprocess_split` | The accelerated sub-result exists, but app-level post-processing must be separated before performance claims. |
+| `exclude_from_rtx_app_benchmark` | Do not include this app in NVIDIA RTX RT-core app claims today. It may still be a CPU, Embree, Apple, HIPRT, or GPU-compute app. |
+
+| App | Readiness | Next goal | Allowed claim today |
+| --- | --- | --- | --- |
+| `examples/rtdl_database_analytics_app.py` | `needs_interface_tuning` | Goal706 | correctness-capable OptiX DB path only; no RTX app speedup claim yet |
+| `examples/rtdl_graph_analytics_app.py` | `needs_native_kernel_tuning` | Goal707 | no RTX graph acceleration claim today |
+| `examples/rtdl_apple_rt_demo_app.py` | `exclude_from_rtx_app_benchmark` | none | Apple RT demo claim only, not NVIDIA OptiX |
+| `examples/rtdl_service_coverage_gaps.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
+| `examples/rtdl_event_hotspot_screening.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
+| `examples/rtdl_facility_knn_assignment.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
+| `examples/rtdl_road_hazard_screening.py` | `needs_native_kernel_tuning` | Goal708 | no RTX road-hazard speedup claim today |
+| `examples/rtdl_segment_polygon_hitcount.py` | `needs_native_kernel_tuning` | Goal708 | no RTX segment/polygon hit-count speedup claim today |
+| `examples/rtdl_segment_polygon_anyhit_rows.py` | `needs_native_kernel_tuning` | Goal708 | no RTX pair-row speedup claim today |
+| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `exclude_from_rtx_app_benchmark` | none | CPU correctness app only |
+| `examples/rtdl_polygon_set_jaccard.py` | `exclude_from_rtx_app_benchmark` | none | CPU correctness app only |
+| `examples/rtdl_hausdorff_distance_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | GPU-compute comparison only; no RT-core acceleration claim |
+| `examples/rtdl_ann_candidate_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | GPU-compute comparison only; no RT-core acceleration claim |
+| `examples/rtdl_outlier_detection_app.py` | `needs_phase_contract` | Goal710 | candidate fixed-radius summary speedup claim only after phase-clean RTX rerun and review |
+| `examples/rtdl_dbscan_clustering_app.py` | `needs_postprocess_split` | Goal711 | core-flag summary claim only; no full DBSCAN acceleration claim yet |
+| `examples/rtdl_robot_collision_screening_app.py` | `needs_phase_contract` | Goal712 | flagship candidate; no final app speedup claim until RTX rerun |
+| `examples/rtdl_barnes_hut_force_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | no RT-core Barnes-Hut claim today |
+| `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `exclude_from_rtx_app_benchmark` | none | HIPRT validation only, not NVIDIA OptiX |
+
+Cloud benchmark policy after Goal705: do not rent or keep a paid RTX instance
+for broad app benchmarking until Goal706 through Goal712 either close or
+explicitly exclude their app from RTX RT-core claims. The only acceptable early
+cloud reruns are narrow confirmation runs for a single app whose phase contract
+has already been fixed locally.
