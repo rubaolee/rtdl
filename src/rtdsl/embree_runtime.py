@@ -381,6 +381,14 @@ class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusCountRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_count", ctypes.c_uint32),
+        ("threshold_reached", ctypes.c_uint32),
+    ]
+
+
 class _RtdlKnnNeighborRow(ctypes.Structure):
     _fields_ = [
         ("query_id", ctypes.c_uint32),
@@ -1058,6 +1066,69 @@ def embree_version() -> tuple[int, int, int]:
     patch = ctypes.c_int()
     _check_status(library.rtdl_embree_get_version(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)))
     return major.value, minor.value, patch.value
+
+
+def fixed_radius_count_threshold_2d_embree(
+    query_points,
+    search_points=None,
+    *,
+    radius: float,
+    threshold: int = 0,
+) -> tuple[dict[str, int], ...]:
+    """Run Embree fixed-radius count summaries without neighbor-row materialization.
+
+    A threshold of 0 requests exact counts. A positive threshold permits capped
+    counting once the app only needs a density/core flag. This is intentionally
+    narrower than ``fixed_radius_neighbors`` and currently covers 2-D point
+    workloads used by outlier and DBSCAN-style app summaries.
+    """
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    packed_queries = pack_points(records=query_points, dimension=2)
+    packed_search = packed_queries if search_points is None else pack_points(records=search_points, dimension=2)
+    lib = _load_configured_embree_library()
+    symbol = _require_optional_embree_symbol(lib, "rtdl_embree_run_fixed_radius_count_threshold")
+    if symbol is None:
+        raise RuntimeError(
+            "loaded Embree backend library does not export rtdl_embree_run_fixed_radius_count_threshold; "
+            "rebuild the Embree backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlFixedRadiusCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        packed_queries.records,
+        packed_queries.count,
+        packed_search.records,
+        packed_search.count,
+        ctypes.c_double(float(radius)),
+        ctypes.c_size_t(int(threshold)),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    view = EmbreeRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlFixedRadiusCountRow,
+        field_names=("query_id", "neighbor_count", "threshold_reached"),
+    )
+    try:
+        return tuple(
+            {
+                "query_id": int(row["query_id"]),
+                "neighbor_count": int(row["neighbor_count"]),
+                "threshold_reached": int(row["threshold_reached"]),
+            }
+            for row in view.to_dict_rows()
+        )
+    finally:
+        view.close()
 
 
 def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, result_mode: str):
@@ -3060,6 +3131,22 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_fixed_radius_3d.restype = ctypes.c_int
+
+    optional_frn_count = _require_optional_embree_symbol(library, "rtdl_embree_run_fixed_radius_count_threshold")
+    if optional_frn_count is not None:
+        optional_frn_count.argtypes = [
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_frn_count.restype = ctypes.c_int
 
     library.rtdl_embree_run_knn_rows.argtypes = [
         ctypes.POINTER(_RtdlPoint),

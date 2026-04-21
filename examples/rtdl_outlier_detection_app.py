@@ -147,19 +147,36 @@ def _run_optix_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[d
     return _density_rows_from_count_rows(case["points"], count_rows)
 
 
+def _run_embree_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+    count_rows = rt.fixed_radius_count_threshold_2d_embree(
+        case["points"],
+        case["points"],
+        radius=RADIUS,
+        threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+    )
+    return _density_rows_from_count_rows(case["points"], count_rows)
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     *,
     copies: int = 1,
     optix_summary_mode: str = "rows",
+    embree_summary_mode: str = "rows",
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "rt_count_threshold"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'rt_count_threshold'")
+    if embree_summary_mode not in {"rows", "rt_count_threshold"}:
+        raise ValueError("embree_summary_mode must be 'rows' or 'rt_count_threshold'")
     case = make_outlier_case(copies=copies)
     native_summary_rows: tuple[dict[str, object], ...] = ()
     if backend == "optix" and optix_summary_mode == "rt_count_threshold":
         neighbor_rows = ()
         density_rows = _run_optix_density_summary(case)
+        native_summary_rows = density_rows
+    elif backend == "embree" and embree_summary_mode == "rt_count_threshold":
+        neighbor_rows = ()
+        density_rows = _run_embree_density_summary(case)
         native_summary_rows = density_rows
     else:
         neighbor_rows = _run_rows(backend, case)
@@ -173,6 +190,7 @@ def run_app(
         "app": "outlier_detection",
         "backend": backend,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
+        "embree_summary_mode": embree_summary_mode if backend == "embree" else "not_applicable",
         "radius": RADIUS,
         "k_max": K_MAX,
         "min_neighbors_including_self": MIN_NEIGHBORS_INCLUDING_SELF,
@@ -184,8 +202,8 @@ def run_app(
         "outlier_point_ids": outlier_ids,
         "oracle_density_rows": oracle_rows,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. Optional OptiX rt_count_threshold emits one native summary row per query for the density threshold.",
-        "boundary": "Bounded density-threshold outlier demo only; OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. Optional Embree/OptiX rt_count_threshold emits one native summary row per query for the density threshold.",
+        "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim.",
     }
 
 
@@ -205,10 +223,21 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="when backend=optix, use experimental native fixed-radius threshold counts instead of neighbor rows",
     )
+    parser.add_argument(
+        "--embree-summary-mode",
+        choices=("rows", "rt_count_threshold"),
+        default="rows",
+        help="when backend=embree, use native fixed-radius threshold counts instead of neighbor rows",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
-            run_app(args.backend, copies=args.copies, optix_summary_mode=args.optix_summary_mode),
+            run_app(
+                args.backend,
+                copies=args.copies,
+                optix_summary_mode=args.optix_summary_mode,
+                embree_summary_mode=args.embree_summary_mode,
+            ),
             indent=2,
             sort_keys=True,
         )

@@ -162,6 +162,12 @@ struct RtdlFixedRadiusNeighborRow {
   double distance;
 };
 
+struct RtdlFixedRadiusCountRow {
+  uint32_t query_id;
+  uint32_t neighbor_count;
+  uint32_t threshold_reached;
+};
+
 struct RtdlKnnNeighborRow {
   uint32_t query_id;
   uint32_t neighbor_id;
@@ -365,6 +371,17 @@ int rtdl_embree_run_fixed_radius_neighbors_3d(
     double radius,
     size_t k_max,
     RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_fixed_radius_count_threshold(
+    const RtdlPoint* query_points,
+    size_t query_count,
+    const RtdlPoint* search_points,
+    size_t search_count,
+    double radius,
+    size_t threshold,
+    RtdlFixedRadiusCountRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);

@@ -1405,6 +1405,89 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_neighbors_3d(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_count_threshold(
+    const RtdlPoint* query_points,
+    size_t query_count,
+    const RtdlPoint* search_points,
+    size_t search_count,
+    double radius,
+    size_t threshold,
+    RtdlFixedRadiusCountRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (radius < 0.0) {
+      throw std::runtime_error("fixed_radius_count_threshold radius must be non-negative");
+    }
+    if (threshold > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+      throw std::runtime_error("fixed_radius_count_threshold threshold exceeds uint32 limit");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<Point2D> query_values;
+    std::vector<Point2D> search_values;
+    query_values.reserve(query_count);
+    search_values.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y}});
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+      search_values.push_back({search_points[i].id, {search_points[i].x, search_points[i].y}});
+    }
+
+    EmbreeDevice device;
+    PointSceneData data {&search_values};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(search_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, point_bounds, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    constexpr double kFixedRadiusCandidateEps = 1.0e-4;
+    std::vector<RtdlFixedRadiusCountRow> rows = run_query_ranges<RtdlFixedRadiusCountRow>(
+        query_values.size(),
+        [&](size_t begin, size_t end, std::vector<RtdlFixedRadiusCountRow>& local_rows) {
+      local_rows.reserve(local_rows.size() + (end - begin));
+      for (size_t query_index = begin; query_index < end; ++query_index) {
+        const Point2D& query = query_values[query_index];
+        FixedRadiusCountThresholdQueryState state {
+            &query,
+            &search_values,
+            radius * radius,
+            threshold,
+            0u,
+            0u};
+        RTCPointQuery point_query;
+        point_query.x = static_cast<float>(query.p.x);
+        point_query.y = static_cast<float>(query.p.y);
+        point_query.z = 0.0f;
+        point_query.time = 0.0f;
+        point_query.radius = static_cast<float>(radius + kFixedRadiusCandidateEps);
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        g_query_kind = QueryKind::kFixedRadiusCountThreshold;
+        rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
+        g_query_kind = QueryKind::kNone;
+        local_rows.push_back({
+            query.id,
+            state.neighbor_count,
+            state.threshold_reached});
+      }
+    });
+    *rows_out = copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows(
     const RtdlPoint* query_points,
     size_t query_count,

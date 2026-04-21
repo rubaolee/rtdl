@@ -47,6 +47,7 @@ enum class QueryKind {
   kGraphTriangleProbe,
   kFixedRadiusNeighbors,
   kFixedRadiusNeighbors3D,
+  kFixedRadiusCountThreshold,
   kKnnRows,
   kKnnRows3D,
   kDbScanRay,
@@ -185,6 +186,15 @@ struct FixedRadiusNeighborsQueryState3D {
   double radius;
   std::vector<RtdlFixedRadiusNeighborRow>* rows;
   std::unordered_set<uint32_t>* seen_neighbor_ids;
+};
+
+struct FixedRadiusCountThresholdQueryState {
+  const Point2D* query;
+  const std::vector<Point2D>* search_points;
+  double radius_squared;
+  size_t threshold;
+  uint32_t neighbor_count;
+  uint32_t threshold_reached;
 };
 
 struct KnnRowsQueryState {
@@ -750,6 +760,25 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
     if (distance <= state->radius) {
       state->seen_neighbor_ids->insert(search_point.id);
       state->rows->push_back({state->query->id, search_point.id, distance});
+    }
+    return false;
+  }
+  if (g_query_kind == QueryKind::kFixedRadiusCountThreshold) {
+    auto* state = static_cast<FixedRadiusCountThresholdQueryState*>(args->userPtr);
+    if (state->threshold > 0 && state->threshold_reached != 0) {
+      return false;
+    }
+    const Point2D& search_point = (*state->search_points)[args->primID];
+    double dx = search_point.p.x - state->query->p.x;
+    double dy = search_point.p.y - state->query->p.y;
+    double distance_squared = dx * dx + dy * dy;
+    if (distance_squared <= state->radius_squared) {
+      ++state->neighbor_count;
+      if (state->threshold > 0 && state->neighbor_count >= state->threshold) {
+        state->threshold_reached = 1u;
+        args->query->radius = 0.0f;
+        return true;
+      }
     }
     return false;
   }
