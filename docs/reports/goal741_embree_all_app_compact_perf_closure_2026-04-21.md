@@ -86,6 +86,45 @@ Result:
 | robot_collision_screening | 5.037 | 2.656 | 2.690 | 0.99x |
 | barnes_hut_force | 0.198 | 0.206 | 0.209 | 0.98x |
 
+## Windows Evidence
+
+Clean temp checkout on `lestat-win` / `Li-1`:
+
+```powershell
+Remove-Item -Recurse -Force $env:TEMP\rtdl_goal741_embree_win -ErrorAction SilentlyContinue
+git clone --depth 1 https://github.com/rubaolee/rtdl.git $env:TEMP\rtdl_goal741_embree_win
+Set-Location $env:TEMP\rtdl_goal741_embree_win
+$env:PYTHONPATH = "src;."
+py -3 scripts/goal714_embree_app_thread_perf.py --host-label windows-Li-1 --apps all --copies 1024 --threads 1,auto --warmups 0 --min-sample-sec 0.2 --max-repeats 2 --timeout 300 --output docs/reports/goal741_embree_all_app_perf_windows_2026-04-21.json
+```
+
+Result:
+
+- `valid: true`
+- Host: `windows-Li-1`, Windows 10 AMD64, 32 logical CPUs, Python 3.11.9
+- Source commit: `4b16c5a`
+- Parity: every Embree payload matched the CPU/reference semantic payload under the harness canonical comparison.
+- Build note: the focused test run built/probed Embree successfully and emitted existing Windows compiler warnings about deprecated `getenv` and `dllexport` redeclarations; these warnings did not block correctness or the perf harness.
+
+| App | CPU/reference sec | Embree 1-thread sec | Embree auto sec | Auto vs 1-thread |
+|---|---:|---:|---:|---:|
+| database_analytics | 0.806 | 0.859 | 0.799 | 1.07x |
+| graph_analytics | 0.615 | 0.759 | 0.708 | 1.07x |
+| service_coverage_gaps | 7.892 | 0.818 | 0.815 | 1.00x |
+| event_hotspot_screening | 22.741 | 1.203 | 1.094 | 1.10x |
+| facility_knn_assignment | 18.027 | 1.636 | 0.600 | 2.73x |
+| road_hazard_screening | 0.754 | 0.709 | 0.619 | 1.14x |
+| segment_polygon_hitcount | 0.598 | 0.612 | 0.570 | 1.07x |
+| segment_polygon_anyhit_rows | 0.986 | 0.903 | 0.947 | 0.95x |
+| polygon_pair_overlap_area_rows | 0.984 | 1.194 | 0.912 | 1.31x |
+| polygon_set_jaccard | 0.455 | 0.606 | 0.507 | 1.19x |
+| hausdorff_distance | 0.491 | 2.281 | 0.660 | 3.46x |
+| ann_candidate_search | 10.679 | 1.137 | 0.614 | 1.85x |
+| outlier_detection | 0.851 | 0.963 | 0.922 | 1.04x |
+| dbscan_clustering | 0.823 | 0.937 | 1.022 | 0.92x |
+| robot_collision_screening | 10.317 | 5.487 | 5.372 | 1.02x |
+| barnes_hut_force | 0.486 | 0.709 | 0.678 | 1.05x |
+
 ## Interpretation
 
 The Embree work is now technically healthier because the app-level harness no longer confuses RTDL/Embree traversal work with Python expansion or validation work.
@@ -107,6 +146,11 @@ Clear multi-thread wins on this Mac:
 The Linux run confirms the same pattern with slightly larger absolute times:
 facility KNN assignment `2.18x`, Hausdorff directed summary `2.51x`, and ANN
 candidate rerank `1.82x` versus Embree 1-thread.
+
+The Windows run confirms that the 32-thread workstation can expose larger
+parallel gains on the strongest Embree shapes: Hausdorff directed summary
+`3.46x`, facility KNN assignment `2.73x`, ANN candidate rerank `1.85x`, and
+polygon-pair overlap summary `1.31x` versus Embree 1-thread.
 
 Limited or no auto-thread wins:
 
@@ -138,6 +182,15 @@ Linux focused tests in the clean temp checkout:
 
 ```bash
 PYTHONPATH=src:. python3 -m unittest tests.goal741_embree_compact_app_perf_harness_test tests.goal738_graph_app_scaled_summary_test tests.goal739_db_app_scaled_summary_test -v
+```
+
+Result: `12` tests OK.
+
+Windows focused tests in the clean temp checkout:
+
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 -m unittest tests.goal741_embree_compact_app_perf_harness_test tests.goal738_graph_app_scaled_summary_test tests.goal739_db_app_scaled_summary_test -v
 ```
 
 Result: `12` tests OK.
