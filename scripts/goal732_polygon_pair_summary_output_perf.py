@@ -62,7 +62,7 @@ def run_benchmark(backend: str, copies_values: list[int], repeats: int) -> dict[
         "measurement": "run_case plus json.dumps wall-clock seconds",
         "boundary": (
             "Summary mode omits full overlap rows from the JSON payload. Embree "
-            "still provides native-assisted candidate discovery and CPU/Python "
+            "uses native LSI/PIP positive candidate discovery, then CPU/Python "
             "exact grid-cell area refinement."
         ),
         "cases": cases,

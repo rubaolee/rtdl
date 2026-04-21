@@ -8,11 +8,11 @@
       "rows": {
         "backend": "embree",
         "copies": 64,
-        "json_bytes_median": 16811,
+        "json_bytes_median": 16818,
         "left_polygon_count": 128,
-        "max_seconds": 0.03714050003327429,
-        "median_seconds": 0.019354041083715856,
-        "min_seconds": 0.01912891597021371,
+        "max_seconds": 0.019419915974140167,
+        "median_seconds": 0.006651457981206477,
+        "min_seconds": 0.006104042055085301,
         "output_mode": "rows",
         "repeats": 3,
         "right_polygon_count": 192
@@ -20,16 +20,16 @@
       "summary": {
         "backend": "embree",
         "copies": 64,
-        "json_bytes_median": 530,
-        "json_reduction_vs_rows": 31.7188679245283,
+        "json_bytes_median": 537,
+        "json_reduction_vs_rows": 31.318435754189945,
         "left_polygon_count": 128,
-        "max_seconds": 0.019665208994410932,
-        "median_seconds": 0.018290999927558005,
-        "min_seconds": 0.017953916918486357,
+        "max_seconds": 0.006375459022819996,
+        "median_seconds": 0.006209957995451987,
+        "min_seconds": 0.005660250084474683,
         "output_mode": "summary",
         "repeats": 3,
         "right_polygon_count": 192,
-        "speedup_vs_rows": 1.0581182636470425
+        "speedup_vs_rows": 1.071095486648675
       }
     },
     {
@@ -37,11 +37,11 @@
       "rows": {
         "backend": "embree",
         "copies": 256,
-        "json_bytes_median": 66398,
+        "json_bytes_median": 66404,
         "left_polygon_count": 512,
-        "max_seconds": 0.35011979192495346,
-        "median_seconds": 0.259650707943365,
-        "min_seconds": 0.25845150009263307,
+        "max_seconds": 0.04148258303757757,
+        "median_seconds": 0.03823533293325454,
+        "min_seconds": 0.03514929208904505,
         "output_mode": "rows",
         "repeats": 3,
         "right_polygon_count": 768
@@ -49,16 +49,16 @@
       "summary": {
         "backend": "embree",
         "copies": 256,
-        "json_bytes_median": 533,
-        "json_reduction_vs_rows": 124.57410881801125,
+        "json_bytes_median": 539,
+        "json_reduction_vs_rows": 123.19851576994434,
         "left_polygon_count": 512,
-        "max_seconds": 0.255163999972865,
-        "median_seconds": 0.24652316700667143,
-        "min_seconds": 0.2370355420280248,
+        "max_seconds": 0.024635333917103708,
+        "median_seconds": 0.02360637509264052,
+        "min_seconds": 0.022087667020969093,
         "output_mode": "summary",
         "repeats": 3,
         "right_polygon_count": 768,
-        "speedup_vs_rows": 1.0532507394582444
+        "speedup_vs_rows": 1.619703693735457
       }
     },
     {
@@ -66,11 +66,11 @@
       "rows": {
         "backend": "embree",
         "copies": 1024,
-        "json_bytes_median": 265413,
+        "json_bytes_median": 265419,
         "left_polygon_count": 2048,
-        "max_seconds": 4.921519500087015,
-        "median_seconds": 4.739013833110221,
-        "min_seconds": 4.705968499998562,
+        "max_seconds": 0.3717967920238152,
+        "median_seconds": 0.32862149993889034,
+        "min_seconds": 0.31869816698599607,
         "output_mode": "rows",
         "repeats": 3,
         "right_polygon_count": 3072
@@ -78,16 +78,16 @@
       "summary": {
         "backend": "embree",
         "copies": 1024,
-        "json_bytes_median": 540,
-        "json_reduction_vs_rows": 491.50555555555553,
+        "json_bytes_median": 546,
+        "json_reduction_vs_rows": 486.11538461538464,
         "left_polygon_count": 2048,
-        "max_seconds": 4.567241624929011,
-        "median_seconds": 4.5588863749289885,
-        "min_seconds": 4.553122000070289,
+        "max_seconds": 0.09715608297847211,
+        "median_seconds": 0.08960662502795458,
+        "min_seconds": 0.0890514999628067,
         "output_mode": "summary",
         "repeats": 3,
         "right_polygon_count": 3072,
-        "speedup_vs_rows": 1.0395112848549637
+        "speedup_vs_rows": 3.6673795027585325
       }
     }
   ],

@@ -38,9 +38,11 @@ direct spatial joins and app-level proximity joins.
 | Polygon-set Jaccard | `examples/rtdl_polygon_set_jaccard.py` | polygon sets become Jaccard-similarity rows | bounded polygon-set overlap join |
 
 The polygon-pair overlap and polygon-set Jaccard apps expose Embree
-native-assisted mode: Embree performs polygon overlay/candidate discovery, then
-CPU/Python exact grid-cell area refinement computes the released area/Jaccard
-rows. This is not a fully native Embree area-overlay kernel.
+native-assisted mode: Embree performs positive candidate discovery through
+segment-intersection and point-in-polygon kernels, then CPU/Python exact
+grid-cell area refinement computes the released area/Jaccard rows. This avoids
+full overlay-matrix materialization inside the apps, but it is not a fully
+native Embree area-overlay kernel.
 
 External comparison scripts for indexed SQL/GIS baselines live under
 `docs/sql/`, including the v0.4 app comparisons and v0.2 PostGIS geometry
@@ -74,7 +76,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_hausdorff_distance_app.py` | `--embree-result-mode directed_summary` | directed Hausdorff distance and witness summaries | omits full KNN rows |
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `--output-mode segment_counts` / `segment_flags` | one hit-count or any-hit flag row per segment | omits polygon ids and pair rows |
 | `examples/rtdl_road_hazard_screening.py` | `--output-mode priority_segments` / `summary` | priority road ids and counts | omits full per-road hit-count rows from the JSON payload |
-| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows |
+| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows; Embree app path uses positive LSI/PIP candidate discovery |
 
 ## DB-Style App Examples
 

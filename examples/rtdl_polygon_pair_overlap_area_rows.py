@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import rtdsl as rt
+from rtdsl.reference import _segments_from_polygons
 from rtdsl.reference import _polygon_unit_cells
 
 
@@ -40,6 +41,27 @@ def polygon_pair_overlap_candidates_embree_kernel():
         rows,
         fields=["left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"],
     )
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_edge_intersections_embree_kernel():
+    left = rt.input("left", rt.Segments, role="probe")
+    right = rt.input("right", rt.Segments, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+    return rt.emit(rows, fields=["left_id", "right_id", "x", "y"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_point_in_polygon_positive_embree_kernel():
+    points = rt.input("points", rt.Points, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(points, polygons, accel="bvh")
+    rows = rt.refine(
+        candidates,
+        predicate=rt.point_in_polygon(exact=False, boundary_mode="inclusive", result_mode="positive_hits"),
+    )
+    return rt.emit(rows, fields=["point_id", "polygon_id", "contains"])
 
 
 def _shift_vertices(vertices: tuple[tuple[float, float], ...], offset_x: float) -> tuple[tuple[float, float], ...]:
@@ -108,6 +130,64 @@ def _exact_overlap_rows_for_candidates(
     return tuple(rows)
 
 
+def _first_vertex_points(polygons: tuple[rt.Polygon, ...]) -> tuple[rt.Point, ...]:
+    return tuple(
+        rt.Point(id=polygon.id, x=polygon.vertices[0][0], y=polygon.vertices[0][1])
+        for polygon in polygons
+    )
+
+
+def _positive_candidate_pairs_embree(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    left_ids = {polygon.id for polygon in left}
+    right_ids = {polygon.id for polygon in right}
+
+    def orient_pair(first_id: int, second_id: int) -> tuple[int, int] | None:
+        if first_id in left_ids and second_id in right_ids:
+            return first_id, second_id
+        if second_id in left_ids and first_id in right_ids:
+            return second_id, first_id
+        return None
+
+    left_segments = _segments_from_polygons(left)
+    right_segments = _segments_from_polygons(right)
+    lsi_rows = rt.run_embree(
+        polygon_edge_intersections_embree_kernel,
+        left=left_segments,
+        right=right_segments,
+    )
+    left_in_right = rt.run_embree(
+        polygon_point_in_polygon_positive_embree_kernel,
+        points=_first_vertex_points(left),
+        polygons=right,
+    )
+    right_in_left = rt.run_embree(
+        polygon_point_in_polygon_positive_embree_kernel,
+        points=_first_vertex_points(right),
+        polygons=left,
+    )
+    pairs: set[tuple[int, int]] = set()
+    for row in lsi_rows:
+        pair = orient_pair(int(row["left_id"]), int(row["right_id"]))
+        if pair is not None:
+            pairs.add(pair)
+    for row in left_in_right:
+        if int(row["contains"]) != 1:
+            continue
+        pair = orient_pair(int(row["point_id"]), int(row["polygon_id"]))
+        if pair is not None:
+            pairs.add(pair)
+    for row in right_in_left:
+        if int(row["contains"]) != 1:
+            continue
+        pair = orient_pair(int(row["point_id"]), int(row["polygon_id"]))
+        if pair is not None:
+            pairs.add(pair)
+    return pairs
+
+
 def _summarize_rows(rows: tuple[dict[str, int], ...]) -> dict[str, int]:
     return {
         "overlap_pair_count": len(rows),
@@ -145,24 +225,14 @@ def _exact_overlap_summary_for_candidates(
 
 
 def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
-    candidate_rows = rt.run_embree(polygon_pair_overlap_candidates_embree_kernel, left=left, right=right)
-    candidate_pairs = {
-        (int(row["left_polygon_id"]), int(row["right_polygon_id"]))
-        for row in candidate_rows
-        if int(row["requires_lsi"]) or int(row["requires_pip"])
-    }
+    candidate_pairs = _positive_candidate_pairs_embree(left, right)
     rows = _exact_overlap_rows_for_candidates(left, right, candidate_pairs)
-    return rows, candidate_rows
+    return rows, candidate_pairs
 
 
 def _run_embree_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
-    candidate_rows = rt.run_embree(polygon_pair_overlap_candidates_embree_kernel, left=left, right=right)
-    candidate_pairs = {
-        (int(row["left_polygon_id"]), int(row["right_polygon_id"]))
-        for row in candidate_rows
-        if int(row["requires_lsi"]) or int(row["requires_pip"])
-    }
-    return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_rows
+    candidate_pairs = _positive_candidate_pairs_embree(left, right)
+    return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_pairs
 
 
 def run_case(backend: str = "cpu_python_reference", *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
@@ -180,11 +250,11 @@ def run_case(backend: str = "cpu_python_reference", *, copies: int = 1, output_m
         summary = _summarize_rows(tuple(rows))
     elif backend == "embree":
         if output_mode == "summary":
-            summary, candidate_rows = _run_embree_summary(case["left"], case["right"])
+            summary, candidate_pairs = _run_embree_summary(case["left"], case["right"])
         else:
-            rows, candidate_rows = _run_embree_native_assisted(case["left"], case["right"])
+            rows, candidate_pairs = _run_embree_native_assisted(case["left"], case["right"])
             summary = _summarize_rows(tuple(rows))
-        candidate_row_count = len(candidate_rows)
+        candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
     payload: dict[str, object] = {
@@ -199,8 +269,8 @@ def run_case(backend: str = "cpu_python_reference", *, copies: int = 1, output_m
         "candidate_row_count": candidate_row_count,
         "summary": summary,
         "boundary": (
-            "Embree mode uses native Embree overlay/candidate discovery and CPU/Python exact grid-cell "
-            "area refinement. It is native-assisted, not a fully native area-overlay kernel."
+            "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
+            "grid-cell area refinement. It is native-assisted, not a fully native area-overlay kernel."
         ),
     }
     if output_mode == "rows":

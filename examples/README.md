@@ -183,8 +183,13 @@ Current v0.8 app example boundary:
 - `rtdl_polygon_pair_overlap_area_rows.py` keeps full per-pair overlap rows in
   `--output-mode rows`. Its compact `summary` mode returns aggregate
   overlap-pair and area totals and omits full per-pair rows from the app JSON
-  payload; exact area refinement remains CPU/Python-owned after Embree
-  native-assisted candidate discovery
+  payload; Embree uses positive-only LSI/PIP candidate discovery, while exact
+  area refinement remains CPU/Python-owned
+- `rtdl_polygon_set_jaccard.py` supports `--copies` for scalable Jaccard
+  characterization. Embree uses positive-only LSI/PIP candidate discovery and
+  CPU/Python exact set-area refinement; the current evidence is correctness and
+  better bounded candidate materialization, not an Embree speedup over the CPU
+  reference
 
 Current HIPRT boundary:
 

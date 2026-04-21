@@ -24,6 +24,12 @@ The new `summary` mode returns:
 
 and omits the full `rows` payload.
 
+Follow-up optimization in this same goal changed Embree native-assisted
+candidate discovery from full `overlay_compose` matrix materialization to
+positive-only Embree `segment_intersection` plus positive-hit
+`point_in_polygon` helper kernels. This preserves the public overlay contract
+while avoiding all-pairs row output inside this app.
+
 ## Correctness
 
 Focused tests verify:
@@ -57,17 +63,17 @@ macOS:
 
 | Copies | Rows median | Summary median | Summary speedup | JSON reduction |
 | ---: | ---: | ---: | ---: | ---: |
-| 64 | 0.0194s | 0.0183s | 1.06x | 31.72x |
-| 256 | 0.2597s | 0.2465s | 1.05x | 124.57x |
-| 1024 | 4.7390s | 4.5589s | 1.04x | 491.51x |
+| 64 | 0.0067s | 0.0062s | 1.07x | 31.32x |
+| 256 | 0.0382s | 0.0236s | 1.62x | 123.20x |
+| 1024 | 0.3286s | 0.0896s | 3.67x | 486.12x |
 
 Linux:
 
 | Copies | Rows median | Summary median | Summary speedup | JSON reduction |
 | ---: | ---: | ---: | ---: | ---: |
-| 64 | 0.0439s | 0.0349s | 1.26x | 31.72x |
-| 256 | 0.5458s | 0.5088s | 1.07x | 124.57x |
-| 1024 | 8.3666s | 7.9858s | 1.05x | 491.51x |
+| 64 | 0.0162s | 0.0123s | 1.32x | 31.32x |
+| 256 | 0.0783s | 0.0510s | 1.54x | 123.20x |
+| 1024 | 0.6539s | 0.2055s | 3.18x | 486.12x |
 
 Raw evidence:
 
@@ -76,9 +82,9 @@ Raw evidence:
 
 ## Boundary
 
-This is primarily a compact-output improvement. It greatly reduces JSON payload
-size, but whole-app timing improves only modestly because exact grid-cell area
-refinement is still CPU/Python-owned after Embree native-assisted candidate
-discovery.
+This is an app-level Embree native-assisted candidate/materialization
+optimization plus a compact-output improvement. It greatly reduces JSON payload
+size and avoids full overlay-matrix row materialization in this app, but exact
+grid-cell area refinement remains CPU/Python-owned.
 
 Do not claim this is a fully native Embree polygon-overlay kernel.

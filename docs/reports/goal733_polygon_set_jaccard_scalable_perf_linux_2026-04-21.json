@@ -1,0 +1,87 @@
+{
+  "app": "polygon_set_jaccard",
+  "boundary": "This characterizes scalable polygon-set Jaccard fixtures. Embree uses native-assisted candidate discovery; exact grid-cell set-area refinement remains CPU/Python-owned.",
+  "cases": [
+    {
+      "copies": 64,
+      "cpu_python_reference": {
+        "backend": "cpu_python_reference",
+        "copies": 64,
+        "json_bytes_median": 538,
+        "left_polygon_count": 128,
+        "max_seconds": 0.007068498991429806,
+        "median_seconds": 0.006262760027311742,
+        "min_seconds": 0.006260226015001535,
+        "repeats": 3,
+        "right_polygon_count": 128
+      },
+      "embree": {
+        "backend": "embree",
+        "copies": 64,
+        "json_bytes_median": 536,
+        "left_polygon_count": 128,
+        "max_seconds": 0.029933746031019837,
+        "median_seconds": 0.018227982975076884,
+        "min_seconds": 0.017576607991941273,
+        "repeats": 3,
+        "right_polygon_count": 128,
+        "speedup_vs_cpu_python_reference": 0.34357943146396464
+      }
+    },
+    {
+      "copies": 256,
+      "cpu_python_reference": {
+        "backend": "cpu_python_reference",
+        "copies": 256,
+        "json_bytes_median": 542,
+        "left_polygon_count": 512,
+        "max_seconds": 0.02561634301673621,
+        "median_seconds": 0.025437055039219558,
+        "min_seconds": 0.02532487502321601,
+        "repeats": 3,
+        "right_polygon_count": 512
+      },
+      "embree": {
+        "backend": "embree",
+        "copies": 256,
+        "json_bytes_median": 540,
+        "left_polygon_count": 512,
+        "max_seconds": 0.07333909498993307,
+        "median_seconds": 0.07182449602987617,
+        "min_seconds": 0.06737402599537745,
+        "repeats": 3,
+        "right_polygon_count": 512,
+        "speedup_vs_cpu_python_reference": 0.3541557051599602
+      }
+    },
+    {
+      "copies": 1024,
+      "cpu_python_reference": {
+        "backend": "cpu_python_reference",
+        "copies": 1024,
+        "json_bytes_median": 548,
+        "left_polygon_count": 2048,
+        "max_seconds": 0.10926290904171765,
+        "median_seconds": 0.10298855701694265,
+        "min_seconds": 0.10233891004463658,
+        "repeats": 3,
+        "right_polygon_count": 2048
+      },
+      "embree": {
+        "backend": "embree",
+        "copies": 1024,
+        "json_bytes_median": 547,
+        "left_polygon_count": 2048,
+        "max_seconds": 0.2835767170181498,
+        "median_seconds": 0.28194789797998965,
+        "min_seconds": 0.2760320280212909,
+        "repeats": 3,
+        "right_polygon_count": 2048,
+        "speedup_vs_cpu_python_reference": 0.3652751368419563
+      }
+    }
+  ],
+  "goal": 733,
+  "measurement": "run_case plus json.dumps wall-clock seconds",
+  "repeats": 3
+}
