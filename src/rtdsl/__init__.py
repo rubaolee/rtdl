@@ -75,6 +75,12 @@ from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
 from .embree_runtime import embree_version
+from .engine_feature_matrix import assert_engine_feature_supported
+from .engine_feature_matrix import engine_feature_support
+from .engine_feature_matrix import engine_feature_support_matrix
+from .engine_feature_matrix import ENGINE_SUPPORT_STATUSES
+from .engine_feature_matrix import public_engine_features
+from .engine_feature_matrix import RTDL_ENGINES
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -630,6 +636,7 @@ __all__ = [
     "adaptive_predicate_mode",
     "adaptive_support_matrix",
     "adaptive_version",
+    "assert_engine_feature_supported",
     "build_arcgis_geojson_query_url",
     "build_arcgis_query_url",
     "build_arcgis_layer_url",
@@ -795,6 +802,7 @@ __all__ = [
     "PreparedEmbreeKernel",
     "PreparedAdaptiveExecution",
     "public_pathology_datasets",
+    "public_engine_features",
     "ray_triangle_any_hit",
     "ray_triangle_hit_count",
     "ray_triangle_closest_hit",
@@ -816,6 +824,10 @@ __all__ = [
     "representative_dataset_names",
     "refine",
     "reduce_rows",
+    "RTDL_ENGINES",
+    "ENGINE_SUPPORT_STATUSES",
+    "engine_feature_support",
+    "engine_feature_support_matrix",
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_adaptive",

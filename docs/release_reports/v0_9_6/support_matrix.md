@@ -4,6 +4,12 @@ Status: released as `v0.9.6`.
 
 This matrix describes the released `v0.9.6` boundary.
 
+For developer-facing feature selection, RTDL also maintains a
+[machine-readable engine feature support contract](../../features/engine_support_matrix.md).
+Every public selectable RTDL feature must have an explicit status on each
+engine: `native`, `native_assisted`, `compatibility_fallback`, or
+`unsupported_explicit`.
+
 ## Prepared/Prepacked Visibility-Count Surface
 
 | Surface | CPU reference | Embree | OptiX | Vulkan | HIPRT | Apple RT |

@@ -8,6 +8,12 @@ This page separates three different claims that are easy to confuse:
 
 RTDL should not describe every implemented backend as optimized.
 
+For developer-facing feature selection, the stricter rule is recorded in
+[Engine Feature Support Contract](features/engine_support_matrix.md): each
+public feature must have an explicit status on each engine. The allowed statuses
+are `native`, `native_assisted`, `compatibility_fallback`, and
+`unsupported_explicit`.
+
 ## Current Summary
 
 | Backend | Current status | Honest performance claim |

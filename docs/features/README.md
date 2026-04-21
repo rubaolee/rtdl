@@ -12,11 +12,13 @@ Use these feature homes when you want to answer practical questions quickly:
 - best practices
 - what to try and what not to try
 - current limitations
+- how each RTDL engine reports support for public selectable features
 
 ## Choose By Workload Shape
 
 | Workload shape | Feature home |
 | --- | --- |
+| engine-by-feature support states | [Engine Feature Support Contract](engine_support_matrix.md) |
 | nearest neighbors within a radius | [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) |
 | top-k nearest neighbors | [KNN Rows](knn_rows/README.md) |
 | segment/polygon candidate search | [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md) |
@@ -44,6 +46,7 @@ For the fastest feature-by-feature learning path, use:
 
 Current feature homes:
 
+- [Engine Feature Support Contract](engine_support_matrix.md)
 - [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) (released in `v0.4.0`)
 - [KNN Rows](knn_rows/README.md) (released in `v0.4.0`)
 - [LSI: Line Segment Intersection](lsi/README.md)

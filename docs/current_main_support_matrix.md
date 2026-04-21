@@ -9,6 +9,12 @@ build from the latest source should read this page together with the release
 matrix because stale local backend libraries may not contain the newest native
 symbols until rebuilt.
 
+For the machine-readable feature-by-engine contract, read
+[Engine Feature Support Contract](features/engine_support_matrix.md). Every
+public RTDL feature that developers can choose must be classified for every
+engine as `native`, `native_assisted`, `compatibility_fallback`, or
+`unsupported_explicit`; blank cells and silent CPU fallback are not allowed.
+
 ## Boundary
 
 - Current public release: `v0.9.6`.

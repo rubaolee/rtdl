@@ -180,6 +180,7 @@ For exact status:
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
 - [Backend Maturity](docs/backend_maturity.md)
+- [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
 - [RTDL v0.9.6 Release Package](docs/release_reports/v0_9_6/README.md)
 - [RTDL v0.9.6 Release Statement](docs/release_reports/v0_9_6/release_statement.md)
