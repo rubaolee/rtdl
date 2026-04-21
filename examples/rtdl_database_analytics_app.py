@@ -12,10 +12,22 @@ sys.path.insert(0, str(ROOT))
 
 from examples import rtdl_sales_risk_screening
 from examples import rtdl_v0_7_db_app_demo
+import rtdsl as rt
 
 
 BACKENDS = ("auto", "cpu_python_reference", "cpu_reference", "cpu", "embree", "optix", "vulkan")
 SCENARIOS = ("regional_dashboard", "sales_risk", "all")
+
+
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("database_analytics")
+    return {"class": support.performance_class, "note": support.note}
+
+
+def _regional_backend(backend: str) -> str:
+    if backend in {"auto", "cpu", "cpu_python_reference"}:
+        return "cpu_reference"
+    return backend
 
 
 def _sales_backend(backend: str) -> str:
@@ -32,7 +44,7 @@ def run_app(backend: str, scenario: str = "all") -> dict[str, Any]:
 
     sections: dict[str, Any] = {}
     if scenario in {"regional_dashboard", "all"}:
-        sections["regional_dashboard"] = rtdl_v0_7_db_app_demo.run_app(backend)
+        sections["regional_dashboard"] = rtdl_v0_7_db_app_demo.run_app(_regional_backend(backend))
     if scenario in {"sales_risk", "all"}:
         sections["sales_risk"] = rtdl_sales_risk_screening.run_case(_sales_backend(backend))
 
@@ -51,6 +63,7 @@ def run_app(backend: str, scenario: str = "all") -> dict[str, Any]:
             "examples/rtdl_v0_7_db_app_demo.py",
             "examples/rtdl_sales_risk_screening.py",
         ],
+        "optix_performance": _optix_performance(),
         "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
     }
 

@@ -35,6 +35,11 @@ def make_demo_case() -> dict[str, tuple[object, ...]]:
     return {"roads": roads, "hazards": hazards}
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("road_hazard_screening")
+    return {"class": support.performance_class, "note": support.note}
+
+
 def run_case(backend: str) -> dict[str, object]:
     case = make_demo_case()
     if backend == "cpu_python_reference":
@@ -56,6 +61,8 @@ def run_case(backend: str) -> dict[str, object]:
         "row_count": len(rows),
         "rows": rows,
         "priority_segments": hot_segments,
+        "optix_performance": _optix_performance(),
+        "boundary": "OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.",
     }
 
 

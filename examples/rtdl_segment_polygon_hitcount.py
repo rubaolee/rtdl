@@ -14,6 +14,11 @@ from examples.reference.rtdl_release_reference import segment_polygon_hitcount_r
 from rtdsl.baseline_runner import load_representative_case
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("segment_polygon_hitcount")
+    return {"class": support.performance_class, "note": support.note}
+
+
 def run_case(backend: str, dataset: str) -> dict[str, object]:
     case = load_representative_case("segment_polygon_hitcount", dataset)
     if backend == "cpu_python_reference":
@@ -33,6 +38,8 @@ def run_case(backend: str, dataset: str) -> dict[str, object]:
         "dataset": dataset,
         "row_count": len(rows),
         "rows": rows,
+        "optix_performance": _optix_performance(),
+        "boundary": "OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.",
     }
 
 
