@@ -1,0 +1,31 @@
+{
+  "description": "Embree fixed-radius count-threshold gap summary for service coverage gaps.",
+  "goal": 724,
+  "repeats": 3,
+  "results": [
+    {
+      "app": "service_coverage_gaps",
+      "clinic_count": 3072,
+      "copies": 1024,
+      "gap_summary_sec": 0.020904095959849656,
+      "household_count": 4096,
+      "row_count": 5118,
+      "row_mode_sec": 0.03385242202784866,
+      "summary_row_count": 4096,
+      "summary_speedup_vs_rows": 1.619415739999891,
+      "uncovered_count": 1024
+    },
+    {
+      "app": "service_coverage_gaps",
+      "clinic_count": 12288,
+      "copies": 4096,
+      "gap_summary_sec": 0.09867205301998183,
+      "household_count": 16384,
+      "row_count": 20478,
+      "row_mode_sec": 0.10784543596673757,
+      "summary_row_count": 16384,
+      "summary_speedup_vs_rows": 1.0929684005348308,
+      "uncovered_count": 4096
+    }
+  ]
+}
