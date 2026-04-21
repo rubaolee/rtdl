@@ -1,0 +1,121 @@
+{
+  "apps": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "boundary": "native-assisted candidate discovery plus CPU exact area refinement",
+      "copies": 1,
+      "cpu_reference": {
+        "elapsed_sec": 0.15356337500270456,
+        "error": null,
+        "ok": true,
+        "payload_hash": "f45ade6d5d1afc90eab134b7daf42eb0e37d592214a83a652047b82c3f538a24"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.18452262494247407,
+          "median_sec": 0.18452262494247407,
+          "min_sec": 0.18452262494247407,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.18452262494247407
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.18452262494247407
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 10,
+          "errors": [],
+          "max_sec": 0.12784562492743134,
+          "median_sec": 0.12784562492743134,
+          "min_sec": 0.12784562492743134,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.12784562492743134
+          ],
+          "speedup_vs_1_thread": 1.4433237355381863,
+          "threads": "auto",
+          "total_sample_sec": 0.12784562492743134
+        }
+      ],
+      "group": "polygon_overlap",
+      "scalable": false,
+      "valid": true
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "boundary": "native-assisted candidate discovery plus CPU exact Jaccard refinement",
+      "copies": 1,
+      "cpu_reference": {
+        "elapsed_sec": 0.11413025006186217,
+        "error": null,
+        "ok": true,
+        "payload_hash": "d05b9178a304a6f735a5e962a441eff497a965e64f204535782276a9dbabff74"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.12056083302013576,
+          "median_sec": 0.12056083302013576,
+          "min_sec": 0.12056083302013576,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.12056083302013576
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.12056083302013576
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 10,
+          "errors": [],
+          "max_sec": 0.11864741705358028,
+          "median_sec": 0.11864741705358028,
+          "min_sec": 0.11864741705358028,
+          "ok": true,
+          "repeat_count": 1,
+          "samples_sec": [
+            0.11864741705358028
+          ],
+          "speedup_vs_1_thread": 1.016126907892916,
+          "threads": "auto",
+          "total_sample_sec": 0.11864741705358028
+        }
+      ],
+      "group": "polygon_overlap",
+      "scalable": false,
+      "valid": true
+    }
+  ],
+  "goal": 714,
+  "host": {
+    "label": "macos-local-smoke",
+    "machine": "arm64",
+    "os_cpu_count": 10,
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python": "3.14.0"
+  },
+  "methodology": {
+    "boundary": "This is app-level wall-clock timing. It includes Python CLI startup, JSON materialization, and app postprocess; it is not pure native traversal timing.",
+    "copies_for_scalable_apps": 256,
+    "max_repeats": 2,
+    "min_sample_sec": 0.05,
+    "threads": [
+      "1",
+      "auto"
+    ],
+    "timeout_sec": 300.0
+  },
+  "valid": true
+}
