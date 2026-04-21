@@ -1,0 +1,157 @@
+{
+  "boundary": "Measures repeated app summary phases with Python density/core conversion, but excludes full CLI JSON output and oracle work. Prepared mode reports run-only timing after one reusable Embree BVH prepare.",
+  "cases": [
+    {
+      "copies": 32768,
+      "dbscan": {
+        "one_shot": {
+          "label": "one_shot_summary_plus_core_flags",
+          "max_sec": 1.3662086839904077,
+          "median_sec": 1.352853408025112,
+          "min_sec": 1.3340411609970033,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            1.3662086839904077,
+            1.352853408025112,
+            1.3340411609970033
+          ]
+        },
+        "prepare_sec": 0.3735787909827195,
+        "prepared_run_only": {
+          "label": "prepared_summary_plus_core_flags",
+          "max_sec": 0.9685702039860189,
+          "median_sec": 0.9566142160329036,
+          "min_sec": 0.8843806679942645,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            0.8843806679942645,
+            0.9685702039860189,
+            0.9566142160329036
+          ]
+        },
+        "prepared_speedup_vs_one_shot": 1.4142100183660447
+      },
+      "dbscan_point_count": 262144,
+      "outlier": {
+        "one_shot": {
+          "label": "one_shot_summary_plus_density",
+          "max_sec": 1.4418729559984058,
+          "median_sec": 1.346220395003911,
+          "min_sec": 1.3019968360313214,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            1.4418729559984058,
+            1.3019968360313214,
+            1.346220395003911
+          ]
+        },
+        "prepare_sec": 0.4443903379724361,
+        "prepared_run_only": {
+          "label": "prepared_summary_plus_density",
+          "max_sec": 0.9734815710107796,
+          "median_sec": 0.9704844079678878,
+          "min_sec": 0.9141048659803346,
+          "repeat_count": 3,
+          "row_count": 262144,
+          "samples_sec": [
+            0.9734815710107796,
+            0.9141048659803346,
+            0.9704844079678878
+          ]
+        },
+        "prepared_speedup_vs_one_shot": 1.3871633422970522
+      },
+      "outlier_point_count": 262144
+    },
+    {
+      "copies": 131072,
+      "dbscan": {
+        "one_shot": {
+          "label": "one_shot_summary_plus_core_flags",
+          "max_sec": 5.963303236989304,
+          "median_sec": 5.911426733015105,
+          "min_sec": 5.635632496967446,
+          "repeat_count": 3,
+          "row_count": 1048576,
+          "samples_sec": [
+            5.911426733015105,
+            5.635632496967446,
+            5.963303236989304
+          ]
+        },
+        "prepare_sec": 1.561193753965199,
+        "prepared_run_only": {
+          "label": "prepared_summary_plus_core_flags",
+          "max_sec": 4.26464157900773,
+          "median_sec": 4.170373808010481,
+          "min_sec": 3.8846141190151684,
+          "repeat_count": 3,
+          "row_count": 1048576,
+          "samples_sec": [
+            4.170373808010481,
+            4.26464157900773,
+            3.8846141190151684
+          ]
+        },
+        "prepared_speedup_vs_one_shot": 1.4174812631089324
+      },
+      "dbscan_point_count": 1048576,
+      "outlier": {
+        "one_shot": {
+          "label": "one_shot_summary_plus_density",
+          "max_sec": 6.124670449993573,
+          "median_sec": 5.7276287150452845,
+          "min_sec": 5.591854429978412,
+          "repeat_count": 3,
+          "row_count": 1048576,
+          "samples_sec": [
+            5.591854429978412,
+            6.124670449993573,
+            5.7276287150452845
+          ]
+        },
+        "prepare_sec": 1.5642949600005522,
+        "prepared_run_only": {
+          "label": "prepared_summary_plus_density",
+          "max_sec": 4.25724435102893,
+          "median_sec": 4.175918369030114,
+          "min_sec": 3.881863621005323,
+          "repeat_count": 3,
+          "row_count": 1048576,
+          "samples_sec": [
+            4.175918369030114,
+            4.25724435102893,
+            3.881863621005323
+          ]
+        },
+        "prepared_speedup_vs_one_shot": 1.3715854116122403
+      },
+      "outlier_point_count": 1048576
+    }
+  ],
+  "copies": [
+    32768,
+    131072
+  ],
+  "embree_threads": {
+    "auto": true,
+    "effective_threads": 8,
+    "requested": "auto",
+    "source": "api"
+  },
+  "embree_version": [
+    4,
+    3,
+    0
+  ],
+  "goal": 718,
+  "host": "lx1",
+  "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "repeats": 3,
+  "valid": true,
+  "warmups": 1
+}
