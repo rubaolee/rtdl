@@ -180,6 +180,11 @@ Current v0.8 app example boundary:
   `--output-mode rows`. Its compact `priority_segments` and `summary` modes
   omit full rows from the app JSON payload when only priority road ids or
   aggregate counts are needed
+- `rtdl_polygon_pair_overlap_area_rows.py` keeps full per-pair overlap rows in
+  `--output-mode rows`. Its compact `summary` mode returns aggregate
+  overlap-pair and area totals and omits full per-pair rows from the app JSON
+  payload; exact area refinement remains CPU/Python-owned after Embree
+  native-assisted candidate discovery
 
 Current HIPRT boundary:
 

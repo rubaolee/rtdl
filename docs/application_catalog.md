@@ -74,6 +74,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_hausdorff_distance_app.py` | `--embree-result-mode directed_summary` | directed Hausdorff distance and witness summaries | omits full KNN rows |
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `--output-mode segment_counts` / `segment_flags` | one hit-count or any-hit flag row per segment | omits polygon ids and pair rows |
 | `examples/rtdl_road_hazard_screening.py` | `--output-mode priority_segments` / `summary` | priority road ids and counts | omits full per-road hit-count rows from the JSON payload |
+| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows |
 
 ## DB-Style App Examples
 

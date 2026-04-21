@@ -1,0 +1,97 @@
+{
+  "app": "polygon_pair_overlap_area_rows",
+  "backend": "embree",
+  "boundary": "Summary mode omits full overlap rows from the JSON payload. Embree still provides native-assisted candidate discovery and CPU/Python exact grid-cell area refinement.",
+  "cases": [
+    {
+      "copies": 64,
+      "rows": {
+        "backend": "embree",
+        "copies": 64,
+        "json_bytes_median": 16811,
+        "left_polygon_count": 128,
+        "max_seconds": 0.05273031198885292,
+        "median_seconds": 0.04386288399109617,
+        "min_seconds": 0.03767772298306227,
+        "output_mode": "rows",
+        "repeats": 3,
+        "right_polygon_count": 192
+      },
+      "summary": {
+        "backend": "embree",
+        "copies": 64,
+        "json_bytes_median": 530,
+        "json_reduction_vs_rows": 31.7188679245283,
+        "left_polygon_count": 128,
+        "max_seconds": 0.03563219599891454,
+        "median_seconds": 0.034852897049859166,
+        "min_seconds": 0.03414959000656381,
+        "output_mode": "summary",
+        "repeats": 3,
+        "right_polygon_count": 192,
+        "speedup_vs_rows": 1.2585147205509968
+      }
+    },
+    {
+      "copies": 256,
+      "rows": {
+        "backend": "embree",
+        "copies": 256,
+        "json_bytes_median": 66398,
+        "left_polygon_count": 512,
+        "max_seconds": 0.5462787660071626,
+        "median_seconds": 0.5457554410095327,
+        "min_seconds": 0.5414401850430295,
+        "output_mode": "rows",
+        "repeats": 3,
+        "right_polygon_count": 768
+      },
+      "summary": {
+        "backend": "embree",
+        "copies": 256,
+        "json_bytes_median": 533,
+        "json_reduction_vs_rows": 124.57410881801125,
+        "left_polygon_count": 512,
+        "max_seconds": 0.5188532889587805,
+        "median_seconds": 0.5088010610197671,
+        "min_seconds": 0.5078512229956686,
+        "output_mode": "summary",
+        "repeats": 3,
+        "right_polygon_count": 768,
+        "speedup_vs_rows": 1.0726303123576424
+      }
+    },
+    {
+      "copies": 1024,
+      "rows": {
+        "backend": "embree",
+        "copies": 1024,
+        "json_bytes_median": 265413,
+        "left_polygon_count": 2048,
+        "max_seconds": 8.376590018975548,
+        "median_seconds": 8.366636313963681,
+        "min_seconds": 8.364522211020812,
+        "output_mode": "rows",
+        "repeats": 3,
+        "right_polygon_count": 3072
+      },
+      "summary": {
+        "backend": "embree",
+        "copies": 1024,
+        "json_bytes_median": 540,
+        "json_reduction_vs_rows": 491.50555555555553,
+        "left_polygon_count": 2048,
+        "max_seconds": 7.9886125680059195,
+        "median_seconds": 7.985778784030117,
+        "min_seconds": 7.969204346998595,
+        "output_mode": "summary",
+        "repeats": 3,
+        "right_polygon_count": 3072,
+        "speedup_vs_rows": 1.047691970969093
+      }
+    }
+  ],
+  "goal": 732,
+  "measurement": "run_case plus json.dumps wall-clock seconds",
+  "repeats": 3
+}
