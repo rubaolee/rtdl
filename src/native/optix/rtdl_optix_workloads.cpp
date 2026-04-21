@@ -2955,6 +2955,17 @@ struct FixedRadiusCountRtLaunchParams {
     float trace_tmax;
 };
 
+thread_local double g_optix_last_bvh_build_s = 0.0;
+thread_local double g_optix_last_traversal_s = 0.0;
+thread_local double g_optix_last_copy_s = 0.0;
+
+extern "C" int rtdl_optix_get_last_phase_timings(double* bvh, double* trav, double* copy) {
+    if (bvh) *bvh = g_optix_last_bvh_build_s;
+    if (trav) *trav = g_optix_last_traversal_s;
+    if (copy) *copy = g_optix_last_copy_s;
+    return 0;
+}
+
 static void run_fixed_radius_count_threshold_rt(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,
@@ -3007,7 +3018,10 @@ static void run_fixed_radius_count_threshold_rt(
         aabb.maxZ = aabb_radius;
         aabbs[i] = aabb;
     }
+    auto t_start_bvh = std::chrono::steady_clock::now();
     AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+    auto t_end_bvh = std::chrono::steady_clock::now();
+    g_optix_last_bvh_build_s = std::chrono::duration<double>(t_end_bvh - t_start_bvh).count();
 
     FixedRadiusCountRtLaunchParams lp;
     lp.traversable = accel.handle;
@@ -3023,14 +3037,20 @@ static void run_fixed_radius_count_threshold_rt(
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
+    auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
                              d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
                              &g_frn_count_rt.pipe->sbt,
                              static_cast<unsigned>(query_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
 
+    auto t_start_copy = std::chrono::steady_clock::now();
     std::vector<GpuFixedRadiusCountRecord> gpu_rows(query_count);
     download(gpu_rows.data(), d_output.ptr, query_count);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
 
     auto* out = static_cast<RtdlFixedRadiusCountRow*>(
         std::malloc(sizeof(RtdlFixedRadiusCountRow) * query_count));

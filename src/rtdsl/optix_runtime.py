@@ -619,6 +619,30 @@ def fixed_radius_count_threshold_2d_optix(
         view.close()
 
 
+def get_last_phase_timings() -> dict[str, float] | None:
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_get_last_phase_timings")
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+    )
+    symbol.restype = ctypes.c_int
+    bvh = ctypes.c_double(0.0)
+    trav = ctypes.c_double(0.0)
+    copy = ctypes.c_double(0.0)
+    status = symbol(ctypes.byref(bvh), ctypes.byref(trav), ctypes.byref(copy))
+    if status != 0:
+        return None
+    return {
+        "bvh_build": float(bvh.value),
+        "traversal": float(trav.value),
+        "copyback": float(copy.value),
+    }
+
+
 def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mode: str):
     predicate_name = compiled.refine_op.predicate.name
     if predicate_name == "conjunctive_scan":

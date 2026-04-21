@@ -46,6 +46,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -418,6 +419,10 @@ int  rtdl_optix_db_dataset_grouped_sum(
          const char* value_field,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_get_last_phase_timings(
+         double* bvh_build_out,
+         double* traversal_out,
+         double* copy_out);
 void rtdl_optix_free_rows(void* rows);
 
 } // extern "C"

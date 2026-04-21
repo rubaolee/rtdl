@@ -1439,7 +1439,7 @@ static const char* kPointNearestKernelSrc = R"CUDA(
 #include <math.h>
 #include <float.h>
 
-struct GpuPoint { float x, y; uint32_t id; };
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
 struct GpuSegment { float x0, y0, x1, y1; uint32_t id; };
 struct PnsRecord { uint32_t point_id, segment_id; float distance; };
 
@@ -1481,7 +1481,7 @@ static const char* kFixedRadiusNeighborsKernelSrc = R"CUDA(
 #include <math.h>
 #include <float.h>
 
-struct GpuPoint { float x, y; uint32_t id; };
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
 struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
 
 extern "C" __global__ void fixed_radius_neighbors(
@@ -1614,7 +1614,7 @@ static const char* kFixedRadiusCountRtKernelSrc = R"CUDA(
 
 typedef unsigned int uint32_t;
 
-struct GpuPoint { float x, y; uint32_t id; };
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
 struct FixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
 
 struct FixedRadiusCountParams {
@@ -1681,7 +1681,7 @@ static const char* kKnnRowsKernelSrc = R"CUDA(
 #include <math.h>
 #include <float.h>
 
-struct GpuPoint { float x, y; uint32_t id; };
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
 struct KnnRecord { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; };
 
 extern "C" __global__ void knn_rows(
@@ -1954,7 +1954,7 @@ static KnnCuFunction      g_knn3d;
 
 #pragma pack(push, 1)
 struct GpuSegment   { float x0, y0, x1, y1; uint32_t id; };
-struct GpuPoint     { float x, y;           uint32_t id; };
+struct GpuPoint     { float x, y;           uint32_t id; uint32_t pad; };
 struct GpuPoint3DHost { float x, y, z;      uint32_t id; };
 struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };
 struct GpuTriangle  { float x0, y0, x1, y1, x2, y2; uint32_t id; };
