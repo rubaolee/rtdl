@@ -1941,6 +1941,101 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_knn_rows_3d(
   }, error_out, error_size);
 }
 
+RTDL_EMBREE_EXPORT int rtdl_embree_run_directed_hausdorff_2d(
+    const RtdlPoint* query_points,
+    size_t query_count,
+    const RtdlPoint* search_points,
+    size_t search_count,
+    RtdlDirectedHausdorffRow* row_out,
+    char* error_out,
+    size_t error_size) {
+  return handle_native_call([&]() {
+    if (row_out == nullptr) {
+      throw std::runtime_error("row_out must not be null");
+    }
+    if (query_count == 0 || search_count == 0) {
+      throw std::runtime_error("directed Hausdorff requires non-empty point sets");
+    }
+    *row_out = {0u, 0u, 0.0, 0u};
+
+    std::vector<Point2D> query_values;
+    std::vector<Point2D> search_values;
+    query_values.reserve(query_count);
+    search_values.reserve(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+      query_values.push_back({query_points[i].id, {query_points[i].x, query_points[i].y}});
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+      search_values.push_back({search_points[i].id, {search_points[i].x, search_points[i].y}});
+    }
+
+    EmbreeDevice device;
+    PointSceneData data {&search_values};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(search_values.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, point_bounds, nullptr);
+    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<RtdlDirectedHausdorffRow> local_best = run_query_ranges<RtdlDirectedHausdorffRow>(
+        query_values.size(),
+        [&](size_t begin, size_t end, std::vector<RtdlDirectedHausdorffRow>& local_rows) {
+      RtdlDirectedHausdorffRow best {0u, 0u, -1.0, 0u};
+      for (size_t query_index = begin; query_index < end; ++query_index) {
+        const Point2D& query = query_values[query_index];
+        NearestPointQueryState state {&query, &search_values, 0u, 0.0, false};
+        RTCPointQuery point_query;
+        point_query.x = static_cast<float>(query.p.x);
+        point_query.y = static_cast<float>(query.p.y);
+        point_query.z = 0.0f;
+        point_query.time = 0.0f;
+        point_query.radius = std::numeric_limits<float>::infinity();
+        RTCPointQueryContext context;
+        rtcInitPointQueryContext(&context);
+        g_query_kind = QueryKind::kNearestPoint;
+        rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
+        g_query_kind = QueryKind::kNone;
+        if (!state.has_hit) {
+          continue;
+        }
+        if (state.best_distance > best.distance + 1.0e-12 ||
+            (std::abs(state.best_distance - best.distance) <= 1.0e-12 &&
+             (best.row_count == 0u || query.id < best.source_id ||
+              (query.id == best.source_id && state.best_neighbor_id < best.target_id)))) {
+          best = {query.id, state.best_neighbor_id, state.best_distance, 1u};
+        }
+      }
+      if (best.row_count != 0u) {
+        best.row_count = static_cast<uint32_t>(end - begin);
+        local_rows.push_back(best);
+      }
+    });
+
+    if (local_best.empty()) {
+      throw std::runtime_error("directed Hausdorff produced no nearest-neighbor rows");
+    }
+    RtdlDirectedHausdorffRow best = local_best[0];
+    uint64_t total_rows = 0;
+    for (const RtdlDirectedHausdorffRow& candidate : local_best) {
+      total_rows += candidate.row_count;
+      if (candidate.distance > best.distance + 1.0e-12 ||
+          (std::abs(candidate.distance - best.distance) <= 1.0e-12 &&
+           (candidate.source_id < best.source_id ||
+            (candidate.source_id == best.source_id && candidate.target_id < best.target_id)))) {
+        best = candidate;
+      }
+    }
+    best.row_count = total_rows > static_cast<uint64_t>(std::numeric_limits<uint32_t>::max())
+        ? std::numeric_limits<uint32_t>::max()
+        : static_cast<uint32_t>(total_rows);
+    *row_out = best;
+  }, error_out, error_size);
+}
+
 RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
     const uint32_t* row_offsets,
     size_t row_offset_count,

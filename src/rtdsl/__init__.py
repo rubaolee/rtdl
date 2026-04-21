@@ -78,6 +78,7 @@ from .embree_runtime import configure_embree
 from .embree_runtime import embree_thread_config
 from .embree_runtime import embree_version
 from .embree_runtime import EmbreeThreadConfig
+from .embree_runtime import directed_hausdorff_2d_embree
 from .embree_runtime import fixed_radius_count_threshold_2d_embree
 from .embree_runtime import prepare_embree_fixed_radius_count_threshold_2d
 from .embree_runtime import prepare_embree_knn_rows_2d
@@ -685,6 +686,7 @@ __all__ = [
     "fixed_radius_neighbors_3d_apple_rt",
     "fixed_radius_neighbors_3d_hiprt",
     "fixed_radius_neighbors_cpu",
+    "directed_hausdorff_2d_embree",
     "fixed_radius_count_threshold_2d_embree",
     "prepare_embree_fixed_radius_count_threshold_2d",
     "prepare_embree_knn_rows_2d",

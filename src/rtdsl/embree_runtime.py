@@ -398,6 +398,15 @@ class _RtdlKnnNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlDirectedHausdorffRow(ctypes.Structure):
+    _fields_ = [
+        ("source_id", ctypes.c_uint32),
+        ("target_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+        ("row_count", ctypes.c_uint32),
+    ]
+
+
 class _RtdlFrontierVertex(ctypes.Structure):
     _fields_ = [
         ("vertex_id", ctypes.c_uint32),
@@ -1353,6 +1362,40 @@ class PreparedEmbreeKnnRows2D:
 def prepare_embree_knn_rows_2d(search_points) -> PreparedEmbreeKnnRows2D:
     """Prepare a reusable Embree 2-D kNN object for repeated app probes."""
     return PreparedEmbreeKnnRows2D(search_points)
+
+
+def directed_hausdorff_2d_embree(query_points, search_points) -> dict[str, object]:
+    """Run one directed Hausdorff pass fully inside the Embree KNN traversal path."""
+    packed_queries = pack_points(records=query_points, dimension=2)
+    packed_search = pack_points(records=search_points, dimension=2)
+    lib = _load_configured_embree_library()
+    symbol = _require_optional_embree_symbol(lib, "rtdl_embree_run_directed_hausdorff_2d")
+    if symbol is None:
+        raise RuntimeError(
+            "loaded Embree backend library does not export rtdl_embree_run_directed_hausdorff_2d; "
+            "rebuild the Embree backend from current main"
+        )
+    row = _RtdlDirectedHausdorffRow()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        packed_queries.records,
+        packed_queries.count,
+        packed_search.records,
+        packed_search.count,
+        ctypes.byref(row),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return {
+        "distance": float(row.distance),
+        "source_id": int(row.source_id),
+        "target_id": int(row.target_id),
+        "row_count": int(row.row_count),
+        "distance_reduction_rows": (
+            {"directed_distance": float(row.distance)},
+        ),
+    }
 
 
 def _run_db_embree(compiled: CompiledKernel, normalized_inputs, library, *, result_mode: str):
@@ -3469,6 +3512,22 @@ def _load_embree_library():
             ctypes.c_size_t,
         ]
         optional_knn_rows_3d.restype = ctypes.c_int
+
+    optional_directed_hausdorff_2d = _require_optional_embree_symbol(
+        library,
+        "rtdl_embree_run_directed_hausdorff_2d",
+    )
+    if optional_directed_hausdorff_2d is not None:
+        optional_directed_hausdorff_2d.argtypes = [
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlDirectedHausdorffRow),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_directed_hausdorff_2d.restype = ctypes.c_int
 
     optional_bfs_expand = _require_optional_embree_symbol(library, "rtdl_embree_run_bfs_expand")
     if optional_bfs_expand is not None:

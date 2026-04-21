@@ -178,6 +178,13 @@ struct RtdlKnnNeighborRow {
   uint32_t neighbor_rank;
 };
 
+struct RtdlDirectedHausdorffRow {
+  uint32_t source_id;
+  uint32_t target_id;
+  double distance;
+  uint32_t row_count;
+};
+
 struct RtdlFrontierVertex {
   uint32_t vertex_id;
   uint32_t level;
@@ -441,6 +448,14 @@ int rtdl_embree_run_knn_rows_3d(
     size_t k,
     RtdlKnnNeighborRow** rows_out,
     size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_run_directed_hausdorff_2d(
+    const RtdlPoint* query_points,
+    size_t query_count,
+    const RtdlPoint* search_points,
+    size_t search_count,
+    RtdlDirectedHausdorffRow* row_out,
     char* error_out,
     size_t error_size);
 int rtdl_embree_run_bfs_expand(

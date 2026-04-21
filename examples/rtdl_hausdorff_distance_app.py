@@ -162,17 +162,37 @@ def brute_force_hausdorff(points_a: tuple[Point, ...], points_b: tuple[Point, ..
     }
 
 
-def run_app(backend: str = "cpu_python_reference", copies: int = 1) -> dict[str, object]:
+def run_app(
+    backend: str = "cpu_python_reference",
+    copies: int = 1,
+    *,
+    embree_result_mode: str = "rows",
+) -> dict[str, object]:
     case = make_authored_point_sets(copies=copies)
     points_a = case["points_a"]
     points_b = case["points_b"]
     if not points_a or not points_b:
         raise ValueError("Hausdorff distance requires non-empty point sets")
+    if embree_result_mode not in {"rows", "directed_summary"}:
+        raise ValueError("embree_result_mode must be 'rows' or 'directed_summary'")
 
-    rows_ab = _run_nearest(backend, points_a, points_b)
-    rows_ba = _run_nearest(backend, points_b, points_a)
-    directed_ab = _directed_from_rows(rows_ab, "a_to_b")
-    directed_ba = _directed_from_rows(rows_ba, "b_to_a")
+    if backend == "embree" and embree_result_mode == "directed_summary":
+        directed_ab = rt.directed_hausdorff_2d_embree(points_a, points_b)
+        directed_ba = rt.directed_hausdorff_2d_embree(points_b, points_a)
+        rtdl_role = (
+            "RTDL/Embree runs k=1 nearest-neighbor traversal and directed max reduction "
+            "inside the native Embree summary path; Python keeps only undirected comparison "
+            "and oracle validation."
+        )
+    else:
+        rows_ab = _run_nearest(backend, points_a, points_b)
+        rows_ba = _run_nearest(backend, points_b, points_a)
+        directed_ab = _directed_from_rows(rows_ab, "a_to_b")
+        directed_ba = _directed_from_rows(rows_ba, "b_to_a")
+        rtdl_role = (
+            "RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed "
+            "Hausdorff distances, while Python keeps witness selection and undirected comparison."
+        )
     undirected = max(
         (("a_to_b", directed_ab), ("b_to_a", directed_ba)),
         key=lambda item: (float(item[1]["distance"]), item[0]),
@@ -185,6 +205,7 @@ def run_app(backend: str = "cpu_python_reference", copies: int = 1) -> dict[str,
         "copies": copies,
         "point_count_a": len(points_a),
         "point_count_b": len(points_b),
+        "embree_result_mode": embree_result_mode if backend == "embree" else None,
         "directed_a_to_b": directed_ab,
         "directed_b_to_a": directed_ba,
         "hausdorff_distance": float(undirected[1]["distance"]),
@@ -196,7 +217,7 @@ def run_app(backend: str = "cpu_python_reference", copies: int = 1) -> dict[str,
             rel_tol=1e-5,
             abs_tol=1e-5,
         ),
-        "rtdl_role": "RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed Hausdorff distances, while Python keeps witness selection and undirected comparison.",
+        "rtdl_role": rtdl_role,
     }
 
 
@@ -210,8 +231,20 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1, help="tile the small authored point sets")
+    parser.add_argument(
+        "--embree-result-mode",
+        choices=("rows", "directed_summary"),
+        default="rows",
+        help="Embree-only: emit KNN rows or native directed-Hausdorff summaries",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, args.copies), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(args.backend, args.copies, embree_result_mode=args.embree_result_mode),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

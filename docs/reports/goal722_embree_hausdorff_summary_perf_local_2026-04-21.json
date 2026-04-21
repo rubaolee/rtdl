@@ -1,0 +1,37 @@
+{
+  "description": "Embree native directed-Hausdorff summary compared with KNN rows plus Python reduction.",
+  "goal": 722,
+  "repeats": 3,
+  "results": [
+    {
+      "app": "hausdorff_distance",
+      "copies": 256,
+      "directed_summary_sec": 0.010405625100247562,
+      "hausdorff_distance": 0.30000000000000004,
+      "point_count_a": 1024,
+      "point_count_b": 1024,
+      "row_mode_sec": 0.012877457891590893,
+      "summary_speedup_vs_rows": 1.2375477462939275
+    },
+    {
+      "app": "hausdorff_distance",
+      "copies": 1024,
+      "directed_summary_sec": 0.11176520900335163,
+      "hausdorff_distance": 0.30000000000000004,
+      "point_count_a": 4096,
+      "point_count_b": 4096,
+      "row_mode_sec": 0.1348976659355685,
+      "summary_speedup_vs_rows": 1.2069736829420967
+    },
+    {
+      "app": "hausdorff_distance",
+      "copies": 4096,
+      "directed_summary_sec": 1.4165083339903504,
+      "hausdorff_distance": 0.30000000000000004,
+      "point_count_a": 16384,
+      "point_count_b": 16384,
+      "row_mode_sec": 1.752040124963969,
+      "summary_speedup_vs_rows": 1.2368724439682006
+    }
+  ]
+}

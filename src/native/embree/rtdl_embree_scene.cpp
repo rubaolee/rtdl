@@ -48,6 +48,7 @@ enum class QueryKind {
   kFixedRadiusNeighbors,
   kFixedRadiusNeighbors3D,
   kFixedRadiusCountThreshold,
+  kNearestPoint,
   kKnnRows,
   kKnnRows3D,
   kDbScanRay,
@@ -196,6 +197,14 @@ struct FixedRadiusCountThresholdQueryState {
   uint32_t neighbor_count;
   uint32_t threshold_reached;
   std::unordered_set<uint32_t>* seen_neighbor_ids;
+};
+
+struct NearestPointQueryState {
+  const Point2D* query;
+  const std::vector<Point2D>* search_points;
+  uint32_t best_neighbor_id;
+  double best_distance;
+  bool has_hit;
 };
 
 struct KnnRowsQueryState {
@@ -786,6 +795,23 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
         args->query->radius = 0.0f;
         return true;
       }
+    }
+    return false;
+  }
+  if (g_query_kind == QueryKind::kNearestPoint) {
+    auto* state = static_cast<NearestPointQueryState*>(args->userPtr);
+    const Point2D& search_point = (*state->search_points)[args->primID];
+    double dx = search_point.p.x - state->query->p.x;
+    double dy = search_point.p.y - state->query->p.y;
+    double distance = std::sqrt(dx * dx + dy * dy);
+    if (!state->has_hit ||
+        distance < state->best_distance - 1.0e-12 ||
+        (std::abs(distance - state->best_distance) <= 1.0e-12 &&
+         search_point.id < state->best_neighbor_id)) {
+      state->best_neighbor_id = search_point.id;
+      state->best_distance = distance;
+      state->has_hit = true;
+      args->query->radius = static_cast<float>(distance + 1.0e-6);
     }
     return false;
   }
