@@ -106,6 +106,21 @@ def _run_backend(backend: str, edge_rays: tuple[rt.Ray2D, ...], obstacle_triangl
     raise ValueError(f"unsupported backend `{backend}`")
 
 
+def _run_optix_prepared_hit_edge_count(
+    edge_rays: tuple[rt.Ray2D, ...],
+    obstacle_triangles: tuple[rt.Triangle, ...],
+) -> dict[str, object]:
+    with rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles) as prepared_scene:
+        with rt.prepare_optix_rays_2d(edge_rays) as prepared_rays:
+            hit_edge_count = prepared_scene.count(prepared_rays)
+    return {
+        "mode": "optix_prepared_hit_edge_count",
+        "hit_edge_count": int(hit_edge_count),
+        "edge_ray_count": len(edge_rays),
+        "obstacle_triangle_count": len(obstacle_triangles),
+    }
+
+
 def _attach_pose_metadata(
     rows: tuple[dict[str, object], ...],
     ray_metadata: dict[int, dict[str, int]],
@@ -174,21 +189,45 @@ def _summarize_collisions(
     }
 
 
-def run_app(backend: str = "cpu_python_reference") -> dict[str, object]:
+def run_app(backend: str = "cpu_python_reference", optix_summary_mode: str = "rows") -> dict[str, object]:
+    if optix_summary_mode not in {"rows", "prepared_count"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'prepared_count'")
+    if optix_summary_mode == "prepared_count" and backend != "optix":
+        raise ValueError("optix_summary_mode='prepared_count' requires backend='optix'")
+
     case = make_demo_case()
     edge_rays = case["edge_rays"]
     obstacle_triangles = case["obstacle_triangles"]
     poses = case["poses"]
     ray_metadata = case["ray_metadata"]
 
-    rows = _run_backend(backend, edge_rays, obstacle_triangles)
     oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
-    summary = _summarize_collisions(rows, poses, ray_metadata)
     oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
+
+    if backend == "optix" and optix_summary_mode == "prepared_count":
+        prepared_summary = _run_optix_prepared_hit_edge_count(edge_rays, obstacle_triangles)
+        expected_hit_count = sum(1 for row in oracle_rows if row["any_hit"])
+        return {
+            "app": "robot_collision_screening",
+            "backend": backend,
+            "optix_summary_mode": optix_summary_mode,
+            "pose_count": len(poses),
+            "edge_ray_count": len(edge_rays),
+            "obstacle_triangle_count": len(obstacle_triangles),
+            "prepared_summary": prepared_summary,
+            "oracle_hit_edge_count": int(expected_hit_count),
+            "matches_oracle": int(prepared_summary["hit_edge_count"]) == int(expected_hit_count),
+            "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns a native scalar hit-edge count, avoiding per-ray Python dict row materialization for this summary path.",
+            "boundary": "Prepared count mode returns only the total hit-edge count. Use optix_summary_mode='rows' when pose-level witnesses and edge rows are needed.",
+        }
+
+    rows = _run_backend(backend, edge_rays, obstacle_triangles)
+    summary = _summarize_collisions(rows, poses, ray_metadata)
 
     return {
         "app": "robot_collision_screening",
         "backend": backend,
+        "optix_summary_mode": optix_summary_mode,
         "pose_count": len(poses),
         "edge_ray_count": len(edge_rays),
         "obstacle_triangle_count": len(obstacle_triangles),
@@ -213,8 +252,14 @@ def main(argv: list[str] | None = None) -> int:
         choices=("cpu_python_reference", "cpu", "embree", "optix"),
         default="cpu_python_reference",
     )
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "prepared_count"),
+        default="rows",
+        help="For --backend optix, prepared_count returns a native scalar hit-edge count instead of materializing per-ray rows.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend), indent=2, sort_keys=True))
+    print(json.dumps(run_app(args.backend, args.optix_summary_mode), indent=2, sort_keys=True))
     return 0
 
 
