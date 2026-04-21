@@ -166,6 +166,14 @@ class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
     ]
 
 
+class _RtdlFixedRadiusCountRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_count", ctypes.c_uint32),
+        ("threshold_reached", ctypes.c_uint32),
+    ]
+
+
 class _RtdlKnnNeighborRow(ctypes.Structure):
     _fields_ = [
         ("query_id", ctypes.c_uint32),
@@ -544,6 +552,71 @@ def optix_version() -> tuple:
     _check_status(lib.rtdl_optix_get_version(
         ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)))
     return major.value, minor.value, patch.value
+
+
+def fixed_radius_count_threshold_2d_optix(
+    query_points,
+    search_points=None,
+    *,
+    radius: float,
+    threshold: int = 0,
+) -> tuple[dict[str, int], ...]:
+    """Run the experimental OptiX RT-traversal fixed-radius count primitive.
+
+    This is intentionally narrower than ``fixed_radius_neighbors``: it emits
+    one summary row per query with ``neighbor_count`` counted up to
+    ``threshold``. A threshold of ``0`` requests full counts; a positive
+    threshold allows the OptiX any-hit program to terminate each ray once the
+    threshold is reached. The current implementation is 2-D only and is meant
+    for outlier/DBSCAN core-flag prototypes, not KNN or Hausdorff.
+    """
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    packed_queries = pack_points(records=query_points, dimension=2)
+    packed_search = packed_queries if search_points is None else pack_points(records=search_points, dimension=2)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_fixed_radius_count_threshold")
+    if symbol is None:
+        raise RuntimeError(
+            "loaded OptiX backend library does not export rtdl_optix_run_fixed_radius_count_threshold; "
+            "rebuild the OptiX backend from current main"
+        )
+    rows_ptr = ctypes.POINTER(_RtdlFixedRadiusCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        packed_queries.records,
+        packed_queries.count,
+        packed_search.records,
+        packed_search.count,
+        ctypes.c_double(float(radius)),
+        ctypes.c_size_t(int(threshold)),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    view = OptixRowView(
+        library=lib,
+        rows_ptr=rows_ptr,
+        row_count=row_count.value,
+        row_type=_RtdlFixedRadiusCountRow,
+        field_names=("query_id", "neighbor_count", "threshold_reached"),
+    )
+    try:
+        return tuple(
+            {
+                "query_id": int(row["query_id"]),
+                "neighbor_count": int(row["neighbor_count"]),
+                "threshold_reached": int(row["threshold_reached"]),
+            }
+            for row in view.to_dict_rows()
+        )
+    finally:
+        view.close()
 
 
 def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mode: str):
@@ -2084,6 +2157,19 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
+
+    optional_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_run_fixed_radius_count_threshold")
+    if optional_frn_count is not None:
+        optional_frn_count.argtypes = [
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_frn_count.restype = ctypes.c_int
 
     _require_backend_symbol(lib, "rtdl_optix_run_knn_rows").argtypes = [
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,

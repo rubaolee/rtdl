@@ -168,6 +168,62 @@ def brute_force_dbscan(
     return cluster_from_neighbor_rows(points, rows, min_points=min_points)
 
 
+def brute_force_core_flag_rows(
+    points: tuple[rt.Point, ...],
+    *,
+    epsilon: float = EPSILON,
+    min_points: int = MIN_POINTS,
+) -> tuple[dict[str, object], ...]:
+    rows: list[dict[str, object]] = []
+    for query in points:
+        count = 0
+        for neighbor in points:
+            if math.hypot(query.x - neighbor.x, query.y - neighbor.y) <= epsilon:
+                count += 1
+        rows.append(
+            {
+                "point_id": query.id,
+                "neighbor_count": count,
+                "is_core": count >= min_points,
+            }
+        )
+    return tuple(sorted(rows, key=lambda row: int(row["point_id"])))
+
+
+def _core_flag_rows_from_count_rows(
+    points: tuple[rt.Point, ...],
+    count_rows: Iterable[dict[str, object]],
+    *,
+    min_points: int = MIN_POINTS,
+) -> tuple[dict[str, object], ...]:
+    counts: dict[int, int] = {point.id: 0 for point in points}
+    threshold_reached: dict[int, int] = {point.id: 0 for point in points}
+    for row in count_rows:
+        point_id = int(row["query_id"])
+        if point_id not in counts:
+            continue
+        counts[point_id] = int(row["neighbor_count"])
+        threshold_reached[point_id] = int(row.get("threshold_reached", 0))
+    return tuple(
+        {
+            "point_id": point_id,
+            "neighbor_count": counts[point_id],
+            "is_core": counts[point_id] >= min_points or threshold_reached[point_id] == 1,
+        }
+        for point_id in sorted(counts)
+    )
+
+
+def _run_optix_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+    count_rows = rt.fixed_radius_count_threshold_2d_optix(
+        case["points"],
+        case["points"],
+        radius=EPSILON,
+        threshold=MIN_POINTS,
+    )
+    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+
+
 def _cluster_sizes(cluster_rows: tuple[dict[str, object], ...]) -> dict[int, int]:
     sizes: dict[int, int] = {}
     for row in cluster_rows:
@@ -178,16 +234,37 @@ def _cluster_sizes(cluster_rows: tuple[dict[str, object], ...]) -> dict[int, int
     return dict(sorted(sizes.items()))
 
 
-def run_app(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[str, object]:
+def run_app(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    optix_summary_mode: str = "rows",
+) -> dict[str, object]:
+    if optix_summary_mode not in {"rows", "rt_core_flags"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'rt_core_flags'")
     case = make_dbscan_case(copies=copies)
     points = case["points"]
-    neighbor_rows = _run_rows(backend, case)
-    cluster_rows = cluster_from_neighbor_rows(points, neighbor_rows)
+    core_flag_rows: tuple[dict[str, object], ...] = ()
+    if backend == "optix" and optix_summary_mode == "rt_core_flags":
+        neighbor_rows = ()
+        cluster_rows = ()
+        core_flag_rows = _run_optix_core_flag_summary(case)
+    else:
+        neighbor_rows = _run_rows(backend, case)
+        cluster_rows = cluster_from_neighbor_rows(points, neighbor_rows)
     oracle_rows = brute_force_dbscan(points)
+    oracle_core_flag_rows = brute_force_core_flag_rows(points)
+    if core_flag_rows:
+        core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in core_flag_rows]
+        oracle_core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in oracle_core_flag_rows]
+        matches_oracle = core_flags == oracle_core_flags
+    else:
+        matches_oracle = cluster_rows == oracle_rows
 
     return {
         "app": "dbscan_clustering",
         "backend": backend,
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
         "epsilon": EPSILON,
         "min_points": MIN_POINTS,
         "k_max": K_MAX,
@@ -196,11 +273,13 @@ def run_app(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[s
         "neighbor_row_count": len(neighbor_rows),
         "cluster_rows": cluster_rows,
         "cluster_sizes": _cluster_sizes(cluster_rows),
+        "core_flag_rows": core_flag_rows,
         "noise_point_ids": [int(row["point_id"]) for row in cluster_rows if int(row["cluster_id"]) == NOISE_CLUSTER_ID],
         "oracle_cluster_rows": oracle_rows,
-        "matches_oracle": cluster_rows == oracle_rows,
-        "rtdl_role": "RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates, and Python expands DBSCAN core, border, and noise labels.",
-        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives.",
+        "oracle_core_flag_rows": oracle_core_flag_rows,
+        "matches_oracle": matches_oracle,
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. Optional OptiX rt_core_flags emits native thresholded core flags only.",
+        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut.",
     }
 
 
@@ -214,8 +293,20 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1, help="tile the authored clustering fixture")
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "rt_core_flags"),
+        default="rows",
+        help="when backend=optix, use experimental native fixed-radius threshold counts for core flags only",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(args.backend, copies=args.copies, optix_summary_mode=args.optix_summary_mode),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

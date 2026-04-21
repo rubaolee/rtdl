@@ -112,28 +112,80 @@ def brute_force_outlier_rows(
     )
 
 
-def run_app(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[str, object]:
+def _density_rows_from_count_rows(
+    points: tuple[rt.Point, ...],
+    count_rows: Iterable[dict[str, object]],
+    *,
+    min_neighbors_including_self: int = MIN_NEIGHBORS_INCLUDING_SELF,
+) -> tuple[dict[str, object], ...]:
+    counts: dict[int, int] = {point.id: 0 for point in points}
+    threshold_reached: dict[int, int] = {point.id: 0 for point in points}
+    for row in count_rows:
+        point_id = int(row["query_id"])
+        if point_id not in counts:
+            continue
+        counts[point_id] = int(row["neighbor_count"])
+        threshold_reached[point_id] = int(row.get("threshold_reached", 0))
+    return tuple(
+        {
+            "point_id": point_id,
+            "neighbor_count": counts[point_id],
+            "is_outlier": counts[point_id] < min_neighbors_including_self
+            and threshold_reached[point_id] == 0,
+        }
+        for point_id in sorted(counts)
+    )
+
+
+def _run_optix_density_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+    count_rows = rt.fixed_radius_count_threshold_2d_optix(
+        case["points"],
+        case["points"],
+        radius=RADIUS,
+        threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+    )
+    return _density_rows_from_count_rows(case["points"], count_rows)
+
+
+def run_app(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    optix_summary_mode: str = "rows",
+) -> dict[str, object]:
+    if optix_summary_mode not in {"rows", "rt_count_threshold"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'rt_count_threshold'")
     case = make_outlier_case(copies=copies)
-    neighbor_rows = _run_rows(backend, case)
-    density_rows = density_rows_from_neighbor_rows(case["points"], neighbor_rows)
+    native_summary_rows: tuple[dict[str, object], ...] = ()
+    if backend == "optix" and optix_summary_mode == "rt_count_threshold":
+        neighbor_rows = ()
+        density_rows = _run_optix_density_summary(case)
+        native_summary_rows = density_rows
+    else:
+        neighbor_rows = _run_rows(backend, case)
+        density_rows = density_rows_from_neighbor_rows(case["points"], neighbor_rows)
     oracle_rows = brute_force_outlier_rows(case["points"])
     outlier_ids = [int(row["point_id"]) for row in density_rows if bool(row["is_outlier"])]
+    oracle_outlier_ids = [int(row["point_id"]) for row in oracle_rows if bool(row["is_outlier"])]
+    matches_oracle = outlier_ids == oracle_outlier_ids if native_summary_rows else density_rows == oracle_rows
 
     return {
         "app": "outlier_detection",
         "backend": backend,
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else "not_applicable",
         "radius": RADIUS,
         "k_max": K_MAX,
         "min_neighbors_including_self": MIN_NEIGHBORS_INCLUDING_SELF,
         "copies": copies,
         "point_count": len(case["points"]),
         "neighbor_row_count": len(neighbor_rows),
+        "native_summary_row_count": len(native_summary_rows),
         "density_rows": density_rows,
         "outlier_point_ids": outlier_ids,
         "oracle_density_rows": oracle_rows,
-        "matches_oracle": density_rows == oracle_rows,
-        "rtdl_role": "RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold.",
-        "boundary": "Bounded density-threshold outlier demo only; RTDL does not yet expose density scoring as a language primitive.",
+        "matches_oracle": matches_oracle,
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. Optional OptiX rt_count_threshold emits one native summary row per query for the density threshold.",
+        "boundary": "Bounded density-threshold outlier demo only; OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim.",
     }
 
 
@@ -147,8 +199,20 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "rt_count_threshold"),
+        default="rows",
+        help="when backend=optix, use experimental native fixed-radius threshold counts instead of neighbor rows",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(args.backend, copies=args.copies, optix_summary_mode=args.optix_summary_mode),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

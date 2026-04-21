@@ -313,6 +313,35 @@ extern "C" int rtdl_optix_run_fixed_radius_neighbors_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_fixed_radius_count_threshold(
+        const RtdlPoint* query_points, size_t query_count,
+        const RtdlPoint* search_points, size_t search_count,
+        double radius,
+        size_t threshold,
+        RtdlFixedRadiusCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("output pointers must not be null");
+        if (radius < 0.0)
+            throw std::runtime_error("fixed_radius_count_threshold radius must be non-negative");
+        if (query_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_count_threshold query_count exceeds uint32 limit");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_count_threshold search_count exceeds uint32 limit");
+        if (threshold > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("fixed_radius_count_threshold threshold exceeds uint32 limit");
+        *rows_out = nullptr; *row_count_out = 0;
+        if (query_count == 0 || search_count == 0) return;
+        run_fixed_radius_count_threshold_rt(
+            query_points, query_count,
+            search_points, search_count,
+            radius, threshold,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_knn_rows(
         const RtdlPoint* query_points, size_t query_count,
         const RtdlPoint* search_points, size_t search_count,

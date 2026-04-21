@@ -2944,6 +2944,106 @@ static void run_fixed_radius_neighbors_cuda(
     *row_count_out = rows.size();
 }
 
+struct FixedRadiusCountRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    GpuFixedRadiusCountRecord* output;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+static void run_fixed_radius_count_threshold_rt(
+        const RtdlPoint* query_points, size_t query_count,
+        const RtdlPoint* search_points, size_t search_count,
+        double radius,
+        size_t threshold,
+        RtdlFixedRadiusCountRow** rows_out, size_t* row_count_out)
+{
+    std::call_once(g_frn_count_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(kFixedRadiusCountRtKernelSrc, "frn_count_rt_kernel.cu");
+        g_frn_count_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn_count_probe",
+            "__miss__frn_count_miss",
+            "__intersection__frn_count_isect",
+            "__anyhit__frn_count_anyhit",
+            nullptr, 3).release();
+    });
+
+    // Pad only the BVH broad phase; the intersection program still tests the
+    // unpadded radius so this can add candidates but not accepted hits.
+    constexpr float kRadiusPad = 1.0e-4f;
+    const float radius_f = static_cast<float>(radius);
+    const float aabb_radius = radius_f + kRadiusPad;
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    std::vector<GpuPoint> gpu_search(search_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {static_cast<float>(query_points[i].x), static_cast<float>(query_points[i].y), query_points[i].id};
+    }
+    for (size_t i = 0; i < search_count; ++i) {
+        gpu_search[i] = {static_cast<float>(search_points[i].x), static_cast<float>(search_points[i].y), search_points[i].id};
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    DevPtr d_search(sizeof(GpuPoint) * search_count);
+    DevPtr d_output(sizeof(GpuFixedRadiusCountRecord) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    upload(d_search.ptr, gpu_search.data(), search_count);
+
+    std::vector<OptixAabb> aabbs(search_count);
+    for (size_t i = 0; i < search_count; ++i) {
+        const float x = gpu_search[i].x;
+        const float y = gpu_search[i].y;
+        OptixAabb aabb;
+        aabb.minX = x - aabb_radius;
+        aabb.minY = y - aabb_radius;
+        aabb.minZ = -aabb_radius;
+        aabb.maxX = x + aabb_radius;
+        aabb.maxY = y + aabb_radius;
+        aabb.maxZ = aabb_radius;
+        aabbs[i] = aabb;
+    }
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    FixedRadiusCountRtLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(d_search.ptr);
+    lp.output = reinterpret_cast<GpuFixedRadiusCountRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.radius = radius_f;
+    lp.trace_tmax = 2.0f * aabb_radius;
+
+    DevPtr d_params(sizeof(FixedRadiusCountRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
+                             &g_frn_count_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    std::vector<GpuFixedRadiusCountRecord> gpu_rows(query_count);
+    download(gpu_rows.data(), d_output.ptr, query_count);
+
+    auto* out = static_cast<RtdlFixedRadiusCountRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusCountRow) * query_count));
+    if (!out && query_count > 0) throw std::bad_alloc();
+    for (size_t i = 0; i < query_count; ++i) {
+        out[i].query_id = gpu_rows[i].query_id;
+        out[i].neighbor_count = gpu_rows[i].neighbor_count;
+        out[i].threshold_reached = gpu_rows[i].threshold_reached ? 1u : 0u;
+    }
+    *rows_out = out;
+    *row_count_out = query_count;
+}
+
 static void run_fixed_radius_neighbors_cuda_3d(
         const RtdlPoint3D* query_points, size_t query_count,
         const RtdlPoint3D* search_points, size_t search_count,

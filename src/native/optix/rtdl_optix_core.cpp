@@ -1608,6 +1608,74 @@ extern "C" __global__ void fixed_radius_neighbors_3d(
 }
 )CUDA";
 
+static const char* kFixedRadiusCountRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; };
+struct FixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
+
+struct FixedRadiusCountParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    FixedRadiusCountRecord* output;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusCountParams params;
+}
+
+extern "C" __global__ void __raygen__frn_count_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint query = params.query_points[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u;
+    optixTrace(params.traversable,
+               make_float3(query.x, query.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2);
+    params.output[idx] = {query.id, p1, p2};
+}
+
+extern "C" __global__ void __miss__frn_count_miss() {}
+
+extern "C" __global__ void __intersection__frn_count_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint query = params.query_points[qidx];
+    const GpuPoint target = params.search_points[prim];
+    const float dx = target.x - query.x;
+    const float dy = target.y - query.y;
+    const float radius_sq = params.radius * params.radius;
+    if ((dx * dx + dy * dy) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__frn_count_anyhit() {
+    uint32_t count = optixGetPayload_1() + 1u;
+    optixSetPayload_1(count);
+    if (params.threshold != 0u && count >= params.threshold) {
+        optixSetPayload_2(1u);
+        optixTerminateRay();
+        return;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kKnnRowsKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -1873,6 +1941,7 @@ static RayHitCount3DPipeline g_rayhit3d;
 static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
+static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;
 static DbScanPipeline      g_dbscan;
 static PnsCuFunction      g_pns;
@@ -1902,6 +1971,7 @@ struct GpuPipRecord  { uint32_t point_id, polygon_id, contains; };
 struct GpuOverlayFlags { uint32_t requires_lsi, requires_pip; };
 struct GpuRayHitRecord { uint32_t ray_id, hit_count; };
 struct GpuRayAnyHitRecord { uint32_t ray_id, any_hit; };
+struct GpuFixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
 struct GpuSegPolyRecord { uint32_t segment_id, hit_count; };
 struct GpuPnsRecord     { uint32_t point_id, segment_id; float distance; };
 struct GpuFrnRecord     { uint32_t query_id, neighbor_id; float distance; };
