@@ -1,0 +1,460 @@
+{
+  "cases": [
+    {
+      "aggregate": {
+        "buffer_seconds": {
+          "count": 3,
+          "max": 3.9459e-05,
+          "mean": 1.3153000000000001e-05,
+          "median": 0.0,
+          "min": 0.0,
+          "stdev": 2.2781664271953444e-05
+        },
+        "dispatch_wait_seconds": {
+          "count": 3,
+          "max": 0.009669834,
+          "mean": 0.004125389,
+          "median": 0.001785458,
+          "min": 0.000920875,
+          "stdev": 0.004821050581511358
+        },
+        "output_seconds": {
+          "count": 3,
+          "max": 1.875e-05,
+          "mean": 1.7305666666666666e-05,
+          "median": 1.7667e-05,
+          "min": 1.55e-05,
+          "stdev": 1.6548553813954044e-06
+        },
+        "python_wall_seconds": {
+          "count": 3,
+          "max": 0.036468249978497624,
+          "mean": 0.02804736129473895,
+          "median": 0.024355124915018678,
+          "min": 0.023318708990700543,
+          "stdev": 0.007311091858281925
+        },
+        "ray_pack_seconds": {
+          "count": 3,
+          "max": 0.000105584,
+          "mean": 6.687533333333333e-05,
+          "median": 4.7833e-05,
+          "min": 4.7209e-05,
+          "stdev": 3.352414056069646e-05
+        },
+        "result_scan_seconds": {
+          "count": 3,
+          "max": 0.000419416,
+          "mean": 0.00018054133333333334,
+          "median": 6.2708e-05,
+          "min": 5.95e-05,
+          "stdev": 0.00020687774795113498
+        },
+        "total_seconds": {
+          "count": 3,
+          "max": 0.010253375,
+          "mean": 0.004403486,
+          "median": 0.001913166,
+          "min": 0.001043917,
+          "stdev": 0.005084761492955299
+        }
+      },
+      "case": "dense_blocked:large",
+      "count_aggregate": {
+        "buffer_seconds": {
+          "count": 3,
+          "max": 4.2e-08,
+          "mean": 2.8e-08,
+          "median": 4.2e-08,
+          "min": 0.0,
+          "stdev": 2.424871130596428e-08
+        },
+        "dispatch_wait_seconds": {
+          "count": 3,
+          "max": 0.001269167,
+          "mean": 0.001039389,
+          "median": 0.001017583,
+          "min": 0.000831417,
+          "stdev": 0.00021968816957678905
+        },
+        "output_seconds": {
+          "count": 3,
+          "max": 4.2e-08,
+          "mean": 2.8e-08,
+          "median": 4.2e-08,
+          "min": 0.0,
+          "stdev": 2.424871130596428e-08
+        },
+        "python_wall_seconds": {
+          "count": 3,
+          "max": 0.02160604193340987,
+          "mean": 0.017722750276637573,
+          "median": 0.01598383393138647,
+          "min": 0.015578374965116382,
+          "stdev": 0.003369134133868848
+        },
+        "ray_pack_seconds": {
+          "count": 3,
+          "max": 4.9083e-05,
+          "mean": 4.85e-05,
+          "median": 4.875e-05,
+          "min": 4.7667e-05,
+          "stdev": 7.403640996158551e-07
+        },
+        "result_scan_seconds": {
+          "count": 3,
+          "max": 5.8875e-05,
+          "mean": 5.5333333333333334e-05,
+          "median": 5.6042e-05,
+          "min": 5.1083e-05,
+          "stdev": 3.944042638376688e-06
+        },
+        "total_seconds": {
+          "count": 3,
+          "max": 0.001373,
+          "mean": 0.0011433196666666666,
+          "median": 0.0011175,
+          "min": 0.000939459,
+          "stdev": 0.0002179207219617569
+        }
+      },
+      "kind": "dense_blocked",
+      "last_count_profile": {
+        "blocked_count": 32768,
+        "buffer_seconds": 4.2e-08,
+        "chunk_count": 1,
+        "dispatch_wait_seconds": 0.001017583,
+        "hit_count": 32768,
+        "output_seconds": 0.0,
+        "ray_count": 32768,
+        "ray_pack_seconds": 4.875e-05,
+        "result_scan_seconds": 5.1083e-05,
+        "total_seconds": 0.0011175
+      },
+      "last_packed_count_profile": {
+        "blocked_count": 32768,
+        "buffer_seconds": 0.0,
+        "chunk_count": 1,
+        "dispatch_wait_seconds": 0.003137417,
+        "hit_count": 32768,
+        "output_seconds": 0.0,
+        "ray_count": 32768,
+        "ray_pack_seconds": 5.6292e-05,
+        "result_scan_seconds": 5.3792e-05,
+        "total_seconds": 0.003247791
+      },
+      "last_profile": {
+        "blocked_count": 32768,
+        "buffer_seconds": 0.0,
+        "chunk_count": 1,
+        "dispatch_wait_seconds": 0.001785458,
+        "hit_count": 32768,
+        "output_seconds": 1.7667e-05,
+        "ray_count": 32768,
+        "ray_pack_seconds": 4.7209e-05,
+        "result_scan_seconds": 6.2708e-05,
+        "total_seconds": 0.001913166
+      },
+      "median_fraction_of_native_total": {
+        "buffer_seconds": 0.0,
+        "dispatch_wait_seconds": 0.9332478206282152,
+        "output_seconds": 0.009234431303922399,
+        "ray_pack_seconds": 0.025002012371116777,
+        "result_scan_seconds": 0.032777082595028345
+      },
+      "obstacle_rectangle_count": 4096,
+      "obstacle_triangle_count": 8192,
+      "packed_count_aggregate": {
+        "buffer_seconds": {
+          "count": 3,
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "stdev": 0.0
+        },
+        "dispatch_wait_seconds": {
+          "count": 3,
+          "max": 0.003137417,
+          "mean": 0.0016358193333333333,
+          "median": 0.001077208,
+          "min": 0.000692833,
+          "stdev": 0.0013145465756527355
+        },
+        "output_seconds": {
+          "count": 3,
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "stdev": 0.0
+        },
+        "python_wall_seconds": {
+          "count": 3,
+          "max": 0.003259874996729195,
+          "mean": 0.001783930347301066,
+          "median": 0.0012624580413103104,
+          "min": 0.0008294580038636923,
+          "stdev": 0.0012964110899860567
+        },
+        "ray_pack_seconds": {
+          "count": 3,
+          "max": 0.000112625,
+          "mean": 7.805566666666667e-05,
+          "median": 6.525e-05,
+          "min": 5.6292e-05,
+          "stdev": 3.027111736182418e-05
+        },
+        "result_scan_seconds": {
+          "count": 3,
+          "max": 5.725e-05,
+          "mean": 5.495833333333333e-05,
+          "median": 5.3833e-05,
+          "min": 5.3792e-05,
+          "stdev": 1.9847474230574877e-06
+        },
+        "total_seconds": {
+          "count": 3,
+          "max": 0.003247791,
+          "mean": 0.0017690693333333332,
+          "median": 0.001243875,
+          "min": 0.000815542,
+          "stdev": 0.0012983954002245745
+        }
+      },
+      "prepare_seconds": 0.07164079090580344,
+      "ray_count": 32768,
+      "repeats": 3,
+      "scale": "large"
+    },
+    {
+      "aggregate": {
+        "buffer_seconds": {
+          "count": 3,
+          "max": 3.2291e-05,
+          "mean": 1.0777666666666667e-05,
+          "median": 4.2e-08,
+          "min": 0.0,
+          "stdev": 1.8631105021799788e-05
+        },
+        "dispatch_wait_seconds": {
+          "count": 3,
+          "max": 0.002227166,
+          "mean": 0.0010437636666666666,
+          "median": 0.000643875,
+          "min": 0.00026025,
+          "stdev": 0.0010426518340559965
+        },
+        "output_seconds": {
+          "count": 3,
+          "max": 1.5542e-05,
+          "mean": 1.5472333333333334e-05,
+          "median": 1.55e-05,
+          "min": 1.5375e-05,
+          "stdev": 8.686963412685322e-08
+        },
+        "python_wall_seconds": {
+          "count": 3,
+          "max": 0.026772041921503842,
+          "mean": 0.024548458595139284,
+          "median": 0.02381195896305144,
+          "min": 0.023061374900862575,
+          "stdev": 0.0019619088193817353
+        },
+        "ray_pack_seconds": {
+          "count": 3,
+          "max": 0.000101667,
+          "mean": 6.6639e-05,
+          "median": 5.1292e-05,
+          "min": 4.6958e-05,
+          "stdev": 3.0412439510831747e-05
+        },
+        "result_scan_seconds": {
+          "count": 3,
+          "max": 7.2667e-05,
+          "mean": 6.334733333333334e-05,
+          "median": 5.9625e-05,
+          "min": 5.775e-05,
+          "stdev": 8.125333613663709e-06
+        },
+        "total_seconds": {
+          "count": 3,
+          "max": 0.00235375,
+          "mean": 0.0012001803333333333,
+          "median": 0.000866166,
+          "min": 0.000380625,
+          "stdev": 0.0010280952035489385
+        }
+      },
+      "case": "sparse_clear:large",
+      "count_aggregate": {
+        "buffer_seconds": {
+          "count": 3,
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "stdev": 0.0
+        },
+        "dispatch_wait_seconds": {
+          "count": 3,
+          "max": 0.002890417,
+          "mean": 0.001470153,
+          "median": 0.001061042,
+          "min": 0.000459,
+          "stdev": 0.001266284334070749
+        },
+        "output_seconds": {
+          "count": 3,
+          "max": 4.2e-08,
+          "mean": 1.4e-08,
+          "median": 0.0,
+          "min": 0.0,
+          "stdev": 2.424871130596428e-08
+        },
+        "python_wall_seconds": {
+          "count": 3,
+          "max": 0.021535916021093726,
+          "mean": 0.01793095803198715,
+          "median": 0.017393041984178126,
+          "min": 0.0148639160906896,
+          "stdev": 0.0033683691934964653
+        },
+        "ray_pack_seconds": {
+          "count": 3,
+          "max": 4.9083e-05,
+          "mean": 4.788866666666667e-05,
+          "median": 4.7458e-05,
+          "min": 4.7125e-05,
+          "stdev": 1.047638455447933e-06
+        },
+        "result_scan_seconds": {
+          "count": 3,
+          "max": 5.4e-05,
+          "mean": 5.293033333333333e-05,
+          "median": 5.3833e-05,
+          "min": 5.0958e-05,
+          "stdev": 1.7101305018428636e-06
+        },
+        "total_seconds": {
+          "count": 3,
+          "max": 0.002988667,
+          "mean": 0.0015711113333333334,
+          "median": 0.001164125,
+          "min": 0.000560542,
+          "stdev": 0.0012641899226565338
+        }
+      },
+      "kind": "sparse_clear",
+      "last_count_profile": {
+        "blocked_count": 0,
+        "buffer_seconds": 0.0,
+        "chunk_count": 1,
+        "dispatch_wait_seconds": 0.000459,
+        "hit_count": 0,
+        "output_seconds": 4.2e-08,
+        "ray_count": 32768,
+        "ray_pack_seconds": 4.7458e-05,
+        "result_scan_seconds": 5.4e-05,
+        "total_seconds": 0.000560542
+      },
+      "last_packed_count_profile": {
+        "blocked_count": 0,
+        "buffer_seconds": 4.1e-08,
+        "chunk_count": 1,
+        "dispatch_wait_seconds": 0.000438875,
+        "hit_count": 0,
+        "output_seconds": 0.0,
+        "ray_count": 32768,
+        "ray_pack_seconds": 4.6875e-05,
+        "result_scan_seconds": 5.7292e-05,
+        "total_seconds": 0.000543125
+      },
+      "last_profile": {
+        "blocked_count": 0,
+        "buffer_seconds": 0.0,
+        "chunk_count": 1,
+        "dispatch_wait_seconds": 0.002227166,
+        "hit_count": 0,
+        "output_seconds": 1.5375e-05,
+        "ray_count": 32768,
+        "ray_pack_seconds": 5.1292e-05,
+        "result_scan_seconds": 5.9625e-05,
+        "total_seconds": 0.00235375
+      },
+      "median_fraction_of_native_total": {
+        "buffer_seconds": 4.8489550501866846e-05,
+        "dispatch_wait_seconds": 0.7433621268902266,
+        "output_seconds": 0.017894953161403243,
+        "ray_pack_seconds": 0.0592172862938513,
+        "result_scan_seconds": 0.0688378440160431
+      },
+      "obstacle_rectangle_count": 4096,
+      "obstacle_triangle_count": 8192,
+      "packed_count_aggregate": {
+        "buffer_seconds": {
+          "count": 3,
+          "max": 4.2e-08,
+          "mean": 2.7666666666666666e-08,
+          "median": 4.1e-08,
+          "min": 0.0,
+          "stdev": 2.3965252624024923e-08
+        },
+        "dispatch_wait_seconds": {
+          "count": 3,
+          "max": 0.002131834,
+          "mean": 0.000929514,
+          "median": 0.000438875,
+          "min": 0.000217833,
+          "stdev": 0.0010470887871813928
+        },
+        "output_seconds": {
+          "count": 3,
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0,
+          "stdev": 0.0
+        },
+        "python_wall_seconds": {
+          "count": 3,
+          "max": 0.002250749967060983,
+          "mean": 0.0010465829788396757,
+          "median": 0.0005521660204976797,
+          "min": 0.00033683294896036386,
+          "stdev": 0.0010483824133234517
+        },
+        "ray_pack_seconds": {
+          "count": 3,
+          "max": 4.9458e-05,
+          "mean": 4.780566666666667e-05,
+          "median": 4.7084e-05,
+          "min": 4.6875e-05,
+          "stdev": 1.4347732689638922e-06
+        },
+        "result_scan_seconds": {
+          "count": 3,
+          "max": 5.7625e-05,
+          "mean": 5.6736333333333334e-05,
+          "median": 5.7292e-05,
+          "min": 5.5292e-05,
+          "stdev": 1.2618622481607624e-06
+        },
+        "total_seconds": {
+          "count": 3,
+          "max": 0.002239209,
+          "mean": 0.0010342223333333332,
+          "median": 0.000543125,
+          "min": 0.000320333,
+          "stdev": 0.0010494778315664095
+        }
+      },
+      "prepare_seconds": 0.034387457999400795,
+      "ray_count": 32768,
+      "repeats": 3,
+      "scale": "large"
+    }
+  ],
+  "date": "2026-04-20",
+  "goal": "goal665_apple_rt_prepared_profile"
+}

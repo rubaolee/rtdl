@@ -36,6 +36,8 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 
+from .reference import Ray2D as _CanonicalRay2D
+from .reference import Triangle as _CanonicalTriangle2D
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlPoint
 from .embree_runtime import _RtdlPoint3D
@@ -352,8 +354,117 @@ class PreparedVulkanExecution:
             rows.close()
 
 
+class PreparedVulkanRayTriangleAnyHit2D:
+    def __init__(self, library, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
+        self.library = library
+        self._handle = handle
+        self._empty = empty
+        self._closed = False
+
+    def close(self) -> None:
+        if self._handle:
+            self.library.rtdl_vulkan_destroy_prepared_ray_anyhit_2d(self._handle)
+            self._handle = ctypes.c_void_p()
+        self._closed = True
+
+    def __enter__(self) -> "PreparedVulkanRayTriangleAnyHit2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def run(self, rays) -> tuple[dict[str, int], ...]:
+        if self._closed:
+            raise RuntimeError("prepared Vulkan ray-triangle any-hit handle is closed")
+        if isinstance(rays, PackedRays):
+            if rays.dimension != 2:
+                raise TypeError("Prepared Vulkan ray-triangle any-hit currently supports only 2D ray buffers")
+            ray_records = None
+            ray_ptr = rays.records
+            ray_count = rays.count
+        else:
+            ray_records = tuple(rays)
+            if any(not isinstance(ray, _CanonicalRay2D) for ray in ray_records):
+                raise TypeError("Prepared Vulkan ray-triangle any-hit currently supports only Ray2D inputs")
+            ray_array = (_RtdlRay2D * len(ray_records))(
+                *[_RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in ray_records]
+            )
+            ray_ptr = ray_array
+            ray_count = len(ray_records)
+        if self._empty:
+            if ray_records is None:
+                return tuple({"ray_id": int(rays.records[index].id), "any_hit": 0} for index in range(rays.count))
+            return tuple({"ray_id": int(ray.id), "any_hit": 0} for ray in ray_records)
+        rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self.library.rtdl_vulkan_run_prepared_ray_anyhit_2d(
+            self._handle,
+            ray_ptr,
+            ray_count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        try:
+            return tuple(
+                {"ray_id": int(rows_ptr[index].ray_id), "any_hit": int(rows_ptr[index].any_hit)}
+                for index in range(row_count.value)
+            )
+        finally:
+            self.library.rtdl_vulkan_free_rows(rows_ptr)
+
+
 def prepare_vulkan(kernel_fn_or_compiled) -> PreparedVulkanKernel:
     return PreparedVulkanKernel(kernel_fn_or_compiled)
+
+
+def _vulkan_prepared_ray_anyhit_2d_symbols_available(lib=None) -> bool:
+    try:
+        library = _load_vulkan_library() if lib is None else lib
+    except Exception:
+        return False
+    return (
+        _find_optional_backend_symbol(library, "rtdl_vulkan_prepare_ray_anyhit_2d") is not None
+        and _find_optional_backend_symbol(library, "rtdl_vulkan_run_prepared_ray_anyhit_2d") is not None
+        and _find_optional_backend_symbol(library, "rtdl_vulkan_destroy_prepared_ray_anyhit_2d") is not None
+    )
+
+
+def prepare_vulkan_ray_triangle_any_hit_2d(triangles) -> PreparedVulkanRayTriangleAnyHit2D:
+    triangle_records = tuple(triangles)
+    if any(not isinstance(triangle, _CanonicalTriangle2D) for triangle in triangle_records):
+        raise TypeError("prepare_vulkan_ray_triangle_any_hit_2d currently supports only Triangle2D inputs")
+    if not triangle_records and not _vulkan_prepared_ray_anyhit_2d_symbols_available():
+        return PreparedVulkanRayTriangleAnyHit2D(None, ctypes.c_void_p(), empty=True)
+    lib = _load_vulkan_library()
+    if not _vulkan_prepared_ray_anyhit_2d_symbols_available(lib):
+        raise RuntimeError("current Vulkan library does not export prepared 2D ray_triangle_any_hit symbols")
+    triangle_array = (_RtdlTriangle * len(triangle_records))(
+        *[
+            _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
+            for item in triangle_records
+        ]
+    )
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = lib.rtdl_vulkan_prepare_ray_anyhit_2d(
+        triangle_array,
+        len(triangle_records),
+        ctypes.byref(handle),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return PreparedVulkanRayTriangleAnyHit2D(lib, handle, empty=not triangle_records)
 
 
 def clear_vulkan_prepared_cache() -> None:
@@ -1526,6 +1637,30 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_anyhit.restype = ctypes.c_int
+    optional_prepare_anyhit = _find_optional_backend_symbol(lib, "rtdl_vulkan_prepare_ray_anyhit_2d")
+    optional_run_prepared_anyhit = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_prepared_ray_anyhit_2d")
+    optional_destroy_prepared_anyhit = _find_optional_backend_symbol(lib, "rtdl_vulkan_destroy_prepared_ray_anyhit_2d")
+    if (
+        optional_prepare_anyhit is not None
+        and optional_run_prepared_anyhit is not None
+        and optional_destroy_prepared_anyhit is not None
+    ):
+        optional_prepare_anyhit.argtypes = [
+            ctypes.POINTER(_RtdlTriangle), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_anyhit.restype = ctypes.c_int
+        optional_run_prepared_anyhit.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_anyhit.restype = ctypes.c_int
+        optional_destroy_prepared_anyhit.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_anyhit.restype = None
     optional_anyhit3d = _find_optional_backend_symbol(lib, "rtdl_vulkan_run_ray_anyhit_3d")
     if optional_anyhit3d is not None:
         optional_anyhit3d.argtypes = [

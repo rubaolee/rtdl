@@ -33,6 +33,7 @@ If you are new to RTDL, use these files first:
 | app-level use | `rtdl_v0_7_db_app_demo.py` | a Python app delegates the query core to RTDL |
 | HIPRT example | `rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through the prepared HIPRT path |
 | Apple RT example | `rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through the Apple Metal/MPS path |
+| Apple RT visibility count | `rtdl_apple_rt_visibility_count.py` | 2D rays and blocker triangles become one scalar blocked-ray count through a prepared/prepacked Apple RT path |
 
 - `rtdl_hello_world.py`
 - `rtdl_hello_world_backends.py`
@@ -57,6 +58,7 @@ If you are new to RTDL, use these files first:
 - `rtdl_v0_7_db_kernel_app_demo.py`
 - `rtdl_hiprt_ray_triangle_hitcount.py`
 - `rtdl_apple_rt_closest_hit.py`
+- `rtdl_apple_rt_visibility_count.py`
 - `rtdl_sales_risk_screening.py`
 - `rtdl_service_coverage_gaps.py`
 - `rtdl_event_hotspot_screening.py`
@@ -155,6 +157,10 @@ Current HIPRT boundary:
 - the broader v0.9.0 matrix is larger than this one example: `run_hiprt` has
   Linux parity coverage for 18 workloads; prepared HIPRT reuse is currently
   limited to the paths documented in the v0.9 support matrix
+- current `main` additionally exposes
+  `prepare_hiprt_ray_triangle_any_hit_2d(...)` for repeated 2D visibility
+  apps; current evidence is HIPRT/Orochi CUDA on the Linux NVIDIA host, not
+  AMD GPU evidence
 - this is not an AMD GPU validation, RT-core speedup claim, CPU fallback, or
   OptiX/Vulkan/HIPRT closest-hit support claim
 
@@ -177,17 +183,23 @@ Current Apple RT boundary:
 - this is not a broad measured Apple speedup claim; Embree remains the mature
   performance baseline
 
-Current v0.9.5 example boundary:
+Current v0.9.6 example boundary:
 
 - `rtdl_ray_triangle_any_hit.py` shows bounded yes/no blocker rows. Native
-  early-exit is available on OptiX, Embree, and HIPRT at the released `v0.9.5`
-  tag boundary.
-- Current `main` also has native Vulkan any-hit and Apple RT
-  native/native-assisted any-hit after rebuilding `librtdl_vulkan` and
+  early-exit is available on OptiX, Embree, HIPRT, and Vulkan at the released
+  `v0.9.6` tag boundary when the backend library exports the relevant symbol.
+- `v0.9.6` also has Apple RT native/native-assisted any-hit after rebuilding
   `librtdl_apple_rt` from current source.
 - Apple RT 3D uses MPS RT nearest-intersection existence; Apple RT 2D uses
   MPS-prism traversal with per-ray early exit plus exact 2D acceptance. This is
   not programmable shader-level Apple any-hit.
+- `rtdl_apple_rt_visibility_count.py` demonstrates the released `v0.9.6`
+  prepared/prepacked Apple RT 2D path for scalar blocked-ray counts. It is an
+  app-level count contract, not full emitted-row output.
+- `v0.9.6` also includes prepared repeated-query 2D any-hit helpers for
+  OptiX, HIPRT, and Vulkan. These are performance-oriented backend helpers for
+  stable triangle sets and repeated ray batches, not separate beginner example
+  files yet and not broad DB/graph/full-row speedup claims.
 - `rtdl_visibility_rows.py` shows observer-target line-of-sight rows built on
   any-hit.
 - `rtdl_reduce_rows.py` shows deterministic Python standard-library reductions

@@ -25,12 +25,13 @@ performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v0.9.5`: the bounded `v0.7.0` DB package, the
+The current released state is `v0.9.6`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
 the released `v0.9.1` Apple RT closest-hit slice, the released `v0.9.4`
 Apple RT consolidation, and the released `v0.9.5` any-hit / visibility-row /
-emitted-row reduction layer.
+emitted-row reduction layer, plus the released `v0.9.6` prepared/prepacked
+repeated visibility/count optimization line.
 
 The released `v0.9.1` line adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
@@ -112,8 +113,11 @@ Current release layers:
   absorbing the internal v0.9.2/v0.9.3 evidence lines
 - `v0.9.5`: bounded any-hit / visibility-row / emitted-row reduction surface;
   native any-hit early-exit is implemented for OptiX, Embree, and HIPRT in the
-  released tag; current `main` adds post-release native Vulkan any-hit,
-  Apple MPS RT 3D any-hit, and Apple RT 2D MPS-prism any-hit for this feature
+  released tag
+- `v0.9.6`: native Vulkan any-hit, Apple MPS RT 3D any-hit, Apple RT 2D
+  MPS-prism any-hit, and prepared/prepacked repeated-query visibility/count
+  paths for Apple RT, OptiX, HIPRT, and Vulkan under scalar/compact-output
+  contracts
 
 Plus:
 
@@ -247,10 +251,10 @@ The current repo can:
   combinations; current Apple modes include MPS RT geometry/nearest-neighbor
   slices and Metal compute/native-assisted DB/graph slices
 - run the released v0.9.5 bounded any-hit and visibility helpers; OptiX,
-  Embree, and HIPRT use native early-exit traversal in the released tag, current
-  `main` adds native Vulkan any-hit after rebuilding the backend plus Apple MPS
-  RT 3D any-hit and Apple RT 2D MPS-prism any-hit after rebuilding the Apple
-  backend
+  Embree, and HIPRT use native early-exit traversal in that released tag
+- run the released v0.9.6 prepared/prepacked repeated visibility/count paths;
+  Vulkan and Apple RT any-hit require rebuilt backend libraries, and the fastest
+  paths require stable build-side triangles plus reusable/prepacked probe rays
 - reduce already-emitted RTDL rows in Python with `rt.reduce_rows(...)`
 - compare accepted workloads against indexed PostGIS/PostgreSQL ground-truth
   queries on the Linux host

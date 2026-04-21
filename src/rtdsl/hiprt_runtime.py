@@ -671,6 +671,30 @@ def _hiprt_lib() -> ctypes.CDLL:
     lib.rtdl_hiprt_run_prepared_ray_hitcount_3d.restype = ctypes.c_int
     lib.rtdl_hiprt_destroy_prepared_ray_hitcount_3d.argtypes = [ctypes.c_void_p]
     lib.rtdl_hiprt_destroy_prepared_ray_hitcount_3d.restype = None
+    prepare_anyhit_2d = getattr(lib, "rtdl_hiprt_prepare_ray_anyhit_2d", None)
+    run_anyhit_2d = getattr(lib, "rtdl_hiprt_run_prepared_ray_anyhit_2d", None)
+    destroy_anyhit_2d = getattr(lib, "rtdl_hiprt_destroy_prepared_ray_anyhit_2d", None)
+    if prepare_anyhit_2d is not None and run_anyhit_2d is not None and destroy_anyhit_2d is not None:
+        prepare_anyhit_2d.argtypes = [
+            ctypes.POINTER(_RtdlTriangle),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        prepare_anyhit_2d.restype = ctypes.c_int
+        run_anyhit_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        run_anyhit_2d.restype = ctypes.c_int
+        destroy_anyhit_2d.argtypes = [ctypes.c_void_p]
+        destroy_anyhit_2d.restype = None
     return lib
 
 
@@ -2191,6 +2215,111 @@ def prepare_hiprt_ray_triangle_hit_count(
     return PreparedHiprtRayTriangleHitCount3D(handle)
 
 
+class PreparedHiprtRayTriangleAnyHit2D:
+    def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
+        self._handle = handle
+        self._empty = empty
+        self._closed = False
+
+    def close(self) -> None:
+        if self._handle:
+            _hiprt_lib().rtdl_hiprt_destroy_prepared_ray_anyhit_2d(self._handle)
+            self._handle = ctypes.c_void_p()
+        self._closed = True
+
+    def __enter__(self) -> "PreparedHiprtRayTriangleAnyHit2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def run(self, rays: tuple[_CanonicalRay2D, ...]) -> tuple[dict[str, int], ...]:
+        ray_records = tuple(rays)
+        if any(not isinstance(ray, _CanonicalRay2D) for ray in ray_records):
+            raise TypeError("Prepared HIPRT ray-triangle any-hit currently supports only Ray2D inputs")
+        if self._closed:
+            raise RuntimeError("prepared HIPRT ray-triangle any-hit handle is closed")
+        if self._empty:
+            return tuple({"ray_id": int(ray.id), "any_hit": 0} for ray in ray_records)
+        if not self._handle:
+            raise RuntimeError("prepared HIPRT ray-triangle any-hit handle is closed")
+
+        ray_array = (_RtdlRay2D * len(ray_records))(
+            *[_RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in ray_records]
+        )
+        rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = _hiprt_lib().rtdl_hiprt_run_prepared_ray_anyhit_2d(
+            self._handle,
+            ray_array,
+            len(ray_records),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            ctypes.sizeof(error),
+        )
+        if status != 0:
+            detail = error.value.decode("utf-8", errors="replace")
+            raise RuntimeError(f"rtdl_hiprt_run_prepared_ray_anyhit_2d failed with status {status}: {detail}")
+        try:
+            return tuple(
+                {"ray_id": int(rows_ptr[index].ray_id), "any_hit": int(rows_ptr[index].any_hit)}
+                for index in range(row_count.value)
+            )
+        finally:
+            _hiprt_lib().rtdl_hiprt_free_rows(rows_ptr)
+
+
+def _hiprt_prepared_ray_anyhit_2d_symbols_available() -> bool:
+    try:
+        lib = _hiprt_lib()
+    except Exception:
+        return False
+    return (
+        getattr(lib, "rtdl_hiprt_prepare_ray_anyhit_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_run_prepared_ray_anyhit_2d", None) is not None
+        and getattr(lib, "rtdl_hiprt_destroy_prepared_ray_anyhit_2d", None) is not None
+    )
+
+
+def prepare_hiprt_ray_triangle_any_hit_2d(
+    triangles: tuple[_CanonicalTriangle2D, ...],
+) -> PreparedHiprtRayTriangleAnyHit2D:
+    triangle_records = tuple(triangles)
+    if any(not isinstance(triangle, _CanonicalTriangle2D) for triangle in triangle_records):
+        raise TypeError("prepare_hiprt_ray_triangle_any_hit_2d currently supports only Triangle2D inputs")
+    if not triangle_records and not _hiprt_prepared_ray_anyhit_2d_symbols_available():
+        return PreparedHiprtRayTriangleAnyHit2D(ctypes.c_void_p(), empty=True)
+    if not _hiprt_prepared_ray_anyhit_2d_symbols_available():
+        raise RuntimeError("current HIPRT library does not export prepared 2D ray_triangle_any_hit symbols")
+    triangle_array = (_RtdlTriangle * len(triangle_records))(
+        *[
+            _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
+            for item in triangle_records
+        ]
+    )
+    handle = ctypes.c_void_p()
+    error = ctypes.create_string_buffer(4096)
+    status = _hiprt_lib().rtdl_hiprt_prepare_ray_anyhit_2d(
+        triangle_array,
+        len(triangle_records),
+        ctypes.byref(handle),
+        error,
+        ctypes.sizeof(error),
+    )
+    if status != 0:
+        detail = error.value.decode("utf-8", errors="replace")
+        raise RuntimeError(f"rtdl_hiprt_prepare_ray_anyhit_2d failed with status {status}: {detail}")
+    return PreparedHiprtRayTriangleAnyHit2D(handle, empty=not triangle_records)
+
+
 class PreparedHiprtFixedRadiusNeighbors3D:
     def __init__(self, handle: ctypes.c_void_p, *, empty: bool = False) -> None:
         self._handle = handle
@@ -2894,7 +3023,7 @@ def prepare_hiprt(kernel_fn_or_compiled, **inputs):
             )
         prepared = prepare_hiprt_db_table(inputs[table_name])
         return PreparedHiprtDbKernel(compiled, predicate_name, probe_name, table_name, prepared)
-    if predicate_name != "ray_triangle_hit_count":
+    if predicate_name not in {"ray_triangle_hit_count", "ray_triangle_any_hit"}:
         raise _unsupported_hiprt_peer_workload(
             predicate_name,
             "prepared execution is not implemented for this workload yet",
@@ -2912,5 +3041,18 @@ def prepare_hiprt(kernel_fn_or_compiled, **inputs):
             + f"; pass query rays later to prepared.run({rays_name}=...)"
         )
     triangles = _normalize_records(triangles_name, "triangles", inputs[triangles_name])
-    prepared = prepare_hiprt_ray_triangle_hit_count(triangles)
+    if predicate_name == "ray_triangle_any_hit":
+        if options.get("layout_pair") != ("Ray2D", "Triangle2D"):
+            raise _unsupported_hiprt_peer_workload(
+                predicate_name,
+                "prepared execution currently supports only Ray2D/Triangle2D any-hit",
+            )
+        prepared = prepare_hiprt_ray_triangle_any_hit_2d(triangles)
+    else:
+        if options.get("layout_pair") != ("Ray3D", "Triangle3D"):
+            raise _unsupported_hiprt_peer_workload(
+                predicate_name,
+                "prepared execution currently supports only Ray3D/Triangle3D hit-count",
+            )
+        prepared = prepare_hiprt_ray_triangle_hit_count(triangles)
     return PreparedHiprtKernel(compiled, rays_name, triangles_name, prepared)

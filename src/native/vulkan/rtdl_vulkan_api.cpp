@@ -82,6 +82,43 @@ int rtdl_vulkan_run_ray_anyhit(
     }, error_out, error_size);
 }
 
+int rtdl_vulkan_prepare_ray_anyhit_2d(
+        const RtdlTriangle* triangles, size_t triangle_count,
+        void** prepared_out,
+        char* error_out, size_t error_size) {
+    return handle_call([&] {
+        if (prepared_out == nullptr) {
+            throw std::runtime_error("prepared_out must not be null");
+        }
+        *prepared_out = nullptr;
+        *prepared_out = prepare_ray_anyhit_2d_vulkan(triangles, triangle_count);
+    }, error_out, error_size);
+}
+
+int rtdl_vulkan_run_prepared_ray_anyhit_2d(
+        void* prepared,
+        const RtdlRay2D* rays, size_t ray_count,
+        RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size) {
+    return handle_call([&] {
+        if (rows_out == nullptr || row_count_out == nullptr) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_prepared_ray_anyhit_2d_vulkan(
+            reinterpret_cast<VulkanPreparedRayAnyhit2D*>(prepared),
+            rays,
+            ray_count,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+void rtdl_vulkan_destroy_prepared_ray_anyhit_2d(void* prepared) {
+    delete reinterpret_cast<VulkanPreparedRayAnyhit2D*>(prepared);
+}
+
 int rtdl_vulkan_run_ray_anyhit_3d(
         const RtdlRay3D* rays, size_t ray_count,
         const RtdlTriangle3D* triangles, size_t triangle_count,

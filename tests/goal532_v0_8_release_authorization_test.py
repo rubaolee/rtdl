@@ -9,12 +9,12 @@ V08_DIR = REPO_ROOT / "docs" / "release_reports" / "v0_8"
 
 
 class Goal532V08ReleaseAuthorizationTest(unittest.TestCase):
-    def test_public_docs_identify_v095_as_current_release_and_v08_as_released_layer(self) -> None:
+    def test_public_docs_identify_v096_as_current_release_and_v08_as_released_layer(self) -> None:
         front_page = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("current released version: `v0.9.5`", front_page)
-        self.assertIn("current released version is `v0.9.5`", docs_index)
+        self.assertIn("current released version: `v0.9.6`", front_page)
+        self.assertIn("current released version is `v0.9.6`", docs_index)
         self.assertIn("released `v0.8.0` app-building", front_page)
         self.assertIn("released `v0.8.0` app-building", docs_index)
         self.assertIn("RTDL v0.8 Release Package", front_page)

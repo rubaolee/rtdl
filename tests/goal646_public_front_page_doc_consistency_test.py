@@ -28,7 +28,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
             (REPO_ROOT / path).read_text(encoding="utf-8") for path in PUBLIC_FRONT_PAGES
         )
 
-        self.assertIn("current released version: `v0.9.5`", combined)
+        self.assertIn("current released version: `v0.9.6`", combined)
         self.assertIn("ray_triangle_any_hit", combined)
         self.assertIn("visibility_rows", combined)
         self.assertIn("reduce_rows", combined)
@@ -61,7 +61,7 @@ class Goal646PublicFrontPageDocConsistencyTest(unittest.TestCase):
 
         self.assertGreaterEqual(len(numbered), 8)
         self.assertLessEqual(len(numbered), 15)
-        self.assertIn("[v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)", section)
+        self.assertIn("[v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)", section)
         self.assertIn("Older release packages remain linked below", section)
 
 

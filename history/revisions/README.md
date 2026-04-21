@@ -47,3 +47,14 @@ backfill hundreds of structured revision directories. If the project later wants
 one visible structured round for every historical goal, that should be a
 separate generated backfill goal because it will add many files and must not
 rewrite already accepted reports.
+
+## Latest Current-Main Catch-Up
+
+The latest structured current-main catch-up round is Goals658-679:
+
+- `2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization`
+
+It records Apple RT, OptiX, HIPRT, and Vulkan prepared/prepacked
+visibility-count optimization work plus the local and Linux release gates. It
+is current-main evidence, not a new public release tag and not a retroactive
+`v0.9.5` tag claim.

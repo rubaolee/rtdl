@@ -27,6 +27,24 @@ def knn_3d_kernel():
     return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def bounded_knn_3d_kmax_over_cap_kernel():
+    query_points = rt.input("query_points", rt.Points3D, layout=rt.Point3DLayout, role="probe")
+    search_points = rt.input("search_points", rt.Points3D, layout=rt.Point3DLayout, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.bounded_knn_rows(radius=1.0, k_max=65))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def knn_3d_k_over_cap_kernel():
+    query_points = rt.input("query_points", rt.Points3D, layout=rt.Point3DLayout, role="probe")
+    search_points = rt.input("search_points", rt.Points3D, layout=rt.Point3DLayout, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.knn_rows(k=65))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+
+
 def hiprt_available() -> bool:
     try:
         hiprt_context_probe()
@@ -97,6 +115,23 @@ class Goal549Hiprt3DKnnTest(unittest.TestCase):
             rt.run_hiprt(knn_3d_kernel, **case),
             rt.run_cpu_python_reference(knn_3d_kernel, **case),
         )
+
+
+class Goal549Hiprt3DKnnBoundaryTest(unittest.TestCase):
+    def _case(self) -> dict[str, tuple[rt.Point3D, ...]]:
+        points = (
+            rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),
+            rt.Point3D(id=2, x=1.0, y=0.0, z=0.0),
+        )
+        return {"query_points": points, "search_points": points}
+
+    def test_bounded_knn_rejects_oversized_kmax_before_backend_execution(self) -> None:
+        with self.assertRaisesRegex(ValueError, "k_max <= 64"):
+            rt.run_hiprt(bounded_knn_3d_kmax_over_cap_kernel, **self._case())
+
+    def test_knn_rejects_oversized_k_before_backend_execution(self) -> None:
+        with self.assertRaisesRegex(ValueError, "k_max <= 64"):
+            rt.run_hiprt(knn_3d_k_over_cap_kernel, **self._case())
 
 
 if __name__ == "__main__":

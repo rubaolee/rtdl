@@ -1,0 +1,3 @@
+# Goal684 External Review Request
+
+Please review `/Users/rl2025/rtdl_python_only/docs/reports/goal684_v0_9_6_release_level_flow_audit_2026-04-21.md`, the public `v0.9.6` release docs under `/Users/rl2025/rtdl_python_only/docs/release_reports/v0_9_6/`, and the key public docs (`README.md`, `docs/README.md`, `docs/current_main_support_matrix.md`, `docs/quick_tutorial.md`, `docs/release_facing_examples.md`, `examples/README.md`, `docs/features/README.md`, `docs/rtdl_feature_guide.md`, `docs/tutorials/README.md`, `docs/backend_maturity.md`), then write an ACCEPT/BLOCK verdict on whether `v0.9.6` can be released without stale public-doc claims or single-developer-only release-flow actions.

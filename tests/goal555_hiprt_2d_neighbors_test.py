@@ -27,6 +27,24 @@ def knn_2d_kernel():
     return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def fixed_radius_2d_kmax_over_cap_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=1.1, k_max=65))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def knn_2d_k_over_cap_kernel():
+    query_points = rt.input("query_points", rt.Points, role="probe")
+    search_points = rt.input("search_points", rt.Points, role="build")
+    candidates = rt.traverse(query_points, search_points, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.knn_rows(k=65))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+
+
 def hiprt_available() -> bool:
     try:
         hiprt_context_probe()
@@ -89,6 +107,24 @@ class Goal555Hiprt2DNeighborsTest(unittest.TestCase):
         self.assertEqual(rt.run_hiprt(fixed_radius_2d_kernel, query_points=points, search_points=()), ())
         self.assertEqual(rt.run_hiprt(knn_2d_kernel, query_points=(), search_points=points), ())
         self.assertEqual(rt.run_hiprt(knn_2d_kernel, query_points=points, search_points=()), ())
+
+
+class Goal555Hiprt2DNeighborsBoundaryTest(unittest.TestCase):
+    def _points(self):
+        return (
+            rt.Point(id=1, x=0.0, y=0.0),
+            rt.Point(id=2, x=1.0, y=0.0),
+        )
+
+    def test_fixed_radius_rejects_oversized_kmax_before_backend_execution(self) -> None:
+        points = self._points()
+        with self.assertRaisesRegex(ValueError, "k_max <= 64"):
+            rt.run_hiprt(fixed_radius_2d_kmax_over_cap_kernel, query_points=points, search_points=points)
+
+    def test_knn_rejects_oversized_k_before_backend_execution(self) -> None:
+        points = self._points()
+        with self.assertRaisesRegex(ValueError, "k_max <= 64"):
+            rt.run_hiprt(knn_2d_k_over_cap_kernel, query_points=points, search_points=points)
 
 
 if __name__ == "__main__":

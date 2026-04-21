@@ -80,6 +80,7 @@ from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
 from .apple_rt_runtime import apple_rt_support_matrix
 from .apple_rt_runtime import apple_rt_version
+from .apple_rt_runtime import AppleRtRay2DBuffer
 from .apple_rt_runtime import AppleRtRowView
 from .apple_rt_runtime import bfs_discover_apple_rt
 from .apple_rt_runtime import conjunctive_scan_apple_rt
@@ -88,13 +89,16 @@ from .apple_rt_runtime import fixed_radius_neighbors_3d_apple_rt
 from .apple_rt_runtime import grouped_count_apple_rt
 from .apple_rt_runtime import grouped_sum_apple_rt
 from .apple_rt_runtime import overlay_compose_apple_rt
+from .apple_rt_runtime import PreparedAppleRtRayTriangleAnyHit2D
 from .apple_rt_runtime import PreparedAppleRtRayTriangleClosestHit3D
 from .apple_rt_runtime import point_in_polygon_full_matrix_apple_rt
 from .apple_rt_runtime import point_in_polygon_positive_hits_apple_rt
 from .apple_rt_runtime import point_nearest_segment_apple_rt
 from .apple_rt_runtime import polygon_pair_overlap_area_rows_apple_rt
 from .apple_rt_runtime import polygon_set_jaccard_apple_rt
+from .apple_rt_runtime import prepare_apple_rt_ray_triangle_any_hit_2d
 from .apple_rt_runtime import prepare_apple_rt_ray_triangle_closest_hit
+from .apple_rt_runtime import prepare_apple_rt_rays_2d
 from .apple_rt_runtime import ray_triangle_any_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_closest_hit_apple_rt
 from .apple_rt_runtime import ray_triangle_hit_count_apple_rt
@@ -119,12 +123,16 @@ from .external_baselines import run_scipy_fixed_radius_neighbors
 from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
 from .optix_runtime import optix_version
+from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixRowView
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
+from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
+from .optix_runtime import prepare_optix_rays_2d
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixKernel
+from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import run_optix
 from .reduction_runtime import reduce_rows
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
@@ -138,6 +146,7 @@ from .hiprt_runtime import hiprt_version
 from .hiprt_runtime import knn_rows_2d_hiprt
 from .hiprt_runtime import overlay_compose_hiprt
 from .hiprt_runtime import prepare_hiprt_db_table
+from .hiprt_runtime import prepare_hiprt_ray_triangle_any_hit_2d
 from .hiprt_runtime import prepare_hiprt_ray_triangle_hit_count
 from .hiprt_runtime import prepare_hiprt_fixed_radius_neighbors_3d
 from .hiprt_runtime import prepare_hiprt_graph_csr
@@ -149,6 +158,7 @@ from .hiprt_runtime import PreparedHiprtFixedRadiusKernel
 from .hiprt_runtime import PreparedHiprtGraphCSR
 from .hiprt_runtime import PreparedHiprtGraphKernel
 from .hiprt_runtime import PreparedHiprtKernel
+from .hiprt_runtime import PreparedHiprtRayTriangleAnyHit2D
 from .hiprt_runtime import PreparedHiprtRayTriangleHitCount3D
 from .hiprt_runtime import ray_triangle_any_hit_hiprt
 from .hiprt_runtime import ray_triangle_hit_count_hiprt
@@ -160,9 +170,11 @@ from .vulkan_runtime import vulkan_version
 from .vulkan_runtime import VulkanRowView
 from .vulkan_runtime import prepare_vulkan
 from .vulkan_runtime import prepare_vulkan_db_dataset
+from .vulkan_runtime import prepare_vulkan_ray_triangle_any_hit_2d
 from .vulkan_runtime import PreparedVulkanDbDataset
 from .vulkan_runtime import PreparedVulkanExecution
 from .vulkan_runtime import PreparedVulkanKernel
+from .vulkan_runtime import PreparedVulkanRayTriangleAnyHit2D
 from .vulkan_runtime import run_vulkan
 from .embree_runtime import EmbreeRowView
 from .embree_runtime import pack_points
@@ -649,11 +661,15 @@ __all__ = [
     "embree_version",
     "OptixRowView",
     "optix_version",
+    "OptixRay2DBuffer",
     "prepare_optix",
     "prepare_optix_db_dataset",
+    "prepare_optix_ray_triangle_any_hit_2d",
+    "prepare_optix_rays_2d",
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",
     "PreparedOptixKernel",
+    "PreparedOptixRayTriangleAnyHit2D",
     "run_optix",
     "triangle_match_apple_rt",
     "triangle_match_hiprt",
@@ -661,9 +677,11 @@ __all__ = [
     "vulkan_version",
     "prepare_vulkan",
     "prepare_vulkan_db_dataset",
+    "prepare_vulkan_ray_triangle_any_hit_2d",
     "PreparedVulkanDbDataset",
     "PreparedVulkanExecution",
     "PreparedVulkanKernel",
+    "PreparedVulkanRayTriangleAnyHit2D",
     "run_vulkan",
     "emit",
     "f32",
@@ -763,9 +781,13 @@ __all__ = [
     "apple_rt_predicate_mode",
     "apple_rt_support_matrix",
     "apple_rt_version",
+    "AppleRtRay2DBuffer",
     "AppleRtRowView",
+    "PreparedAppleRtRayTriangleAnyHit2D",
     "PreparedAppleRtRayTriangleClosestHit3D",
+    "prepare_apple_rt_ray_triangle_any_hit_2d",
     "prepare_apple_rt_ray_triangle_closest_hit",
+    "prepare_apple_rt_rays_2d",
     "prepare_embree_db_dataset",
     "prepare_postgresql_denorm_table",
     "PreparedEmbreeDbDataset",
@@ -785,6 +807,8 @@ __all__ = [
     "ray_triangle_hit_count_apple_rt",
     "ray_triangle_hit_count_hiprt",
     "PreparedHiprtRayTriangleHitCount3D",
+    "PreparedHiprtRayTriangleAnyHit2D",
+    "prepare_hiprt_ray_triangle_any_hit_2d",
     "RAYJOIN_PAPER_TARGETS",
     "rayjoin_bounded_plans",
     "rayjoin_feature_service_layers",

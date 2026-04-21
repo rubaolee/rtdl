@@ -1,0 +1,306 @@
+{
+  "cases": [
+    {
+      "apple_rt_prepare_seconds": 0.05132308299653232,
+      "case": "dense_blocked:long_10s",
+      "kind": "dense_blocked",
+      "measurements": [
+        {
+          "backend": "apple_rt_prepared_query",
+          "calibration_iterations": 6,
+          "calibration_seconds": 0.04472322915292656,
+          "calibration_total_seconds": 0.2683393749175593,
+          "cold_seconds": 8.58847987500485,
+          "inner_iterations": 224,
+          "matches_oracle": true,
+          "per_query_samples_seconds": [
+            0.037357452750126995
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.037357452750126995,
+            "mean_seconds": 0.037357452750126995,
+            "median_seconds": 0.037357452750126995,
+            "min_seconds": 0.037357452750126995,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.06320891703944653,
+          "samples_seconds": [
+            8.368069416028447
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 8.368069416028447,
+            "mean_seconds": 8.368069416028447,
+            "median_seconds": 8.368069416028447,
+            "min_seconds": 8.368069416028447,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 0
+        },
+        {
+          "backend": "embree",
+          "calibration_iterations": 76,
+          "calibration_seconds": 0.003334767538992884,
+          "calibration_total_seconds": 0.2534423329634592,
+          "cold_seconds": 10.104674624977633,
+          "inner_iterations": 2999,
+          "matches_oracle": true,
+          "per_query_samples_seconds": [
+            0.0035211306962250753
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.0035211306962250753,
+            "mean_seconds": 0.0035211306962250753,
+            "median_seconds": 0.0035211306962250753,
+            "min_seconds": 0.0035211306962250753,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.021023874985985458,
+          "samples_seconds": [
+            10.559870957979001
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 10.559870957979001,
+            "mean_seconds": 10.559870957979001,
+            "median_seconds": 10.559870957979001,
+            "min_seconds": 10.559870957979001,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 0
+        },
+        {
+          "backend": "shapely_strtree",
+          "calibration_iterations": 4,
+          "calibration_seconds": 0.07266587499179877,
+          "calibration_total_seconds": 0.2906634999671951,
+          "cold_seconds": 9.963903624913655,
+          "inner_iterations": 138,
+          "matches_oracle": true,
+          "per_query_samples_seconds": [
+            0.07355381279721505
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.07355381279721505,
+            "mean_seconds": 0.07355381279721505,
+            "median_seconds": 0.07355381279721505,
+            "min_seconds": 0.07355381279721505,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.13605608406942338,
+          "samples_seconds": [
+            10.150426166015677
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 10.150426166015677,
+            "mean_seconds": 10.150426166015677,
+            "median_seconds": 10.150426166015677,
+            "min_seconds": 10.150426166015677,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 0
+        }
+      ],
+      "obstacle_rectangle_count": 1024,
+      "obstacle_triangle_count": 2048,
+      "oracle_summary": {
+        "blocked_count": 8192,
+        "clear_count": 0,
+        "row_count": 8192
+      },
+      "ray_count": 8192,
+      "scale": "long_10s"
+    },
+    {
+      "apple_rt_prepare_seconds": 0.013648834079504013,
+      "case": "sparse_clear:long_10s",
+      "kind": "sparse_clear",
+      "measurements": [
+        {
+          "backend": "apple_rt_prepared_query",
+          "calibration_iterations": 11,
+          "calibration_seconds": 0.02377455309033394,
+          "calibration_total_seconds": 0.2615200839936733,
+          "cold_seconds": 9.247217042022385,
+          "inner_iterations": 421,
+          "matches_oracle": true,
+          "per_query_samples_seconds": [
+            0.021677539392148816
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.021677539392148816,
+            "mean_seconds": 0.021677539392148816,
+            "median_seconds": 0.021677539392148816,
+            "min_seconds": 0.021677539392148816,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.032896125107072294,
+          "samples_seconds": [
+            9.126244084094651
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 9.126244084094651,
+            "mean_seconds": 9.126244084094651,
+            "median_seconds": 9.126244084094651,
+            "min_seconds": 9.126244084094651,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 0
+        },
+        {
+          "backend": "embree",
+          "calibration_iterations": 81,
+          "calibration_seconds": 0.003114254111826512,
+          "calibration_total_seconds": 0.25225458305794746,
+          "cold_seconds": 10.240152916987427,
+          "inner_iterations": 3212,
+          "matches_oracle": true,
+          "per_query_samples_seconds": [
+            0.0033683305962015856
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.0033683305962015856,
+            "mean_seconds": 0.0033683305962015856,
+            "median_seconds": 0.0033683305962015856,
+            "min_seconds": 0.0033683305962015856,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.008010499994270504,
+          "samples_seconds": [
+            10.819077874999493
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 10.819077874999493,
+            "mean_seconds": 10.819077874999493,
+            "median_seconds": 10.819077874999493,
+            "min_seconds": 10.819077874999493,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 0
+        },
+        {
+          "backend": "shapely_strtree",
+          "calibration_iterations": 6,
+          "calibration_seconds": 0.047541499991590776,
+          "calibration_total_seconds": 0.28524899994954467,
+          "cold_seconds": 10.277362958993763,
+          "inner_iterations": 211,
+          "matches_oracle": true,
+          "per_query_samples_seconds": [
+            0.04798362836058547
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.04798362836058547,
+            "mean_seconds": 0.04798362836058547,
+            "median_seconds": 0.04798362836058547,
+            "min_seconds": 0.04798362836058547,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.04715779097750783,
+          "samples_seconds": [
+            10.124545584083535
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 10.124545584083535,
+            "mean_seconds": 10.124545584083535,
+            "median_seconds": 10.124545584083535,
+            "min_seconds": 10.124545584083535,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 0
+        }
+      ],
+      "obstacle_rectangle_count": 1024,
+      "obstacle_triangle_count": 2048,
+      "oracle_summary": {
+        "blocked_count": 0,
+        "clear_count": 8192,
+        "row_count": 8192
+      },
+      "ray_count": 8192,
+      "scale": "long_10s"
+    }
+  ],
+  "date": "2026-04-20",
+  "goal": "goal659_mac_visibility_collision_perf",
+  "host": {
+    "apple_rt_context": "Apple M4",
+    "apple_rt_version": "(0, 9, 3)",
+    "embree_version": "(4, 4, 0)",
+    "hostname": "Rs-MacBook-Air.local",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python": "3.14.0",
+    "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t26.3\nBuildVersion:\t\t25D125"
+  },
+  "methodology": {
+    "hidden_correctness_oracle": "rt.ray_triangle_any_hit_cpu",
+    "note": "CPU/oracle is used only for parity and is not reported as a performance engine.",
+    "repeats": 1,
+    "reported_backends": [
+      "apple_rt_prepared_query",
+      "embree",
+      "shapely_strtree"
+    ],
+    "target_sample_seconds": 10.0,
+    "warmups": 0
+  }
+}

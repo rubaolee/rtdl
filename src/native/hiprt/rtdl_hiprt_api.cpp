@@ -78,6 +78,108 @@ extern "C" int rtdl_hiprt_run_prepared_ray_hitcount_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_hiprt_prepare_ray_anyhit_2d(
+    const RtdlTriangle* triangles,
+    size_t triangle_count,
+    void** prepared_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared_out == nullptr) {
+            throw std::runtime_error("prepared_out must not be null");
+        }
+        *prepared_out = nullptr;
+        if (triangle_count > std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error("HIPRT prepared 2D ray_triangle_any_hit currently supports at most 2^32-1 triangles");
+        }
+        if (triangle_count > 0 && triangles == nullptr) {
+            throw std::runtime_error("triangle pointer must not be null when triangle_count is nonzero");
+        }
+        if (triangle_count == 0) {
+            *prepared_out = new PreparedRayAnyhit2D(true);
+            return;
+        }
+
+        std::vector<RtdlHiprtTriangle2DDevice> triangle_values = encode_triangles_2d(triangles, triangle_count);
+        std::vector<RtdlHiprtAabb> aabb_values = encode_triangle_2d_aabbs(
+            triangle_values.data(),
+            triangle_values.size());
+        HiprtRuntime runtime = create_runtime();
+        hiprtSetLogLevel(hiprtLogLevelError);
+        DeviceAllocation triangle_device(triangle_values.size() * sizeof(RtdlHiprtTriangle2DDevice));
+        DeviceAllocation aabb_device(aabb_values.size() * sizeof(RtdlHiprtAabb));
+        copy_host_to_device(triangle_device, triangle_values);
+        copy_host_to_device(aabb_device, aabb_values);
+
+        hiprtGeometry geometry = build_aabb_geometry(runtime.context, aabb_device, aabb_values.size());
+        hiprtFuncTable func_table{};
+        try {
+            hiprtFuncNameSet func_name_set{};
+            func_name_set.intersectFuncName = "intersectRtdlTriangle2D";
+            hiprtFuncDataSet func_data_set{};
+            func_data_set.intersectFuncData = triangle_device.get();
+            check_hiprt("hiprtCreateFuncTable", hiprtCreateFuncTable(runtime.context, 1, 1, func_table));
+            check_hiprt("hiprtSetFuncTable", hiprtSetFuncTable(runtime.context, func_table, 0, 0, func_data_set));
+            const std::string source = ray_anyhit_kernel_source_2d();
+            oroFunction kernel = build_trace_kernel_from_source(
+                runtime.context,
+                source.c_str(),
+                "rtdl_hiprt_ray_anyhit_2d.cu",
+                "RtdlRayAnyhit2DKernel",
+                &func_name_set,
+                1,
+                1);
+            *prepared_out = new PreparedRayAnyhit2D(
+                std::move(runtime),
+                std::move(triangle_device),
+                std::move(aabb_device),
+                geometry,
+                func_table,
+                kernel);
+            geometry = nullptr;
+            func_table = nullptr;
+        } catch (...) {
+            if (func_table != nullptr) {
+                hiprtDestroyFuncTable(runtime.context, func_table);
+            }
+            if (geometry != nullptr) {
+                hiprtDestroyGeometry(runtime.context, geometry);
+            }
+            throw;
+        }
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_hiprt_destroy_prepared_ray_anyhit_2d(void* prepared) {
+    delete reinterpret_cast<PreparedRayAnyhit2D*>(prepared);
+}
+
+extern "C" int rtdl_hiprt_run_prepared_ray_anyhit_2d(
+    void* prepared,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    return handle_call([&]() {
+        if (prepared == nullptr) {
+            throw std::runtime_error("prepared HIPRT ray-anyhit handle must not be null");
+        }
+        if (rows_out == nullptr || row_count_out == nullptr) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_prepared_ray_anyhit_2d(
+            *reinterpret_cast<PreparedRayAnyhit2D*>(prepared),
+            rays,
+            ray_count,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_hiprt_run_ray_hitcount_3d(
     const RtdlRay3D* rays,
     size_t ray_count,

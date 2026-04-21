@@ -15,23 +15,26 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.9.5`. The release includes the existing
+The current released version is `v0.9.6`. The release includes the existing
 HIPRT line, exact bounded closest-hit support, Apple RT consolidation on macOS
-Apple Silicon, and the new bounded any-hit / visibility-row / emitted-row
-reduction slice.
+Apple Silicon, the bounded any-hit / visibility-row / emitted-row reduction
+slice, and prepared/prepacked repeated 2D visibility/count optimizations.
 
-`v0.9.5` adds bounded any-hit / early-exit traversal as
+`v0.9.5` added bounded any-hit / early-exit traversal as
 `rt.ray_triangle_any_hit(exact=False)`, line-of-sight helpers
 (`rt.visibility_rows_cpu(...)` / `rt.visibility_rows(...)`), and
 `rt.reduce_rows(...)` for deterministic Python-side reductions over emitted
 rows. The released `v0.9.5` tag has native any-hit paths for OptiX, Embree, and
-HIPRT. Current `main` additionally has a post-release Vulkan native any-hit path
-when `librtdl_vulkan` is rebuilt from current source, and a post-release Apple
-MPS RT 3D any-hit path based on nearest-intersection existence. Current `main`
-also adds Apple RT 2D any-hit through MPS prism traversal with per-ray mask
-early-exit plus exact 2D acceptance when the Apple library is rebuilt from
-current source. `reduce_rows` is a standard-library helper, not a native RT
-backend reduction.
+HIPRT. `v0.9.6` releases the post-`v0.9.5` current-main backend expansion:
+Vulkan native early-exit any-hit after rebuilding `librtdl_vulkan`, Apple MPS RT
+3D any-hit based on nearest-intersection existence, Apple RT 2D MPS-prism
+native-assisted any-hit after rebuilding `librtdl_apple_rt`, and prepared
+repeated-query 2D any-hit / visibility-count paths for Apple RT, OptiX, HIPRT,
+and Vulkan. The fastest measured paths reuse build-side acceleration structures
+and prepack probe-side rays before returning a scalar or compact yes/no result.
+These are bounded visibility/count optimizations, not broad speedup claims for
+DB, graph, one-shot calls, or full emitted-row workloads. `reduce_rows` is a
+standard-library helper, not a native RT backend reduction.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -61,22 +64,29 @@ bounded DB-style analytical workloads.
 
 ## Version Status At A Glance
 
-- current released version: `v0.9.5`
-- current mainline state: released `v0.9.5` bounded any-hit, visibility-row,
+- current released version: `v0.9.6`
+- current mainline state: released `v0.9.6` bounded any-hit, visibility-row,
   and emitted-row reduction work on top of the released v0.7 DB, v0.8 app,
-  v0.9 HIPRT/closest-hit, and v0.9.4 Apple RT consolidation lines
-- released `v0.9.5` surface:
+  v0.9 HIPRT/closest-hit, v0.9.4 Apple RT consolidation, and
+  prepared/prepacked repeated visibility/count optimization lines
+- released `v0.9.6` surface:
   - `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows and allows early
     termination after the first accepted triangle hit
-  - OptiX, Embree, and HIPRT have native early-exit any-hit implementations in
-    the released tag; current `main` also adds native Vulkan any-hit after
-    rebuilding `librtdl_vulkan`, Apple MPS RT 3D any-hit, and Apple RT 2D
-    MPS-prism any-hit with per-ray early exit after rebuilding `librtdl_apple_rt`
+  - OptiX, Embree, HIPRT, and Vulkan have native early-exit any-hit
+    implementations in the released tag after backend rebuild where required;
+    Apple RT has MPS RT 3D any-hit and MPS-prism 2D native-assisted any-hit
+    with per-ray early exit after rebuilding `librtdl_apple_rt`
   - `visibility_rows_cpu` emits `{observer_id, target_id, visible}` rows by
     turning observer-target pairs into finite any-hit rays
   - `reduce_rows` reduces emitted rows by `any`, `count`, `sum`, `min`, or
     `max` in Python; it improves app ergonomics but is not a native backend
     speedup claim
+  - `v0.9.6` has a prepared/prepacked Apple RT 2D visibility-count helper
+    for repeated Mac visibility/collision apps; the claim is limited to scalar
+    blocked-ray counts, not full emitted-row output
+  - `v0.9.6` also has prepared repeated-query 2D any-hit helpers for
+    OptiX, HIPRT, and Vulkan; the strongest measured results require stable
+    build-side triangles and prepacked probe-side rays
   - the current OptiX dense-hit micro-result is encouraging but bounded; there
     is no broad any-hit speedup claim yet
 - current released graph surface today:
@@ -171,10 +181,12 @@ For exact status:
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
 - [Backend Maturity](docs/backend_maturity.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
+- [RTDL v0.9.6 Release Package](docs/release_reports/v0_9_6/README.md)
+- [RTDL v0.9.6 Release Statement](docs/release_reports/v0_9_6/release_statement.md)
+- [RTDL v0.9.6 Support Matrix](docs/release_reports/v0_9_6/support_matrix.md)
+- [RTDL v0.9.6 Audit Report](docs/release_reports/v0_9_6/audit_report.md)
 - [RTDL v0.9.5 Release Package](docs/release_reports/v0_9_5/README.md)
-- [RTDL v0.9.5 Release Statement](docs/release_reports/v0_9_5/release_statement.md)
 - [RTDL v0.9.5 Support Matrix](docs/release_reports/v0_9_5/support_matrix.md)
-- [RTDL v0.9.5 Audit Report](docs/release_reports/v0_9_5/audit_report.md)
 - [RTDL v0.9.4 Release Package](docs/release_reports/v0_9_4/README.md)
 - [RTDL v0.9.4 Release Statement](docs/release_reports/v0_9_4/release_statement.md)
 - [RTDL v0.9.4 Apple RT Support Matrix](docs/release_reports/v0_9_4/support_matrix.md)
@@ -231,6 +243,8 @@ RTDL uses several backends behind one public kernel surface:
     Metal-compute paths, not Apple MPS ray-tracing-hardware traversal paths
   - prepared closest-hit reuse and masked traversal reduce repeated setup
     overhead
+  - released `v0.9.6` adds a prepared/prepacked 2D visibility-count path for
+    repeated Apple Silicon visibility/collision apps
   - no broad hardware-speedup claim is made; local Apple M4 evidence is
     workload-dependent and Embree remains the mature performance baseline
 - `PostGIS` / `PostgreSQL`:
@@ -407,13 +421,16 @@ Released Apple RT path on Apple Silicon macOS:
 ```bash
 make build-apple-rt
 PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
+PYTHONPATH=src:. python examples/rtdl_apple_rt_visibility_count.py
 ```
 
 That example compares CPU Python reference rows against `run_apple_rt` for 3D
 closest-hit ray/triangle queries. The released `v0.9.4` line also includes
 prepared closest-hit reuse through
 `rt.prepare_apple_rt_ray_triangle_closest_hit(...)`.
-This remains bounded Apple RT support, not a broad speedup claim.
+The visibility-count example is released v0.9.6 app evidence for a prepared scene,
+prepacked 2D rays, and scalar blocked-ray count. This remains bounded Apple RT
+support, not a broad speedup claim.
 
 In `v0.9.4`, `run_apple_rt` can execute the full current 18-predicate RTDL
 surface on Apple Silicon macOS through explicit native/native-assisted
@@ -581,7 +598,7 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.9.5`
+- `v0.9.6`
 
 Current mainline release line:
 
@@ -595,9 +612,12 @@ Current mainline release line:
   `v0.9.3` evidence lines
 - released `v0.9.5` additionally carries bounded any-hit / visibility-row /
   emitted-row reduction support, with native early-exit any-hit for OptiX,
-  Embree, and HIPRT; current `main` adds post-release native Vulkan any-hit and
-  Apple MPS RT 3D any-hit plus Apple RT 2D MPS-prism any-hit after rebuilding
-  `librtdl_apple_rt`
+  Embree, and HIPRT
+- released `v0.9.6` carries the prepared/prepacked repeated
+  visibility/count optimization line: native Vulkan any-hit, Apple MPS RT 3D
+  any-hit, Apple RT 2D MPS-prism any-hit after backend rebuild, and
+  prepared/prepacked visibility/count paths for Apple RT, OptiX, HIPRT, and
+  Vulkan under bounded scalar/compact-output contracts
 
 Newest released graph workload surface:
 
@@ -658,12 +678,15 @@ Release and preview layers inside the current repository:
   - combines the untagged `v0.9.2`/`v0.9.3` Apple work with Apple Metal compute
     DB/graph slices, final release docs, full tests, and audit gates
   - Apple RT is not yet claimed as broadly faster than Embree
-- `v0.9.5`: current public release
+- `v0.9.5`: previous public release
+- `v0.9.6`: current public release
   - adds `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`
-  - native early-exit any-hit exists for OptiX, Embree, HIPRT, and post-release
-    current-main Vulkan when the backend library is rebuilt
-  - Apple RT has current-main 3D MPS RT any-hit plus current-main 2D
+  - native early-exit any-hit exists for OptiX, Embree, HIPRT, and Vulkan when
+    the backend library is rebuilt
+  - Apple RT has 3D MPS RT any-hit plus 2D
     MPS-prism any-hit when `librtdl_apple_rt` is rebuilt from source
+  - Apple RT also has a prepared/prepacked scalar visibility-count
+    app path; do not generalize it to full emitted-row performance
   - `reduce_rows` is a Python helper over emitted rows, not native backend
     acceleration
 
@@ -675,8 +698,10 @@ For exact backend/workload status, use:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
-- [RTDL v0.9.5 Release Package](docs/release_reports/v0_9_5/README.md)
+- [RTDL v0.9.6 Release Package](docs/release_reports/v0_9_6/README.md)
 - [RTDL Current Main Support Matrix](docs/current_main_support_matrix.md)
+- [RTDL v0.9.6 Support Matrix](docs/release_reports/v0_9_6/support_matrix.md)
+- [RTDL v0.9.5 Release Package](docs/release_reports/v0_9_5/README.md)
 - [RTDL v0.9.5 Support Matrix](docs/release_reports/v0_9_5/support_matrix.md)
 - [RTDL v0.9.4 Release Package](docs/release_reports/v0_9_4/README.md)
 - [RTDL v0.9.4 Apple RT Support Matrix](docs/release_reports/v0_9_4/support_matrix.md)
@@ -757,7 +782,7 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
-- the current v0.9 line is released as `v0.9.5`, but it is still bounded by the
+- the current v0.9 line is released as `v0.9.6`, but it is still bounded by the
   documented Linux HIPRT, closest-hit, Apple RT, any-hit, visibility-row, and
   emitted-row reduction support matrices
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
@@ -776,7 +801,9 @@ Important honesty boundaries:
   the bounded Apple RT closest-hit line; `v0.9.4` releases the Apple RT
   consolidation absorbing the internal v0.9.2/v0.9.3 work plus Apple Metal
   compute DB/graph coverage; `v0.9.5` releases bounded any-hit, visibility-row,
-  and emitted-row reduction support
+  and emitted-row reduction support; `v0.9.6` releases prepared/prepacked
+  repeated visibility/count optimizations under scalar/compact-output
+  contracts
 
 For the precise current release boundary, use the release statement and support
 matrix instead of inferring from the front page.

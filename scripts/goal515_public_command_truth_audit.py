@@ -43,6 +43,7 @@ GOAL513_COMMANDS = [
 GOAL593_COMMANDS = [
     "python examples/rtdl_hiprt_ray_triangle_hitcount.py",
     "python examples/rtdl_apple_rt_closest_hit.py",
+    "python examples/rtdl_apple_rt_visibility_count.py",
 ]
 
 PUBLIC_VALIDATION_COMMAND_KEYS = {

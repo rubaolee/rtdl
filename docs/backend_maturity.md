@@ -13,10 +13,10 @@ RTDL should not describe every implemented backend as optimized.
 | Backend | Current status | Honest performance claim |
 | --- | --- | --- |
 | Embree | Mature RTDL CPU backend | Optimized enough for current RTDL performance-facing claims |
-| OptiX | Implemented for supported Linux/NVIDIA workloads | Real RT backend; performance is workload-dependent and not a broad speedup claim |
-| Vulkan | Implemented for supported workloads | Real backend and portability path; not consistently optimized |
-| HIPRT | Implemented for the accepted HIPRT matrix, including the current CUDA/NVIDIA compatibility path | Correctness-focused HIPRT integration; not a broad speedup claim |
-| Apple Metal/MPS RT | Implemented for bounded native slices | Correct with v0.9.2 overhead reductions; still not a broad speedup claim and Embree remains faster on current hit-count/segment fixtures |
+| OptiX | Implemented for supported Linux/NVIDIA workloads | Real RT backend; now has a strong prepared/prepacked 2D visibility-count result, but no broad speedup claim |
+| Vulkan | Implemented for supported workloads | Real backend and portability path; prepared/prepacked 2D any-hit improves repeated queries, but it is not consistently optimized |
+| HIPRT | Implemented for the accepted HIPRT matrix, including the current CUDA/NVIDIA compatibility path | Prepared 2D any-hit removes much setup overhead on the HIPRT/Orochi CUDA path; no AMD GPU or broad speedup claim |
+| Apple Metal/MPS RT | Implemented for bounded native slices | Prepared/prepacked scalar visibility count is fast on the tested Apple M4; full emitted-row and broad Apple RT speedup claims remain disallowed |
 | CPU/Python reference | Correctness oracle and fallback | Not a performance backend |
 | Adaptive native engine | Paused work-in-progress | Not release evidence and not an optimized backend claim |
 
@@ -45,17 +45,40 @@ Their correct public framing is:
 - reference/oracle parity where tested
 - measured performance varies by workload, host, and implementation maturity
 
-For the released v0.9.5 any-hit layer, this means:
+For the released v0.9.6 any-hit and prepared/prepacked visibility-count layer,
+this means:
 
-- OptiX, Embree, HIPRT, and current-main Vulkan have native early-exit any-hit
+- OptiX, Embree, HIPRT, and Vulkan have native early-exit any-hit
   implementations when the loaded backend libraries export them.
-- Apple RT 3D on current `main` can use MPS RT nearest-intersection any-hit.
-  Apple RT 2D on current `main` can use MPS prism traversal with per-ray mask
-  early-exit plus exact 2D acceptance when `librtdl_apple_rt` is rebuilt.
+- Apple RT 3D can use MPS RT nearest-intersection any-hit. Apple RT 2D can use
+  MPS prism traversal with per-ray mask early-exit plus exact 2D acceptance
+  when `librtdl_apple_rt` is rebuilt.
+- OptiX, HIPRT, Vulkan, and Apple RT now have released v0.9.6 prepared repeated
+  2D any-hit or visibility/count improvements. These are important app-level
+  optimization paths for stable build-side triangles and repeated probe-side
+  rays, but they should not be generalized to full emitted-row output,
+  one-shot calls, DB workloads, or graph workloads.
 - `reduce_rows` is a Python standard-library helper over emitted rows, not a
   backend-native reduction.
 
-For a compact current-main backend table, including the post-release Vulkan and
+## Prepared/Prepacked Visibility Count Snapshot
+
+The released v0.9.6 performance-facing work follows one pattern: reuse the
+build-side acceleration structure, prepack repeated probe-side rays where
+possible, and return reduced output when the app only needs a yes/no count.
+
+| Backend | Measured current-main result | Boundary |
+| --- | ---: | --- |
+| Apple RT | `0.00091-0.00133 s` per repeated scalar count query for `32768` rays / `8192` triangles on Apple M4 | scalar blocked-ray count only; not full emitted rows |
+| OptiX | about `0.000062-0.000075 s` prepared/prepacked scalar count versus direct around `0.00503 s` on the Linux GTX 1070 host | OptiX/CUDA path evidence; GTX 1070 has no RT cores |
+| HIPRT | `0.007464495 s` prepared 2D any-hit query versus direct `0.580084853 s` for `4096` rays / `1024` triangles on Linux | HIPRT/Orochi CUDA path evidence; no AMD GPU validation |
+| Vulkan | `0.004496957 s` prepared/prepacked query versus direct `0.008035034 s` for `4096` rays / `1024` triangles on Linux | win requires prepacked rays; tuple-ray prepared calls can be slower |
+
+These results move OptiX, HIPRT, Vulkan, and Apple RT forward for a specific
+class of repeated visibility/count apps. They do not change the release-level
+statement that Embree is the only broadly mature RTDL backend today.
+
+For a compact backend table, including the v0.9.6 Vulkan and
 Apple RT any-hit work after Goals650-653, read
 [RTDL Current Main Support Matrix](current_main_support_matrix.md).
 
@@ -116,6 +139,15 @@ Evidence artifact:
 
 The segment-intersection path improved from the latest pre-Goal598 local
 artifact:
+
+Goal666 adds a different, narrower Apple RT result: for repeated 32768-ray /
+8192-triangle 2D visibility-count queries on the local Apple M4, the prepared
+prepacked Apple RT scalar count path measured about `0.00133 s` per query on a
+dense blocked case versus Embree row-count at about `0.01530 s`. This is a
+scalar blocked-ray count result; it does not replace the full-row Embree
+comparison above. The current count path uses nearest-hit existence over the
+prepared MPS prism acceleration structure; a lower-level true any-hit kernel
+remains a future optimization opportunity.
 
 | Artifact | Apple RT segment median | Apple RT vs Embree |
 | --- | ---: | ---: |

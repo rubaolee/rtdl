@@ -1,0 +1,11 @@
+slug: 2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization
+title: Goals658-679 cross-engine prepared visibility/count optimization and release gates
+version: v0.9.5-current-main
+status: accepted
+started_on: 2026-04-20
+closed_on: 2026-04-20
+source_commit: f5f2338-plus-uncommitted-goal658-679-worktree
+gemini_review: docs/reports/goal678_679_external_review_gemini_flash_2026-04-20.md
+codex_revision: docs/reports/goal678_679_consensus_2026-04-20.md
+final_result: accepted
+summary: Registered post-v0.9.5 current-main Apple RT, OptiX, HIPRT, and Vulkan prepared/prepacked visibility-count optimization work, public-doc refresh, local full gate, Linux GPU backend gate, and 3-AI release-gate consensus.

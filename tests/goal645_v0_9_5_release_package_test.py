@@ -20,12 +20,13 @@ class Goal645V095ReleasePackageTest(unittest.TestCase):
             with self.subTest(filename=filename):
                 self.assertTrue((V095_DIR / filename).is_file())
 
-    def test_public_docs_mark_v095_as_current_release(self) -> None:
+    def test_public_docs_keep_v095_as_previous_release_after_v096(self) -> None:
         front_page = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("current released version: `v0.9.5`", front_page)
-        self.assertIn("current released version is `v0.9.5`", docs_index)
+        self.assertIn("current released version: `v0.9.6`", front_page)
+        self.assertIn("current released version is `v0.9.6`", docs_index)
+        self.assertIn("`v0.9.5`: previous public release", front_page)
         self.assertIn("RTDL v0.9.5 Release Package", front_page)
         self.assertIn("v0.9.5 Release Package", docs_index)
 

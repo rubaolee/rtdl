@@ -47,6 +47,49 @@ struct PreparedRayHitcount3D {
     PreparedRayHitcount3D& operator=(PreparedRayHitcount3D&&) = delete;
 };
 
+struct PreparedRayAnyhit2D {
+    HiprtRuntime runtime;
+    DeviceAllocation triangle_device;
+    DeviceAllocation aabb_device;
+    hiprtGeometry geometry{};
+    hiprtFuncTable func_table{};
+    oroFunction kernel{};
+    bool empty_scene{false};
+
+    explicit PreparedRayAnyhit2D(bool empty_scene_in) : empty_scene(empty_scene_in) {}
+
+    PreparedRayAnyhit2D(
+        HiprtRuntime&& runtime_in,
+        DeviceAllocation&& triangle_device_in,
+        DeviceAllocation&& aabb_device_in,
+        hiprtGeometry geometry_in,
+        hiprtFuncTable func_table_in,
+        oroFunction kernel_in)
+        : runtime(std::move(runtime_in)),
+          triangle_device(std::move(triangle_device_in)),
+          aabb_device(std::move(aabb_device_in)),
+          geometry(geometry_in),
+          func_table(func_table_in),
+          kernel(kernel_in),
+          empty_scene(false) {}
+
+    ~PreparedRayAnyhit2D() {
+        if (func_table != nullptr) {
+            hiprtDestroyFuncTable(runtime.context, func_table);
+            func_table = nullptr;
+        }
+        if (geometry != nullptr) {
+            hiprtDestroyGeometry(runtime.context, geometry);
+            geometry = nullptr;
+        }
+    }
+
+    PreparedRayAnyhit2D(const PreparedRayAnyhit2D&) = delete;
+    PreparedRayAnyhit2D& operator=(const PreparedRayAnyhit2D&) = delete;
+    PreparedRayAnyhit2D(PreparedRayAnyhit2D&&) = delete;
+    PreparedRayAnyhit2D& operator=(PreparedRayAnyhit2D&&) = delete;
+};
+
 struct PreparedFixedRadiusNeighbors3D {
     HiprtRuntime runtime;
     DeviceAllocation search_device;
@@ -803,6 +846,62 @@ void run_prepared_ray_hitcount_3d(
     uint32_t block_size = 128;
     uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
     void* args[] = {&prepared.geometry, &ray_device_ptr, &ray_count_u32, &output_device_ptr};
+    check_oro(
+        "oroModuleLaunchKernel",
+        oroModuleLaunchKernel(prepared.kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));
+    copy_device_to_host(output, output_device);
+
+    *rows_out = copy_rows_to_heap(output);
+    *row_count_out = output.size();
+}
+
+void run_prepared_ray_anyhit_2d(
+    PreparedRayAnyhit2D& prepared,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out) {
+    if (ray_count > std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("HIPRT prepared 2D ray_triangle_any_hit currently supports at most 2^32-1 rays");
+    }
+    if (ray_count > 0 && rays == nullptr) {
+        throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
+    }
+    if (ray_count == 0) {
+        std::vector<RtdlRayAnyHitRow> empty;
+        *rows_out = copy_rows_to_heap(empty);
+        *row_count_out = 0;
+        return;
+    }
+    if (prepared.empty_scene) {
+        std::vector<RtdlRayAnyHitRow> output;
+        output.reserve(ray_count);
+        for (size_t i = 0; i < ray_count; ++i) {
+            output.push_back({rays[i].id, 0u});
+        }
+        *rows_out = copy_rows_to_heap(output);
+        *row_count_out = output.size();
+        return;
+    }
+
+    std::vector<RtdlHiprtRay2DDevice> ray_values = encode_rays_2d(rays, ray_count);
+    DeviceAllocation ray_device(ray_values.size() * sizeof(RtdlHiprtRay2DDevice));
+    copy_host_to_device(ray_device, ray_values);
+    std::vector<RtdlRayAnyHitRow> output(ray_count);
+    DeviceAllocation output_device(output.size() * sizeof(RtdlRayAnyHitRow));
+
+    void* ray_device_ptr = ray_device.get();
+    void* output_device_ptr = output_device.get();
+    uint32_t ray_count_u32 = static_cast<uint32_t>(ray_count);
+    uint32_t block_size = 128;
+    uint32_t grid_size = static_cast<uint32_t>((ray_count + block_size - 1) / block_size);
+    void* args[] = {
+        &prepared.geometry,
+        &ray_device_ptr,
+        &ray_count_u32,
+        &output_device_ptr,
+        &prepared.func_table,
+    };
     check_oro(
         "oroModuleLaunchKernel",
         oroModuleLaunchKernel(prepared.kernel, grid_size, 1, 1, block_size, 1, 1, 0, 0, args, nullptr));

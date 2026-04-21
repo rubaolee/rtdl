@@ -1,0 +1,127 @@
+{
+  "cases": [
+    {
+      "apple_rt_prepare_seconds": 0.08491116599179804,
+      "case": "dense_blocked:xlarge_dense_backend_agreement_1s",
+      "kind": "dense_blocked",
+      "measurements": [
+        {
+          "backend": "apple_rt_prepared_query",
+          "calibration_iterations": 5,
+          "calibration_seconds": 0.05243978318758309,
+          "calibration_total_seconds": 0.26219891593791544,
+          "cold_seconds": 1.0016352920792997,
+          "inner_iterations": 20,
+          "matches_oracle": null,
+          "matches_reference_backend": true,
+          "per_query_samples_seconds": [
+            0.05248309579910711
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.05248309579910711,
+            "mean_seconds": 0.05248309579910711,
+            "median_seconds": 0.05248309579910711,
+            "min_seconds": 0.05248309579910711,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.05505958304274827,
+          "reference_backend": "apple_rt_prepared_query",
+          "samples_seconds": [
+            1.049661915982142
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 1.049661915982142,
+            "mean_seconds": 1.049661915982142,
+            "median_seconds": 1.049661915982142,
+            "min_seconds": 1.049661915982142,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 65536,
+            "clear_count": 0,
+            "row_count": 65536
+          },
+          "warmups": 0
+        },
+        {
+          "backend": "embree",
+          "calibration_iterations": 8,
+          "calibration_seconds": 0.03126701037399471,
+          "calibration_total_seconds": 0.25013608299195766,
+          "cold_seconds": 0.9937765840440989,
+          "inner_iterations": 32,
+          "matches_oracle": null,
+          "matches_reference_backend": true,
+          "per_query_samples_seconds": [
+            0.03112619140665629
+          ],
+          "per_query_stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.03112619140665629,
+            "mean_seconds": 0.03112619140665629,
+            "median_seconds": 0.03112619140665629,
+            "min_seconds": 0.03112619140665629,
+            "stdev_seconds": 0.0
+          },
+          "prime_seconds": 0.08506470895372331,
+          "reference_backend": "apple_rt_prepared_query",
+          "samples_seconds": [
+            0.9960381250130013
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0,
+            "count": 1,
+            "max_seconds": 0.9960381250130013,
+            "mean_seconds": 0.9960381250130013,
+            "median_seconds": 0.9960381250130013,
+            "min_seconds": 0.9960381250130013,
+            "stdev_seconds": 0.0
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 65536,
+            "clear_count": 0,
+            "row_count": 65536
+          },
+          "warmups": 0
+        }
+      ],
+      "obstacle_rectangle_count": 8192,
+      "obstacle_triangle_count": 16384,
+      "oracle_mode": "backend_agreement",
+      "oracle_summary": null,
+      "ray_count": 65536,
+      "scale": "xlarge_dense_backend_agreement_1s"
+    }
+  ],
+  "date": "2026-04-20",
+  "goal": "goal659_mac_visibility_collision_perf",
+  "host": {
+    "apple_rt_context": "Apple M4",
+    "apple_rt_version": "(0, 9, 3)",
+    "embree_version": "(4, 4, 0)",
+    "hostname": "Rs-MacBook-Air.local",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python": "3.14.0",
+    "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t26.3\nBuildVersion:\t\t25D125"
+  },
+  "methodology": {
+    "correctness_mode": "backend_agreement",
+    "hidden_correctness_oracle": null,
+    "note": "Full CPU/oracle is skipped for scale; successful backends are compared by backend-output agreement.",
+    "repeats": 1,
+    "reported_backends": [
+      "apple_rt_prepared_query",
+      "embree"
+    ],
+    "target_sample_seconds": 1.0,
+    "warmups": 0
+  }
+}

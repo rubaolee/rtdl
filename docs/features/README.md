@@ -31,6 +31,12 @@ Across these features, the intended RTDL benefit is the same: write the
 workload contract once, then let RTDL handle traversal/refinement/backend
 plumbing inside documented release limits.
 
+`v0.9.6` does not add a new workload family. It makes the any-hit and
+visibility-count path more practical for repeated apps by adding
+prepared/prepacked backend contracts for Apple RT, OptiX, HIPRT, and Vulkan.
+Use those paths when the build-side triangles and probe-side ray batches are
+stable and the app can consume scalar or compact yes/no outputs.
+
 For the fastest feature-by-feature learning path, use:
 
 - [Feature Quickstart Cookbook](../tutorials/feature_quickstart_cookbook.md)
@@ -47,6 +53,8 @@ Current feature homes:
 - [Ray/Triangle Any Hit](ray_tri_anyhit/README.md) (released in `v0.9.5`)
 - [Visibility Rows](visibility_rows/README.md) (released in `v0.9.5`)
 - [Reduce Rows](reduce_rows/README.md) (released in `v0.9.5`)
+- Prepared/prepacked repeated visibility/count paths (released in `v0.9.6`;
+  documented in the [v0.9.6 Support Matrix](../release_reports/v0_9_6/support_matrix.md))
 - [Point/Nearest Segment](point_nearest_segment/README.md)
 - [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md)
 - [Segment/Polygon Any-Hit Rows](segment_polygon_anyhit_rows/README.md)

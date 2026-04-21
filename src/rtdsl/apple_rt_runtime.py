@@ -188,7 +188,7 @@ _APPLE_RT_SUPPORT_NOTES = {
         "cpu_refinement": "2d_exact_acceptance_or_3d_row_materialization",
         "native_only": "supported_for_2d_and_3d",
         "native_shapes": ("Ray2D/Triangle2D", "Ray3D/Triangle3D"),
-        "notes": "Current main uses Apple Metal/MPS nearest-intersection any-hit for 3D and MPS prism traversal with per-ray mask early-exit plus exact 2D acceptance for 2D when the loaded library exports the symbols; stale libraries fall back to hit-count projection.",
+        "notes": "Current main uses Apple Metal/MPS nearest-intersection any-hit for 3D and MPS prism traversal with per-ray mask early-exit plus exact 2D acceptance for emitted 2D rows when the loaded library exports the symbols. The prepared/prepacked 2D count helper returns only a scalar blocked-ray count and currently uses nearest-hit existence over a prepared MPS prism acceleration structure. Stale libraries fall back to hit-count projection.",
     },
     "segment_intersection": {
         "native_candidate_discovery": "yes",
@@ -366,6 +366,20 @@ class _RtdlRayAnyHitRow(ctypes.Structure):
     _fields_ = [
         ("ray_id", ctypes.c_uint32),
         ("any_hit", ctypes.c_uint32),
+    ]
+
+
+class _RtdlAppleRtAnyHitProfile(ctypes.Structure):
+    _fields_ = [
+        ("total_seconds", ctypes.c_double),
+        ("buffer_seconds", ctypes.c_double),
+        ("ray_pack_seconds", ctypes.c_double),
+        ("dispatch_wait_seconds", ctypes.c_double),
+        ("result_scan_seconds", ctypes.c_double),
+        ("output_seconds", ctypes.c_double),
+        ("chunk_count", ctypes.c_uint64),
+        ("ray_count", ctypes.c_uint64),
+        ("hit_count", ctypes.c_uint64),
     ]
 
 
@@ -642,6 +656,57 @@ def _configure_library(library: ctypes.CDLL) -> None:
             ctypes.c_size_t,
         ]
         optional_anyhit_2d.restype = ctypes.c_int
+    optional_prepare_anyhit_2d = getattr(library, "rtdl_apple_rt_prepare_ray_anyhit_2d", None)
+    if optional_prepare_anyhit_2d is not None:
+        optional_prepare_anyhit_2d.argtypes = [
+            ctypes.POINTER(_RtdlTriangle2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_anyhit_2d.restype = ctypes.c_int
+    optional_run_prepared_anyhit_2d = getattr(library, "rtdl_apple_rt_run_prepared_ray_anyhit_2d", None)
+    if optional_run_prepared_anyhit_2d is not None:
+        optional_run_prepared_anyhit_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_prepared_anyhit_2d.restype = ctypes.c_int
+    optional_profile_prepared_anyhit_2d = getattr(library, "rtdl_apple_rt_profile_prepared_ray_anyhit_2d", None)
+    if optional_profile_prepared_anyhit_2d is not None:
+        optional_profile_prepared_anyhit_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlRayAnyHitRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(_RtdlAppleRtAnyHitProfile),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_profile_prepared_anyhit_2d.restype = ctypes.c_int
+    optional_count_prepared_anyhit_2d = getattr(library, "rtdl_apple_rt_count_prepared_ray_anyhit_2d", None)
+    if optional_count_prepared_anyhit_2d is not None:
+        optional_count_prepared_anyhit_2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(_RtdlAppleRtAnyHitProfile),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_anyhit_2d.restype = ctypes.c_int
+    optional_destroy_prepared_anyhit_2d = getattr(library, "rtdl_apple_rt_destroy_prepared_ray_anyhit_2d", None)
+    if optional_destroy_prepared_anyhit_2d is not None:
+        optional_destroy_prepared_anyhit_2d.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_anyhit_2d.restype = None
     library.rtdl_apple_rt_run_ray_hitcount_2d.argtypes = [
         ctypes.POINTER(_RtdlRay2D),
         ctypes.c_size_t,
@@ -1225,6 +1290,172 @@ def prepare_apple_rt_ray_triangle_closest_hit(
     triangles: tuple[_CanonicalTriangle3D, ...],
 ) -> PreparedAppleRtRayTriangleClosestHit3D:
     return PreparedAppleRtRayTriangleClosestHit3D(triangles)
+
+
+def _profile_to_dict(profile: _RtdlAppleRtAnyHitProfile) -> dict[str, float | int]:
+    return {
+        "total_seconds": float(profile.total_seconds),
+        "buffer_seconds": float(profile.buffer_seconds),
+        "ray_pack_seconds": float(profile.ray_pack_seconds),
+        "dispatch_wait_seconds": float(profile.dispatch_wait_seconds),
+        "result_scan_seconds": float(profile.result_scan_seconds),
+        "output_seconds": float(profile.output_seconds),
+        "chunk_count": int(profile.chunk_count),
+        "ray_count": int(profile.ray_count),
+        "hit_count": int(profile.hit_count),
+    }
+
+
+class AppleRtRay2DBuffer:
+    """Prepacked Apple RT 2D ray buffer for repeated prepared any-hit calls."""
+
+    def __init__(self, rays: tuple[_CanonicalRay2D, ...]):
+        if any(not isinstance(ray, _CanonicalRay2D) for ray in rays):
+            raise ValueError("Apple RT packed ray buffer currently requires 2D rays")
+        self._records = _pack_rays_2d(rays)
+        self.count = len(rays)
+
+    @property
+    def records(self):
+        return self._records
+
+
+class PreparedAppleRtRayTriangleAnyHit2D:
+    """Prepared Apple RT 2D any-hit scene for repeated visibility/collision queries."""
+
+    def __init__(self, triangles: tuple[_CanonicalTriangle2D, ...]):
+        if any(not isinstance(triangle, _CanonicalTriangle2D) for triangle in triangles):
+            raise ValueError("prepared Apple RT ray_triangle_any_hit currently requires 2D triangles")
+        self._library = _load_library()
+        if getattr(self._library, "rtdl_apple_rt_prepare_ray_anyhit_2d", None) is None:
+            raise NotImplementedError("loaded Apple RT library does not export prepared 2D any-hit")
+        self._closed = False
+        triangle_records = _pack_triangles_2d(triangles)
+        handle = ctypes.c_void_p()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_apple_rt_prepare_ray_anyhit_2d(
+            triangle_records,
+            len(triangles),
+            ctypes.byref(handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self._handle = handle
+
+    def _check_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("prepared Apple RT 2D any-hit handle is closed")
+
+    def run(self, rays: tuple[_CanonicalRay2D, ...]) -> AppleRtRowView:
+        return self.run_packed(AppleRtRay2DBuffer(rays))
+
+    def run_packed(self, rays: AppleRtRay2DBuffer) -> AppleRtRowView:
+        self._check_open()
+        if not isinstance(rays, AppleRtRay2DBuffer):
+            raise ValueError("run_packed requires an AppleRtRay2DBuffer")
+        rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_apple_rt_run_prepared_ray_anyhit_2d(
+            self._handle,
+            rays.records,
+            rays.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return AppleRtRowView(
+            library=self._library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayAnyHitRow,
+            field_names=("ray_id", "any_hit"),
+        )
+
+    def run_profile(self, rays: tuple[_CanonicalRay2D, ...]) -> tuple[AppleRtRowView, dict[str, float | int]]:
+        return self.run_profile_packed(AppleRtRay2DBuffer(rays))
+
+    def run_profile_packed(self, rays: AppleRtRay2DBuffer) -> tuple[AppleRtRowView, dict[str, float | int]]:
+        self._check_open()
+        if not isinstance(rays, AppleRtRay2DBuffer):
+            raise ValueError("run_profile_packed requires an AppleRtRay2DBuffer")
+        rows_ptr = ctypes.POINTER(_RtdlRayAnyHitRow)()
+        row_count = ctypes.c_size_t()
+        profile = _RtdlAppleRtAnyHitProfile()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_apple_rt_profile_prepared_ray_anyhit_2d(
+            self._handle,
+            rays.records,
+            rays.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            ctypes.byref(profile),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return (
+            AppleRtRowView(
+                library=self._library,
+                rows_ptr=rows_ptr,
+                row_count=row_count.value,
+                row_type=_RtdlRayAnyHitRow,
+                field_names=("ray_id", "any_hit"),
+            ),
+            _profile_to_dict(profile),
+        )
+
+    def count_profile(self, rays: tuple[_CanonicalRay2D, ...]) -> tuple[int, dict[str, float | int]]:
+        return self.count_profile_packed(AppleRtRay2DBuffer(rays))
+
+    def count_profile_packed(self, rays: AppleRtRay2DBuffer) -> tuple[int, dict[str, float | int]]:
+        self._check_open()
+        if not isinstance(rays, AppleRtRay2DBuffer):
+            raise ValueError("count_profile_packed requires an AppleRtRay2DBuffer")
+        hit_count = ctypes.c_uint64()
+        profile = _RtdlAppleRtAnyHitProfile()
+        error = ctypes.create_string_buffer(4096)
+        status = self._library.rtdl_apple_rt_count_prepared_ray_anyhit_2d(
+            self._handle,
+            rays.records,
+            rays.count,
+            ctypes.byref(hit_count),
+            ctypes.byref(profile),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(hit_count.value), _profile_to_dict(profile)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        if self._handle:
+            self._library.rtdl_apple_rt_destroy_prepared_ray_anyhit_2d(self._handle)
+        self._closed = True
+
+    def __enter__(self) -> "PreparedAppleRtRayTriangleAnyHit2D":
+        self._check_open()
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        self.close()
+
+
+def prepare_apple_rt_ray_triangle_any_hit_2d(
+    triangles: tuple[_CanonicalTriangle2D, ...],
+) -> PreparedAppleRtRayTriangleAnyHit2D:
+    return PreparedAppleRtRayTriangleAnyHit2D(triangles)
+
+
+def prepare_apple_rt_rays_2d(rays: tuple[_CanonicalRay2D, ...]) -> AppleRtRay2DBuffer:
+    return AppleRtRay2DBuffer(rays)
 
 
 def segment_intersection_apple_rt(

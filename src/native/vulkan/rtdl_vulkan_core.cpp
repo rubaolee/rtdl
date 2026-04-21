@@ -796,6 +796,26 @@ struct GpuFrnRecord      { uint32_t query_id, neighbor_id; float distance; };   
 struct GpuKnnRecord      { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; }; // 16 bytes
 #pragma pack(pop)
 
+struct VulkanPreparedRayAnyhit2D {
+    VkContext* ctx = nullptr;
+    BufMem d_tris;
+    AccelResult blas;
+    AccelResult tlas;
+    bool empty_scene = false;
+
+    ~VulkanPreparedRayAnyhit2D() {
+        if (ctx != nullptr) {
+            destroy_accel(ctx, tlas);
+            destroy_accel(ctx, blas);
+            free_buf(ctx, d_tris);
+        }
+    }
+
+    VulkanPreparedRayAnyhit2D(const VulkanPreparedRayAnyhit2D&) = delete;
+    VulkanPreparedRayAnyhit2D& operator=(const VulkanPreparedRayAnyhit2D&) = delete;
+    VulkanPreparedRayAnyhit2D() = default;
+};
+
 static bool exact_segment_intersection(
         const RtdlSegment& left,
         const RtdlSegment& right,
@@ -4233,6 +4253,158 @@ static void run_ray_anyhit_vulkan(
         out[i] = { gpu_rows[i].ray_id, gpu_rows[i].hit_count ? 1u : 0u };
     *rows_out      = out;
     *row_count_out = ray_count;
+}
+
+static VulkanPreparedRayAnyhit2D* prepare_ray_anyhit_2d_vulkan(
+        const RtdlTriangle* triangles, size_t triangle_count)
+{
+    if (triangle_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("Vulkan prepared 2D ray_triangle_any_hit supports at most 2^32-1 triangles");
+    }
+    if (triangle_count > 0 && triangles == nullptr) {
+        throw std::runtime_error("triangle pointer must not be null when triangle_count > 0");
+    }
+
+    auto prepared = std::make_unique<VulkanPreparedRayAnyhit2D>();
+    prepared->ctx = get_context();
+    std::call_once(g_rah_init, [ctx = prepared->ctx]() {
+        g_rah_pipe = new RtPipeline(build_rt_pipeline(
+            ctx, kRahRgen, kRahRmiss, kRhcRint, kRahRahit,
+            "rah.rgen", "rah.rmiss", "rah.rint", "rah.rahit", 6));
+    });
+    if (triangle_count == 0) {
+        prepared->empty_scene = true;
+        return prepared.release();
+    }
+
+    std::vector<GpuTriangle> gpu_tris(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        gpu_tris[i] = {
+            (float)triangles[i].x0, (float)triangles[i].y0,
+            (float)triangles[i].x1, (float)triangles[i].y1,
+            (float)triangles[i].x2, (float)triangles[i].y2,
+            triangles[i].id,
+        };
+    }
+    const VkDeviceSize tri_sz = sizeof(GpuTriangle) * triangle_count;
+    prepared->d_tris = alloc_buffer(prepared->ctx, tri_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    upload_to_buf(prepared->ctx, prepared->d_tris, gpu_tris.data(), tri_sz);
+
+    std::vector<GpuAabb> aabbs(triangle_count);
+    for (size_t i = 0; i < triangle_count; ++i) {
+        float xmin = std::min({gpu_tris[i].x0, gpu_tris[i].x1, gpu_tris[i].x2});
+        float ymin = std::min({gpu_tris[i].y0, gpu_tris[i].y1, gpu_tris[i].y2});
+        float xmax = std::max({gpu_tris[i].x0, gpu_tris[i].x1, gpu_tris[i].x2});
+        float ymax = std::max({gpu_tris[i].y0, gpu_tris[i].y1, gpu_tris[i].y2});
+        aabbs[i] = { xmin-kAabbEps, ymin-kAabbEps, -0.5f, xmax+kAabbEps, ymax+kAabbEps, 0.5f };
+    }
+    prepared->blas = build_aabb_blas(prepared->ctx, aabbs);
+    prepared->tlas = build_tlas(prepared->ctx, prepared->blas.handle, prepared->blas.device_addr);
+    return prepared.release();
+}
+
+static void run_prepared_ray_anyhit_2d_vulkan(
+        VulkanPreparedRayAnyhit2D* prepared,
+        const RtdlRay2D* rays, size_t ray_count,
+        RtdlRayAnyHitRow** rows_out, size_t* row_count_out)
+{
+    if (prepared == nullptr) {
+        throw std::runtime_error("prepared Vulkan 2D ray_triangle_any_hit handle must not be null");
+    }
+    if (ray_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("Vulkan prepared 2D ray_triangle_any_hit supports at most 2^32-1 rays");
+    }
+    if (ray_count > 0 && rays == nullptr) {
+        throw std::runtime_error("ray pointer must not be null when ray_count > 0");
+    }
+    if (ray_count == 0) {
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        return;
+    }
+    if (prepared->empty_scene) {
+        auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(sizeof(RtdlRayAnyHitRow) * ray_count));
+        if (!out) throw std::bad_alloc();
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = { rays[i].id, 0u };
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
+        return;
+    }
+
+    VkContext* ctx = prepared->ctx;
+    std::vector<GpuRay> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        gpu_rays[i] = {
+            (float)rays[i].ox, (float)rays[i].oy,
+            (float)rays[i].dx, (float)rays[i].dy,
+            (float)rays[i].tmax,
+            rays[i].id,
+        };
+    }
+    const VkDeviceSize ray_sz = sizeof(GpuRay) * ray_count;
+    BufMem d_rays = alloc_buffer(ctx, ray_sz,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_output = alloc_buffer(ctx, sizeof(GpuRayHitRecord) * ray_count,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    BufMem d_params{};
+    BufMem d_dummy{};
+    DescriptorSet ds{};
+    try {
+        upload_to_buf(ctx, d_rays, gpu_rays.data(), ray_sz);
+        zero_buf(ctx, d_output);
+
+        struct { uint32_t nrays, pad0; } params{ (uint32_t)ray_count, 0 };
+        d_params = alloc_buffer(ctx, sizeof(params), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        void* mp;
+        VK_CHECK(vkMapMemory(ctx->device, d_params.memory, 0, sizeof(params), 0, &mp));
+        std::memcpy(mp, &params, sizeof(params));
+        vkUnmapMemory(ctx->device, d_params.memory);
+
+        d_dummy = alloc_buffer(ctx, 4, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        ds = alloc_descriptor_set(ctx, g_rah_pipe->dset_layout, 6, true);
+        bind_tlas(ctx, ds.set, prepared->tlas.handle, 0);
+        bind_ssbo(ctx->device, ds.set, d_output.buffer, sizeof(GpuRayHitRecord) * ray_count, 1);
+        bind_ssbo(ctx->device, ds.set, d_dummy.buffer, 4, 2);
+        bind_ubo(ctx->device, ds.set, d_params.buffer, sizeof(params), 3);
+        bind_ssbo(ctx->device, ds.set, d_rays.buffer, ray_sz, 4);
+        bind_ssbo(ctx->device, ds.set, prepared->d_tris.buffer, prepared->d_tris.size, 5);
+
+        dispatch_rt(ctx, *g_rah_pipe, ds.set, (uint32_t)ray_count);
+
+        std::vector<GpuRayHitRecord> gpu_rows(ray_count);
+        download_from_buf(ctx, gpu_rows.data(), d_output, sizeof(GpuRayHitRecord) * ray_count);
+
+        auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(sizeof(RtdlRayAnyHitRow) * ray_count));
+        if (!out) throw std::bad_alloc();
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = { gpu_rows[i].ray_id, gpu_rows[i].hit_count ? 1u : 0u };
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
+    } catch (...) {
+        if (ds.pool != VK_NULL_HANDLE) {
+            vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+        }
+        free_buf(ctx, d_rays);
+        free_buf(ctx, d_output);
+        free_buf(ctx, d_params);
+        free_buf(ctx, d_dummy);
+        throw;
+    }
+    if (ds.pool != VK_NULL_HANDLE) {
+        vkDestroyDescriptorPool(ctx->device, ds.pool, nullptr);
+    }
+    free_buf(ctx, d_rays);
+    free_buf(ctx, d_output);
+    free_buf(ctx, d_params);
+    free_buf(ctx, d_dummy);
 }
 
 // ---------- SegmentPolygonHitcount -------------------------------------------

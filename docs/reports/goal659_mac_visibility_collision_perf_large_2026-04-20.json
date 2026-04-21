@@ -1,0 +1,268 @@
+{
+  "cases": [
+    {
+      "apple_rt_prepare_seconds": 0.04373579111415893,
+      "case": "dense_blocked:large",
+      "kind": "dense_blocked",
+      "measurements": [
+        {
+          "backend": "apple_rt",
+          "cold_seconds": 0.10316437494475394,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.09330287494231015,
+            0.09403012495022267,
+            0.10434437496587634
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.06351800809133505,
+            "count": 3,
+            "max_seconds": 0.10434437496587634,
+            "mean_seconds": 0.09722579161946972,
+            "median_seconds": 0.09403012495022267,
+            "min_seconds": 0.09330287494231015,
+            "stdev_seconds": 0.006175588618771933
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 1
+        },
+        {
+          "backend": "apple_rt_prepared_query",
+          "cold_seconds": 0.07353658298961818,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.05778641707729548,
+            0.05691195803228766,
+            0.0579752919729799
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.009856306202083064,
+            "count": 3,
+            "max_seconds": 0.0579752919729799,
+            "mean_seconds": 0.057557889027521014,
+            "median_seconds": 0.05778641707729548,
+            "min_seconds": 0.05691195803228766,
+            "stdev_seconds": 0.0005673081786007642
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 1
+        },
+        {
+          "backend": "embree",
+          "cold_seconds": 0.02505720895715058,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.0032059589866548777,
+            0.003227583016268909,
+            0.003433333011344075
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.038157595692003,
+            "count": 3,
+            "max_seconds": 0.003433333011344075,
+            "mean_seconds": 0.0032889583380892873,
+            "median_seconds": 0.003227583016268909,
+            "min_seconds": 0.0032059589866548777,
+            "stdev_seconds": 0.00012549874251265313
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 1
+        },
+        {
+          "backend": "shapely_strtree",
+          "cold_seconds": 0.11922154203057289,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.07287229201756418,
+            0.0728570829378441,
+            0.0724333340767771
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.0034262236541802065,
+            "count": 3,
+            "max_seconds": 0.07287229201756418,
+            "mean_seconds": 0.07272090301072846,
+            "median_seconds": 0.0728570829378441,
+            "min_seconds": 0.0724333340767771,
+            "stdev_seconds": 0.00024915807804870246
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 8192,
+            "clear_count": 0,
+            "row_count": 8192
+          },
+          "warmups": 1
+        }
+      ],
+      "obstacle_rectangle_count": 1024,
+      "obstacle_triangle_count": 2048,
+      "oracle_summary": {
+        "blocked_count": 8192,
+        "clear_count": 0,
+        "row_count": 8192
+      },
+      "ray_count": 8192,
+      "scale": "large"
+    },
+    {
+      "apple_rt_prepare_seconds": 0.018939957953989506,
+      "case": "sparse_clear:large",
+      "kind": "sparse_clear",
+      "measurements": [
+        {
+          "backend": "apple_rt",
+          "cold_seconds": 0.052845209022052586,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.05559387500397861,
+            0.051775333005934954,
+            0.05721441691275686
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.05090265262007114,
+            "count": 3,
+            "max_seconds": 0.05721441691275686,
+            "mean_seconds": 0.05486120830755681,
+            "median_seconds": 0.05559387500397861,
+            "min_seconds": 0.051775333005934954,
+            "stdev_seconds": 0.002792581028796925
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 1
+        },
+        {
+          "backend": "apple_rt_prepared_query",
+          "cold_seconds": 0.04222962504718453,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.03375704202335328,
+            0.0347714580129832,
+            0.031133624957874417
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.056509471270250695,
+            "count": 3,
+            "max_seconds": 0.0347714580129832,
+            "mean_seconds": 0.033220708331403635,
+            "median_seconds": 0.03375704202335328,
+            "min_seconds": 0.031133624957874417,
+            "stdev_seconds": 0.0018772846630308317
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 1
+        },
+        {
+          "backend": "embree",
+          "cold_seconds": 0.008209999999962747,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.00287004210986197,
+            0.0027787500293925405,
+            0.0028755839448422194
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.019137333058059237,
+            "count": 3,
+            "max_seconds": 0.0028755839448422194,
+            "mean_seconds": 0.0028414586946989098,
+            "median_seconds": 0.00287004210986197,
+            "min_seconds": 0.0027787500293925405,
+            "stdev_seconds": 5.437794141117129e-05
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 1
+        },
+        {
+          "backend": "shapely_strtree",
+          "cold_seconds": 0.0487753750057891,
+          "matches_oracle": true,
+          "samples_seconds": [
+            0.04820449999533594,
+            0.04883100010920316,
+            0.04965754097793251
+          ],
+          "stats": {
+            "coefficient_of_variation": 0.01490483489303934,
+            "count": 3,
+            "max_seconds": 0.04965754097793251,
+            "mean_seconds": 0.04889768036082387,
+            "median_seconds": 0.04883100010920316,
+            "min_seconds": 0.04820449999533594,
+            "stdev_seconds": 0.000728811852430692
+          },
+          "status": "ok",
+          "summary": {
+            "blocked_count": 0,
+            "clear_count": 8192,
+            "row_count": 8192
+          },
+          "warmups": 1
+        }
+      ],
+      "obstacle_rectangle_count": 1024,
+      "obstacle_triangle_count": 2048,
+      "oracle_summary": {
+        "blocked_count": 0,
+        "clear_count": 8192,
+        "row_count": 8192
+      },
+      "ray_count": 8192,
+      "scale": "large"
+    }
+  ],
+  "date": "2026-04-20",
+  "goal": "goal659_mac_visibility_collision_perf",
+  "host": {
+    "apple_rt_context": "Apple M4",
+    "apple_rt_version": "(0, 9, 3)",
+    "embree_version": "(4, 4, 0)",
+    "hostname": "Rs-MacBook-Air.local",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python": "3.14.0",
+    "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t26.3\nBuildVersion:\t\t25D125"
+  },
+  "methodology": {
+    "hidden_correctness_oracle": "rt.ray_triangle_any_hit_cpu",
+    "note": "CPU/oracle is used only for parity and is not reported as a performance engine.",
+    "repeats": 3,
+    "reported_backends": [
+      "apple_rt",
+      "apple_rt_prepared_query",
+      "embree",
+      "shapely_strtree"
+    ],
+    "warmups": 1
+  }
+}

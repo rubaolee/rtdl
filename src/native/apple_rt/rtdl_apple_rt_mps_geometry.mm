@@ -1108,6 +1108,194 @@ extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_ray_anyhit_2d(
     }
 }
 
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_prepare_ray_anyhit_2d(
+    const RtdlTriangle2D* triangles,
+    size_t triangle_count,
+    void** handle_out,
+    char* error_out,
+    size_t error_size) {
+    if (handle_out == nullptr) {
+        set_message(error_out, error_size, "null handle output passed to rtdl_apple_rt_prepare_ray_anyhit_2d");
+        return 1;
+    }
+    *handle_out = nullptr;
+    if (triangle_count > 0 && triangles == nullptr) {
+        set_message(error_out, error_size, "null triangles passed to rtdl_apple_rt_prepare_ray_anyhit_2d");
+        return 1;
+    }
+
+    @autoreleasepool {
+        auto* prepared = new (std::nothrow) AppleRtAnyHit2DPrepared();
+        if (prepared == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT prepared 2D any-hit handle");
+            return 2;
+        }
+        prepared->device = MTLCreateSystemDefaultDevice();
+        if (prepared->device == nil) {
+            delete prepared;
+            set_message(error_out, error_size, "Metal default device is unavailable");
+            return 3;
+        }
+        prepared->command_queue = [prepared->device newCommandQueue];
+        if (prepared->command_queue == nil) {
+            delete prepared;
+            set_message(error_out, error_size, "Metal command queue creation failed");
+            return 4;
+        }
+        prepared->intersector = [[MPSRayIntersector alloc] initWithDevice:prepared->device];
+        if (prepared->intersector == nil) {
+            delete prepared;
+            set_message(error_out, error_size, "MPSRayIntersector initialization failed");
+            return 5;
+        }
+        prepared->intersector.cullMode = MTLCullModeNone;
+        prepared->intersector.rayDataType = MPSRayDataTypeOriginMaskDirectionMaxDistance;
+        prepared->intersector.rayMaskOptions = MPSRayMaskOptionPrimitive;
+        prepared->intersector.rayMaskOperator = MPSRayMaskOperatorAnd;
+        prepared->intersector.intersectionDataType = MPSIntersectionDataTypeDistancePrimitiveIndex;
+        prepared->intersector.rayStride = sizeof(MPSRayOriginMaskDirectionMaxDistance);
+        prepared->intersector.intersectionStride = sizeof(MPSIntersectionDistancePrimitiveIndex);
+        prepared->triangle_count = triangle_count;
+
+        if (triangle_count > 0) {
+            std::vector<MPSPackedFloat3> vertices;
+            vertices.reserve(triangle_count * 24);
+            auto add_triangle = [&](float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz) {
+                vertices.emplace_back(ax, ay, az);
+                vertices.emplace_back(bx, by, bz);
+                vertices.emplace_back(cx, cy, cz);
+            };
+            for (size_t index = 0; index < triangle_count; ++index) {
+                const RtdlTriangle2D& tri = triangles[index];
+                const float x0 = static_cast<float>(tri.x0);
+                const float y0 = static_cast<float>(tri.y0);
+                const float x1 = static_cast<float>(tri.x1);
+                const float y1 = static_cast<float>(tri.y1);
+                const float x2 = static_cast<float>(tri.x2);
+                const float y2 = static_cast<float>(tri.y2);
+                constexpr float z0 = -1.0f;
+                constexpr float z1 = 1.0f;
+
+                add_triangle(x0, y0, z0, x1, y1, z0, x2, y2, z0);
+                add_triangle(x0, y0, z1, x2, y2, z1, x1, y1, z1);
+                add_triangle(x0, y0, z0, x1, y1, z0, x1, y1, z1);
+                add_triangle(x0, y0, z0, x1, y1, z1, x0, y0, z1);
+                add_triangle(x1, y1, z0, x2, y2, z0, x2, y2, z1);
+                add_triangle(x1, y1, z0, x2, y2, z1, x1, y1, z1);
+                add_triangle(x2, y2, z0, x0, y0, z0, x0, y0, z1);
+                add_triangle(x2, y2, z0, x0, y0, z1, x2, y2, z1);
+            }
+            prepared->vertex_buffer = [prepared->device newBufferWithBytes:vertices.data()
+                                                                    length:vertices.size() * sizeof(MPSPackedFloat3)
+                                                                   options:MTLResourceStorageModeShared];
+            if (prepared->vertex_buffer == nil) {
+                delete prepared;
+                set_message(error_out, error_size, "Metal prepared 2D any-hit prism vertex buffer creation failed");
+                return 6;
+            }
+            std::vector<uint32_t> primitive_masks(vertices.size() / 3, 0xFFFFFFFFu);
+            prepared->mask_buffer = [prepared->device newBufferWithBytes:primitive_masks.data()
+                                                                  length:primitive_masks.size() * sizeof(uint32_t)
+                                                                 options:MTLResourceStorageModeShared];
+            if (prepared->mask_buffer == nil) {
+                delete prepared;
+                set_message(error_out, error_size, "Metal prepared 2D any-hit primitive mask buffer creation failed");
+                return 7;
+            }
+            prepared->accel = [[MPSTriangleAccelerationStructure alloc] initWithDevice:prepared->device];
+            if (prepared->accel == nil) {
+                delete prepared;
+                set_message(error_out, error_size, "MPSTriangleAccelerationStructure initialization failed for prepared 2D any-hit");
+                return 8;
+            }
+            prepared->accel.vertexBuffer = prepared->vertex_buffer;
+            prepared->accel.vertexStride = sizeof(MPSPackedFloat3);
+            prepared->accel.maskBuffer = prepared->mask_buffer;
+            prepared->accel.triangleCount = vertices.size() / 3;
+            [prepared->accel rebuild];
+        }
+
+        *handle_out = prepared;
+        return 0;
+    }
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_prepared_ray_anyhit_2d(
+    void* handle,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+    uint64_t hit_count = 0;
+    return run_anyhit_2d_prepared(
+        static_cast<AppleRtAnyHit2DPrepared*>(handle),
+        rays,
+        ray_count,
+        rows_out,
+        row_count_out,
+        &hit_count,
+        nullptr,
+        true,
+        error_out,
+        error_size);
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_profile_prepared_ray_anyhit_2d(
+    void* handle,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    RtdlAppleRtAnyHitProfile* profile_out,
+    char* error_out,
+    size_t error_size) {
+    uint64_t hit_count = 0;
+    return run_anyhit_2d_prepared(
+        static_cast<AppleRtAnyHit2DPrepared*>(handle),
+        rays,
+        ray_count,
+        rows_out,
+        row_count_out,
+        &hit_count,
+        profile_out,
+        true,
+        error_out,
+        error_size);
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_count_prepared_ray_anyhit_2d(
+    void* handle,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    uint64_t* hit_count_out,
+    RtdlAppleRtAnyHitProfile* profile_out,
+    char* error_out,
+    size_t error_size) {
+    if (hit_count_out == nullptr) {
+        set_message(error_out, error_size, "null hit-count output passed to rtdl_apple_rt_count_prepared_ray_anyhit_2d");
+        return 1;
+    }
+    RtdlRayAnyHitRow* rows_out = nullptr;
+    size_t row_count = 0;
+    return run_anyhit_2d_prepared(
+        static_cast<AppleRtAnyHit2DPrepared*>(handle),
+        rays,
+        ray_count,
+        &rows_out,
+        &row_count,
+        hit_count_out,
+        profile_out,
+        false,
+        error_out,
+        error_size);
+}
+
+extern "C" RTDL_APPLE_RT_EXPORT void rtdl_apple_rt_destroy_prepared_ray_anyhit_2d(void* handle) {
+    delete static_cast<AppleRtAnyHit2DPrepared*>(handle);
+}
+
 extern "C" RTDL_APPLE_RT_EXPORT int rtdl_apple_rt_run_fixed_radius_neighbors_2d(
     const RtdlPoint2D* queries,
     size_t query_count,

@@ -1460,6 +1460,196 @@ def _call_ray_anyhit_optix_packed(compiled: CompiledKernel, packed, lib) -> Opti
         field_names=("ray_id", "any_hit"))
 
 
+class PreparedOptixRayTriangleAnyHit2D:
+    """Prepared OptiX 2-D any-hit scene with scalar hit-count query output."""
+
+    def __init__(self, triangles):
+        packed = triangles if isinstance(triangles, PackedTriangles) else pack_triangles(triangles, dimension=2)
+        if packed.dimension != 2:
+            raise ValueError("prepare_optix_ray_triangle_any_hit_2d requires 2-D triangles")
+        self._packed_triangles = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if packed.count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_ray_anyhit_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_prepare_ray_anyhit_2d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    def count(self, rays) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        if isinstance(rays, OptixRay2DBuffer):
+            return self.count_packed(rays)
+        packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=2)
+        if packed_rays.dimension != 2:
+            raise ValueError("PreparedOptixRayTriangleAnyHit2D.count requires 2-D rays")
+        if packed_rays.count == 0 or self._packed_triangles.count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_ray_anyhit_2d")
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_count_prepared_ray_anyhit_2d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        hit_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            packed_rays.records,
+            packed_rays.count,
+            ctypes.byref(hit_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(hit_count.value)
+
+    def count_packed(self, rays: "OptixRay2DBuffer") -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        if not isinstance(rays, OptixRay2DBuffer):
+            raise ValueError("count_packed requires an OptixRay2DBuffer")
+        if rays.closed:
+            raise RuntimeError("prepared OptiX ray buffer is closed")
+        if rays.count == 0 or self._packed_triangles.count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_ray_anyhit_2d_packed")
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_count_prepared_ray_anyhit_2d_packed. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        hit_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            rays.handle,
+            ctypes.byref(hit_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(hit_count.value)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_ray_anyhit_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixRayTriangleAnyHit2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_ray_triangle_any_hit_2d(triangles) -> PreparedOptixRayTriangleAnyHit2D:
+    return PreparedOptixRayTriangleAnyHit2D(triangles)
+
+
+class OptixRay2DBuffer:
+    """Prepared OptiX 2-D ray batch for repeated scalar any-hit counts."""
+
+    def __init__(self, rays):
+        packed = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=2)
+        if packed.dimension != 2:
+            raise ValueError("prepare_optix_rays_2d requires 2-D rays")
+        self._packed_rays = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if packed.count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_rays_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_prepare_rays_2d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def count(self) -> int:
+        return int(self._packed_rays.count)
+
+    @property
+    def handle(self):
+        return self._handle
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_rays_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "OptixRay2DBuffer":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_rays_2d(rays) -> OptixRay2DBuffer:
+    return OptixRay2DBuffer(rays)
+
+
 def _call_segment_polygon_hitcount_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     segments = packed[compiled.candidates.left.name]
     polygons = packed[compiled.candidates.right.name]
@@ -1792,6 +1982,55 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_anyhit3d.restype = ctypes.c_int
+    optional_prepare_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_ray_anyhit_2d")
+    if optional_prepare_anyhit2d is not None:
+        optional_prepare_anyhit2d.argtypes = [
+            ctypes.POINTER(_RtdlTriangle),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_anyhit2d.restype = ctypes.c_int
+    optional_count_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_ray_anyhit_2d")
+    if optional_count_anyhit2d is not None:
+        optional_count_anyhit2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_anyhit2d.restype = ctypes.c_int
+    optional_destroy_anyhit2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_ray_anyhit_2d")
+    if optional_destroy_anyhit2d is not None:
+        optional_destroy_anyhit2d.argtypes = [ctypes.c_void_p]
+        optional_destroy_anyhit2d.restype = None
+    optional_prepare_rays2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_rays_2d")
+    if optional_prepare_rays2d is not None:
+        optional_prepare_rays2d.argtypes = [
+            ctypes.POINTER(_RtdlRay2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_rays2d.restype = ctypes.c_int
+    optional_count_anyhit2d_packed = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_ray_anyhit_2d_packed")
+    if optional_count_anyhit2d_packed is not None:
+        optional_count_anyhit2d_packed.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_anyhit2d_packed.restype = ctypes.c_int
+    optional_destroy_rays2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_rays_2d")
+    if optional_destroy_rays2d is not None:
+        optional_destroy_rays2d.argtypes = [ctypes.c_void_p]
+        optional_destroy_rays2d.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_hitcount").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,

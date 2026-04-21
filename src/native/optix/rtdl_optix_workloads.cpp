@@ -1989,6 +1989,79 @@ struct RayHitCountLaunchParams {
     uint32_t               ray_count;
 };
 
+static std::string ray_anyhit_kernel_source_2d();
+
+struct RayAnyHitCountLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuRay*          rays;
+    const GpuTriangle*     triangles;
+    uint32_t*              hit_count;
+    uint32_t               ray_count;
+};
+
+static void ensure_ray_anyhit_2d_pipeline()
+{
+    std::call_once(g_rayanyhit.init, [&]() {
+        std::string src = ray_anyhit_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_kernel.cu");
+        g_rayanyhit.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static std::string ray_anyhit_count_kernel_source_2d()
+{
+    std::string src = ray_anyhit_kernel_source_2d();
+    const std::string old_output_field =
+        "    RayHitCountRecord* output;\n";
+    const std::string new_output_field =
+        "    uint32_t* hit_count;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit count params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit count zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    if (p1 != 0u) atomicAdd(params.hit_count, 1u);\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit count output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+    return src;
+}
+
+static void ensure_ray_anyhit_count_2d_pipeline()
+{
+    std::call_once(g_rayanyhit_count.init, [&]() {
+        std::string src = ray_anyhit_count_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_count_kernel.cu");
+        g_rayanyhit_count.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+}
+
 static void run_ray_hitcount_optix(
         const RtdlRay2D*    rays,      size_t ray_count,
         const RtdlTriangle* triangles, size_t triangle_count,
@@ -2098,17 +2171,7 @@ static void run_ray_anyhit_optix(
         const RtdlTriangle* triangles, size_t triangle_count,
         RtdlRayAnyHitRow** rows_out, size_t* row_count_out)
 {
-    std::call_once(g_rayanyhit.init, [&]() {
-        std::string src = ray_anyhit_kernel_source_2d();
-        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_kernel.cu");
-        g_rayanyhit.pipe = build_pipeline(
-            get_optix_context(), ptx,
-            "__raygen__rayhit_probe",
-            "__miss__rayhit_miss",
-            "__intersection__rayhit_isect",
-            "__anyhit__rayhit_anyhit",
-            nullptr, 4).release();
-    });
+    ensure_ray_anyhit_2d_pipeline();
 
     std::vector<GpuRay>      gpu_rays(ray_count);
     std::vector<GpuTriangle> gpu_tris(triangle_count);
@@ -2164,6 +2227,152 @@ static void run_ray_anyhit_optix(
     }
     *rows_out      = out;
     *row_count_out = ray_count;
+}
+
+struct PreparedRayAnyHit2D {
+    std::vector<GpuTriangle> triangles;
+    DevPtr d_triangles;
+    AccelHolder accel;
+
+    explicit PreparedRayAnyHit2D(const RtdlTriangle* source, size_t count)
+        : triangles(count), d_triangles(sizeof(GpuTriangle) * count)
+    {
+        for (size_t i = 0; i < count; ++i) {
+            triangles[i] = {
+                static_cast<float>(source[i].x0),
+                static_cast<float>(source[i].y0),
+                static_cast<float>(source[i].x1),
+                static_cast<float>(source[i].y1),
+                static_cast<float>(source[i].x2),
+                static_cast<float>(source[i].y2),
+                source[i].id,
+            };
+        }
+        upload(d_triangles.ptr, triangles.data(), triangles.size());
+
+        if (!triangles.empty()) {
+            std::vector<OptixAabb> aabbs(triangles.size());
+            for (size_t i = 0; i < triangles.size(); ++i) {
+                aabbs[i] = aabb_for_triangle(
+                    triangles[i].x0, triangles[i].y0,
+                    triangles[i].x1, triangles[i].y1,
+                    triangles[i].x2, triangles[i].y2);
+            }
+            accel = build_custom_accel(get_optix_context(), aabbs);
+        }
+    }
+};
+
+struct PreparedRays2D {
+    size_t ray_count;
+    DevPtr d_rays;
+
+    explicit PreparedRays2D(const RtdlRay2D* source, size_t count)
+        : ray_count(count), d_rays(sizeof(GpuRay) * count)
+    {
+        std::vector<GpuRay> rays(count);
+        for (size_t i = 0; i < count; ++i) {
+            rays[i] = {
+                static_cast<float>(source[i].ox),
+                static_cast<float>(source[i].oy),
+                static_cast<float>(source[i].dx),
+                static_cast<float>(source[i].dy),
+                static_cast<float>(source[i].tmax),
+                source[i].id,
+            };
+        }
+        upload(d_rays.ptr, rays.data(), rays.size());
+    }
+};
+
+static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_optix(
+        const RtdlTriangle* triangles, size_t triangle_count)
+{
+    ensure_ray_anyhit_count_2d_pipeline();
+    return new PreparedRayAnyHit2D(triangles, triangle_count);
+}
+
+static PreparedRays2D* prepare_rays_2d_optix(
+        const RtdlRay2D* rays, size_t ray_count)
+{
+    return new PreparedRays2D(rays, ray_count);
+}
+
+static void count_prepared_ray_anyhit_2d_gpu_optix(
+        PreparedRayAnyHit2D* prepared,
+        CUdeviceptr d_rays,
+        size_t ray_count,
+        size_t* hit_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
+    *hit_count_out = 0;
+    if (ray_count == 0 || prepared->triangles.empty()) return;
+
+    ensure_ray_anyhit_count_2d_pipeline();
+
+    if (!d_rays) throw std::runtime_error("prepared OptiX ray buffer must not be null when ray_count is nonzero");
+
+    DevPtr d_hit_count(sizeof(uint32_t));
+    uint32_t zero = 0u;
+    upload(d_hit_count.ptr, &zero, 1);
+
+    RayAnyHitCountLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay*>(d_rays);
+    lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
+    lp.hit_count = reinterpret_cast<uint32_t*>(d_hit_count.ptr);
+    lp.ray_count = static_cast<uint32_t>(ray_count);
+
+    DevPtr d_params(sizeof(RayAnyHitCountLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_count.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitCountLaunchParams),
+                            &g_rayanyhit_count.pipe->sbt,
+                            static_cast<unsigned>(ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t count = 0u;
+    download(&count, d_hit_count.ptr, 1);
+    *hit_count_out = static_cast<size_t>(count);
+}
+
+static void count_prepared_ray_anyhit_2d_optix(
+        PreparedRayAnyHit2D* prepared,
+        const RtdlRay2D* rays, size_t ray_count,
+        size_t* hit_count_out)
+{
+    if (!rays && ray_count != 0) throw std::runtime_error("rays pointer must not be null when ray_count is nonzero");
+    std::vector<GpuRay> gpu_rays(ray_count);
+    for (size_t i = 0; i < ray_count; ++i) {
+        gpu_rays[i] = {
+            static_cast<float>(rays[i].ox),
+            static_cast<float>(rays[i].oy),
+            static_cast<float>(rays[i].dx),
+            static_cast<float>(rays[i].dy),
+            static_cast<float>(rays[i].tmax),
+            rays[i].id,
+        };
+    }
+
+    DevPtr d_rays(sizeof(GpuRay) * ray_count);
+    upload(d_rays.ptr, gpu_rays.data(), gpu_rays.size());
+    count_prepared_ray_anyhit_2d_gpu_optix(prepared, d_rays.ptr, ray_count, hit_count_out);
+}
+
+static void count_prepared_ray_anyhit_2d_packed_optix(
+        PreparedRayAnyHit2D* prepared,
+        PreparedRays2D* prepared_rays,
+        size_t* hit_count_out)
+{
+    if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
+    count_prepared_ray_anyhit_2d_gpu_optix(
+        prepared,
+        prepared_rays->d_rays.ptr,
+        prepared_rays->ray_count,
+        hit_count_out);
 }
 
 // ---------- 3-D ray-triangle hit count (OptiX-accelerated) ------------------

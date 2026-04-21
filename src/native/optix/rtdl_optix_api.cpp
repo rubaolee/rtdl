@@ -122,6 +122,81 @@ extern "C" int rtdl_optix_run_ray_anyhit_3d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_ray_anyhit_2d(
+        const RtdlTriangle* triangles, size_t triangle_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!triangles && triangle_count != 0)
+            throw std::runtime_error("triangles pointer must not be null when triangle_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_ray_anyhit_2d_optix(triangles, triangle_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_ray_anyhit_2d(
+        void* prepared,
+        const RtdlRay2D* rays, size_t ray_count,
+        size_t* hit_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rays && ray_count != 0)
+            throw std::runtime_error("rays pointer must not be null when ray_count is nonzero");
+        if (!hit_count_out)
+            throw std::runtime_error("hit_count_out must not be null");
+        count_prepared_ray_anyhit_2d_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            rays, ray_count, hit_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_ray_anyhit_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedRayAnyHit2D*>(prepared);
+}
+
+extern "C" int rtdl_optix_prepare_rays_2d(
+        const RtdlRay2D* rays, size_t ray_count,
+        void** rays_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!rays_out)
+            throw std::runtime_error("rays_out must not be null");
+        if (!rays && ray_count != 0)
+            throw std::runtime_error("rays pointer must not be null when ray_count is nonzero");
+        *rays_out = nullptr;
+        *rays_out = prepare_rays_2d_optix(rays, ray_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_ray_anyhit_2d_packed(
+        void* prepared,
+        void* prepared_rays,
+        size_t* hit_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_rays)
+            throw std::runtime_error("prepared_rays must not be null");
+        if (!hit_count_out)
+            throw std::runtime_error("hit_count_out must not be null");
+        count_prepared_ray_anyhit_2d_packed_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            reinterpret_cast<PreparedRays2D*>(prepared_rays),
+            hit_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays)
+{
+    delete reinterpret_cast<PreparedRays2D*>(prepared_rays);
+}
+
 extern "C" int rtdl_optix_run_segment_polygon_hitcount(
         const RtdlSegment*    segments,  size_t segment_count,
         const RtdlPolygonRef* polygons,  size_t polygon_count,

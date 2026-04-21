@@ -118,7 +118,8 @@ This hybrid layout is more practical than:
 This archive began with the March 29, 2026 review-and-revision cycle and now
 contains later rounds through the `v0.9.5` release and post-release
 fresh-checkout verification, plus the Goals650-656 current-main any-hit,
-documentation, and full-test catch-up:
+documentation, and full-test catch-up, plus the Goals658-679 cross-engine
+prepared visibility/count optimization and release-gate catch-up:
 
 - language/runtime bring-up
 - Embree validation and RayJoin-style reproduction work
@@ -136,6 +137,10 @@ documentation, and full-test catch-up:
 - Goals650-656 current-main native/native-assisted any-hit backend work,
   current-main support matrix, tutorial/example boundary refresh, and
   post-doc-refresh full local test evidence
+- Goals658-679 current-main Apple RT, OptiX, HIPRT, and Vulkan
+  prepared/prepacked visibility-count optimization, public-doc refresh, local
+  full gate, Linux GPU backend gate, and 3-AI release-gate consensus:
+  `2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization`
 - ad hoc review memos and consensus notes that complement the structured rounds
 
 Goal629 added an explicit audit for the misleading public gap between Goal 65

@@ -145,6 +145,16 @@ int  rtdl_vulkan_run_ray_anyhit(
          const RtdlTriangle* triangles, size_t triangle_count,
          RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_vulkan_prepare_ray_anyhit_2d(
+         const RtdlTriangle* triangles, size_t triangle_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_vulkan_run_prepared_ray_anyhit_2d(
+         void* prepared,
+         const RtdlRay2D* rays, size_t ray_count,
+         RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+void rtdl_vulkan_destroy_prepared_ray_anyhit_2d(void* prepared);
 int  rtdl_vulkan_run_ray_anyhit_3d(
          const RtdlRay3D*    rays,      size_t ray_count,
          const RtdlTriangle3D* triangles, size_t triangle_count,

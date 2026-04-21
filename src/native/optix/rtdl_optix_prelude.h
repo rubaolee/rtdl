@@ -274,6 +274,26 @@ int  rtdl_optix_run_ray_anyhit_3d(
          const RtdlTriangle3D* triangles, size_t triangle_count,
          RtdlRayAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_ray_anyhit_2d(
+         const RtdlTriangle* triangles, size_t triangle_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_ray_anyhit_2d(
+         void* prepared,
+         const RtdlRay2D* rays, size_t ray_count,
+         size_t* hit_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_ray_anyhit_2d(void* prepared);
+int  rtdl_optix_prepare_rays_2d(
+         const RtdlRay2D* rays, size_t ray_count,
+         void** rays_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_ray_anyhit_2d_packed(
+         void* prepared,
+         void* prepared_rays,
+         size_t* hit_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays);
 int  rtdl_optix_run_segment_polygon_hitcount(
          const RtdlSegment*   segments,  size_t segment_count,
          const RtdlPolygonRef* polygons, size_t polygon_count,

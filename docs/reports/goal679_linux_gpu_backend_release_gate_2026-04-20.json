@@ -1,0 +1,74 @@
+{
+  "date": "2026-04-20",
+  "goal": 679,
+  "host": {
+    "hostname": "lx1",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver_version": "580.126.09",
+    "gpu_memory": "8192 MiB",
+    "python": "Python 3.12.3",
+    "sync_path": "/tmp/rtdl_goal679"
+  },
+  "builds": {
+    "optix": {
+      "command": "make build-optix OPTIX_PREFIX=$HOME/vendor/optix-dev CUDA_PREFIX=/usr NVCC=/usr/bin/nvcc",
+      "status": "pass",
+      "version": [9, 0, 0]
+    },
+    "vulkan": {
+      "command": "make build-vulkan",
+      "status": "pass",
+      "version": [0, 1, 0]
+    },
+    "hiprt": {
+      "command": "make build-hiprt HIPRT_PREFIX=$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54",
+      "status": "pass",
+      "version": [2, 2, 15109972]
+    }
+  },
+  "focused_native_tests": {
+    "command": "RTDL_OPTIX_LIB=$PWD/build/librtdl_optix.so RTDL_VULKAN_LIB=$PWD/build/librtdl_vulkan.so RTDL_HIPRT_LIB=$PWD/build/librtdl_hiprt.so LD_LIBRARY_PATH=$HOME/vendor/hiprt-official/hiprtSdk-2.2.0e68f54/hiprt/linux64:${LD_LIBRARY_PATH:-} PYTHONPATH=src:. python3 -m unittest tests.goal671_optix_prepared_anyhit_count_test tests.goal674_hiprt_prepared_anyhit_2d_test tests.goal675_vulkan_prepared_anyhit_2d_test tests.goal636_backend_any_hit_dispatch_test tests.goal639_hiprt_native_any_hit_test -v",
+    "status": "pass",
+    "tests_run": 30,
+    "skipped": 2,
+    "skip_reason": "Apple RT backend unavailable on Linux"
+  },
+  "performance_sanity": {
+    "ray_count": 4096,
+    "triangle_count": 1024,
+    "expected_any_hit_count": 4096,
+    "backends": {
+      "optix": {
+        "direct_count": 4096,
+        "prepared_count": 4096,
+        "direct_median_s": 0.0035153299977537245,
+        "prepared_packed_count_median_s": 0.00005833699833601713,
+        "direct_samples_s": [0.31418489100178704, 0.0035153299977537245, 0.003013328998349607],
+        "prepared_samples_s": [0.00010315500549040735, 0.00006548900273628533, 0.00005833699833601713, 0.000055226992117245025, 0.00005403498653322458]
+      },
+      "hiprt": {
+        "direct_count": 4096,
+        "prepared_count": 4096,
+        "direct_median_s": 0.5688568009936716,
+        "prepared_rows_median_s": 0.0057718300085980445,
+        "direct_samples_s": [0.5882959450245835, 0.5688568009936716, 0.5571995019854512],
+        "prepared_samples_s": [0.005824331979965791, 0.006008269003359601, 0.0057718300085980445, 0.005761542997788638, 0.005712993006454781]
+      },
+      "vulkan": {
+        "direct_count": 4096,
+        "prepared_count": 4096,
+        "direct_median_s": 0.009350006002932787,
+        "prepared_packed_rows_median_s": 0.004641148989321664,
+        "direct_samples_s": [0.4691095110028982, 0.009350006002932787, 0.008727156004169956],
+        "prepared_samples_s": [0.004641148989321664, 0.0049207569973077625, 0.00493162201019004, 0.004485288984142244, 0.004479445982724428]
+      }
+    }
+  },
+  "honesty_boundaries": [
+    "GTX 1070 has no RT cores; OptiX/Vulkan timing is not RT-core evidence.",
+    "HIPRT timing is HIPRT/Orochi CUDA on NVIDIA, not AMD GPU validation.",
+    "The performance sanity case is repeated 2D visibility/any-hit over 4096 rays and 1024 triangles, not DB or graph evidence.",
+    "Prepared/prepacked results use narrower output contracts than full emitted-row workloads."
+  ],
+  "verdict": "pass"
+}

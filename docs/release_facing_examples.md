@@ -18,9 +18,14 @@ It currently covers:
   native/native-assisted Apple execution rather than broad Apple speedup
   evidence
 - the released `v0.9.5` any-hit, visibility-row, and emitted-row reduction
-  examples; the released tag has native early-exit on OptiX, Embree, and HIPRT,
-  while current `main` also has native/native-assisted Vulkan and Apple RT
-  any-hit after rebuilding the backend libraries
+  examples
+- the released `v0.9.6` prepared/prepacked repeated visibility/count paths:
+  Vulkan native any-hit, Apple RT native/native-assisted any-hit, and
+  Apple RT/OptiX/HIPRT/Vulkan prepared repeated-query helpers with explicit
+  no-full-row-speedup and no-DB/graph boundaries
+- released `v0.9.6` OptiX, HIPRT, and Vulkan prepared repeated-query 2D any-hit
+  evidence for visibility/count-style apps; the fastest paths require stable
+  build-side data and, for OptiX/Vulkan, prepacked probe-side rays
 
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
@@ -53,6 +58,7 @@ If you want a guided learning order instead of a flat example list, start with:
 | App integration | `examples/rtdl_v0_7_db_app_demo.py` | Python app stays thin around the RTDL query core |
 | HIPRT example | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through `run_hiprt` / `prepare_hiprt` |
 | Apple RT example | `examples/rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through `run_apple_rt` |
+| Apple RT visibility count | `examples/rtdl_apple_rt_visibility_count.py` | 2D rays and blocker triangles become one scalar blocked-ray count through a prepared/prepacked Apple RT path |
 | Bounded any-hit blocker query | `examples/rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `{ray_id, any_hit}` rows |
 | Visibility / line-of-sight rows | `examples/rtdl_visibility_rows.py` | observers, targets, and blockers become `{observer_id, target_id, visible}` rows |
 | Emitted-row app reductions | `examples/rtdl_reduce_rows.py` | existing RTDL rows become deterministic grouped app summaries |
@@ -113,7 +119,7 @@ Read the companion tutorial:
 
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 
-## v0.9.5 Any-Hit, Visibility, And Row Reduction
+## v0.9.5/v0.9.6 Any-Hit, Visibility, And Repeated Count
 
 Run the portable examples:
 
@@ -123,16 +129,21 @@ PYTHONPATH=src:. python examples/rtdl_visibility_rows.py
 PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 ```
 
-Current v0.9.5 boundary:
+Current v0.9.6 boundary:
 
 - `ray_triangle_any_hit` is a bounded yes/no ray blocker primitive.
-- At the released `v0.9.5` tag boundary, native early-exit exists for OptiX,
-  Embree, and HIPRT.
-- On current `main`, OptiX, Embree, HIPRT, and Vulkan have native early-exit
-  any-hit implementations when the loaded backend libraries export them.
-- Apple RT 3D on current `main` may use MPS RT nearest-intersection any-hit.
-- Apple RT 2D on current `main` may use MPS prism traversal with per-ray
-  early-exit plus exact 2D acceptance when `librtdl_apple_rt` is rebuilt.
+- At the released `v0.9.6` tag boundary, native early-exit exists for OptiX,
+  Embree, HIPRT, and Vulkan when the loaded backend libraries export the
+  relevant symbols.
+- Apple RT 3D may use MPS RT nearest-intersection any-hit.
+- Apple RT 2D may use MPS prism traversal with per-ray early-exit plus exact 2D
+  acceptance when `librtdl_apple_rt` is rebuilt.
+- Apple RT also has a prepared/prepacked visibility-count app path
+  for scalar blocked-ray counts; this is a narrower output contract than full
+  row emission.
+- `v0.9.6` also has prepared repeated-query 2D any-hit paths for OptiX,
+  HIPRT, and Vulkan. These are backend helpers for performance-oriented apps,
+  not a new public workload family and not a broad speedup claim.
 - Do not describe Apple any-hit as programmable shader-level any-hit.
 - `visibility_rows` is a standard-library line-of-sight helper built on
   finite any-hit rays.
@@ -219,6 +230,8 @@ Current HIPRT boundary:
 - `prepare_hiprt` support: prepared 3D `ray_triangle_hit_count` and
   prepared 3D `fixed_radius_neighbors`, plus prepared graph CSR reuse for
   `bfs_discover` and `triangle_match`
+- current-main prepared 2D `ray_triangle_any_hit` support:
+  `prepare_hiprt_ray_triangle_any_hit_2d(...)`
 - unsupported claims: AMD GPU validation, RT-core speedup evidence from the
   tested GTX 1070 path, CPU fallback, and OptiX/Vulkan/HIPRT native
   `ray_triangle_closest_hit`
@@ -236,6 +249,7 @@ Build and run:
 ```bash
 make build-apple-rt
 PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
+PYTHONPATH=src:. python examples/rtdl_apple_rt_visibility_count.py
 ```
 
 The example first computes a CPU Python reference answer, then attempts Apple
@@ -259,6 +273,9 @@ Current Apple RT boundary:
 - Goal597/Goal598 masked traversal support: 3D hit-count and 2D
   segment-intersection use chunked primitive masks to reduce repeated setup
   overhead
+- v0.9.6 visibility-count support: `rtdl_apple_rt_visibility_count.py`
+  uses a prepared 2D Apple RT scene and prepacked rays to return a scalar
+  blocked-ray count for repeated visibility/collision apps
 - Goal590 native support detail: 2D `segment_intersection` uses an
   Apple MPS ray-versus-extruded-segment traversal plus analytic intersection
   refinement

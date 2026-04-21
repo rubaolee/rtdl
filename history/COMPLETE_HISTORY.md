@@ -1,7 +1,7 @@
 # RTDL Complete History Map
 
 Date: 2026-04-20
-Status: generated history map with Goal629 gap-audit addendum, Goal648 public-release hygiene refresh, and Goals650-656 current-main catch-up
+Status: generated history map with Goal629 gap-audit addendum, Goal648 public-release hygiene refresh, Goals650-656 current-main catch-up, and Goals658-679 cross-engine prepared visibility/count optimization catch-up
 
 This page answers the question a new visitor will ask: "Where is the full RTDL
 history?"
@@ -21,10 +21,10 @@ ad hoc reviews, and git history. See `GOAL_66_493_COVERAGE_AUDIT.md` and
 
 ## What Is Recorded
 
-- Structured revision rounds: `109`
-- Archived files in `history/history.db`: `1137`
+- Structured revision rounds: `110`
+- Archived files in `history/history.db`: `1143`
 - External report snapshots: `193`
-- Project snapshots: `943`
+- Project snapshots: `950`
 - Tracked `docs/reports/` artifacts: `1946`
 - Tracked `history/ad_hoc_reviews/` artifacts: `695`
 - Tracked AI handoff files: `530`
@@ -67,6 +67,7 @@ Use these layers together:
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals658-679 cross-engine prepared visibility/count optimization and release gates | `accepted` | `2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization` |
 | `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals650-656 current-main any-hit, documentation, and test catch-up | `accepted` | `2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup` |
 | `v0.9.5` | 2026-04-19 | `accepted` | Goal647 fresh checkout post-release verification | `accepted` | `docs/reports/goal647_fresh_checkout_post_release_verification_2026-04-19.md` |
 | `v0.9.5` | 2026-04-19 | `accepted` | Goal646 public front-page doc refresh | `accepted` | `docs/reports/goal646_post_release_public_front_page_doc_update_2026-04-19.md` |

@@ -3,6 +3,7 @@
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
@@ -103,6 +104,18 @@ struct RtdlRayAnyHitRow {
     uint32_t any_hit;
 };
 
+struct RtdlAppleRtAnyHitProfile {
+    double total_seconds;
+    double buffer_seconds;
+    double ray_pack_seconds;
+    double dispatch_wait_seconds;
+    double result_scan_seconds;
+    double output_seconds;
+    uint64_t chunk_count;
+    uint64_t ray_count;
+    uint64_t hit_count;
+};
+
 struct RtdlNeighborRow {
     uint32_t query_id;
     uint32_t neighbor_id;
@@ -167,6 +180,30 @@ struct AppleRtClosestHitPrepared {
     ~AppleRtClosestHitPrepared() {
         [intersector release];
         [accel release];
+        [vertex_buffer release];
+        [command_queue release];
+        [device release];
+    }
+};
+
+struct AppleRtAnyHit2DPrepared {
+    id<MTLDevice> device = nil;
+    id<MTLCommandQueue> command_queue = nil;
+    id<MTLBuffer> vertex_buffer = nil;
+    id<MTLBuffer> mask_buffer = nil;
+    MPSTriangleAccelerationStructure* accel = nil;
+    MPSRayIntersector* intersector = nil;
+    id<MTLBuffer> ray_buffer = nil;
+    id<MTLBuffer> intersection_buffer = nil;
+    size_t ray_capacity = 0;
+    size_t triangle_count = 0;
+
+    ~AppleRtAnyHit2DPrepared() {
+        [intersection_buffer release];
+        [ray_buffer release];
+        [intersector release];
+        [accel release];
+        [mask_buffer release];
         [vertex_buffer release];
         [command_queue release];
         [device release];
@@ -301,6 +338,187 @@ double point_distance_3d(const RtdlPoint3D& query, const RtdlPoint3D& point) {
     const double dy = query.y - point.y;
     const double dz = query.z - point.z;
     return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+using Clock = std::chrono::steady_clock;
+
+double elapsed_seconds(Clock::time_point begin, Clock::time_point end) {
+    return std::chrono::duration<double>(end - begin).count();
+}
+
+void fill_mps_rays_2d(const RtdlRay2D* rays, size_t ray_count, MPSRayOriginMaskDirectionMaxDistance* out) {
+    for (size_t i = 0; i < ray_count; ++i) {
+        if (!valid_ray_2d(rays[i])) {
+            out[i].origin = MPSPackedFloat3(INFINITY, INFINITY, INFINITY);
+            out[i].mask = 0;
+            out[i].direction = MPSPackedFloat3(0.0f, 0.0f, 0.0f);
+            out[i].maxDistance = -1.0f;
+            continue;
+        }
+        out[i].origin = MPSPackedFloat3(static_cast<float>(rays[i].ox), static_cast<float>(rays[i].oy), -1.0f);
+        out[i].mask = 0xFFFFFFFFu;
+        out[i].direction = MPSPackedFloat3(
+            static_cast<float>(rays[i].dx * rays[i].tmax),
+            static_cast<float>(rays[i].dy * rays[i].tmax),
+            2.0f);
+        out[i].maxDistance = 1.000001f;
+    }
+}
+
+int ensure_anyhit_2d_work_buffers(AppleRtAnyHit2DPrepared* prepared, size_t ray_count, char* error_out, size_t error_size) {
+    if (ray_count <= prepared->ray_capacity) {
+        return 0;
+    }
+    [prepared->ray_buffer release];
+    [prepared->intersection_buffer release];
+    prepared->ray_buffer = [prepared->device newBufferWithLength:ray_count * sizeof(MPSRayOriginMaskDirectionMaxDistance)
+                                                         options:MTLResourceStorageModeShared];
+    prepared->intersection_buffer = [prepared->device newBufferWithLength:ray_count * sizeof(MPSIntersectionDistancePrimitiveIndex)
+                                                                   options:MTLResourceStorageModeShared];
+    if (prepared->ray_buffer == nil || prepared->intersection_buffer == nil) {
+        prepared->ray_capacity = 0;
+        set_message(error_out, error_size, "Metal prepared 2D any-hit work-buffer creation failed");
+        return 2;
+    }
+    prepared->ray_capacity = ray_count;
+    return 0;
+}
+
+int run_anyhit_2d_prepared(
+    AppleRtAnyHit2DPrepared* prepared,
+    const RtdlRay2D* rays,
+    size_t ray_count,
+    RtdlRayAnyHitRow** rows_out,
+    size_t* row_count_out,
+    uint64_t* hit_count_out,
+    RtdlAppleRtAnyHitProfile* profile_out,
+    bool emit_rows,
+    char* error_out,
+    size_t error_size) {
+    const auto total_begin = Clock::now();
+    if (prepared == nullptr || (emit_rows && rows_out == nullptr) || row_count_out == nullptr || hit_count_out == nullptr) {
+        set_message(error_out, error_size, "null handle or output passed to Apple RT prepared 2D any-hit run");
+        return 1;
+    }
+    if (emit_rows) {
+        *rows_out = nullptr;
+    }
+    *row_count_out = 0;
+    *hit_count_out = 0;
+    if (ray_count > 0 && rays == nullptr) {
+        set_message(error_out, error_size, "null rays passed to Apple RT prepared 2D any-hit run");
+        return 1;
+    }
+    if (ray_count == 0 || prepared->triangle_count == 0) {
+        if (emit_rows && ray_count > 0) {
+            auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(ray_count * sizeof(RtdlRayAnyHitRow)));
+            if (out == nullptr) {
+                set_message(error_out, error_size, "out of memory allocating empty Apple RT prepared 2D any-hit rows");
+                return 2;
+            }
+            for (size_t i = 0; i < ray_count; ++i) {
+                out[i] = RtdlRayAnyHitRow{rays[i].id, 0u};
+            }
+            *rows_out = out;
+            *row_count_out = ray_count;
+        }
+        if (profile_out != nullptr) {
+            const auto total_end = Clock::now();
+            *profile_out = RtdlAppleRtAnyHitProfile{
+                elapsed_seconds(total_begin, total_end), 0.0, 0.0, 0.0, 0.0, 0.0,
+                prepared->triangle_count == 0 ? 0u : 1u,
+                static_cast<uint64_t>(ray_count),
+                0u,
+            };
+        }
+        return 0;
+    }
+
+    const auto buffer_begin = Clock::now();
+    int status = ensure_anyhit_2d_work_buffers(prepared, ray_count, error_out, error_size);
+    const auto buffer_end = Clock::now();
+    if (status != 0) {
+        return status;
+    }
+
+    const auto pack_begin = Clock::now();
+    auto* gpu_rays = static_cast<MPSRayOriginMaskDirectionMaxDistance*>([prepared->ray_buffer contents]);
+    fill_mps_rays_2d(rays, ray_count, gpu_rays);
+    const auto pack_end = Clock::now();
+
+    const auto dispatch_begin = Clock::now();
+    id<MTLCommandBuffer> command_buffer = [prepared->command_queue commandBuffer];
+    if (command_buffer == nil) {
+        set_message(error_out, error_size, "Metal command buffer creation failed");
+        return 3;
+    }
+    [prepared->intersector encodeIntersectionToCommandBuffer:command_buffer
+                                            intersectionType:MPSIntersectionTypeNearest
+                                                   rayBuffer:prepared->ray_buffer
+                                             rayBufferOffset:0
+                                          intersectionBuffer:prepared->intersection_buffer
+                                    intersectionBufferOffset:0
+                                                    rayCount:ray_count
+                                       accelerationStructure:prepared->accel];
+    [command_buffer commit];
+    [command_buffer waitUntilCompleted];
+    NSError* error = [command_buffer error];
+    const auto dispatch_end = Clock::now();
+    if (error != nil) {
+        set_message(error_out, error_size, [[error localizedDescription] UTF8String]);
+        return 4;
+    }
+
+    const auto scan_begin = Clock::now();
+    const auto* gpu_intersections = static_cast<const MPSIntersectionDistancePrimitiveIndex*>([prepared->intersection_buffer contents]);
+    std::vector<uint32_t> any_hits;
+    if (emit_rows) {
+        any_hits.resize(ray_count, 0u);
+    }
+    uint64_t hit_count = 0;
+    for (size_t i = 0; i < ray_count; ++i) {
+        const float distance = gpu_intersections[i].distance;
+        const bool hit = valid_ray_2d(rays[i]) && distance >= 0.0f && distance <= 1.000001f;
+        if (hit) {
+            hit_count += 1;
+        }
+        if (emit_rows) {
+            any_hits[i] = hit ? 1u : 0u;
+        }
+    }
+    const auto scan_end = Clock::now();
+
+    const auto output_begin = Clock::now();
+    if (emit_rows) {
+        auto* out = static_cast<RtdlRayAnyHitRow*>(std::malloc(ray_count * sizeof(RtdlRayAnyHitRow)));
+        if (out == nullptr) {
+            set_message(error_out, error_size, "out of memory allocating Apple RT prepared 2D any-hit rows");
+            return 5;
+        }
+        for (size_t i = 0; i < ray_count; ++i) {
+            out[i] = RtdlRayAnyHitRow{rays[i].id, any_hits[i]};
+        }
+        *rows_out = out;
+        *row_count_out = ray_count;
+    }
+    *hit_count_out = hit_count;
+    const auto output_end = Clock::now();
+
+    if (profile_out != nullptr) {
+        const auto total_end = Clock::now();
+        *profile_out = RtdlAppleRtAnyHitProfile{
+            elapsed_seconds(total_begin, total_end),
+            elapsed_seconds(buffer_begin, buffer_end),
+            elapsed_seconds(pack_begin, pack_end),
+            elapsed_seconds(dispatch_begin, dispatch_end),
+            elapsed_seconds(scan_begin, scan_end),
+            elapsed_seconds(output_begin, output_end),
+            1u,
+            static_cast<uint64_t>(ray_count),
+            hit_count,
+        };
+    }
+    return 0;
 }
 
 int run_closest_hit_prepared(

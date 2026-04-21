@@ -76,8 +76,12 @@ Backend note:
   the current 18-workload HIPRT matrix on the Linux validation host,
   while `prepare_hiprt` currently covers prepared 3D `ray_triangle_hit_count`
   and prepared 3D `fixed_radius_neighbors`, plus prepared graph CSR reuse for
-  `bfs_discover` and `triangle_match`, and prepared bounded DB table reuse for
-  repeated `conjunctive_scan`, `grouped_count`, and `grouped_sum` queries
+  `bfs_discover` and `triangle_match`, prepared bounded DB table reuse for
+  repeated `conjunctive_scan`, `grouped_count`, and `grouped_sum` queries, and
+  current-main prepared 2D `ray_triangle_any_hit` for repeated visibility apps
+- current `main` also exposes prepared repeated-query 2D any-hit helpers for
+  OptiX and Vulkan; the measured wins require stable build-side triangles and,
+  for the fastest OptiX/Vulkan paths, prepacked probe-side rays
 - released `v0.9.1` Apple RT support exists on Apple Silicon macOS;
   native Apple Metal/MPS execution currently covers 3D
   `ray_triangle_closest_hit`
@@ -187,6 +191,11 @@ When the app needs a summary after emission, `rt.reduce_rows(...)` can reduce
 rows by `any`, `count`, `sum`, `min`, or `max`; it is a Python helper, not a
 native RT backend reduction.
 
+For repeated 2D visibility/count apps in the released `v0.9.6` line, RTDL also
+has prepared/prepacked backend paths that reuse the build-side scene and avoid
+repacking stable ray batches. These paths are for scalar or compact yes/no
+outputs, not full emitted-row output or DB/graph speedup claims.
+
 Then run it:
 
 ```python
@@ -244,11 +253,20 @@ dedicated 3D prepared-path example first:
 PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py
 ```
 
+For performance-oriented repeated visibility/count apps in released `v0.9.6`, the
+important pattern is prepare once, optionally prepack the repeated rays, then
+run the compact any-hit/count query many times. This pattern exists for the
+OptiX, HIPRT, Vulkan, and Apple RT 2D any-hit paths, but the exact
+helper names are backend-specific and the performance claims are limited to
+the measured repeated-query cases.
+
 If your Apple Silicon Mac is configured for the Apple RT backend, use the
-dedicated closest-hit example first:
+dedicated closest-hit example first, then the prepared visibility-count app
+example if you want the released v0.9.6 scalar count path:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_apple_rt_closest_hit.py
+PYTHONPATH=src:. python examples/rtdl_apple_rt_visibility_count.py
 ```
 
 What stays the same:
@@ -349,3 +367,12 @@ Or jump directly to the full hub:
 - the kernel describes the query; Python runs the surrounding program
 - `rt.run_cpu_python_reference(...)` is the easiest runner to start with
 - switching backends changes execution, not the public kernel shape
+
+Apple RT visibility-count note:
+
+- `examples/rtdl_apple_rt_visibility_count.py` uses a prepared Apple RT 2D
+  scene plus prepacked rays to return one scalar blocked-ray count.
+- In `v0.9.6`, it is the Mac-facing prepared/prepacked visibility-count example
+  for repeated visibility/collision apps on Apple Silicon.
+- It is not a claim that Apple RT is faster for full emitted-row output or for
+  DB/graph workloads.
