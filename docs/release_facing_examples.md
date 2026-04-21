@@ -615,6 +615,7 @@ PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend c
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
 ```
 
 ### Polygon-Pair Overlap Area Rows
@@ -625,7 +626,12 @@ PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree
 ```
+
+For both polygon-overlap examples, `--backend embree` is native-assisted:
+Embree performs candidate discovery and CPU/Python performs exact bounded
+area/Jaccard refinement.
 
 ## App-style example
 

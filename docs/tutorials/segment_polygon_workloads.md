@@ -168,6 +168,7 @@ Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree
 ```
 
 Windows `cmd.exe`:
@@ -175,7 +176,12 @@ Windows `cmd.exe`:
 ```bat
 set PYTHONPATH=src;.
 python examples\rtdl_polygon_pair_overlap_area_rows.py
+python examples\rtdl_polygon_pair_overlap_area_rows.py --backend embree
 ```
+
+The Embree mode is native-assisted: Embree performs polygon overlay/candidate
+discovery and the app keeps exact grid-cell overlap-area refinement in
+CPU/Python.
 
 Kernel shape:
 
@@ -199,6 +205,7 @@ Run:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
 ```
 
 Windows `cmd.exe`:
@@ -206,10 +213,13 @@ Windows `cmd.exe`:
 ```bat
 set PYTHONPATH=src;.
 python examples\rtdl_polygon_set_jaccard.py
+python examples\rtdl_polygon_set_jaccard.py --backend embree
 ```
 
 This workload is packaged under a bounded pathology-style overlap contract. It
-is not framed as a generic polygon-similarity engine for every use case.
+is not framed as a generic polygon-similarity engine for every use case. Its
+Embree mode is native-assisted: Embree performs candidate discovery and
+CPU/Python computes exact set-area/Jaccard refinement.
 
 ---
 

@@ -37,6 +37,11 @@ direct spatial joins and app-level proximity joins.
 | Polygon-pair overlap rows | `examples/rtdl_polygon_pair_overlap_area_rows.py` | polygon pairs become overlap-area rows | bounded polygon/polygon overlap join |
 | Polygon-set Jaccard | `examples/rtdl_polygon_set_jaccard.py` | polygon sets become Jaccard-similarity rows | bounded polygon-set overlap join |
 
+The polygon-pair overlap and polygon-set Jaccard apps expose Embree
+native-assisted mode: Embree performs polygon overlay/candidate discovery, then
+CPU/Python exact grid-cell area refinement computes the released area/Jaccard
+rows. This is not a fully native Embree area-overlay kernel.
+
 External comparison scripts for indexed SQL/GIS baselines live under
 `docs/sql/`, including the v0.4 app comparisons and v0.2 PostGIS geometry
 workloads. PostGIS is an external baseline and correctness/performance anchor,

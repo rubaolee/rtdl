@@ -1,0 +1,753 @@
+{
+  "app_count": 16,
+  "by_app": {
+    "ann_candidate_search": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10361154202837497,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11235349997878075,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0843724336040834
+    },
+    "barnes_hut_force": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10420158307533711,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11209212499670684,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0757238200082326
+    },
+    "database_analytics": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.11371812492143363,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.12518391595222056,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.1008264165339385
+    },
+    "dbscan_clustering": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10751195903867483,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.1165622090920806,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.084179007938551
+    },
+    "event_hotspot_screening": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10137320798821747,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11128149996511638,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0977407361721307
+    },
+    "facility_knn_assignment": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10167716594878584,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11166774993762374,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0982578919820611
+    },
+    "graph_analytics": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10322124999947846,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.10901916690636426,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.056169799405792
+    },
+    "hausdorff_distance": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10606516699772328,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11194566695485264,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0554423296882716
+    },
+    "outlier_detection": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.1064302499871701,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11319408298004419,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0635517909023933
+    },
+    "polygon_pair_overlap_area_rows": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.09997879201546311,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11192495794966817,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.1194870001265609
+    },
+    "polygon_set_jaccard": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.09989691700320691,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11039825004991144,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.1051216930585297
+    },
+    "road_hazard_screening": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10046841599978507,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11019174999091774,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0967800068745335
+    },
+    "robot_collision_screening": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.1027463749051094,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11215379100758582,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0915595913837794
+    },
+    "segment_polygon_anyhit_rows": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.1005417499691248,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11035066598560661,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.09756062550626
+    },
+    "segment_polygon_hitcount": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.10180916707031429,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11000375007279217,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.0804896379990843
+    },
+    "service_coverage_gaps": {
+      "canonical_payload_match": true,
+      "cpu_python_reference_elapsed_sec": 0.1009121659444645,
+      "cpu_python_reference_ok": true,
+      "embree_elapsed_sec": 0.11018333397805691,
+      "embree_ok": true,
+      "embree_vs_cpu_elapsed_ratio": 1.091873640277374
+    }
+  },
+  "canonical_payloads_match": true,
+  "commands_valid": true,
+  "goal": 713,
+  "run_count": 32,
+  "runs": [
+    {
+      "app": "database_analytics",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "adc8ff97a138ba0a61d4fa828373ec184363252e1c3effe5b8e89d92553a6019",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_database_analytics_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.11371812492143363,
+      "json_valid": true,
+      "payload_app": "database_analytics",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"database_analytics\",\n  \"data_flow\": [\n    \"application-owned denormalized rows\",\n    \"bounded RTDL DB kernels\",\n    \"scan and grouped aggregate rows\",\n    \"Python-owned dashboard or risk-summary JSON\"\n  ],\n  \"honesty_boundary\": \"Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.\",\n  \"optix_performance\": {\n    \"class\": \"python_interface_dominated\",\n    \"note\": \"Uses real OptiX DB BVH candidate discovery, but app-level performance is still d"
+    },
+    {
+      "app": "database_analytics",
+      "backend": "embree",
+      "canonical_sha256": "adc8ff97a138ba0a61d4fa828373ec184363252e1c3effe5b8e89d92553a6019",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_database_analytics_app.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.12518391595222056,
+      "json_valid": true,
+      "payload_app": "database_analytics",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"database_analytics\",\n  \"data_flow\": [\n    \"application-owned denormalized rows\",\n    \"bounded RTDL DB kernels\",\n    \"scan and grouped aggregate rows\",\n    \"Python-owned dashboard or risk-summary JSON\"\n  ],\n  \"honesty_boundary\": \"Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.\",\n  \"optix_performance\": {\n    \"class\": \"python_interface_dominated\",\n    \"note\": \"Uses real OptiX DB BVH candidate discovery, but app-level performance is still d"
+    },
+    {
+      "app": "graph_analytics",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "f862a790d8ff52ef550a02f5d0d03d94fa7692e0a8e841ab6f56edf80a13c84b",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_graph_analytics_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10322124999947846,
+      "json_valid": true,
+      "payload_app": "graph_analytics",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"graph_analytics\",\n  \"backend\": \"cpu_python_reference\",\n  \"data_flow\": [\n    \"application graph data\",\n    \"bounded RTDL graph kernels\",\n    \"BFS discovery rows and triangle rows\",\n    \"Python-owned graph analytics summary JSON\"\n  ],\n  \"honesty_boundary\": \"Unified app over bounded v0.6.1 graph kernels; not a full graph database or distributed graph analytics system.\",\n  \"scenario\": \"all\",\n  \"sections\": {\n    \"bfs\": {\n      \"app\": \"graph_bfs\",\n      \"backend\": \"cpu_python_reference\",\n      \"fronti"
+    },
+    {
+      "app": "graph_analytics",
+      "backend": "embree",
+      "canonical_sha256": "f862a790d8ff52ef550a02f5d0d03d94fa7692e0a8e841ab6f56edf80a13c84b",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_graph_analytics_app.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.10901916690636426,
+      "json_valid": true,
+      "payload_app": "graph_analytics",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"graph_analytics\",\n  \"backend\": \"embree\",\n  \"data_flow\": [\n    \"application graph data\",\n    \"bounded RTDL graph kernels\",\n    \"BFS discovery rows and triangle rows\",\n    \"Python-owned graph analytics summary JSON\"\n  ],\n  \"honesty_boundary\": \"Unified app over bounded v0.6.1 graph kernels; not a full graph database or distributed graph analytics system.\",\n  \"scenario\": \"all\",\n  \"sections\": {\n    \"bfs\": {\n      \"app\": \"graph_bfs\",\n      \"backend\": \"embree\",\n      \"frontier\": [\n        {\n          \""
+    },
+    {
+      "app": "service_coverage_gaps",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "0c371ae8264deacd9d4349d13ef6513f8bb26be0b350dea852ca7eaf68c94435",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.1009121659444645,
+      "json_valid": true,
+      "payload_app": "service_coverage_gaps",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"service_coverage_gaps\",\n  \"backend\": \"cpu_python_reference\",\n  \"clinic_count\": 48,\n  \"clinic_loads\": {\n    \"10\": 2,\n    \"11\": 1,\n    \"12\": 2,\n    \"110\": 2,\n    \"111\": 1,\n    \"112\": 2,\n    \"210\": 2,\n    \"211\": 1,\n    \"212\": 2,\n    \"310\": 2,\n    \"311\": 1,\n    \"312\": 2,\n    \"410\": 2,\n    \"411\": 1,\n    \"412\": 2,\n    \"510\": 2,\n    \"511\": 1,\n    \"512\": 2,\n    \"610\": 2,\n    \"611\": 1,\n    \"612\": 2,\n    \"710\": 2,\n    \"711\": 1,\n    \"712\": 2,\n    \"810\": 2,\n    \"811\": 1,\n    \"812\": 2,\n    \"910\": 2,\n    \"911"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "backend": "embree",
+      "canonical_sha256": "0c371ae8264deacd9d4349d13ef6513f8bb26be0b350dea852ca7eaf68c94435",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11018333397805691,
+      "json_valid": true,
+      "payload_app": "service_coverage_gaps",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"service_coverage_gaps\",\n  \"backend\": \"embree\",\n  \"clinic_count\": 48,\n  \"clinic_loads\": {\n    \"10\": 2,\n    \"11\": 1,\n    \"12\": 2,\n    \"110\": 2,\n    \"111\": 1,\n    \"112\": 2,\n    \"210\": 2,\n    \"211\": 1,\n    \"212\": 2,\n    \"310\": 2,\n    \"311\": 1,\n    \"312\": 2,\n    \"410\": 2,\n    \"411\": 1,\n    \"412\": 2,\n    \"510\": 2,\n    \"511\": 1,\n    \"512\": 2,\n    \"610\": 2,\n    \"611\": 1,\n    \"612\": 2,\n    \"710\": 2,\n    \"711\": 1,\n    \"712\": 2,\n    \"810\": 2,\n    \"811\": 1,\n    \"812\": 2,\n    \"910\": 2,\n    \"911\": 1,\n    \"912"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "54d6713f4c99943725853ccc6cc5f7389d26af22cb1013b3da6798f0d9ef1a3b",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10137320798821747,
+      "json_valid": true,
+      "payload_app": "event_hotspot_screening",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"event_hotspot_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"copies\": 16,\n  \"event_count\": 96,\n  \"hotspot_threshold\": 3,\n  \"hotspots\": [\n    {\n      \"event_id\": 101,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 102,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 103,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 201,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 202,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 203,\n      \"neighbor_cou"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "backend": "embree",
+      "canonical_sha256": "54d6713f4c99943725853ccc6cc5f7389d26af22cb1013b3da6798f0d9ef1a3b",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11128149996511638,
+      "json_valid": true,
+      "payload_app": "event_hotspot_screening",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"event_hotspot_screening\",\n  \"backend\": \"embree\",\n  \"copies\": 16,\n  \"event_count\": 96,\n  \"hotspot_threshold\": 3,\n  \"hotspots\": [\n    {\n      \"event_id\": 101,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 102,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 103,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 201,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 202,\n      \"neighbor_count\": 4\n    },\n    {\n      \"event_id\": 203,\n      \"neighbor_count\": 4\n    },\n"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "e6a2ecd2d572e986649a1a2a1ced61f4c4ae78cb90498794a4262e4a74a518ca",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_facility_knn_assignment.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10167716594878584,
+      "json_valid": true,
+      "payload_app": "facility_knn_assignment",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"facility_knn_assignment\",\n  \"backend\": \"cpu_python_reference\",\n  \"choices_by_customer\": {\n    \"1\": [\n      {\n        \"depot_id\": 10,\n        \"distance\": 0.2,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"depot_id\": 11,\n        \"distance\": 1.5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"depot_id\": 12,\n        \"distance\": 3.0016662039607267,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"2\": [\n      {\n        \"depot_id\": 11,\n        \"distance\": 0.7280109889280517,\n        \"neighbo"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "backend": "embree",
+      "canonical_sha256": "e6a2ecd2d572e986649a1a2a1ced61f4c4ae78cb90498794a4262e4a74a518ca",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_facility_knn_assignment.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11166774993762374,
+      "json_valid": true,
+      "payload_app": "facility_knn_assignment",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"facility_knn_assignment\",\n  \"backend\": \"embree\",\n  \"choices_by_customer\": {\n    \"1\": [\n      {\n        \"depot_id\": 10,\n        \"distance\": 0.2,\n        \"neighbor_rank\": 1\n      },\n      {\n        \"depot_id\": 11,\n        \"distance\": 1.5,\n        \"neighbor_rank\": 2\n      },\n      {\n        \"depot_id\": 12,\n        \"distance\": 3.0016662039607267,\n        \"neighbor_rank\": 3\n      }\n    ],\n    \"2\": [\n      {\n        \"depot_id\": 11,\n        \"distance\": 0.7280109889280517,\n        \"neighbor_rank\": 1\n   "
+    },
+    {
+      "app": "road_hazard_screening",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "15cfa40f86fdc131112d8399a9b361c44a481ee22c0f98de2895d184a22742e4",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_road_hazard_screening.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10046841599978507,
+      "json_valid": true,
+      "payload_app": "road_hazard_screening",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"road_hazard_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"Default segment/polygon OptiX app path uses host-indexed candidate reduction unless native OptiX mode is explicitly enabled and separately gated.\"\n  },\n  \"priority_segments\": [\n    1\n  ],\n  \"row_count\": 3,\n  \"row"
+    },
+    {
+      "app": "road_hazard_screening",
+      "backend": "embree",
+      "canonical_sha256": "15cfa40f86fdc131112d8399a9b361c44a481ee22c0f98de2895d184a22742e4",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_road_hazard_screening.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11019174999091774,
+      "json_valid": true,
+      "payload_app": "road_hazard_screening",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"road_hazard_screening\",\n  \"backend\": \"embree\",\n  \"boundary\": \"OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"Default segment/polygon OptiX app path uses host-indexed candidate reduction unless native OptiX mode is explicitly enabled and separately gated.\"\n  },\n  \"priority_segments\": [\n    1\n  ],\n  \"row_count\": 3,\n  \"rows\": [\n    {\n  "
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "870c20fe4ecf28d7ee5eeed271c2d06adc028f07d897b542864b7dd11e2ebec6",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10180916707031429,
+      "json_valid": true,
+      "payload_app": "segment_polygon_hitcount",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"segment_polygon_hitcount\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"dataset\": \"authored_segment_polygon_minimal\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates.\"\n  },\n  \"row_count\": 2,\n  \""
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "backend": "embree",
+      "canonical_sha256": "870c20fe4ecf28d7ee5eeed271c2d06adc028f07d897b542864b7dd11e2ebec6",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11000375007279217,
+      "json_valid": true,
+      "payload_app": "segment_polygon_hitcount",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"segment_polygon_hitcount\",\n  \"backend\": \"embree\",\n  \"boundary\": \"OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"dataset\": \"authored_segment_polygon_minimal\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates.\"\n  },\n  \"row_count\": 2,\n  \"rows\": [\n    {"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "5602416fc200202a7271e75c9322e4dbceb02a69f7b2e04247319ac6c270fc4f",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_segment_polygon_anyhit_rows.py",
+        "--output-mode",
+        "segment_counts",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.1005417499691248,
+      "json_valid": true,
+      "payload_app": "segment_polygon_anyhit_rows",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"segment_polygon_anyhit_rows\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"dataset\": \"authored_segment_polygon_minimal\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated.\"\n  },\n  \"output_mode\": \"segment_counts\",\n  \"row_count\": 2,\n"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "backend": "embree",
+      "canonical_sha256": "5602416fc200202a7271e75c9322e4dbceb02a69f7b2e04247319ac6c270fc4f",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_segment_polygon_anyhit_rows.py",
+        "--output-mode",
+        "segment_counts",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11035066598560661,
+      "json_valid": true,
+      "payload_app": "segment_polygon_anyhit_rows",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"segment_polygon_anyhit_rows\",\n  \"backend\": \"embree\",\n  \"boundary\": \"OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.\",\n  \"dataset\": \"authored_segment_polygon_minimal\",\n  \"optix_performance\": {\n    \"class\": \"host_indexed_fallback\",\n    \"note\": \"Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated.\"\n  },\n  \"output_mode\": \"segment_counts\",\n  \"row_count\": 2,\n  \"segment_cou"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "f45ade6d5d1afc90eab134b7daf42eb0e37d592214a83a652047b82c3f538a24",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.09997879201546311,
+      "json_valid": true,
+      "payload_app": "polygon_pair_overlap_area_rows",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"polygon_pair_overlap_area_rows\",\n  \"backend\": \"cpu_python_reference\",\n  \"backend_mode\": \"cpu_exact\",\n  \"boundary\": \"Embree mode uses native Embree overlay/candidate discovery and CPU/Python exact grid-cell area refinement. It is native-assisted, not a fully native area-overlay kernel.\",\n  \"candidate_row_count\": null,\n  \"row_count\": 2,\n  \"rows\": [\n    {\n      \"intersection_area\": 4,\n      \"left_area\": 9,\n      \"left_polygon_id\": 1,\n      \"right_area\": 9,\n      \"right_polygon_id\": 10,\n      \"union"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "backend": "embree",
+      "canonical_sha256": "f45ade6d5d1afc90eab134b7daf42eb0e37d592214a83a652047b82c3f538a24",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_polygon_pair_overlap_area_rows.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11192495794966817,
+      "json_valid": true,
+      "payload_app": "polygon_pair_overlap_area_rows",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"polygon_pair_overlap_area_rows\",\n  \"backend\": \"embree\",\n  \"backend_mode\": \"embree_native_assisted\",\n  \"boundary\": \"Embree mode uses native Embree overlay/candidate discovery and CPU/Python exact grid-cell area refinement. It is native-assisted, not a fully native area-overlay kernel.\",\n  \"candidate_row_count\": 6,\n  \"row_count\": 2,\n  \"rows\": [\n    {\n      \"intersection_area\": 4,\n      \"left_area\": 9,\n      \"left_polygon_id\": 1,\n      \"right_area\": 9,\n      \"right_polygon_id\": 10,\n      \"union_are"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "d05b9178a304a6f735a5e962a441eff497a965e64f204535782276a9dbabff74",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_polygon_set_jaccard.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.09989691700320691,
+      "json_valid": true,
+      "payload_app": "polygon_set_jaccard",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"polygon_set_jaccard\",\n  \"backend\": \"cpu_python_reference\",\n  \"backend_mode\": \"cpu_exact\",\n  \"boundary\": \"Embree mode uses native Embree overlay/candidate discovery and CPU/Python exact grid-cell set-area refinement. It is native-assisted, not a fully native Jaccard kernel.\",\n  \"candidate_row_count\": null,\n  \"row_count\": 1,\n  \"rows\": [\n    {\n      \"intersection_area\": 5,\n      \"jaccard_similarity\": 0.2631578947368421,\n      \"left_area\": 13,\n      \"right_area\": 11,\n      \"union_area\": 19\n    }\n  ]"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "backend": "embree",
+      "canonical_sha256": "d05b9178a304a6f735a5e962a441eff497a965e64f204535782276a9dbabff74",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_polygon_set_jaccard.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11039825004991144,
+      "json_valid": true,
+      "payload_app": "polygon_set_jaccard",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"polygon_set_jaccard\",\n  \"backend\": \"embree\",\n  \"backend_mode\": \"embree_native_assisted\",\n  \"boundary\": \"Embree mode uses native Embree overlay/candidate discovery and CPU/Python exact grid-cell set-area refinement. It is native-assisted, not a fully native Jaccard kernel.\",\n  \"candidate_row_count\": 4,\n  \"row_count\": 1,\n  \"rows\": [\n    {\n      \"intersection_area\": 5,\n      \"jaccard_similarity\": 0.2631578947368421,\n      \"left_area\": 13,\n      \"right_area\": 11,\n      \"union_area\": 19\n    }\n  ]\n}\n"
+    },
+    {
+      "app": "hausdorff_distance",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "56fb4b7c50f95b8dc4e1c9c48e818b04a56a97ad8ff3ccf82ab8dbd930987a96",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10606516699772328,
+      "json_valid": true,
+      "payload_app": "hausdorff_distance",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"cpu_python_reference\",\n  \"copies\": 16,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 64,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 64,\n    \"sou"
+    },
+    {
+      "app": "hausdorff_distance",
+      "backend": "embree",
+      "canonical_sha256": "56fb4b7c50f95b8dc4e1c9c48e818b04a56a97ad8ff3ccf82ab8dbd930987a96",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11194566695485264,
+      "json_valid": true,
+      "payload_app": "hausdorff_distance",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"hausdorff_distance\",\n  \"backend\": \"embree\",\n  \"copies\": 16,\n  \"directed_a_to_b\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 64,\n    \"source_id\": 3,\n    \"target_id\": 103\n  },\n  \"directed_b_to_a\": {\n    \"distance\": 0.30000000000000004,\n    \"distance_reduction_rows\": [\n      {\n        \"directed_distance\": 0.30000000000000004\n      }\n    ],\n    \"row_count\": 64,\n    \"source_id\": 103,\n"
+    },
+    {
+      "app": "ann_candidate_search",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "18bfe976164be194919d0e03c92166448671b4200f23b5f74d65bff7d6758fec",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_ann_candidate_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10361154202837497,
+      "json_valid": true,
+      "payload_app": "ann_candidate_search",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"ann_candidate_search\",\n  \"approximate_rows\": [\n    {\n      \"distance\": 0.05,\n      \"neighbor_id\": 101,\n      \"neighbor_rank\": 1,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.17999999999999972,\n      \"neighbor_id\": 103,\n      \"neighbor_rank\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.09999999999999964,\n      \"neighbor_id\": 105,\n      \"neighbor_rank\": 1,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.05000000000000071,\n      \"neighbor_id\": 1101,\n      \"neighbor_rank\": 1"
+    },
+    {
+      "app": "ann_candidate_search",
+      "backend": "embree",
+      "canonical_sha256": "18bfe976164be194919d0e03c92166448671b4200f23b5f74d65bff7d6758fec",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_ann_candidate_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11235349997878075,
+      "json_valid": true,
+      "payload_app": "ann_candidate_search",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"ann_candidate_search\",\n  \"approximate_rows\": [\n    {\n      \"distance\": 0.05,\n      \"neighbor_id\": 101,\n      \"neighbor_rank\": 1,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 0.17999999999999972,\n      \"neighbor_id\": 103,\n      \"neighbor_rank\": 1,\n      \"query_id\": 2\n    },\n    {\n      \"distance\": 0.09999999999999964,\n      \"neighbor_id\": 105,\n      \"neighbor_rank\": 1,\n      \"query_id\": 3\n    },\n    {\n      \"distance\": 0.05000000000000071,\n      \"neighbor_id\": 1101,\n      \"neighbor_rank\": 1"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "5232cfee585857819f436ac35fa708b6d2b9c3a400382b2e720283c1da7f3b81",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_outlier_detection_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.1064302499871701,
+      "json_valid": true,
+      "payload_app": "outlier_detection",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"outlier_detection\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"Bounded density-threshold outlier demo only; OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim.\",\n  \"copies\": 16,\n  \"density_rows\": [\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "embree",
+      "canonical_sha256": "5232cfee585857819f436ac35fa708b6d2b9c3a400382b2e720283c1da7f3b81",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_outlier_detection_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11319408298004419,
+      "json_valid": true,
+      "payload_app": "outlier_detection",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"outlier_detection\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Bounded density-threshold outlier demo only; OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim.\",\n  \"copies\": 16,\n  \"density_rows\": [\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 1\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 2\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "d04ea42471f2609061095586c31712045e54daea3a27a4a8699f8d83a8b64e3c",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_dbscan_clustering_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10751195903867483,
+      "json_valid": true,
+      "payload_app": "dbscan_clustering",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"dbscan_clustering\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut.\",\n  \"cluster_rows\": [\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n      \"point_id\": 1\n    },\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "embree",
+      "canonical_sha256": "d04ea42471f2609061095586c31712045e54daea3a27a4a8699f8d83a8b64e3c",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_dbscan_clustering_app.py",
+        "--copies",
+        "16",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.1165622090920806,
+      "json_valid": true,
+      "payload_app": "dbscan_clustering",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"dbscan_clustering\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut.\",\n  \"cluster_rows\": [\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n      \"point_id\": 1\n    },\n    {\n      \"cluster_id\": 1,\n      \"is_core\": true,\n      \"neighbor_count\": 4,\n  "
+    },
+    {
+      "app": "robot_collision_screening",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "7de87c79aef3d1c57830b1c5efed1f25c05599899f43be3c24ce42b1432b134a",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--output-mode",
+        "hit_count",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.1027463749051094,
+      "json_valid": true,
+      "payload_app": "robot_collision_screening",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"cpu_python_reference\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.\",\n  \"edge_ray_count\": 16,\n  \"hit_edge_count\": 7,\n  \"matches_oracle\": true,\n  \"obstacle_triangle_count\": 2,\n  \"optix_summary_mode\": \"rows\",\n  \"oracle_hit_edge_count\": 7,\n  \"out"
+    },
+    {
+      "app": "robot_collision_screening",
+      "backend": "embree",
+      "canonical_sha256": "7de87c79aef3d1c57830b1c5efed1f25c05599899f43be3c24ce42b1432b134a",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--output-mode",
+        "hit_count",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11215379100758582,
+      "json_valid": true,
+      "payload_app": "robot_collision_screening",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"robot_collision_screening\",\n  \"backend\": \"embree\",\n  \"boundary\": \"Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.\",\n  \"edge_ray_count\": 16,\n  \"hit_edge_count\": 7,\n  \"matches_oracle\": true,\n  \"obstacle_triangle_count\": 2,\n  \"optix_summary_mode\": \"rows\",\n  \"oracle_hit_edge_count\": 7,\n  \"output_mode\": \"hi"
+    },
+    {
+      "app": "barnes_hut_force",
+      "backend": "cpu_python_reference",
+      "canonical_sha256": "5ac2b3bda923412266e36ca6fbf40a30d257c73e7a746af9e2f235103e1d0017",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "cpu_python_reference"
+      ],
+      "elapsed_sec": 0.10420158307533711,
+      "json_valid": true,
+      "payload_app": "barnes_hut_force_app",
+      "payload_backend": "cpu_python_reference",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"backend\": \"cpu_python_reference\",\n  \"body_count\": 6,\n  \"boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions.\",\n  \"candidate_row_count\": 24,\n  \"candidate_rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 10,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 1.0907795377618705,\n      \"neighbor_id\": 12,\n      \"query_id\": 1\n    },\n    {\n      \"dis"
+    },
+    {
+      "app": "barnes_hut_force",
+      "backend": "embree",
+      "canonical_sha256": "5ac2b3bda923412266e36ca6fbf40a30d257c73e7a746af9e2f235103e1d0017",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "embree"
+      ],
+      "elapsed_sec": 0.11209212499670684,
+      "json_valid": true,
+      "payload_app": "barnes_hut_force_app",
+      "payload_backend": "embree",
+      "returncode": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"app\": \"barnes_hut_force_app\",\n  \"backend\": \"embree\",\n  \"body_count\": 6,\n  \"boundary\": \"Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions.\",\n  \"candidate_row_count\": 24,\n  \"candidate_rows\": [\n    {\n      \"distance\": 0.0,\n      \"neighbor_id\": 10,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 1.0907795377618705,\n      \"neighbor_id\": 12,\n      \"query_id\": 1\n    },\n    {\n      \"distance\": 2.2051"
+    }
+  ],
+  "thread_policy": "RTDL_EMBREE_THREADS=auto unless externally overridden",
+  "valid": true
+}

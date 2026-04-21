@@ -25,6 +25,8 @@ APP_COMMANDS = (
         "segment_polygon_anyhit_rows",
         ("examples/rtdl_segment_polygon_anyhit_rows.py", "--output-mode", "segment_counts"),
     ),
+    ("polygon_pair_overlap_area_rows", ("examples/rtdl_polygon_pair_overlap_area_rows.py",)),
+    ("polygon_set_jaccard", ("examples/rtdl_polygon_set_jaccard.py",)),
     ("hausdorff_distance", ("examples/rtdl_hausdorff_distance_app.py", "--copies", "16")),
     ("ann_candidate_search", ("examples/rtdl_ann_candidate_app.py", "--copies", "16")),
     ("outlier_detection", ("examples/rtdl_outlier_detection_app.py", "--copies", "16")),
@@ -86,7 +88,15 @@ def _canonical_payload(value):
         return {
             key: _canonical_payload(item)
             for key, item in value.items()
-            if key not in {"backend", "requested_backend", "data_flow", "prepared_dataset"}
+            if key
+            not in {
+                "backend",
+                "requested_backend",
+                "data_flow",
+                "prepared_dataset",
+                "backend_mode",
+                "candidate_row_count",
+            }
         }
     if isinstance(value, list):
         items = [_canonical_payload(item) for item in value]
@@ -98,6 +108,7 @@ def _canonical_payload(value):
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--goal", type=int, default=711)
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
@@ -123,7 +134,7 @@ def main() -> int:
         }
 
     payload = {
-        "goal": 711,
+        "goal": args.goal,
         "commands_valid": all(item["returncode"] == 0 and item["json_valid"] for item in runs),
         "thread_policy": "RTDL_EMBREE_THREADS=auto unless externally overridden",
         "app_count": len(APP_COMMANDS),

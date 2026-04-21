@@ -258,7 +258,12 @@ Run the narrow Jaccard example:
 
 ```bash
 PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py
+PYTHONPATH=src:. python3 examples/rtdl_polygon_set_jaccard.py --backend embree
 ```
+
+The Embree Jaccard mode is native-assisted: Embree performs polygon
+overlay/candidate discovery and CPU/Python performs exact bounded set-area
+refinement. It is not a fully native Embree Jaccard kernel.
 
 Generate a runnable handoff artifact:
 
