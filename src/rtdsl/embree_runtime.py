@@ -55,6 +55,7 @@ _DB_MAX_ROWS_PER_JOB = 1_000_000
 _EMBREE_THREAD_OVERRIDE: str | int | None = None
 EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
+    "rtdl_embree_configure_threads",
     "rtdl_embree_free_rows",
     "rtdl_embree_run_lsi",
     "rtdl_embree_run_pip",
@@ -123,7 +124,10 @@ def configure_embree(*, threads: str | int | None = None) -> EmbreeThreadConfig:
     else:
         _normalize_embree_thread_request(threads)
         _EMBREE_THREAD_OVERRIDE = threads
-    return embree_thread_config()
+    config = embree_thread_config()
+    if "_load_embree_library" in globals() and _load_embree_library.cache_info().currsize:
+        _apply_embree_thread_config(_load_embree_library(), config)
+    return config
 
 
 def embree_thread_config() -> EmbreeThreadConfig:
@@ -143,6 +147,21 @@ def embree_thread_config() -> EmbreeThreadConfig:
         source=source,
         auto=auto,
     )
+
+
+def _apply_embree_thread_config(library, config: EmbreeThreadConfig | None = None) -> None:
+    setter = _require_optional_embree_symbol(library, "rtdl_embree_configure_threads")
+    if setter is None:
+        return
+    if config is None:
+        config = embree_thread_config()
+    setter(ctypes.c_size_t(config.effective_threads))
+
+
+def _load_configured_embree_library():
+    library = _load_embree_library()
+    _apply_embree_thread_config(library)
+    return library
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:
@@ -528,7 +547,7 @@ class PreparedEmbreeKernel:
         compiled = _resolve_kernel(kernel_fn_or_compiled)
         _validate_kernel_for_cpu(compiled)
         self.compiled = compiled
-        self.library = _load_embree_library()
+        self.library = _load_configured_embree_library()
         self.expected_inputs = {item.name: item for item in compiled.inputs}
         predicate = compiled.refine_op.predicate.name
         if predicate not in {
@@ -587,6 +606,7 @@ class PreparedEmbreeExecution:
     packed_inputs: dict[str, object]
 
     def run_raw(self) -> EmbreeRowView:
+        _apply_embree_thread_config(self.library)
         predicate_name = self.compiled.refine_op.predicate.name
         if predicate_name == "ray_triangle_any_hit":
             native = _require_optional_embree_symbol(self.library, "rtdl_embree_run_ray_anyhit")
@@ -625,6 +645,7 @@ class PreparedEmbreeExecution:
         raise ValueError(f"unsupported prepared RTDL Embree predicate: {predicate_name}")
 
     def run(self) -> tuple[dict[str, object], ...]:
+        _apply_embree_thread_config(self.library)
         predicate_name = self.compiled.refine_op.predicate.name
         if predicate_name == "ray_triangle_any_hit":
             if _require_optional_embree_symbol(self.library, "rtdl_embree_run_ray_anyhit") is not None:
@@ -924,7 +945,7 @@ def run_embree(kernel_fn_or_compiled, *, result_mode: str = "dict", **inputs):
             name: _normalize_records(name, expected_inputs[name].geometry.name, payload)
             for name, payload in inputs.items()
         }
-        rows = _run_db_embree(compiled, normalized_inputs, _load_embree_library(), result_mode=result_mode)
+        rows = _run_db_embree(compiled, normalized_inputs, _load_configured_embree_library(), result_mode=result_mode)
         return rows
 
     # Current accepted honesty boundary:
@@ -1031,7 +1052,7 @@ def _prepared_execution_cache_key(compiled: CompiledKernel, expected_inputs, inp
 
 
 def embree_version() -> tuple[int, int, int]:
-    library = _load_embree_library()
+    library = _load_configured_embree_library()
     major = ctypes.c_int()
     minor = ctypes.c_int()
     patch = ctypes.c_int()
@@ -2854,6 +2875,8 @@ def _load_embree_library():
         ctypes.POINTER(ctypes.c_int),
     ]
     library.rtdl_embree_get_version.restype = ctypes.c_int
+    library.rtdl_embree_configure_threads.argtypes = [ctypes.c_size_t]
+    library.rtdl_embree_configure_threads.restype = None
     library.rtdl_embree_free_rows.argtypes = [ctypes.c_void_p]
     library.rtdl_embree_free_rows.restype = None
 

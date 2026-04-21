@@ -3,13 +3,17 @@
 #include <embree4/rtcore.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <cstdlib>
 #include <cstdint>
 #include <cstring>
+#include <exception>
 #include <limits>
 #include <new>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -231,6 +235,7 @@ struct RtdlDbGroupedSumRow {
 struct RtdlEmbreeDbDataset;
 
 int rtdl_embree_get_version(int* major_out, int* minor_out, int* patch_out);
+void rtdl_embree_configure_threads(size_t thread_count);
 int rtdl_embree_run_lsi(
     const RtdlSegment* left,
     size_t left_count,
