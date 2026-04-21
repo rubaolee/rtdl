@@ -7,6 +7,10 @@
 Use it when the probe side is points, the build side is polygons, and you want
 one row per accepted containment hit.
 
+`pip` is one of RTDL's root workloads. It is the historical positive-hit
+spatial-filter primitive behind the early RayJoin-facing work and remains a
+building block for polygon applications that need containment/candidate rows.
+
 ## Docs
 
 - canonical kernel pattern:
@@ -34,6 +38,19 @@ return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
   - `rt.point_in_polygon(exact=False, boundary_mode="inclusive")`
 - canonical reference kernel:
   - [point_in_counties_reference](../../../examples/reference/rtdl_language_reference.py)
+- current Embree root-performance closure:
+  - [Goal 742 LSI/PIP root workload refresh](../../reports/goal742_lsi_pip_root_workload_refresh_2026-04-21.md)
+
+## Current Backend Notes
+
+- Embree: native CPU ray-tracing candidate discovery through build-side polygon
+  user geometry and point queries; positive-hit mode emits only accepted
+  containment rows.
+- Prepared Embree raw mode avoids Python dict materialization when the caller
+  only needs compact native rows or a follow-up app reduction.
+- OptiX, Vulkan, HIPRT, and Apple RT remain listed in the engine support matrix;
+  exact performance evidence is backend-specific and should not be inferred
+  from the Embree root refresh.
 
 ## Example
 
@@ -75,4 +92,5 @@ For the strongest historical performance/correctness story, see the accepted
 
 - the accepted public contract is boundary-inclusive only
 - current paths are float-based, not robust exact geometry
-- current `main` keeps this feature working, but the newest live docs emphasize newer v0.2 families rather than expanding `pip` further
+- full matrix mode can be output-materialization-bound; positive-hit mode is
+  the preferred high-performance app shape

@@ -1,0 +1,78 @@
+{
+  "cases": [
+    {
+      "cpu_reference_sec": 5.380151582998224,
+      "embree_1_thread_sec": 0.03488670790102333,
+      "embree_auto_speedup_vs_1_thread": 5.501477778052743,
+      "embree_auto_speedup_vs_cpu": 848.4258377257715,
+      "embree_auto_thread_sec": 0.006341333966702223,
+      "embree_prepared_raw_sec_median": 0.0019459580071270466,
+      "inputs": {
+        "left": 5000,
+        "right": 5000
+      },
+      "name": "lsi_sparse",
+      "parity": {
+        "auto_thread": true,
+        "hash": "efed1e3df1e2e753",
+        "one_thread": true,
+        "prepared_raw": true
+      },
+      "prepared_raw_speedup_vs_dict_auto": 3.258720868321499,
+      "row_count": 5000
+    },
+    {
+      "cpu_reference_sec": 0.09031700005289167,
+      "embree_1_thread_sec": 0.0693135840119794,
+      "embree_auto_speedup_vs_1_thread": 1.122961544410115,
+      "embree_auto_speedup_vs_cpu": 1.463241575393864,
+      "embree_auto_thread_sec": 0.0617239159764722,
+      "embree_prepared_raw_sec_median": 0.0013523329980671406,
+      "inputs": {
+        "left": 350,
+        "right": 350
+      },
+      "name": "lsi_dense",
+      "parity": {
+        "auto_thread": true,
+        "hash": "2a1e553536f2c223",
+        "one_thread": true,
+        "prepared_raw": true
+      },
+      "prepared_raw_speedup_vs_dict_auto": 45.64254223234426,
+      "row_count": 122500
+    },
+    {
+      "cpu_reference_sec": 1.6569615420885384,
+      "embree_1_thread_sec": 0.0193318750243634,
+      "embree_auto_speedup_vs_1_thread": 1.9726403086460031,
+      "embree_auto_speedup_vs_cpu": 169.07770837959507,
+      "embree_auto_thread_sec": 0.009799999999813735,
+      "embree_prepared_raw_sec_median": 0.005374583066441119,
+      "inputs": {
+        "points": 10000,
+        "polygons": 5000
+      },
+      "name": "pip_positive",
+      "parity": {
+        "auto_thread": true,
+        "hash": "47cc0e901685251a",
+        "one_thread": true,
+        "prepared_raw": true
+      },
+      "prepared_raw_speedup_vs_dict_auto": 1.8233972530827383,
+      "row_count": 10000
+    }
+  ],
+  "embree_thread_config": {
+    "auto": true,
+    "effective_threads": 10,
+    "requested": "auto",
+    "source": "api"
+  },
+  "generated_at": "2026-04-21T23:17:05Z",
+  "host": "Rs-MacBook-Air.local",
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "repeats": 5,
+  "scale": "standard"
+}

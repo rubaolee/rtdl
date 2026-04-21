@@ -7,6 +7,11 @@
 Use it when both sides of the query are segment sets and you want one emitted
 row per accepted segment/segment intersection.
 
+`lsi` is one of RTDL's root workloads. The newer segment/polygon and bounded
+polygon-overlap applications build on the same idea: use ray-tracing-style
+candidate discovery for spatial pairs, then emit or refine only the rows the
+application needs.
+
 ## Docs
 
 - canonical kernel pattern:
@@ -34,6 +39,19 @@ return rt.emit(
   - `rt.segment_intersection(exact=False)`
 - canonical reference kernel:
   - [county_zip_join_reference](../../../examples/reference/rtdl_language_reference.py)
+- current Embree root-performance closure:
+  - [Goal 742 LSI/PIP root workload refresh](../../reports/goal742_lsi_pip_root_workload_refresh_2026-04-21.md)
+
+## Current Backend Notes
+
+- Embree: native CPU ray-tracing traversal over build-side segment user
+  geometry, with automatic multithreaded probe dispatch through
+  `RTDL_EMBREE_THREADS=auto` or `rt.configure_embree(threads="auto")`.
+- Prepared Embree raw mode avoids Python dict materialization when the caller
+  only needs native rows or a compact follow-up reduction.
+- OptiX, Vulkan, HIPRT, and Apple RT remain listed in the engine support matrix;
+  their performance evidence is tracked separately from this Embree root
+  refresh.
 
 ## Example
 
@@ -73,5 +91,6 @@ This file contains the current minimal language-reference `lsi` kernel.
 ## Limitations
 
 - current implementation is float-based, not exact arithmetic
-- backend maturity is not uniform across every historical package
-- this feature is part of the accepted RTDL surface, but the strongest public-facing live v0.2 stories are the newer segment/polygon families
+- dense all-pairs outputs are usually row-materialization-bound even when
+  traversal is native and correct
+- backend performance maturity is not uniform across every historical package

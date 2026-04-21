@@ -19,6 +19,8 @@ Use these feature homes when you want to answer practical questions quickly:
 | Workload shape | Feature home |
 | --- | --- |
 | engine-by-feature support states | [Engine Feature Support Contract](engine_support_matrix.md) |
+| segment/segment root spatial join | [LSI: Line Segment Intersection](lsi/README.md) |
+| point/polygon root spatial join | [PIP: Point In Polygon](pip/README.md) |
 | nearest neighbors within a radius | [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) |
 | top-k nearest neighbors | [KNN Rows](knn_rows/README.md) |
 | segment/polygon candidate search | [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md) |
@@ -32,6 +34,13 @@ Use these feature homes when you want to answer practical questions quickly:
 Across these features, the intended RTDL benefit is the same: write the
 workload contract once, then let RTDL handle traversal/refinement/backend
 plumbing inside documented release limits.
+
+`lsi` and `pip` are the original RTDL root workloads. Current `main` gives them
+dedicated root-workload performance evidence again in
+[Goal 742](../reports/goal742_lsi_pip_root_workload_refresh_2026-04-21.md):
+Embree now uses native CPU ray-tracing traversal for LSI and native point-query
+candidate discovery for positive-hit PIP, with automatic multithreaded dispatch
+and prepared raw result modes for low-overhead app integration.
 
 `v0.9.6` does not add a new workload family. It makes the any-hit and
 visibility-count path more practical for repeated apps by adding

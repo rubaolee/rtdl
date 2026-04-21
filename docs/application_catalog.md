@@ -21,6 +21,14 @@ traversal path on RTX-class hardware.
 For app-level support across CPU/Python, Embree, OptiX, Vulkan, HIPRT, and
 Apple RT, see the [App Engine Support Matrix](app_engine_support_matrix.md).
 
+The original RTDL root spatial workloads are still first-class:
+[LSI](features/lsi/README.md) turns segment sets into segment-intersection
+rows, and [PIP](features/pip/README.md) turns point/polygon inputs into
+containment rows. Current Embree evidence is recorded in
+[Goal 742](reports/goal742_lsi_pip_root_workload_refresh_2026-04-21.md); the
+polygon apps below reuse these root primitives for candidate discovery before
+application-specific refinement or reduction.
+
 ## Spatial Join And Proximity Apps
 
 Yes, RTDL has spatial join apps. The current public surface includes both

@@ -597,7 +597,54 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_lsi(
       right_segments.push_back({right[i].id, {right[i].x0, right[i].y0}, {right[i].x1, right[i].y1}});
     }
 
-    std::vector<RtdlLsiRow> rows = lsi_native_loop(left_segments, right_segments);
+    EmbreeDevice device;
+    SegmentSceneData data {&right_segments};
+    SceneHolder holder(device.device);
+    holder.geometry = rtcNewGeometry(device.device, RTC_GEOMETRY_TYPE_USER);
+    rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(right_segments.size()));
+    rtcSetGeometryUserData(holder.geometry, &data);
+    rtcSetGeometryBoundsFunction(holder.geometry, segment_bounds, nullptr);
+    rtcSetGeometryIntersectFunction(holder.geometry, segment_intersect);
+    rtcCommitGeometry(holder.geometry);
+    rtcAttachGeometry(holder.scene, holder.geometry);
+    rtcCommitScene(holder.scene);
+
+    std::vector<size_t> build_order_by_primitive(right_segments.size());
+    for (size_t index = 0; index < build_order_by_primitive.size(); ++index) {
+      build_order_by_primitive[index] = index;
+    }
+
+    std::vector<RtdlLsiRow> rows = run_query_ranges<RtdlLsiRow>(
+        left_segments.size(),
+        [&](size_t begin, size_t end, std::vector<RtdlLsiRow>& local_rows) {
+          for (size_t left_index = begin; left_index < end; ++left_index) {
+            const Segment2D& probe = left_segments[left_index];
+            Vec2 direction = sub(probe.b, probe.a);
+            if (std::fabs(direction.x) < kSegmentIntersectionEps && std::fabs(direction.y) < kSegmentIntersectionEps) {
+              continue;
+            }
+            std::vector<std::pair<size_t, RtdlLsiRow>> query_rows;
+            LsiQueryState state {&probe, &query_rows, &build_order_by_primitive};
+            g_query_kind = QueryKind::kLsi;
+            g_query_state = &state;
+            RTCRayHit rayhit;
+            set_ray(&rayhit, probe.a, direction, 1.0f);
+            RTCIntersectArguments args;
+            rtcInitIntersectArguments(&args);
+            rtcIntersect1(holder.scene, &rayhit, &args);
+            g_query_kind = QueryKind::kNone;
+            g_query_state = nullptr;
+            std::stable_sort(
+                query_rows.begin(),
+                query_rows.end(),
+                [](const auto& left_pair, const auto& right_pair) {
+                  return left_pair.first < right_pair.first;
+                });
+            for (const auto& hit : query_rows) {
+              local_rows.push_back(hit.second);
+            }
+          }
+        });
     *rows_out = copy_rows_out(rows);
     *row_count_out = rows.size();
   }, error_out, error_size);

@@ -104,7 +104,8 @@ struct TriangleSceneData3D {
 
 struct LsiQueryState {
   const Segment2D* probe;
-  std::vector<RtdlLsiRow>* rows;
+  std::vector<std::pair<size_t, RtdlLsiRow>>* rows;
+  const std::vector<size_t>* build_order_by_primitive;
 };
 
 struct PipQueryState {
@@ -660,7 +661,10 @@ void segment_intersect(const RTCIntersectFunctionNArguments* args) {
   if (segment_intersection(*state->probe, build, &point)) {
     // LSI collects all intersecting build segments directly from the user-geometry
     // callback; this path is not limited to a single closest-hit row.
-    state->rows->push_back({state->probe->id, build.id, point.x, point.y});
+    const size_t build_order = state->build_order_by_primitive == nullptr
+        ? static_cast<size_t>(args->primID)
+        : state->build_order_by_primitive->at(args->primID);
+    state->rows->push_back({build_order, {state->probe->id, build.id, point.x, point.y}});
   }
 }
 
