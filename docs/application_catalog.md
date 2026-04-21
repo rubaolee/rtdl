@@ -70,6 +70,7 @@ compact answers instead of all emitted neighbor rows.
 
 | App | Summary mode | What it returns | Boundary |
 | --- | --- | --- | --- |
+| `examples/rtdl_graph_analytics_app.py` | `--output-mode summary` with `--copies N` | BFS discovery counts and triangle-count summaries over repeated deterministic graph fixtures | scales the public graph app for Embree characterization while omitting full discovery/triangle rows from JSON |
 | `examples/rtdl_service_coverage_gaps.py` | `--embree-summary-mode gap_summary` | covered/uncovered household summary rows | omits clinic ids, distances, and clinic-load counts |
 | `examples/rtdl_event_hotspot_screening.py` | `--embree-summary-mode count_summary` | one neighbor-count row per event plus hotspot flags | omits neighbor-pair rows and distances |
 | `examples/rtdl_facility_knn_assignment.py` | `--output-mode primary_assignments` / `summary` | primary depot assignments or depot-load summaries | uses K=1 and omits K=3 fallback choices |
@@ -109,7 +110,11 @@ The primary graph app is unified over the two released v0.6.1 graph kernels.
 | Triangle-count example | `examples/rtdl_graph_triangle_count.py` | seed edges become triangle rows | bounded graph intersection primitive |
 
 This is a graph-kernel app surface, not a graph database or distributed graph
-analytics system.
+analytics system. The unified app also supports
+`--copies N --output-mode summary` for scalable Embree characterization:
+the default remains the small row-emitting tutorial fixture, while summary
+mode repeats the deterministic BFS and triangle fixtures and returns compact
+counts instead of full emitted rows.
 
 ## Visibility And Ray Query Examples
 

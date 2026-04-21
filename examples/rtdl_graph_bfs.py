@@ -22,22 +22,46 @@ def bfs_expand_kernel():
     return rt.emit(fresh, fields=["src_vertex", "dst_vertex", "level"])
 
 
-def make_case() -> dict[str, object]:
+def make_case(copies: int = 1) -> dict[str, object]:
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    row_offsets = [0]
+    column_indices: list[int] = []
+    frontier: list[rt.FrontierVertex] = []
+    visited: list[int] = []
+    for copy_index in range(copies):
+        base = copy_index * 4
+        adjacency = ((base + 1, base + 2), (base + 2, base + 3), (base + 3,), ())
+        frontier.extend(
+            (
+                rt.FrontierVertex(vertex_id=base + 0, level=0),
+                rt.FrontierVertex(vertex_id=base + 1, level=0),
+            )
+        )
+        visited.extend((base + 0, base + 1))
+        for neighbors in adjacency:
+            column_indices.extend(neighbors)
+            row_offsets.append(len(column_indices))
     return {
-        "frontier": (
-            rt.FrontierVertex(vertex_id=0, level=0),
-            rt.FrontierVertex(vertex_id=1, level=0),
-        ),
-        "graph": rt.csr_graph(
-            row_offsets=(0, 2, 4, 5, 5),
-            column_indices=(1, 2, 2, 3, 3),
-        ),
-        "visited": (0, 1),
+        "frontier": tuple(frontier),
+        "graph": rt.csr_graph(row_offsets=tuple(row_offsets), column_indices=tuple(column_indices)),
+        "visited": tuple(visited),
     }
 
 
-def run_backend(backend: str) -> dict[str, object]:
-    case = make_case()
+def _summarize(rows) -> dict[str, object]:
+    row_list = list(rows)
+    return {
+        "discovered_edge_count": len(row_list),
+        "discovered_vertex_count": len({int(row["dst_vertex"]) for row in row_list}),
+        "max_level": max((int(row["level"]) for row in row_list), default=0),
+    }
+
+
+def run_backend(backend: str, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+    if output_mode not in {"rows", "summary"}:
+        raise ValueError(f"unsupported output_mode: {output_mode}")
+    case = make_case(copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(bfs_expand_kernel, **case)
     elif backend == "cpu":
@@ -54,11 +78,14 @@ def run_backend(backend: str) -> dict[str, object]:
     return {
         "app": "graph_bfs",
         "backend": backend,
-        "graph_vertex_count": 4,
-        "graph_edge_count": 5,
-        "frontier": [{"vertex_id": 0, "level": 0}, {"vertex_id": 1, "level": 0}],
-        "visited": [0, 1],
-        "rows": rows,
+        "copies": copies,
+        "output_mode": output_mode,
+        "graph_vertex_count": 4 * copies,
+        "graph_edge_count": 5 * copies,
+        "frontier_size": len(case["frontier"]),
+        "visited_size": len(case["visited"]),
+        "rows": rows if output_mode == "rows" else [],
+        "summary": _summarize(rows),
     }
 
 
@@ -69,8 +96,10 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
         choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
     )
+    parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic graph fixture this many times.")
+    parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
     args = parser.parse_args(argv)
-    print(json.dumps(run_backend(args.backend), indent=2, sort_keys=True))
+    print(json.dumps(run_backend(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 

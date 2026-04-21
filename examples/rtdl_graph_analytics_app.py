@@ -18,22 +18,28 @@ BACKENDS = ("cpu_python_reference", "cpu", "embree", "optix", "vulkan")
 SCENARIOS = ("bfs", "triangle_count", "all")
 
 
-def run_app(backend: str, scenario: str = "all") -> dict[str, Any]:
+def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: str = "rows") -> dict[str, Any]:
     if backend not in BACKENDS:
         raise ValueError(f"unsupported backend: {backend}")
     if scenario not in SCENARIOS:
         raise ValueError(f"unsupported scenario: {scenario}")
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    if output_mode not in {"rows", "summary"}:
+        raise ValueError(f"unsupported output_mode: {output_mode}")
 
     sections: dict[str, Any] = {}
     if scenario in {"bfs", "all"}:
-        sections["bfs"] = rtdl_graph_bfs.run_backend(backend)
+        sections["bfs"] = rtdl_graph_bfs.run_backend(backend, copies=copies, output_mode=output_mode)
     if scenario in {"triangle_count", "all"}:
-        sections["triangle_count"] = rtdl_graph_triangle_count.run_backend(backend)
+        sections["triangle_count"] = rtdl_graph_triangle_count.run_backend(backend, copies=copies, output_mode=output_mode)
 
     return {
         "app": "graph_analytics",
         "backend": backend,
         "scenario": scenario,
+        "copies": copies,
+        "output_mode": output_mode,
         "sections": sections,
         "data_flow": [
             "application graph data",
@@ -64,8 +70,10 @@ def main(argv: list[str] | None = None) -> int:
         choices=SCENARIOS,
         help="Run one graph scenario or the complete unified app.",
     )
+    parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic graph fixture this many times.")
+    parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, args.scenario), indent=2, sort_keys=True))
+    print(json.dumps(run_app(args.backend, args.scenario, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 

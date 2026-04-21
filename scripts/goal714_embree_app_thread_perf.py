@@ -29,7 +29,13 @@ class AppCase:
 
 APP_CASES: tuple[AppCase, ...] = (
     AppCase("database_analytics", ("examples/rtdl_database_analytics_app.py",), "db", False, "small public app fixture"),
-    AppCase("graph_analytics", ("examples/rtdl_graph_analytics_app.py",), "graph", False, "small public app fixture"),
+    AppCase(
+        "graph_analytics",
+        ("examples/rtdl_graph_analytics_app.py", "--copies", "{copies}", "--output-mode", "summary"),
+        "graph",
+        True,
+        "copy-scaled public graph fixture in compact summary mode",
+    ),
     AppCase(
         "service_coverage_gaps",
         ("examples/rtdl_service_coverage_gaps.py", "--copies", "{copies}"),
