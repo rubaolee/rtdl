@@ -33,6 +33,7 @@ live workload/package story.
 If you want a guided learning order instead of a flat example list, start with:
 
 - [RTDL Tutorials](tutorials/README.md)
+- [Application Catalog](application_catalog.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
 
@@ -44,6 +45,7 @@ If you want a guided learning order instead of a flat example list, start with:
 | Learn one kernel across backends | `examples/rtdl_hello_world_backends.py` | shows backend selection without changing the kernel idea |
 | Learn every feature shape quickly | `examples/rtdl_feature_quickstart_cookbook.py` | one compact CPU Python reference recipe per public feature |
 | Spatial/geometric query | `examples/rtdl_segment_polygon_hitcount.py` | released segment/polygon workload |
+| Spatial join app catalog | `docs/application_catalog.md` | complete inventory of app examples, including spatial joins and proximity joins |
 | Nearest-neighbor query | `examples/rtdl_fixed_radius_neighbors.py` | released v0.4 nearest-neighbor surface |
 | Paper-derived spatial metric app | `examples/rtdl_hausdorff_distance_app.py` | two point sets become nearest-neighbor rows and one Hausdorff distance |
 | Paper-derived ANN candidate app | `examples/rtdl_ann_candidate_app.py` | queries and an approximate candidate subset become nearest rows plus recall metrics |
@@ -53,10 +55,15 @@ If you want a guided learning order instead of a flat example list, start with:
 | Paper-derived force approximation app | `examples/rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become candidate rows and approximate force vectors |
 | Graph traversal | `examples/rtdl_graph_bfs.py` | frontier data becomes discovered vertices |
 | Graph intersection | `examples/rtdl_graph_triangle_count.py` | edge probes become triangle rows |
+| Unified graph app | `examples/rtdl_graph_analytics_app.py` | BFS and triangle-count examples become one app JSON result |
 | Bounded DB filter | `examples/rtdl_db_conjunctive_scan.py` | denormalized rows plus predicates become row IDs |
 | Bounded DB aggregate | `examples/rtdl_db_grouped_count.py` / `examples/rtdl_db_grouped_sum.py` | filtered rows become grouped results |
+| Unified DB app | `examples/rtdl_database_analytics_app.py` | regional dashboard and sales-risk scenarios become one app JSON result |
 | App integration | `examples/rtdl_v0_7_db_app_demo.py` | Python app stays thin around the RTDL query core |
+| App-level DB screening | `examples/rtdl_sales_risk_screening.py` | orders plus predicates become risky IDs and grouped regional summaries |
+| App-level road/polygon screening | `examples/rtdl_road_hazard_screening.py` | road segments plus hazard polygons become per-road hit counts |
 | HIPRT example | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through `run_hiprt` / `prepare_hiprt` |
+| Unified Apple RT demo | `examples/rtdl_apple_rt_demo_app.py` | closest-hit and visibility-count scenarios become one app JSON result |
 | Apple RT example | `examples/rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through `run_apple_rt` |
 | Apple RT visibility count | `examples/rtdl_apple_rt_visibility_count.py` | 2D rays and blocker triangles become one scalar blocked-ray count through a prepared/prepacked Apple RT path |
 | Bounded any-hit blocker query | `examples/rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `{ray_id, any_hit}` rows |

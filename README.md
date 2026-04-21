@@ -372,9 +372,15 @@ feature:
 PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py
 ```
 
+If you want the complete app inventory, including the spatial join examples,
+read:
+
+- [Application Catalog](docs/application_catalog.md)
+
 Then try the released graph line:
 
 ```bash
+PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference
 ```
@@ -382,6 +388,7 @@ PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_pyth
 Then try the bounded `v0.7.0` DB release line:
 
 ```bash
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference
 PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference

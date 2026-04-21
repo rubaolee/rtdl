@@ -28,7 +28,7 @@ RT stack.
 | 8 | [v0.8 App Building](v0_8_app_building.md) | Build apps from existing RTDL rows plus Python orchestration |
 | 9 | [RTDL Plus Python Rendering](rendering_and_visual_demos.md) | RTDL as an accelerated compute/query core inside Python demos |
 | 10 | [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py) | See the prepared 3D path for the released v0.9 HIPRT surface |
-| 11 | [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py) | See the released v0.9.1 Apple Metal/MPS closest-hit slice and the released v0.9.4 Apple RT consolidation |
+| 11 | [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py) | See Apple RT closest-hit and visibility-count scenarios from one demo entry point |
 | 12 | [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py) | See the released v0.9.5 bounded any-hit row primitive |
 | 13 | [Apple RT Visibility-Count Example](../../examples/rtdl_apple_rt_visibility_count.py) | See the released v0.9.6 prepared/prepacked scalar visibility-count app path |
 | 13 | [Visibility Rows Example](../../examples/rtdl_visibility_rows.py) | See observer-target line-of-sight rows built on any-hit |
@@ -83,7 +83,8 @@ application.
 - [RTDL Plus Python Rendering](rendering_and_visual_demos.md)
 - [v0.8 App Building](v0_8_app_building.md)
 - [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-- [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py)
+- [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py)
+- [Apple RT Closest-Hit Scenario](../../examples/rtdl_apple_rt_closest_hit.py)
 - [Ray/Triangle Any-Hit Example](../../examples/rtdl_ray_triangle_any_hit.py)
 - [Visibility Rows Example](../../examples/rtdl_visibility_rows.py)
 - [Reduce Rows Example](../../examples/rtdl_reduce_rows.py)
@@ -101,7 +102,7 @@ Once you finish the ladder, the next useful destinations are:
 - [RTDL Language Docs](../rtdl/README.md)
 - [RTDL v0.4 Application Examples](../v0_4_application_examples.md)
 - [HIPRT Example](../../examples/rtdl_hiprt_ray_triangle_hitcount.py)
-- [Apple RT Closest-Hit Example](../../examples/rtdl_apple_rt_closest_hit.py)
+- [Unified Apple RT Demo App](../../examples/rtdl_apple_rt_demo_app.py)
 - [v0.9.6 Release Package](../release_reports/v0_9_6/README.md)
 - [v0.9.5 Release Package](../release_reports/v0_9_5/README.md)
 

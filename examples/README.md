@@ -28,10 +28,16 @@ If you are new to RTDL, use these files first:
 | app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows |
 | graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices |
 | graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows |
+| unified graph app | `rtdl_graph_analytics_app.py` | graph inputs become BFS discovery rows and triangle rows |
 | DB-style filtering | `rtdl_db_conjunctive_scan.py` | rows plus predicates become matching row IDs |
 | DB-style aggregation | `rtdl_db_grouped_count.py` / `rtdl_db_grouped_sum.py` | rows plus predicates become grouped aggregates |
+| unified database app | `rtdl_database_analytics_app.py` | order rows become regional dashboard rows and sales-risk summaries |
 | app-level use | `rtdl_v0_7_db_app_demo.py` | a Python app delegates the query core to RTDL |
+| app-level DB screening | `rtdl_sales_risk_screening.py` | orders plus predicates become risky order IDs and grouped regional summaries |
+| app-level road/polygon screening | `rtdl_road_hazard_screening.py` | road segments plus hazard polygons become per-road hit counts |
+| spatial join apps | `rtdl_service_coverage_gaps.py`, `rtdl_event_hotspot_screening.py`, `rtdl_facility_knn_assignment.py` | locations become coverage gaps, event hotspots, or nearest facility assignments |
 | HIPRT example | `rtdl_hiprt_ray_triangle_hitcount.py` | 3D rays and 3D triangles become per-ray hit-count rows through the prepared HIPRT path |
+| unified Apple RT demo | `rtdl_apple_rt_demo_app.py` | Apple closest-hit and visibility-count scenarios become one app JSON result |
 | Apple RT example | `rtdl_apple_rt_closest_hit.py` | 3D rays and 3D triangles become nearest-hit rows through the Apple Metal/MPS path |
 | Apple RT visibility count | `rtdl_apple_rt_visibility_count.py` | 2D rays and blocker triangles become one scalar blocked-ray count through a prepared/prepacked Apple RT path |
 
@@ -51,12 +57,15 @@ If you are new to RTDL, use these files first:
 - `rtdl_barnes_hut_force_app.py`
 - `rtdl_graph_bfs.py`
 - `rtdl_graph_triangle_count.py`
+- `rtdl_graph_analytics_app.py`
 - `rtdl_db_conjunctive_scan.py`
 - `rtdl_db_grouped_count.py`
 - `rtdl_db_grouped_sum.py`
+- `rtdl_database_analytics_app.py`
 - `rtdl_v0_7_db_app_demo.py`
 - `rtdl_v0_7_db_kernel_app_demo.py`
 - `rtdl_hiprt_ray_triangle_hitcount.py`
+- `rtdl_apple_rt_demo_app.py`
 - `rtdl_apple_rt_closest_hit.py`
 - `rtdl_apple_rt_visibility_count.py`
 - `rtdl_sales_risk_screening.py`
@@ -93,6 +102,7 @@ For release-facing examples and commands, prefer the docs entry points:
 
 - `../README.md`
 - `../docs/current_main_support_matrix.md`
+- `../docs/application_catalog.md`
 - `../docs/quick_tutorial.md`
 - `../docs/tutorials/README.md`
 - `../docs/release_facing_examples.md`

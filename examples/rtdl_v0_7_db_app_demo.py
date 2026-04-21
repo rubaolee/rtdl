@@ -19,7 +19,7 @@ from rtdsl.db_reference import normalize_grouped_query
 from rtdsl.db_reference import normalize_predicate_bundle
 
 
-BACKENDS = ("cpu_reference", "embree", "optix", "vulkan")
+BACKENDS = ("cpu_python_reference", "cpu_reference", "embree", "optix", "vulkan")
 
 
 def make_orders() -> tuple[dict[str, object], ...]:
@@ -107,9 +107,15 @@ def _run_prepared_backend(backend: str, table: tuple[dict[str, object], ...]) ->
         dataset.close()
 
 
+def _canonical_backend(backend: str) -> str:
+    if backend == "cpu_python_reference":
+        return "cpu_reference"
+    return backend
+
+
 def choose_backend(requested: str, table: tuple[dict[str, object], ...]) -> tuple[str, str | None]:
     if requested != "auto":
-        return requested, None
+        return _canonical_backend(requested), None
     for backend in ("embree", "optix", "vulkan"):
         try:
             dataset = _prepare_dataset(backend, table)
@@ -175,9 +181,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="RTDL v0.7 app demo for bounded DB workloads.")
     parser.add_argument(
         "--backend",
-        default="cpu_reference",
+        default="cpu_python_reference",
         choices=("auto", *BACKENDS),
-        help="Use cpu_reference everywhere, or run a prepared RT backend when available.",
+        help="Use the CPU reference everywhere, or run a prepared RT backend when available.",
     )
     args = parser.parse_args(argv)
     print(json.dumps(run_app(args.backend), indent=2, sort_keys=True))
