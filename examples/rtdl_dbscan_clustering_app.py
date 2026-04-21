@@ -234,6 +234,16 @@ def _run_embree_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tupl
     return _core_flag_rows_from_count_rows(case["points"], count_rows)
 
 
+def _run_embree_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+    with rt.prepare_embree_fixed_radius_count_threshold_2d(case["points"]) as prepared:
+        count_rows = prepared.run(
+            case["points"],
+            radius=EPSILON,
+            threshold=MIN_POINTS,
+        )
+    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+
+
 def _cluster_sizes(cluster_rows: tuple[dict[str, object], ...]) -> dict[int, int]:
     sizes: dict[int, int] = {}
     for row in cluster_rows:
@@ -253,8 +263,8 @@ def run_app(
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "rt_core_flags"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'rt_core_flags'")
-    if embree_summary_mode not in {"rows", "rt_core_flags"}:
-        raise ValueError("embree_summary_mode must be 'rows' or 'rt_core_flags'")
+    if embree_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
+        raise ValueError("embree_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
     case = make_dbscan_case(copies=copies)
     points = case["points"]
     core_flag_rows: tuple[dict[str, object], ...] = ()
@@ -266,6 +276,10 @@ def run_app(
         neighbor_rows = ()
         cluster_rows = ()
         core_flag_rows = _run_embree_core_flag_summary(case)
+    elif backend == "embree" and embree_summary_mode == "rt_core_flags_prepared":
+        neighbor_rows = ()
+        cluster_rows = ()
+        core_flag_rows = _run_embree_prepared_core_flag_summary(case)
     else:
         neighbor_rows = _run_rows(backend, case)
         cluster_rows = cluster_from_neighbor_rows(points, neighbor_rows)
@@ -296,8 +310,8 @@ def run_app(
         "oracle_cluster_rows": oracle_rows,
         "oracle_core_flag_rows": oracle_core_flag_rows,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. Optional Embree/OptiX rt_core_flags emits native thresholded core flags only.",
-        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. Optional Embree/OptiX rt_core_flags emits native thresholded core flags only. Embree rt_core_flags_prepared uses a reusable Embree BVH handle.",
+        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. A one-shot CLI run cannot amortize Embree preparation; prepared mode is intended for repeated app/session probes.",
     }
 
 
@@ -319,9 +333,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--embree-summary-mode",
-        choices=("rows", "rt_core_flags"),
+        choices=("rows", "rt_core_flags", "rt_core_flags_prepared"),
         default="rows",
-        help="when backend=embree, use native fixed-radius threshold counts for core flags only",
+        help="when backend=embree, use native fixed-radius threshold counts for core flags only; prepared mode reuses an Embree BVH handle inside the run",
     )
     args = parser.parse_args(argv)
     print(
