@@ -1,0 +1,106 @@
+{
+  "description": "Prepared Embree 2-D kNN rows compared with one-shot Embree kNN app paths.",
+  "goal": 720,
+  "repeats": 3,
+  "results": [
+    {
+      "app": "hausdorff_distance",
+      "copies": 256,
+      "k": 1,
+      "one_shot_sec": 0.03287522302707657,
+      "prepare_sec": 0.00331898097647354,
+      "prepared_run_sec": 0.0333833810291253,
+      "prepared_run_speedup_vs_one_shot": 0.9847781145473136,
+      "query_count": 2048,
+      "search_count_per_pass": 1024
+    },
+    {
+      "app": "ann_candidate_search",
+      "copies": 256,
+      "k": 1,
+      "one_shot_sec": 0.009939784999005497,
+      "prepare_sec": 0.0012764460407197475,
+      "prepared_run_sec": 0.009973426989745349,
+      "prepared_run_speedup_vs_one_shot": 0.9966268374176256,
+      "query_count": 768,
+      "search_count": 768
+    },
+    {
+      "app": "facility_knn_assignment",
+      "copies": 256,
+      "k": 3,
+      "one_shot_sec": 0.021717711992096156,
+      "prepare_sec": 0.0017764799995347857,
+      "prepared_run_sec": 0.021323776978533715,
+      "prepared_run_speedup_vs_one_shot": 1.0184739792560675,
+      "query_count": 1024,
+      "search_count": 1024
+    },
+    {
+      "app": "hausdorff_distance",
+      "copies": 1024,
+      "k": 1,
+      "one_shot_sec": 0.449996795039624,
+      "prepare_sec": 0.01197208696976304,
+      "prepared_run_sec": 0.4565739899990149,
+      "prepared_run_speedup_vs_one_shot": 0.985594459817115,
+      "query_count": 8192,
+      "search_count_per_pass": 4096
+    },
+    {
+      "app": "ann_candidate_search",
+      "copies": 1024,
+      "k": 1,
+      "one_shot_sec": 0.12948085099924356,
+      "prepare_sec": 0.004539796966128051,
+      "prepared_run_sec": 0.13220483000623062,
+      "prepared_run_speedup_vs_one_shot": 0.9793957678637105,
+      "query_count": 3072,
+      "search_count": 3072
+    },
+    {
+      "app": "facility_knn_assignment",
+      "copies": 1024,
+      "k": 3,
+      "one_shot_sec": 0.27762755803996697,
+      "prepare_sec": 0.006424947991035879,
+      "prepared_run_sec": 0.2784203889896162,
+      "prepared_run_speedup_vs_one_shot": 0.9971523962288595,
+      "query_count": 4096,
+      "search_count": 4096
+    },
+    {
+      "app": "hausdorff_distance",
+      "copies": 4096,
+      "k": 1,
+      "one_shot_sec": 7.1141051220474765,
+      "prepare_sec": 0.061919465952087194,
+      "prepared_run_sec": 7.145597052003723,
+      "prepared_run_speedup_vs_one_shot": 0.9955928203441845,
+      "query_count": 32768,
+      "search_count_per_pass": 16384
+    },
+    {
+      "app": "ann_candidate_search",
+      "copies": 4096,
+      "k": 1,
+      "one_shot_sec": 2.029193505004514,
+      "prepare_sec": 0.01899163203779608,
+      "prepared_run_sec": 2.0379987180349417,
+      "prepared_run_speedup_vs_one_shot": 0.9956794805843069,
+      "query_count": 12288,
+      "search_count": 12288
+    },
+    {
+      "app": "facility_knn_assignment",
+      "copies": 4096,
+      "k": 3,
+      "one_shot_sec": 4.090658315981273,
+      "prepare_sec": 0.025544898002408445,
+      "prepared_run_sec": 4.120150537986774,
+      "prepared_run_speedup_vs_one_shot": 0.9928419552311037,
+      "query_count": 16384,
+      "search_count": 16384
+    }
+  ]
+}

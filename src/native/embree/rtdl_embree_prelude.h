@@ -169,6 +169,7 @@ struct RtdlFixedRadiusCountRow {
 };
 
 struct RtdlEmbreeFixedRadiusCountThreshold2D;
+struct RtdlEmbreeKnnRows2D;
 
 struct RtdlKnnNeighborRow {
   uint32_t query_id;
@@ -405,6 +406,23 @@ int rtdl_embree_fixed_radius_count_threshold_2d_run(
     size_t error_size);
 void rtdl_embree_fixed_radius_count_threshold_2d_destroy(
     RtdlEmbreeFixedRadiusCountThreshold2D* handle);
+int rtdl_embree_knn_rows_2d_create(
+    const RtdlPoint* search_points,
+    size_t search_count,
+    RtdlEmbreeKnnRows2D** handle_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_embree_knn_rows_2d_run(
+    RtdlEmbreeKnnRows2D* handle,
+    const RtdlPoint* query_points,
+    size_t query_count,
+    size_t k,
+    RtdlKnnNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+void rtdl_embree_knn_rows_2d_destroy(
+    RtdlEmbreeKnnRows2D* handle);
 int rtdl_embree_run_knn_rows(
     const RtdlPoint* query_points,
     size_t query_count,
