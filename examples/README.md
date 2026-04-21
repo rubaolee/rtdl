@@ -172,6 +172,10 @@ Current v0.8 app example boundary:
   `--output-mode rows`. Its compact `segment_flags` and `segment_counts` modes
   use the RTDL `segment_polygon_hitcount` primitive to avoid materializing full
   segment/polygon pair rows when polygon ids are not needed
+- `rtdl_road_hazard_screening.py` keeps full per-road hit-count rows in
+  `--output-mode rows`. Its compact `priority_segments` and `summary` modes
+  omit full rows from the app JSON payload when only priority road ids or
+  aggregate counts are needed
 
 Current HIPRT boundary:
 

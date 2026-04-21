@@ -1,0 +1,78 @@
+{
+  "backend": "embree",
+  "boundary": "Measures app payload generation plus JSON serialization. Compact road-hazard modes do not change backend traversal; they avoid returning full per-road rows when only priority road ids/counts are needed.",
+  "cases": [
+    {
+      "backend": "embree",
+      "copies": 1024,
+      "json_size_reduction": 16.349383667180277,
+      "priority_segment_count": 1024,
+      "priority_segments_all_sec": [
+        0.015511790988966823,
+        0.011224874993786216,
+        0.007289125001989305
+      ],
+      "priority_segments_best_sec": 0.007289125001989305,
+      "priority_segments_json_bytes": 7788,
+      "row_count": 3072,
+      "rows_all_sec": [
+        0.022909541032277048,
+        0.024716584011912346,
+        0.02181441697757691
+      ],
+      "rows_best_sec": 0.02181441697757691,
+      "rows_json_bytes": 127329,
+      "speedup_vs_rows": 2.992734652187121
+    },
+    {
+      "backend": "embree",
+      "copies": 4096,
+      "json_size_reduction": 16.08360883670632,
+      "priority_segment_count": 4096,
+      "priority_segments_all_sec": [
+        0.08255066606216133,
+        0.08607491594739258,
+        0.07881216704845428
+      ],
+      "priority_segments_best_sec": 0.07881216704845428,
+      "priority_segments_json_bytes": 32365,
+      "row_count": 12288,
+      "rows_all_sec": [
+        0.04119883303064853,
+        0.07892849994823337,
+        0.2763368330197409
+      ],
+      "rows_best_sec": 0.04119883303064853,
+      "rows_json_bytes": 520546,
+      "speedup_vs_rows": 0.5227471160045528
+    },
+    {
+      "backend": "embree",
+      "copies": 16384,
+      "json_size_reduction": 15.460566925686768,
+      "priority_segment_count": 16384,
+      "priority_segments_all_sec": [
+        0.2978570410050452,
+        0.29230545891914517,
+        0.29963741602841765
+      ],
+      "priority_segments_best_sec": 0.29230545891914517,
+      "priority_segments_json_bytes": 137055,
+      "row_count": 49152,
+      "rows_all_sec": [
+        0.3946816249517724,
+        0.40025924996007234,
+        0.3395016669528559
+      ],
+      "rows_best_sec": 0.3395016669528559,
+      "rows_json_bytes": 2118948,
+      "speedup_vs_rows": 1.1614619453506878
+    }
+  ],
+  "geomean_json_size_reduction": 15.96014260885291,
+  "geomean_speedup_vs_rows": 1.220267227252418,
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "python": "3.14.0",
+  "repeats": 3,
+  "suite": "goal729_road_hazard_compact_output_perf"
+}

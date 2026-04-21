@@ -21,18 +21,43 @@ def road_hazard_hitcount():
     return rt.emit(hits, fields=["segment_id", "hit_count"])
 
 
-def make_demo_case() -> dict[str, tuple[object, ...]]:
-    roads = (
+def make_demo_case(*, copies: int = 1) -> dict[str, tuple[object, ...]]:
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    base_roads = (
         rt.Segment(id=1, x0=0.0, y0=1.0, x1=6.0, y1=1.0),
         rt.Segment(id=2, x0=0.0, y0=4.5, x1=6.0, y1=4.5),
         rt.Segment(id=3, x0=3.0, y0=-1.0, x1=3.0, y1=6.0),
     )
-    hazards = (
+    base_hazards = (
         rt.Polygon(id=10, vertices=((1.0, 0.0), (2.5, 0.0), (2.5, 2.0), (1.0, 2.0))),
         rt.Polygon(id=11, vertices=((4.0, 0.5), (5.5, 0.5), (5.5, 2.5), (4.0, 2.5))),
         rt.Polygon(id=12, vertices=((2.0, 3.5), (4.5, 3.5), (4.5, 5.5), (2.0, 5.5))),
     )
-    return {"roads": roads, "hazards": hazards}
+    roads: list[object] = []
+    hazards: list[object] = []
+    for copy_index in range(copies):
+        x_offset = float(copy_index * 10)
+        road_id_offset = copy_index * 100
+        hazard_id_offset = copy_index * 100
+        for road in base_roads:
+            roads.append(
+                rt.Segment(
+                    id=int(road.id) + road_id_offset,
+                    x0=float(road.x0) + x_offset,
+                    y0=float(road.y0),
+                    x1=float(road.x1) + x_offset,
+                    y1=float(road.y1),
+                )
+            )
+        for hazard in base_hazards:
+            hazards.append(
+                rt.Polygon(
+                    id=int(hazard.id) + hazard_id_offset,
+                    vertices=tuple((x + x_offset, y) for x, y in hazard.vertices),
+                )
+            )
+    return {"roads": tuple(roads), "hazards": tuple(hazards)}
 
 
 def _optix_performance() -> dict[str, str]:
@@ -40,8 +65,10 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
-def run_case(backend: str) -> dict[str, object]:
-    case = make_demo_case()
+def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+    if output_mode not in {"rows", "priority_segments", "summary"}:
+        raise ValueError("output_mode must be 'rows', 'priority_segments', or 'summary'")
+    case = make_demo_case(copies=copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
     elif backend == "cpu":
@@ -55,15 +82,26 @@ def run_case(backend: str) -> dict[str, object]:
     else:
         raise ValueError(f"unsupported backend `{backend}`")
     hot_segments = [row["segment_id"] for row in rows if row["hit_count"] >= 2]
-    return {
+    payload: dict[str, object] = {
         "app": "road_hazard_screening",
         "backend": backend,
+        "copies": copies,
+        "output_mode": output_mode,
         "row_count": len(rows),
-        "rows": rows,
         "priority_segments": hot_segments,
+        "priority_segment_count": len(hot_segments),
         "optix_performance": _optix_performance(),
-        "boundary": "OptiX app exposure is currently classified separately from RT-core performance; use optix_performance for the current classification.",
+        "boundary": (
+            "Rows mode emits per-road hit-count rows. Compact priority_segments "
+            "and summary modes omit rows from the app payload when only priority "
+            "road ids or counts are needed. OptiX app exposure is currently "
+            "classified separately from RT-core performance; use optix_performance "
+            "for the current classification."
+        ),
     }
+    if output_mode == "rows":
+        payload["rows"] = rows
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -75,8 +113,15 @@ def main(argv: list[str] | None = None) -> int:
         choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
         default="cpu_python_reference",
     )
+    parser.add_argument("--copies", type=int, default=1, help="Tile the demo roads/hazards for larger app-output tests.")
+    parser.add_argument(
+        "--output-mode",
+        choices=("rows", "priority_segments", "summary"),
+        default="rows",
+        help="Use compact modes to omit full per-road rows from the JSON payload.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend), indent=2, sort_keys=True))
+    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 
