@@ -341,12 +341,12 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "outlier_detection": OptixAppPerformanceSupport(
         app="outlier_detection",
         performance_class=CUDA_THROUGH_OPTIX,
-        note="Uses fixed-radius rows through CUDA-style kernels in the OptiX backend library; emitting all neighbor rows can dominate when only counts are needed.",
+        note="Default path uses fixed-radius rows through CUDA-style kernels; optional rt_count_threshold summary uses OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending.",
     ),
     "dbscan_clustering": OptixAppPerformanceSupport(
         app="dbscan_clustering",
         performance_class=CUDA_THROUGH_OPTIX,
-        note="Uses fixed-radius rows through CUDA-style kernels; Python clustering expansion and row volume can dominate full-app time.",
+        note="Default path uses fixed-radius rows through CUDA-style kernels; optional rt_core_flags summary uses OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path.",
     ),
     "robot_collision_screening": OptixAppPerformanceSupport(
         app="robot_collision_screening",

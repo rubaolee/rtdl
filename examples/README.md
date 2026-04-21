@@ -132,13 +132,18 @@ Current v0.8 app example boundary:
   neighbor rows and Python applies a density threshold. Goal524 records bounded
   Linux CPU/oracle, Embree, OptiX, and Vulkan timing characterization for this
   app; it is not a claim against SciPy, scikit-learn, or production anomaly
-  detection systems
+  detection systems. The optional OptiX `--optix-summary-mode
+  rt_count_threshold` path emits one native fixed-radius threshold summary row
+  per query and avoids neighbor-row materialization, but it remains pending
+  RTX-class performance validation
 - `rtdl_dbscan_clustering_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, `vulkan`, and optional `scipy`; RTDL emits fixed-radius
   neighbor rows and Python expands core, border, and noise labels. Goal524
   records bounded Linux CPU/oracle, Embree, OptiX, and Vulkan timing
   characterization for this app; it is not a claim against scikit-learn DBSCAN
-  or production clustering systems
+  or production clustering systems. The optional OptiX `--optix-summary-mode
+  rt_core_flags` path emits native core flags only; full DBSCAN cluster
+  expansion still needs neighbor connectivity and remains Python-owned
 - `rtdl_robot_collision_screening_app.py` runs on `cpu_python_reference`,
   `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
   plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed

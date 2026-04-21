@@ -112,6 +112,12 @@ bounded DB-style analytical workloads.
       Vulkan timing for these three Stage-1 proximity apps, with no
       external-baseline speedup claim because SciPy was not installed in that
       validation checkout
+    - current `main` also has optional OptiX fixed-radius summary modes for
+      these two apps: `rt_count_threshold` for outlier density thresholds and
+      `rt_core_flags` for DBSCAN core flags. These avoid neighbor-row
+      materialization for the bounded summary, but they are not KNN,
+      Hausdorff, ANN, Barnes-Hut, or full DBSCAN cluster-expansion claims and
+      still require RTX-class performance validation
   - robot collision screening app using `ray_triangle_any_hit` plus
     `rt.reduce_rows(any)` before Python pose/link witness reporting
     - earlier Linux Goal509 evidence covered the hit-count formulation on CPU,
@@ -661,6 +667,9 @@ Release and preview layers inside the current repository:
   - Stage-1 proximity apps now have bounded Linux CPU/Embree/OptiX/Vulkan
     timing characterization through Goal524; that evidence is not a claim
     against SciPy, scikit-learn, FAISS, or production ANN/clustering systems
+  - outlier and DBSCAN now have optional OptiX fixed-radius summary paths for
+    threshold/core-flag output; public performance classification remains
+    conservative until RTX-class evidence is available
   - the current claim is "RTDL rows plus Python app logic," not a new released
     backend/language surface
 - `v0.9.0`: released HIPRT backend and closest-hit expansion
