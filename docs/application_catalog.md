@@ -70,6 +70,7 @@ compact answers instead of all emitted neighbor rows.
 
 | App | Summary mode | What it returns | Boundary |
 | --- | --- | --- | --- |
+| `examples/rtdl_database_analytics_app.py` | `--output-mode summary` with `--copies N` | regional dashboard and sales-risk aggregate summaries over repeated deterministic DB fixtures | scales bounded DB kernels for Embree characterization while omitting full row lists from JSON |
 | `examples/rtdl_graph_analytics_app.py` | `--output-mode summary` with `--copies N` | BFS discovery counts and triangle-count summaries over repeated deterministic graph fixtures | scales the public graph app for Embree characterization while omitting full discovery/triangle rows from JSON |
 | `examples/rtdl_service_coverage_gaps.py` | `--embree-summary-mode gap_summary` | covered/uncovered household summary rows | omits clinic ids, distances, and clinic-load counts |
 | `examples/rtdl_event_hotspot_screening.py` | `--embree-summary-mode count_summary` | one neighbor-count row per event plus hotspot flags | omits neighbor-pair rows and distances |
@@ -98,6 +99,8 @@ analytical row workloads without claiming to be a DBMS.
 because it unifies the regional dashboard and sales-risk screening scenarios.
 The older scenario-specific files remain runnable compatibility helpers for
 historical tests and imports, but they are retired from the public app catalog.
+The unified app also supports `--copies N --output-mode summary` for scalable
+Embree characterization while keeping the default small full-output fixture.
 
 ## Graph App Examples
 

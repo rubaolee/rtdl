@@ -22,9 +22,11 @@ from rtdsl.db_reference import normalize_predicate_bundle
 BACKENDS = ("cpu_python_reference", "cpu_reference", "embree", "optix", "vulkan")
 
 
-def make_orders() -> tuple[dict[str, object], ...]:
+def make_orders(copies: int = 1) -> tuple[dict[str, object], ...]:
     """Small denormalized app table; a real app would load this from its own store."""
-    return (
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    base_rows = (
         {"row_id": 1, "region": "east", "channel": "web", "ship_date": 10, "discount": 5, "quantity": 12, "revenue": 120},
         {"row_id": 2, "region": "west", "channel": "store", "ship_date": 11, "discount": 8, "quantity": 30, "revenue": 300},
         {"row_id": 3, "region": "east", "channel": "web", "ship_date": 12, "discount": 6, "quantity": 18, "revenue": 180},
@@ -33,6 +35,14 @@ def make_orders() -> tuple[dict[str, object], ...]:
         {"row_id": 6, "region": "south", "channel": "store", "ship_date": 14, "discount": 3, "quantity": 6, "revenue": 70},
         {"row_id": 7, "region": "east", "channel": "store", "ship_date": 15, "discount": 6, "quantity": 16, "revenue": 160},
     )
+    rows: list[dict[str, object]] = []
+    for copy_index in range(copies):
+        row_id_offset = copy_index * len(base_rows)
+        for row in base_rows:
+            copied = dict(row)
+            copied["row_id"] = int(row["row_id"]) + row_id_offset
+            rows.append(copied)
+    return tuple(rows)
 
 
 PROMO_SCAN = (
@@ -126,8 +136,24 @@ def choose_backend(requested: str, table: tuple[dict[str, object], ...]) -> tupl
     return "cpu_reference", f"no RT backend prepared successfully; using CPU reference ({last_error})"
 
 
-def run_app(backend: str) -> dict[str, Any]:
-    table = make_orders()
+def _summarize_results(results: dict[str, Any]) -> dict[str, Any]:
+    promo_order_ids = results["promo_order_ids"]
+    counts = {str(row["region"]): int(row["count"]) for row in results["open_order_count_by_region"]}
+    revenue = {
+        str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
+        for row in results["web_revenue_by_region"]
+    }
+    return {
+        "promo_order_count": len(promo_order_ids),
+        "open_order_count_by_region": counts,
+        "web_revenue_by_region": revenue,
+    }
+
+
+def run_app(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, Any]:
+    if output_mode not in {"full", "summary"}:
+        raise ValueError(f"unsupported output_mode: {output_mode}")
+    table = make_orders(copies)
     selected_backend, fallback_note = choose_backend(backend, table)
     if selected_backend == "cpu_reference":
         results = _run_cpu_reference(table)
@@ -143,6 +169,8 @@ def run_app(backend: str) -> dict[str, Any]:
         "app": "regional_order_dashboard",
         "requested_backend": backend,
         "backend": selected_backend,
+        "copies": copies,
+        "output_mode": output_mode,
         "fallback_note": fallback_note,
         "data_flow": [
             "app order rows",
@@ -172,7 +200,8 @@ def run_app(backend: str) -> dict[str, Any]:
             },
         },
         "prepared_dataset": prepared_summary,
-        "results": results,
+        "results": results if output_mode == "full" else {},
+        "summary": _summarize_results(results),
         "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
     }
 
@@ -185,8 +214,10 @@ def main(argv: list[str] | None = None) -> int:
         choices=("auto", *BACKENDS),
         help="Use the CPU reference everywhere, or run a prepared RT backend when available.",
     )
+    parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic order table this many times.")
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend), indent=2, sort_keys=True))
+    print(json.dumps(run_app(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 

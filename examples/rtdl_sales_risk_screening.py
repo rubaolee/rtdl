@@ -42,8 +42,10 @@ def risky_order_revenue_by_region():
     return rt.emit(groups, fields=["region", "sum"])
 
 
-def make_sales_case() -> tuple[dict[str, object], dict[str, object]]:
-    table = (
+def make_sales_case(copies: int = 1) -> tuple[dict[str, object], dict[str, object]]:
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    base_table = (
         {"row_id": 1, "region": "east", "ship_date": 10, "discount": 4, "quantity": 8, "revenue": 120},
         {"row_id": 2, "region": "east", "ship_date": 12, "discount": 7, "quantity": 18, "revenue": 310},
         {"row_id": 3, "region": "west", "ship_date": 12, "discount": 6, "quantity": 12, "revenue": 280},
@@ -51,6 +53,14 @@ def make_sales_case() -> tuple[dict[str, object], dict[str, object]]:
         {"row_id": 5, "region": "central", "ship_date": 13, "discount": 2, "quantity": 40, "revenue": 500},
         {"row_id": 6, "region": "central", "ship_date": 11, "discount": 6, "quantity": 14, "revenue": 260},
     )
+    rows: list[dict[str, object]] = []
+    for copy_index in range(copies):
+        row_id_offset = copy_index * len(base_table)
+        for row in base_table:
+            copied = dict(row)
+            copied["row_id"] = int(row["row_id"]) + row_id_offset
+            rows.append(copied)
+    table = tuple(rows)
     risky_predicates = (
         ("ship_date", "between", 11, 13),
         ("discount", "ge", 6),
@@ -111,8 +121,10 @@ def _run_grouped_sum_rows(backend: str, case: dict[str, object]) -> tuple[dict[s
     raise ValueError(f"unsupported backend: {backend}")
 
 
-def run_case(backend: str) -> dict[str, object]:
-    scan_case, grouped_case = make_sales_case()
+def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, object]:
+    if output_mode not in {"full", "summary"}:
+        raise ValueError(f"unsupported output_mode: {output_mode}")
+    scan_case, grouped_case = make_sales_case(copies)
     risky_rows = _run_scan_rows(backend, scan_case)
     count_rows = _run_grouped_count_rows(backend, grouped_case)
     sum_rows = _run_grouped_sum_rows(backend, grouped_case)
@@ -124,13 +136,20 @@ def run_case(backend: str) -> dict[str, object]:
     return {
         "app": "sales_risk_screening",
         "backend": backend,
+        "copies": copies,
+        "output_mode": output_mode,
         "summary": {
             "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
             "risky_order_count_by_region": region_counts,
             "risky_revenue_by_region": region_revenue,
             "highest_risk_region": max(region_counts.items(), key=lambda item: (item[1], item[0]))[0],
         },
-        "rows": {
+        "row_counts": {
+            "scan": len(risky_rows),
+            "grouped_count": len(count_rows),
+            "grouped_sum": len(sum_rows),
+        },
+        "rows": {} if output_mode == "summary" else {
             "scan": list(risky_rows),
             "grouped_count": list(count_rows),
             "grouped_sum": list(sum_rows),
@@ -147,8 +166,10 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
         choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
     )
+    parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic sales table this many times.")
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend), indent=2, sort_keys=True))
+    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 

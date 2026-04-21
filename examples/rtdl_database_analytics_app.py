@@ -36,22 +36,32 @@ def _sales_backend(backend: str) -> str:
     return backend
 
 
-def run_app(backend: str, scenario: str = "all") -> dict[str, Any]:
+def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: str = "full") -> dict[str, Any]:
     if backend not in BACKENDS:
         raise ValueError(f"unsupported backend: {backend}")
     if scenario not in SCENARIOS:
         raise ValueError(f"unsupported scenario: {scenario}")
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    if output_mode not in {"full", "summary"}:
+        raise ValueError(f"unsupported output_mode: {output_mode}")
 
     sections: dict[str, Any] = {}
     if scenario in {"regional_dashboard", "all"}:
-        sections["regional_dashboard"] = rtdl_v0_7_db_app_demo.run_app(_regional_backend(backend))
+        sections["regional_dashboard"] = rtdl_v0_7_db_app_demo.run_app(
+            _regional_backend(backend), copies=copies, output_mode=output_mode
+        )
     if scenario in {"sales_risk", "all"}:
-        sections["sales_risk"] = rtdl_sales_risk_screening.run_case(_sales_backend(backend))
+        sections["sales_risk"] = rtdl_sales_risk_screening.run_case(
+            _sales_backend(backend), copies=copies, output_mode=output_mode
+        )
 
     return {
         "app": "database_analytics",
         "requested_backend": backend,
         "scenario": scenario,
+        "copies": copies,
+        "output_mode": output_mode,
         "sections": sections,
         "data_flow": [
             "application-owned denormalized rows",
@@ -83,8 +93,10 @@ def main(argv: list[str] | None = None) -> int:
         choices=SCENARIOS,
         help="Run one DB app scenario or the complete unified app.",
     )
+    parser.add_argument("--copies", type=int, default=1, help="Repeat deterministic DB fixtures this many times.")
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, args.scenario), indent=2, sort_keys=True))
+    print(json.dumps(run_app(args.backend, args.scenario, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 
