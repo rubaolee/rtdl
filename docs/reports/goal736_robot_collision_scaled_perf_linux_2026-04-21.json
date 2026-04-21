@@ -1,0 +1,100 @@
+{
+  "app": "robot_collision_screening",
+  "boundary": "Embree hit_count uses the native any-hit row path plus compact app output. It does not yet use a prepared Embree scalar-count ABI; full output reports witness rows and JSON materialization separately.",
+  "cases": [
+    {
+      "cpu_hit_count": {
+        "backend": "cpu_python_reference",
+        "edge_ray_count": 1024,
+        "json_bytes_median": 725,
+        "max_seconds": 4.673988286987878,
+        "median_seconds": 4.669886839983519,
+        "min_seconds": 4.667150327004492,
+        "obstacle_count": 256,
+        "obstacle_triangle_count": 512,
+        "output_mode": "hit_count",
+        "pose_count": 256,
+        "repeats": 3
+      },
+      "embree_full": {
+        "backend": "embree",
+        "edge_ray_count": 1024,
+        "json_bytes_median": 272381,
+        "json_expansion_vs_hit_count": 383.0956399437412,
+        "max_seconds": 2.373725242970977,
+        "median_seconds": 2.3457817069720477,
+        "min_seconds": 2.341835274011828,
+        "obstacle_count": 256,
+        "obstacle_triangle_count": 512,
+        "output_mode": "full",
+        "pose_count": 256,
+        "repeats": 3,
+        "slowdown_vs_hit_count": 0.9974859433018685
+      },
+      "embree_hit_count": {
+        "backend": "embree",
+        "edge_ray_count": 1024,
+        "json_bytes_median": 711,
+        "max_seconds": 2.3900377440149896,
+        "median_seconds": 2.3516939990222454,
+        "min_seconds": 2.341794075036887,
+        "obstacle_count": 256,
+        "obstacle_triangle_count": 512,
+        "output_mode": "hit_count",
+        "pose_count": 256,
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 1.9857544569680834
+      },
+      "pose_count": 256
+    },
+    {
+      "cpu_hit_count": {
+        "backend": "cpu_python_reference",
+        "edge_ray_count": 4096,
+        "json_bytes_median": 728,
+        "max_seconds": 18.729323002975434,
+        "median_seconds": 18.705986885994207,
+        "min_seconds": 18.67246424301993,
+        "obstacle_count": 256,
+        "obstacle_triangle_count": 512,
+        "output_mode": "hit_count",
+        "pose_count": 1024,
+        "repeats": 3
+      },
+      "embree_full": {
+        "backend": "embree",
+        "edge_ray_count": 4096,
+        "json_bytes_median": 1097910,
+        "json_expansion_vs_hit_count": 1537.689075630252,
+        "max_seconds": 9.378928360994905,
+        "median_seconds": 9.375773939013015,
+        "min_seconds": 9.366491256980225,
+        "obstacle_count": 256,
+        "obstacle_triangle_count": 512,
+        "output_mode": "full",
+        "pose_count": 1024,
+        "repeats": 3,
+        "slowdown_vs_hit_count": 1.0021067341694734
+      },
+      "embree_hit_count": {
+        "backend": "embree",
+        "edge_ray_count": 4096,
+        "json_bytes_median": 714,
+        "max_seconds": 9.378581682976801,
+        "median_seconds": 9.356063200975768,
+        "min_seconds": 9.338240056007635,
+        "obstacle_count": 256,
+        "obstacle_triangle_count": 512,
+        "output_mode": "hit_count",
+        "pose_count": 1024,
+        "repeats": 3,
+        "speedup_vs_cpu_python_reference": 1.999343792808423
+      },
+      "pose_count": 1024
+    }
+  ],
+  "goal": 736,
+  "measurement": "run_app plus json.dumps wall-clock seconds",
+  "obstacle_count": 256,
+  "repeats": 3
+}

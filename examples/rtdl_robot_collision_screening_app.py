@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -89,6 +90,65 @@ def make_demo_case() -> dict[str, object]:
         "edge_rays": edge_rays,
         "obstacle_triangles": obstacle_triangles,
         "poses": poses,
+        "ray_metadata": ray_metadata,
+    }
+
+
+def make_scaled_case(*, pose_count: int, obstacle_count: int) -> dict[str, object]:
+    if pose_count < 1:
+        raise ValueError("pose_count must be positive")
+    if obstacle_count < 1:
+        raise ValueError("obstacle_count must be positive")
+
+    grid = int(math.ceil(math.sqrt(obstacle_count)))
+    obstacle_triangles: list[rt.Triangle] = []
+    for obstacle_index in range(obstacle_count):
+        gx = obstacle_index % grid
+        gy = obstacle_index // grid
+        x0 = gx * 1.5 + 0.35
+        y0 = gy * 1.2 - 0.25
+        obstacle_triangles.extend(_rect_triangles(1000 + obstacle_index, x0, y0, x0 + 0.55, y0 + 0.45))
+
+    poses: list[dict[str, object]] = []
+    edge_rays: list[rt.Ray2D] = []
+    for pose_id in range(1, pose_count + 1):
+        gx = (pose_id - 1) % grid
+        gy = ((pose_id - 1) // grid) % grid
+        # Alternate clear and obstacle-crossing poses on a deterministic grid.
+        center_x = gx * 1.5 + (0.45 if pose_id % 2 == 0 else -0.35)
+        center_y = gy * 1.2
+        poses.append(
+            {
+                "pose_id": pose_id,
+                "link_id": 1,
+                "center_x": center_x,
+                "center_y": center_y,
+                "label": "crossing" if pose_id % 2 == 0 else "clear",
+            }
+        )
+        edge_rays.extend(
+            _edge_rays_for_link_rect(
+                pose_id=pose_id,
+                link_id=1,
+                center_x=center_x,
+                center_y=center_y,
+                width=0.75,
+                height=0.25,
+            )
+        )
+
+    ray_metadata = {
+        ray.id: {
+            "pose_id": ray.id // 1000,
+            "link_id": (ray.id % 1000) // 10,
+            "edge_id": ray.id % 10,
+        }
+        for ray in edge_rays
+    }
+    return {
+        "edge_rays": tuple(edge_rays),
+        "obstacle_triangles": tuple(obstacle_triangles),
+        "poses": tuple(poses),
         "ray_metadata": ray_metadata,
     }
 
@@ -229,6 +289,9 @@ def run_app(
     backend: str = "cpu_python_reference",
     optix_summary_mode: str = "rows",
     output_mode: str = "full",
+    *,
+    pose_count: int | None = None,
+    obstacle_count: int | None = None,
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "prepared_count"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'prepared_count'")
@@ -237,7 +300,14 @@ def run_app(
     if output_mode not in {"full", "pose_flags", "hit_count"}:
         raise ValueError("output_mode must be 'full', 'pose_flags', or 'hit_count'")
 
-    case = make_demo_case()
+    if (pose_count is None) != (obstacle_count is None):
+        raise ValueError("pose_count and obstacle_count must be provided together")
+
+    case = (
+        make_demo_case()
+        if pose_count is None
+        else make_scaled_case(pose_count=pose_count, obstacle_count=int(obstacle_count))
+    )
     edge_rays = case["edge_rays"]
     obstacle_triangles = case["obstacle_triangles"]
     poses = case["poses"]
@@ -303,8 +373,22 @@ def main(argv: list[str] | None = None) -> int:
         default="full",
         help="For row mode, choose full witness rows, compact pose flags, or compact hit-count output.",
     )
+    parser.add_argument("--pose-count", type=int, default=None, help="use a generated scalable pose fixture")
+    parser.add_argument("--obstacle-count", type=int, default=None, help="use a generated scalable obstacle fixture")
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, args.optix_summary_mode, args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(
+                args.backend,
+                args.optix_summary_mode,
+                args.output_mode,
+                pose_count=args.pose_count,
+                obstacle_count=args.obstacle_count,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

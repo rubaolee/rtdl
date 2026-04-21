@@ -60,7 +60,7 @@ the ITRE model: input, traverse, refine, emit.
 | ANN candidate search | `examples/rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become nearest rows and recall metrics | exact KNN over candidate subsets; compact rerank summaries expose the RTDL/Embree slice separately from Python exact quality comparison |
 | Outlier detection | `examples/rtdl_outlier_detection_app.py` | points become neighbor rows, density counts, and outlier labels | radius-neighbor rows plus Python thresholding; optional OptiX `rt_count_threshold` and Embree `rt_count_threshold` emit one density-threshold summary row per query |
 | DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | points become neighbor rows, core counts, and cluster labels | radius-neighbor rows plus Python expansion; optional OptiX `rt_core_flags` and Embree `rt_core_flags` emit core flags only, not full cluster expansion |
-| Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | robot link rays plus obstacle triangles become pose collision flags | any-hit rows plus `rt.reduce_rows(any)`; compact output modes expose pose flags or hit counts without full witness rows |
+| Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | robot link rays plus obstacle triangles become pose collision flags | any-hit rows plus `rt.reduce_rows(any)`; compact output modes and scaled fixtures expose Embree any-hit performance without full witness rows |
 | Barnes-Hut force approximation | `examples/rtdl_barnes_hut_force_app.py` | bodies plus tree nodes become candidate rows and approximate force vectors | candidate generation; compact candidate summaries expose the RTDL/Embree slice separately from Python force reduction |
 
 ## Spatial Join App Summary Modes
@@ -75,6 +75,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_facility_knn_assignment.py` | `--output-mode primary_assignments` / `summary` | primary depot assignments or depot-load summaries | uses K=1 and omits K=3 fallback choices |
 | `examples/rtdl_hausdorff_distance_app.py` | `--embree-result-mode directed_summary` | directed Hausdorff distance and witness summaries | omits full KNN rows |
 | `examples/rtdl_ann_candidate_app.py` | `--output-mode rerank_summary` / `quality_summary` | candidate-rerank summaries or compact recall/distance metrics | separates RTDL candidate-subset KNN reranking from Python exact full-set quality comparison |
+| `examples/rtdl_robot_collision_screening_app.py` | `--output-mode hit_count` / `pose_flags` | hit-edge counts or pose collision flags | omits full witness rows; Embree still uses native any-hit row path internally |
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `--output-mode segment_counts` / `segment_flags` | one hit-count or any-hit flag row per segment | omits polygon ids and pair rows |
 | `examples/rtdl_road_hazard_screening.py` | `--output-mode priority_segments` / `summary` | priority road ids and counts | omits full per-road hit-count rows from the JSON payload |
 | `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows; Embree app path uses positive LSI/PIP candidate discovery |
