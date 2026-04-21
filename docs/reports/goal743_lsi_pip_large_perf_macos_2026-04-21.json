@@ -1,0 +1,219 @@
+{
+  "cases": [
+    {
+      "auto_speedup_vs_1_thread_dict": 3.7224904453427503,
+      "embree_1_thread_dict": {
+        "hashes": [
+          "2f032c95fc7b597f"
+        ],
+        "median_sec": 0.4857375411083922,
+        "row_counts": [
+          100000
+        ],
+        "samples_sec": [
+          0.4857375411083922
+        ]
+      },
+      "embree_auto_dict": {
+        "hashes": [
+          "2f032c95fc7b597f",
+          "2f032c95fc7b597f",
+          "2f032c95fc7b597f"
+        ],
+        "median_sec": 0.13048724993132055,
+        "row_counts": [
+          100000,
+          100000,
+          100000
+        ],
+        "samples_sec": [
+          0.12858991604298353,
+          0.13048724993132055,
+          0.13573741598520428
+        ]
+      },
+      "embree_auto_prepared_raw": {
+        "hashes": [
+          "2f032c95fc7b597f",
+          "2f032c95fc7b597f",
+          "2f032c95fc7b597f"
+        ],
+        "median_sec": 0.025715499999932945,
+        "row_counts": [
+          100000,
+          100000,
+          100000
+        ],
+        "samples_sec": [
+          0.02206462505273521,
+          0.026675333036109805,
+          0.025715499999932945
+        ]
+      },
+      "expected_hash": "2f032c95fc7b597f",
+      "expected_rows": 100000,
+      "inputs": {
+        "left": 100000,
+        "right": 100000
+      },
+      "meaning": "many segment pairs in space, one expected hit per probe",
+      "name": "lsi_sparse_large",
+      "parity": {
+        "auto_dict": true,
+        "auto_prepared_raw": true,
+        "one_thread_dict": true
+      },
+      "prepared_raw_speedup_vs_auto_dict": 5.074264545961028,
+      "rows_per_sec_auto_dict": 766358.3994040267,
+      "rows_per_sec_prepared_raw": 3888705.255595293,
+      "workload": "LSI sparse"
+    },
+    {
+      "auto_speedup_vs_1_thread_dict": 0.9576449809950524,
+      "embree_1_thread_dict": {
+        "hashes": [
+          "a6895d3ac9779be3"
+        ],
+        "median_sec": 1.2843470419757068,
+        "row_counts": [
+          1000000
+        ],
+        "samples_sec": [
+          1.2843470419757068
+        ]
+      },
+      "embree_auto_dict": {
+        "hashes": [
+          "a6895d3ac9779be3",
+          "a6895d3ac9779be3",
+          "a6895d3ac9779be3"
+        ],
+        "median_sec": 1.341151540982537,
+        "row_counts": [
+          1000000,
+          1000000,
+          1000000
+        ],
+        "samples_sec": [
+          1.2433755410602316,
+          1.341151540982537,
+          1.5262196250259876
+        ]
+      },
+      "embree_auto_prepared_raw": {
+        "hashes": [
+          "a6895d3ac9779be3",
+          "a6895d3ac9779be3",
+          "a6895d3ac9779be3"
+        ],
+        "median_sec": 0.01721679198089987,
+        "row_counts": [
+          1000000,
+          1000000,
+          1000000
+        ],
+        "samples_sec": [
+          0.02491050004027784,
+          0.01721679198089987,
+          0.014631040976382792
+        ]
+      },
+      "expected_hash": "a6895d3ac9779be3",
+      "expected_rows": 1000000,
+      "inputs": {
+        "left": 1000,
+        "right": 1000
+      },
+      "meaning": "all probes intersect all build segments; intentionally row-output-heavy",
+      "name": "lsi_dense_large",
+      "parity": {
+        "auto_dict": true,
+        "auto_prepared_raw": true,
+        "one_thread_dict": true
+      },
+      "prepared_raw_speedup_vs_auto_dict": 77.89787682109399,
+      "rows_per_sec_auto_dict": 745627.8947175448,
+      "rows_per_sec_prepared_raw": 58082829.897078946,
+      "workload": "LSI dense"
+    },
+    {
+      "auto_speedup_vs_1_thread_dict": 2.260826353851474,
+      "embree_1_thread_dict": {
+        "hashes": [
+          "38d9e5f0f0488443"
+        ],
+        "median_sec": 0.8626825410174206,
+        "row_counts": [
+          200000
+        ],
+        "samples_sec": [
+          0.8626825410174206
+        ]
+      },
+      "embree_auto_dict": {
+        "hashes": [
+          "38d9e5f0f0488443",
+          "38d9e5f0f0488443",
+          "38d9e5f0f0488443"
+        ],
+        "median_sec": 0.38157841691281646,
+        "row_counts": [
+          200000,
+          200000,
+          200000
+        ],
+        "samples_sec": [
+          0.38157841691281646,
+          0.3791392499115318,
+          0.45616454095579684
+        ]
+      },
+      "embree_auto_prepared_raw": {
+        "hashes": [
+          "38d9e5f0f0488443",
+          "38d9e5f0f0488443",
+          "38d9e5f0f0488443"
+        ],
+        "median_sec": 0.1892095000948757,
+        "row_counts": [
+          200000,
+          200000,
+          200000
+        ],
+        "samples_sec": [
+          0.1892095000948757,
+          0.19374449993483722,
+          0.18213529197964817
+        ]
+      },
+      "expected_hash": "38d9e5f0f0488443",
+      "expected_rows": 200000,
+      "inputs": {
+        "points": 200000,
+        "polygons": 100000
+      },
+      "meaning": "many point/polygon containment probes, one expected positive row per point",
+      "name": "pip_positive_large",
+      "parity": {
+        "auto_dict": true,
+        "auto_prepared_raw": true,
+        "one_thread_dict": true
+      },
+      "prepared_raw_speedup_vs_auto_dict": 2.0166979814516757,
+      "rows_per_sec_auto_dict": 524138.6596708279,
+      "rows_per_sec_prepared_raw": 1057029.3769589455,
+      "workload": "PIP positive"
+    }
+  ],
+  "embree_thread_config": {
+    "auto": true,
+    "effective_threads": 10,
+    "requested": "auto",
+    "source": "api"
+  },
+  "generated_at": "2026-04-21T23:28:55Z",
+  "host": "Rs-MacBook-Air.local",
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "repeats": 3,
+  "scale": "large"
+}
