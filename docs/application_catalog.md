@@ -11,6 +11,13 @@ refinement, and row emission. Python owns application orchestration,
 post-processing, policy decisions, and presentation. These examples are not
 full GIS, database, robotics, clustering, or simulation systems.
 
+RTDL owns the accelerated core only when the app routes that core through an
+RTDL backend traversal, BVH, point-query, ray-query, or native spatial-query
+primitive. Python orchestration is expected, but Python-only post-processing
+must not be described as backend acceleration. In particular, `--backend optix`
+is not by itself a NVIDIA RT-core claim; that claim requires a measured OptiX
+traversal path on RTX-class hardware.
+
 For app-level support across CPU/Python, Embree, OptiX, Vulkan, HIPRT, and
 Apple RT, see the [App Engine Support Matrix](app_engine_support_matrix.md).
 
