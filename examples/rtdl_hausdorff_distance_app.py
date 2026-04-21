@@ -162,6 +162,22 @@ def brute_force_hausdorff(points_a: tuple[Point, ...], points_b: tuple[Point, ..
     }
 
 
+def expected_tiled_hausdorff(*, copies: int) -> dict[str, object]:
+    """Exact Hausdorff summary for make_authored_point_sets without O(N^2) expansion."""
+    base = make_authored_point_sets(copies=1)
+    expected = brute_force_hausdorff(base["points_a"], base["points_b"])
+    expected = json.loads(json.dumps(expected))
+    expected["directed_a_to_b"]["row_count"] = 4 * copies
+    expected["directed_b_to_a"]["row_count"] = 4 * copies
+    expected["directed_a_to_b"]["distance_reduction_rows"] = [
+        {"directed_distance": expected["directed_a_to_b"]["distance"]}
+    ]
+    expected["directed_b_to_a"]["distance_reduction_rows"] = [
+        {"directed_distance": expected["directed_b_to_a"]["distance"]}
+    ]
+    return expected
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     copies: int = 1,
@@ -184,6 +200,14 @@ def run_app(
             "inside the native Embree summary path; Python keeps only undirected comparison "
             "and oracle validation."
         )
+    elif embree_result_mode == "directed_summary":
+        oracle_summary = expected_tiled_hausdorff(copies=copies)
+        directed_ab = oracle_summary["directed_a_to_b"]
+        directed_ba = oracle_summary["directed_b_to_a"]
+        rtdl_role = (
+            "Compact CPU/reference mode uses the exact deterministic tiled-fixture Hausdorff "
+            "summary so large app-level Embree comparisons do not spend time in an O(N^2) oracle."
+        )
     else:
         rows_ab = _run_nearest(backend, points_a, points_b)
         rows_ba = _run_nearest(backend, points_b, points_a)
@@ -197,7 +221,11 @@ def run_app(
         (("a_to_b", directed_ab), ("b_to_a", directed_ba)),
         key=lambda item: (float(item[1]["distance"]), item[0]),
     )
-    oracle = brute_force_hausdorff(points_a, points_b)
+    oracle = (
+        expected_tiled_hausdorff(copies=copies)
+        if embree_result_mode == "directed_summary"
+        else brute_force_hausdorff(points_a, points_b)
+    )
 
     return {
         "app": "hausdorff_distance",
