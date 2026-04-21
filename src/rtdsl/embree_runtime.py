@@ -52,6 +52,7 @@ from .reference import Ray3D as _CanonicalRay3D
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_embree_execution_cache: OrderedDict[tuple[object, ...], "PreparedEmbreeExecution"] = OrderedDict()
 _DB_MAX_ROWS_PER_JOB = 1_000_000
+_EMBREE_THREAD_OVERRIDE: str | int | None = None
 EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_get_version",
     "rtdl_embree_free_rows",
@@ -76,6 +77,72 @@ EMBREE_REQUIRED_SYMBOLS = (
     "rtdl_embree_db_dataset_grouped_count",
     "rtdl_embree_db_dataset_grouped_sum",
 )
+
+
+@dataclass(frozen=True)
+class EmbreeThreadConfig:
+    requested: str
+    effective_threads: int
+    source: str
+    auto: bool
+
+
+def _normalize_embree_thread_request(value: str | int | None) -> tuple[str, bool]:
+    if value is None:
+        return "auto", True
+    if isinstance(value, int):
+        if value <= 0:
+            raise ValueError("Embree thread count must be a positive integer or 'auto'")
+        return str(value), False
+    text = value.strip().lower()
+    if text == "" or text == "auto":
+        return "auto", True
+    try:
+        parsed = int(text)
+    except ValueError as exc:
+        raise ValueError("Embree thread count must be a positive integer or 'auto'") from exc
+    if parsed <= 0:
+        raise ValueError("Embree thread count must be a positive integer or 'auto'")
+    return str(parsed), False
+
+
+def _auto_embree_thread_count() -> int:
+    return max(1, os.cpu_count() or 1)
+
+
+def configure_embree(*, threads: str | int | None = None) -> EmbreeThreadConfig:
+    """Set a process-local Embree thread override for future RTDL dispatch.
+
+    `threads=None` clears the process-local override and returns the current
+    environment/default-derived configuration. Goal710 native dispatch will use
+    the same contract when parallel loops are enabled.
+    """
+    global _EMBREE_THREAD_OVERRIDE
+    if threads is None:
+        _EMBREE_THREAD_OVERRIDE = None
+    else:
+        _normalize_embree_thread_request(threads)
+        _EMBREE_THREAD_OVERRIDE = threads
+    return embree_thread_config()
+
+
+def embree_thread_config() -> EmbreeThreadConfig:
+    if _EMBREE_THREAD_OVERRIDE is not None:
+        requested, auto = _normalize_embree_thread_request(_EMBREE_THREAD_OVERRIDE)
+        source = "api"
+    elif "RTDL_EMBREE_THREADS" in os.environ:
+        requested, auto = _normalize_embree_thread_request(os.environ["RTDL_EMBREE_THREADS"])
+        source = "env"
+    else:
+        requested, auto = "auto", True
+        source = "default"
+    effective = _auto_embree_thread_count() if auto else int(requested)
+    return EmbreeThreadConfig(
+        requested=requested,
+        effective_threads=effective,
+        source=source,
+        auto=auto,
+    )
 
 
 def _pkg_config_flags(package: str, option: str) -> list[str]:

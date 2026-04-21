@@ -74,7 +74,10 @@ from .datasets import RayJoinPublicAsset
 from .datasets import rayjoin_public_assets
 from .datasets import slice_cdb_dataset
 from .datasets import write_cdb
+from .embree_runtime import configure_embree
+from .embree_runtime import embree_thread_config
 from .embree_runtime import embree_version
+from .embree_runtime import EmbreeThreadConfig
 from .engine_feature_matrix import assert_engine_feature_supported
 from .engine_feature_matrix import engine_feature_support
 from .engine_feature_matrix import engine_feature_support_matrix
@@ -679,6 +682,9 @@ __all__ = [
     "fixed_radius_neighbors_cpu",
     "knn_rows_cpu",
     "EmbreeRowView",
+    "EmbreeThreadConfig",
+    "configure_embree",
+    "embree_thread_config",
     "embree_version",
     "OptixRowView",
     "optix_version",
