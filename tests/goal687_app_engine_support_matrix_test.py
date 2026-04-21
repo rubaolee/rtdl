@@ -63,6 +63,8 @@ class Goal687AppEngineSupportMatrixTest(unittest.TestCase):
             if not line.startswith("| `examples/"):
                 continue
             cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
+            if len(cells) != 1 + len(rt.APP_ENGINES):
+                continue
             app = label_to_app[cells[0]]
             rows[app] = dict(zip(rt.APP_ENGINES, cells[1:], strict=True))
 

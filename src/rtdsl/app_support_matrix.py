@@ -23,12 +23,35 @@ APP_SUPPORT_STATUSES = (
     APPLE_SPECIFIC,
 )
 
+OPTIX_TRAVERSAL = "optix_traversal"
+CUDA_THROUGH_OPTIX = "cuda_through_optix"
+HOST_INDEXED_FALLBACK = "host_indexed_fallback"
+PYTHON_INTERFACE_DOMINATED = "python_interface_dominated"
+NOT_OPTIX_EXPOSED = "not_optix_exposed"
+NOT_OPTIX_APPLICABLE = "not_optix_applicable"
+
+OPTIX_APP_PERFORMANCE_CLASSES = (
+    OPTIX_TRAVERSAL,
+    CUDA_THROUGH_OPTIX,
+    HOST_INDEXED_FALLBACK,
+    PYTHON_INTERFACE_DOMINATED,
+    NOT_OPTIX_EXPOSED,
+    NOT_OPTIX_APPLICABLE,
+)
+
 
 @dataclass(frozen=True)
 class AppEngineSupport:
     app: str
     engine: str
     status: str
+    note: str
+
+
+@dataclass(frozen=True)
+class OptixAppPerformanceSupport:
+    app: str
+    performance_class: str
     note: str
 
 
@@ -249,6 +272,99 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
     ),
 }
 
+_OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
+    "database_analytics": OptixAppPerformanceSupport(
+        app="database_analytics",
+        performance_class=PYTHON_INTERFACE_DOMINATED,
+        note="Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+    ),
+    "graph_analytics": OptixAppPerformanceSupport(
+        app="graph_analytics",
+        performance_class=HOST_INDEXED_FALLBACK,
+        note="Current OptiX-facing BFS and triangle routines are host-indexed correctness paths, not dominant OptiX ray traversal or RT-core acceleration paths.",
+    ),
+    "apple_rt_demo": OptixAppPerformanceSupport(
+        app="apple_rt_demo",
+        performance_class=NOT_OPTIX_APPLICABLE,
+        note="Apple-specific app; OptiX is not an applicable app entry point.",
+    ),
+    "service_coverage_gaps": OptixAppPerformanceSupport(
+        app="service_coverage_gaps",
+        performance_class=NOT_OPTIX_EXPOSED,
+        note="Public app CLI does not expose OptiX today.",
+    ),
+    "event_hotspot_screening": OptixAppPerformanceSupport(
+        app="event_hotspot_screening",
+        performance_class=NOT_OPTIX_EXPOSED,
+        note="Public app CLI does not expose OptiX today.",
+    ),
+    "facility_knn_assignment": OptixAppPerformanceSupport(
+        app="facility_knn_assignment",
+        performance_class=NOT_OPTIX_EXPOSED,
+        note="Public app CLI does not expose OptiX today.",
+    ),
+    "road_hazard_screening": OptixAppPerformanceSupport(
+        app="road_hazard_screening",
+        performance_class=HOST_INDEXED_FALLBACK,
+        note="Default segment/polygon OptiX app path uses host-indexed candidate reduction unless native OptiX mode is explicitly enabled and separately gated.",
+    ),
+    "segment_polygon_hitcount": OptixAppPerformanceSupport(
+        app="segment_polygon_hitcount",
+        performance_class=HOST_INDEXED_FALLBACK,
+        note="Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates.",
+    ),
+    "segment_polygon_anyhit_rows": OptixAppPerformanceSupport(
+        app="segment_polygon_anyhit_rows",
+        performance_class=HOST_INDEXED_FALLBACK,
+        note="Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated.",
+    ),
+    "polygon_pair_overlap_area_rows": OptixAppPerformanceSupport(
+        app="polygon_pair_overlap_area_rows",
+        performance_class=NOT_OPTIX_EXPOSED,
+        note="Public script is CPU-reference only today.",
+    ),
+    "polygon_set_jaccard": OptixAppPerformanceSupport(
+        app="polygon_set_jaccard",
+        performance_class=NOT_OPTIX_EXPOSED,
+        note="Public script is CPU-reference only today.",
+    ),
+    "hausdorff_distance": OptixAppPerformanceSupport(
+        app="hausdorff_distance",
+        performance_class=CUDA_THROUGH_OPTIX,
+        note="Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim.",
+    ),
+    "ann_candidate_search": OptixAppPerformanceSupport(
+        app="ann_candidate_search",
+        performance_class=CUDA_THROUGH_OPTIX,
+        note="Uses KNN rows through CUDA-style kernels in the OptiX backend library; recall metrics remain app/Python work.",
+    ),
+    "outlier_detection": OptixAppPerformanceSupport(
+        app="outlier_detection",
+        performance_class=CUDA_THROUGH_OPTIX,
+        note="Uses fixed-radius rows through CUDA-style kernels in the OptiX backend library; emitting all neighbor rows can dominate when only counts are needed.",
+    ),
+    "dbscan_clustering": OptixAppPerformanceSupport(
+        app="dbscan_clustering",
+        performance_class=CUDA_THROUGH_OPTIX,
+        note="Uses fixed-radius rows through CUDA-style kernels; Python clustering expansion and row volume can dominate full-app time.",
+    ),
+    "robot_collision_screening": OptixAppPerformanceSupport(
+        app="robot_collision_screening",
+        performance_class=OPTIX_TRAVERSAL,
+        note="Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; native pose-level outputs are still needed to avoid Python row reduction overhead.",
+    ),
+    "barnes_hut_force_app": OptixAppPerformanceSupport(
+        app="barnes_hut_force_app",
+        performance_class=CUDA_THROUGH_OPTIX,
+        note="Candidate generation uses KNN/radius-style GPU compute; Python tree/opening-rule/force reduction dominates the end-to-end app.",
+    ),
+    "hiprt_ray_triangle_hitcount": OptixAppPerformanceSupport(
+        app="hiprt_ray_triangle_hitcount",
+        performance_class=NOT_OPTIX_EXPOSED,
+        note="HIPRT-specific app; OptiX is not exposed by this public app CLI.",
+    ),
+}
+
 
 def public_apps() -> tuple[str, ...]:
     return tuple(_APP_MATRIX)
@@ -263,3 +379,14 @@ def app_engine_support(app: str, engine: str) -> AppEngineSupport:
 
 def app_engine_support_matrix() -> dict[str, dict[str, AppEngineSupport]]:
     return {app: dict(entries) for app, entries in _APP_MATRIX.items()}
+
+
+def optix_app_performance_support(app: str) -> OptixAppPerformanceSupport:
+    try:
+        return _OPTIX_PERFORMANCE_MATRIX[app]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL app: app={app!r}") from exc
+
+
+def optix_app_performance_matrix() -> dict[str, OptixAppPerformanceSupport]:
+    return dict(_OPTIX_PERFORMANCE_MATRIX)

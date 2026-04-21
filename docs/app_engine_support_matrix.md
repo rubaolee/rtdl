@@ -5,6 +5,8 @@ Status: public app-level support map for current `main` after Goal688.
 This matrix answers which engines each public app entry point exposes today. It is intentionally app-level, not just feature-level: an underlying RTDL primitive may support an engine while a particular app CLI does not expose that engine yet.
 
 The machine-readable source of truth is `rtdsl.app_engine_support_matrix()`.
+For OptiX performance classification specifically, use
+`rtdsl.optix_app_performance_matrix()`.
 
 ## Status Legend
 
@@ -59,6 +61,44 @@ The machine-readable source of truth is `rtdsl.app_engine_support_matrix()`.
 - `robot_collision_screening`: Discrete collision app exposes CPU, Embree, and OptiX; Vulkan is intentionally not exposed until a dedicated any-hit app gate exists.
 - `barnes_hut_force_app`: Candidate-generation app exposes CPU, Embree, OptiX, and Vulkan.
 - `hiprt_ray_triangle_hitcount`: Scenario-specific HIPRT hit-count demo; HIPRT evidence is SDK/Orochi on tested hosts, not AMD GPU validation.
+
+## OptiX Performance Classification
+
+This table is separate from the app engine matrix. `direct_cli_native` means
+the app exposes an OptiX-backed path; it does not automatically mean the
+dominant operation is NVIDIA RT-core traversal.
+
+The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
+
+| Class | Meaning |
+| --- | --- |
+| `optix_traversal` | Dominant RTDL operation uses OptiX ray traversal/custom primitives and is eligible for RTX hardware acceleration on RTX-class GPUs. |
+| `cuda_through_optix` | App uses CUDA-style kernels through the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
+| `host_indexed_fallback` | OptiX-facing app path currently dispatches to host-indexed CPU-side logic. |
+| `python_interface_dominated` | Real native/backend work exists, but app-level performance is currently dominated by Python packing, row materialization, reduction, or CPU post-processing. |
+| `not_optix_exposed` | Public app CLI does not expose OptiX today. |
+| `not_optix_applicable` | App is for another engine family and OptiX is not an applicable entry point. |
+
+| App | OptiX performance class | Note |
+| --- | --- | --- |
+| `examples/rtdl_database_analytics_app.py` | `python_interface_dominated` | Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization. |
+| `examples/rtdl_graph_analytics_app.py` | `host_indexed_fallback` | Current OptiX-facing BFS and triangle routines are host-indexed correctness paths, not dominant OptiX ray traversal or RT-core acceleration paths. |
+| `examples/rtdl_apple_rt_demo_app.py` | `not_optix_applicable` | Apple-specific app; OptiX is not an applicable app entry point. |
+| `examples/rtdl_service_coverage_gaps.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
+| `examples/rtdl_event_hotspot_screening.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
+| `examples/rtdl_facility_knn_assignment.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
+| `examples/rtdl_road_hazard_screening.py` | `host_indexed_fallback` | Default segment/polygon OptiX app path uses host-indexed candidate reduction unless native OptiX mode is explicitly enabled and separately gated. |
+| `examples/rtdl_segment_polygon_hitcount.py` | `host_indexed_fallback` | Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates. |
+| `examples/rtdl_segment_polygon_anyhit_rows.py` | `host_indexed_fallback` | Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. |
+| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `not_optix_exposed` | Public script is CPU-reference only today. |
+| `examples/rtdl_polygon_set_jaccard.py` | `not_optix_exposed` | Public script is CPU-reference only today. |
+| `examples/rtdl_hausdorff_distance_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
+| `examples/rtdl_ann_candidate_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; recall metrics remain app/Python work. |
+| `examples/rtdl_outlier_detection_app.py` | `cuda_through_optix` | Uses fixed-radius rows through CUDA-style kernels in the OptiX backend library; emitting all neighbor rows can dominate when only counts are needed. |
+| `examples/rtdl_dbscan_clustering_app.py` | `cuda_through_optix` | Uses fixed-radius rows through CUDA-style kernels; Python clustering expansion and row volume can dominate full-app time. |
+| `examples/rtdl_robot_collision_screening_app.py` | `optix_traversal` | Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; native pose-level outputs are still needed to avoid Python row reduction overhead. |
+| `examples/rtdl_barnes_hut_force_app.py` | `cuda_through_optix` | Candidate generation uses KNN/radius-style GPU compute; Python tree/opening-rule/force reduction dominates the end-to-end app. |
+| `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `not_optix_exposed` | HIPRT-specific app; OptiX is not exposed by this public app CLI. |
 
 Retired compatibility helpers:
 
