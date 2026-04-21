@@ -1,0 +1,90 @@
+{
+  "app": "ann_candidate_search",
+  "boundary": "rerank_summary measures only RTDL candidate-subset KNN reranking. quality_summary includes Python exact full-set comparison for recall and distance metrics. This is not a full ANN index or recall/latency optimizer.",
+  "cases": [
+    {
+      "copies": 256,
+      "cpu_rerank_summary": {
+        "backend": "cpu_python_reference",
+        "candidate_count": 768,
+        "copies": 256,
+        "json_bytes_median": 752,
+        "max_seconds": 0.13315645896364003,
+        "median_seconds": 0.12966387497726828,
+        "min_seconds": 0.12842037505470216,
+        "output_mode": "rerank_summary",
+        "query_count": 768,
+        "repeats": 3,
+        "search_count": 1536
+      },
+      "embree_quality_summary": {
+        "backend": "embree",
+        "candidate_count": 768,
+        "copies": 256,
+        "json_bytes_median": 842,
+        "max_seconds": 0.1577626660000533,
+        "median_seconds": 0.15107016696128994,
+        "min_seconds": 0.14941066701430827,
+        "output_mode": "quality_summary",
+        "query_count": 768,
+        "repeats": 3,
+        "search_count": 1536,
+        "slowdown_vs_rerank_summary": 23.111927680812883
+      },
+      "embree_rerank_summary": {
+        "backend": "embree",
+        "candidate_count": 768,
+        "copies": 256,
+        "json_bytes_median": 738,
+        "max_seconds": 0.017133083078078926,
+        "median_seconds": 0.006536458968184888,
+        "min_seconds": 0.004315957892686129,
+        "output_mode": "rerank_summary",
+        "query_count": 768,
+        "repeats": 3,
+        "search_count": 1536,
+        "speedup_vs_cpu_python_reference": 19.837021177427307
+      }
+    },
+    {
+      "copies": 1024,
+      "cpu_rerank_summary": {
+        "backend": "cpu_python_reference",
+        "candidate_count": 3072,
+        "copies": 1024,
+        "json_bytes_median": 757,
+        "max_seconds": 2.6718461249256507,
+        "median_seconds": 2.596932917018421,
+        "min_seconds": 2.5731489999452606,
+        "output_mode": "rerank_summary",
+        "query_count": 3072,
+        "repeats": 3,
+        "search_count": 6144
+      },
+      "embree_quality_summary": {
+        "reason": "Python exact full-set comparison is intentionally capped to --quality-copies.",
+        "status": "skipped"
+      },
+      "embree_rerank_summary": {
+        "backend": "embree",
+        "candidate_count": 3072,
+        "copies": 1024,
+        "json_bytes_median": 743,
+        "max_seconds": 0.04443583404645324,
+        "median_seconds": 0.04045395797584206,
+        "min_seconds": 0.04006249993108213,
+        "output_mode": "rerank_summary",
+        "query_count": 3072,
+        "repeats": 3,
+        "search_count": 6144,
+        "speedup_vs_cpu_python_reference": 64.19477962006177
+      }
+    }
+  ],
+  "goal": 735,
+  "measurement": "run_app plus json.dumps wall-clock seconds",
+  "quality_copies": [
+    256
+  ],
+  "repeats": 3
+}

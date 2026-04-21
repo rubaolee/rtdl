@@ -127,9 +127,11 @@ Current v0.8 app example boundary:
 - `rtdl_ann_candidate_app.py` runs on `cpu_python_reference`, `cpu`, `embree`,
   `optix`, `vulkan`, and optional `scipy`; RTDL emits nearest-neighbor rows
   over a Python-selected approximate candidate set and Python evaluates recall.
-  Goal524 records bounded Linux CPU/oracle, Embree, OptiX, and Vulkan timing
-  characterization for this app; it is not an external ANN-baseline speedup
-  claim
+  `--output-mode rerank_summary` measures the RTDL candidate-subset reranking
+  slice without exact full-set quality comparison or heavy row output;
+  `quality_summary` preserves compact recall/distance metrics but remains
+  Python exact-comparison dominated. This is not a full ANN index or external
+  ANN-baseline speedup claim
 - `rtdl_outlier_detection_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, `vulkan`, and optional `scipy`; RTDL emits fixed-radius
   neighbor rows and Python applies a density threshold. Goal524 records bounded

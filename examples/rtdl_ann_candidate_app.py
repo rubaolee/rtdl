@@ -150,25 +150,50 @@ def evaluate_approximation(
     }
 
 
-def run_app(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[str, object]:
+def _approximate_summary(rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    return {
+        "approximate_row_count": len(rows),
+        "query_count_with_candidate": len({int(row["query_id"]) for row in rows}),
+        "max_neighbor_rank": max((int(row["neighbor_rank"]) for row in rows), default=0),
+    }
+
+
+def run_app(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    output_mode: str = "full",
+) -> dict[str, object]:
+    if output_mode not in {"full", "rerank_summary", "quality_summary"}:
+        raise ValueError("output_mode must be 'full', 'rerank_summary', or 'quality_summary'")
     case = make_ann_case(copies=copies)
     approximate_rows = _run_rows(backend, case)
-    exact_rows = exact_knn_rows(case["query_points"], case["search_points"])
-    evaluation = evaluate_approximation(approximate_rows, exact_rows)
-
-    return {
+    base_payload = {
         "app": "ann_candidate_search",
         "backend": backend,
         "k": K,
         "copies": copies,
+        "output_mode": output_mode,
         "query_count": len(case["query_points"]),
         "search_count": len(case["search_points"]),
         "candidate_count": len(case["candidate_points"]),
+        **_approximate_summary(approximate_rows),
+        "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
+        "boundary": "Bounded ANN candidate-search demo only; RTDL does not yet provide an ANN index, training phase, or recall/latency optimizer. rerank_summary measures only the RTDL candidate-subset KNN reranking slice; full quality evaluation still uses Python exact full-set comparison.",
+    }
+    if output_mode == "rerank_summary":
+        return base_payload
+
+    exact_rows = exact_knn_rows(case["query_points"], case["search_points"])
+    evaluation = evaluate_approximation(approximate_rows, exact_rows)
+    if output_mode == "quality_summary":
+        return {**base_payload, **{key: value for key, value in evaluation.items() if key != "comparison_rows"}}
+
+    return {
+        **base_payload,
         "approximate_rows": approximate_rows,
         "exact_rows": exact_rows,
         **evaluation,
-        "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
-        "boundary": "Bounded ANN candidate-search demo only; RTDL does not yet provide an ANN index, training phase, or recall/latency optimizer.",
     }
 
 
@@ -182,8 +207,14 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument(
+        "--output-mode",
+        choices=("full", "rerank_summary", "quality_summary"),
+        default="full",
+        help="choose full quality rows, RTDL candidate-rerank summary, or compact quality metrics",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(json.dumps(run_app(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 
