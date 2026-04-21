@@ -1,0 +1,153 @@
+{
+  "goal": 696,
+  "date": "2026-04-21",
+  "host": "lestat-lx1",
+  "checkout": "/tmp/rtdl_goal696_optix_frn",
+  "commit": "c569e71",
+  "gpu": "NVIDIA GeForce GTX 1070",
+  "gpu_boundary": "GTX 1070 has no RT cores; this validates OptiX traversal correctness and whole-call behavior, not RTX RT-core speedup.",
+  "optix_version": [9, 0, 0],
+  "build": {
+    "command": "make build-optix OPTIX_PREFIX=$HOME/vendor/optix-dev CUDA_PREFIX=/usr NVCC=/usr/bin/nvcc",
+    "result": "pass",
+    "library": "/tmp/rtdl_goal696_optix_frn/build/librtdl_optix.so"
+  },
+  "direct_correctness": {
+    "helper": "rtdsl.fixed_radius_count_threshold_2d_optix",
+    "outlier_summary_matches_oracle": true,
+    "dbscan_core_flags_match_oracle": true,
+    "outlier_neighbor_rows_materialized": 0,
+    "dbscan_neighbor_rows_materialized": 0
+  },
+  "focused_tests": {
+    "command": "PYTHONPATH=src:. RTDL_OPTIX_LIB=$PWD/build/librtdl_optix.so python3 -m unittest -v tests.goal695_optix_fixed_radius_summary_test tests.goal216_fixed_radius_neighbors_optix_test tests.goal690_optix_performance_classification_test",
+    "tests": 15,
+    "result": "pass"
+  },
+  "timing": {
+    "iterations_per_case": 3,
+    "unit": "seconds",
+    "cases": [
+      {
+        "label": "outlier_rows_copies_16",
+        "point_count": 128,
+        "matches_oracle": true,
+        "neighbor_row_count": 320,
+        "native_summary_row_count": 0,
+        "median_sec": 0.004078847006894648,
+        "min_sec": 0.003926595003576949,
+        "max_sec": 0.4888076170173008
+      },
+      {
+        "label": "outlier_summary_copies_16",
+        "point_count": 128,
+        "matches_oracle": true,
+        "neighbor_row_count": 0,
+        "native_summary_row_count": 128,
+        "median_sec": 0.0036542669986374676,
+        "min_sec": 0.0034317480167374015,
+        "max_sec": 0.40836058399872854
+      },
+      {
+        "label": "dbscan_rows_copies_16",
+        "point_count": 128,
+        "matches_oracle": true,
+        "neighbor_row_count": 416,
+        "median_sec": 0.006347623013425618,
+        "min_sec": 0.0062472619756590575,
+        "max_sec": 0.006965080014197156
+      },
+      {
+        "label": "dbscan_core_flags_copies_16",
+        "point_count": 128,
+        "matches_oracle": true,
+        "neighbor_row_count": 0,
+        "median_sec": 0.005658320995280519,
+        "min_sec": 0.005650252976920456,
+        "max_sec": 0.005659257993102074
+      },
+      {
+        "label": "outlier_rows_copies_64",
+        "point_count": 512,
+        "matches_oracle": true,
+        "neighbor_row_count": 1280,
+        "native_summary_row_count": 0,
+        "median_sec": 0.03589819199987687,
+        "min_sec": 0.03577210599905811,
+        "max_sec": 0.03617925199796446
+      },
+      {
+        "label": "outlier_summary_copies_64",
+        "point_count": 512,
+        "matches_oracle": true,
+        "neighbor_row_count": 0,
+        "native_summary_row_count": 512,
+        "median_sec": 0.034564709989354014,
+        "min_sec": 0.0344492320145946,
+        "max_sec": 0.03460525401169434
+      },
+      {
+        "label": "dbscan_rows_copies_64",
+        "point_count": 512,
+        "matches_oracle": true,
+        "neighbor_row_count": 1664,
+        "median_sec": 0.0684271490026731,
+        "min_sec": 0.06781720201252028,
+        "max_sec": 0.07503394500236027
+      },
+      {
+        "label": "dbscan_core_flags_copies_64",
+        "point_count": 512,
+        "matches_oracle": true,
+        "neighbor_row_count": 0,
+        "median_sec": 0.06558774801669642,
+        "min_sec": 0.06558124700677581,
+        "max_sec": 0.0658301160146948
+      },
+      {
+        "label": "outlier_rows_copies_128",
+        "point_count": 1024,
+        "matches_oracle": true,
+        "neighbor_row_count": 2560,
+        "native_summary_row_count": 0,
+        "median_sec": 0.13198739700601436,
+        "min_sec": 0.131790286017349,
+        "max_sec": 0.13340289000188932
+      },
+      {
+        "label": "outlier_summary_copies_128",
+        "point_count": 1024,
+        "matches_oracle": true,
+        "neighbor_row_count": 0,
+        "native_summary_row_count": 1024,
+        "median_sec": 0.12937463901471347,
+        "min_sec": 0.12934430901077576,
+        "max_sec": 0.1336597400077153
+      },
+      {
+        "label": "dbscan_rows_copies_128",
+        "point_count": 1024,
+        "matches_oracle": true,
+        "neighbor_row_count": 3328,
+        "median_sec": 0.2549783990252763,
+        "min_sec": 0.25457803599420004,
+        "max_sec": 0.2559304120077286
+      },
+      {
+        "label": "dbscan_core_flags_copies_128",
+        "point_count": 1024,
+        "matches_oracle": true,
+        "neighbor_row_count": 0,
+        "median_sec": 0.2502260949986521,
+        "min_sec": 0.2493247499805875,
+        "max_sec": 0.2550205659936182
+      }
+    ]
+  },
+  "conclusion": {
+    "correctness_gate": "pass",
+    "performance_gate": "bounded_near_parity_on_gtx1070",
+    "classification_change": false,
+    "next_required_gate": "RTX-class hardware phase-split benchmark before any RT-core speedup claim"
+  }
+}
