@@ -120,7 +120,10 @@ Current v0.8 app example boundary:
 
 - `rtdl_hausdorff_distance_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, and `vulkan`; Goal507 records bounded Linux performance
-  evidence against RTDL and mature nearest-neighbor baselines
+  evidence against RTDL and mature nearest-neighbor baselines. The optional
+  Embree `--embree-result-mode directed_summary` path computes the directed
+  Hausdorff summary in the native Embree traversal path and avoids returning
+  all KNN rows when the app only needs distance/witness output
 - `rtdl_ann_candidate_app.py` runs on `cpu_python_reference`, `cpu`, `embree`,
   `optix`, `vulkan`, and optional `scipy`; RTDL emits nearest-neighbor rows
   over a Python-selected approximate candidate set and Python evaluates recall.
@@ -144,8 +147,15 @@ Current v0.8 app example boundary:
   characterization for this app; it is not a claim against scikit-learn DBSCAN
   or production clustering systems. The optional OptiX `--optix-summary-mode
   rt_core_flags` and Embree `--embree-summary-mode rt_core_flags` paths emit
-  native core flags only; full DBSCAN cluster expansion still needs neighbor
-  connectivity and remains Python-owned
+  native core flags only; full DBSCAN cluster
+  expansion still needs neighbor connectivity and remains Python-owned
+- `rtdl_service_coverage_gaps.py` exposes optional Embree
+  `--embree-summary-mode gap_summary` for covered/uncovered household
+  detection. This mode intentionally omits clinic ids, distances, and
+  `clinic_loads`; use row mode for full service-analysis output
+- `rtdl_event_hotspot_screening.py` exposes optional Embree
+  `--embree-summary-mode count_summary` for per-event neighbor counts and
+  hotspot flags without returning all neighbor-pair rows
 - `rtdl_robot_collision_screening_app.py` runs on `cpu_python_reference`,
   `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
   plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed

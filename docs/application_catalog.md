@@ -54,12 +54,23 @@ the ITRE model: input, traverse, refine, emit.
 
 | App | File | What data becomes | RTDL role |
 | --- | --- | --- | --- |
-| Hausdorff distance | `examples/rtdl_hausdorff_distance_app.py` | two point sets become nearest-neighbor rows and one directed Hausdorff distance | emit KNN rows, reduce max distance in Python |
+| Hausdorff distance | `examples/rtdl_hausdorff_distance_app.py` | two point sets become nearest-neighbor rows and one directed Hausdorff distance | emit KNN rows, reduce max distance in Python; optional Embree `directed_summary` keeps directed max reduction native |
 | ANN candidate search | `examples/rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become nearest rows and recall metrics | exact KNN over candidate subsets |
-| Outlier detection | `examples/rtdl_outlier_detection_app.py` | points become neighbor rows, density counts, and outlier labels | radius-neighbor rows plus Python thresholding; optional Embree/OptiX `rt_count_threshold` emits one density-threshold summary row per query |
-| DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | points become neighbor rows, core counts, and cluster labels | radius-neighbor rows plus Python expansion; optional Embree/OptiX `rt_core_flags` emits core flags only, not full cluster expansion |
+| Outlier detection | `examples/rtdl_outlier_detection_app.py` | points become neighbor rows, density counts, and outlier labels | radius-neighbor rows plus Python thresholding; optional OptiX `rt_count_threshold` and Embree `rt_count_threshold` emit one density-threshold summary row per query |
+| DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | points become neighbor rows, core counts, and cluster labels | radius-neighbor rows plus Python expansion; optional OptiX `rt_core_flags` and Embree `rt_core_flags` emit core flags only, not full cluster expansion |
 | Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | robot link rays plus obstacle triangles become pose collision flags | any-hit rows plus `rt.reduce_rows(any)`; compact output modes expose pose flags or hit counts without full witness rows |
 | Barnes-Hut force approximation | `examples/rtdl_barnes_hut_force_app.py` | bodies plus tree nodes become candidate rows and approximate force vectors | candidate generation; Python force reduction |
+
+## Spatial Join App Summary Modes
+
+Some spatial apps expose optional Embree summary modes when the app needs only
+compact answers instead of all emitted neighbor rows.
+
+| App | Summary mode | What it returns | Boundary |
+| --- | --- | --- | --- |
+| `examples/rtdl_service_coverage_gaps.py` | `--embree-summary-mode gap_summary` | covered/uncovered household summary rows | omits clinic ids, distances, and clinic-load counts |
+| `examples/rtdl_event_hotspot_screening.py` | `--embree-summary-mode count_summary` | one neighbor-count row per event plus hotspot flags | omits neighbor-pair rows and distances |
+| `examples/rtdl_hausdorff_distance_app.py` | `--embree-result-mode directed_summary` | directed Hausdorff distance and witness summaries | omits full KNN rows |
 
 ## DB-Style App Examples
 

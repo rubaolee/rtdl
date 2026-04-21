@@ -118,6 +118,12 @@ bounded DB-style analytical workloads.
       materialization for the bounded summary, but they are not KNN,
       Hausdorff, ANN, Barnes-Hut, or full DBSCAN cluster-expansion claims and
       still require RTX-class performance validation
+    - current `main` also has bounded Embree summary modes for selected app
+      outputs: Hausdorff `--embree-result-mode directed_summary`, event
+      hotspot `--embree-summary-mode count_summary`, and service coverage
+      `--embree-summary-mode gap_summary`. These are app-specific compact
+      outputs, not replacements for row modes when users need witness rows,
+      clinic ids, distances, or load counts
   - robot collision screening app using `ray_triangle_any_hit` plus
     `rt.reduce_rows(any)` before Python pose/link witness reporting
     - earlier Linux Goal509 evidence covered the hit-count formulation on CPU,
@@ -675,6 +681,10 @@ Release and preview layers inside the current repository:
   - outlier and DBSCAN now have optional OptiX fixed-radius summary paths for
     threshold/core-flag output; public performance classification remains
     conservative until RTX-class evidence is available
+  - selected Embree apps now have bounded compact summary modes:
+    Hausdorff directed summary, event-hotspot count summary, and
+    service-coverage gap summary. Each mode has its own report and boundary;
+    the claim is app-output-specific, not a universal Embree speedup claim
   - the current claim is "RTDL rows plus Python app logic," not a new released
     backend/language surface
 - `v0.9.0`: released HIPRT backend and closest-hit expansion
