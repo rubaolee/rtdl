@@ -112,6 +112,42 @@ std::vector<Row> run_query_ranges(size_t query_count, WorkerFn worker_fn) {
   return rows;
 }
 
+template <typename WorkerFn>
+void run_query_index_ranges(size_t query_count, WorkerFn worker_fn) {
+  const size_t worker_count = embree_dispatch_thread_count(query_count);
+  if (worker_count == 0) {
+    return;
+  }
+  if (worker_count == 1) {
+    worker_fn(0, query_count);
+    return;
+  }
+
+  std::vector<std::thread> workers;
+  std::vector<std::exception_ptr> exceptions(worker_count);
+  workers.reserve(worker_count);
+  const size_t chunk = (query_count + worker_count - 1) / worker_count;
+  for (size_t worker_index = 0; worker_index < worker_count; ++worker_index) {
+    const size_t begin = worker_index * chunk;
+    const size_t end = std::min(query_count, begin + chunk);
+    workers.emplace_back([&, worker_index, begin, end]() {
+      try {
+        worker_fn(begin, end);
+      } catch (...) {
+        exceptions[worker_index] = std::current_exception();
+      }
+    });
+  }
+  for (std::thread& worker : workers) {
+    worker.join();
+  }
+  for (const std::exception_ptr& exception : exceptions) {
+    if (exception) {
+      std::rethrow_exception(exception);
+    }
+  }
+}
+
 size_t db_find_field_index_or_throw(const RtdlDbField* fields, size_t field_count, const char* name) {
   return db_find_field_index(fields, field_count, name);
 }
@@ -1453,10 +1489,8 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_count_threshold(
     rtcCommitScene(holder.scene);
 
     constexpr double kFixedRadiusCandidateEps = 1.0e-4;
-    std::vector<RtdlFixedRadiusCountRow> rows = run_query_ranges<RtdlFixedRadiusCountRow>(
-        query_values.size(),
-        [&](size_t begin, size_t end, std::vector<RtdlFixedRadiusCountRow>& local_rows) {
-      local_rows.reserve(local_rows.size() + (end - begin));
+    std::vector<RtdlFixedRadiusCountRow> rows(query_values.size());
+    run_query_index_ranges(query_values.size(), [&](size_t begin, size_t end) {
       for (size_t query_index = begin; query_index < end; ++query_index) {
         const Point2D& query = query_values[query_index];
         FixedRadiusCountThresholdQueryState state {
@@ -1477,10 +1511,10 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_fixed_radius_count_threshold(
         g_query_kind = QueryKind::kFixedRadiusCountThreshold;
         rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
         g_query_kind = QueryKind::kNone;
-        local_rows.push_back({
+        rows[query_index] = {
             query.id,
             state.neighbor_count,
-            state.threshold_reached});
+            state.threshold_reached};
       }
     });
     *rows_out = copy_rows_out(rows);

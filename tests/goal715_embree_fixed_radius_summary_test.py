@@ -24,7 +24,7 @@ class Goal715EmbreeFixedRadiusSummaryTest(unittest.TestCase):
             ],
             "src/native/embree/rtdl_embree_api.cpp": [
                 "rtdl_embree_run_fixed_radius_count_threshold",
-                "run_query_ranges<RtdlFixedRadiusCountRow>",
+                "run_query_index_ranges(query_values.size()",
             ],
             "src/rtdsl/embree_runtime.py": [
                 "fixed_radius_count_threshold_2d_embree",
