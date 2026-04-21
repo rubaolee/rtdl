@@ -1,0 +1,145 @@
+{
+  "app": "facility_knn_assignment",
+  "backend": "embree",
+  "boundary": "Rows mode keeps K=3 fallback choices. Compact modes run the K=1 primary-assignment RTDL kernel and omit fallback-choice rows from the app JSON payload.",
+  "cases": [
+    {
+      "copies": 256,
+      "modes": {
+        "primary_assignments": {
+          "backend": "embree",
+          "copies": 256,
+          "customer_count": 1024,
+          "depot_count": 1024,
+          "json_bytes_median": 24787,
+          "json_reduction_vs_rows": 21.455400008068747,
+          "max_seconds": 0.02374324598349631,
+          "median_seconds": 0.01790553901810199,
+          "min_seconds": 0.016266870021354407,
+          "output_mode": "primary_assignments",
+          "repeats": 3,
+          "speedup_vs_rows": 1.8105463892184803
+        },
+        "rows": {
+          "backend": "embree",
+          "copies": 256,
+          "customer_count": 1024,
+          "depot_count": 1024,
+          "json_bytes_median": 531815,
+          "max_seconds": 0.04493724001804367,
+          "median_seconds": 0.03241880901623517,
+          "min_seconds": 0.0322937109740451,
+          "output_mode": "rows",
+          "repeats": 3
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 256,
+          "customer_count": 1024,
+          "depot_count": 1024,
+          "json_bytes_median": 9252,
+          "json_reduction_vs_rows": 57.48108517077389,
+          "max_seconds": 0.01787808199878782,
+          "median_seconds": 0.016035860986448824,
+          "min_seconds": 0.01585567998699844,
+          "output_mode": "summary",
+          "repeats": 3,
+          "speedup_vs_rows": 2.0216444282992247
+        }
+      }
+    },
+    {
+      "copies": 1024,
+      "modes": {
+        "primary_assignments": {
+          "backend": "embree",
+          "copies": 1024,
+          "customer_count": 4096,
+          "depot_count": 4096,
+          "json_bytes_median": 101852,
+          "json_reduction_vs_rows": 21.014638887797982,
+          "max_seconds": 0.2083333440241404,
+          "median_seconds": 0.20045821997337043,
+          "min_seconds": 0.20041711896192282,
+          "output_mode": "primary_assignments",
+          "repeats": 3,
+          "speedup_vs_rows": 1.435360241352674
+        },
+        "rows": {
+          "backend": "embree",
+          "copies": 1024,
+          "customer_count": 4096,
+          "depot_count": 4096,
+          "json_bytes_median": 2140383,
+          "max_seconds": 0.28947950300062075,
+          "median_seconds": 0.2877297590021044,
+          "min_seconds": 0.27401593601098284,
+          "output_mode": "rows",
+          "repeats": 3
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 1024,
+          "customer_count": 4096,
+          "depot_count": 4096,
+          "json_bytes_median": 36973,
+          "json_reduction_vs_rows": 57.89043355962459,
+          "max_seconds": 0.1984092830098234,
+          "median_seconds": 0.1941383359953761,
+          "min_seconds": 0.1935507230227813,
+          "output_mode": "summary",
+          "repeats": 3,
+          "speedup_vs_rows": 1.4820862532218129
+        }
+      }
+    },
+    {
+      "copies": 4096,
+      "modes": {
+        "primary_assignments": {
+          "backend": "embree",
+          "copies": 4096,
+          "customer_count": 16384,
+          "depot_count": 16384,
+          "json_bytes_median": 442847,
+          "json_reduction_vs_rows": 19.70987045187164,
+          "max_seconds": 2.8023207240039483,
+          "median_seconds": 2.78636736999033,
+          "min_seconds": 2.784834112972021,
+          "output_mode": "primary_assignments",
+          "repeats": 3,
+          "speedup_vs_rows": 1.258563734196733
+        },
+        "rows": {
+          "backend": "embree",
+          "copies": 4096,
+          "customer_count": 16384,
+          "depot_count": 16384,
+          "json_bytes_median": 8728457,
+          "max_seconds": 3.529872561979573,
+          "median_seconds": 3.50682092201896,
+          "min_seconds": 3.484167486021761,
+          "output_mode": "rows",
+          "repeats": 3
+        },
+        "summary": {
+          "backend": "embree",
+          "copies": 4096,
+          "customer_count": 16384,
+          "depot_count": 16384,
+          "json_bytes_median": 156784,
+          "json_reduction_vs_rows": 55.67186064904582,
+          "max_seconds": 2.7845954920048825,
+          "median_seconds": 2.7564540949533693,
+          "min_seconds": 2.7503563099890016,
+          "output_mode": "summary",
+          "repeats": 3,
+          "speedup_vs_rows": 1.2722217752290501
+        }
+      }
+    }
+  ],
+  "goal": 730,
+  "measurement": "run_case plus json.dumps wall-clock seconds",
+  "repeats": 3
+}

@@ -13,6 +13,7 @@ import rtdsl as rt
 
 
 K = 3
+PRIMARY_K = 1
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -24,7 +25,18 @@ def facility_knn_assignment():
     return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
 
 
+@rt.kernel(backend="rtdl", precision="float_approx")
+def facility_primary_assignment():
+    customers = rt.input("customers", rt.Points, role="probe")
+    depots = rt.input("depots", rt.Points, role="build")
+    candidates = rt.traverse(customers, depots, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.knn_rows(k=PRIMARY_K))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance", "neighbor_rank"])
+
+
 def make_facility_knn_case(*, copies: int = 1) -> dict[str, tuple[rt.Point, ...]]:
+    if copies < 1:
+        raise ValueError("copies must be >= 1")
     customers: list[rt.Point] = []
     depots: list[rt.Point] = []
     for copy_index in range(copies):
@@ -49,53 +61,74 @@ def make_facility_knn_case(*, copies: int = 1) -> dict[str, tuple[rt.Point, ...]
     return {"customers": tuple(customers), "depots": tuple(depots)}
 
 
-def _run_rows(backend: str, case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+def _run_rows(
+    backend: str,
+    case: dict[str, tuple[rt.Point, ...]],
+    *,
+    primary_only: bool = False,
+) -> tuple[dict[str, object], ...]:
+    kernel = facility_primary_assignment if primary_only else facility_knn_assignment
+    k = PRIMARY_K if primary_only else K
     if backend == "cpu_python_reference":
-        return tuple(rt.run_cpu_python_reference(facility_knn_assignment, **case))
+        return tuple(rt.run_cpu_python_reference(kernel, **case))
     if backend == "cpu":
-        return tuple(rt.run_cpu(facility_knn_assignment, **case))
+        return tuple(rt.run_cpu(kernel, **case))
     if backend == "embree":
-        return tuple(rt.run_embree(facility_knn_assignment, **case))
+        return tuple(rt.run_embree(kernel, **case))
     if backend == "scipy":
-        return tuple(rt.run_scipy_knn_rows(case["customers"], case["depots"], k=K))
+        return tuple(rt.run_scipy_knn_rows(case["customers"], case["depots"], k=k))
     raise ValueError(f"unsupported backend `{backend}`")
 
 
-def run_case(backend: str, *, copies: int = 1) -> dict[str, object]:
+def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+    if output_mode not in {"rows", "primary_assignments", "summary"}:
+        raise ValueError("output_mode must be 'rows', 'primary_assignments', or 'summary'")
     case = make_facility_knn_case(copies=copies)
-    rows = _run_rows(backend, case)
+    primary_only = output_mode != "rows"
+    rows = _run_rows(backend, case, primary_only=primary_only)
     choices: dict[int, list[dict[str, object]]] = {}
     primary_load: dict[int, int] = {}
+    primary_depot_by_customer: dict[int, int] = {}
     for row in rows:
         query_id = int(row["query_id"])
         neighbor_id = int(row["neighbor_id"])
         rank = int(row["neighbor_rank"])
-        choices.setdefault(query_id, []).append(
-            {
-                "depot_id": neighbor_id,
-                "neighbor_rank": rank,
-                "distance": float(row["distance"]),
-            }
-        )
+        option = {
+            "depot_id": neighbor_id,
+            "neighbor_rank": rank,
+            "distance": float(row["distance"]),
+        }
+        choices.setdefault(query_id, []).append(option)
         if rank == 1:
+            primary_depot_by_customer[query_id] = neighbor_id
             primary_load[neighbor_id] = primary_load.get(neighbor_id, 0) + 1
-    primary_depot_by_customer = {
-        customer_id: int(options[0]["depot_id"])
-        for customer_id, options in choices.items()
-        if options
-    }
-    return {
+
+    for options in choices.values():
+        options.sort(key=lambda item: int(item["neighbor_rank"]))
+
+    payload: dict[str, object] = {
         "app": "facility_knn_assignment",
         "backend": backend,
-        "k": K,
+        "k": PRIMARY_K if primary_only else K,
         "copies": copies,
+        "output_mode": output_mode,
         "customer_count": len(case["customers"]),
         "depot_count": len(case["depots"]),
-        "rows": list(rows),
-        "choices_by_customer": choices,
         "primary_depot_by_customer": dict(sorted(primary_depot_by_customer.items())),
         "primary_depot_load": dict(sorted(primary_load.items())),
+        "row_count": len(rows),
+        "boundary": (
+            "Rows mode emits K=3 nearest-depot fallback choices. Compact "
+            "primary_assignments and summary modes use a K=1 RTDL KNN kernel "
+            "when fallback choices are not needed."
+        ),
     }
+    if output_mode == "rows":
+        payload["rows"] = list(rows)
+        payload["choices_by_customer"] = dict(sorted(choices.items()))
+    elif output_mode == "summary":
+        payload.pop("primary_depot_by_customer")
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -108,8 +141,14 @@ def main(argv: list[str] | None = None) -> int:
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument(
+        "--output-mode",
+        choices=("rows", "primary_assignments", "summary"),
+        default="rows",
+        help="Use compact primary_assignments or summary when K=3 fallback choices are not needed.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0
 
 
