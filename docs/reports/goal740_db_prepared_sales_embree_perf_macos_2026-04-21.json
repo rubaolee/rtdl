@@ -1,0 +1,83 @@
+{
+  "apps": [
+    {
+      "app": "database_analytics",
+      "boundary": "copy-scaled public DB fixtures in compact summary mode",
+      "copies": 1024,
+      "cpu_reference": {
+        "elapsed_sec": 0.1601802499499172,
+        "error": null,
+        "ok": true,
+        "payload_hash": "659275326880fed46284fd5777ebe3a4e9bedfb56370d77a11321471df596f74"
+      },
+      "embree": [
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 1,
+          "errors": [],
+          "max_sec": 0.22681812499649823,
+          "median_sec": 0.1769825000083074,
+          "min_sec": 0.15958041604608297,
+          "ok": true,
+          "repeat_count": 3,
+          "samples_sec": [
+            0.1769825000083074,
+            0.22681812499649823,
+            0.15958041604608297
+          ],
+          "speedup_vs_1_thread": 1.0,
+          "threads": "1",
+          "total_sample_sec": 0.5633810410508886,
+          "warmup_errors": [],
+          "warmups": 1
+        },
+        {
+          "canonical_payload_match": true,
+          "effective_threads": 10,
+          "errors": [],
+          "max_sec": 0.15508708299603313,
+          "median_sec": 0.1528855204815045,
+          "min_sec": 0.1514015420107171,
+          "ok": true,
+          "repeat_count": 4,
+          "samples_sec": [
+            0.15508708299603313,
+            0.1514015420107171,
+            0.15264712506905198,
+            0.15312391589395702
+          ],
+          "speedup_vs_1_thread": 1.1576145304729368,
+          "threads": "auto",
+          "total_sample_sec": 0.6122596659697592,
+          "warmup_errors": [],
+          "warmups": 1
+        }
+      ],
+      "group": "db",
+      "scalable": true,
+      "valid": true
+    }
+  ],
+  "goal": 714,
+  "host": {
+    "label": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "os_cpu_count": 10,
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "python": "3.14.0"
+  },
+  "methodology": {
+    "boundary": "This is app-level wall-clock timing. It includes Python CLI startup, JSON materialization, and app postprocess; it is not pure native traversal timing.",
+    "copies_for_scalable_apps": 1024,
+    "max_repeats": 8,
+    "min_sample_sec": 0.5,
+    "threads": [
+      "1",
+      "auto"
+    ],
+    "timeout_sec": 300.0,
+    "warmups_before_sample_window": 1
+  },
+  "valid": true
+}

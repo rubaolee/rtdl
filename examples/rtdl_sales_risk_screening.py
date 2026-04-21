@@ -121,13 +121,53 @@ def _run_grouped_sum_rows(backend: str, case: dict[str, object]) -> tuple[dict[s
     raise ValueError(f"unsupported backend: {backend}")
 
 
+def _prepare_dataset(backend: str, table):
+    kwargs = {
+        "primary_fields": ("ship_date", "discount", "quantity"),
+        "transfer": "columnar",
+    }
+    if backend == "embree":
+        return rt.prepare_embree_db_dataset(table, **kwargs)
+    if backend == "optix":
+        return rt.prepare_optix_db_dataset(table, **kwargs)
+    if backend == "vulkan":
+        return rt.prepare_vulkan_db_dataset(table, **kwargs)
+    raise ValueError(f"unsupported prepared backend: {backend}")
+
+
+def _run_prepared_rows(backend: str, scan_case: dict[str, object], grouped_case: dict[str, object]):
+    dataset = _prepare_dataset(backend, scan_case["table"])
+    try:
+        predicates = scan_case["predicates"]
+        query = grouped_case["query"]
+        count_query = {
+            "predicates": query["predicates"],
+            "group_keys": query["group_keys"],
+        }
+        return (
+            tuple(dataset.conjunctive_scan(predicates)),
+            tuple(dataset.grouped_count(count_query)),
+            tuple(dataset.grouped_sum(query)),
+            {
+                "transfer": dataset._dataset.transfer,
+                "row_count": dataset.row_count,
+            },
+        )
+    finally:
+        dataset.close()
+
+
 def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, object]:
     if output_mode not in {"full", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
     scan_case, grouped_case = make_sales_case(copies)
-    risky_rows = _run_scan_rows(backend, scan_case)
-    count_rows = _run_grouped_count_rows(backend, grouped_case)
-    sum_rows = _run_grouped_sum_rows(backend, grouped_case)
+    prepared_dataset = None
+    if backend in {"embree", "optix", "vulkan"}:
+        risky_rows, count_rows, sum_rows, prepared_dataset = _run_prepared_rows(backend, scan_case, grouped_case)
+    else:
+        risky_rows = _run_scan_rows(backend, scan_case)
+        count_rows = _run_grouped_count_rows(backend, grouped_case)
+        sum_rows = _run_grouped_sum_rows(backend, grouped_case)
     region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
     region_revenue = {
         str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
@@ -138,6 +178,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
+        "prepared_dataset": prepared_dataset,
         "summary": {
             "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
             "risky_order_count_by_region": region_counts,
