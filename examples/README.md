@@ -148,7 +148,11 @@ Current v0.8 app example boundary:
   `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
   plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed
   in this app until the app has a dedicated Vulkan parity/performance gate on
-  the any-hit formulation
+  the any-hit formulation. Use `--output-mode pose_flags` or `--output-mode
+  hit_count` when the app only needs compact summaries instead of full
+  per-edge witness rows. On OptiX, `--optix-summary-mode prepared_count`
+  returns a native scalar hit-edge count; native pose-level OptiX summaries
+  remain future ABI work
 - `rtdl_barnes_hut_force_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, and `vulkan`; Goal509 records candidate-generation timing
   separately from Python force-reduction timing

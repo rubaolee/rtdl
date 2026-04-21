@@ -189,11 +189,53 @@ def _summarize_collisions(
     }
 
 
-def run_app(backend: str = "cpu_python_reference", optix_summary_mode: str = "rows") -> dict[str, object]:
+def _compact_collision_payload(
+    *,
+    mode: str,
+    summary: dict[str, object],
+    rows: tuple[dict[str, object], ...],
+    oracle_summary: dict[str, object],
+) -> dict[str, object]:
+    hit_edge_count = sum(1 for row in rows if bool(row["any_hit"]))
+    oracle_hit_edge_count = sum(1 for row in oracle_summary["edge_any_hit_rows"] if bool(row["any_hit"]))
+    if mode == "full":
+        return {
+            "rows": rows,
+            "edge_any_hit_rows": summary["edge_any_hit_rows"],
+            "pose_collision_flags": summary["pose_collision_flags"],
+            "colliding_pose_ids": summary["colliding_pose_ids"],
+            "pose_summaries": summary["pose_summaries"],
+            "oracle": oracle_summary,
+            "matches_oracle": summary == oracle_summary,
+        }
+    if mode == "pose_flags":
+        return {
+            "pose_collision_flags": summary["pose_collision_flags"],
+            "colliding_pose_ids": summary["colliding_pose_ids"],
+            "colliding_pose_count": len(summary["colliding_pose_ids"]),
+            "oracle_colliding_pose_ids": oracle_summary["colliding_pose_ids"],
+            "matches_oracle": summary["pose_collision_flags"] == oracle_summary["pose_collision_flags"],
+        }
+    if mode == "hit_count":
+        return {
+            "hit_edge_count": int(hit_edge_count),
+            "oracle_hit_edge_count": int(oracle_hit_edge_count),
+            "matches_oracle": int(hit_edge_count) == int(oracle_hit_edge_count),
+        }
+    raise ValueError("output_mode must be 'full', 'pose_flags', or 'hit_count'")
+
+
+def run_app(
+    backend: str = "cpu_python_reference",
+    optix_summary_mode: str = "rows",
+    output_mode: str = "full",
+) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "prepared_count"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'prepared_count'")
     if optix_summary_mode == "prepared_count" and backend != "optix":
         raise ValueError("optix_summary_mode='prepared_count' requires backend='optix'")
+    if output_mode not in {"full", "pose_flags", "hit_count"}:
+        raise ValueError("output_mode must be 'full', 'pose_flags', or 'hit_count'")
 
     case = make_demo_case()
     edge_rays = case["edge_rays"]
@@ -211,6 +253,7 @@ def run_app(backend: str = "cpu_python_reference", optix_summary_mode: str = "ro
             "app": "robot_collision_screening",
             "backend": backend,
             "optix_summary_mode": optix_summary_mode,
+            "output_mode": "hit_count",
             "pose_count": len(poses),
             "edge_ray_count": len(edge_rays),
             "obstacle_triangle_count": len(obstacle_triangles),
@@ -224,23 +267,19 @@ def run_app(backend: str = "cpu_python_reference", optix_summary_mode: str = "ro
     rows = _run_backend(backend, edge_rays, obstacle_triangles)
     summary = _summarize_collisions(rows, poses, ray_metadata)
 
-    return {
+    payload = {
         "app": "robot_collision_screening",
         "backend": backend,
         "optix_summary_mode": optix_summary_mode,
+        "output_mode": output_mode,
         "pose_count": len(poses),
         "edge_ray_count": len(edge_rays),
         "obstacle_triangle_count": len(obstacle_triangles),
-        "rows": rows,
-        "edge_any_hit_rows": summary["edge_any_hit_rows"],
-        "pose_collision_flags": summary["pose_collision_flags"],
-        "colliding_pose_ids": summary["colliding_pose_ids"],
-        "pose_summaries": summary["pose_summaries"],
-        "oracle": oracle_summary,
-        "matches_oracle": summary == oracle_summary,
         "rtdl_role": "RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries.",
-        "boundary": "Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine.",
+        "boundary": "Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.",
     }
+    payload.update(_compact_collision_payload(mode=output_mode, summary=summary, rows=rows, oracle_summary=oracle_summary))
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -258,8 +297,14 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="For --backend optix, prepared_count returns a native scalar hit-edge count instead of materializing per-ray rows.",
     )
+    parser.add_argument(
+        "--output-mode",
+        choices=("full", "pose_flags", "hit_count"),
+        default="full",
+        help="For row mode, choose full witness rows, compact pose flags, or compact hit-count output.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, args.optix_summary_mode), indent=2, sort_keys=True))
+    print(json.dumps(run_app(args.backend, args.optix_summary_mode, args.output_mode), indent=2, sort_keys=True))
     return 0
 
 

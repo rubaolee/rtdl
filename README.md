@@ -123,6 +123,11 @@ bounded DB-style analytical workloads.
     - earlier Linux Goal509 evidence covered the hit-count formulation on CPU,
       Embree, and OptiX; the current any-hit formulation should keep Vulkan and
       Apple claims bounded until dedicated parity/performance gates exist
+    - current `main` exposes `--output-mode pose_flags` and `--output-mode
+      hit_count` so apps can avoid returning full witness rows when compact
+      summaries are enough. OptiX `--optix-summary-mode prepared_count`
+      returns a native scalar hit-edge count; native pose-level OptiX summaries
+      remain future ABI work
   - exact bounded RTXRMQ-style range-minimum query app using the new
     `ray_triangle_closest_hit` primitive plus Python result decoding
     - Linux Goal573 evidence covers CPU reference and Embree correctness and

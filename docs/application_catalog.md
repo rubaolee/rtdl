@@ -46,7 +46,7 @@ the ITRE model: input, traverse, refine, emit.
 | ANN candidate search | `examples/rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become nearest rows and recall metrics | exact KNN over candidate subsets |
 | Outlier detection | `examples/rtdl_outlier_detection_app.py` | points become neighbor rows, density counts, and outlier labels | radius-neighbor rows plus Python thresholding; optional OptiX `rt_count_threshold` emits one density-threshold summary row per query |
 | DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | points become neighbor rows, core counts, and cluster labels | radius-neighbor rows plus Python expansion; optional OptiX `rt_core_flags` emits core flags only, not full cluster expansion |
-| Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | robot link rays plus obstacle triangles become pose collision flags | any-hit rows plus `rt.reduce_rows(any)` |
+| Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | robot link rays plus obstacle triangles become pose collision flags | any-hit rows plus `rt.reduce_rows(any)`; compact output modes expose pose flags or hit counts without full witness rows |
 | Barnes-Hut force approximation | `examples/rtdl_barnes_hut_force_app.py` | bodies plus tree nodes become candidate rows and approximate force vectors | candidate generation; Python force reduction |
 
 ## DB-Style App Examples
