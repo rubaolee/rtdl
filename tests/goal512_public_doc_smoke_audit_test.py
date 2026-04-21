@@ -15,6 +15,7 @@ PUBLIC_DOCS = (
     "docs/capability_boundaries.md",
     "docs/release_facing_examples.md",
     "docs/application_catalog.md",
+    "docs/app_engine_support_matrix.md",
     "docs/tutorials/README.md",
     "docs/tutorials/v0_8_app_building.md",
     "docs/tutorials/feature_quickstart_cookbook.md",

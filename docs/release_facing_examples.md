@@ -34,6 +34,7 @@ If you want a guided learning order instead of a flat example list, start with:
 
 - [RTDL Tutorials](tutorials/README.md)
 - [Application Catalog](application_catalog.md)
+- [App Engine Support Matrix](app_engine_support_matrix.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
 

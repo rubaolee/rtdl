@@ -103,6 +103,7 @@ For release-facing examples and commands, prefer the docs entry points:
 - `../README.md`
 - `../docs/current_main_support_matrix.md`
 - `../docs/application_catalog.md`
+- `../docs/app_engine_support_matrix.md`
 - `../docs/quick_tutorial.md`
 - `../docs/tutorials/README.md`
 - `../docs/release_facing_examples.md`

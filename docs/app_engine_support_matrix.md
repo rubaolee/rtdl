@@ -1,0 +1,78 @@
+# RTDL App Engine Support Matrix
+
+Status: public app-level support map for current `main` after Goal686.
+
+This matrix answers which engines each public app entry point exposes today. It is intentionally app-level, not just feature-level: an underlying RTDL primitive may support an engine while a particular app CLI does not expose that engine yet.
+
+The machine-readable source of truth is `rtdsl.app_engine_support_matrix()`.
+
+## Status Legend
+
+- `direct_cli_native`: the app CLI exposes this engine and the app uses native backend support for its RTDL core.
+- `direct_cli_native_assisted`: the app CLI or app path exposes this engine and uses native/native-assisted backend work.
+- `direct_cli_compatibility_fallback`: the app exposes this engine but the path is a documented compatibility path, not an acceleration claim.
+- `portable_cpu_oracle`: the app has a portable CPU/Python correctness path.
+- `partial_cpu_oracle`: only part of the app has a CPU/Python oracle; another scenario is hardware-gated or may skip.
+- `not_exposed_by_app_cli`: the app does not expose this engine today, even if the underlying feature matrix may support related primitives.
+- `apple_specific`: the app is specifically an Apple RT demo; non-Apple engines are not applicable entry points.
+
+## Matrix
+
+| App | CPU/Python | Embree | OptiX | Vulkan | HIPRT | Apple RT |
+| --- | --- | --- | --- | --- | --- | --- |
+| `examples/rtdl_database_analytics_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_graph_analytics_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_apple_rt_demo_app.py` | `partial_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native_assisted` |
+| `examples/rtdl_service_coverage_gaps.py` | `portable_cpu_oracle` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_event_hotspot_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_facility_knn_assignment.py` | `portable_cpu_oracle` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_road_hazard_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_segment_polygon_hitcount.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_segment_polygon_anyhit_rows.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `portable_cpu_oracle` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_polygon_set_jaccard.py` | `portable_cpu_oracle` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_hausdorff_distance_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_ann_candidate_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_outlier_detection_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_dbscan_clustering_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_robot_collision_screening_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_barnes_hut_force_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_sales_risk_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_v0_7_db_app_demo.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_v0_7_db_kernel_app_demo.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_apple_rt_closest_hit.py` | `portable_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native` |
+| `examples/rtdl_apple_rt_visibility_count.py` | `partial_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native_assisted` |
+| `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `portable_cpu_oracle` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `direct_cli_native` | `not_exposed_by_app_cli` |
+
+## Notes
+
+- `database_analytics`: Primary DB app exposes CPU/Embree/OptiX/Vulkan; HIPRT and Apple DB feature paths exist below the app layer but are not exposed by this app CLI.
+- `graph_analytics`: Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios.
+- `apple_rt_demo`: Primary Apple RT demo is Apple-specific; closest-hit has CPU reference parity, visibility-count is hardware-gated and may skip if Apple RT is unavailable.
+- `service_coverage_gaps`: Spatial radius-join app currently exposes CPU, Embree, and SciPy baseline; other RT engines are not app CLI options.
+- `event_hotspot_screening`: Spatial self-join app currently exposes CPU, Embree, and SciPy baseline.
+- `facility_knn_assignment`: Spatial KNN app currently exposes CPU, Embree, and SciPy baseline.
+- `road_hazard_screening`: Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan.
+- `segment_polygon_hitcount`: Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan.
+- `segment_polygon_anyhit_rows`: Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan.
+- `polygon_pair_overlap_area_rows`: Current public script is CPU-reference only.
+- `polygon_set_jaccard`: Current public script is CPU-reference only.
+- `hausdorff_distance`: KNN app exposes CPU, Embree, OptiX, and Vulkan.
+- `ann_candidate_search`: Candidate-search app exposes CPU, Embree, OptiX, Vulkan, and SciPy baseline.
+- `outlier_detection`: Density app exposes CPU, Embree, OptiX, Vulkan, and SciPy baseline.
+- `dbscan_clustering`: DBSCAN app exposes CPU, Embree, OptiX, Vulkan, and SciPy baseline.
+- `robot_collision_screening`: Discrete collision app exposes CPU, Embree, and OptiX; Vulkan is intentionally not exposed until a dedicated any-hit app gate exists.
+- `barnes_hut_force_app`: Candidate-generation app exposes CPU, Embree, OptiX, and Vulkan.
+- `sales_risk_screening`: Scenario-specific DB app exposes CPU, Embree, OptiX, and Vulkan.
+- `regional_order_dashboard`: Scenario-specific prepared DB app exposes CPU, Embree, OptiX, and Vulkan.
+- `regional_order_dashboard_kernel_form`: Kernel-form DB demo exposes CPU, Embree, OptiX, and Vulkan.
+- `apple_rt_closest_hit`: Scenario-specific Apple RT closest-hit demo.
+- `apple_rt_visibility_count`: Scenario-specific prepared/prepacked Apple RT visibility-count demo.
+- `hiprt_ray_triangle_hitcount`: Scenario-specific HIPRT hit-count demo; HIPRT evidence is SDK/Orochi on tested hosts, not AMD GPU validation.
+
+## Boundaries
+
+- `not_exposed_by_app_cli` is not a claim that the underlying primitive can never run on that engine. It means this public app file does not expose that engine today.
+- HIPRT evidence remains bounded by the documented HIPRT SDK/Orochi validation path and is not AMD GPU validation unless explicitly stated elsewhere.
+- Apple RT DB and graph support in the lower-level feature matrix is native-assisted/Metal-compute scoped, not Apple MPS ray-tracing traversal for DB/graph.
+- App-level Python orchestration and `rt.reduce_rows(...)` remain Python-owned unless a native backend helper is explicitly named.

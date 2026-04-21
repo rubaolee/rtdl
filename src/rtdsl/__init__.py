@@ -81,6 +81,11 @@ from .engine_feature_matrix import engine_feature_support_matrix
 from .engine_feature_matrix import ENGINE_SUPPORT_STATUSES
 from .engine_feature_matrix import public_engine_features
 from .engine_feature_matrix import RTDL_ENGINES
+from .app_support_matrix import app_engine_support
+from .app_support_matrix import app_engine_support_matrix
+from .app_support_matrix import APP_ENGINES
+from .app_support_matrix import APP_SUPPORT_STATUSES
+from .app_support_matrix import public_apps
 from .apple_rt_runtime import apple_rt_context_probe
 from .apple_rt_runtime import apple_rt_compute_u32_add
 from .apple_rt_runtime import apple_rt_predicate_mode
@@ -825,9 +830,14 @@ __all__ = [
     "refine",
     "reduce_rows",
     "RTDL_ENGINES",
+    "APP_ENGINES",
     "ENGINE_SUPPORT_STATUSES",
+    "APP_SUPPORT_STATUSES",
     "engine_feature_support",
     "engine_feature_support_matrix",
+    "app_engine_support",
+    "app_engine_support_matrix",
+    "public_apps",
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_adaptive",

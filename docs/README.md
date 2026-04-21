@@ -20,11 +20,12 @@ Read these in order for the current public story:
 9. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 10. [Release-Facing Examples](release_facing_examples.md)
 11. [Application Catalog](application_catalog.md)
-12. [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
-13. [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
-14. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
-15. [v0.8 App Building](tutorials/v0_8_app_building.md)
-16. [ITRE App Programming Model](rtdl/itre_app_model.md)
+12. [App Engine Support Matrix](app_engine_support_matrix.md)
+13. [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
+14. [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
+15. [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
+16. [v0.8 App Building](tutorials/v0_8_app_building.md)
+17. [ITRE App Programming Model](rtdl/itre_app_model.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -76,6 +77,7 @@ audited release claims.
 - [Backend Maturity](backend_maturity.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
 - [Application Catalog](application_catalog.md)
+- [App Engine Support Matrix](app_engine_support_matrix.md)
 - [RTDL Tutorials](tutorials/README.md)
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)

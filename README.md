@@ -376,6 +376,7 @@ If you want the complete app inventory, including the spatial join examples,
 read:
 
 - [Application Catalog](docs/application_catalog.md)
+- [App Engine Support Matrix](docs/app_engine_support_matrix.md)
 
 Then try the released graph line:
 

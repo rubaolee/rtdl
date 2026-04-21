@@ -11,6 +11,9 @@ refinement, and row emission. Python owns application orchestration,
 post-processing, policy decisions, and presentation. These examples are not
 full GIS, database, robotics, clustering, or simulation systems.
 
+For app-level support across CPU/Python, Embree, OptiX, Vulkan, HIPRT, and
+Apple RT, see the [App Engine Support Matrix](app_engine_support_matrix.md).
+
 ## Spatial Join And Proximity Apps
 
 Yes, RTDL has spatial join apps. The current public surface includes both
