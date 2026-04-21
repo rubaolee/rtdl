@@ -204,16 +204,23 @@ def _measure_embree_case(
     cpu_hash: str | None,
     copies: int,
     thread_value: str,
+    warmups: int,
     min_sample_sec: float,
     max_repeats: int,
     timeout: float,
 ) -> dict[str, Any]:
+    warmup_errors: list[str | None] = []
+    for _ in range(warmups):
+        warmup = _run_once(case, "embree", copies, thread_value, timeout)
+        warmup_errors.append(warmup["error"])
+        if warmup["returncode"] != 0 or not warmup["json_valid"]:
+            break
     samples: list[float] = []
     hashes: list[str | None] = []
     errors: list[str | None] = []
     total = 0.0
     repeats = 0
-    while repeats < max_repeats and (repeats == 0 or total < min_sample_sec):
+    while not any(warmup_errors) and repeats < max_repeats and (repeats == 0 or total < min_sample_sec):
         result = _run_once(case, "embree", copies, thread_value, timeout)
         repeats += 1
         samples.append(float(result["elapsed_sec"]))
@@ -222,13 +229,15 @@ def _measure_embree_case(
         errors.append(result["error"])
         if result["returncode"] != 0 or not result["json_valid"]:
             break
-    ok = all(error is None for error in errors)
+    ok = all(error is None for error in warmup_errors) and all(error is None for error in errors)
     parity = ok and cpu_hash is not None and all(item == cpu_hash for item in hashes)
     return {
         "threads": thread_value,
         "effective_threads": _effective_threads(thread_value),
         "ok": ok,
         "canonical_payload_match": parity,
+        "warmups": warmups,
+        "warmup_errors": [error for error in warmup_errors if error is not None],
         "repeat_count": repeats,
         "samples_sec": samples,
         "total_sample_sec": total,
@@ -260,6 +269,7 @@ def main() -> int:
     parser.add_argument("--groups", default="all", help="comma-separated groups or all")
     parser.add_argument("--copies", type=int, default=256)
     parser.add_argument("--threads", default="1,auto")
+    parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--min-sample-sec", type=float, default=0.2)
     parser.add_argument("--max-repeats", type=int, default=5)
     parser.add_argument("--timeout", type=float, default=300.0)
@@ -281,6 +291,7 @@ def main() -> int:
         "methodology": {
             "copies_for_scalable_apps": args.copies,
             "threads": thread_values,
+            "warmups_before_sample_window": args.warmups,
             "min_sample_sec": args.min_sample_sec,
             "max_repeats": args.max_repeats,
             "timeout_sec": args.timeout,
@@ -317,6 +328,7 @@ def main() -> int:
                     cpu_hash,
                     copies,
                     thread_value,
+                    args.warmups,
                     args.min_sample_sec,
                     args.max_repeats,
                     args.timeout,

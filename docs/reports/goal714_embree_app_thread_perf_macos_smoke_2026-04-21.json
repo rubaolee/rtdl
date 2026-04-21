@@ -5,7 +5,7 @@
       "boundary": "native-assisted candidate discovery plus CPU exact area refinement",
       "copies": 1,
       "cpu_reference": {
-        "elapsed_sec": 0.15356337500270456,
+        "elapsed_sec": 0.1342927919467911,
         "error": null,
         "ok": true,
         "payload_hash": "f45ade6d5d1afc90eab134b7daf42eb0e37d592214a83a652047b82c3f538a24"
@@ -15,33 +15,37 @@
           "canonical_payload_match": true,
           "effective_threads": 1,
           "errors": [],
-          "max_sec": 0.18452262494247407,
-          "median_sec": 0.18452262494247407,
-          "min_sec": 0.18452262494247407,
+          "max_sec": 0.11824495799373835,
+          "median_sec": 0.11824495799373835,
+          "min_sec": 0.11824495799373835,
           "ok": true,
           "repeat_count": 1,
           "samples_sec": [
-            0.18452262494247407
+            0.11824495799373835
           ],
           "speedup_vs_1_thread": 1.0,
           "threads": "1",
-          "total_sample_sec": 0.18452262494247407
+          "total_sample_sec": 0.11824495799373835,
+          "warmup_errors": [],
+          "warmups": 1
         },
         {
           "canonical_payload_match": true,
           "effective_threads": 10,
           "errors": [],
-          "max_sec": 0.12784562492743134,
-          "median_sec": 0.12784562492743134,
-          "min_sec": 0.12784562492743134,
+          "max_sec": 0.12288141704630107,
+          "median_sec": 0.12288141704630107,
+          "min_sec": 0.12288141704630107,
           "ok": true,
           "repeat_count": 1,
           "samples_sec": [
-            0.12784562492743134
+            0.12288141704630107
           ],
-          "speedup_vs_1_thread": 1.4433237355381863,
+          "speedup_vs_1_thread": 0.9622688347513463,
           "threads": "auto",
-          "total_sample_sec": 0.12784562492743134
+          "total_sample_sec": 0.12288141704630107,
+          "warmup_errors": [],
+          "warmups": 1
         }
       ],
       "group": "polygon_overlap",
@@ -53,7 +57,7 @@
       "boundary": "native-assisted candidate discovery plus CPU exact Jaccard refinement",
       "copies": 1,
       "cpu_reference": {
-        "elapsed_sec": 0.11413025006186217,
+        "elapsed_sec": 0.11304204200860113,
         "error": null,
         "ok": true,
         "payload_hash": "d05b9178a304a6f735a5e962a441eff497a965e64f204535782276a9dbabff74"
@@ -63,33 +67,37 @@
           "canonical_payload_match": true,
           "effective_threads": 1,
           "errors": [],
-          "max_sec": 0.12056083302013576,
-          "median_sec": 0.12056083302013576,
-          "min_sec": 0.12056083302013576,
+          "max_sec": 0.11933516699355096,
+          "median_sec": 0.11933516699355096,
+          "min_sec": 0.11933516699355096,
           "ok": true,
           "repeat_count": 1,
           "samples_sec": [
-            0.12056083302013576
+            0.11933516699355096
           ],
           "speedup_vs_1_thread": 1.0,
           "threads": "1",
-          "total_sample_sec": 0.12056083302013576
+          "total_sample_sec": 0.11933516699355096,
+          "warmup_errors": [],
+          "warmups": 1
         },
         {
           "canonical_payload_match": true,
           "effective_threads": 10,
           "errors": [],
-          "max_sec": 0.11864741705358028,
-          "median_sec": 0.11864741705358028,
-          "min_sec": 0.11864741705358028,
+          "max_sec": 0.10958354198373854,
+          "median_sec": 0.10958354198373854,
+          "min_sec": 0.10958354198373854,
           "ok": true,
           "repeat_count": 1,
           "samples_sec": [
-            0.11864741705358028
+            0.10958354198373854
           ],
-          "speedup_vs_1_thread": 1.016126907892916,
+          "speedup_vs_1_thread": 1.0889880435810286,
           "threads": "auto",
-          "total_sample_sec": 0.11864741705358028
+          "total_sample_sec": 0.10958354198373854,
+          "warmup_errors": [],
+          "warmups": 1
         }
       ],
       "group": "polygon_overlap",
@@ -115,7 +123,8 @@
       "1",
       "auto"
     ],
-    "timeout_sec": 300.0
+    "timeout_sec": 300.0,
+    "warmups_before_sample_window": 1
   },
   "valid": true
 }

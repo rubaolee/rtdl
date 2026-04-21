@@ -33,6 +33,8 @@ The harness records:
 - `RTDL_EMBREE_THREADS` requested value and effective thread count;
 - repeat count, median/min/max/sample wall-clock seconds;
 - speedup versus `threads=1` when a one-thread baseline is included.
+- discarded warmups before the measured sample window, to avoid counting
+  one-time native library load/compile/cache effects as thread performance.
 
 ## Honesty Boundary
 
@@ -54,6 +56,7 @@ PYTHONPATH=src:. python3 scripts/goal714_embree_app_thread_perf.py \
   --groups spatial_point,segment_polygon,polygon_overlap,ray,db,graph \
   --copies 1024 \
   --threads 1,2,4,8,auto \
+  --warmups 1 \
   --min-sample-sec 2 \
   --max-repeats 10 \
   --output docs/reports/goal714_embree_app_thread_perf_linux_2026-04-21.json
@@ -68,6 +71,7 @@ py -3 scripts\goal714_embree_app_thread_perf.py ^
   --groups spatial_point,segment_polygon,polygon_overlap,ray,db,graph ^
   --copies 1024 ^
   --threads 1,2,4,8,16,32,auto ^
+  --warmups 1 ^
   --min-sample-sec 2 ^
   --max-repeats 10 ^
   --output docs\reports\goal714_embree_app_thread_perf_windows_2026-04-21.json
