@@ -203,7 +203,6 @@ struct KnnRowsQueryState {
   const std::vector<Point2D>* search_points;
   size_t k;
   std::vector<RtdlKnnNeighborRow>* rows;
-  std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
 struct KnnRowsQueryState3D {
@@ -211,7 +210,6 @@ struct KnnRowsQueryState3D {
   const std::vector<Point3D>* search_points;
   size_t k;
   std::vector<RtdlKnnNeighborRow>* rows;
-  std::unordered_set<uint32_t>* seen_neighbor_ids;
 };
 
 struct DbScanRayQueryState {
@@ -302,6 +300,14 @@ size_t knn_worst_index(const std::vector<RtdlKnnNeighborRow>& rows) {
   return worst_index;
 }
 
+bool knn_rows_have_neighbor(
+    const std::vector<RtdlKnnNeighborRow>& rows,
+    uint32_t neighbor_id) {
+  return std::any_of(rows.begin(), rows.end(), [&](const RtdlKnnNeighborRow& row) {
+    return row.neighbor_id == neighbor_id;
+  });
+}
+
 void tighten_knn_query_radius(
     RTCPointQuery* query,
     const std::vector<RtdlKnnNeighborRow>& rows,
@@ -316,15 +322,13 @@ void tighten_knn_query_radius(
 void append_knn_candidate(
     RTCPointQueryFunctionArguments* args,
     std::vector<RtdlKnnNeighborRow>* rows,
-    std::unordered_set<uint32_t>* seen_neighbor_ids,
     size_t k,
     const RtdlKnnNeighborRow& candidate) {
-  if (seen_neighbor_ids->find(candidate.neighbor_id) != seen_neighbor_ids->end()) {
+  if (knn_rows_have_neighbor(*rows, candidate.neighbor_id)) {
     return;
   }
   if (rows->size() < k) {
     rows->push_back(candidate);
-    seen_neighbor_ids->insert(candidate.neighbor_id);
     tighten_knn_query_radius(args != nullptr ? args->query : nullptr, *rows, k);
     return;
   }
@@ -332,9 +336,7 @@ void append_knn_candidate(
   if (!knn_row_is_better(candidate, (*rows)[worst_index])) {
     return;
   }
-  seen_neighbor_ids->erase((*rows)[worst_index].neighbor_id);
   (*rows)[worst_index] = candidate;
-  seen_neighbor_ids->insert(candidate.neighbor_id);
   tighten_knn_query_radius(args != nullptr ? args->query : nullptr, *rows, k);
 }
 
@@ -795,7 +797,6 @@ bool point_point_query_collect(RTCPointQueryFunctionArguments* args) {
   append_knn_candidate(
       args,
       state->rows,
-      state->seen_neighbor_ids,
       state->k,
       {state->query->id, search_point.id, distance, 0u});
   return false;
@@ -831,7 +832,6 @@ bool point_point_query_collect_3d(RTCPointQueryFunctionArguments* args) {
     append_knn_candidate(
         args,
         state->rows,
-        state->seen_neighbor_ids,
         state->k,
         {state->query->id, search_point.id, distance, 0u});
     return false;

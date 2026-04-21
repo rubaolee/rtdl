@@ -1,0 +1,73 @@
+{
+  "description": "Prepared Embree 2-D kNN rows compared with one-shot Embree kNN app paths.",
+  "goal": 720,
+  "repeats": 3,
+  "results": [
+    {
+      "app": "hausdorff_distance",
+      "copies": 256,
+      "k": 1,
+      "one_shot_sec": 0.013390665990300477,
+      "prepare_sec": 0.0014545839512720704,
+      "prepared_run_sec": 0.01252791692968458,
+      "prepared_run_speedup_vs_one_shot": 1.068866122393551,
+      "query_count": 2048,
+      "search_count_per_pass": 1024
+    },
+    {
+      "app": "ann_candidate_search",
+      "copies": 256,
+      "k": 1,
+      "one_shot_sec": 0.0040918750455603,
+      "prepare_sec": 0.0005189999938011169,
+      "prepared_run_sec": 0.0034452909603714943,
+      "prepared_run_speedup_vs_one_shot": 1.1876718374807702,
+      "query_count": 768,
+      "search_count": 768
+    },
+    {
+      "app": "facility_knn_assignment",
+      "copies": 256,
+      "k": 3,
+      "one_shot_sec": 0.007271916954778135,
+      "prepare_sec": 0.0006925000343471766,
+      "prepared_run_sec": 0.008091291994787753,
+      "prepared_run_speedup_vs_one_shot": 0.8987337200860576,
+      "query_count": 1024,
+      "search_count": 1024
+    },
+    {
+      "app": "hausdorff_distance",
+      "copies": 1024,
+      "k": 1,
+      "one_shot_sec": 0.16485658299643546,
+      "prepare_sec": 0.005846209009177983,
+      "prepared_run_sec": 0.14988854201510549,
+      "prepared_run_speedup_vs_one_shot": 1.0998611420199251,
+      "query_count": 8192,
+      "search_count_per_pass": 4096
+    },
+    {
+      "app": "ann_candidate_search",
+      "copies": 1024,
+      "k": 1,
+      "one_shot_sec": 0.03453050006646663,
+      "prepare_sec": 0.0023670420050621033,
+      "prepared_run_sec": 0.03555808390956372,
+      "prepared_run_speedup_vs_one_shot": 0.9711012594010806,
+      "query_count": 3072,
+      "search_count": 3072
+    },
+    {
+      "app": "facility_knn_assignment",
+      "copies": 1024,
+      "k": 3,
+      "one_shot_sec": 0.0751633329782635,
+      "prepare_sec": 0.003156416933052242,
+      "prepared_run_sec": 0.07548554195091128,
+      "prepared_run_speedup_vs_one_shot": 0.9957315140844147,
+      "query_count": 4096,
+      "search_count": 4096
+    }
+  ]
+}
