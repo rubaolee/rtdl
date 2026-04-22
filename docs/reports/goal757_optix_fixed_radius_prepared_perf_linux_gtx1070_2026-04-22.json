@@ -1,0 +1,319 @@
+{
+  "boundary": "GTX 1070 evidence validates OptiX prepared-scene behavior only. RTX RT-core speedup claims require RTX-class hardware.",
+  "copies": 20000,
+  "iterations": 5,
+  "results": [
+    {
+      "app": "outlier_detection",
+      "copies": 20000,
+      "one_shot_output": {
+        "app": "outlier_detection",
+        "backend": "optix",
+        "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
+        "copies": 20000,
+        "density_rows_count": 160000,
+        "density_rows_sample": [
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "embree_summary_mode": "not_applicable",
+        "k_max": 16,
+        "matches_oracle": true,
+        "min_neighbors_including_self": 3,
+        "native_summary_row_count": 160000,
+        "neighbor_row_count": 0,
+        "optix_summary_mode": "rt_count_threshold",
+        "oracle_density_rows_count": 160000,
+        "oracle_density_rows_sample": [
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "outlier_point_ids_count": 40000,
+        "outlier_point_ids_sample": [
+          7,
+          8,
+          107,
+          108,
+          207,
+          208,
+          307,
+          308,
+          407,
+          408
+        ],
+        "output_mode": "density_summary",
+        "point_count": 160000,
+        "radius": 0.35,
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. output_mode=density_summary emits one thresholded density row per query; Embree uses a prepared fixed-radius threshold traversal for this compact path."
+      },
+      "one_shot_total_sec": 1.6426292469841428,
+      "point_count": 160000,
+      "prepared_optix_close_sec": 0.0007333480170927942,
+      "prepared_optix_prepare_sec": 0.23038239299785346,
+      "prepared_optix_warm_query_sec": {
+        "max_sec": 0.46355943399248645,
+        "median_sec": 0.43452424701536074,
+        "min_sec": 0.42427063098875806
+      },
+      "prepared_output": {
+        "density_rows_count": 160000,
+        "density_rows_sample": [
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "matches_oracle": true,
+        "oracle_density_rows_count": 160000,
+        "oracle_density_rows_sample": [
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_outlier": false,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "outlier_count": 40000,
+        "point_count": 160000
+      },
+      "speedup_one_shot_over_warm_query_median": 3.7802936390016337
+    },
+    {
+      "app": "dbscan_clustering",
+      "copies": 20000,
+      "one_shot_output": {
+        "app": "dbscan_clustering",
+        "backend": "optix",
+        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
+        "cluster_sizes": {},
+        "copies": 20000,
+        "core_flag_rows_count": 160000,
+        "core_flag_rows_sample": [
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "embree_summary_mode": "not_applicable",
+        "epsilon": 0.35,
+        "k_max": 16,
+        "matches_oracle": true,
+        "min_points": 3,
+        "neighbor_row_count": 0,
+        "noise_point_ids_count": 0,
+        "noise_point_ids_sample": [],
+        "optix_summary_mode": "rt_core_flags",
+        "oracle_core_flag_rows_count": 160000,
+        "oracle_core_flag_rows_sample": [
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "output_mode": "core_flags",
+        "point_count": 160000,
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. output_mode=core_flags emits only thresholded core flags; Embree uses a prepared fixed-radius threshold traversal for this compact path."
+      },
+      "one_shot_total_sec": 1.1020381659618579,
+      "point_count": 160000,
+      "prepared_optix_close_sec": 0.0007347569917328656,
+      "prepared_optix_prepare_sec": 0.2197364880121313,
+      "prepared_optix_warm_query_sec": {
+        "max_sec": 0.4497949910000898,
+        "median_sec": 0.4346646629855968,
+        "min_sec": 0.4229621239937842
+      },
+      "prepared_output": {
+        "core_count": 140000,
+        "core_flag_rows_count": 160000,
+        "core_flag_rows_sample": [
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "matches_oracle": true,
+        "oracle_core_flag_rows_count": 160000,
+        "oracle_core_flag_rows_sample": [
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 1
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 2
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 3
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 4
+          },
+          {
+            "is_core": true,
+            "neighbor_count": 3,
+            "point_id": 5
+          }
+        ],
+        "point_count": 160000
+      },
+      "speedup_one_shot_over_warm_query_median": 2.5353755660564827
+    }
+  ],
+  "suite": "goal757_optix_fixed_radius_prepared_perf"
+}

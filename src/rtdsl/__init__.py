@@ -156,10 +156,12 @@ from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixRowView
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
+from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_rays_2d
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
+from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import run_optix
@@ -703,10 +705,12 @@ __all__ = [
     "OptixRay2DBuffer",
     "prepare_optix",
     "prepare_optix_db_dataset",
+    "prepare_optix_fixed_radius_count_threshold_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
     "prepare_optix_rays_2d",
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",
+    "PreparedOptixFixedRadiusCountThreshold2D",
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
     "run_optix",

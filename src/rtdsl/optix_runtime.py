@@ -619,6 +619,141 @@ def fixed_radius_count_threshold_2d_optix(
         view.close()
 
 
+class PreparedOptixFixedRadiusCountThreshold2D:
+    """Prepared OptiX 2-D fixed-radius count-threshold scene.
+
+    ``max_radius`` is part of preparation because the OptiX custom-primitive
+    AABBs must be wide enough for every later query radius.
+    """
+
+    def __init__(self, search_points, *, max_radius: float):
+        if max_radius < 0:
+            raise ValueError("max_radius must be non-negative")
+        packed = search_points if isinstance(search_points, PackedPoints) else pack_points(records=search_points, dimension=2)
+        if packed.dimension != 2:
+            raise ValueError("prepare_optix_fixed_radius_count_threshold_2d requires 2-D points")
+        self._packed_search = packed
+        self._max_radius = float(max_radius)
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if packed.count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_count_threshold_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_fixed_radius_count_threshold_2d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.c_double(self._max_radius),
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def max_radius(self) -> float:
+        return self._max_radius
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self, query_points, *, radius: float, threshold: int = 0) -> tuple[dict[str, int], ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixFixedRadiusCountThreshold2D.run requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return ()
+
+        lib = _load_optix_library()
+        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d")
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlFixedRadiusCountRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlFixedRadiusCountRow,
+            field_names=("query_id", "neighbor_count", "threshold_reached"),
+        )
+        try:
+            return tuple(
+                {
+                    "query_id": int(row["query_id"]),
+                    "neighbor_count": int(row["neighbor_count"]),
+                    "threshold_reached": int(row["threshold_reached"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixFixedRadiusCountThreshold2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_fixed_radius_count_threshold_2d(
+    search_points,
+    *,
+    max_radius: float,
+) -> PreparedOptixFixedRadiusCountThreshold2D:
+    return PreparedOptixFixedRadiusCountThreshold2D(search_points, max_radius=max_radius)
+
+
 def get_last_phase_timings() -> dict[str, float] | None:
     lib = _load_optix_library()
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_get_last_phase_timings")
@@ -2254,6 +2389,34 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_frn_count.restype = ctypes.c_int
+
+    optional_prepare_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_count_threshold_2d")
+    if optional_prepare_frn_count is not None:
+        optional_prepare_frn_count.argtypes = [
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_frn_count.restype = ctypes.c_int
+
+    optional_run_prepared_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d")
+    if optional_run_prepared_frn_count is not None:
+        optional_run_prepared_frn_count.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_frn_count.restype = ctypes.c_int
+
+    optional_destroy_prepared_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d")
+    if optional_destroy_prepared_frn_count is not None:
+        optional_destroy_prepared_frn_count.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_frn_count.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_knn_rows").argtypes = [
         ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,

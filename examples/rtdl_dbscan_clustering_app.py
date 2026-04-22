@@ -250,6 +250,16 @@ def _run_optix_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple
     return _core_flag_rows_from_count_rows(case["points"], count_rows)
 
 
+def _run_optix_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=EPSILON) as prepared:
+        count_rows = prepared.run(
+            case["points"],
+            radius=EPSILON,
+            threshold=MIN_POINTS,
+        )
+    return _core_flag_rows_from_count_rows(case["points"], count_rows)
+
+
 def _run_embree_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
     count_rows = rt.fixed_radius_count_threshold_2d_embree(
         case["points"],
@@ -280,6 +290,71 @@ def _cluster_sizes(cluster_rows: tuple[dict[str, object], ...]) -> dict[int, int
     return dict(sorted(sizes.items()))
 
 
+class PreparedDbscanCoreFlagSession:
+    def __init__(self, backend: str = "optix", *, copies: int = 1):
+        if backend != "optix":
+            raise ValueError("PreparedDbscanCoreFlagSession currently supports backend='optix'")
+        self.backend = backend
+        self.copies = copies
+        self.case = make_dbscan_case(copies=copies)
+        self._prepared = rt.prepare_optix_fixed_radius_count_threshold_2d(self.case["points"], max_radius=EPSILON)
+        self._closed = False
+
+    def run(self, *, output_mode: str = "core_flags") -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared DBSCAN core-flag session is closed")
+        if output_mode != "core_flags":
+            raise ValueError("prepared DBSCAN core-flag session currently supports output_mode='core_flags'")
+        count_rows = self._prepared.run(
+            self.case["points"],
+            radius=EPSILON,
+            threshold=MIN_POINTS,
+        )
+        core_flag_rows = _core_flag_rows_from_count_rows(self.case["points"], count_rows)
+        oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=self.copies)
+        core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in core_flag_rows]
+        oracle_core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in oracle_core_flag_rows]
+        return {
+            "app": "dbscan_clustering",
+            "backend": self.backend,
+            "execution_mode": "prepared_session",
+            "output_mode": output_mode,
+            "optix_summary_mode": "rt_core_flags_prepared",
+            "embree_summary_mode": "not_applicable",
+            "epsilon": EPSILON,
+            "min_points": MIN_POINTS,
+            "k_max": K_MAX,
+            "copies": self.copies,
+            "point_count": len(self.case["points"]),
+            "neighbor_row_count": 0,
+            "cluster_rows": (),
+            "cluster_sizes": {},
+            "core_flag_rows": core_flag_rows,
+            "noise_point_ids": (),
+            "oracle_cluster_rows": (),
+            "oracle_core_flag_rows": oracle_core_flag_rows,
+            "matches_oracle": core_flags == oracle_core_flags,
+            "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits compact DBSCAN core flags; Python clustering expansion remains outside this prepared summary path.",
+            "boundary": "Prepared OptiX core flags cover the RT-heavy fixed-radius density predicate only. Full DBSCAN cluster expansion remains Python-side and is not claimed as a backend primitive.",
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        self._prepared.close()
+
+    def __enter__(self) -> "PreparedDbscanCoreFlagSession":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+
+def prepare_session(backend: str = "optix", *, copies: int = 1) -> PreparedDbscanCoreFlagSession:
+    return PreparedDbscanCoreFlagSession(backend, copies=copies)
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     *,
@@ -288,8 +363,8 @@ def run_app(
     embree_summary_mode: str = "rows",
     output_mode: str = "full",
 ) -> dict[str, object]:
-    if optix_summary_mode not in {"rows", "rt_core_flags"}:
-        raise ValueError("optix_summary_mode must be 'rows' or 'rt_core_flags'")
+    if optix_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
     if embree_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
         raise ValueError("embree_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
     if output_mode not in {"full", "core_flags"}:
@@ -313,6 +388,10 @@ def run_app(
         neighbor_rows = ()
         cluster_rows = ()
         core_flag_rows = _run_optix_core_flag_summary(case)
+    elif backend == "optix" and optix_summary_mode == "rt_core_flags_prepared":
+        neighbor_rows = ()
+        cluster_rows = ()
+        core_flag_rows = _run_optix_prepared_core_flag_summary(case)
     elif backend == "embree" and embree_summary_mode == "rt_core_flags":
         neighbor_rows = ()
         cluster_rows = ()
@@ -357,7 +436,7 @@ def run_app(
         "oracle_core_flag_rows": oracle_core_flag_rows,
         "matches_oracle": matches_oracle,
         "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. output_mode=core_flags emits only thresholded core flags; Embree uses a prepared fixed-radius threshold traversal for this compact path.",
-        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. A one-shot CLI run cannot amortize Embree preparation; prepared mode is intended for repeated app/session probes.",
+        "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
     }
 
 
@@ -379,9 +458,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--optix-summary-mode",
-        choices=("rows", "rt_core_flags"),
+        choices=("rows", "rt_core_flags", "rt_core_flags_prepared"),
         default="rows",
-        help="when backend=optix, use experimental native fixed-radius threshold counts for core flags only",
+        help="when backend=optix, use native fixed-radius threshold counts for core flags only; prepared mode reuses an OptiX BVH handle inside the run",
     )
     parser.add_argument(
         "--embree-summary-mode",
