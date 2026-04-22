@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -117,6 +118,108 @@ def _run_prepared_backend(backend: str, table: tuple[dict[str, object], ...]) ->
         dataset.close()
 
 
+class PreparedRegionalDashboardSession:
+    def __init__(self, backend: str, copies: int = 1):
+        if copies <= 0:
+            raise ValueError("copies must be positive")
+        self.requested_backend = backend
+        self.copies = copies
+        table_start = time.perf_counter()
+        self.table = make_orders(copies)
+        self.table_construction_sec = time.perf_counter() - table_start
+        select_start = time.perf_counter()
+        self.backend, self.fallback_note = choose_backend(backend, self.table)
+        self.backend_selection_sec = time.perf_counter() - select_start
+        self._closed = False
+        self._dataset = None
+        self.prepare_sec = 0.0
+        if self.backend != "cpu_reference":
+            prepare_start = time.perf_counter()
+            self._dataset = _prepare_dataset(self.backend, self.table)
+            self.prepare_sec = time.perf_counter() - prepare_start
+
+    def __enter__(self) -> "PreparedRegionalDashboardSession":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if not self._closed and self._dataset is not None:
+            self._dataset.close()
+        self._closed = True
+
+    def run(self, output_mode: str = "full") -> dict[str, Any]:
+        if self._closed:
+            raise RuntimeError("prepared regional dashboard session is closed")
+        if output_mode not in {"full", "summary"}:
+            raise ValueError(f"unsupported output_mode: {output_mode}")
+        if self.backend == "cpu_reference":
+            results = _run_cpu_reference(self.table)
+            prepared_summary = None
+        else:
+            assert self._dataset is not None
+            results = {
+                "promo_order_ids": _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN)),
+                "open_order_count_by_region": _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD)),
+                "web_revenue_by_region": _sort_rows(self._dataset.grouped_sum(REGION_REVENUE)),
+            }
+            prepared_summary = {
+                "transfer": self._dataset._dataset.transfer,
+                "row_count": self._dataset.row_count,
+            }
+
+        return {
+            "app": "regional_order_dashboard",
+            "requested_backend": self.requested_backend,
+            "backend": self.backend,
+            "copies": self.copies,
+            "output_mode": output_mode,
+            "fallback_note": self.fallback_note,
+            "execution_mode": "prepared_session",
+            "session": {
+                "table_construction_sec": self.table_construction_sec,
+                "backend_selection_sec": self.backend_selection_sec,
+                "prepare_sec": self.prepare_sec,
+            },
+            "data_flow": [
+                "app order rows",
+                "RTDL v0.7 bounded DB workload",
+                "reused prepared RT dataset over encoded row boxes" if self.backend != "cpu_reference" else "reused CPU reference evaluator input",
+                "application-ready JSON rows",
+            ],
+            "input_table": {
+                "row_count": len(self.table),
+                "fields": sorted(self.table[0]),
+            },
+            "queries": {
+                "promo_order_ids": {
+                    "operation": "conjunctive_scan",
+                    "predicates": PROMO_SCAN,
+                    "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+                },
+                "open_order_count_by_region": {
+                    "operation": "grouped_count",
+                    "query": REGION_WORKLOAD,
+                    "meaning": "How many small post-window orders remain by region?",
+                },
+                "web_revenue_by_region": {
+                    "operation": "grouped_sum",
+                    "query": REGION_REVENUE,
+                    "meaning": "How much web-channel revenue is covered by region?",
+                },
+            },
+            "prepared_dataset": prepared_summary,
+            "results": results if output_mode == "full" else {},
+            "summary": _summarize_results(results),
+            "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+        }
+
+
+def prepare_session(backend: str, copies: int = 1) -> PreparedRegionalDashboardSession:
+    return PreparedRegionalDashboardSession(backend, copies=copies)
+
+
 def _canonical_backend(backend: str) -> str:
     if backend == "cpu_python_reference":
         return "cpu_reference"
@@ -171,6 +274,7 @@ def run_app(backend: str, copies: int = 1, output_mode: str = "full") -> dict[st
         "backend": selected_backend,
         "copies": copies,
         "output_mode": output_mode,
+        "execution_mode": "one_shot",
         "fallback_note": fallback_note,
         "data_flow": [
             "app order rows",

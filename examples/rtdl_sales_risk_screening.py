@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -157,6 +158,98 @@ def _run_prepared_rows(backend: str, scan_case: dict[str, object], grouped_case:
         dataset.close()
 
 
+class PreparedSalesRiskSession:
+    def __init__(self, backend: str, copies: int = 1):
+        if copies <= 0:
+            raise ValueError("copies must be positive")
+        self.backend = backend
+        self.copies = copies
+        case_start = time.perf_counter()
+        self.scan_case, self.grouped_case = make_sales_case(copies)
+        self.input_construction_sec = time.perf_counter() - case_start
+        self._closed = False
+        self._dataset = None
+        self.prepare_sec = 0.0
+        if backend in {"embree", "optix", "vulkan"}:
+            prepare_start = time.perf_counter()
+            self._dataset = _prepare_dataset(backend, self.scan_case["table"])
+            self.prepare_sec = time.perf_counter() - prepare_start
+
+    def __enter__(self) -> "PreparedSalesRiskSession":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if not self._closed and self._dataset is not None:
+            self._dataset.close()
+        self._closed = True
+
+    def run(self, output_mode: str = "full") -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared sales-risk session is closed")
+        if output_mode not in {"full", "summary"}:
+            raise ValueError(f"unsupported output_mode: {output_mode}")
+        prepared_dataset = None
+        if self.backend in {"embree", "optix", "vulkan"}:
+            assert self._dataset is not None
+            predicates = self.scan_case["predicates"]
+            query = self.grouped_case["query"]
+            count_query = {
+                "predicates": query["predicates"],
+                "group_keys": query["group_keys"],
+            }
+            risky_rows = tuple(self._dataset.conjunctive_scan(predicates))
+            count_rows = tuple(self._dataset.grouped_count(count_query))
+            sum_rows = tuple(self._dataset.grouped_sum(query))
+            prepared_dataset = {
+                "transfer": self._dataset._dataset.transfer,
+                "row_count": self._dataset.row_count,
+            }
+        else:
+            risky_rows = _run_scan_rows(self.backend, self.scan_case)
+            count_rows = _run_grouped_count_rows(self.backend, self.grouped_case)
+            sum_rows = _run_grouped_sum_rows(self.backend, self.grouped_case)
+        region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
+        region_revenue = {
+            str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
+            for row in sum_rows
+        }
+        return {
+            "app": "sales_risk_screening",
+            "backend": self.backend,
+            "copies": self.copies,
+            "output_mode": output_mode,
+            "execution_mode": "prepared_session",
+            "session": {
+                "input_construction_sec": self.input_construction_sec,
+                "prepare_sec": self.prepare_sec,
+            },
+            "prepared_dataset": prepared_dataset,
+            "summary": {
+                "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
+                "risky_order_count_by_region": region_counts,
+                "risky_revenue_by_region": region_revenue,
+                "highest_risk_region": max(region_counts.items(), key=lambda item: (item[1], item[0]))[0],
+            },
+            "row_counts": {
+                "scan": len(risky_rows),
+                "grouped_count": len(count_rows),
+                "grouped_sum": len(sum_rows),
+            },
+            "rows": {} if output_mode == "summary" else {
+                "scan": list(risky_rows),
+                "grouped_count": list(count_rows),
+                "grouped_sum": list(sum_rows),
+            },
+        }
+
+
+def prepare_session(backend: str, copies: int = 1) -> PreparedSalesRiskSession:
+    return PreparedSalesRiskSession(backend, copies=copies)
+
+
 def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, object]:
     if output_mode not in {"full", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
@@ -178,6 +271,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
+        "execution_mode": "one_shot",
         "prepared_dataset": prepared_dataset,
         "summary": {
             "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
