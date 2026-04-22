@@ -51,9 +51,10 @@ target because the row-heavy and compact-summary modes are explicit.
 
 ## Honesty Boundary
 
-This goal does not add a new native OptiX pose-level ABI. In row mode, compact
-outputs still compute summaries from emitted rows. Native pose-level OptiX
-summaries remain future work.
+Post-Goal753 update: RTDL now has a prepared OptiX pose-flag ABI for this app
+summary shape. In row mode, compact outputs still compute summaries from
+emitted rows. `prepared_pose_flags` returns pose-level collision flags only;
+edge witnesses and hit-ray IDs still require row mode.
 
 This goal also does not claim RTX speedup. RTX-class cloud validation is still
 required before public performance claims.

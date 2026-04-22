@@ -40,12 +40,16 @@ The profiler output records `output_mode` and a compact `last_output` shape:
 - `pose_flags`: `pose_flag_count`, `colliding_pose_count`, `matches_oracle`
 - `hit_count`: `hit_edge_count`, `matches_oracle`
 - `prepared_count`: always reports native OptiX scalar `hit_count`
+- `prepared_pose_flags`: reports native OptiX pose-level collision flags
 
 ## Correctness Boundary
 
-Compact row-mode output still executes the row path internally. It reduces app JSON/Python output burden, but it is not the native OptiX prepared-count ABI.
+Compact row-mode output still executes the row path internally. It reduces app JSON/Python output burden, but it is not a native OptiX prepared-summary ABI.
 
-The native OptiX summary path remains `--summary-mode prepared_count`, which returns only a scalar hit-edge count and does not emit pose-level witness rows.
+Post-Goal753 update: the native OptiX summary paths are now
+`--summary-mode prepared_count`, which returns only a scalar hit-edge count,
+and `--summary-mode prepared_pose_flags`, which returns pose-level collision
+flags. Neither emits edge-level witness rows.
 
 ## Verification
 
@@ -80,4 +84,4 @@ This goal only improves measurement readiness and app-output transparency so a f
 - full emitted-row overhead
 - compact app-output overhead
 - native scalar prepared-count overhead
-
+- native prepared pose-flag overhead

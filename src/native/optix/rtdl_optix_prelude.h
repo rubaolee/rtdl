@@ -300,6 +300,14 @@ int  rtdl_optix_count_prepared_ray_anyhit_2d_packed(
          void* prepared_rays,
          size_t* hit_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed(
+         void* prepared,
+         void* prepared_rays,
+         const uint32_t* pose_indices,
+         size_t pose_index_count,
+         uint32_t* pose_flags_out,
+         size_t pose_count,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays);
 int  rtdl_optix_run_segment_polygon_hitcount(
          const RtdlSegment*   segments,  size_t segment_count,

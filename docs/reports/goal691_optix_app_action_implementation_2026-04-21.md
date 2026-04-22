@@ -183,17 +183,19 @@ Result:
 ## Current Limitations
 
 - The local Mac environment does not validate OptiX native execution.
-- The prepared-count path still reports only total hit-edge count, not native
-  pose-level flags.
+- Post-Goal753 update: the OptiX robot app now also has a prepared pose-flag
+  summary path. It reports pose-level collision flags only; edge-level
+  witnesses still require row mode.
 - Full app-scale performance claims still require an RTX-class NVIDIA host.
 - The profiler currently has detailed phases for robot collision only.
 
 ## Next Action
 
-Implement native pose-level or grouped-summary output for robot collision, or
-run the prepared-count path on the Linux OptiX host and compare:
+Run the prepared-count and prepared-pose-flags paths on the Linux OptiX host and
+compare:
 
 - row mode vs prepared-count mode;
+- row mode vs prepared-pose-flags mode;
 - cold vs warm;
 - prepared vs unprepared;
 - OptiX vs Embree;

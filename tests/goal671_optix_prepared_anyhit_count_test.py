@@ -32,6 +32,17 @@ def optix_prepared_packed_anyhit_available() -> bool:
     )
 
 
+def optix_prepared_pose_flags_available() -> bool:
+    try:
+        lib = _load_optix_library()
+    except Exception:
+        return False
+    return (
+        optix_prepared_packed_anyhit_available()
+        and _find_optional_backend_symbol(lib, "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed") is not None
+    )
+
+
 class Goal671OptixPreparedAnyHitCountPortableTest(unittest.TestCase):
     def test_empty_prepared_scene_counts_zero_without_native_library(self) -> None:
         prepared = rt.prepare_optix_ray_triangle_any_hit_2d(())
@@ -68,6 +79,17 @@ class Goal671OptixPreparedAnyHitCountPortableTest(unittest.TestCase):
         with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
             with self.assertRaisesRegex(RuntimeError, "ray buffer is closed"):
                 prepared.count_packed(rays)
+
+    def test_empty_prepared_pose_flags_do_not_need_native_library(self) -> None:
+        with rt.prepare_optix_rays_2d(()) as rays:
+            with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
+                self.assertEqual(prepared.pose_flags_packed(rays, (), pose_count=3), (False, False, False))
+
+    def test_prepared_pose_flags_rejects_bad_pose_index_length(self) -> None:
+        with rt.prepare_optix_rays_2d(()) as rays:
+            with rt.prepare_optix_ray_triangle_any_hit_2d(()) as prepared:
+                with self.assertRaisesRegex(ValueError, "pose_indices length"):
+                    prepared.pose_flags_packed(rays, (0,), pose_count=1)
 
 
 @unittest.skipUnless(optix_prepared_anyhit_available(), "current OptiX prepared any-hit symbols are not available")
@@ -116,6 +138,29 @@ class Goal672OptixPreparedAnyHitPackedCountNativeTest(unittest.TestCase):
             with rt.prepare_optix_rays_2d(rays) as packed_rays:
                 self.assertEqual(prepared.count_packed(packed_rays), prepared.count(rays))
                 self.assertEqual(prepared.count(packed_rays), prepared.count(rays))
+
+
+@unittest.skipUnless(optix_prepared_pose_flags_available(), "current OptiX packed pose-flag any-hit symbols are not available")
+class Goal753OptixPreparedAnyHitPoseFlagsNativeTest(unittest.TestCase):
+    def test_packed_prepared_pose_flags_match_cpu_anyhit_rows(self) -> None:
+        triangles = (
+            rt.Triangle(id=10, x0=-0.1, y0=0.1, x1=0.1, y1=0.1, x2=0.0, y2=0.2),
+        )
+        rays = (
+            rt.Ray2D(id=1000, ox=0.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+            rt.Ray2D(id=1001, ox=1.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+            rt.Ray2D(id=2000, ox=2.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+        )
+        pose_indices = (0, 0, 1)
+        expected_rows = tuple(rt.ray_triangle_any_hit_cpu(rays, triangles))
+        expected = (
+            any(bool(row["any_hit"]) for row in expected_rows[:2]),
+            bool(expected_rows[2]["any_hit"]),
+        )
+        self.assertEqual(expected, (True, False))
+        with rt.prepare_optix_ray_triangle_any_hit_2d(triangles) as prepared:
+            with rt.prepare_optix_rays_2d(rays) as packed_rays:
+                self.assertEqual(prepared.pose_flags_packed(packed_rays, pose_indices, pose_count=2), expected)
 
 
 if __name__ == "__main__":

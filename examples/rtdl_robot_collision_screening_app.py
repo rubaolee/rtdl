@@ -181,6 +181,31 @@ def _run_optix_prepared_hit_edge_count(
     }
 
 
+def _run_optix_prepared_pose_flags(
+    edge_rays: tuple[rt.Ray2D, ...],
+    obstacle_triangles: tuple[rt.Triangle, ...],
+    poses: tuple[dict[str, object], ...],
+    ray_metadata: dict[int, dict[str, int]],
+) -> dict[str, object]:
+    pose_ids = tuple(int(pose["pose_id"]) for pose in poses)
+    pose_index_by_id = {pose_id: index for index, pose_id in enumerate(pose_ids)}
+    pose_indices = tuple(pose_index_by_id[int(ray_metadata[int(ray.id)]["pose_id"])] for ray in edge_rays)
+    with rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles) as prepared_scene:
+        with rt.prepare_optix_rays_2d(edge_rays) as prepared_rays:
+            pose_flags = prepared_scene.pose_flags_packed(prepared_rays, pose_indices, pose_count=len(pose_ids))
+    return {
+        "mode": "optix_prepared_pose_flags",
+        "pose_collision_flags": tuple(
+            {"pose_id": pose_id, "collides": bool(pose_flags[index])}
+            for index, pose_id in enumerate(pose_ids)
+        ),
+        "colliding_pose_ids": tuple(pose_id for index, pose_id in enumerate(pose_ids) if pose_flags[index]),
+        "colliding_pose_count": sum(1 for flag in pose_flags if flag),
+        "edge_ray_count": len(edge_rays),
+        "obstacle_triangle_count": len(obstacle_triangles),
+    }
+
+
 def _attach_pose_metadata(
     rows: tuple[dict[str, object], ...],
     ray_metadata: dict[int, dict[str, int]],
@@ -293,10 +318,10 @@ def run_app(
     pose_count: int | None = None,
     obstacle_count: int | None = None,
 ) -> dict[str, object]:
-    if optix_summary_mode not in {"rows", "prepared_count"}:
-        raise ValueError("optix_summary_mode must be 'rows' or 'prepared_count'")
-    if optix_summary_mode == "prepared_count" and backend != "optix":
-        raise ValueError("optix_summary_mode='prepared_count' requires backend='optix'")
+    if optix_summary_mode not in {"rows", "prepared_count", "prepared_pose_flags"}:
+        raise ValueError("optix_summary_mode must be 'rows', 'prepared_count', or 'prepared_pose_flags'")
+    if optix_summary_mode != "rows" and backend != "optix":
+        raise ValueError("prepared OptiX summary modes require backend='optix'")
     if output_mode not in {"full", "pose_flags", "hit_count"}:
         raise ValueError("output_mode must be 'full', 'pose_flags', or 'hit_count'")
 
@@ -334,6 +359,23 @@ def run_app(
             "boundary": "Prepared count mode returns only the total hit-edge count. Use optix_summary_mode='rows' when pose-level witnesses and edge rows are needed.",
         }
 
+    if backend == "optix" and optix_summary_mode == "prepared_pose_flags":
+        prepared_summary = _run_optix_prepared_pose_flags(edge_rays, obstacle_triangles, poses, ray_metadata)
+        return {
+            "app": "robot_collision_screening",
+            "backend": backend,
+            "optix_summary_mode": optix_summary_mode,
+            "output_mode": "pose_flags",
+            "pose_count": len(poses),
+            "edge_ray_count": len(edge_rays),
+            "obstacle_triangle_count": len(obstacle_triangles),
+            "prepared_summary": prepared_summary,
+            "oracle_colliding_pose_ids": oracle_summary["colliding_pose_ids"],
+            "matches_oracle": tuple(prepared_summary["pose_collision_flags"]) == tuple(oracle_summary["pose_collision_flags"]),
+            "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.",
+            "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
+        }
+
     rows = _run_backend(backend, edge_rays, obstacle_triangles)
     summary = _summarize_collisions(rows, poses, ray_metadata)
 
@@ -363,9 +405,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--optix-summary-mode",
-        choices=("rows", "prepared_count"),
+        choices=("rows", "prepared_count", "prepared_pose_flags"),
         default="rows",
-        help="For --backend optix, prepared_count returns a native scalar hit-edge count instead of materializing per-ray rows.",
+        help="For --backend optix, prepared_count returns a native scalar hit-edge count and prepared_pose_flags returns native pose flags instead of materializing per-ray rows.",
     )
     parser.add_argument(
         "--output-mode",

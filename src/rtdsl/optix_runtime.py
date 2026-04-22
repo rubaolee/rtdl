@@ -1647,6 +1647,50 @@ class PreparedOptixRayTriangleAnyHit2D:
         _check_status(status, error)
         return int(hit_count.value)
 
+    def pose_flags_packed(self, rays: "OptixRay2DBuffer", pose_indices, *, pose_count: int) -> tuple[bool, ...]:
+        """Return one native collision flag per pose index for packed 2-D rays."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        if not isinstance(rays, OptixRay2DBuffer):
+            raise ValueError("pose_flags_packed requires an OptixRay2DBuffer")
+        if rays.closed:
+            raise RuntimeError("prepared OptiX ray buffer is closed")
+        if pose_count < 0:
+            raise ValueError("pose_count must be non-negative")
+        normalized_pose_indices = tuple(int(index) for index in pose_indices)
+        if len(normalized_pose_indices) != rays.count:
+            raise ValueError("pose_indices length must match prepared ray count")
+        if any(index < 0 or index >= pose_count for index in normalized_pose_indices):
+            raise ValueError("pose_indices entries must be within [0, pose_count)")
+        if rays.count == 0 or self._packed_triangles.count == 0 or pose_count == 0:
+            return tuple(False for _ in range(pose_count))
+
+        lib = _load_optix_library()
+        pose_flags_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed")
+        if pose_flags_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        PoseIndexArray = ctypes.c_uint32 * len(normalized_pose_indices)
+        PoseFlagArray = ctypes.c_uint32 * pose_count
+        pose_index_buffer = PoseIndexArray(*normalized_pose_indices)
+        pose_flag_buffer = PoseFlagArray()
+        error = ctypes.create_string_buffer(4096)
+        status = pose_flags_symbol(
+            self._handle,
+            rays.handle,
+            pose_index_buffer,
+            len(normalized_pose_indices),
+            pose_flag_buffer,
+            pose_count,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return tuple(bool(pose_flag_buffer[index]) for index in range(pose_count))
+
     def close(self) -> None:
         if self._closed:
             return
@@ -2124,6 +2168,22 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_anyhit2d_packed.restype = ctypes.c_int
+    optional_pose_flags_anyhit2d_packed = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed",
+    )
+    if optional_pose_flags_anyhit2d_packed is not None:
+        optional_pose_flags_anyhit2d_packed.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_pose_flags_anyhit2d_packed.restype = ctypes.c_int
     optional_destroy_rays2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_rays_2d")
     if optional_destroy_rays2d is not None:
         optional_destroy_rays2d.argtypes = [ctypes.c_void_p]

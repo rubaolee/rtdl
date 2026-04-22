@@ -1949,6 +1949,7 @@ static RayHitCount3DPipeline g_rayhit3d;
 static RayAnyHitPipeline    g_rayanyhit;
 static RayAnyHitPipeline    g_rayanyhit3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
+static RayAnyHitPipeline    g_rayanyhit_pose_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;
 static DbScanPipeline      g_dbscan;

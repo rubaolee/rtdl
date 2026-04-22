@@ -1999,6 +1999,16 @@ struct RayAnyHitCountLaunchParams {
     uint32_t               ray_count;
 };
 
+struct RayAnyHitPoseFlagsLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuRay*          rays;
+    const GpuTriangle*     triangles;
+    const uint32_t*        pose_indices;
+    uint32_t*              pose_flags;
+    uint32_t               ray_count;
+    uint32_t               pose_count;
+};
+
 static void ensure_ray_anyhit_2d_pipeline()
 {
     std::call_once(g_rayanyhit.init, [&]() {
@@ -2053,6 +2063,61 @@ static void ensure_ray_anyhit_count_2d_pipeline()
         std::string src = ray_anyhit_count_kernel_source_2d();
         std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_count_kernel.cu");
         g_rayanyhit_count.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rayhit_probe",
+            "__miss__rayhit_miss",
+            "__intersection__rayhit_isect",
+            "__anyhit__rayhit_anyhit",
+            nullptr, 4).release();
+    });
+}
+
+static std::string ray_anyhit_pose_flags_kernel_source_2d()
+{
+    std::string src = ray_anyhit_kernel_source_2d();
+    const std::string old_output_field =
+        "    RayHitCountRecord* output;\n"
+        "    uint32_t ray_count;\n";
+    const std::string new_output_field =
+        "    const uint32_t* pose_indices;\n"
+        "    uint32_t* pose_flags;\n"
+        "    uint32_t ray_count;\n"
+        "    uint32_t pose_count;\n";
+    size_t pos = src.find(old_output_field);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit pose-flags params");
+    src.replace(pos, old_output_field.size(), new_output_field);
+
+    const std::string old_zero_write =
+        "        params.output[idx] = {r.id, 0u};\n"
+        "        return;\n";
+    const std::string new_zero_write =
+        "        return;\n";
+    pos = src.find(old_zero_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit pose-flags zero-ray path");
+    src.replace(pos, old_zero_write.size(), new_zero_write);
+
+    const std::string old_final_write =
+        "    params.output[idx] = {r.id, p1};\n";
+    const std::string new_final_write =
+        "    if (p1 != 0u) {\n"
+        "        const uint32_t pose_index = params.pose_indices[idx];\n"
+        "        if (pose_index < params.pose_count) atomicExch(&params.pose_flags[pose_index], 1u);\n"
+        "    }\n";
+    pos = src.find(old_final_write);
+    if (pos == std::string::npos)
+        throw std::runtime_error("failed to specialize OptiX 2-D any-hit pose-flags output path");
+    src.replace(pos, old_final_write.size(), new_final_write);
+    return src;
+}
+
+static void ensure_ray_anyhit_pose_flags_2d_pipeline()
+{
+    std::call_once(g_rayanyhit_pose_flags.init, [&]() {
+        std::string src = ray_anyhit_pose_flags_kernel_source_2d();
+        std::string ptx = compile_to_ptx(src.c_str(), "rayanyhit_pose_flags_kernel.cu");
+        g_rayanyhit_pose_flags.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__rayhit_probe",
             "__miss__rayhit_miss",
@@ -2373,6 +2438,56 @@ static void count_prepared_ray_anyhit_2d_packed_optix(
         prepared_rays->d_rays.ptr,
         prepared_rays->ray_count,
         hit_count_out);
+}
+
+static void pose_flags_prepared_ray_anyhit_2d_packed_optix(
+        PreparedRayAnyHit2D* prepared,
+        PreparedRays2D* prepared_rays,
+        const uint32_t* pose_indices,
+        size_t pose_index_count,
+        uint32_t* pose_flags_out,
+        size_t pose_count)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
+    if (!pose_flags_out && pose_count != 0) throw std::runtime_error("pose_flags_out must not be null when pose_count is nonzero");
+    if (!pose_indices && pose_index_count != 0) throw std::runtime_error("pose_indices must not be null when pose_index_count is nonzero");
+    if (pose_index_count != prepared_rays->ray_count)
+        throw std::runtime_error("pose_index_count must match prepared ray count");
+
+    for (size_t i = 0; i < pose_count; ++i)
+        pose_flags_out[i] = 0u;
+    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || pose_count == 0)
+        return;
+
+    ensure_ray_anyhit_pose_flags_2d_pipeline();
+
+    DevPtr d_pose_indices(sizeof(uint32_t) * pose_index_count);
+    DevPtr d_pose_flags(sizeof(uint32_t) * pose_count);
+    std::vector<uint32_t> zero_flags(pose_count, 0u);
+    upload(d_pose_indices.ptr, pose_indices, pose_index_count);
+    upload(d_pose_flags.ptr, zero_flags.data(), zero_flags.size());
+
+    RayAnyHitPoseFlagsLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
+    lp.pose_indices = reinterpret_cast<const uint32_t*>(d_pose_indices.ptr);
+    lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
+    lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
+    lp.pose_count = static_cast<uint32_t>(pose_count);
+
+    DevPtr d_params(sizeof(RayAnyHitPoseFlagsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_pose_flags.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitPoseFlagsLaunchParams),
+                            &g_rayanyhit_pose_flags.pipe->sbt,
+                            static_cast<unsigned>(prepared_rays->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    download(pose_flags_out, d_pose_flags.ptr, pose_count);
 }
 
 // ---------- 3-D ray-triangle hit count (OptiX-accelerated) ------------------

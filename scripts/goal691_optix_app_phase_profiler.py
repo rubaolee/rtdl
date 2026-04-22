@@ -79,17 +79,45 @@ def profile_robot_collision(iterations: int, backend: str, summary_mode: str, ou
         edge_rays = case["edge_rays"]
         obstacle_triangles = case["obstacle_triangles"]
 
-        if backend == "optix" and summary_mode == "prepared_count":
+        if backend == "optix" and summary_mode in {"prepared_count", "prepared_pose_flags"}:
             prepared_scene, elapsed = _time_call(lambda: rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles))
             phase_samples["native_prepare_scene"].append(elapsed)
             try:
                 prepared_rays, elapsed = _time_call(lambda: rt.prepare_optix_rays_2d(edge_rays))
                 phase_samples["native_prepare_rays"].append(elapsed)
                 try:
-                    hit_count, elapsed = _time_call(lambda: prepared_scene.count(prepared_rays))
-                    phase_samples["native_execute"].append(elapsed)
-                    phase_samples["copy_back_and_scalar_materialize"].append(0.0)
-                    outputs.append({"output_mode": "hit_count", "hit_edge_count": int(hit_count)})
+                    if summary_mode == "prepared_count":
+                        hit_count, elapsed = _time_call(lambda: prepared_scene.count(prepared_rays))
+                        phase_samples["native_execute"].append(elapsed)
+                        phase_samples["copy_back_and_scalar_materialize"].append(0.0)
+                        outputs.append({"output_mode": "hit_count", "hit_edge_count": int(hit_count)})
+                    else:
+                        poses = case["poses"]
+                        ray_metadata = case["ray_metadata"]
+                        pose_ids = tuple(int(pose["pose_id"]) for pose in poses)
+                        pose_index_by_id = {pose_id: index for index, pose_id in enumerate(pose_ids)}
+                        pose_indices = tuple(
+                            pose_index_by_id[int(ray_metadata[int(ray.id)]["pose_id"])] for ray in edge_rays
+                        )
+                        pose_flags, elapsed = _time_call(
+                            lambda: prepared_scene.pose_flags_packed(
+                                prepared_rays,
+                                pose_indices,
+                                pose_count=len(pose_ids),
+                            )
+                        )
+                        phase_samples["native_execute"].append(elapsed)
+                        phase_samples["copy_back_and_scalar_materialize"].append(0.0)
+                        outputs.append(
+                            {
+                                "output_mode": "pose_flags",
+                                "pose_flag_count": len(pose_flags),
+                                "colliding_pose_count": sum(1 for flag in pose_flags if flag),
+                                "colliding_pose_ids": [
+                                    pose_id for pose_id, flag in zip(pose_ids, pose_flags) if flag
+                                ],
+                            }
+                        )
                 finally:
                     prepared_rays.close()
             finally:
@@ -106,12 +134,18 @@ def profile_robot_collision(iterations: int, backend: str, summary_mode: str, ou
         "app": "robot_collision_screening",
         "backend": backend,
         "summary_mode": summary_mode,
-        "output_mode": "hit_count" if summary_mode == "prepared_count" else output_mode,
+        "output_mode": (
+            "hit_count"
+            if summary_mode == "prepared_count"
+            else "pose_flags"
+            if summary_mode == "prepared_pose_flags"
+            else output_mode
+        ),
         "iterations": iterations,
         "optix_performance_class": rt.optix_app_performance_support("robot_collision_screening").performance_class,
         "phase_stats": {phase: _stats(samples) for phase, samples in phase_samples.items()},
         "last_output": outputs[-1] if outputs else {},
-        "boundary": "Rows mode can now profile full, pose_flags, and hit_count app outputs. Compact row-mode outputs reduce Python/JSON output volume but still execute the row path internally; prepared OptiX count mode reports a native scalar hit-edge count only and does not emit pose-level witness rows.",
+        "boundary": "Rows mode can profile full, pose_flags, and hit_count app outputs. Compact row-mode outputs reduce Python/JSON output volume but still execute the row path internally. Prepared OptiX count mode reports a native scalar hit-edge count, while prepared_pose_flags reports native pose-level collision flags without edge witness rows.",
     }
 
 
@@ -133,12 +167,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--list-apps", action="store_true")
     parser.add_argument("--app", choices=("robot_collision_screening",), default="robot_collision_screening")
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
-    parser.add_argument("--summary-mode", choices=("rows", "prepared_count"), default="rows")
+    parser.add_argument("--summary-mode", choices=("rows", "prepared_count", "prepared_pose_flags"), default="rows")
     parser.add_argument(
         "--output-mode",
         choices=("full", "pose_flags", "hit_count"),
         default="full",
-        help="Rows-mode app output to profile. Prepared count always reports hit_count.",
+        help="Rows-mode app output to profile. Prepared summary modes force hit_count or pose_flags outputs.",
     )
     parser.add_argument("--iterations", type=int, default=3)
     args = parser.parse_args(argv)
@@ -148,8 +182,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.iterations < 1:
         raise ValueError("--iterations must be positive")
-    if args.summary_mode == "prepared_count" and args.backend != "optix":
-        raise ValueError("--summary-mode prepared_count requires --backend optix")
+    if args.summary_mode != "rows" and args.backend != "optix":
+        raise ValueError("prepared summary modes require --backend optix")
 
     print(
         json.dumps(

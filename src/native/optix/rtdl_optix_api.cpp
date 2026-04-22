@@ -192,6 +192,28 @@ extern "C" int rtdl_optix_count_prepared_ray_anyhit_2d_packed(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed(
+        void* prepared,
+        void* prepared_rays,
+        const uint32_t* pose_indices,
+        size_t pose_index_count,
+        uint32_t* pose_flags_out,
+        size_t pose_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_rays)
+            throw std::runtime_error("prepared_rays must not be null");
+        pose_flags_prepared_ray_anyhit_2d_packed_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            reinterpret_cast<PreparedRays2D*>(prepared_rays),
+            pose_indices,
+            pose_index_count,
+            pose_flags_out,
+            pose_count);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays)
 {
     delete reinterpret_cast<PreparedRays2D*>(prepared_rays);

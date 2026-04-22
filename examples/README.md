@@ -172,7 +172,8 @@ Current v0.8 app example boundary:
   `--output-mode pose_flags` or `--output-mode hit_count` when the app only
   needs compact summaries instead of full per-edge witness rows. On OptiX,
   `--optix-summary-mode prepared_count` returns a native scalar hit-edge
-  count; native pose-level OptiX summaries remain future ABI work.
+  count, and `--optix-summary-mode prepared_pose_flags` returns native
+  pose-level collision flags without edge witnesses.
   `--pose-count` and `--obstacle-count` generate deterministic scaled
   fixtures; Embree scaled `hit_count` is about 2x faster than the CPU Python
   reference on the measured macOS/Linux fixtures, but it still uses the native
