@@ -73,6 +73,7 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | Class | Meaning |
 | --- | --- |
 | `optix_traversal` | Dominant RTDL operation uses OptiX ray traversal/custom primitives and is eligible for RTX hardware acceleration on RTX-class GPUs. |
+| `optix_traversal_prepared_summary` | An explicit prepared summary mode uses OptiX traversal and compact native output, while the app's default/full-row path may still be CUDA-through-OptiX or Python/postprocess dominated. |
 | `cuda_through_optix` | App uses CUDA-style kernels through the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
 | `host_indexed_fallback` | OptiX-facing app path currently dispatches to host-indexed CPU-side logic. |
 | `python_interface_dominated` | Real native/backend work exists, but app-level performance is currently dominated by Python packing, row materialization, reduction, or CPU post-processing. |
@@ -94,8 +95,8 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | `examples/rtdl_polygon_set_jaccard.py` | `not_optix_exposed` | Public script is CPU-reference only today. |
 | `examples/rtdl_hausdorff_distance_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
 | `examples/rtdl_ann_candidate_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; recall metrics remain app/Python work. |
-| `examples/rtdl_outlier_detection_app.py` | `cuda_through_optix` | Default path uses fixed-radius rows through CUDA-style kernels; optional `rt_count_threshold` summary uses OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending. |
-| `examples/rtdl_dbscan_clustering_app.py` | `cuda_through_optix` | Default path uses fixed-radius rows through CUDA-style kernels; optional `rt_core_flags` summary uses OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path. |
+| `examples/rtdl_outlier_detection_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_count_threshold_prepared` summary uses prepared OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending. |
+| `examples/rtdl_dbscan_clustering_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_core_flags_prepared` summary uses prepared OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path. |
 | `examples/rtdl_robot_collision_screening_app.py` | `optix_traversal` | Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate. Pre-Goal748 OptiX robot evidence is superseded because a short-ray `optixReportIntersection` bug was fixed; use Goal748 post-fix parity/timing for current OptiX robot discussion. Compact app output avoids returning full witness rows when only pose flags or hit counts are needed; OptiX now has prepared scalar hit-count and prepared native pose-flag summary modes, while edge witnesses still require row mode. |
 | `examples/rtdl_barnes_hut_force_app.py` | `cuda_through_optix` | Candidate generation uses KNN/radius-style GPU compute; Python tree/opening-rule/force reduction dominates the end-to-end app. |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `not_optix_exposed` | HIPRT-specific app; OptiX is not exposed by this public app CLI. |

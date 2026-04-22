@@ -112,12 +112,13 @@ bounded DB-style analytical workloads.
       Vulkan timing for these three Stage-1 proximity apps, with no
       external-baseline speedup claim because SciPy was not installed in that
       validation checkout
-    - current `main` also has optional OptiX fixed-radius summary modes for
-      these two apps: `rt_count_threshold` for outlier density thresholds and
-      `rt_core_flags` for DBSCAN core flags. These avoid neighbor-row
-      materialization for the bounded summary, but they are not KNN,
-      Hausdorff, ANN, Barnes-Hut, or full DBSCAN cluster-expansion claims and
-      still require RTX-class performance validation
+    - current `main` also has prepared OptiX fixed-radius summary modes for
+      these two apps: `rt_count_threshold_prepared` for outlier density
+      thresholds and `rt_core_flags_prepared` for DBSCAN core flags. These use
+      prepared OptiX traversal and avoid neighbor-row materialization for the
+      bounded summary, but they are not KNN, Hausdorff, ANN, Barnes-Hut, or
+      full DBSCAN cluster-expansion claims and still require RTX-class
+      performance validation
     - current `main` also has bounded Embree summary modes for selected app
       outputs: Hausdorff `--embree-result-mode directed_summary`, event
       hotspot `--embree-summary-mode count_summary`, and service coverage

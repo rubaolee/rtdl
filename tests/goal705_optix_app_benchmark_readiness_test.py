@@ -78,8 +78,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "polygon_set_jaccard": "not_optix_exposed",
             "hausdorff_distance": "cuda_through_optix",
             "ann_candidate_search": "cuda_through_optix",
-            "outlier_detection": "cuda_through_optix",
-            "dbscan_clustering": "cuda_through_optix",
+            "outlier_detection": "optix_traversal_prepared_summary",
+            "dbscan_clustering": "optix_traversal_prepared_summary",
             "robot_collision_screening": "optix_traversal",
             "barnes_hut_force_app": "cuda_through_optix",
             "hiprt_ray_triangle_hitcount": "not_optix_exposed",
@@ -90,18 +90,18 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             with self.subTest(app=app):
                 self.assertEqual(perf[app].performance_class, performance_class)
 
-    def test_cuda_through_optix_non_exclude_readiness_is_explicitly_allowlisted(self):
+    def test_prepared_summary_non_exclude_readiness_is_explicitly_allowlisted(self):
         allowed = {
-            "outlier_detection": "rt_count_threshold summary sub-path uses OptiX traversal",
-            "dbscan_clustering": "rt_core_flags summary sub-path uses OptiX traversal",
+            "outlier_detection": "rt_count_threshold_prepared summary sub-path uses OptiX traversal",
+            "dbscan_clustering": "rt_core_flags_prepared summary sub-path uses OptiX traversal",
         }
-        non_excluded_cuda_apps = {
+        non_excluded_prepared_summary_apps = {
             app
             for app, perf in rt.optix_app_performance_matrix().items()
-            if perf.performance_class == "cuda_through_optix"
+            if perf.performance_class == "optix_traversal_prepared_summary"
             and rt.optix_app_benchmark_readiness(app).status != "exclude_from_rtx_app_benchmark"
         }
-        self.assertEqual(non_excluded_cuda_apps, set(allowed))
+        self.assertEqual(non_excluded_prepared_summary_apps, set(allowed))
 
     def test_public_doc_records_readiness_gate_and_cloud_policy(self):
         doc = Path(__file__).resolve().parents[1] / "docs" / "app_engine_support_matrix.md"

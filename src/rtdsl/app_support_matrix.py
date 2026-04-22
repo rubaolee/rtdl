@@ -24,6 +24,7 @@ APP_SUPPORT_STATUSES = (
 )
 
 OPTIX_TRAVERSAL = "optix_traversal"
+OPTIX_TRAVERSAL_PREPARED_SUMMARY = "optix_traversal_prepared_summary"
 CUDA_THROUGH_OPTIX = "cuda_through_optix"
 HOST_INDEXED_FALLBACK = "host_indexed_fallback"
 PYTHON_INTERFACE_DOMINATED = "python_interface_dominated"
@@ -32,6 +33,7 @@ NOT_OPTIX_APPLICABLE = "not_optix_applicable"
 
 OPTIX_APP_PERFORMANCE_CLASSES = (
     OPTIX_TRAVERSAL,
+    OPTIX_TRAVERSAL_PREPARED_SUMMARY,
     CUDA_THROUGH_OPTIX,
     HOST_INDEXED_FALLBACK,
     PYTHON_INTERFACE_DOMINATED,
@@ -367,13 +369,13 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "outlier_detection": OptixAppPerformanceSupport(
         app="outlier_detection",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Default path uses fixed-radius rows through CUDA-style kernels; optional rt_count_threshold summary uses OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_count_threshold_prepared summary uses prepared OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending.",
     ),
     "dbscan_clustering": OptixAppPerformanceSupport(
         app="dbscan_clustering",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Default path uses fixed-radius rows through CUDA-style kernels; optional rt_core_flags summary uses OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_core_flags_prepared summary uses prepared OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path.",
     ),
     "robot_collision_screening": OptixAppPerformanceSupport(
         app="robot_collision_screening",

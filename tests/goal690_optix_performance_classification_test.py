@@ -23,8 +23,8 @@ class Goal690OptixPerformanceClassificationTest(unittest.TestCase):
             "segment_polygon_hitcount": "host_indexed_fallback",
             "segment_polygon_anyhit_rows": "host_indexed_fallback",
             "hausdorff_distance": "cuda_through_optix",
-            "outlier_detection": "cuda_through_optix",
-            "dbscan_clustering": "cuda_through_optix",
+            "outlier_detection": "optix_traversal_prepared_summary",
+            "dbscan_clustering": "optix_traversal_prepared_summary",
             "robot_collision_screening": "optix_traversal",
             "database_analytics": "python_interface_dominated",
         }
@@ -42,6 +42,7 @@ class Goal690OptixPerformanceClassificationTest(unittest.TestCase):
             "host_indexed_fallback",
             "cuda_through_optix",
             "optix_traversal",
+            "optix_traversal_prepared_summary",
             "python_interface_dominated",
         ):
             with self.subTest(phrase=phrase):

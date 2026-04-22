@@ -13,11 +13,13 @@ class Goal700FixedRadiusSummaryPublicDocTest(unittest.TestCase):
         outlier = matrix["outlier_detection"]
         dbscan = matrix["dbscan_clustering"]
 
-        self.assertEqual(outlier.performance_class, "cuda_through_optix")
-        self.assertEqual(dbscan.performance_class, "cuda_through_optix")
-        self.assertIn("rt_count_threshold", outlier.note)
+        self.assertEqual(outlier.performance_class, "optix_traversal_prepared_summary")
+        self.assertEqual(dbscan.performance_class, "optix_traversal_prepared_summary")
+        self.assertIn("Default row path uses fixed-radius rows through CUDA-style kernels", outlier.note)
+        self.assertIn("rt_count_threshold_prepared", outlier.note)
         self.assertIn("RTX-class measurements are still pending", outlier.note)
-        self.assertIn("rt_core_flags", dbscan.note)
+        self.assertIn("Default row path uses fixed-radius rows through CUDA-style kernels", dbscan.note)
+        self.assertIn("rt_core_flags_prepared", dbscan.note)
         self.assertIn("Python clustering expansion remains outside", dbscan.note)
 
     def test_public_docs_describe_summary_modes_and_boundaries(self):
@@ -29,23 +31,23 @@ class Goal700FixedRadiusSummaryPublicDocTest(unittest.TestCase):
         }
         required_by_doc = {
             "README.md": (
-                "rt_count_threshold",
-                "rt_core_flags",
-                "still require RTX-class performance validation",
+                "rt_count_threshold_prepared",
+                "rt_core_flags_prepared",
+                "RTX-class\n      performance validation",
             ),
             "examples/README.md": (
-                "--optix-summary-mode\n  rt_count_threshold",
-                "--optix-summary-mode\n  rt_core_flags",
-                "full DBSCAN cluster\n  expansion still needs neighbor connectivity",
+                "--optix-summary-mode\n  rt_count_threshold_prepared",
+                "--optix-summary-mode\n  rt_core_flags_prepared",
+                "full DBSCAN\n  cluster expansion still needs neighbor connectivity",
             ),
             "docs/application_catalog.md": (
-                "optional OptiX `rt_count_threshold`",
-                "optional OptiX `rt_core_flags`",
+                "optional OptiX `rt_count_threshold_prepared`",
+                "optional OptiX `rt_core_flags_prepared`",
                 "They do not imply KNN, Hausdorff, ANN, Barnes-Hut",
             ),
             "docs/app_engine_support_matrix.md": (
-                "optional `rt_count_threshold`",
-                "optional `rt_core_flags`",
+                "explicit `rt_count_threshold_prepared`",
+                "explicit `rt_core_flags_prepared`",
                 "RTX-class measurements are still pending",
             ),
         }

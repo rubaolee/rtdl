@@ -138,19 +138,20 @@ Current v0.8 app example boundary:
   Linux CPU/oracle, Embree, OptiX, and Vulkan timing characterization for this
   app; it is not a claim against SciPy, scikit-learn, or production anomaly
   detection systems. The optional OptiX `--optix-summary-mode
-  rt_count_threshold` and Embree `--embree-summary-mode rt_count_threshold`
-  paths emit one native fixed-radius threshold summary row per query and avoid
-  neighbor-row materialization; Goal715 shows this is correctness-useful but
-  not yet a broad Embree performance win for the sparse fixture
+  rt_count_threshold_prepared` and Embree `--embree-summary-mode
+  rt_count_threshold_prepared` paths emit one native fixed-radius threshold
+  summary row per query and avoid neighbor-row materialization; Goal715 shows
+  this is correctness-useful but not yet a broad Embree performance win for the
+  sparse fixture
 - `rtdl_dbscan_clustering_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, `vulkan`, and optional `scipy`; RTDL emits fixed-radius
   neighbor rows and Python expands core, border, and noise labels. Goal524
   records bounded Linux CPU/oracle, Embree, OptiX, and Vulkan timing
   characterization for this app; it is not a claim against scikit-learn DBSCAN
   or production clustering systems. The optional OptiX `--optix-summary-mode
-  rt_core_flags` and Embree `--embree-summary-mode rt_core_flags` paths emit
-  native core flags only; full DBSCAN cluster
-  expansion still needs neighbor connectivity and remains Python-owned
+  rt_core_flags_prepared` and Embree `--embree-summary-mode
+  rt_core_flags_prepared` paths emit native core flags only; full DBSCAN
+  cluster expansion still needs neighbor connectivity and remains Python-owned
 - `rtdl_service_coverage_gaps.py` exposes optional Embree
   `--embree-summary-mode gap_summary` for covered/uncovered household
   detection. This mode intentionally omits clinic ids, distances, and
