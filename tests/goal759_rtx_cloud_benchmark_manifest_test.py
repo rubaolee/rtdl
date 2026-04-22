@@ -71,7 +71,9 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         ).build_manifest()
         robot = next(entry for entry in payload["entries"] if entry["app"] == "robot_collision_screening")
         self.assertEqual(robot["optix_performance_class"], "optix_traversal")
-        self.assertIn("prepared_pose_flags", robot["command"])
+        self.assertIn("scripts/goal760_optix_robot_pose_flags_phase_profiler.py", robot["command"])
+        self.assertIn("--mode", robot["command"])
+        self.assertIn("optix", robot["command"])
         self.assertIn("prepared native pose-flag summary", robot["optix_performance_note"])
         self.assertNotIn("future ABI work", robot["optix_performance_note"])
 

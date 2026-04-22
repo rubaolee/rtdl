@@ -1,0 +1,84 @@
+{
+  "boundary": "This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. optix mode can support future RTX claim review only on RTX-class hardware with exported prepared OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing.",
+  "date": "2026-04-22",
+  "edge_ray_count": 128,
+  "iterations": 2,
+  "matches_oracle": true,
+  "mode": "dry-run",
+  "obstacle_count": 8,
+  "obstacle_triangle_count": 16,
+  "phases": {
+    "close_sec": 0.0,
+    "optix_prepare_rays_sec": 0.0,
+    "optix_prepare_scene_sec": 0.0,
+    "oracle_validate_sec": 0.004735374939627945,
+    "prepared_pose_flags_warm_query_sec": {
+      "max_sec": 0.005041916971094906,
+      "median_sec": 0.005017624993342906,
+      "min_sec": 0.004993333015590906
+    },
+    "python_input_construction_sec": 0.0001365839270874858,
+    "total_sec": 0.014941124944016337
+  },
+  "pose_count": 32,
+  "result": {
+    "colliding_pose_count": 25,
+    "colliding_pose_ids_sample": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "oracle_colliding_pose_count": 25,
+    "pose_collision_flags_sample": [
+      {
+        "collides": false,
+        "pose_id": 1
+      },
+      {
+        "collides": true,
+        "pose_id": 2
+      },
+      {
+        "collides": true,
+        "pose_id": 3
+      },
+      {
+        "collides": true,
+        "pose_id": 4
+      },
+      {
+        "collides": true,
+        "pose_id": 5
+      },
+      {
+        "collides": true,
+        "pose_id": 6
+      },
+      {
+        "collides": false,
+        "pose_id": 7
+      },
+      {
+        "collides": true,
+        "pose_id": 8
+      },
+      {
+        "collides": true,
+        "pose_id": 9
+      },
+      {
+        "collides": true,
+        "pose_id": 10
+      }
+    ]
+  },
+  "suite": "Goal760 OptiX robot pose-flags phase profiler",
+  "validated": true
+}

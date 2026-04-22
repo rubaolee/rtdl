@@ -150,17 +150,17 @@
       "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
       "command": [
         "python3",
-        "examples/rtdl_robot_collision_screening_app.py",
-        "--backend",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
         "optix",
-        "--optix-summary-mode",
-        "prepared_pose_flags",
-        "--output-mode",
-        "pose_flags",
         "--pose-count",
         "200000",
         "--obstacle-count",
-        "1024"
+        "1024",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
       ],
       "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
       "optix_performance_class": "optix_traversal",
@@ -168,11 +168,12 @@
       "path_name": "prepared_pose_flags",
       "preconditions": [
         "OptiX ray/triangle any-hit prepared symbols must be exported.",
-        "Prefer a phase profiler if available; raw CLI timing is not enough for final claim review."
+        "Use the phase profiler rather than raw app CLI timing for final claim review."
       ],
       "readiness_blocker": "best OptiX traversal candidate, but RTX A5000 cloud timing has not been run after compact output/profiler polish",
       "readiness_next_goal": "Goal712",
       "scale": {
+        "iterations": 10,
         "obstacle_count": 1024,
         "pose_count": 200000
       }
