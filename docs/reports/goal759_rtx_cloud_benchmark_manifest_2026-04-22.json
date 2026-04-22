@@ -1,0 +1,200 @@
+{
+  "boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "date": "2026-04-22",
+  "entries": [
+    {
+      "allowed_claim_today": "correctness-capable OptiX DB path only; no RTX app speedup claim yet",
+      "app": "database_analytics",
+      "app_path": "examples/rtdl_database_analytics_app.py",
+      "benchmark_contract": "prepared dataset timing must split packing, BVH/build, launch/traversal, copy-back, exact filtering, grouping, and Python materialization",
+      "benchmark_readiness": "needs_interface_tuning",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "sales_risk",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal759_db_sales_risk_rtx.json"
+      ],
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+      "path_name": "prepared_db_session_sales_risk",
+      "preconditions": [
+        "OptiX DB backend must be available.",
+        "Use prepared-session profiler, not only one-shot CLI timing."
+      ],
+      "readiness_blocker": "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
+      "readiness_next_goal": "Goal706",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "allowed_claim_today": "correctness-capable OptiX DB path only; no RTX app speedup claim yet",
+      "app": "database_analytics",
+      "app_path": "examples/rtdl_database_analytics_app.py",
+      "benchmark_contract": "prepared dataset timing must split packing, BVH/build, launch/traversal, copy-back, exact filtering, grouping, and Python materialization",
+      "benchmark_readiness": "needs_interface_tuning",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "regional_dashboard",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal759_db_regional_dashboard_rtx.json"
+      ],
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "preconditions": [
+        "OptiX DB backend must be available.",
+        "Use prepared-session profiler, not only one-shot CLI timing."
+      ],
+      "readiness_blocker": "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
+      "readiness_next_goal": "Goal706",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "allowed_claim_today": "candidate fixed-radius summary speedup claim only after phase-clean RTX rerun and review",
+      "app": "outlier_detection",
+      "app_path": "examples/rtdl_outlier_detection_app.py",
+      "benchmark_contract": "validation-free RTX timing must split rows versus rt_count_threshold summary, backend/materialization, postprocess, and oracle validation",
+      "benchmark_readiness": "needs_phase_contract",
+      "claim_scope": "prepared fixed-radius threshold summary traversal only",
+      "command": [
+        "python3",
+        "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+      ],
+      "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_count_threshold_prepared summary uses prepared OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending.",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "preconditions": [
+        "OptiX fixed-radius prepared symbols must be exported.",
+        "Interpret only the outlier section of the combined Goal757 profiler for this entry."
+      ],
+      "readiness_blocker": "RunPod RTX A5000 evidence is promising, but the current profiler is app-level and still mixes validation/postprocess costs",
+      "readiness_next_goal": "Goal710",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "allowed_claim_today": "core-flag summary claim only; no full DBSCAN acceleration claim yet",
+      "app": "dbscan_clustering",
+      "app_path": "examples/rtdl_dbscan_clustering_app.py",
+      "benchmark_contract": "core-flag summary timing must be separated from Python cluster expansion and validation",
+      "benchmark_readiness": "needs_postprocess_split",
+      "claim_scope": "prepared fixed-radius core-flag traversal only",
+      "command": [
+        "python3",
+        "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+      ],
+      "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_core_flags_prepared summary uses prepared OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path.",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "preconditions": [
+        "OptiX fixed-radius prepared symbols must be exported.",
+        "Interpret only the DBSCAN section of the combined Goal757 profiler for this entry.",
+        "Report Python cluster expansion separately when measuring full DBSCAN."
+      ],
+      "readiness_blocker": "RunPod RTX A5000 backend timing is near parity, but total app timing is slower because validation/postprocess dominates",
+      "readiness_next_goal": "Goal711",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "allowed_claim_today": "flagship candidate; no final app speedup claim until RTX rerun",
+      "app": "robot_collision_screening",
+      "app_path": "examples/rtdl_robot_collision_screening_app.py",
+      "benchmark_contract": "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
+      "benchmark_readiness": "needs_phase_contract",
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "command": [
+        "python3",
+        "examples/rtdl_robot_collision_screening_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "prepared_pose_flags",
+        "--output-mode",
+        "pose_flags",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024"
+      ],
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "optix_performance_class": "optix_traversal",
+      "optix_performance_note": "Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact app output avoids returning full witness rows when only pose flags or hit counts are needed. OptiX has prepared scalar hit-count and prepared native pose-flag summary modes, while edge witnesses still require row mode.",
+      "path_name": "prepared_pose_flags",
+      "preconditions": [
+        "OptiX ray/triangle any-hit prepared symbols must be exported.",
+        "Prefer a phase profiler if available; raw CLI timing is not enough for final claim review."
+      ],
+      "readiness_blocker": "best OptiX traversal candidate, but RTX A5000 cloud timing has not been run after compact output/profiler polish",
+      "readiness_next_goal": "Goal712",
+      "scale": {
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      }
+    }
+  ],
+  "excluded_apps": {
+    "ann_candidate_search": "current OptiX path is CUDA-through-OptiX KNN rows plus Python recall/quality work",
+    "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
+    "barnes_hut_force_app": "current app is CUDA-through-OptiX candidate generation plus Python tree/opening/reduction",
+    "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
+    "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
+    "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
+    "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback and row-volume sensitive",
+    "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback"
+  },
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "goal": "Goal759 RTX cloud benchmark manifest",
+  "purpose": "Machine-readable contract for the next paid NVIDIA RTX cloud run. This manifest selects app paths worth timing and records what each result is allowed to claim.",
+  "repo": "/Users/rl2025/rtdl_python_only"
+}

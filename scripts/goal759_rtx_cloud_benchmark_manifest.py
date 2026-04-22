@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+import rtdsl as rt
+
+
+GOAL = "Goal759 RTX cloud benchmark manifest"
+DATE = "2026-04-22"
+
+
+def _entry(
+    *,
+    app: str,
+    app_path: str,
+    path_name: str,
+    command: list[str],
+    scale: dict[str, Any],
+    claim_scope: str,
+    non_claim: str,
+    preconditions: list[str],
+) -> dict[str, Any]:
+    perf = rt.optix_app_performance_support(app)
+    readiness = rt.optix_app_benchmark_readiness(app)
+    return {
+        "app": app,
+        "app_path": app_path,
+        "path_name": path_name,
+        "command": command,
+        "scale": scale,
+        "optix_performance_class": perf.performance_class,
+        "optix_performance_note": perf.note,
+        "benchmark_readiness": readiness.status,
+        "readiness_next_goal": readiness.next_goal,
+        "benchmark_contract": readiness.benchmark_contract,
+        "readiness_blocker": readiness.blocker,
+        "allowed_claim_today": readiness.allowed_claim,
+        "claim_scope": claim_scope,
+        "non_claim": non_claim,
+        "preconditions": preconditions,
+    }
+
+
+def build_manifest() -> dict[str, Any]:
+    python = "python3"
+    return {
+        "goal": GOAL,
+        "date": DATE,
+        "repo": str(ROOT),
+        "purpose": (
+            "Machine-readable contract for the next paid NVIDIA RTX cloud run. "
+            "This manifest selects app paths worth timing and records what each "
+            "result is allowed to claim."
+        ),
+        "global_preconditions": [
+            "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+            "Build the OptiX backend from the checked-out commit before timing.",
+            "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+            "Keep validation/postprocess timing separate from native traversal where the profiler exposes it.",
+        ],
+        "entries": [
+            _entry(
+                app="database_analytics",
+                app_path="examples/rtdl_database_analytics_app.py",
+                path_name="prepared_db_session_sales_risk",
+                command=[
+                    python,
+                    "scripts/goal756_db_prepared_session_perf.py",
+                    "--backend",
+                    "optix",
+                    "--scenario",
+                    "sales_risk",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--strict",
+                    "--output-json",
+                    "docs/reports/goal759_db_sales_risk_rtx.json",
+                ],
+                scale={"copies": 20000, "iterations": 10},
+                claim_scope="prepared OptiX DB session behavior and Python/interface cost split",
+                non_claim="not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+                preconditions=["OptiX DB backend must be available.", "Use prepared-session profiler, not only one-shot CLI timing."],
+            ),
+            _entry(
+                app="database_analytics",
+                app_path="examples/rtdl_database_analytics_app.py",
+                path_name="prepared_db_session_regional_dashboard",
+                command=[
+                    python,
+                    "scripts/goal756_db_prepared_session_perf.py",
+                    "--backend",
+                    "optix",
+                    "--scenario",
+                    "regional_dashboard",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--strict",
+                    "--output-json",
+                    "docs/reports/goal759_db_regional_dashboard_rtx.json",
+                ],
+                scale={"copies": 20000, "iterations": 10},
+                claim_scope="prepared OptiX DB session behavior and Python/interface cost split",
+                non_claim="not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+                preconditions=["OptiX DB backend must be available.", "Use prepared-session profiler, not only one-shot CLI timing."],
+            ),
+            _entry(
+                app="outlier_detection",
+                app_path="examples/rtdl_outlier_detection_app.py",
+                path_name="prepared_fixed_radius_density_summary",
+                command=[
+                    python,
+                    "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--output-json",
+                    "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+                ],
+                scale={"copies": 20000, "iterations": 10},
+                claim_scope="prepared fixed-radius threshold summary traversal only",
+                non_claim="not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+                preconditions=[
+                    "OptiX fixed-radius prepared symbols must be exported.",
+                    "Interpret only the outlier section of the combined Goal757 profiler for this entry.",
+                ],
+            ),
+            _entry(
+                app="dbscan_clustering",
+                app_path="examples/rtdl_dbscan_clustering_app.py",
+                path_name="prepared_fixed_radius_core_flags",
+                command=[
+                    python,
+                    "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--output-json",
+                    "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+                ],
+                scale={"copies": 20000, "iterations": 10},
+                claim_scope="prepared fixed-radius core-flag traversal only",
+                non_claim="not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+                preconditions=[
+                    "OptiX fixed-radius prepared symbols must be exported.",
+                    "Interpret only the DBSCAN section of the combined Goal757 profiler for this entry.",
+                    "Report Python cluster expansion separately when measuring full DBSCAN.",
+                ],
+            ),
+            _entry(
+                app="robot_collision_screening",
+                app_path="examples/rtdl_robot_collision_screening_app.py",
+                path_name="prepared_pose_flags",
+                command=[
+                    python,
+                    "examples/rtdl_robot_collision_screening_app.py",
+                    "--backend",
+                    "optix",
+                    "--optix-summary-mode",
+                    "prepared_pose_flags",
+                    "--output-mode",
+                    "pose_flags",
+                    "--pose-count",
+                    "200000",
+                    "--obstacle-count",
+                    "1024",
+                ],
+                scale={"pose_count": 200000, "obstacle_count": 1024},
+                claim_scope="prepared OptiX ray/triangle any-hit pose-flag summary",
+                non_claim="not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+                preconditions=[
+                    "OptiX ray/triangle any-hit prepared symbols must be exported.",
+                    "Prefer a phase profiler if available; raw CLI timing is not enough for final claim review.",
+                ],
+            ),
+        ],
+        "excluded_apps": {
+            "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
+            "ann_candidate_search": "current OptiX path is CUDA-through-OptiX KNN rows plus Python recall/quality work",
+            "barnes_hut_force_app": "current app is CUDA-through-OptiX candidate generation plus Python tree/opening/reduction",
+            "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
+            "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
+            "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback and row-volume sensitive",
+            "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
+            "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
+        },
+        "boundary": (
+            "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; "
+            "claims require successful cloud runs, phase-clean evidence, and independent review."
+        ),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Emit the Goal759 RTX cloud benchmark manifest.")
+    parser.add_argument("--output-json")
+    args = parser.parse_args(argv)
+    payload = build_manifest()
+    text = json.dumps(payload, indent=2, sort_keys=True)
+    if args.output_json:
+        Path(args.output_json).write_text(text + "\n", encoding="utf-8")
+    print(text)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

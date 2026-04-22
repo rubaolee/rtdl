@@ -380,7 +380,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "robot_collision_screening": OptixAppPerformanceSupport(
         app="robot_collision_screening",
         performance_class=OPTIX_TRAVERSAL,
-        note="Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact app output avoids returning full witness rows when only pose flags or hit counts are needed, but native pose-level OptiX summaries are still future ABI work.",
+        note="Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact app output avoids returning full witness rows when only pose flags or hit counts are needed. OptiX has prepared scalar hit-count and prepared native pose-flag summary modes, while edge witnesses still require row mode.",
     ),
     "barnes_hut_force_app": OptixAppPerformanceSupport(
         app="barnes_hut_force_app",
