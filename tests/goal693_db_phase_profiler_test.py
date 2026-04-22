@@ -67,6 +67,62 @@ class Goal693DbPhaseProfilerTest(unittest.TestCase):
         self.assertEqual(payload["sections"]["regional_dashboard"]["backend"], "cpu_reference")
         self.assertEqual(payload["sections"]["sales_risk"]["backend"], "cpu")
 
+    def test_scaled_copies_are_reported_for_all_scenarios(self) -> None:
+        payload = run_json(
+            "scripts/goal693_db_phase_profiler.py",
+            "--scenario",
+            "all",
+            "--backend",
+            "cpu",
+            "--copies",
+            "3",
+            "--iterations",
+            "1",
+        )
+        self.assertEqual(payload["copies"], 3)
+        self.assertEqual(payload["last_output"]["regional_dashboard"]["copies"], 3)
+        self.assertEqual(payload["last_output"]["sales_risk"]["copies"], 3)
+        self.assertEqual(payload["last_output"]["regional_dashboard"]["prepared_dataset"], None)
+        self.assertGreaterEqual(payload["last_output"]["sales_risk"]["row_counts"]["scan"], 1)
+
+    def test_summary_last_output_omits_large_rows(self) -> None:
+        payload = run_json(
+            "scripts/goal693_db_phase_profiler.py",
+            "--scenario",
+            "all",
+            "--backend",
+            "cpu",
+            "--copies",
+            "3",
+            "--iterations",
+            "1",
+            "--last-output-mode",
+            "summary",
+        )
+        self.assertEqual(payload["last_output_mode"], "summary")
+        self.assertNotIn("results", payload["last_output"]["regional_dashboard"])
+        self.assertNotIn("rows", payload["last_output"]["sales_risk"])
+        self.assertNotIn("risky_order_ids", payload["last_output"]["sales_risk"]["summary"])
+        self.assertIn("risky_order_count", payload["last_output"]["sales_risk"]["summary"])
+
+    def test_rejects_non_positive_copies(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "scripts/goal693_db_phase_profiler.py",
+                "--copies",
+                "0",
+                "--iterations",
+                "1",
+            ],
+            cwd=REPO_ROOT,
+            env={**os.environ, "PYTHONPATH": "src:."},
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("--copies must be positive", completed.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

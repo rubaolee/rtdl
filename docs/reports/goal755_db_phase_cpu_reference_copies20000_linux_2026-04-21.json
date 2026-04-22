@@ -1,0 +1,114 @@
+{
+  "app": "database_analytics",
+  "backend": "cpu_reference",
+  "boundary": "This profiler exposes DB app phases. It does not make an OptiX RT-core performance claim; RTX-class hardware and backend-specific validation are still required.",
+  "copies": 20000,
+  "iterations": 3,
+  "last_output": {
+    "regional_dashboard": {
+      "app": "regional_order_dashboard",
+      "backend": "cpu_reference",
+      "copies": 20000,
+      "fallback_note": null,
+      "prepared_dataset": null,
+      "requested_backend": "cpu_reference",
+      "result_counts": {
+        "open_order_count_by_region": 3,
+        "promo_order_ids": 80000,
+        "web_revenue_by_region": 2
+      }
+    },
+    "sales_risk": {
+      "app": "sales_risk_screening",
+      "backend": "cpu_python_reference",
+      "copies": 20000,
+      "prepared_dataset": null,
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_order_ids_sample": [
+          2,
+          3,
+          4,
+          6,
+          8,
+          9,
+          10,
+          12,
+          14,
+          15
+        ],
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    }
+  },
+  "last_output_mode": "summary",
+  "optix_performance_class": "python_interface_dominated",
+  "phase_stats": {
+    "regional_dashboard.backend_selection": {
+      "max_sec": 4.6130153350532055e-06,
+      "median_sec": 2.6900088414549828e-06,
+      "min_sec": 1.8760329112410545e-06
+    },
+    "regional_dashboard.cpu_reference_execute_and_postprocess": {
+      "max_sec": 0.5414538000477478,
+      "median_sec": 0.5397227060166188,
+      "min_sec": 0.5372388690011576
+    },
+    "regional_dashboard.python_input_construction": {
+      "max_sec": 0.05485456099268049,
+      "median_sec": 0.03333390498301014,
+      "min_sec": 0.033175351039972156
+    },
+    "regional_dashboard.total": {
+      "max_sec": 0.5921124120359309,
+      "median_sec": 0.5747986819478683,
+      "min_sec": 0.5729126979713328
+    },
+    "sales_risk.python_input_construction": {
+      "max_sec": 0.027746779029257596,
+      "median_sec": 0.027460184996016324,
+      "min_sec": 0.027052127989009023
+    },
+    "sales_risk.python_postprocess": {
+      "max_sec": 0.006367494002915919,
+      "median_sec": 0.006318915053270757,
+      "min_sec": 0.005858088959939778
+    },
+    "sales_risk.query_conjunctive_scan_and_materialize": {
+      "max_sec": 0.26634895196184516,
+      "median_sec": 0.265127458027564,
+      "min_sec": 0.26440577197354287
+    },
+    "sales_risk.query_grouped_count_and_materialize": {
+      "max_sec": 0.2430509669939056,
+      "median_sec": 0.24294211104279384,
+      "min_sec": 0.2421052780118771
+    },
+    "sales_risk.query_grouped_sum_and_materialize": {
+      "max_sec": 0.25089630199363455,
+      "median_sec": 0.25033370399614796,
+      "min_sec": 0.2487052750075236
+    },
+    "sales_risk.total": {
+      "max_sec": 0.7944341849652119,
+      "median_sec": 0.7902337139821611,
+      "min_sec": 0.7901152200065553
+    }
+  },
+  "scenario": "all"
+}

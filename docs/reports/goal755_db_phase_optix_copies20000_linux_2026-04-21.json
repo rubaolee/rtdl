@@ -1,0 +1,150 @@
+{
+  "app": "database_analytics",
+  "backend": "optix",
+  "boundary": "This profiler exposes DB app phases. It does not make an OptiX RT-core performance claim; RTX-class hardware and backend-specific validation are still required.",
+  "copies": 20000,
+  "iterations": 3,
+  "last_output": {
+    "regional_dashboard": {
+      "app": "regional_order_dashboard",
+      "backend": "optix",
+      "copies": 20000,
+      "fallback_note": null,
+      "prepared_dataset": {
+        "row_count": 140000,
+        "transfer": "columnar"
+      },
+      "requested_backend": "optix",
+      "result_counts": {
+        "open_order_count_by_region": 3,
+        "promo_order_ids": 80000,
+        "web_revenue_by_region": 2
+      }
+    },
+    "sales_risk": {
+      "app": "sales_risk_screening",
+      "backend": "optix",
+      "copies": 20000,
+      "prepared_dataset": {
+        "row_count": 120000,
+        "transfer": "columnar"
+      },
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_order_ids_sample": [
+          2,
+          3,
+          4,
+          6,
+          8,
+          9,
+          10,
+          12,
+          14,
+          15
+        ],
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    }
+  },
+  "last_output_mode": "summary",
+  "optix_performance_class": "python_interface_dominated",
+  "phase_stats": {
+    "regional_dashboard.backend_selection": {
+      "max_sec": 7.412978447973728e-06,
+      "median_sec": 4.2800093069672585e-06,
+      "min_sec": 1.4079851098358631e-06
+    },
+    "regional_dashboard.native_close_dataset": {
+      "max_sec": 0.00245765398722142,
+      "median_sec": 0.0005394929903559387,
+      "min_sec": 0.0005350899882614613
+    },
+    "regional_dashboard.native_prepare_dataset": {
+      "max_sec": 0.8408966289716773,
+      "median_sec": 0.6589276129961945,
+      "min_sec": 0.6536849479889497
+    },
+    "regional_dashboard.python_input_construction": {
+      "max_sec": 0.05530414899112657,
+      "median_sec": 0.03464435203932226,
+      "min_sec": 0.03140913799870759
+    },
+    "regional_dashboard.query_conjunctive_scan_and_materialize": {
+      "max_sec": 0.5522737730061635,
+      "median_sec": 0.14717698097229004,
+      "min_sec": 0.14213345904136077
+    },
+    "regional_dashboard.query_grouped_count_and_materialize": {
+      "max_sec": 0.08362937899073586,
+      "median_sec": 0.0835721530020237,
+      "min_sec": 0.08321672398597002
+    },
+    "regional_dashboard.query_grouped_sum_and_materialize": {
+      "max_sec": 0.08186471997760236,
+      "median_sec": 0.08184956305194646,
+      "min_sec": 0.08126293699024245
+    },
+    "regional_dashboard.total": {
+      "max_sec": 1.6164144630311057,
+      "median_sec": 1.0063912439509295,
+      "min_sec": 0.9926773870247416
+    },
+    "sales_risk.native_close_dataset": {
+      "max_sec": 0.00047717400593683124,
+      "median_sec": 0.00047552899923175573,
+      "min_sec": 0.00047408899990841746
+    },
+    "sales_risk.native_prepare_dataset": {
+      "max_sec": 0.5184042800101452,
+      "median_sec": 0.5018633109866641,
+      "min_sec": 0.4981391489855014
+    },
+    "sales_risk.python_input_construction": {
+      "max_sec": 0.03421323298243806,
+      "median_sec": 0.027025252988096327,
+      "min_sec": 0.026740314031485468
+    },
+    "sales_risk.python_postprocess": {
+      "max_sec": 0.00577337498543784,
+      "median_sec": 0.005770642019342631,
+      "min_sec": 0.005755179037805647
+    },
+    "sales_risk.query_conjunctive_scan_and_materialize": {
+      "max_sec": 0.08860352996271104,
+      "median_sec": 0.08408890396822244,
+      "min_sec": 0.08281297498615459
+    },
+    "sales_risk.query_grouped_count_and_materialize": {
+      "max_sec": 0.0575683829956688,
+      "median_sec": 0.05746734997956082,
+      "min_sec": 0.05744476802647114
+    },
+    "sales_risk.query_grouped_sum_and_materialize": {
+      "max_sec": 0.05687898996984586,
+      "median_sec": 0.05677385296439752,
+      "min_sec": 0.05668370198691264
+    },
+    "sales_risk.total": {
+      "max_sec": 0.7617173370090313,
+      "median_sec": 0.7337022940046154,
+      "min_sec": 0.7281099910032935
+    }
+  },
+  "scenario": "all"
+}
