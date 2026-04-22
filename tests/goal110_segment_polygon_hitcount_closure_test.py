@@ -79,6 +79,15 @@ class Goal110OptixClosureTest(unittest.TestCase):
                 actual = rt.run_optix(segment_polygon_hitcount_reference, **case.inputs)
                 self.assertTrue(rt.compare_baseline_rows("segment_polygon_hitcount", expected, actual))
 
+    def test_optix_matches_python_reference_for_short_segment_inside_polygon(self) -> None:
+        inputs = {
+            "segments": (rt.Segment(id=1, x0=0.1, y0=0.1, x1=0.35, y1=0.1),),
+            "polygons": (rt.Polygon(id=10, vertices=((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))),),
+        }
+        expected = rt.run_cpu_python_reference(segment_polygon_hitcount_reference, **inputs)
+        self.assertEqual(expected, ({"segment_id": 1, "hit_count": 1},))
+        self.assertEqual(rt.run_optix(segment_polygon_hitcount_reference, **inputs), expected)
+
     def test_prepared_optix_matches_current_on_authored_and_fixture_cases(self) -> None:
         prepared = rt.prepare_optix(segment_polygon_hitcount_reference)
         for dataset in PREPARED_DATASETS:

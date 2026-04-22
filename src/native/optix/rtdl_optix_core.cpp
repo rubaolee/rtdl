@@ -1421,7 +1421,11 @@ extern "C" __global__ void __intersection__segpoly_isect() {
     const GpuSegment s = params.segments[sidx];
     const GpuPolygonRef poly = params.polygons[prim];
     if (!seg_hits_polygon(s.x0, s.y0, s.x1, s.y1, poly)) return;
-    optixReportIntersection(0.5f, 0u);
+    // Segment/polygon traces use unit directions and tmax=segment length.
+    // Report a t inside that interval so short segments are not discarded.
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
 }
 
 extern "C" __global__ void __anyhit__segpoly_anyhit() {
