@@ -11,6 +11,7 @@ Goal754 extends the robot-collision scaled performance harness with `optix_prepa
 - Codex implementation and validation: ACCEPT.
 - Gemini Flash plan review: ACCEPT, no blockers.
 - Windows Codex plan review: ACCEPT_WITH_NOTES, no blockers. Its notes were applied: exact pose-flag validation, separate `pose_index_construction_sec`, and explicit GTX 1070 honesty boundary.
+- Gemini 2.5 Flash finish review: ACCEPT, no blockers.
 
 ## Implementation
 
