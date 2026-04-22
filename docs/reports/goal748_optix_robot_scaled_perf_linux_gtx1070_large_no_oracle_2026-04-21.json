@@ -1,0 +1,62 @@
+{
+  "boundary": "This harness is for robot-collision ray/triangle any-hit app performance. OptiX prepared_count is a true OptiX traversal shape, but RTX RT-core speedup claims still require RTX-class hardware and phase evidence. GTX 1070 runs are correctness and whole-call behavior evidence only.",
+  "case_build_sec": 0.24380399595247582,
+  "edge_ray_count": 80000,
+  "obstacle_count": 10000,
+  "obstacle_triangle_count": 20000,
+  "oracle_validation": {
+    "enabled": false,
+    "hit_edge_count": null,
+    "time_sec": null
+  },
+  "pose_count": 20000,
+  "repeats": 5,
+  "results": [
+    {
+      "backend": "embree_rows",
+      "boundary": "Rows backends include native traversal plus per-ray Python dict row materialization.",
+      "hit_edge_count": 59400,
+      "output_shape": "per_ray_dict_rows",
+      "row_count": 80000,
+      "rows_per_sec_median": 1200189.1310577362,
+      "status": "ok",
+      "timing_sec": {
+        "max_sec": 0.06858113501220942,
+        "median_sec": 0.06665616104146466,
+        "min_sec": 0.06513370299944654
+      }
+    },
+    {
+      "backend": "optix_rows",
+      "boundary": "Rows backends include native traversal plus per-ray Python dict row materialization.",
+      "hit_edge_count": 59400,
+      "output_shape": "per_ray_dict_rows",
+      "row_count": 80000,
+      "rows_per_sec_median": 1585783.2639281342,
+      "status": "ok",
+      "timing_sec": {
+        "max_sec": 0.05458909005392343,
+        "median_sec": 0.0504482559626922,
+        "min_sec": 0.04942524601938203
+      }
+    },
+    {
+      "backend": "optix_prepared_count",
+      "boundary": "Prepared count excludes scene/ray preparation from execute timing and returns only a scalar hit-edge count.",
+      "hit_edge_count": 59400,
+      "output_shape": "native_scalar_hit_edge_count",
+      "prepare_rays_sec": 0.11247330904006958,
+      "prepare_scene_sec": 0.1495847529731691,
+      "rays_per_sec_median": 341791273.14488417,
+      "row_count": 0,
+      "status": "ok",
+      "timing_sec": {
+        "max_sec": 0.00023630098439753056,
+        "median_sec": 0.0002340609789825976,
+        "min_sec": 0.0002322669606655836
+      }
+    }
+  ],
+  "suite": "goal748_optix_robot_scaled_perf",
+  "warmups": 2
+}

@@ -1126,7 +1126,11 @@ extern "C" __global__ void __intersection__rayhit_isect() {
     if (!ray_hits_triangle(r.ox, r.oy, r.dx, r.dy, r.tmax,
                            t.x0, t.y0, t.x1, t.y1, t.x2, t.y2))
         return;
-    optixReportIntersection(0.5f, 0u);
+    // Any-hit only needs a valid interval-local t. A fixed 0.5f drops
+    // legitimate short rays whose world-space trace interval is below 0.5.
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
 }
 
 extern "C" __global__ void __anyhit__rayhit_anyhit() {

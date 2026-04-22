@@ -86,6 +86,19 @@ class Goal671OptixPreparedAnyHitCountNativeTest(unittest.TestCase):
         with rt.prepare_optix_ray_triangle_any_hit_2d(triangles) as prepared:
             self.assertEqual(prepared.count(rays), expected)
 
+    def test_prepared_anyhit_count_matches_cpu_for_short_rays(self) -> None:
+        triangles = (
+            rt.Triangle(id=10, x0=-0.1, y0=0.1, x1=0.1, y1=0.1, x2=0.0, y2=0.2),
+        )
+        rays = (
+            rt.Ray2D(id=1, ox=0.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+            rt.Ray2D(id=2, ox=1.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+        )
+        expected = sum(1 for row in rt.ray_triangle_any_hit_cpu(rays, triangles) if row["any_hit"])
+        self.assertEqual(expected, 1)
+        with rt.prepare_optix_ray_triangle_any_hit_2d(triangles) as prepared:
+            self.assertEqual(prepared.count(rays), expected)
+
 
 @unittest.skipUnless(optix_prepared_packed_anyhit_available(), "current OptiX packed prepared any-hit symbols are not available")
 class Goal672OptixPreparedAnyHitPackedCountNativeTest(unittest.TestCase):

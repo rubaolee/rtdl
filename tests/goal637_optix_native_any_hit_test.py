@@ -57,6 +57,22 @@ class Goal637OptixNativeAnyHitTest(unittest.TestCase):
             rows.close()
 
     @unittest.skipUnless(_available(rt.optix_version), "OptiX backend is not available")
+    def test_optix_native_any_hit_2d_matches_cpu_for_short_rays(self) -> None:
+        inputs = {
+            "rays": (
+                rt.Ray2D(id=1, ox=0.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+                rt.Ray2D(id=2, ox=1.0, oy=0.0, dx=0.0, dy=0.25, tmax=1.0),
+            ),
+            "triangles": (
+                rt.Triangle(id=10, x0=-0.1, y0=0.1, x1=0.1, y1=0.1, x2=0.0, y2=0.2),
+            ),
+        }
+
+        expected = rt.run_cpu(any_hit_2d_kernel, **inputs)
+        self.assertEqual(expected, ({"ray_id": 1, "any_hit": 1}, {"ray_id": 2, "any_hit": 0}))
+        self.assertEqual(rt.run_optix(any_hit_2d_kernel, **inputs), expected)
+
+    @unittest.skipUnless(_available(rt.optix_version), "OptiX backend is not available")
     def test_optix_native_any_hit_3d_matches_cpu(self) -> None:
         inputs = {
             "rays": (
