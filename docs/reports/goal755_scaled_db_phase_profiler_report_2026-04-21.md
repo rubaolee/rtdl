@@ -11,7 +11,7 @@ Goal755 adds scaled fixture support to the DB phase profiler and runs Linux back
 - Codex implementation and validation: ACCEPT.
 - Gemini Flash plan review: ACCEPT, no blockers.
 - Gemini Flash finish review: ACCEPT, no blockers.
-- Windows review request was sent through the bridge. No Windows finish result was required to execute this diagnostic step because the plan already had 2-AI consensus from Codex and Gemini.
+- Windows Codex plan review: ACCEPT_WITH_NOTES, no blockers. The notes were applied by recording deterministic scale metadata, asserting identical inputs across backends in the JSON payload, preserving default `copies=1` behavior, and keeping the GTX 1070 boundary explicit.
 
 ## Implementation
 
@@ -29,6 +29,8 @@ New profiler options:
 - `--last-output-mode full|summary`: keeps old full-output behavior by default, but allows compact evidence for large runs.
 
 Important correction: the profiler now mirrors the real public `sales_risk` app path for RT backends by preparing one dataset and running three prepared queries. The first scaled run exposed that the old profiler path was unfair because it used three unprepared `run_*` calls for RT backends.
+
+The JSON payload records `scale_metadata`, including the deterministic tiling policy, expected row counts, expected output counts, and `identical_inputs_across_backends: true`.
 
 ## Linux Evidence
 

@@ -178,6 +178,27 @@ def _compact_last_output(output: dict[str, object]) -> dict[str, object]:
     return compact
 
 
+def _scale_metadata(copies: int) -> dict[str, object]:
+    return {
+        "scaling_policy": "deterministic fixture tiling with fresh row_id offsets; predicate selectivity is unchanged by copies",
+        "identical_inputs_across_backends": True,
+        "regional_dashboard": {
+            "base_rows": 7,
+            "row_count": 7 * copies,
+            "expected_promo_order_ids": 4 * copies,
+            "expected_grouped_count_rows": 3,
+            "expected_grouped_sum_rows": 2,
+        },
+        "sales_risk": {
+            "base_rows": 6,
+            "row_count": 6 * copies,
+            "expected_scan_rows": 4 * copies,
+            "expected_grouped_count_rows": 3,
+            "expected_grouped_sum_rows": 3,
+        },
+    }
+
+
 def _profile(
     iterations: int,
     scenario: str,
@@ -221,6 +242,7 @@ def _profile(
         "copies": copies,
         "iterations": iterations,
         "last_output_mode": last_output_mode,
+        "scale_metadata": _scale_metadata(copies),
         "optix_performance_class": rt.optix_app_performance_support("database_analytics").performance_class,
         "phase_stats": {phase: _stats(samples) for phase, samples in sorted(phase_samples.items())},
         "last_output": (

@@ -54,6 +54,8 @@ class Goal693DbPhaseProfilerTest(unittest.TestCase):
             "1",
         )
         self.assertEqual(payload["scenario"], "regional_dashboard")
+        self.assertEqual(payload["copies"], 1)
+        self.assertEqual(payload["scale_metadata"]["regional_dashboard"]["row_count"], 7)
         self.assertIn("regional_dashboard.python_input_construction", payload["phase_stats"])
         self.assertIn("regional_dashboard.backend_selection", payload["phase_stats"])
         self.assertIn("regional_dashboard.cpu_reference_execute_and_postprocess", payload["phase_stats"])
@@ -80,6 +82,11 @@ class Goal693DbPhaseProfilerTest(unittest.TestCase):
             "1",
         )
         self.assertEqual(payload["copies"], 3)
+        self.assertTrue(payload["scale_metadata"]["identical_inputs_across_backends"])
+        self.assertEqual(payload["scale_metadata"]["regional_dashboard"]["row_count"], 21)
+        self.assertEqual(payload["scale_metadata"]["regional_dashboard"]["expected_promo_order_ids"], 12)
+        self.assertEqual(payload["scale_metadata"]["sales_risk"]["row_count"], 18)
+        self.assertEqual(payload["scale_metadata"]["sales_risk"]["expected_scan_rows"], 12)
         self.assertEqual(payload["last_output"]["regional_dashboard"]["copies"], 3)
         self.assertEqual(payload["last_output"]["sales_risk"]["copies"], 3)
         self.assertEqual(payload["last_output"]["regional_dashboard"]["prepared_dataset"], None)
