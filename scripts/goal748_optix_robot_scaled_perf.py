@@ -18,7 +18,7 @@ import rtdsl as rt
 from examples import rtdl_robot_collision_screening_app as robot_app
 
 
-BACKENDS = ("cpu_rows", "embree_rows", "optix_rows", "optix_prepared_count")
+BACKENDS = ("cpu_rows", "embree_rows", "optix_rows", "optix_prepared_count", "optix_prepared_pose_flags")
 
 
 def _time_call(fn: Callable[[], Any]) -> tuple[Any, float]:
@@ -126,11 +126,68 @@ def _profile_optix_prepared_count(
         prepared_scene.close()
 
 
+def _profile_optix_prepared_pose_flags(
+    *,
+    edge_rays: tuple[rt.Ray2D, ...],
+    obstacle_triangles: tuple[rt.Triangle, ...],
+    poses: tuple[dict[str, object], ...],
+    ray_metadata: dict[int, dict[str, int]],
+    repeats: int,
+    warmups: int,
+) -> dict[str, object]:
+    def build_pose_index_data() -> tuple[tuple[int, ...], tuple[int, ...]]:
+        pose_ids = tuple(int(pose["pose_id"]) for pose in poses)
+        pose_index_by_id = {pose_id: index for index, pose_id in enumerate(pose_ids)}
+        pose_indices = tuple(pose_index_by_id[int(ray_metadata[int(ray.id)]["pose_id"])] for ray in edge_rays)
+        return pose_ids, pose_indices
+
+    (pose_ids, pose_indices), pose_index_construction_sec = _time_call(build_pose_index_data)
+
+    prepared_scene, prepare_scene_sec = _time_call(lambda: rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles))
+    try:
+        prepared_rays, prepare_rays_sec = _time_call(lambda: rt.prepare_optix_rays_2d(edge_rays))
+        try:
+            for _ in range(warmups):
+                prepared_scene.pose_flags_packed(prepared_rays, pose_indices, pose_count=len(pose_ids))
+
+            samples: list[float] = []
+            last_pose_flags: tuple[bool, ...] = ()
+            for _ in range(repeats):
+                last_pose_flags, elapsed = _time_call(
+                    lambda: prepared_scene.pose_flags_packed(prepared_rays, pose_indices, pose_count=len(pose_ids))
+                )
+                samples.append(elapsed)
+
+            median = statistics.median(samples) if samples else 0.0
+            colliding_pose_ids = tuple(pose_id for pose_id, flag in zip(pose_ids, last_pose_flags) if flag)
+            return {
+                "backend": "optix_prepared_pose_flags",
+                "status": "ok",
+                "output_shape": "native_pose_collision_flags",
+                "row_count": 0,
+                "pose_flag_count": len(last_pose_flags),
+                "colliding_pose_ids": list(colliding_pose_ids),
+                "colliding_pose_count": len(colliding_pose_ids),
+                "pose_index_construction_sec": float(pose_index_construction_sec),
+                "prepare_scene_sec": float(prepare_scene_sec),
+                "prepare_rays_sec": float(prepare_rays_sec),
+                "timing_sec": _stats(samples),
+                "rays_per_sec_median": (len(edge_rays) / median) if median > 0.0 else 0.0,
+                "boundary": "Prepared pose flags exclude pose-index construction and scene/ray preparation from execute timing. The timed native call includes launch plus pose-flag copy-back and returns one collision flag per pose, not edge witnesses.",
+            }
+        finally:
+            prepared_rays.close()
+    finally:
+        prepared_scene.close()
+
+
 def _profile_backend(
     *,
     backend: str,
     edge_rays: tuple[rt.Ray2D, ...],
     obstacle_triangles: tuple[rt.Triangle, ...],
+    poses: tuple[dict[str, object], ...],
+    ray_metadata: dict[int, dict[str, int]],
     repeats: int,
     warmups: int,
 ) -> dict[str, object]:
@@ -138,6 +195,15 @@ def _profile_backend(
         return _profile_optix_prepared_count(
             edge_rays=edge_rays,
             obstacle_triangles=obstacle_triangles,
+            repeats=repeats,
+            warmups=warmups,
+        )
+    if backend == "optix_prepared_pose_flags":
+        return _profile_optix_prepared_pose_flags(
+            edge_rays=edge_rays,
+            obstacle_triangles=obstacle_triangles,
+            poses=poses,
+            ray_metadata=ray_metadata,
             repeats=repeats,
             warmups=warmups,
         )
@@ -163,12 +229,19 @@ def run_suite(
     case, build_sec = _time_call(lambda: robot_app.make_scaled_case(pose_count=pose_count, obstacle_count=obstacle_count))
     edge_rays = case["edge_rays"]
     obstacle_triangles = case["obstacle_triangles"]
+    poses = case["poses"]
+    ray_metadata = case["ray_metadata"]
 
     oracle_hit_count: int | None = None
+    oracle_colliding_pose_count: int | None = None
+    oracle_colliding_pose_ids: list[int] | None = None
     oracle_sec: float | None = None
     if validate:
         oracle_rows, oracle_elapsed = _time_call(lambda: rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles))
         oracle_hit_count = _rows_hit_count(oracle_rows)
+        oracle_summary = robot_app._summarize_collisions(oracle_rows, poses, ray_metadata)
+        oracle_colliding_pose_ids = list(oracle_summary["colliding_pose_ids"])
+        oracle_colliding_pose_count = len(oracle_colliding_pose_ids)
         oracle_sec = oracle_elapsed
 
     results: list[dict[str, object]] = []
@@ -178,12 +251,20 @@ def run_suite(
                 backend=backend,
                 edge_rays=edge_rays,
                 obstacle_triangles=obstacle_triangles,
+                poses=poses,
+                ray_metadata=ray_metadata,
                 repeats=repeats,
                 warmups=warmups,
             )
             if oracle_hit_count is not None:
-                result["matches_oracle"] = int(result["hit_edge_count"]) == int(oracle_hit_count)
-                result["oracle_hit_edge_count"] = int(oracle_hit_count)
+                if backend == "optix_prepared_pose_flags":
+                    result["matches_oracle_pose_flags"] = list(result["colliding_pose_ids"]) == oracle_colliding_pose_ids
+                    result["matches_oracle"] = bool(result["matches_oracle_pose_flags"])
+                    result["oracle_colliding_pose_ids"] = oracle_colliding_pose_ids
+                    result["oracle_colliding_pose_count"] = int(oracle_colliding_pose_count)
+                else:
+                    result["matches_oracle"] = int(result["hit_edge_count"]) == int(oracle_hit_count)
+                    result["oracle_hit_edge_count"] = int(oracle_hit_count)
         except Exception as exc:
             if strict:
                 raise
@@ -206,14 +287,16 @@ def run_suite(
         "oracle_validation": {
             "enabled": validate,
             "hit_edge_count": oracle_hit_count,
+            "colliding_pose_count": oracle_colliding_pose_count,
+            "colliding_pose_ids": oracle_colliding_pose_ids,
             "time_sec": oracle_sec,
         },
         "results": results,
         "boundary": (
             "This harness is for robot-collision ray/triangle any-hit app performance. "
-            "OptiX prepared_count is a true OptiX traversal shape, but RTX RT-core speedup "
-            "claims still require RTX-class hardware and phase evidence. GTX 1070 runs are "
-            "correctness and whole-call behavior evidence only."
+            "OptiX prepared_count and prepared_pose_flags are true OptiX traversal summary shapes, "
+            "but RTX RT-core speedup claims still require RTX-class hardware and phase evidence. "
+            "GTX 1070 runs are correctness and whole-call behavior evidence only."
         ),
     }
 
@@ -239,7 +322,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.repeats < 1 or args.warmups < 0:
         raise ValueError("--repeats must be positive and --warmups must be non-negative")
 
-    backends = tuple(args.backend) if args.backend else ("embree_rows", "optix_rows", "optix_prepared_count")
+    backends = (
+        tuple(args.backend)
+        if args.backend
+        else ("embree_rows", "optix_rows", "optix_prepared_count", "optix_prepared_pose_flags")
+    )
     payload = run_suite(
         pose_count=args.pose_count,
         obstacle_count=args.obstacle_count,
