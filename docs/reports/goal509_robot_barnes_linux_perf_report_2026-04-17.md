@@ -128,9 +128,23 @@ Result: passed.
 
 ## Release Meaning
 
+## Post-Goal748 Erratum
+
+Goal748 later found and fixed a native OptiX short-ray correctness bug in the
+2D ray/triangle any-hit path: the custom intersection program reported a fixed
+`t=0.5`, which can drop valid short rays whose traced interval is below `0.5`.
+The robot fixture contains short vertical link-edge rays, so pre-fix OptiX
+robot evidence in this Goal509 report is now treated as suspect for
+correctness-sensitive robot claims.
+
+The CPU and Embree robot evidence remains usable. Post-fix OptiX robot evidence
+is recorded in Goal748 and should be used instead of this report for current
+OptiX robot correctness/performance discussion. GTX 1070 timing remains
+whole-call OptiX traversal evidence only, not RTX RT-core speedup evidence.
+
 Goal509 supports the following bounded claims:
 
-- The robot collision app has repeatable Linux performance evidence for CPU, Embree, and OptiX, with Embree showing about 29x-33x speedup over the CPU oracle on this synthetic benchmark.
+- The robot collision app has repeatable Linux performance evidence for CPU and Embree, with Embree showing about 29x-33x speedup over the CPU oracle on this synthetic benchmark. The original OptiX robot evidence in this report is superseded by the Goal748 post-fix rerun.
 - The robot app must not claim Vulkan support yet because the Vulkan hit-count output fails the oracle parity gate.
 - The Barnes-Hut app has repeatable Linux correctness evidence for CPU, Embree, OptiX, and Vulkan.
 - Barnes-Hut backend performance must be described as candidate-generation performance, not full force-solver acceleration.

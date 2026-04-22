@@ -166,15 +166,17 @@ Current v0.8 app example boundary:
   `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
   plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed
   in this app until the app has a dedicated Vulkan parity/performance gate on
-  the any-hit formulation. Use `--output-mode pose_flags` or `--output-mode
-  hit_count` when the app only needs compact summaries instead of full
-  per-edge witness rows. On OptiX, `--optix-summary-mode prepared_count`
-  returns a native scalar hit-edge count; native pose-level OptiX summaries
-  remain future ABI work. `--pose-count` and `--obstacle-count` generate
-  deterministic scaled fixtures; Embree scaled `hit_count` is about 2x faster
-  than the CPU Python reference on the measured macOS/Linux fixtures, but it
-  still uses the native any-hit row path internally rather than a prepared
-  scalar-count ABI
+  the any-hit formulation. Goal748 supersedes the old Goal509 OptiX robot
+  evidence after fixing a short-ray OptiX correctness bug; use Goal748
+  post-fix parity/timing for current OptiX robot discussion. Use
+  `--output-mode pose_flags` or `--output-mode hit_count` when the app only
+  needs compact summaries instead of full per-edge witness rows. On OptiX,
+  `--optix-summary-mode prepared_count` returns a native scalar hit-edge
+  count; native pose-level OptiX summaries remain future ABI work.
+  `--pose-count` and `--obstacle-count` generate deterministic scaled
+  fixtures; Embree scaled `hit_count` is about 2x faster than the CPU Python
+  reference on the measured macOS/Linux fixtures, but it still uses the native
+  any-hit row path internally rather than a prepared scalar-count ABI
 - `rtdl_barnes_hut_force_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, and `vulkan`; `--body-count` selects a deterministic
   scalable fixture and `--output-mode candidate_summary|force_summary|full`

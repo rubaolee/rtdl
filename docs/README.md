@@ -225,9 +225,10 @@ Keep these current facts in mind while reading:
   - Barnes-Hut force approximation app using `fixed_radius_neighbors` plus
     Python quadtree/opening-rule/force reduction
   - bounded Linux performance evidence for the app line through Goal507,
-    Goal509, and Goal524, including an explicit rejection of robot Vulkan until
-    per-edge hit-count parity is fixed and a no-external-baseline-speedup
-    boundary for the Stage-1 proximity apps
+    Goal509, Goal748, and Goal524, including an explicit rejection of robot
+    Vulkan until per-edge hit-count parity is fixed, a Goal748 correction that
+    supersedes the old Goal509 OptiX robot evidence after a short-ray bug fix,
+    and a no-external-baseline-speedup boundary for the Stage-1 proximity apps
   - an app-building tutorial that records future language pressure without
     claiming new backend or language internals
 - the released `v0.9.0` line adds a Linux HIPRT-SDK backend with `run_hiprt`

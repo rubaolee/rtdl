@@ -127,8 +127,11 @@ bounded DB-style analytical workloads.
   - robot collision screening app using `ray_triangle_any_hit` plus
     `rt.reduce_rows(any)` before Python pose/link witness reporting
     - earlier Linux Goal509 evidence covered the hit-count formulation on CPU,
-      Embree, and OptiX; the current any-hit formulation should keep Vulkan and
-      Apple claims bounded until dedicated parity/performance gates exist
+      Embree, and pre-fix OptiX. Goal748 found and fixed a short-ray OptiX
+      correctness bug in that evidence line, so current OptiX robot claims must
+      use the post-fix Goal748 parity/performance report instead of the old
+      Goal509 OptiX numbers. Vulkan and Apple claims stay bounded until
+      dedicated parity/performance gates exist
     - current `main` exposes `--output-mode pose_flags` and `--output-mode
       hit_count` so apps can avoid returning full witness rows when compact
       summaries are enough. OptiX `--optix-summary-mode prepared_count`
@@ -671,8 +674,10 @@ Release and preview layers inside the current repository:
   - Hausdorff now has bounded Linux Embree/OptiX/Vulkan performance evidence
     against SciPy, scikit-learn, and FAISS nearest-neighbor baselines
   - robot collision screening now uses v0.9.5 any-hit plus `reduce_rows`; the
-    earlier bounded Linux CPU/Embree/OptiX evidence applies to the hit-count
-    formulation, so new backend speedup claims need fresh gates
+    earlier bounded Linux CPU/Embree evidence applies to the hit-count
+    formulation. The old Goal509 OptiX robot evidence is superseded by the
+    post-fix Goal748 rerun after the short-ray OptiX bug fix, so new backend
+    speedup claims need fresh gates
   - Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan evidence with
     candidate generation separated from Python force reduction
   - Stage-1 proximity apps now have bounded Linux CPU/Embree/OptiX/Vulkan

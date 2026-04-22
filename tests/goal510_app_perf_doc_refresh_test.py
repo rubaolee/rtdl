@@ -14,14 +14,16 @@ class Goal510AppPerfDocRefreshTest(unittest.TestCase):
         self.assertIn("Robot/Barnes-Hut Linux Performance Evidence", text)
         self.assertIn("goal509_robot_barnes_linux_perf_report_2026-04-17.md", text)
         self.assertIn("earlier Linux Goal509 evidence covered the hit-count formulation", text)
-        self.assertIn("new backend speedup claims need fresh gates", text)
+        self.assertIn("post-fix Goal748 parity/performance report", text)
+        self.assertRegex(text, r"new backend\s+speedup claims need fresh gates")
         self.assertIn("Barnes-Hut now has bounded Linux CPU/Embree/OptiX/Vulkan", text)
 
     def test_release_examples_explain_goal509_and_cli_boundaries(self) -> None:
         text = (REPO_ROOT / "docs" / "release_facing_examples.md").read_text(encoding="utf-8")
 
         self.assertIn("Goal509 Robot/Barnes-Hut Linux Performance Report", text)
-        self.assertIn("rejects robot Vulkan because it\nfails per-edge hit-count parity", text)
+        self.assertIn("rejects robot Vulkan because it fails per-edge hit-count parity", text.replace("\n", " "))
+        self.assertIn("superseded by Goal748", text)
         self.assertIn("examples/rtdl_robot_collision_screening_app.py --backend optix", text)
         self.assertIn("Vulkan is not a supported public backend for this app yet", text)
         self.assertIn("examples/rtdl_barnes_hut_force_app.py --backend vulkan", text)
@@ -39,7 +41,8 @@ class Goal510AppPerfDocRefreshTest(unittest.TestCase):
 
         self.assertIn("`vulkan` is not exposed", examples)
         self.assertIn("dedicated Vulkan parity/performance gate", examples)
-        self.assertIn("candidate-generation timing\n  separately from Python force-reduction timing", examples)
+        self.assertIn("Goal748 supersedes the old Goal509 OptiX robot", examples)
+        self.assertIn("separates RTDL candidate-generation timing from Python opening-rule and\n  force-reduction timing", examples)
 
 
 if __name__ == "__main__":

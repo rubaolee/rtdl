@@ -134,10 +134,12 @@ PYTHONPATH=src:. python examples/rtdl_reduce_rows.py
 - Standard-library helper: `rt.reduce_rows(any)` converts per-edge rows into pose-level collision flags.
 - Python output: colliding pose IDs plus witness edge/ray summaries.
 - Boundary: this is bounded 2D discrete-pose screening, not continuous collision detection, full robot kinematics, or a full mesh collision engine.
-- Linux performance evidence: Goal509 accepts CPU, Embree, and OptiX for this
-  app on the earlier hit-count formulation; v0.9.5 rewrites the app to any-hit
-  plus `reduce_rows` without making a new Vulkan or Apple native early-exit
-  speedup claim.
+- Linux performance evidence: Goal509 accepts CPU and Embree for this app on
+  the earlier hit-count formulation. The original Goal509 OptiX robot evidence
+  is superseded by Goal748, which found and fixed a short-ray OptiX correctness
+  bug and reran post-fix parity/timing. The v0.9.5 app rewrites the app to
+  any-hit plus `reduce_rows` without making a new Vulkan or Apple native
+  early-exit speedup claim.
 - Run:
 
 ```bash

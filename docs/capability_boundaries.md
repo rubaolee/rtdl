@@ -226,8 +226,11 @@ B-spline, curve, or swept-volume collision detection needs new primitives and
 backend lowering before it can be claimed as an RTDL capability.
 
 The current v0.8 robot screening app is inside the bounded discrete case:
-CPU/Embree/OptiX are correctness-gated in Goal509, while Vulkan is not exposed
-for that app until its per-edge hit-count mismatch is fixed.
+CPU/Embree are correctness-gated in Goal509, while Vulkan is not exposed for
+that app until its per-edge hit-count mismatch is fixed. The original Goal509
+OptiX robot evidence is superseded by Goal748 because Goal748 found and fixed a
+short-ray OptiX `optixReportIntersection` correctness bug and reran post-fix
+OptiX parity/timing.
 
 ### Full Barnes-Hut Or General N-Body Simulation
 

@@ -195,9 +195,13 @@ beating mature exact 2D nearest-neighbor baselines such as SciPy `cKDTree` or
 FAISS `IndexFlatL2`.
 
 Goal509 covers the robot collision screening and Barnes-Hut apps. It accepts
-CPU/Embree/OptiX for robot collision screening, rejects robot Vulkan because it
-fails per-edge hit-count parity, and accepts CPU/Embree/OptiX/Vulkan for
-Barnes-Hut candidate generation while keeping Python force reduction separate.
+CPU/Embree for the original robot collision screening evidence, rejects robot
+Vulkan because it fails per-edge hit-count parity, and accepts
+CPU/Embree/OptiX/Vulkan for Barnes-Hut candidate generation while keeping
+Python force reduction separate. The original Goal509 OptiX robot evidence is
+superseded by Goal748 because Goal748 found and fixed a short-ray OptiX
+`optixReportIntersection` correctness bug; use the post-fix Goal748 report for
+current OptiX robot claims.
 
 Goal524 characterizes the ANN candidate, outlier detection, and DBSCAN apps on
 Linux across RTDL CPU/oracle, Embree, OptiX, and Vulkan backends. It does not
@@ -569,7 +573,9 @@ Important boundary:
 - `examples/rtdl_hausdorff_distance_app.py` now exposes `embree`, `optix`, and
   `vulkan` because Goal507 validates that app-specific path on Linux
 - `examples/rtdl_robot_collision_screening_app.py` exposes `embree` and
-  `optix`, but not `vulkan`, because Goal509 rejects robot Vulkan parity
+  `optix`, but not `vulkan`, because Goal509 rejects robot Vulkan parity.
+  Its old Goal509 OptiX robot evidence is superseded by Goal748 after a
+  short-ray OptiX correctness fix
 - `examples/rtdl_barnes_hut_force_app.py` exposes `embree`, `optix`, and
   `vulkan`, but Goal509 reports candidate-generation timing separately from
   Python force-reduction timing
