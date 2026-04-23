@@ -1,0 +1,1 @@
+Read `docs/reports/goal843_linux_active_baseline_batch_2026-04-23.md`, inspect `scripts/goal843_linux_active_baseline_batch.py` and `tests/goal843_linux_active_baseline_batch_test.py`, and return only ACCEPT or BLOCK plus one short paragraph on whether this is a technically sound and honest way to batch the four remaining active Linux-only baseline collectors.
