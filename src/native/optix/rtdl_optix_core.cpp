@@ -235,7 +235,6 @@ std::string compile_to_ptx(const char* cuda_src,
         opts.push_back(include_opt.c_str());
     }
     opts.push_back("--std=c++14");
-    opts.push_back("--device-as-default-execution-space");
     for (const char* o : extra_opts) opts.push_back(o);
 
     nvrtcProgram prog;
