@@ -3188,6 +3188,7 @@ struct FixedRadiusCountRtLaunchParams {
     const GpuPoint* query_points;
     const GpuPoint* search_points;
     GpuFixedRadiusCountRecord* output;
+    uint32_t* threshold_reached_count;
     uint32_t query_count;
     uint32_t threshold;
     float radius;
