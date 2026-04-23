@@ -27,6 +27,22 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, output_mode: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    if output_mode != "compact_summary":
+        raise RuntimeError(
+            "database_analytics RT-core claim path requires --output-mode compact_summary "
+            "to avoid full row materialization dominating the app"
+        )
+
+
+def _rt_core_accelerated(backend: str, output_mode: str) -> bool:
+    return backend == "optix" and output_mode == "compact_summary"
+
+
 def _regional_backend(backend: str) -> str:
     if backend in {"auto", "cpu", "cpu_python_reference"}:
         return "cpu_reference"
@@ -40,7 +56,14 @@ def _sales_backend(backend: str) -> str:
 
 
 class PreparedDatabaseAnalyticsSession:
-    def __init__(self, backend: str, scenario: str = "all", copies: int = 1):
+    def __init__(
+        self,
+        backend: str,
+        scenario: str = "all",
+        copies: int = 1,
+        *,
+        require_rt_core: bool = False,
+    ):
         if backend not in BACKENDS:
             raise ValueError(f"unsupported backend: {backend}")
         if scenario not in SCENARIOS:
@@ -50,6 +73,7 @@ class PreparedDatabaseAnalyticsSession:
         self.requested_backend = backend
         self.scenario = scenario
         self.copies = copies
+        self.require_rt_core = require_rt_core
         self._closed = False
         self._sessions: dict[str, Any] = {}
         prepare_start = time.perf_counter()
@@ -80,6 +104,7 @@ class PreparedDatabaseAnalyticsSession:
             raise RuntimeError("prepared database analytics session is closed")
         if output_mode not in OUTPUT_MODES:
             raise ValueError(f"unsupported output_mode: {output_mode}")
+        _enforce_rt_core_requirement(self.requested_backend, output_mode, self.require_rt_core)
         per_section_run_sec: dict[str, float] = {}
         sections: dict[str, Any] = {}
         for name, session in self._sessions.items():
@@ -110,15 +135,37 @@ class PreparedDatabaseAnalyticsSession:
                 "examples/rtdl_sales_risk_screening.py",
             ],
             "optix_performance": _optix_performance(),
+            "rt_core_accelerated": _rt_core_accelerated(self.requested_backend, output_mode),
+            "rt_core_claim_scope": (
+                "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim"
+            ),
             "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
         }
 
 
-def prepare_session(backend: str, scenario: str = "all", copies: int = 1) -> PreparedDatabaseAnalyticsSession:
-    return PreparedDatabaseAnalyticsSession(backend, scenario=scenario, copies=copies)
+def prepare_session(
+    backend: str,
+    scenario: str = "all",
+    copies: int = 1,
+    *,
+    require_rt_core: bool = False,
+) -> PreparedDatabaseAnalyticsSession:
+    return PreparedDatabaseAnalyticsSession(
+        backend,
+        scenario=scenario,
+        copies=copies,
+        require_rt_core=require_rt_core,
+    )
 
 
-def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: str = "full") -> dict[str, Any]:
+def run_app(
+    backend: str,
+    scenario: str = "all",
+    copies: int = 1,
+    output_mode: str = "full",
+    *,
+    require_rt_core: bool = False,
+) -> dict[str, Any]:
     if backend not in BACKENDS:
         raise ValueError(f"unsupported backend: {backend}")
     if scenario not in SCENARIOS:
@@ -127,6 +174,7 @@ def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: s
         raise ValueError("copies must be positive")
     if output_mode not in OUTPUT_MODES:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    _enforce_rt_core_requirement(backend, output_mode, require_rt_core)
 
     sections: dict[str, Any] = {}
     if scenario in {"regional_dashboard", "all"}:
@@ -157,6 +205,10 @@ def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: s
             "examples/rtdl_sales_risk_screening.py",
         ],
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": _rt_core_accelerated(backend, output_mode),
+        "rt_core_claim_scope": (
+            "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim"
+        ),
         "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
     }
 
@@ -180,14 +232,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-mode", default="full", choices=OUTPUT_MODES)
     parser.add_argument("--execution-mode", default="one_shot", choices=("one_shot", "prepared_session"))
     parser.add_argument("--session-iterations", type=int, default=1)
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail unless the selected DB app path is the bounded OptiX compact-summary RT-core claim path.",
+    )
     args = parser.parse_args(argv)
     if args.session_iterations < 1:
         raise ValueError("--session-iterations must be positive")
+    _enforce_rt_core_requirement(args.backend, args.output_mode, args.require_rt_core)
     if args.execution_mode == "one_shot":
-        payload = run_app(args.backend, args.scenario, copies=args.copies, output_mode=args.output_mode)
+        payload = run_app(
+            args.backend,
+            args.scenario,
+            copies=args.copies,
+            output_mode=args.output_mode,
+            require_rt_core=args.require_rt_core,
+        )
     else:
         run_samples: list[float] = []
-        with prepare_session(args.backend, args.scenario, copies=args.copies) as session:
+        with prepare_session(
+            args.backend,
+            args.scenario,
+            copies=args.copies,
+            require_rt_core=args.require_rt_core,
+        ) as session:
             last_payload: dict[str, Any] | None = None
             for _ in range(args.session_iterations):
                 start = time.perf_counter()
