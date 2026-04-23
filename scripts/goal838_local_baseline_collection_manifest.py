@@ -47,6 +47,23 @@ def _db_command(row: dict[str, Any], backend: str, baseline: str) -> list[str]:
     ]
 
 
+def _db_postgresql_command(row: dict[str, Any], baseline: str) -> list[str]:
+    scale = row.get("scale") or {}
+    scenario = str(row["path_name"]).removeprefix("prepared_db_session_")
+    return [
+        "python3",
+        "scripts/goal842_postgresql_db_prepared_baseline.py",
+        "--scenario",
+        scenario,
+        "--copies",
+        str(scale.get("copies", 20000)),
+        "--iterations",
+        str(scale.get("iterations", 10)),
+        "--output-json",
+        _artifact_path(row, baseline),
+    ]
+
+
 def _fixed_radius_command(row: dict[str, Any], baseline: str) -> list[str]:
     scale = row.get("scale") or {}
     backend = "cpu" if baseline == "cpu_scalar_threshold_count_oracle" else "embree"
@@ -125,7 +142,10 @@ def _row_actions(row: dict[str, Any]) -> list[dict[str, Any]]:
             action.update(
                 {
                     "status": "linux_postgresql_required",
-                    "reason": "project policy says PostgreSQL baseline is required on Linux, not on this macOS host",
+                    "collector_kind": "goal842_postgresql_db_prepared_baseline",
+                    "command": _db_postgresql_command(row, baseline_name),
+                    "reason": "project policy says live PostgreSQL baseline collection is required on Linux, not on this macOS host",
+                    "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
                 }
             )
         elif app in {"outlier_detection", "dbscan_clustering"} and baseline_name == "embree_scalar_or_summary_path":

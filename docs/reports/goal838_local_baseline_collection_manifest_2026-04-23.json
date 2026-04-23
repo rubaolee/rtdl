@@ -83,10 +83,23 @@
         "copies": 20000,
         "iterations": 10
       },
-      "command": null,
+      "collector_kind": "goal842_postgresql_db_prepared_baseline",
+      "command": [
+        "python3",
+        "scripts/goal842_postgresql_db_prepared_baseline.py",
+        "--scenario",
+        "sales_risk",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json"
+      ],
       "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
       "path_name": "prepared_db_session_sales_risk",
-      "reason": "project policy says PostgreSQL baseline is required on Linux, not on this macOS host",
+      "reason": "project policy says live PostgreSQL baseline collection is required on Linux, not on this macOS host",
       "required_phases": [
         "input_pack_or_table_build",
         "backend_prepare",
@@ -179,10 +192,23 @@
         "copies": 20000,
         "iterations": 10
       },
-      "command": null,
+      "collector_kind": "goal842_postgresql_db_prepared_baseline",
+      "command": [
+        "python3",
+        "scripts/goal842_postgresql_db_prepared_baseline.py",
+        "--scenario",
+        "regional_dashboard",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json"
+      ],
       "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
       "path_name": "prepared_db_session_regional_dashboard",
-      "reason": "project policy says PostgreSQL baseline is required on Linux, not on this macOS host",
+      "reason": "project policy says live PostgreSQL baseline collection is required on Linux, not on this macOS host",
       "required_phases": [
         "input_pack_or_table_build",
         "backend_prepare",

@@ -64,6 +64,18 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
         self.assertTrue(all(action["collector_kind"] == "goal839_robot_pose_count_baseline" for action in robot))
         self.assertTrue(all(action["command"][1] == "scripts/goal839_robot_pose_count_baseline.py" for action in robot))
 
+    def test_postgresql_actions_are_linux_bound_but_have_direct_collectors(self) -> None:
+        module = __import__("scripts.goal838_local_baseline_collection_manifest", fromlist=["build_collection_manifest"])
+        payload = module.build_collection_manifest()
+        postgres = [
+            action for action in payload["actions"]
+            if action["baseline"] == "postgresql_same_semantics_on_linux_when_available"
+        ]
+        self.assertEqual(len(postgres), 2)
+        self.assertEqual({action["status"] for action in postgres}, {"linux_postgresql_required"})
+        self.assertTrue(all(action["collector_kind"] == "goal842_postgresql_db_prepared_baseline" for action in postgres))
+        self.assertTrue(all(action["command"][1] == "scripts/goal842_postgresql_db_prepared_baseline.py" for action in postgres))
+
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "manifest.json"
