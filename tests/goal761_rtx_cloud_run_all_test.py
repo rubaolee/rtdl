@@ -61,9 +61,22 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
             for row in manifest["entries"]
         }
         native = deferred["segment_polygon_hitcount_native_experimental"]
-        self.assertEqual(native["env"], {"RTDL_OPTIX_SEGPOLY_MODE": "native"})
+        self.assertEqual(native["env"], {})
+        self.assertIn("scripts/goal807_segment_polygon_optix_mode_gate.py", native["command"])
         self.assertNotIn("segment_polygon_hitcount_native_experimental", active_path_names)
         self.assertIn("historical Goal120 evidence", native["reason_deferred"])
+
+    def test_runner_can_include_deferred_entries_selectively(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(
+            dry_run=True,
+            only={"service_coverage_gaps"},
+            include_deferred=True,
+        )
+        self.assertEqual(payload["entry_count"], 1)
+        self.assertTrue(payload["include_deferred"])
+        self.assertEqual(payload["results"][0]["manifest_section"], "deferred_entries")
+        self.assertEqual(payload["results"][0]["app"], "service_coverage_gaps")
 
     def test_runner_caches_distinct_env_overrides_separately(self) -> None:
         module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["_run_command"])

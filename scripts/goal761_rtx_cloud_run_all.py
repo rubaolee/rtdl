@@ -70,10 +70,18 @@ def _probe(command: list[str]) -> str:
         return f"probe failed: {exc}"
 
 
-def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
+def run_all(*, dry_run: bool, only: set[str] | None = None, include_deferred: bool = False) -> dict[str, Any]:
     manifest = build_manifest()
+    active_entries = [
+        {**entry, "_manifest_section": "entries"}
+        for entry in manifest["entries"]
+    ]
+    deferred_entries = [
+        {**entry, "_manifest_section": "deferred_entries"}
+        for entry in manifest.get("deferred_entries", ())
+    ] if include_deferred else []
     entries = [
-        entry for entry in manifest["entries"]
+        entry for entry in [*active_entries, *deferred_entries]
         if only is None or entry["path_name"] in only or entry["app"] in only
     ]
     command_results = []
@@ -98,6 +106,7 @@ def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
             {
                 "app": entry["app"],
                 "path_name": entry["path_name"],
+                "manifest_section": entry["_manifest_section"],
                 "claim_scope": entry["claim_scope"],
                 "non_claim": entry["non_claim"],
                 "result": result,
@@ -108,6 +117,7 @@ def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
         "suite": "goal761_rtx_cloud_run_all",
         "repo": str(ROOT),
         "dry_run": dry_run,
+        "include_deferred": include_deferred,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "git_head": _probe(["git", "rev-parse", "HEAD"]),
         "git_status_short": _probe(["git", "status", "--short"]),
@@ -130,10 +140,15 @@ def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run all Goal759 RTX cloud benchmark commands and collect metadata.")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--include-deferred", action="store_true", help="Also run manifest deferred_entries readiness gates.")
     parser.add_argument("--only", action="append", help="Limit to an app or manifest path_name. May be repeated.")
     parser.add_argument("--output-json", default="docs/reports/goal761_rtx_cloud_run_all_summary.json")
     args = parser.parse_args(argv)
-    payload = run_all(dry_run=args.dry_run, only=set(args.only) if args.only else None)
+    payload = run_all(
+        dry_run=args.dry_run,
+        only=set(args.only) if args.only else None,
+        include_deferred=args.include_deferred,
+    )
     text = json.dumps(payload, indent=2, sort_keys=True)
     Path(args.output_json).write_text(text + "\n", encoding="utf-8")
     print(text)
