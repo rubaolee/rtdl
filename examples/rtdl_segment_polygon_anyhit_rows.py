@@ -22,6 +22,17 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "segment_polygon_anyhit_rows native OptiX compact mode remains gated by strict RTX validation; "
+        "pair-row native output does not exist, so no RT-core claim path is accepted today"
+    )
+
+
 @contextmanager
 def _temporary_optix_segpoly_mode(optix_mode: str):
     previous = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
@@ -115,11 +126,13 @@ def run_case(
     dataset: str,
     output_mode: str = "rows",
     optix_mode: str = "auto",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "segment_flags", "segment_counts"}:
         raise ValueError("output_mode must be 'rows', 'segment_flags', or 'segment_counts'")
     if optix_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = load_representative_case("segment_polygon_anyhit_rows", dataset)
     if output_mode == "rows":
         rows = _run_anyhit_rows(backend, case, optix_mode=optix_mode)
@@ -140,6 +153,7 @@ def run_case(
         "row_count": row_count,
         "summary_source": summary_source,
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
         "boundary": (
             "Rows mode emits segment/polygon pair rows. Compact segment_flags and "
             "segment_counts use the RTDL segment_polygon_hitcount primitive to avoid "
@@ -190,13 +204,30 @@ def main(argv: list[str] | None = None) -> int:
         default="auto",
         help="OptiX only: compact output modes may request the experimental native segment/polygon hit-count mode.",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail because segment/polygon native OptiX remains behind strict RTX validation.",
+    )
     args = parser.parse_args(argv)
     dataset = (
         rt.segment_polygon_large_dataset_name(copies=args.copies)
         if args.copies is not None
         else args.dataset
     )
-    print(json.dumps(run_case(args.backend, dataset, args.output_mode, args.optix_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                dataset,
+                args.output_mode,
+                args.optix_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

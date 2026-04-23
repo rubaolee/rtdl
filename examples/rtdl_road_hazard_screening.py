@@ -67,6 +67,17 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "road_hazard_screening native OptiX mode remains gated by strict segment/polygon RTX validation; "
+        "no RT-core claim path is accepted today"
+    )
+
+
 @contextmanager
 def _temporary_optix_segpoly_mode(optix_mode: str):
     previous = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
@@ -89,11 +100,13 @@ def run_case(
     copies: int = 1,
     output_mode: str = "rows",
     optix_mode: str = "auto",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "priority_segments", "summary"}:
         raise ValueError("output_mode must be 'rows', 'priority_segments', or 'summary'")
     if optix_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = make_demo_case(copies=copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
@@ -119,6 +132,7 @@ def run_case(
         "priority_segments": hot_segments,
         "priority_segment_count": len(hot_segments),
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
         "boundary": (
             "Rows mode emits per-road hit-count rows. Compact priority_segments "
             "and summary modes omit rows from the app payload when only priority "
@@ -154,6 +168,11 @@ def main(argv: list[str] | None = None) -> int:
         default="auto",
         help="OptiX only: preserve current default, force host-indexed fallback, or request experimental native segment/polygon hit-count mode.",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail because road-hazard native OptiX remains behind strict segment/polygon RTX validation.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -162,6 +181,7 @@ def main(argv: list[str] | None = None) -> int:
                 copies=args.copies,
                 output_mode=args.output_mode,
                 optix_mode=args.optix_mode,
+                require_rt_core=args.require_rt_core,
             ),
             indent=2,
             sort_keys=True,

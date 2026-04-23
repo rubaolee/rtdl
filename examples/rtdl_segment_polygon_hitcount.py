@@ -21,6 +21,17 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "segment_polygon_hitcount native OptiX mode remains gated by strict RTX validation; "
+        "no RT-core claim path is accepted today"
+    )
+
+
 @contextmanager
 def _temporary_optix_segpoly_mode(optix_mode: str):
     previous = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
@@ -37,9 +48,16 @@ def _temporary_optix_segpoly_mode(optix_mode: str):
             os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = previous
 
 
-def run_case(backend: str, dataset: str, *, optix_mode: str = "auto") -> dict[str, object]:
+def run_case(
+    backend: str,
+    dataset: str,
+    *,
+    optix_mode: str = "auto",
+    require_rt_core: bool = False,
+) -> dict[str, object]:
     if optix_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = load_representative_case("segment_polygon_hitcount", dataset)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(segment_polygon_hitcount_reference, **case.inputs)
@@ -62,6 +80,7 @@ def run_case(backend: str, dataset: str, *, optix_mode: str = "auto") -> dict[st
         "row_count": len(rows),
         "rows": rows,
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
         "boundary": "RT-core performance remains classified separately: OptiX mode 'native' explicitly requests the experimental native custom-AABB path, but current public performance class stays host_indexed_fallback until a focused correctness/performance gate passes.",
     }
 
@@ -93,13 +112,29 @@ def main(argv: list[str] | None = None) -> int:
         default="auto",
         help="OptiX only: preserve current default, force host-indexed fallback, or request experimental native custom-AABB mode.",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail because segment/polygon native OptiX remains behind strict RTX validation.",
+    )
     args = parser.parse_args(argv)
     dataset = (
         rt.segment_polygon_large_dataset_name(copies=args.copies)
         if args.copies is not None
         else args.dataset
     )
-    print(json.dumps(run_case(args.backend, dataset, optix_mode=args.optix_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                dataset,
+                optix_mode=args.optix_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

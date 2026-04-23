@@ -25,9 +25,9 @@ scope, or guarded/excluded with fail-fast `--require-rt-core` behavior.
 | `service_coverage_gaps` | `rt_core_partial_ready` | `--require-rt-core` allowed only for `--backend optix --optix-summary-mode gap_summary_prepared`; needs phase-clean RTX evidence before any claim. |
 | `event_hotspot_screening` | `rt_core_partial_ready` | `--require-rt-core` allowed only for `--backend optix --optix-summary-mode count_summary_prepared`; needs phase-clean RTX evidence before any claim. |
 | `facility_knn_assignment` | `needs_optix_app_surface` | No OptiX app surface; KNN ranking cannot be replaced by fixed-radius threshold counts. |
-| `road_hazard_screening` | `needs_rt_core_redesign` | Explicit native segment/polygon mode exists but remains gated by strict Goal807 RTX validation. |
-| `segment_polygon_hitcount` | `needs_rt_core_redesign` | Native hit-count mode exists but remains gated by strict Goal807 RTX validation. |
-| `segment_polygon_anyhit_rows` | `needs_rt_core_redesign` | Compact native hit-count mode may be gated; pair-row native emitter does not exist. |
+| `road_hazard_screening` | `needs_rt_core_redesign` | `--require-rt-core` rejects even native mode until strict segment/polygon RTX validation passes. |
+| `segment_polygon_hitcount` | `needs_rt_core_redesign` | `--require-rt-core` rejects even native hit-count mode until strict Goal807 RTX validation passes. |
+| `segment_polygon_anyhit_rows` | `needs_rt_core_redesign` | `--require-rt-core` rejects compact native mode until strict Goal807 RTX validation passes; pair-row native emitter does not exist. |
 | `polygon_pair_overlap_area_rows` | `needs_optix_app_surface` | `--require-rt-core` rejects because there is no OptiX app surface today. |
 | `polygon_set_jaccard` | `needs_optix_app_surface` | `--require-rt-core` rejects because there is no OptiX app surface today. |
 | `hausdorff_distance` | `needs_rt_core_redesign` | `--require-rt-core` rejects CUDA-through-OptiX KNN rows. |
@@ -49,6 +49,7 @@ scope, or guarded/excluded with fail-fast `--require-rt-core` behavior.
 | Goal816 | Polygon overlap/Jaccard | Adds `--require-rt-core` rejection for apps with no OptiX surface. |
 | Goal817 | Hausdorff/ANN/Barnes-Hut | Adds `--require-rt-core` rejection for CUDA-through-OptiX compute paths. |
 | Goal819 | Service coverage / event hotspot | Adds `--require-rt-core` enforcement for prepared OptiX summary modes only. |
+| Goal820 | Segment/polygon apps | Adds `--require-rt-core` rejection until strict native RTX validation passes. |
 
 ## Verification
 
