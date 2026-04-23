@@ -1,0 +1,295 @@
+{
+  "apps": [
+    {
+      "app": "database_analytics",
+      "benchmark_readiness": "needs_interface_tuning",
+      "cloud_policy": "No broad DB speedup claim until compact_summary is rerun on RTX hardware and native phase counters prove materialization is not dominant.",
+      "current_status": "rt_core_partial_ready",
+      "performance_class": "python_interface_dominated",
+      "required_action": "Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "graph_analytics",
+      "benchmark_readiness": "needs_native_kernel_tuning",
+      "cloud_policy": "No paid graph RTX benchmark until a native traversal design and local correctness gate exist.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "host_indexed_fallback",
+      "required_action": "Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "apple_rt_demo",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "Never include in NVIDIA cloud batches.",
+      "current_status": "not_nvidia_rt_core_target",
+      "performance_class": "not_optix_applicable",
+      "required_action": "Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables.",
+      "target_status": "not_nvidia_rt_core_target"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "benchmark_readiness": "needs_phase_contract",
+      "cloud_policy": "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+      "current_status": "rt_core_partial_ready",
+      "performance_class": "optix_traversal_prepared_summary",
+      "required_action": "Add a phase-clean profiler for the prepared OptiX gap-summary mode and validate it on RTX before any claim.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "benchmark_readiness": "needs_phase_contract",
+      "cloud_policy": "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+      "current_status": "rt_core_partial_ready",
+      "performance_class": "optix_traversal_prepared_summary",
+      "required_action": "Add a phase-clean profiler for the prepared OptiX count-summary mode and validate it on RTX before any claim.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "Cloud only after a native traversal/ranking design exists and has a local correctness gate.",
+      "current_status": "needs_optix_app_surface",
+      "performance_class": "not_optix_exposed",
+      "required_action": "Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal plus native ranking primitive rather than CUDA-through-OptiX KNN rows or fixed-radius count thresholds.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "road_hazard_screening",
+      "benchmark_readiness": "needs_native_kernel_tuning",
+      "cloud_policy": "Cloud only in the focused Goal807 native-vs-host-indexed batch; no road-hazard speedup claim until that passes.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "host_indexed_fallback",
+      "required_action": "Run the explicit native segment/polygon mode through Goal807 strict RTX gating before changing default OptiX behavior or claims.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "benchmark_readiness": "needs_native_kernel_tuning",
+      "cloud_policy": "Cloud only in a focused Goal807 native-vs-host-indexed batch after local gate packaging is complete.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "host_indexed_fallback",
+      "required_action": "Use Goal807 to prove explicit native hit-count correctness/performance against host-indexed and PostGIS where available before promotion.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "benchmark_readiness": "needs_native_kernel_tuning",
+      "cloud_policy": "No pair-row cloud benchmark until native any-hit rows exist; compact modes may join the Goal807 batch only as bounded summary evidence.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "host_indexed_fallback",
+      "required_action": "Use native hit-count mode only for compact flags/counts after Goal807; implement a true native pair-row emitter before any row-output acceleration claim.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "Cloud only after native OptiX surface and local correctness gate exist.",
+      "current_status": "needs_optix_app_surface",
+      "performance_class": "not_optix_exposed",
+      "required_action": "Add an OptiX app surface only after polygon-pair overlap is mapped to true traversal plus bounded exact refinement.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "Cloud only after native OptiX surface and local correctness gate exist.",
+      "current_status": "needs_optix_app_surface",
+      "performance_class": "not_optix_exposed",
+      "required_action": "Add an OptiX app surface only after Jaccard candidate discovery and compact overlap summaries use true traversal.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "hausdorff_distance",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "No RT-core cloud claim until a true traversal design exists.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "cuda_through_optix",
+      "required_action": "Replace CUDA-through-OptiX KNN rows with a true traversal-friendly Hausdorff candidate/summary design or keep it as GPU-compute only.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "ann_candidate_search",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "No RT-core cloud claim until a true traversal design exists.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "cuda_through_optix",
+      "required_action": "Redesign candidate search around a true RT traversal primitive or keep it as GPU-compute/re-ranking evidence.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "outlier_detection",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "cloud_policy": "Include in the next batched cloud run only with the prepared scalar profiler.",
+      "current_status": "rt_core_ready",
+      "performance_class": "optix_traversal_prepared_summary",
+      "required_action": "Keep prepared scalar threshold-count as the RT-core claim path and prevent default row mode from being presented as the claim.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "dbscan_clustering",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "cloud_policy": "Include in the next batched cloud run only with the prepared scalar profiler.",
+      "current_status": "rt_core_ready",
+      "performance_class": "optix_traversal_prepared_summary",
+      "required_action": "Keep prepared scalar core-threshold summary as the RT-core claim path and split Python cluster expansion from native timing.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "robot_collision_screening",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "cloud_policy": "Include in the next batched cloud run with prepared packed input and scalar pose-count mode.",
+      "current_status": "rt_core_ready",
+      "performance_class": "optix_traversal",
+      "required_action": "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "No RT-core cloud claim until a true traversal design exists.",
+      "current_status": "needs_rt_core_redesign",
+      "performance_class": "cuda_through_optix",
+      "required_action": "Redesign node candidate discovery around a true RT traversal primitive and keep force/opening reduction split from RTDL traversal timing.",
+      "target_status": "rt_core_ready"
+    },
+    {
+      "app": "hiprt_ray_triangle_hitcount",
+      "benchmark_readiness": "exclude_from_rtx_app_benchmark",
+      "cloud_policy": "Never include in NVIDIA OptiX cloud batches.",
+      "current_status": "not_nvidia_rt_core_target",
+      "performance_class": "not_optix_exposed",
+      "required_action": "Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity.",
+      "target_status": "not_nvidia_rt_core_target"
+    }
+  ],
+  "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
+  "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
+  "date": "2026-04-23",
+  "generated_at": "2026-04-23T15:51:01",
+  "goal": "Goal848 v1.0 RT-core goal series",
+  "goal_series": [
+    {
+      "acceptance": [
+        "Every public app is assigned to a v1.0 bucket.",
+        "Each bucket has an explicit engineering purpose and claim boundary.",
+        "The plan is machine-readable and reviewable."
+      ],
+      "consensus_requirement": "3-AI for planning significance",
+      "goal_id": "Goal848",
+      "scope": "Use the canonical app maturity matrix to define promotion order, acceptance rules, and claim boundaries.",
+      "title": "Lock the v1.0 all-in-RT app migration plan"
+    },
+    {
+      "acceptance": [
+        "Dry-run phase packet exists for both apps.",
+        "Prepared OptiX summary modes remain guarded by --require-rt-core.",
+        "Cloud inclusion criteria are explicit and bounded."
+      ],
+      "consensus_requirement": "2-AI before completion",
+      "goal_id": "Goal849",
+      "scope": "Package local evidence for service coverage and event hotspot prepared OptiX summary paths using existing profiler and CLI guards.",
+      "title": "Promote spatial prepared-summary apps to promotion-ready candidates"
+    },
+    {
+      "acceptance": [
+        "Prepared DB compact-summary path has phase-clean counters.",
+        "Internal review package shows the dominant app path is no longer materialization-driven.",
+        "Claim remains bounded to prepared DB summary paths."
+      ],
+      "consensus_requirement": "2-AI before completion",
+      "goal_id": "Goal850",
+      "scope": "Push compact prepared DB outputs and native phase accounting until Python is orchestration only.",
+      "title": "Reduce DB app host/interface overhead on the OptiX path"
+    },
+    {
+      "acceptance": [
+        "Explicit native mode passes strict correctness gate.",
+        "Compact summary/count outputs are separated from pair-row output.",
+        "No row-output claim is made without a native row emitter."
+      ],
+      "consensus_requirement": "2-AI before completion",
+      "goal_id": "Goal851",
+      "scope": "Run strict native-vs-host-indexed gating for hit-count and compact outputs before any row-output claim.",
+      "title": "Promote segment/polygon compact native OptiX paths"
+    },
+    {
+      "acceptance": [
+        "There is a native traversal design or an explicit scope removal.",
+        "Host-indexed fallback is no longer presented as an RT-core path."
+      ],
+      "consensus_requirement": "3-AI because it changes strategic scope",
+      "goal_id": "Goal852",
+      "scope": "Either implement a real graph-to-RT lowering or remove graph analytics from NVIDIA RT-core targets.",
+      "title": "Decide graph analytics RT-core future"
+    },
+    {
+      "acceptance": [
+        "Each app has a true traversal design or a permanent non-RT-core decision.",
+        "Public docs stop conflating CUDA-through-OptiX with RT-core use."
+      ],
+      "consensus_requirement": "3-AI because it changes flagship app scope",
+      "goal_id": "Goal853",
+      "scope": "Hausdorff, ANN candidate search, and Barnes-Hut require true RT traversal formulations or permanent non-RT-core classification.",
+      "title": "Redesign CUDA-through-OptiX apps into true traversal apps or demote them permanently"
+    },
+    {
+      "acceptance": [
+        "Each app has a surface decision with rationale.",
+        "Any new OptiX surface has a local correctness gate."
+      ],
+      "consensus_requirement": "2-AI before completion",
+      "goal_id": "Goal854",
+      "scope": "Facility KNN, polygon overlap, and polygon Jaccard need either real OptiX surfaces or explicit retirement from NVIDIA RT-core targets.",
+      "title": "Expose or explicitly retire missing OptiX app surfaces"
+    },
+    {
+      "acceptance": [
+        "All active-candidate apps have local readiness packets.",
+        "The cloud run is one batched session with preserved artifacts.",
+        "Interpretation stays bounded to exact measured sub-paths."
+      ],
+      "consensus_requirement": "2-AI before completion",
+      "goal_id": "Goal855",
+      "scope": "Use the single-session cloud procedure only after local work is ready.",
+      "title": "Run one consolidated RTX cloud validation batch after local closure"
+    }
+  ],
+  "priority_buckets": {
+    "already_ready_keep_and_optimize": [
+      "outlier_detection",
+      "dbscan_clustering"
+    ],
+    "major_redesign_wave": [
+      "facility_knn_assignment",
+      "polygon_pair_overlap_area_rows",
+      "polygon_set_jaccard",
+      "hausdorff_distance",
+      "ann_candidate_search",
+      "barnes_hut_force_app"
+    ],
+    "must_finish_first": [
+      "database_analytics",
+      "service_coverage_gaps",
+      "event_hotspot_screening",
+      "robot_collision_screening"
+    ],
+    "out_of_scope_for_nvidia_rt": [
+      "apple_rt_demo",
+      "hiprt_ray_triangle_hitcount"
+    ],
+    "second_wave": [
+      "graph_analytics",
+      "road_hazard_screening",
+      "segment_polygon_hitcount",
+      "segment_polygon_anyhit_rows"
+    ]
+  },
+  "summary": {
+    "needs_redesign_or_new_surface": 10,
+    "out_of_scope_for_nvidia_rt": 2,
+    "public_app_count": 18,
+    "rt_core_partial_ready_now": 3,
+    "rt_core_ready_now": 3
+  }
+}
