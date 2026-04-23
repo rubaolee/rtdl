@@ -80,10 +80,16 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         return {
             "artifact_status": "ok",
             "mode": artifact.get("mode"),
+            "input_mode": artifact.get("input_mode"),
+            "result_mode": artifact.get("result_mode"),
             "pose_count": artifact.get("pose_count"),
             "edge_ray_count": artifact.get("edge_ray_count"),
+            "colliding_pose_count": (artifact.get("result") or {}).get("colliding_pose_count")
+            if isinstance(artifact.get("result"), dict)
+            else None,
             "prepare_scene_sec": phases.get("optix_prepare_scene_sec"),
             "prepare_rays_sec": phases.get("optix_prepare_rays_sec"),
+            "prepare_pose_indices_sec": phases.get("optix_prepare_pose_indices_sec"),
             "warm_query_median_sec": _median(phases.get("prepared_pose_flags_warm_query_sec")),
             "oracle_validate_sec": phases.get("oracle_validate_sec"),
             "matches_oracle": artifact.get("matches_oracle"),
