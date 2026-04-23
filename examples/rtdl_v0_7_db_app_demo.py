@@ -169,6 +169,8 @@ class PreparedRegionalDashboardSession:
             prepared_summary = None
         else:
             assert self._dataset is not None
+            compact_group_count_summary = None
+            compact_group_sum_summary = None
             if output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
                 promo_order_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
                     lambda: self._dataset.conjunctive_scan_count(PROMO_SCAN)
@@ -183,16 +185,32 @@ class PreparedRegionalDashboardSession:
                 promo_order_count = len(promo_order_ids)
                 if hasattr(self._dataset, "last_phase_timings"):
                     native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
-            open_order_count_by_region, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
-                lambda: _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD))
-            )
-            if hasattr(self._dataset, "last_phase_timings"):
-                native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
-            web_revenue_by_region, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
-                lambda: _sort_rows(self._dataset.grouped_sum(REGION_REVENUE))
-            )
-            if hasattr(self._dataset, "last_phase_timings"):
-                native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
+            if output_mode == "compact_summary" and hasattr(self._dataset, "grouped_count_summary"):
+                compact_group_count_summary, run_phases["query_grouped_count_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_count_summary(REGION_WORKLOAD)
+                )
+                open_order_count_by_region = []
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count_summary"] = self._dataset.last_phase_timings()
+            else:
+                open_order_count_by_region, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                    lambda: _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
+            if output_mode == "compact_summary" and hasattr(self._dataset, "grouped_sum_summary"):
+                compact_group_sum_summary, run_phases["query_grouped_sum_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_sum_summary(REGION_REVENUE)
+                )
+                web_revenue_by_region = []
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum_summary"] = self._dataset.last_phase_timings()
+            else:
+                web_revenue_by_region, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                    lambda: _sort_rows(self._dataset.grouped_sum(REGION_REVENUE))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
             results = {
                 "promo_order_ids": promo_order_ids,
                 "open_order_count_by_region": open_order_count_by_region,
@@ -203,9 +221,21 @@ class PreparedRegionalDashboardSession:
                 "row_count": self._dataset.row_count,
             }
         summary_start = time.perf_counter()
-        summary = _summarize_results(results)
-        if self.backend != "cpu_reference" and output_mode == "compact_summary":
-            summary["promo_order_count"] = promo_order_count
+        if (
+            self.backend != "cpu_reference"
+            and output_mode == "compact_summary"
+            and compact_group_count_summary is not None
+            and compact_group_sum_summary is not None
+        ):
+            summary = {
+                "promo_order_count": promo_order_count,
+                "open_order_count_by_region": dict(compact_group_count_summary),
+                "web_revenue_by_region": dict(compact_group_sum_summary),
+            }
+        else:
+            summary = _summarize_results(results)
+            if self.backend != "cpu_reference" and output_mode == "compact_summary":
+                summary["promo_order_count"] = promo_order_count
         run_phases["python_summary_postprocess_sec"] = time.perf_counter() - summary_start
 
         return {

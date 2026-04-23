@@ -1290,6 +1290,22 @@ class PreparedOptixDbDataset:
         finally:
             rows.close()
 
+    def grouped_count_summary(self, query) -> dict[str, int]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave OptiX DB grouped kernels support exactly one group key")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_count(clauses_array, group_key.encode("utf-8"))
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return {
+                str(_decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key)): int(rows.rows_ptr[index].count)
+                for index in range(rows.row_count)
+            }
+        finally:
+            rows.close()
+
     def grouped_sum(self, query) -> tuple[dict[str, object], ...]:
         normalized_query = normalize_grouped_query(query)
         if len(normalized_query.group_keys) != 1:
@@ -1312,6 +1328,28 @@ class PreparedOptixDbDataset:
                 }
                 for index in range(rows.row_count)
             )
+        finally:
+            rows.close()
+
+    def grouped_sum_summary(self, query) -> dict[str, int]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave OptiX DB grouped kernels support exactly one group key")
+        if not normalized_query.value_field:
+            raise ValueError("grouped_sum requires a value_field")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_sum(
+            clauses_array,
+            group_key.encode("utf-8"),
+            normalized_query.value_field.encode("utf-8"),
+        )
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return {
+                str(_decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key)): int(rows.rows_ptr[index].sum)
+                for index in range(rows.row_count)
+            }
         finally:
             rows.close()
 
