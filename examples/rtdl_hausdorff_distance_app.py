@@ -87,6 +87,11 @@ def _run_nearest(backend: str, query_points: tuple[Point, ...], search_points: t
     raise ValueError(f"unsupported backend `{backend}`")
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("hausdorff_distance")
+    return {"class": support.performance_class, "note": support.note}
+
+
 def _directed_from_rows(rows: Iterable[dict[str, object]], label: str) -> dict[str, object]:
     nearest_rows = list(rows)
     if not nearest_rows:
@@ -246,6 +251,7 @@ def run_app(
             abs_tol=1e-5,
         ),
         "rtdl_role": rtdl_role,
+        "optix_performance": _optix_performance(),
     }
 
 

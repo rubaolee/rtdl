@@ -53,6 +53,19 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
                 self.assertEqual(payload["optix_performance"]["class"], "host_indexed_fallback")
                 self.assertIn("not", payload["optix_performance"]["note"].lower())
 
+    def test_spatial_compute_apps_expose_cuda_through_optix_classification(self) -> None:
+        cases = (
+            ("examples/rtdl_hausdorff_distance_app.py", ("--backend", "cpu_python_reference")),
+            ("examples/rtdl_ann_candidate_app.py", ("--backend", "cpu_python_reference", "--output-mode", "rerank_summary")),
+            ("examples/rtdl_barnes_hut_force_app.py", ("--backend", "cpu_python_reference", "--output-mode", "candidate_summary")),
+        )
+        for script, extra_args in cases:
+            with self.subTest(script=script):
+                payload = run_json(script, *extra_args)
+                self.assertEqual(payload["optix_performance"]["class"], "cuda_through_optix")
+                note = payload["optix_performance"]["note"].lower()
+                self.assertTrue("cuda" in note or "gpu compute" in note)
+
     def test_segment_polygon_anyhit_summary_modes_preserve_counts(self) -> None:
         rows_payload = run_json(
             "examples/rtdl_segment_polygon_anyhit_rows.py",

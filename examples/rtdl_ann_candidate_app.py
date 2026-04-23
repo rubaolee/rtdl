@@ -82,6 +82,11 @@ def _run_rows(backend: str, case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict
     raise ValueError(f"unsupported backend `{backend}`")
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("ann_candidate_search")
+    return {"class": support.performance_class, "note": support.note}
+
+
 def exact_knn_rows(
     query_points: tuple[rt.Point, ...],
     search_points: tuple[rt.Point, ...],
@@ -179,6 +184,7 @@ def run_app(
         "candidate_count": len(case["candidate_points"]),
         **_approximate_summary(approximate_rows),
         "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
+        "optix_performance": _optix_performance(),
         "boundary": "Bounded ANN candidate-search demo only; RTDL does not yet provide an ANN index, training phase, or recall/latency optimizer. rerank_summary measures only the RTDL candidate-subset KNN reranking slice; full quality evaluation still uses Python exact full-set comparison.",
     }
     if output_mode == "rerank_summary":

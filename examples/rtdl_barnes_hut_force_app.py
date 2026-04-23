@@ -146,6 +146,11 @@ def _run_node_candidates(backend: str, bodies: tuple[Body, ...], nodes: tuple[Qu
     raise ValueError(f"unsupported backend `{backend}`")
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("barnes_hut_force_app")
+    return {"class": support.performance_class, "note": support.note}
+
+
 def _force_from_mass(body: Body, mass: float, cx: float, cy: float) -> tuple[float, float]:
     dx = cx - body.x
     dy = cy - body.y
@@ -283,6 +288,7 @@ def run_app(
         **candidate_summary,
         "output_mode": output_mode,
         "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "optix_performance": _optix_performance(),
         "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
     }
     if output_mode == "candidate_summary":
