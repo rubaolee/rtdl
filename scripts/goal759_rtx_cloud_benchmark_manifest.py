@@ -179,6 +179,7 @@ def build_manifest() -> dict[str, Any]:
                     "1024",
                     "--iterations",
                     "10",
+                    "--skip-validation",
                     "--output-json",
                     "docs/reports/goal759_robot_pose_flags_phase_rtx.json",
                 ],
@@ -188,6 +189,7 @@ def build_manifest() -> dict[str, Any]:
                 preconditions=[
                     "OptiX ray/triangle any-hit prepared symbols must be exported.",
                     "Use the phase profiler rather than raw app CLI timing for final claim review.",
+                    "Cloud performance timing must use --skip-validation after Goal763 focused correctness passes.",
                 ],
             ),
         ],

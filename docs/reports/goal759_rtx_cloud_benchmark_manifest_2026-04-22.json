@@ -161,6 +161,7 @@
         "1024",
         "--iterations",
         "10",
+        "--skip-validation",
         "--output-json",
         "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
       ],
@@ -170,7 +171,8 @@
       "path_name": "prepared_pose_flags",
       "preconditions": [
         "OptiX ray/triangle any-hit prepared symbols must be exported.",
-        "Use the phase profiler rather than raw app CLI timing for final claim review."
+        "Use the phase profiler rather than raw app CLI timing for final claim review.",
+        "Cloud performance timing must use --skip-validation after Goal763 focused correctness passes."
       ],
       "readiness_blocker": "best OptiX traversal candidate, but RTX A5000 cloud timing has not been run after compact output/profiler polish",
       "readiness_next_goal": "Goal712",
