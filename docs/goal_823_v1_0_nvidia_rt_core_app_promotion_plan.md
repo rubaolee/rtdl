@@ -78,12 +78,18 @@ These apps have Embree/native-assisted paths but no OptiX/NVIDIA app surface.
    command plan.
 3. Goal825: tighten Tier-1 phase profiler contracts and ensure outputs are
    directly comparable across runs.
-4. Goal826: promote Tier-2 apps only if their Goal811 phase profiler is locally
-   complete and cloud-ready.
-5. Goal827: complete segment/polygon native OptiX strict-gate packaging without
-   promoting it to active cloud entries yet.
-6. Goal828+: design reports for graph, Hausdorff/ANN, Barnes-Hut, facility KNN,
-   and polygon overlap/Jaccard before implementation.
+4. Goal826: add Tier-2 service/hotspot phase-profiler contracts while keeping
+   those apps deferred until real RTX phase runs and review.
+5. Goal827: fail closed on incomplete post-cloud artifacts by requiring
+   `cloud_claim_contract` and all required phase keys before evidence can be
+   reviewed.
+6. Goal828: add deferred/filter controls to the one-shot pod runner so active
+   and selected deferred entries can run in one paid session.
+7. Goal829: publish the single-session cloud runbook with local preflight,
+   one batched command, artifact copy-back, shutdown rule, and claim boundary.
+8. Goal830+: return to segment/polygon strict packaging and the design reports
+   for graph, Hausdorff/ANN, Barnes-Hut, facility KNN, and polygon
+   overlap/Jaccard before implementation.
 
 ## Exit Criteria
 
@@ -92,4 +98,6 @@ These apps have Embree/native-assisted paths but no OptiX/NVIDIA app surface.
 - Deferred entries have explicit activation gates.
 - Excluded apps are explicit and documented.
 - One local command can prove "ready to start one cloud pod and run the batch."
+- The runbook `docs/rtx_cloud_single_session_runbook.md` is followed for paid
+  pod sessions; no per-app restart/stop loop is used.
 - No release or speedup claim is made before cloud evidence and review.

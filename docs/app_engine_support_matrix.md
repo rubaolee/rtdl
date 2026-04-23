@@ -181,6 +181,9 @@ outside the NVIDIA RT-core target rather than being forced into the OptiX table.
 Cloud policy: do not restart or stop a paid cloud pod per app. Finish local
 implementation, local correctness, docs, manifests, and review packets first;
 then run one batched cloud validation session for all eligible RT-core paths.
+Use `/Users/rl2025/rtdl_python_only/docs/rtx_cloud_single_session_runbook.md`
+for the actual paid-pod procedure: Goal824 local readiness first, one Goal769
+batched run, copy artifacts, then shut down.
 
 | Status | Meaning |
 | --- | --- |
