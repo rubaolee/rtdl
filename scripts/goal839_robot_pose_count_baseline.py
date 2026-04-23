@@ -46,6 +46,28 @@ def _summary_from_rows(rows: tuple[dict[str, object], ...], poses: tuple[dict[st
     }
 
 
+def _pose_indices_for_case(case: dict[str, Any]) -> tuple[int, ...]:
+    pose_order = [int(pose["pose_id"]) for pose in case["poses"]]
+    pose_index_by_id = {pose_id: index for index, pose_id in enumerate(pose_order)}
+    return tuple(
+        pose_index_by_id[int(case["ray_metadata"][int(ray.id)]["pose_id"])]
+        for ray in case["edge_rays"]
+    )
+
+
+def _summary_from_pose_flags(flags: tuple[bool, ...], poses: tuple[dict[str, object], ...]) -> dict[str, Any]:
+    colliding_pose_ids = [
+        int(poses[index]["pose_id"])
+        for index, flag in enumerate(flags)
+        if flag
+    ]
+    return {
+        "pose_count": len(poses),
+        "colliding_pose_count": len(colliding_pose_ids),
+        "colliding_pose_ids_sample": colliding_pose_ids[:10],
+    }
+
+
 def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) -> dict[str, Any]:
     row = load_goal835_row(
         app="robot_collision_screening",
@@ -53,14 +75,22 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) 
         baseline_name="cpu_oracle_pose_count",
     )
     case, input_sec = _time_call(lambda: robot_app.make_scaled_case(pose_count=pose_count, obstacle_count=obstacle_count))
+    pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
     rows_query_samples: list[float] = []
     postprocess_samples: list[float] = []
-    last_rows: tuple[dict[str, object], ...] = ()
+    last_flags: tuple[bool, ...] = ()
     last_summary: dict[str, Any] = {}
     for _ in range(iterations):
-        last_rows, query_sec = _time_call(lambda: rt.ray_triangle_any_hit_cpu(case["edge_rays"], case["obstacle_triangles"]))
+        last_flags, query_sec = _time_call(
+            lambda: rt.ray_triangle_pose_flags_cpu(
+                case["edge_rays"],
+                case["obstacle_triangles"],
+                pose_indices,
+                pose_count=len(case["poses"]),
+            )
+        )
         last_summary, post_sec = _time_call(
-            lambda: _summary_from_rows(last_rows, case["poses"], case["ray_metadata"])
+            lambda: _summary_from_pose_flags(last_flags, case["poses"])
         )
         rows_query_samples.append(query_sec)
         postprocess_samples.append(post_sec)
@@ -73,7 +103,7 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) 
         correctness_parity=True,
         phase_seconds={
             "pose_and_obstacle_generation": input_sec,
-            "ray_pack": 0.0,
+            "ray_pack": ray_pack_sec,
             "backend_scene_prepare": 0.0,
             "pose_index_prepare": 0.0,
             "native_anyhit_query": _stats(rows_query_samples)["median_sec"],
@@ -82,11 +112,11 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) 
         },
         summary=last_summary,
         notes=[
-            "CPU oracle uses direct ray_triangle_any_hit_cpu traversal and compact pose-count postprocess.",
+            "CPU oracle uses direct pose-flag aggregation during any-hit traversal and compact pose-count postprocess.",
             "No separate backend scene prepare or pose-index prepare phase exists on the CPU oracle path.",
         ],
         validation={
-            "method": "oracle path by construction",
+            "method": "oracle path by construction using exact CPU pose-flag traversal",
             "matches_reference": True,
         },
     )
@@ -100,9 +130,17 @@ def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int) -> d
         baseline_name="embree_anyhit_pose_count_or_equivalent_compact_summary",
     )
     case, input_sec = _time_call(lambda: robot_app.make_scaled_case(pose_count=pose_count, obstacle_count=obstacle_count))
-    oracle_rows, oracle_query_sec = _time_call(lambda: rt.ray_triangle_any_hit_cpu(case["edge_rays"], case["obstacle_triangles"]))
+    pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
+    oracle_flags, oracle_query_sec = _time_call(
+        lambda: rt.ray_triangle_pose_flags_cpu(
+            case["edge_rays"],
+            case["obstacle_triangles"],
+            pose_indices,
+            pose_count=len(case["poses"]),
+        )
+    )
     oracle_summary, oracle_post_sec = _time_call(
-        lambda: _summary_from_rows(oracle_rows, case["poses"], case["ray_metadata"])
+        lambda: _summary_from_pose_flags(oracle_flags, case["poses"])
     )
     prepared_kernel, prepare_sec = _time_call(lambda: rt.prepare_embree(robot_app.robot_edge_any_hit_kernel).bind(
         edge_rays=case["edge_rays"],
@@ -134,7 +172,7 @@ def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int) -> d
         correctness_parity=parity,
         phase_seconds={
             "pose_and_obstacle_generation": input_sec,
-            "ray_pack": 0.0,
+            "ray_pack": ray_pack_sec,
             "backend_scene_prepare": prepare_sec,
             "pose_index_prepare": 0.0,
             "native_anyhit_query": _stats(query_samples)["median_sec"],

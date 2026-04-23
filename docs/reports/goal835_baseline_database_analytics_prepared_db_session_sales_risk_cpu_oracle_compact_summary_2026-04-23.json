@@ -1,0 +1,131 @@
+{
+  "app": "database_analytics",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_oracle_compact_summary",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 10
+  },
+  "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+  "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "CPU oracle artifact validates prepared-session compact summary against the same backend one-shot compact summary.",
+    "Goal756 exposes section-level input construction, prepare, query/materialization, and Python summary postprocess timers.",
+    "The current public DB profiler does not split native query from copy-back/materialization, so both required phases are represented by the same aggregate query total.",
+    "This artifact is same-semantics baseline evidence only and does not authorize any public speedup claim."
+  ],
+  "path_name": "prepared_db_session_sales_risk",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "copyback_or_materialization": 1.9049472089391202,
+    "input_pack_or_table_build": 0.013288917019963264,
+    "native_query": 1.9049472089391202,
+    "python_summary_postprocess": 0.0017921250546351075
+  },
+  "phase_separated": true,
+  "repeated_runs": 10,
+  "required_phase_coverage": [
+    "input_pack_or_table_build",
+    "backend_prepare",
+    "native_query",
+    "copyback_or_materialization",
+    "python_summary_postprocess"
+  ],
+  "source_backend": "cpu",
+  "status": "ok",
+  "summary": {
+    "prepared_session_section": {
+      "app": "sales_risk_screening",
+      "backend": "cpu",
+      "copies": 20000,
+      "execution_mode": "prepared_session",
+      "native_db_phases": {},
+      "output_mode": "compact_summary",
+      "prepared_dataset": null,
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "run_phases": {
+        "python_summary_postprocess_sec": 0.0017921250546351075,
+        "query_conjunctive_scan_and_materialize_sec": 0.6290943749481812,
+        "query_grouped_count_and_materialize_sec": 0.6084468750050291,
+        "query_grouped_sum_and_materialize_sec": 0.6674059589859098
+      },
+      "session": {
+        "input_construction_sec": 0.013288917019963264,
+        "prepare_sec": 0.0
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    },
+    "scenario": "sales_risk"
+  },
+  "summary_sha256": "17a9ce4c9f781057699f8366ad5d1cd7aac3c4bcf39ebc53564fe3797b26437a",
+  "validation": {
+    "date": "2026-04-23",
+    "goal": "Goal840 local prepared DB baseline collector",
+    "reference_backend": "cpu_self_one_shot",
+    "reference_summary": {
+      "output_mode": "compact_summary",
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    },
+    "scenario": "sales_risk",
+    "target_backend": "cpu",
+    "target_summary": {
+      "output_mode": "compact_summary",
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    }
+  }
+}

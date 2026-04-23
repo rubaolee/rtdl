@@ -9,10 +9,10 @@
         "copies": 20000,
         "iterations": 10
       },
-      "collector_kind": "goal756_db_prepared_session_perf",
+      "collector_kind": "goal840_db_prepared_baseline",
       "command": [
         "python3",
-        "scripts/goal756_db_prepared_session_perf.py",
+        "scripts/goal840_db_prepared_baseline.py",
         "--backend",
         "cpu",
         "--scenario",
@@ -21,14 +21,11 @@
         "20000",
         "--iterations",
         "10",
-        "--output-mode",
-        "compact_summary",
-        "--strict",
         "--output-json",
-        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.raw.json"
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.json"
       ],
       "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
-      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
       "path_name": "prepared_db_session_sales_risk",
       "reason": "no local collector has been assigned for this baseline yet",
       "required_phases": [
@@ -49,10 +46,10 @@
         "copies": 20000,
         "iterations": 10
       },
-      "collector_kind": "goal756_db_prepared_session_perf",
+      "collector_kind": "goal840_db_prepared_baseline",
       "command": [
         "python3",
-        "scripts/goal756_db_prepared_session_perf.py",
+        "scripts/goal840_db_prepared_baseline.py",
         "--backend",
         "embree",
         "--scenario",
@@ -61,14 +58,11 @@
         "20000",
         "--iterations",
         "10",
-        "--output-mode",
-        "compact_summary",
-        "--strict",
         "--output-json",
-        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.raw.json"
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.json"
       ],
       "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
-      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
       "path_name": "prepared_db_session_sales_risk",
       "reason": "no local collector has been assigned for this baseline yet",
       "required_phases": [
@@ -111,10 +105,10 @@
         "copies": 20000,
         "iterations": 10
       },
-      "collector_kind": "goal756_db_prepared_session_perf",
+      "collector_kind": "goal840_db_prepared_baseline",
       "command": [
         "python3",
-        "scripts/goal756_db_prepared_session_perf.py",
+        "scripts/goal840_db_prepared_baseline.py",
         "--backend",
         "cpu",
         "--scenario",
@@ -123,14 +117,11 @@
         "20000",
         "--iterations",
         "10",
-        "--output-mode",
-        "compact_summary",
-        "--strict",
         "--output-json",
-        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.raw.json"
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json"
       ],
       "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
-      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
       "path_name": "prepared_db_session_regional_dashboard",
       "reason": "no local collector has been assigned for this baseline yet",
       "required_phases": [
@@ -151,10 +142,10 @@
         "copies": 20000,
         "iterations": 10
       },
-      "collector_kind": "goal756_db_prepared_session_perf",
+      "collector_kind": "goal840_db_prepared_baseline",
       "command": [
         "python3",
-        "scripts/goal756_db_prepared_session_perf.py",
+        "scripts/goal840_db_prepared_baseline.py",
         "--backend",
         "embree",
         "--scenario",
@@ -163,14 +154,11 @@
         "20000",
         "--iterations",
         "10",
-        "--output-mode",
-        "compact_summary",
-        "--strict",
         "--output-json",
-        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.raw.json"
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json"
       ],
       "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
-      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
       "path_name": "prepared_db_session_regional_dashboard",
       "reason": "no local collector has been assigned for this baseline yet",
       "required_phases": [

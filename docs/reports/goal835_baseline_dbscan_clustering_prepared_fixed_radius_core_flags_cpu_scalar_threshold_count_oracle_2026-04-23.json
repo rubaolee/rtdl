@@ -1,0 +1,47 @@
+{
+  "app": "dbscan_clustering",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_scalar_threshold_count_oracle",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 10
+  },
+  "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+  "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "CPU scalar oracle uses the app's exact tiled fixture evaluator for the public DBSCAN case.",
+    "No backend prepare phase exists for the CPU oracle path."
+  ],
+  "path_name": "prepared_fixed_radius_core_flags",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "native_threshold_query": 0.024831687042023987,
+    "point_pack": 0.06272966705728322,
+    "python_postprocess": 0.005453229008708149,
+    "scalar_copyback": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 10,
+  "required_phase_coverage": [
+    "point_pack",
+    "backend_prepare",
+    "native_threshold_query",
+    "scalar_copyback",
+    "python_postprocess"
+  ],
+  "source_backend": "cpu_oracle",
+  "status": "ok",
+  "summary": {
+    "core_count": 140000,
+    "point_count": 160000,
+    "threshold_reached_count": 140000
+  },
+  "summary_sha256": "b380c886c5d37fe2cf23e309faf3d83ee7110feb2f4fd92a2bb80243f2c1a3d3",
+  "validation": {
+    "copies": 20000,
+    "matches_reference": true,
+    "method": "compare expected_tiled_core_flag_rows compact summary against the app's exact tiled core-flag oracle"
+  }
+}

@@ -33,7 +33,7 @@ def _db_command(row: dict[str, Any], backend: str, baseline: str) -> list[str]:
     scenario = str(row["path_name"]).removeprefix("prepared_db_session_")
     return [
         "python3",
-        "scripts/goal756_db_prepared_session_perf.py",
+        "scripts/goal840_db_prepared_baseline.py",
         "--backend",
         backend,
         "--scenario",
@@ -42,11 +42,8 @@ def _db_command(row: dict[str, Any], backend: str, baseline: str) -> list[str]:
         str(scale.get("copies", 20000)),
         "--iterations",
         str(scale.get("iterations", 10)),
-        "--output-mode",
-        "compact_summary",
-        "--strict",
         "--output-json",
-        _raw_output_path(row, baseline),
+        _artifact_path(row, baseline),
     ]
 
 
@@ -110,18 +107,18 @@ def _row_actions(row: dict[str, Any]) -> list[dict[str, Any]]:
             action.update(
                 {
                     "status": "local_command_ready",
-                    "collector_kind": "goal756_db_prepared_session_perf",
+                    "collector_kind": "goal840_db_prepared_baseline",
                     "command": _db_command(row, "cpu", baseline_name),
-                    "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+                    "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
                 }
             )
         elif app == "database_analytics" and baseline_name == "embree_compact_summary":
             action.update(
                 {
                     "status": "local_command_ready",
-                    "collector_kind": "goal756_db_prepared_session_perf",
+                    "collector_kind": "goal840_db_prepared_baseline",
                     "command": _db_command(row, "embree", baseline_name),
-                    "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+                    "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
                 }
             )
         elif app == "database_analytics" and baseline_name == "postgresql_same_semantics_on_linux_when_available":

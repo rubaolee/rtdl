@@ -48,6 +48,8 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
         self.assertEqual(db["benchmark_scale"], {"copies": 20000, "iterations": 10})
         self.assertIn("--copies", db["command"])
         self.assertIn("20000", db["command"])
+        self.assertEqual(db["collector_kind"], "goal840_db_prepared_baseline")
+        self.assertEqual(db["command"][1], "scripts/goal840_db_prepared_baseline.py")
         self.assertTrue(db["artifact_path"].endswith("_cpu_oracle_compact_summary_2026-04-23.json"))
 
     def test_robot_actions_do_not_pretend_collector_exists_yet(self) -> None:

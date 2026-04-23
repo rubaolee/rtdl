@@ -192,6 +192,51 @@ def ray_triangle_any_hit_cpu(
     return tuple(results)
 
 
+def ray_triangle_pose_flags_cpu(
+    rays: tuple[Ray2D | Ray3D, ...],
+    triangles: tuple[Triangle | Triangle3D, ...],
+    pose_indices: tuple[int, ...],
+    *,
+    pose_count: int,
+) -> tuple[bool, ...]:
+    if pose_count < 0:
+        raise ValueError("pose_count must be non-negative")
+    if len(rays) != len(pose_indices):
+        raise ValueError("pose_indices length must match rays length")
+    flags = [False] * pose_count
+    if pose_count == 0 or not rays or not triangles:
+        return tuple(flags)
+    for ray, pose_index in zip(rays, pose_indices):
+        if pose_index < 0 or pose_index >= pose_count:
+            raise ValueError("pose_indices entries must be within [0, pose_count)")
+        if flags[pose_index]:
+            continue
+        for triangle in triangles:
+            if _finite_ray_hits_triangle(ray, triangle):
+                flags[pose_index] = True
+                break
+    return tuple(flags)
+
+
+def ray_triangle_pose_count_cpu(
+    rays: tuple[Ray2D | Ray3D, ...],
+    triangles: tuple[Triangle | Triangle3D, ...],
+    pose_indices: tuple[int, ...],
+    *,
+    pose_count: int,
+) -> int:
+    return sum(
+        1
+        for flag in ray_triangle_pose_flags_cpu(
+            rays,
+            triangles,
+            pose_indices,
+            pose_count=pose_count,
+        )
+        if flag
+    )
+
+
 def ray_triangle_closest_hit_cpu(
     rays: tuple[Ray2D | Ray3D, ...],
     triangles: tuple[Triangle | Triangle3D, ...],

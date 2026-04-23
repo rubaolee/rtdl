@@ -42,25 +42,25 @@ This is a local collection manifest only. It does not run heavy benchmarks, writ
 ### database_analytics / prepared_db_session_sales_risk / cpu_oracle_compact_summary
 
 ```bash
-python3 scripts/goal756_db_prepared_session_perf.py --backend cpu --scenario sales_risk --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.raw.json
+python3 scripts/goal840_db_prepared_baseline.py --backend cpu --scenario sales_risk --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.json
 ```
 
 ### database_analytics / prepared_db_session_sales_risk / embree_compact_summary
 
 ```bash
-python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.raw.json
+python3 scripts/goal840_db_prepared_baseline.py --backend embree --scenario sales_risk --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.json
 ```
 
 ### database_analytics / prepared_db_session_regional_dashboard / cpu_oracle_compact_summary
 
 ```bash
-python3 scripts/goal756_db_prepared_session_perf.py --backend cpu --scenario regional_dashboard --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.raw.json
+python3 scripts/goal840_db_prepared_baseline.py --backend cpu --scenario regional_dashboard --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json
 ```
 
 ### database_analytics / prepared_db_session_regional_dashboard / embree_compact_summary
 
 ```bash
-python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario regional_dashboard --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.raw.json
+python3 scripts/goal840_db_prepared_baseline.py --backend embree --scenario regional_dashboard --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json
 ```
 
 ### outlier_detection / prepared_fixed_radius_density_summary / cpu_scalar_threshold_count_oracle

@@ -55,6 +55,26 @@ class Goal632RayTriangleAnyHitTest(unittest.TestCase):
             any_hit_rows,
         )
 
+    def test_pose_flags_and_pose_count_cpu_aggregate_any_hit_without_rows(self) -> None:
+        rays = (
+            rt.Ray2D(id=1, ox=0.0, oy=0.0, dx=1.0, dy=0.0, tmax=10.0),
+            rt.Ray2D(id=2, ox=0.0, oy=0.0, dx=1.0, dy=0.0, tmax=10.0),
+            rt.Ray2D(id=3, ox=0.0, oy=0.0, dx=0.0, dy=1.0, tmax=2.0),
+        )
+        triangles = (
+            rt.Triangle(id=10, x0=2.0, y0=-1.0, x1=3.0, y1=1.0, x2=4.0, y2=-1.0),
+        )
+        pose_indices = (0, 0, 1)
+
+        self.assertEqual(
+            rt.ray_triangle_pose_flags_cpu(rays, triangles, pose_indices, pose_count=2),
+            (True, False),
+        )
+        self.assertEqual(
+            rt.ray_triangle_pose_count_cpu(rays, triangles, pose_indices, pose_count=2),
+            1,
+        )
+
     def test_run_cpu_python_reference_and_run_cpu_match(self) -> None:
         inputs = {
             "rays": (

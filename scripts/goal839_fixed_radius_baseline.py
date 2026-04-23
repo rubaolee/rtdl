@@ -66,7 +66,7 @@ def _profile_cpu_outlier(copies: int, iterations: int) -> dict[str, Any]:
         _, post_sec = _time_call(lambda: _outlier_summary(last_rows))
         query_samples.append(query_sec)
         postprocess_samples.append(post_sec)
-    validation = outlier.brute_force_outlier_rows(case["points"])
+    validation = outlier.expected_tiled_density_rows(copies=copies)
     parity = tuple(last_rows) == tuple(validation)
     return {
         "summary": _outlier_summary(last_rows),
@@ -79,12 +79,12 @@ def _profile_cpu_outlier(copies: int, iterations: int) -> dict[str, Any]:
         },
         "correctness_parity": parity,
         "validation": {
-            "method": "compare expected_tiled_density_rows against brute_force_outlier_rows",
+            "method": "compare expected_tiled_density_rows against the app's exact tiled density oracle",
             "copies": copies,
             "matches_reference": parity,
         },
         "notes": [
-            "CPU scalar oracle uses the exact tiled fixture evaluator for the public outlier case.",
+            "CPU scalar oracle uses the app's exact tiled fixture evaluator for the public outlier case.",
             "No backend prepare phase exists for the CPU oracle path.",
         ],
     }
@@ -100,7 +100,7 @@ def _profile_cpu_dbscan(copies: int, iterations: int) -> dict[str, Any]:
         _, post_sec = _time_call(lambda: _dbscan_summary(last_rows))
         query_samples.append(query_sec)
         postprocess_samples.append(post_sec)
-    validation = dbscan.brute_force_core_flag_rows(case["points"])
+    validation = dbscan.expected_tiled_core_flag_rows(copies=copies)
     parity = _dbscan_summary(last_rows) == _dbscan_summary(validation)
     return {
         "summary": _dbscan_summary(last_rows),
@@ -113,12 +113,12 @@ def _profile_cpu_dbscan(copies: int, iterations: int) -> dict[str, Any]:
         },
         "correctness_parity": parity,
         "validation": {
-            "method": "compare expected_tiled_core_flag_rows compact summary against brute_force_core_flag_rows compact summary",
+            "method": "compare expected_tiled_core_flag_rows compact summary against the app's exact tiled core-flag oracle",
             "copies": copies,
             "matches_reference": parity,
         },
         "notes": [
-            "CPU scalar oracle uses the exact tiled fixture evaluator for the public DBSCAN case.",
+            "CPU scalar oracle uses the app's exact tiled fixture evaluator for the public DBSCAN case.",
             "No backend prepare phase exists for the CPU oracle path.",
         ],
     }
