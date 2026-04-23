@@ -74,14 +74,23 @@ def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
         if only is None or entry["path_name"] in only or entry["app"] in only
     ]
     command_results = []
+    command_cache: dict[tuple[str, ...], dict[str, Any]] = {}
     for entry in entries:
+        command_key = tuple(str(part) for part in entry["command"])
+        if command_key in command_cache:
+            result = dict(command_cache[command_key])
+            result["execution_mode"] = "reused_command_result"
+        else:
+            result = _run_command(list(entry["command"]), dry_run=dry_run)
+            result["execution_mode"] = "executed"
+            command_cache[command_key] = dict(result)
         command_results.append(
             {
                 "app": entry["app"],
                 "path_name": entry["path_name"],
                 "claim_scope": entry["claim_scope"],
                 "non_claim": entry["non_claim"],
-                "result": _run_command(list(entry["command"]), dry_run=dry_run),
+                "result": result,
             }
         )
     failed = [item for item in command_results if item["result"]["status"] == "failed"]
@@ -97,6 +106,7 @@ def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
         "manifest_boundary": manifest["boundary"],
         "global_preconditions": manifest["global_preconditions"],
         "entry_count": len(entries),
+        "unique_command_count": len(command_cache),
         "results": command_results,
         "status": "ok" if not failed else "failed",
         "failed_count": len(failed),
