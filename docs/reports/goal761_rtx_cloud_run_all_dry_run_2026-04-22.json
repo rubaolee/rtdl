@@ -1,0 +1,159 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": true,
+  "entry_count": 5,
+  "failed_count": 0,
+  "git_head": "be444ffead8b5c60c57a8a11bbed2508cb0b61bd",
+  "git_status_short": "M docs/reports/goal759_rtx_cloud_benchmark_manifest_2026-04-22.json\n M scripts/goal756_db_prepared_session_perf.py\n M scripts/goal757_optix_fixed_radius_prepared_perf.py\n M scripts/goal759_rtx_cloud_benchmark_manifest.py\n M tests/goal756_db_prepared_session_perf_test.py\n M tests/goal759_rtx_cloud_benchmark_manifest_test.py\n?? scripts/goal761_rtx_cloud_run_all.py\n?? tests/goal761_rtx_cloud_run_all_test.py",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "probe failed: [Errno 2] No such file or directory: 'nvidia-smi'",
+  "python_version": "Python 3.14.0",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "results": [
+    {
+      "app": "database_analytics",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_sales_risk_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-22T12:02:43-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "database_analytics",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "regional_dashboard",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_regional_dashboard_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-22T12:02:43-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "outlier_detection",
+      "claim_scope": "prepared fixed-radius threshold summary traversal only",
+      "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-22T12:02:43-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "claim_scope": "prepared fixed-radius core-flag traversal only",
+      "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-22T12:02:43-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "robot_collision_screening",
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "path_name": "prepared_pose_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+          "--mode",
+          "optix",
+          "--pose-count",
+          "200000",
+          "--obstacle-count",
+          "1024",
+          "--iterations",
+          "10",
+          "--output-json",
+          "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-22T12:02:43-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-22T12:02:43-0400"
+}

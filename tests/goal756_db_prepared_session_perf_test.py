@@ -43,6 +43,8 @@ class Goal756DbPreparedSessionPerfTest(unittest.TestCase):
         self.assertEqual(result["status"], "ok")
         self.assertIn("one_shot_total_sec", result)
         self.assertIn("prepared_session_warm_query_sec", result)
+        self.assertIn("phase_contract", result)
+        self.assertIn("reported_prepare_phases_sec", result)
         self.assertEqual(result["prepared_session_output"]["execution_mode"], "prepared_session")
         self.assertIn("GTX 1070", payload["boundary"])
 

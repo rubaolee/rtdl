@@ -1,0 +1,64 @@
+{
+  "boundary": "This report checks cloud artifacts and summarizes phase metrics. It does not authorize RTX speedup claims; claims require human/AI review of correctness, phase separation, hardware metadata, and comparison baselines.",
+  "dry_run": true,
+  "entry_count": 5,
+  "failure_count": 0,
+  "git_head": "be444ffead8b5c60c57a8a11bbed2508cb0b61bd",
+  "nvidia_smi": "probe failed: [Errno 2] No such file or directory: 'nvidia-smi'",
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_db_sales_risk_rtx.json",
+      "artifact_status": "dry_run_not_expected",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "runner_returncode": 0,
+      "runner_status": "dry_run"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_db_regional_dashboard_rtx.json",
+      "artifact_status": "dry_run_not_expected",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "runner_returncode": 0,
+      "runner_status": "dry_run"
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+      "artifact_status": "dry_run_not_expected",
+      "claim_scope": "prepared fixed-radius threshold summary traversal only",
+      "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "runner_returncode": 0,
+      "runner_status": "dry_run"
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+      "artifact_status": "dry_run_not_expected",
+      "claim_scope": "prepared fixed-radius core-flag traversal only",
+      "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "runner_returncode": 0,
+      "runner_status": "dry_run"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_robot_pose_flags_phase_rtx.json",
+      "artifact_status": "dry_run_not_expected",
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "path_name": "prepared_pose_flags",
+      "runner_returncode": 0,
+      "runner_status": "dry_run"
+    }
+  ],
+  "runner_status": "ok",
+  "status": "ok",
+  "suite": "goal762_rtx_cloud_artifact_report",
+  "summary_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal761_rtx_cloud_run_all_dry_run_2026-04-22.json"
+}

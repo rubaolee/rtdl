@@ -90,6 +90,7 @@
         "20000",
         "--iterations",
         "10",
+        "--skip-validation",
         "--output-json",
         "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
       ],
@@ -122,6 +123,7 @@
         "20000",
         "--iterations",
         "10",
+        "--skip-validation",
         "--output-json",
         "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
       ],
