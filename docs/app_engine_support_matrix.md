@@ -95,7 +95,7 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | `examples/rtdl_polygon_set_jaccard.py` | `not_optix_exposed` | Public script is CPU-reference only today. |
 | `examples/rtdl_hausdorff_distance_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
 | `examples/rtdl_ann_candidate_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; recall metrics remain app/Python work. |
-| `examples/rtdl_outlier_detection_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_count_threshold_prepared` summary uses prepared OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending. |
+| `examples/rtdl_outlier_detection_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_count_threshold_prepared` summary uses prepared OptiX traversal to avoid neighbor-row materialization, with RTX 4090 phase evidence preserved in Goals 793 and 795. |
 | `examples/rtdl_dbscan_clustering_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_core_flags_prepared` summary uses prepared OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path. |
 | `examples/rtdl_robot_collision_screening_app.py` | `optix_traversal` | Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate. Pre-Goal748 OptiX robot evidence is superseded because a short-ray `optixReportIntersection` bug was fixed; use Goal748 post-fix parity/timing for current OptiX robot discussion. Compact app output avoids returning full witness rows when only pose flags or hit counts are needed; OptiX now has prepared scalar hit-count and prepared native pose-flag summary modes, while edge witnesses still require row mode. |
 | `examples/rtdl_barnes_hut_force_app.py` | `cuda_through_optix` | Candidate generation uses KNN/radius-style GPU compute; Python tree/opening-rule/force reduction dominates the end-to-end app. |
@@ -154,14 +154,14 @@ materialization, validation, and post-processing.
 | `examples/rtdl_polygon_set_jaccard.py` | `exclude_from_rtx_app_benchmark` | none | CPU correctness app only |
 | `examples/rtdl_hausdorff_distance_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | GPU-compute comparison only; no RT-core acceleration claim |
 | `examples/rtdl_ann_candidate_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | GPU-compute comparison only; no RT-core acceleration claim |
-| `examples/rtdl_outlier_detection_app.py` | `needs_phase_contract` | Goal710 | candidate fixed-radius summary speedup claim only after phase-clean RTX rerun and review |
-| `examples/rtdl_dbscan_clustering_app.py` | `needs_postprocess_split` | Goal711 | core-flag summary claim only; no full DBSCAN acceleration claim yet |
-| `examples/rtdl_robot_collision_screening_app.py` | `needs_phase_contract` | Goal712 | flagship candidate; no final app speedup claim until RTX rerun |
+| `examples/rtdl_outlier_detection_app.py` | `ready_for_rtx_claim_review` | Goal795 | prepared fixed-radius scalar threshold-count sub-path may enter claim review; no broad outlier-app speedup claim |
+| `examples/rtdl_dbscan_clustering_app.py` | `ready_for_rtx_claim_review` | Goal795 | prepared fixed-radius core-threshold summary may enter claim review; no full DBSCAN clustering acceleration claim |
+| `examples/rtdl_robot_collision_screening_app.py` | `ready_for_rtx_claim_review` | Goal795 | prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim |
 | `examples/rtdl_barnes_hut_force_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | no RT-core Barnes-Hut claim today |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `exclude_from_rtx_app_benchmark` | none | HIPRT validation only, not NVIDIA OptiX |
 
-Cloud benchmark policy after Goal705: do not rent or keep a paid RTX instance
-for broad app benchmarking until Goal706 through Goal712 either close or
-explicitly exclude their app from RTX RT-core claims. The only acceptable early
-cloud reruns are narrow confirmation runs for a single app whose phase contract
-has already been fixed locally.
+Cloud benchmark policy after Goal795: do not rent or keep a paid RTX instance
+for broad app benchmarking until the next local optimization batch is ready.
+The preserved RTX 4090 evidence is enough for claim-review discussion of the
+three prepared scalar sub-paths above, but not enough for broad whole-app
+speedup claims.

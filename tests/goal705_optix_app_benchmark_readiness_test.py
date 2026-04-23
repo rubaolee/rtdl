@@ -18,24 +18,34 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
                 self.assertTrue(support.blocker.strip())
                 self.assertTrue(support.allowed_claim.strip())
 
-    def test_no_app_is_prematurely_marked_ready_for_rtx_claim_review(self):
+    def test_only_goal795_prepared_scalar_paths_enter_rtx_claim_review(self):
         readiness = rt.optix_app_benchmark_readiness_matrix()
         ready = [
             app
             for app, support in readiness.items()
             if support.status == "ready_for_rtx_claim_review"
         ]
-        self.assertEqual(ready, [])
+        self.assertEqual(
+            ready,
+            [
+                "outlier_detection",
+                "dbscan_clustering",
+                "robot_collision_screening",
+            ],
+        )
 
-    def test_closest_candidates_are_still_gated_by_phase_or_postprocess_contracts(self):
+    def test_goal795_prepared_scalar_candidates_are_bounded_ready(self):
         expected = {
-            "robot_collision_screening": "needs_phase_contract",
-            "outlier_detection": "needs_phase_contract",
-            "dbscan_clustering": "needs_postprocess_split",
+            "robot_collision_screening": "prepared ray/triangle any-hit scalar pose-count sub-path",
+            "outlier_detection": "prepared fixed-radius scalar threshold-count sub-path",
+            "dbscan_clustering": "prepared fixed-radius core-threshold summary",
         }
-        for app, status in expected.items():
+        for app, claim_phrase in expected.items():
             with self.subTest(app=app):
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, status)
+                support = rt.optix_app_benchmark_readiness(app)
+                self.assertEqual(support.status, "ready_for_rtx_claim_review")
+                self.assertIn(claim_phrase, support.allowed_claim)
+                self.assertIn("Goal795", support.next_goal)
 
     def test_high_risk_or_non_optix_apps_are_not_benchmark_candidates(self):
         expected = {
@@ -115,6 +125,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "needs_native_kernel_tuning",
             "needs_postprocess_split",
             "exclude_from_rtx_app_benchmark",
+            "ready_for_rtx_claim_review",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
