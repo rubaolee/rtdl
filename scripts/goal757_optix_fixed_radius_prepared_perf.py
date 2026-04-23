@@ -53,6 +53,7 @@ def _compact(payload: dict[str, Any]) -> dict[str, Any]:
 
 def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> dict[str, Any]:
     case = outlier_app.make_outlier_case(copies=copies)
+    packed_points, pack_points_sec = _time_call(lambda: rt.pack_points(records=case["points"], dimension=2))
     one_shot_output, one_shot_sec = _time_call(
         lambda: outlier_app.run_app(
             "optix",
@@ -62,7 +63,7 @@ def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> 
         )
     )
     prepared_obj, prepare_sec = _time_call(
-        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=outlier_app.RADIUS)
+        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_points, max_radius=outlier_app.RADIUS)
     )
     native_samples: list[float] = []
     postprocess_samples: list[float] = []
@@ -72,7 +73,7 @@ def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> 
         for _ in range(iterations):
             count_rows, elapsed = _time_call(
                 lambda: prepared_obj.run(
-                    case["points"],
+                    packed_points,
                     radius=outlier_app.RADIUS,
                     threshold=outlier_app.MIN_NEIGHBORS_INCLUDING_SELF,
                 )
@@ -108,6 +109,7 @@ def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> 
         "copies": copies,
         "point_count": len(case["points"]),
         "one_shot_total_sec": one_shot_sec,
+        "prepared_optix_pack_points_sec": pack_points_sec,
         "prepared_optix_prepare_sec": prepare_sec,
         "prepared_optix_warm_query_sec": _stats(native_samples),
         "prepared_optix_postprocess_sec": _stats(postprocess_samples),
@@ -127,6 +129,7 @@ def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> 
 
 def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> dict[str, Any]:
     case = dbscan_app.make_dbscan_case(copies=copies)
+    packed_points, pack_points_sec = _time_call(lambda: rt.pack_points(records=case["points"], dimension=2))
     one_shot_output, one_shot_sec = _time_call(
         lambda: dbscan_app.run_app(
             "optix",
@@ -136,7 +139,7 @@ def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> d
         )
     )
     prepared_obj, prepare_sec = _time_call(
-        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=dbscan_app.EPSILON)
+        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_points, max_radius=dbscan_app.EPSILON)
     )
     native_samples: list[float] = []
     postprocess_samples: list[float] = []
@@ -146,7 +149,7 @@ def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> d
         for _ in range(iterations):
             count_rows, elapsed = _time_call(
                 lambda: prepared_obj.run(
-                    case["points"],
+                    packed_points,
                     radius=dbscan_app.EPSILON,
                     threshold=dbscan_app.MIN_POINTS,
                 )
@@ -180,6 +183,7 @@ def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> d
         "copies": copies,
         "point_count": len(case["points"]),
         "one_shot_total_sec": one_shot_sec,
+        "prepared_optix_pack_points_sec": pack_points_sec,
         "prepared_optix_prepare_sec": prepare_sec,
         "prepared_optix_warm_query_sec": _stats(native_samples),
         "prepared_optix_postprocess_sec": _stats(postprocess_samples),

@@ -65,6 +65,7 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         return {
             "artifact_status": "ok",
             "one_shot_total_sec": result.get("one_shot_total_sec"),
+            "pack_points_sec": result.get("prepared_optix_pack_points_sec"),
             "prepare_sec": result.get("prepared_optix_prepare_sec"),
             "warm_query_median_sec": _median(result.get("prepared_optix_warm_query_sec")),
             "postprocess_median_sec": _median(result.get("prepared_optix_postprocess_sec")),
@@ -181,11 +182,12 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Artifact Table",
         "",
-        "| App | Path | Runner | Artifact | Warm query median (s) | Postprocess median (s) | Validation / oracle (s) | Non-claim |",
-        "|---|---|---:|---:|---:|---:|---:|---|",
+        "| App | Path | Runner | Artifact | Input/prep pack (s) | Warm query median (s) | Postprocess median (s) | Validation / oracle (s) | Non-claim |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in payload["rows"]:
         validation = row.get("validation_median_sec", row.get("oracle_validate_sec"))
+        input_pack = row.get("pack_points_sec", row.get("prepare_pose_indices_sec"))
         lines.append(
             "| "
             + " | ".join(
@@ -194,6 +196,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
                     _fmt(row.get("path_name")),
                     _fmt(row.get("runner_status")),
                     _fmt(row.get("artifact_status")),
+                    _fmt(input_pack),
                     _fmt(row.get("warm_query_median_sec")),
                     _fmt(row.get("postprocess_median_sec")),
                     _fmt(validation),
