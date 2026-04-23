@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -18,6 +20,22 @@ from rtdsl.baseline_runner import load_representative_case
 def _optix_performance() -> dict[str, str]:
     support = rt.optix_app_performance_support("segment_polygon_anyhit_rows")
     return {"class": support.performance_class, "note": support.note}
+
+
+@contextmanager
+def _temporary_optix_segpoly_mode(optix_mode: str):
+    previous = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
+    if optix_mode == "native":
+        os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = "native"
+    elif optix_mode == "host_indexed":
+        os.environ.pop("RTDL_OPTIX_SEGPOLY_MODE", None)
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("RTDL_OPTIX_SEGPOLY_MODE", None)
+        else:
+            os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = previous
 
 
 def _summarize_rows(rows: tuple[dict[str, object], ...], segments: tuple[object, ...]) -> dict[str, object]:
@@ -43,7 +61,7 @@ def _summarize_rows(rows: tuple[dict[str, object], ...], segments: tuple[object,
     }
 
 
-def _run_anyhit_rows(backend: str, case) -> tuple[dict[str, object], ...]:
+def _run_anyhit_rows(backend: str, case, *, optix_mode: str) -> tuple[dict[str, object], ...]:
     if backend == "cpu_python_reference":
         return rt.run_cpu_python_reference(segment_polygon_anyhit_rows_reference, **case.inputs)
     if backend == "cpu":
@@ -51,13 +69,16 @@ def _run_anyhit_rows(backend: str, case) -> tuple[dict[str, object], ...]:
     if backend == "embree":
         return rt.run_embree(segment_polygon_anyhit_rows_reference, **case.inputs)
     if backend == "optix":
-        return rt.run_optix(segment_polygon_anyhit_rows_reference, **case.inputs)
+        if optix_mode == "native":
+            raise ValueError("optix_mode 'native' is only valid for compact segment_flags or segment_counts output")
+        with _temporary_optix_segpoly_mode(optix_mode):
+            return rt.run_optix(segment_polygon_anyhit_rows_reference, **case.inputs)
     if backend == "vulkan":
         return rt.run_vulkan(segment_polygon_anyhit_rows_reference, **case.inputs)
     raise ValueError(f"unsupported backend `{backend}`")
 
 
-def _run_hitcount_rows(backend: str, case) -> tuple[dict[str, object], ...]:
+def _run_hitcount_rows(backend: str, case, *, optix_mode: str) -> tuple[dict[str, object], ...]:
     if backend == "cpu_python_reference":
         return rt.run_cpu_python_reference(segment_polygon_hitcount_reference, **case.inputs)
     if backend == "cpu":
@@ -65,7 +86,8 @@ def _run_hitcount_rows(backend: str, case) -> tuple[dict[str, object], ...]:
     if backend == "embree":
         return rt.run_embree(segment_polygon_hitcount_reference, **case.inputs)
     if backend == "optix":
-        return rt.run_optix(segment_polygon_hitcount_reference, **case.inputs)
+        with _temporary_optix_segpoly_mode(optix_mode):
+            return rt.run_optix(segment_polygon_hitcount_reference, **case.inputs)
     if backend == "vulkan":
         return rt.run_vulkan(segment_polygon_hitcount_reference, **case.inputs)
     raise ValueError(f"unsupported backend `{backend}`")
@@ -88,17 +110,24 @@ def _summarize_hitcount_rows(rows: tuple[dict[str, object], ...]) -> dict[str, o
     }
 
 
-def run_case(backend: str, dataset: str, output_mode: str = "rows") -> dict[str, object]:
+def run_case(
+    backend: str,
+    dataset: str,
+    output_mode: str = "rows",
+    optix_mode: str = "auto",
+) -> dict[str, object]:
     if output_mode not in {"rows", "segment_flags", "segment_counts"}:
         raise ValueError("output_mode must be 'rows', 'segment_flags', or 'segment_counts'")
+    if optix_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
     case = load_representative_case("segment_polygon_anyhit_rows", dataset)
     if output_mode == "rows":
-        rows = _run_anyhit_rows(backend, case)
+        rows = _run_anyhit_rows(backend, case, optix_mode=optix_mode)
         summary = _summarize_rows(rows, case.inputs["segments"])
         row_count = len(rows)
         summary_source = "segment_polygon_anyhit_rows"
     else:
-        rows = _run_hitcount_rows(backend, case)
+        rows = _run_hitcount_rows(backend, case, optix_mode=optix_mode)
         summary = _summarize_hitcount_rows(rows)
         row_count = len(rows)
         summary_source = "segment_polygon_hitcount"
@@ -107,6 +136,7 @@ def run_case(backend: str, dataset: str, output_mode: str = "rows") -> dict[str,
         "backend": backend,
         "dataset": dataset,
         "output_mode": output_mode,
+        "optix_mode": optix_mode if backend == "optix" else "not_applicable",
         "row_count": row_count,
         "summary_source": summary_source,
         "optix_performance": _optix_performance(),
@@ -154,13 +184,19 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="Use segment_flags or segment_counts to avoid emitting full segment/polygon pair rows.",
     )
+    parser.add_argument(
+        "--optix-mode",
+        choices=("auto", "host_indexed", "native"),
+        default="auto",
+        help="OptiX only: compact output modes may request the experimental native segment/polygon hit-count mode.",
+    )
     args = parser.parse_args(argv)
     dataset = (
         rt.segment_polygon_large_dataset_name(copies=args.copies)
         if args.copies is not None
         else args.dataset
     )
-    print(json.dumps(run_case(args.backend, dataset, args.output_mode), indent=2, sort_keys=True))
+    print(json.dumps(run_case(args.backend, dataset, args.output_mode, args.optix_mode), indent=2, sort_keys=True))
     return 0
 
 

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -65,9 +67,33 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
-def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+@contextmanager
+def _temporary_optix_segpoly_mode(optix_mode: str):
+    previous = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
+    if optix_mode == "native":
+        os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = "native"
+    elif optix_mode == "host_indexed":
+        os.environ.pop("RTDL_OPTIX_SEGPOLY_MODE", None)
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("RTDL_OPTIX_SEGPOLY_MODE", None)
+        else:
+            os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = previous
+
+
+def run_case(
+    backend: str,
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    optix_mode: str = "auto",
+) -> dict[str, object]:
     if output_mode not in {"rows", "priority_segments", "summary"}:
         raise ValueError("output_mode must be 'rows', 'priority_segments', or 'summary'")
+    if optix_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
     case = make_demo_case(copies=copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
@@ -76,7 +102,8 @@ def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dic
     elif backend == "embree":
         rows = rt.run_embree(road_hazard_hitcount, **case)
     elif backend == "optix":
-        rows = rt.run_optix(road_hazard_hitcount, **case)
+        with _temporary_optix_segpoly_mode(optix_mode):
+            rows = rt.run_optix(road_hazard_hitcount, **case)
     elif backend == "vulkan":
         rows = rt.run_vulkan(road_hazard_hitcount, **case)
     else:
@@ -87,6 +114,7 @@ def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dic
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
+        "optix_mode": optix_mode if backend == "optix" else "not_applicable",
         "row_count": len(rows),
         "priority_segments": hot_segments,
         "priority_segment_count": len(hot_segments),
@@ -120,8 +148,25 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="Use compact modes to omit full per-road rows from the JSON payload.",
     )
+    parser.add_argument(
+        "--optix-mode",
+        choices=("auto", "host_indexed", "native"),
+        default="auto",
+        help="OptiX only: preserve current default, force host-indexed fallback, or request experimental native segment/polygon hit-count mode.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                optix_mode=args.optix_mode,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
