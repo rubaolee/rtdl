@@ -50,11 +50,15 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("prepared fixed-radius threshold summary", by_app["outlier_detection"]["claim_scope"])
         self.assertIn("whole-app RTX speedup", by_app["outlier_detection"]["non_claim"])
         self.assertIn("--skip-validation", by_app["outlier_detection"]["command"])
+        self.assertIn("--result-mode", by_app["outlier_detection"]["command"])
+        self.assertIn("threshold_count", by_app["outlier_detection"]["command"])
 
         self.assertEqual(by_app["dbscan_clustering"]["optix_performance_class"], "optix_traversal_prepared_summary")
         self.assertIn("prepared fixed-radius core-flag", by_app["dbscan_clustering"]["claim_scope"])
         self.assertIn("not a full DBSCAN", by_app["dbscan_clustering"]["non_claim"])
         self.assertIn("--skip-validation", by_app["dbscan_clustering"]["command"])
+        self.assertIn("--result-mode", by_app["dbscan_clustering"]["command"])
+        self.assertIn("threshold_count", by_app["dbscan_clustering"]["command"])
 
     def test_excluded_cuda_through_optix_apps_do_not_enter_manifest_entries(self):
         payload = __import__(

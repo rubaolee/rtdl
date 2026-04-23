@@ -467,6 +467,21 @@ extern "C" int rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        size_t threshold,
+        size_t* threshold_reached_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        count_prepared_fixed_radius_threshold_reached_2d_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared),
+            query_points, query_count, radius, threshold, threshold_reached_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared);

@@ -127,6 +127,72 @@ def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> 
     }
 
 
+def _profile_outlier_threshold_count(copies: int, iterations: int, *, skip_validation: bool) -> dict[str, Any]:
+    case = outlier_app.make_outlier_case(copies=copies)
+    packed_points, pack_points_sec = _time_call(lambda: rt.pack_points(records=case["points"], dimension=2))
+    prepared_obj, prepare_sec = _time_call(
+        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_points, max_radius=outlier_app.RADIUS)
+    )
+    native_samples: list[float] = []
+    validation_samples: list[float] = []
+    last_output: dict[str, Any] | None = None
+    point_count = len(case["points"])
+    try:
+        for _ in range(iterations):
+            threshold_reached_count, elapsed = _time_call(
+                lambda: prepared_obj.count_threshold_reached(
+                    packed_points,
+                    radius=outlier_app.RADIUS,
+                    threshold=outlier_app.MIN_NEIGHBORS_INCLUDING_SELF,
+                )
+            )
+            native_samples.append(elapsed)
+            outlier_count = point_count - int(threshold_reached_count)
+            oracle_outlier_count: int | None = None
+            validation_sec = 0.0
+            if not skip_validation:
+                oracle_rows, validation_sec = _time_call(
+                    lambda: outlier_app.expected_tiled_density_rows(copies=copies)
+                )
+                oracle_outlier_count = sum(1 for row in oracle_rows if bool(row["is_outlier"]))
+                validation_samples.append(validation_sec)
+            last_output = {
+                "matches_oracle": True if skip_validation else outlier_count == oracle_outlier_count,
+                "point_count": point_count,
+                "threshold_reached_count": int(threshold_reached_count),
+                "outlier_count": outlier_count,
+                "oracle_outlier_count": oracle_outlier_count,
+            }
+    finally:
+        _, close_sec = _time_call(prepared_obj.close)
+
+    median = statistics.median(native_samples)
+    return {
+        "app": "outlier_detection",
+        "copies": copies,
+        "point_count": point_count,
+        "one_shot_total_sec": None,
+        "prepared_optix_pack_points_sec": pack_points_sec,
+        "prepared_optix_prepare_sec": prepare_sec,
+        "prepared_optix_warm_query_sec": _stats(native_samples),
+        "prepared_optix_postprocess_sec": _stats([]),
+        "prepared_optix_validation_sec": _stats(validation_samples),
+        "prepared_optix_close_sec": close_sec,
+        "speedup_one_shot_over_warm_query_median": 0.0 if median <= 0.0 else None,
+        "phase_contract": {
+            "native_warm_query": (
+                "prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, "
+                "and scalar count copy-back"
+            ),
+            "postprocess": "none in scalar-summary mode",
+            "validation": "oracle construction/comparison timing; omitted when skip_validation=true",
+        },
+        "validation_mode": "skipped" if skip_validation else "per_iteration_expected_fixture",
+        "result_mode": "threshold_count",
+        "prepared_output": _compact(last_output or {}),
+    }
+
+
 def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> dict[str, Any]:
     case = dbscan_app.make_dbscan_case(copies=copies)
     packed_points, pack_points_sec = _time_call(lambda: rt.pack_points(records=case["points"], dimension=2))
@@ -202,19 +268,93 @@ def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> d
     }
 
 
-def run_suite(*, copies: int, iterations: int, skip_validation: bool = False) -> dict[str, Any]:
+def _profile_dbscan_threshold_count(copies: int, iterations: int, *, skip_validation: bool) -> dict[str, Any]:
+    case = dbscan_app.make_dbscan_case(copies=copies)
+    packed_points, pack_points_sec = _time_call(lambda: rt.pack_points(records=case["points"], dimension=2))
+    prepared_obj, prepare_sec = _time_call(
+        lambda: rt.prepare_optix_fixed_radius_count_threshold_2d(packed_points, max_radius=dbscan_app.EPSILON)
+    )
+    native_samples: list[float] = []
+    validation_samples: list[float] = []
+    last_output: dict[str, Any] | None = None
+    point_count = len(case["points"])
+    try:
+        for _ in range(iterations):
+            core_count, elapsed = _time_call(
+                lambda: prepared_obj.count_threshold_reached(
+                    packed_points,
+                    radius=dbscan_app.EPSILON,
+                    threshold=dbscan_app.MIN_POINTS,
+                )
+            )
+            native_samples.append(elapsed)
+            oracle_core_count: int | None = None
+            validation_sec = 0.0
+            if not skip_validation:
+                oracle_rows, validation_sec = _time_call(lambda: dbscan_app.expected_tiled_core_flag_rows(copies=copies))
+                oracle_core_count = sum(1 for row in oracle_rows if bool(row["is_core"]))
+                validation_samples.append(validation_sec)
+            last_output = {
+                "matches_oracle": True if skip_validation else int(core_count) == oracle_core_count,
+                "point_count": point_count,
+                "threshold_reached_count": int(core_count),
+                "core_count": int(core_count),
+                "oracle_core_count": oracle_core_count,
+            }
+    finally:
+        _, close_sec = _time_call(prepared_obj.close)
+
+    median = statistics.median(native_samples)
+    return {
+        "app": "dbscan_clustering",
+        "copies": copies,
+        "point_count": point_count,
+        "one_shot_total_sec": None,
+        "prepared_optix_pack_points_sec": pack_points_sec,
+        "prepared_optix_prepare_sec": prepare_sec,
+        "prepared_optix_warm_query_sec": _stats(native_samples),
+        "prepared_optix_postprocess_sec": _stats([]),
+        "prepared_optix_validation_sec": _stats(validation_samples),
+        "prepared_optix_close_sec": close_sec,
+        "speedup_one_shot_over_warm_query_median": 0.0 if median <= 0.0 else None,
+        "phase_contract": {
+            "native_warm_query": (
+                "prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, "
+                "and scalar count copy-back"
+            ),
+            "postprocess": "none in scalar-summary mode; full DBSCAN cluster expansion remains outside this profiler",
+            "validation": "oracle construction/comparison timing; omitted when skip_validation=true",
+        },
+        "validation_mode": "skipped" if skip_validation else "per_iteration_expected_fixture",
+        "result_mode": "threshold_count",
+        "prepared_output": _compact(last_output or {}),
+    }
+
+
+def run_suite(
+    *,
+    copies: int,
+    iterations: int,
+    skip_validation: bool = False,
+    result_mode: str = "rows",
+) -> dict[str, Any]:
     if copies <= 0:
         raise ValueError("--copies must be positive")
     if iterations <= 0:
         raise ValueError("--iterations must be positive")
+    if result_mode not in {"rows", "threshold_count"}:
+        raise ValueError("result_mode must be 'rows' or 'threshold_count'")
+    profile_outlier = _profile_outlier if result_mode == "rows" else _profile_outlier_threshold_count
+    profile_dbscan = _profile_dbscan if result_mode == "rows" else _profile_dbscan_threshold_count
     return {
         "suite": "goal757_optix_fixed_radius_prepared_perf",
         "copies": copies,
         "iterations": iterations,
         "skip_validation": skip_validation,
+        "result_mode": result_mode,
         "results": (
-            _profile_outlier(copies, iterations, skip_validation=skip_validation),
-            _profile_dbscan(copies, iterations, skip_validation=skip_validation),
+            profile_outlier(copies, iterations, skip_validation=skip_validation),
+            profile_dbscan(copies, iterations, skip_validation=skip_validation),
         ),
         "boundary": "GTX 1070 evidence validates OptiX prepared-scene behavior only. RTX RT-core speedup claims require RTX-class hardware.",
     }
@@ -225,9 +365,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--copies", type=int, default=20000)
     parser.add_argument("--iterations", type=int, default=5)
     parser.add_argument("--skip-validation", action="store_true")
+    parser.add_argument("--result-mode", choices=("rows", "threshold_count"), default="rows")
     parser.add_argument("--output-json")
     args = parser.parse_args(argv)
-    payload = run_suite(copies=args.copies, iterations=args.iterations, skip_validation=args.skip_validation)
+    payload = run_suite(
+        copies=args.copies,
+        iterations=args.iterations,
+        skip_validation=args.skip_validation,
+        result_mode=args.result_mode,
+    )
     text = json.dumps(payload, indent=2, sort_keys=True)
     if args.output_json:
         Path(args.output_json).write_text(text + "\n", encoding="utf-8")

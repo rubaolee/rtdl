@@ -3267,6 +3267,7 @@ static void run_fixed_radius_count_threshold_rt(
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(d_search.ptr);
     lp.output = reinterpret_cast<GpuFixedRadiusCountRecord*>(d_output.ptr);
+    lp.threshold_reached_count = nullptr;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
     lp.radius = radius_f;
@@ -3412,6 +3413,7 @@ static void run_prepared_fixed_radius_count_threshold_2d_optix(
     lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
     lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
     lp.output = reinterpret_cast<GpuFixedRadiusCountRecord*>(d_output.ptr);
+    lp.threshold_reached_count = nullptr;
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.threshold = static_cast<uint32_t>(threshold);
     lp.radius = static_cast<float>(radius);
@@ -3447,6 +3449,76 @@ static void run_prepared_fixed_radius_count_threshold_2d_optix(
     }
     *rows_out = out;
     *row_count_out = query_count;
+}
+
+static void count_prepared_fixed_radius_threshold_reached_2d_optix(
+        PreparedFixedRadiusCountThreshold2D* prepared,
+        const RtdlPoint* query_points,
+        size_t query_count,
+        double radius,
+        size_t threshold,
+        size_t* threshold_reached_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius handle must not be null");
+    if (!threshold_reached_count_out) throw std::runtime_error("threshold_reached_count_out must not be null");
+    if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
+    if (radius < 0.0) throw std::runtime_error("fixed_radius_count_threshold radius must be non-negative");
+    if (radius > static_cast<double>(prepared->max_radius) + 1.0e-7)
+        throw std::runtime_error("fixed_radius_count_threshold radius exceeds prepared max_radius");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold query_count exceeds uint32 limit");
+    if (threshold > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("fixed_radius_count_threshold threshold exceeds uint32 limit");
+
+    *threshold_reached_count_out = 0;
+    if (query_count == 0 || prepared->search_points.empty()) return;
+
+    std::vector<GpuPoint> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            query_points[i].id
+        };
+    }
+
+    DevPtr d_queries(sizeof(GpuPoint) * query_count);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    DevPtr d_threshold_reached_count(sizeof(uint32_t));
+    uint32_t zero = 0;
+    upload(d_threshold_reached_count.ptr, &zero, 1);
+
+    FixedRadiusCountRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint*>(prepared->d_search.ptr);
+    lp.output = nullptr;
+    lp.threshold_reached_count = reinterpret_cast<uint32_t*>(d_threshold_reached_count.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.threshold = static_cast<uint32_t>(threshold);
+    lp.radius = static_cast<float>(radius);
+    lp.trace_tmax = 2.0f * (prepared->max_radius + 1.0e-4f);
+
+    DevPtr d_params(sizeof(FixedRadiusCountRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    g_optix_last_bvh_build_s = 0.0;
+    auto t_start_trav = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_frn_count_rt.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(FixedRadiusCountRtLaunchParams),
+                             &g_frn_count_rt.pipe->sbt,
+                             static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
+
+    auto t_start_copy = std::chrono::steady_clock::now();
+    uint32_t threshold_reached_count = 0;
+    download(&threshold_reached_count, d_threshold_reached_count.ptr, 1);
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
+    *threshold_reached_count_out = static_cast<size_t>(threshold_reached_count);
 }
 
 static void run_fixed_radius_neighbors_cuda_3d(

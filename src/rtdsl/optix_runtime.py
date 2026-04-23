@@ -721,6 +721,48 @@ class PreparedOptixFixedRadiusCountThreshold2D:
         finally:
             view.close()
 
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int = 0) -> int:
+        """Return only the number of query points that reached ``threshold``.
+
+        This is the scalar-summary path for app profilers that need counts
+        rather than one Python row per query point.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius count handle is closed")
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=2)
+        if packed_queries.dimension != 2:
+            raise ValueError("PreparedOptixFixedRadiusCountThreshold2D.count_threshold_reached requires 2-D points")
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d")
+        if count_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d; rebuild the OptiX backend from current main"
+            )
+        threshold_reached_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(float(radius)),
+            ctypes.c_size_t(int(threshold)),
+            ctypes.byref(threshold_reached_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(threshold_reached_count.value)
+
     def close(self) -> None:
         if self._closed:
             return
@@ -2715,6 +2757,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_run_prepared_frn_count.restype = ctypes.c_int
+
+    optional_count_prepared_frn_threshold = _find_optional_backend_symbol(
+        lib, "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d"
+    )
+    if optional_count_prepared_frn_threshold is not None:
+        optional_count_prepared_frn_threshold.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_frn_threshold.restype = ctypes.c_int
 
     optional_destroy_prepared_frn_count = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d")
     if optional_destroy_prepared_frn_count is not None:

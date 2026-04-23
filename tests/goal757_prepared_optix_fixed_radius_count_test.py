@@ -32,6 +32,11 @@ class _FakePreparedOptixFixedRadius:
             raise RuntimeError("fake prepared handle is closed")
         return tuple(self._rows)
 
+    def count_threshold_reached(self, query_points, *, radius, threshold=0):
+        if self.closed:
+            raise RuntimeError("fake prepared handle is closed")
+        return sum(1 for row in self._rows if int(row["threshold_reached"]) != 0)
+
     def close(self):
         self.closed = True
 
@@ -69,6 +74,7 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         with rt.prepare_optix_fixed_radius_count_threshold_2d((), max_radius=1.0) as prepared:
             self.assertEqual(prepared.max_radius, 1.0)
             self.assertEqual(prepared.run((), radius=0.5, threshold=1), ())
+            self.assertEqual(prepared.count_threshold_reached((), radius=0.5, threshold=1), 0)
 
     def test_prepared_handle_rejects_radius_above_max_radius(self):
         with rt.prepare_optix_fixed_radius_count_threshold_2d((), max_radius=1.0) as prepared:
@@ -135,6 +141,40 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "closed"):
             session.run()
 
+    def test_fixed_radius_profiler_scalar_threshold_count_matches_oracle(self):
+        profiler = __import__(
+            "scripts.goal757_optix_fixed_radius_prepared_perf",
+            fromlist=["run_suite"],
+        )
+
+        def unpack_points(points):
+            if hasattr(points, "records") and hasattr(points, "count"):
+                return tuple(
+                    rt.Point(
+                        id=int(points.records[index].id),
+                        x=float(points.records[index].x),
+                        y=float(points.records[index].y),
+                    )
+                    for index in range(points.count)
+                )
+            return points
+
+        def fake_prepare(search_points, *, max_radius):
+            points = unpack_points(search_points)
+            is_outlier_fixture = any(int(point.id) == 4 and float(point.x) > 1.0 for point in points)
+            rows = _outlier_count_rows(points) if is_outlier_fixture else _dbscan_count_rows(points)
+            return _FakePreparedOptixFixedRadius(rows)
+
+        with mock.patch.object(rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
+            payload = profiler.run_suite(copies=1, iterations=1, result_mode="threshold_count")
+
+        self.assertEqual(payload["result_mode"], "threshold_count")
+        for result in payload["results"]:
+            with self.subTest(app=result["app"]):
+                self.assertEqual(result["result_mode"], "threshold_count")
+                self.assertTrue(result["prepared_output"]["matches_oracle"])
+                self.assertEqual(result["prepared_optix_postprocess_sec"]["median_sec"], 0.0)
+
     def test_native_sources_export_prepared_optix_fixed_radius_symbols(self):
         root = outlier.ROOT
         api_text = (root / "src" / "native" / "optix" / "rtdl_optix_api.cpp").read_text(encoding="utf-8")
@@ -144,6 +184,7 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         for phrase in (
             "rtdl_optix_prepare_fixed_radius_count_threshold_2d",
             "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d",
+            "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d",
             "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d",
         ):
             with self.subTest(phrase=phrase):

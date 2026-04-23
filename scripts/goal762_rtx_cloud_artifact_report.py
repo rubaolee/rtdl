@@ -71,6 +71,10 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "postprocess_median_sec": _median(result.get("prepared_optix_postprocess_sec")),
             "validation_median_sec": _median(result.get("prepared_optix_validation_sec")),
             "validation_mode": result.get("validation_mode"),
+            "result_mode": result.get("result_mode"),
+            "threshold_reached_count": (result.get("prepared_output") or {}).get("threshold_reached_count")
+            if isinstance(result.get("prepared_output"), dict)
+            else None,
             "speedup_one_shot_over_warm_query_median": result.get("speedup_one_shot_over_warm_query_median"),
             "phase_contract_present": isinstance(result.get("phase_contract"), dict),
         }

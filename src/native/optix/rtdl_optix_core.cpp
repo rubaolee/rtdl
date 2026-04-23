@@ -1630,6 +1630,7 @@ struct FixedRadiusCountParams {
     const GpuPoint* query_points;
     const GpuPoint* search_points;
     FixedRadiusCountRecord* output;
+    uint32_t* threshold_reached_count;
     uint32_t query_count;
     uint32_t threshold;
     float radius;
@@ -1653,7 +1654,12 @@ extern "C" __global__ void __raygen__frn_count_probe() {
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
                p0, p1, p2);
-    params.output[idx] = {query.id, p1, p2};
+    if (params.output) {
+        params.output[idx] = {query.id, p1, p2};
+    }
+    if (params.threshold_reached_count && p2 != 0u) {
+        atomicAdd(params.threshold_reached_count, 1u);
+    }
 }
 
 extern "C" __global__ void __miss__frn_count_miss() {}
