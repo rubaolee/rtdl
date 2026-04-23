@@ -4,8 +4,8 @@
   "date": "2026-04-23",
   "deferred_count": 3,
   "goal": "Goal836 RTX baseline readiness gate",
-  "invalid_artifact_count": 1,
-  "missing_artifact_count": 12,
+  "invalid_artifact_count": 0,
+  "missing_artifact_count": 11,
   "repo": "/Users/rl2025/rtdl_python_only",
   "required_artifact_count": 23,
   "row_count": 8,
@@ -211,21 +211,19 @@
       "artifact_checks": [
         {
           "baseline": "cpu_oracle_pose_count",
-          "errors": [
-            "artifact file is missing"
-          ],
+          "covered_phase_count": 7,
+          "errors": [],
           "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
-          "status": "missing"
+          "repeated_runs": 3,
+          "status": "valid"
         },
         {
           "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
           "covered_phase_count": 7,
-          "errors": [
-            "benchmark_scale does not match Goal835 plan"
-          ],
+          "errors": [],
           "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
-          "repeated_runs": 10,
-          "status": "invalid"
+          "repeated_runs": 3,
+          "status": "valid"
         }
       ],
       "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
@@ -243,7 +241,7 @@
         "scalar_copyback",
         "oracle_validation_separate"
       ],
-      "row_status": "needs_baselines",
+      "row_status": "ok",
       "scale": {
         "iterations": 3,
         "obstacle_count": 1024,
@@ -389,5 +387,5 @@
   ],
   "source_plan_goal": "Goal835 RTX baseline collection plan",
   "status": "needs_baselines",
-  "valid_artifact_count": 10
+  "valid_artifact_count": 12
 }

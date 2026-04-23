@@ -8,9 +8,9 @@ This readiness gate only inspects local baseline evidence. It does not run bench
 
 - rows checked: `8`
 - required baseline artifacts: `23`
-- valid artifacts: `10`
-- missing artifacts: `12`
-- invalid artifacts: `1`
+- valid artifacts: `12`
+- missing artifacts: `11`
+- invalid artifacts: `0`
 
 ## Row Readiness
 
@@ -20,7 +20,7 @@ This readiness gate only inspects local baseline evidence. It does not run bench
 | active | database_analytics | prepared_db_session_regional_dashboard | ok | 0 | 0 | 3 |
 | active | outlier_detection | prepared_fixed_radius_density_summary | needs_baselines | 1 | 0 | 2 |
 | active | dbscan_clustering | prepared_fixed_radius_core_flags | needs_baselines | 1 | 0 | 2 |
-| active | robot_collision_screening | prepared_pose_flags | needs_baselines | 1 | 1 | 0 |
+| active | robot_collision_screening | prepared_pose_flags | ok | 0 | 0 | 2 |
 | deferred | service_coverage_gaps | prepared_gap_summary | needs_baselines | 3 | 0 | 0 |
 | deferred | event_hotspot_screening | prepared_count_summary | needs_baselines | 3 | 0 | 0 |
 | deferred | segment_polygon_hitcount | segment_polygon_hitcount_native_experimental | needs_baselines | 3 | 0 | 0 |
@@ -36,13 +36,6 @@ This readiness gate only inspects local baseline evidence. It does not run bench
 
 - `scipy_or_reference_neighbor_baseline_when_used_in_app_report`: `missing` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json`
 - error: artifact file is missing
-
-### robot_collision_screening / prepared_pose_flags
-
-- `cpu_oracle_pose_count`: `missing` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json`
-- error: artifact file is missing
-- `embree_anyhit_pose_count_or_equivalent_compact_summary`: `invalid` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json`
-- error: benchmark_scale does not match Goal835 plan
 
 ### service_coverage_gaps / prepared_gap_summary
 

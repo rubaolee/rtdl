@@ -1,0 +1,190 @@
+{
+  "blocking_statuses": [
+    "linux_postgresql_required",
+    "linux_preferred_for_large_exact_oracle",
+    "local_command_ready"
+  ],
+  "boundary": "This gate is for active OptiX claim-review readiness only. It counts mandatory active same-semantics baselines and explicitly excludes optional reference baselines and deferred app rows. It does not authorize a public RTX speedup claim by itself.",
+  "date": "2026-04-23",
+  "goal": "Goal846 active RTX claim gate",
+  "invalid_artifact_count": 0,
+  "missing_artifact_count": 0,
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "required_artifact_count": 12,
+  "row_count": 5,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "blocking_checks": [
+        {
+          "baseline": "cpu_oracle_compact_summary",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_compact_summary",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        },
+        {
+          "baseline": "postgresql_same_semantics_on_linux_when_available",
+          "collection_status": "linux_postgresql_required",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        }
+      ],
+      "path_name": "prepared_db_session_sales_risk",
+      "row_status": "ok",
+      "skipped_checks": []
+    },
+    {
+      "app": "database_analytics",
+      "blocking_checks": [
+        {
+          "baseline": "cpu_oracle_compact_summary",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_compact_summary",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        },
+        {
+          "baseline": "postgresql_same_semantics_on_linux_when_available",
+          "collection_status": "linux_postgresql_required",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        }
+      ],
+      "path_name": "prepared_db_session_regional_dashboard",
+      "row_status": "ok",
+      "skipped_checks": []
+    },
+    {
+      "app": "outlier_detection",
+      "blocking_checks": [
+        {
+          "baseline": "cpu_scalar_threshold_count_oracle",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_scalar_or_summary_path",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        }
+      ],
+      "path_name": "prepared_fixed_radius_density_summary",
+      "row_status": "ok",
+      "skipped_checks": [
+        {
+          "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+          "collection_status": "optional_dependency_or_reference_required",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+          "status": "missing"
+        }
+      ]
+    },
+    {
+      "app": "dbscan_clustering",
+      "blocking_checks": [
+        {
+          "baseline": "cpu_scalar_threshold_count_oracle",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_scalar_or_summary_path",
+          "collection_status": "local_command_ready",
+          "covered_phase_count": 5,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json",
+          "repeated_runs": 10,
+          "status": "valid"
+        }
+      ],
+      "path_name": "prepared_fixed_radius_core_flags",
+      "row_status": "ok",
+      "skipped_checks": [
+        {
+          "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+          "collection_status": "optional_dependency_or_reference_required",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+          "status": "missing"
+        }
+      ]
+    },
+    {
+      "app": "robot_collision_screening",
+      "blocking_checks": [
+        {
+          "baseline": "cpu_oracle_pose_count",
+          "collection_status": "linux_preferred_for_large_exact_oracle",
+          "covered_phase_count": 7,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
+          "repeated_runs": 3,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+          "collection_status": "linux_preferred_for_large_exact_oracle",
+          "covered_phase_count": 7,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
+          "repeated_runs": 3,
+          "status": "valid"
+        }
+      ],
+      "path_name": "prepared_pose_flags",
+      "row_status": "ok",
+      "skipped_checks": []
+    }
+  ],
+  "skipped_optional_or_deferred_count": 2,
+  "source_gate_goal": "Goal836 RTX baseline readiness gate",
+  "source_manifest_goal": "Goal838 local RTX baseline collection manifest",
+  "status": "ok",
+  "valid_artifact_count": 12
+}

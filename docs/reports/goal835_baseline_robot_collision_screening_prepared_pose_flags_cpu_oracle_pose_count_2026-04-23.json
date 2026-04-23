@@ -1,0 +1,64 @@
+{
+  "app": "robot_collision_screening",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_oracle_pose_count",
+  "benchmark_scale": {
+    "iterations": 3,
+    "obstacle_count": 1024,
+    "pose_count": 200000
+  },
+  "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+  "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "CPU oracle uses direct pose-flag aggregation during any-hit traversal and compact pose-count postprocess.",
+    "CPU oracle worker_count=8. On Linux, worker_count>1 uses exact process-level OR-reduction over disjoint ray chunks.",
+    "No separate backend scene prepare or pose-index prepare phase exists on the CPU oracle path."
+  ],
+  "path_name": "prepared_pose_flags",
+  "phase_seconds": {
+    "backend_scene_prepare": 0.0,
+    "native_anyhit_query": 594.6519250799902,
+    "oracle_validation_separate": 0.0,
+    "pose_and_obstacle_generation": 2.244188330951147,
+    "pose_index_prepare": 0.0,
+    "ray_pack": 0.24652601702837273,
+    "scalar_copyback": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "pose_and_obstacle_generation",
+    "ray_pack",
+    "backend_scene_prepare",
+    "pose_index_prepare",
+    "native_anyhit_query",
+    "scalar_copyback",
+    "oracle_validation_separate"
+  ],
+  "source_backend": "cpu_oracle",
+  "status": "ok",
+  "summary": {
+    "colliding_pose_count": 193750,
+    "colliding_pose_ids_sample": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "pose_count": 200000
+  },
+  "summary_sha256": "609e752a8e5dd85284353e530ae306f3083a2ae8951ddf8630c434af476b49cf",
+  "validation": {
+    "matches_reference": true,
+    "method": "oracle path by construction using exact CPU pose-flag traversal",
+    "worker_count": 8
+  }
+}
