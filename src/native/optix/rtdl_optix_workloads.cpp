@@ -3060,16 +3060,16 @@ static void run_fixed_radius_neighbors_cuda(
         CU_CHECK(cuModuleGetFunction(&g_frn.fn, g_frn.module, "fixed_radius_neighbors"));
     });
 
-    struct GpuPt { float x, y; uint32_t id; };
+    struct GpuPt { float x, y; uint32_t id, pad; };
     constexpr double kFixedRadiusCandidateEps = 1.0e-4;
     constexpr size_t kFixedRadiusSlack = 8;
 
     std::vector<GpuPt> gpu_queries(query_count);
     std::vector<GpuPt> gpu_search(search_count);
     for (size_t i = 0; i < query_count; ++i)
-        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, query_points[i].id};
+        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, query_points[i].id, 0u};
     for (size_t i = 0; i < search_count; ++i)
-        gpu_search[i] = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id};
+        gpu_search[i] = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id, 0u};
 
     const size_t capped_k_max = std::min(k_max, search_count);
     const size_t candidate_slack = std::min(
@@ -3672,14 +3672,14 @@ static void run_knn_rows_cuda(
         CU_CHECK(cuModuleGetFunction(&g_knn.fn, g_knn.module, "knn_rows"));
     });
 
-    struct GpuPt { float x, y; uint32_t id; };
+    struct GpuPt { float x, y; uint32_t id, pad; };
 
     std::vector<GpuPt> gpu_queries(query_count);
     std::vector<GpuPt> gpu_search(search_count);
     for (size_t i = 0; i < query_count; ++i)
-        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, query_points[i].id};
+        gpu_queries[i] = {(float)query_points[i].x, (float)query_points[i].y, query_points[i].id, 0u};
     for (size_t i = 0; i < search_count; ++i)
-        gpu_search[i] = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id};
+        gpu_search[i] = {(float)search_points[i].x, (float)search_points[i].y, search_points[i].id, 0u};
 
     if (query_count != 0 && k > ((std::numeric_limits<size_t>::max)() / query_count)) {
         throw std::runtime_error("knn_rows output_capacity overflows size_t");
