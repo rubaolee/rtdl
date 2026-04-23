@@ -61,6 +61,30 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
         self.assertIsNone(payload["matches_oracle"])
         self.assertIsNone(payload["result"]["oracle_colliding_pose_count"])
 
+    def test_packed_arrays_requires_optix_and_skip_validation(self):
+        module = __import__(
+            "scripts.goal760_optix_robot_pose_flags_phase_profiler",
+            fromlist=["run_suite"],
+        )
+        with self.assertRaisesRegex(ValueError, "only supported with mode='optix'"):
+            module.run_suite(
+                mode="dry-run",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=False,
+                input_mode="packed_arrays",
+            )
+        with self.assertRaisesRegex(ValueError, "requires --skip-validation"):
+            module.run_suite(
+                mode="optix",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=True,
+                input_mode="packed_arrays",
+            )
+
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(
             [

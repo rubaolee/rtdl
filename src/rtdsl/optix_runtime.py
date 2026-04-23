@@ -1502,6 +1502,54 @@ def pack_rays_3d_from_arrays(
     return PackedRays(records=arr, count=n, dimension=3)
 
 
+def pack_rays_2d_from_arrays(
+    ids,
+    ox,
+    oy,
+    dx,
+    dy,
+    tmax,
+) -> PackedRays:
+    """Fast bulk packing of 2-D rays from array-like inputs.
+
+    This bypasses per-ray ``Ray2D`` object construction for generated workloads
+    such as robot pose sweeps.  The structured dtype mirrors the packed C ABI:
+    ``uint32 id`` followed by five float64 fields.
+    """
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        raise RuntimeError("pack_rays_2d_from_arrays requires numpy")
+
+    ids_a = _np.asarray(ids, dtype=_np.uint32)
+    ox_a = _np.asarray(ox, dtype=_np.float64)
+    oy_a = _np.asarray(oy, dtype=_np.float64)
+    dx_a = _np.asarray(dx, dtype=_np.float64)
+    dy_a = _np.asarray(dy, dtype=_np.float64)
+    tmax_a = _np.asarray(tmax, dtype=_np.float64)
+
+    n = len(ids_a)
+    if any(len(field) != n for field in (ox_a, oy_a, dx_a, dy_a, tmax_a)):
+        raise ValueError("rays arrays must have equal lengths")
+
+    _dtype = _np.dtype({
+        "names": ["id", "ox", "oy", "dx", "dy", "tmax"],
+        "formats": [_np.uint32, _np.float64, _np.float64, _np.float64, _np.float64, _np.float64],
+        "offsets": [0, 4, 12, 20, 28, 36],
+        "itemsize": 44,
+    })
+    buf = _np.empty(n, dtype=_dtype)
+    buf["id"] = ids_a
+    buf["ox"] = ox_a
+    buf["oy"] = oy_a
+    buf["dx"] = dx_a
+    buf["dy"] = dy_a
+    buf["tmax"] = tmax_a
+
+    arr = (_RtdlRay2D * n).from_buffer_copy(buf)
+    return PackedRays(records=arr, count=n, dimension=2)
+
+
 def pack_rays(
     records=None,
     *,
@@ -1792,11 +1840,34 @@ class PreparedOptixRayTriangleAnyHit2D:
             raise RuntimeError("prepared OptiX ray buffer is closed")
         if pose_count < 0:
             raise ValueError("pose_count must be non-negative")
-        normalized_pose_indices = tuple(int(index) for index in pose_indices)
-        if len(normalized_pose_indices) != rays.count:
+        pose_index_ptr: ctypes.c_void_p | ctypes.POINTER(ctypes.c_uint32)
+        pose_index_count: int
+        pose_index_owner = None
+        if hasattr(pose_indices, "ctypes"):
+            try:
+                import numpy as _np
+            except ImportError:  # pragma: no cover
+                _np = None
+            if _np is None:
+                raise RuntimeError("numpy pose-index buffers require numpy")
+            pose_index_owner = _np.ascontiguousarray(pose_indices, dtype=_np.uint32)
+            pose_index_count = int(pose_index_owner.size)
+            if pose_index_count and (
+                int(pose_index_owner.min()) < 0 or int(pose_index_owner.max()) >= pose_count
+            ):
+                raise ValueError("pose_indices entries must be within [0, pose_count)")
+            pose_index_ptr = pose_index_owner.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32))
+        else:
+            normalized_pose_indices = tuple(int(index) for index in pose_indices)
+            pose_index_count = len(normalized_pose_indices)
+            if any(index < 0 or index >= pose_count for index in normalized_pose_indices):
+                raise ValueError("pose_indices entries must be within [0, pose_count)")
+            PoseIndexArray = ctypes.c_uint32 * pose_index_count
+            pose_index_owner = PoseIndexArray(*normalized_pose_indices)
+            pose_index_ptr = pose_index_owner
+
+        if pose_index_count != rays.count:
             raise ValueError("pose_indices length must match prepared ray count")
-        if any(index < 0 or index >= pose_count for index in normalized_pose_indices):
-            raise ValueError("pose_indices entries must be within [0, pose_count)")
         if rays.count == 0 or self._packed_triangles.count == 0 or pose_count == 0:
             return tuple(False for _ in range(pose_count))
 
@@ -1808,16 +1879,14 @@ class PreparedOptixRayTriangleAnyHit2D:
                 "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed. "
                 "Rebuild it with 'make build-optix' from current main."
             )
-        PoseIndexArray = ctypes.c_uint32 * len(normalized_pose_indices)
         PoseFlagArray = ctypes.c_uint32 * pose_count
-        pose_index_buffer = PoseIndexArray(*normalized_pose_indices)
         pose_flag_buffer = PoseFlagArray()
         error = ctypes.create_string_buffer(4096)
         status = pose_flags_symbol(
             self._handle,
             rays.handle,
-            pose_index_buffer,
-            len(normalized_pose_indices),
+            pose_index_ptr,
+            pose_index_count,
             pose_flag_buffer,
             pose_count,
             error,

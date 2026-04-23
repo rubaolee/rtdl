@@ -91,6 +91,26 @@ class Goal671OptixPreparedAnyHitCountPortableTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "pose_indices length"):
                     prepared.pose_flags_packed(rays, (0,), pose_count=1)
 
+    def test_pack_rays_2d_from_arrays_preserves_c_abi_records(self) -> None:
+        np = unittest.import_module("numpy") if hasattr(unittest, "import_module") else None
+        if np is None:
+            try:
+                import numpy as np
+            except ImportError:
+                self.skipTest("numpy is not available")
+        packed = rt.pack_rays_2d_from_arrays(
+            ids=np.array([10, 11], dtype=np.uint32),
+            ox=np.array([1.0, 2.0]),
+            oy=np.array([3.0, 4.0]),
+            dx=np.array([5.0, 6.0]),
+            dy=np.array([7.0, 8.0]),
+            tmax=np.array([9.0, 10.0]),
+        )
+        self.assertEqual(packed.count, 2)
+        self.assertEqual(packed.dimension, 2)
+        self.assertEqual(packed.records[0].id, 10)
+        self.assertEqual(packed.records[1].ox, 2.0)
+
 
 @unittest.skipUnless(optix_prepared_anyhit_available(), "current OptiX prepared any-hit symbols are not available")
 class Goal671OptixPreparedAnyHitCountNativeTest(unittest.TestCase):

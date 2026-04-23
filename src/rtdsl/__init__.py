@@ -154,6 +154,7 @@ from .optix_runtime import optix_version
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
 from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixRowView
+from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
@@ -703,6 +704,7 @@ __all__ = [
     "OptixRowView",
     "optix_version",
     "OptixRay2DBuffer",
+    "pack_rays_2d_from_arrays",
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_count_threshold_2d",
