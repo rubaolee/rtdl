@@ -407,7 +407,7 @@
       ],
       "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
       "path_name": "prepared_pose_flags",
-      "reason": "no local collector has been assigned for this baseline yet",
+      "reason": "collector exists, but this exact large-scale robot oracle is too expensive for an efficient unattended macOS local batch",
       "required_phases": [
         "pose_and_obstacle_generation",
         "ray_pack",
@@ -418,7 +418,7 @@
         "oracle_validation_separate"
       ],
       "section": "active",
-      "status": "local_command_ready"
+      "status": "linux_preferred_for_large_exact_oracle"
     },
     {
       "app": "robot_collision_screening",
@@ -446,7 +446,7 @@
       ],
       "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
       "path_name": "prepared_pose_flags",
-      "reason": "no local collector has been assigned for this baseline yet",
+      "reason": "collector exists, but this exact large-scale robot Embree validation is better collected on Linux in the same batch as the CPU oracle",
       "required_phases": [
         "pose_and_obstacle_generation",
         "ray_pack",
@@ -457,7 +457,7 @@
         "oracle_validation_separate"
       ],
       "section": "active",
-      "status": "local_command_ready"
+      "status": "linux_preferred_for_large_exact_oracle"
     },
     {
       "app": "service_coverage_gaps",
@@ -630,7 +630,8 @@
   "status_counts": {
     "deferred_until_app_gate_active": 9,
     "linux_postgresql_required": 2,
-    "local_command_ready": 10,
+    "linux_preferred_for_large_exact_oracle": 2,
+    "local_command_ready": 8,
     "optional_dependency_or_reference_required": 2
   }
 }

@@ -89,8 +89,21 @@ Current missing set is now limited to:
 
 1. Two Linux/PostgreSQL DB baselines
 2. Two optional SciPy/reference baselines
-3. Two robot baselines
+3. Two robot baselines, now explicitly marked Linux-preferred for large exact-oracle collection
 4. Nine deferred-app baselines
+
+## Follow-On Tooling
+
+The local manifest was further tightened after the first collection pass:
+
+- `scripts/goal838_local_baseline_collection_manifest.py` now classifies the robot pair as
+  `linux_preferred_for_large_exact_oracle` instead of `local_command_ready` on this macOS host.
+- `scripts/goal841_local_baseline_collect.py` can execute filtered Goal838 local-ready actions,
+  which is useful for bounded collection batches and for constructing exact Linux handoff plans.
+- The Goal841 dry-run plan for `robot_collision_screening` now intentionally selects zero actions on macOS,
+  because the robot pair is no longer part of the local-ready batch.
+- Linux robot handoff packet:
+  - `/Users/rl2025/rtdl_python_only/docs/handoff/GOAL841_LINUX_ROBOT_BASELINE_COLLECTION_REQUEST_2026-04-23.md`
 
 ## Honest Boundary
 

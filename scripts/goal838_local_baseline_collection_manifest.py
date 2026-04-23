@@ -154,17 +154,19 @@ def _row_actions(row: dict[str, Any]) -> list[dict[str, Any]]:
         elif app == "robot_collision_screening" and baseline_name == "cpu_oracle_pose_count":
             action.update(
                 {
-                    "status": "local_command_ready",
+                    "status": "linux_preferred_for_large_exact_oracle",
                     "collector_kind": "goal839_robot_pose_count_baseline",
                     "command": _robot_command(row, "cpu", baseline_name),
+                    "reason": "collector exists, but this exact large-scale robot oracle is too expensive for an efficient unattended macOS local batch",
                 }
             )
         elif app == "robot_collision_screening" and baseline_name == "embree_anyhit_pose_count_or_equivalent_compact_summary":
             action.update(
                 {
-                    "status": "local_command_ready",
+                    "status": "linux_preferred_for_large_exact_oracle",
                     "collector_kind": "goal839_robot_pose_count_baseline",
                     "command": _robot_command(row, "embree", baseline_name),
+                    "reason": "collector exists, but this exact large-scale robot Embree validation is better collected on Linux in the same batch as the CPU oracle",
                 }
             )
         elif row["section"] == "deferred":

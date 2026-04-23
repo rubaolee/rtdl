@@ -29,7 +29,8 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
         module = __import__("scripts.goal838_local_baseline_collection_manifest", fromlist=["build_collection_manifest"])
         payload = module.build_collection_manifest()
         self.assertEqual(payload["action_count"], 23)
-        self.assertEqual(payload["status_counts"]["local_command_ready"], 10)
+        self.assertEqual(payload["status_counts"]["local_command_ready"], 8)
+        self.assertEqual(payload["status_counts"]["linux_preferred_for_large_exact_oracle"], 2)
         self.assertEqual(payload["status_counts"]["linux_postgresql_required"], 2)
         self.assertEqual(payload["status_counts"]["deferred_until_app_gate_active"], 9)
         self.assertIn("does not run heavy benchmarks", payload["boundary"])
@@ -52,14 +53,14 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
         self.assertEqual(db["command"][1], "scripts/goal840_db_prepared_baseline.py")
         self.assertTrue(db["artifact_path"].endswith("_cpu_oracle_compact_summary_2026-04-23.json"))
 
-    def test_robot_actions_do_not_pretend_collector_exists_yet(self) -> None:
+    def test_robot_actions_are_explicitly_linux_preferred(self) -> None:
         module = __import__("scripts.goal838_local_baseline_collection_manifest", fromlist=["build_collection_manifest"])
         payload = module.build_collection_manifest()
         robot = [
             action for action in payload["actions"]
             if action["app"] == "robot_collision_screening"
         ]
-        self.assertEqual({action["status"] for action in robot}, {"local_command_ready"})
+        self.assertEqual({action["status"] for action in robot}, {"linux_preferred_for_large_exact_oracle"})
         self.assertTrue(all(action["collector_kind"] == "goal839_robot_pose_count_baseline" for action in robot))
         self.assertTrue(all(action["command"][1] == "scripts/goal839_robot_pose_count_baseline.py" for action in robot))
 
