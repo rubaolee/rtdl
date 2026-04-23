@@ -92,6 +92,8 @@ def run_cli_smokes() -> dict[str, object]:
 
 def run_artifact_smokes() -> dict[str, object]:
     results: dict[str, object] = {}
+    if not embree_available():
+        return {"skipped": True, "reason": "Embree is not installed in the current environment"}
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp = Path(tmpdir)
         artifacts = rt.generate_embree_evaluation_artifacts(
