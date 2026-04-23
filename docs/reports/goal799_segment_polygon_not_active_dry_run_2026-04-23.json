@@ -1,0 +1,23 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": true,
+  "entry_count": 0,
+  "failed_count": 0,
+  "git_head": "f443d16348a4b32ce368bcdabb1058dc1fa973d1",
+  "git_status_short": "M docs/reports/goal759_rtx_cloud_benchmark_manifest_2026-04-22.json\n M scripts/goal759_rtx_cloud_benchmark_manifest.py\n M scripts/goal761_rtx_cloud_run_all.py\n M tests/goal761_rtx_cloud_run_all_test.py",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "probe failed: [Errno 2] No such file or directory: 'nvidia-smi'",
+  "python_version": "Python 3.14.0",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "results": [],
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-23T06:00:47-0400",
+  "unique_command_count": 0
+}

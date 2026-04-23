@@ -1,6 +1,31 @@
 {
   "boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
   "date": "2026-04-22",
+  "deferred_entries": [
+    {
+      "activation_gate": "Promote only after a focused native-vs-host-indexed-vs-PostGIS correctness/performance harness passes on RTX hardware and the app readiness matrix is updated.",
+      "app": "segment_polygon_hitcount",
+      "app_path": "examples/rtdl_segment_polygon_hitcount.py",
+      "benchmark_readiness": "needs_native_kernel_tuning",
+      "claim_scope": "experimental native custom-AABB segment/polygon hit-count traversal",
+      "command": [
+        "python3",
+        "examples/rtdl_segment_polygon_hitcount.py",
+        "--backend",
+        "optix",
+        "--dataset",
+        "derived/br_county_subset_segment_polygon_tiled_x256"
+      ],
+      "env": {
+        "RTDL_OPTIX_SEGPOLY_MODE": "native"
+      },
+      "non_claim": "not default public app behavior and not a row-returning any-hit claim",
+      "optix_performance_class": "host_indexed_fallback",
+      "optix_performance_note": "Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates.",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "reason_deferred": "Native OptiX hit-count exists behind an explicit environment gate, but historical Goal120 evidence showed no performance win and the default public app path remains host-indexed."
+    }
+  ],
   "entries": [
     {
       "allowed_claim_today": "correctness-capable OptiX DB path only; no RTX app speedup claim yet",
@@ -24,6 +49,7 @@
         "--output-json",
         "docs/reports/goal759_db_sales_risk_rtx.json"
       ],
+      "env": {},
       "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
       "optix_performance_class": "python_interface_dominated",
       "optix_performance_note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
@@ -61,6 +87,7 @@
         "--output-json",
         "docs/reports/goal759_db_regional_dashboard_rtx.json"
       ],
+      "env": {},
       "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
       "optix_performance_class": "python_interface_dominated",
       "optix_performance_note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
@@ -77,11 +104,11 @@
       }
     },
     {
-      "allowed_claim_today": "candidate fixed-radius summary speedup claim only after phase-clean RTX rerun and review",
+      "allowed_claim_today": "prepared fixed-radius scalar threshold-count sub-path may enter claim review; no broad outlier-app speedup claim",
       "app": "outlier_detection",
       "app_path": "examples/rtdl_outlier_detection_app.py",
       "benchmark_contract": "validation-free RTX timing must split rows versus rt_count_threshold summary, backend/materialization, postprocess, and oracle validation",
-      "benchmark_readiness": "needs_phase_contract",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_scope": "prepared fixed-radius threshold summary traversal only",
       "command": [
         "python3",
@@ -90,31 +117,34 @@
         "20000",
         "--iterations",
         "10",
+        "--result-mode",
+        "threshold_count",
         "--skip-validation",
         "--output-json",
         "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
       ],
+      "env": {},
       "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
       "optix_performance_class": "optix_traversal_prepared_summary",
-      "optix_performance_note": "Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_count_threshold_prepared summary uses prepared OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending.",
+      "optix_performance_note": "Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_count_threshold_prepared summary uses prepared OptiX traversal to avoid neighbor-row materialization, with RTX 4090 phase evidence preserved in Goals 793 and 795.",
       "path_name": "prepared_fixed_radius_density_summary",
       "preconditions": [
         "OptiX fixed-radius prepared symbols must be exported.",
         "Interpret only the outlier section of the combined Goal757 profiler for this entry."
       ],
-      "readiness_blocker": "RunPod RTX A5000 evidence is promising, but the current profiler is app-level and still mixes validation/postprocess costs",
-      "readiness_next_goal": "Goal710",
+      "readiness_blocker": "RTX 4090 evidence covers the prepared scalar threshold-count sub-path only; full anomaly-detection app and row-returning paths remain outside the claim",
+      "readiness_next_goal": "Goal795",
       "scale": {
         "copies": 20000,
         "iterations": 10
       }
     },
     {
-      "allowed_claim_today": "core-flag summary claim only; no full DBSCAN acceleration claim yet",
+      "allowed_claim_today": "prepared fixed-radius core-threshold summary may enter claim review; no full DBSCAN clustering acceleration claim",
       "app": "dbscan_clustering",
       "app_path": "examples/rtdl_dbscan_clustering_app.py",
       "benchmark_contract": "core-flag summary timing must be separated from Python cluster expansion and validation",
-      "benchmark_readiness": "needs_postprocess_split",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_scope": "prepared fixed-radius core-flag traversal only",
       "command": [
         "python3",
@@ -123,10 +153,13 @@
         "20000",
         "--iterations",
         "10",
+        "--result-mode",
+        "threshold_count",
         "--skip-validation",
         "--output-json",
         "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
       ],
+      "env": {},
       "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
       "optix_performance_class": "optix_traversal_prepared_summary",
       "optix_performance_note": "Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_core_flags_prepared summary uses prepared OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path.",
@@ -136,19 +169,19 @@
         "Interpret only the DBSCAN section of the combined Goal757 profiler for this entry.",
         "Report Python cluster expansion separately when measuring full DBSCAN."
       ],
-      "readiness_blocker": "RunPod RTX A5000 backend timing is near parity, but total app timing is slower because validation/postprocess dominates",
-      "readiness_next_goal": "Goal711",
+      "readiness_blocker": "RTX 4090 evidence covers the prepared scalar core-threshold sub-path only; Python cluster expansion remains outside the native summary path",
+      "readiness_next_goal": "Goal795",
       "scale": {
         "copies": 20000,
         "iterations": 10
       }
     },
     {
-      "allowed_claim_today": "flagship candidate; no final app speedup claim until RTX rerun",
+      "allowed_claim_today": "prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim",
       "app": "robot_collision_screening",
       "app_path": "examples/rtdl_robot_collision_screening_app.py",
       "benchmark_contract": "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
-      "benchmark_readiness": "needs_phase_contract",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
       "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
       "command": [
         "python3",
@@ -169,6 +202,7 @@
         "--output-json",
         "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
       ],
+      "env": {},
       "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
       "optix_performance_class": "optix_traversal",
       "optix_performance_note": "Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact app output avoids returning full witness rows when only pose flags or hit counts are needed. OptiX has prepared scalar hit-count and prepared native pose-flag summary modes, while edge witnesses still require row mode.",
@@ -180,8 +214,8 @@
         "Use packed_arrays input mode to avoid per-ray Python object construction in large cloud timing.",
         "Use pose_count result mode for scalar native summary timing after pose-flag correctness is established."
       ],
-      "readiness_blocker": "best OptiX traversal candidate, but RTX A5000 cloud timing has not been run after compact output/profiler polish",
-      "readiness_next_goal": "Goal712",
+      "readiness_blocker": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
+      "readiness_next_goal": "Goal795",
       "scale": {
         "iterations": 10,
         "obstacle_count": 1024,

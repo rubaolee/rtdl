@@ -29,6 +29,7 @@ def _entry(
     claim_scope: str,
     non_claim: str,
     preconditions: list[str],
+    env: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     perf = rt.optix_app_performance_support(app)
     readiness = rt.optix_app_benchmark_readiness(app)
@@ -48,6 +49,37 @@ def _entry(
         "claim_scope": claim_scope,
         "non_claim": non_claim,
         "preconditions": preconditions,
+        "env": dict(env or {}),
+    }
+
+
+def _deferred_entry(
+    *,
+    app: str,
+    app_path: str,
+    path_name: str,
+    command: list[str],
+    env: dict[str, str],
+    reason_deferred: str,
+    activation_gate: str,
+    claim_scope: str,
+    non_claim: str,
+) -> dict[str, Any]:
+    perf = rt.optix_app_performance_support(app)
+    readiness = rt.optix_app_benchmark_readiness(app)
+    return {
+        "app": app,
+        "app_path": app_path,
+        "path_name": path_name,
+        "command": command,
+        "env": dict(env),
+        "optix_performance_class": perf.performance_class,
+        "optix_performance_note": perf.note,
+        "benchmark_readiness": readiness.status,
+        "reason_deferred": reason_deferred,
+        "activation_gate": activation_gate,
+        "claim_scope": claim_scope,
+        "non_claim": non_claim,
     }
 
 
@@ -213,6 +245,34 @@ def build_manifest() -> dict[str, Any]:
             "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
             "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
         },
+        "deferred_entries": [
+            _deferred_entry(
+                app="segment_polygon_hitcount",
+                app_path="examples/rtdl_segment_polygon_hitcount.py",
+                path_name="segment_polygon_hitcount_native_experimental",
+                command=[
+                    python,
+                    "examples/rtdl_segment_polygon_hitcount.py",
+                    "--backend",
+                    "optix",
+                    "--dataset",
+                    "derived/br_county_subset_segment_polygon_tiled_x256",
+                ],
+                env={"RTDL_OPTIX_SEGPOLY_MODE": "native"},
+                reason_deferred=(
+                    "Native OptiX hit-count exists behind an explicit environment gate, "
+                    "but historical Goal120 evidence showed no performance win and the "
+                    "default public app path remains host-indexed."
+                ),
+                activation_gate=(
+                    "Promote only after a focused native-vs-host-indexed-vs-PostGIS "
+                    "correctness/performance harness passes on RTX hardware and the "
+                    "app readiness matrix is updated."
+                ),
+                claim_scope="experimental native custom-AABB segment/polygon hit-count traversal",
+                non_claim="not default public app behavior and not a row-returning any-hit claim",
+            ),
+        ],
         "boundary": (
             "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; "
             "claims require successful cloud runs, phase-clean evidence, and independent review."

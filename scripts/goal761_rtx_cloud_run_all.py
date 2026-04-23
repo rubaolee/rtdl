@@ -18,11 +18,13 @@ sys.path.insert(0, str(ROOT))
 from scripts.goal759_rtx_cloud_benchmark_manifest import build_manifest
 
 
-def _run_command(command: list[str], *, dry_run: bool) -> dict[str, Any]:
+def _run_command(command: list[str], *, dry_run: bool, env_overrides: dict[str, str] | None = None) -> dict[str, Any]:
     started = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    env_overrides = dict(env_overrides or {})
     if dry_run:
         return {
             "command": command,
+            "env_overrides": env_overrides,
             "status": "dry_run",
             "started_at": started,
             "elapsed_sec": 0.0,
@@ -34,7 +36,7 @@ def _run_command(command: list[str], *, dry_run: bool) -> dict[str, Any]:
     completed = subprocess.run(
         command,
         cwd=ROOT,
-        env={**os.environ, "PYTHONPATH": "src:."},
+        env={**os.environ, "PYTHONPATH": "src:.", **env_overrides},
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -43,6 +45,7 @@ def _run_command(command: list[str], *, dry_run: bool) -> dict[str, Any]:
     elapsed = time.perf_counter() - start
     return {
         "command": command,
+        "env_overrides": env_overrides,
         "status": "ok" if completed.returncode == 0 else "failed",
         "started_at": started,
         "elapsed_sec": elapsed,
@@ -74,14 +77,21 @@ def run_all(*, dry_run: bool, only: set[str] | None = None) -> dict[str, Any]:
         if only is None or entry["path_name"] in only or entry["app"] in only
     ]
     command_results = []
-    command_cache: dict[tuple[str, ...], dict[str, Any]] = {}
+    command_cache: dict[tuple[tuple[str, ...], tuple[tuple[str, str], ...]], dict[str, Any]] = {}
     for entry in entries:
-        command_key = tuple(str(part) for part in entry["command"])
+        env_overrides = {
+            str(key): str(value)
+            for key, value in entry.get("env", {}).items()
+        }
+        command_key = (
+            tuple(str(part) for part in entry["command"]),
+            tuple(sorted(env_overrides.items())),
+        )
         if command_key in command_cache:
             result = dict(command_cache[command_key])
             result["execution_mode"] = "reused_command_result"
         else:
-            result = _run_command(list(entry["command"]), dry_run=dry_run)
+            result = _run_command(list(entry["command"]), dry_run=dry_run, env_overrides=env_overrides)
             result["execution_mode"] = "executed"
             command_cache[command_key] = dict(result)
         command_results.append(
