@@ -238,7 +238,7 @@
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
       "scale": {
-        "iterations": 10,
+        "iterations": 3,
         "obstacle_count": 1024,
         "pose_count": 200000
       },

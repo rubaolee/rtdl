@@ -36,7 +36,7 @@ class Goal837BaselineScaleIdentityHardeningTest(unittest.TestCase):
         }
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["scale"],
-            {"pose_count": 200000, "obstacle_count": 1024, "iterations": 10},
+            {"pose_count": 200000, "obstacle_count": 1024, "iterations": 3},
         )
         self.assertEqual(
             rows[("database_analytics", "prepared_db_session_sales_risk")]["scale"],

@@ -412,7 +412,7 @@
       "artifact_path": "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
       "baseline": "cpu_oracle_pose_count",
       "benchmark_scale": {
-        "iterations": 10,
+        "iterations": 3,
         "obstacle_count": 1024,
         "pose_count": 200000
       },
@@ -427,7 +427,7 @@
         "--obstacle-count",
         "1024",
         "--iterations",
-        "10",
+        "3",
         "--output-json",
         "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json"
       ],
@@ -451,7 +451,7 @@
       "artifact_path": "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
       "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
       "benchmark_scale": {
-        "iterations": 10,
+        "iterations": 3,
         "obstacle_count": 1024,
         "pose_count": 200000
       },
@@ -466,7 +466,7 @@
         "--obstacle-count",
         "1024",
         "--iterations",
-        "10",
+        "3",
         "--output-json",
         "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json"
       ],

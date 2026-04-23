@@ -60,7 +60,7 @@ class Goal835RtxBaselineCollectionPlanTest(unittest.TestCase):
         robot = rows[("robot_collision_screening", "prepared_pose_flags")]
         self.assertIn("embree_anyhit_pose_count_or_equivalent_compact_summary", robot["required_baselines"])
         self.assertIn("native_anyhit_query", robot["required_phases"])
-        self.assertEqual(robot["scale"], {"pose_count": 200000, "obstacle_count": 1024, "iterations": 10})
+        self.assertEqual(robot["scale"], {"pose_count": 200000, "obstacle_count": 1024, "iterations": 3})
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

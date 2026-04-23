@@ -4,8 +4,8 @@
   "date": "2026-04-23",
   "deferred_count": 3,
   "goal": "Goal836 RTX baseline readiness gate",
-  "invalid_artifact_count": 0,
-  "missing_artifact_count": 15,
+  "invalid_artifact_count": 1,
+  "missing_artifact_count": 12,
   "repo": "/Users/rl2025/rtdl_python_only",
   "required_artifact_count": 23,
   "row_count": 8,
@@ -31,11 +31,11 @@
         },
         {
           "baseline": "postgresql_same_semantics_on_linux_when_available",
-          "errors": [
-            "artifact file is missing"
-          ],
+          "covered_phase_count": 5,
+          "errors": [],
           "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
-          "status": "missing"
+          "repeated_runs": 10,
+          "status": "valid"
         }
       ],
       "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
@@ -52,7 +52,7 @@
         "copyback_or_materialization",
         "python_summary_postprocess"
       ],
-      "row_status": "needs_baselines",
+      "row_status": "ok",
       "scale": {
         "copies": 20000,
         "iterations": 10
@@ -80,11 +80,11 @@
         },
         {
           "baseline": "postgresql_same_semantics_on_linux_when_available",
-          "errors": [
-            "artifact file is missing"
-          ],
+          "covered_phase_count": 5,
+          "errors": [],
           "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
-          "status": "missing"
+          "repeated_runs": 10,
+          "status": "valid"
         }
       ],
       "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
@@ -101,7 +101,7 @@
         "copyback_or_materialization",
         "python_summary_postprocess"
       ],
-      "row_status": "needs_baselines",
+      "row_status": "ok",
       "scale": {
         "copies": 20000,
         "iterations": 10
@@ -219,11 +219,13 @@
         },
         {
           "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+          "covered_phase_count": 7,
           "errors": [
-            "artifact file is missing"
+            "benchmark_scale does not match Goal835 plan"
           ],
           "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
-          "status": "missing"
+          "repeated_runs": 10,
+          "status": "invalid"
         }
       ],
       "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
@@ -243,7 +245,7 @@
       ],
       "row_status": "needs_baselines",
       "scale": {
-        "iterations": 10,
+        "iterations": 3,
         "obstacle_count": 1024,
         "pose_count": 200000
       },
@@ -387,5 +389,5 @@
   ],
   "source_plan_goal": "Goal835 RTX baseline collection plan",
   "status": "needs_baselines",
-  "valid_artifact_count": 8
+  "valid_artifact_count": 10
 }

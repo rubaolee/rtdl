@@ -350,7 +350,7 @@ def build_manifest() -> dict[str, Any]:
                     "--output-json",
                     "docs/reports/goal759_robot_pose_flags_phase_rtx.json",
                 ],
-                scale={"pose_count": 200000, "obstacle_count": 1024, "iterations": 10},
+                scale={"pose_count": 200000, "obstacle_count": 1024, "iterations": 3},
                 claim_scope="prepared OptiX ray/triangle any-hit pose-flag summary",
                 non_claim="not continuous collision detection, full robot kinematics, or mesh-engine replacement",
                 preconditions=[

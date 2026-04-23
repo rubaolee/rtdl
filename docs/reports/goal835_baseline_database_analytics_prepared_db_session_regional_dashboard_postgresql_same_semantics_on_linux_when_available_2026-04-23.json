@@ -1,0 +1,115 @@
+{
+  "app": "database_analytics",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "postgresql_same_semantics_on_linux_when_available",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 10
+  },
+  "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+  "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "This PostgreSQL artifact is same-semantics compact-summary baseline evidence for Linux hosts with live PostgreSQL available.",
+    "The unified database analytics app does not expose PostgreSQL as a public backend; this collector validates equivalent bounded DB semantics against the CPU prepared compact-summary path.",
+    "The current collector measures PostgreSQL query plus row materialization as one aggregate query total, so native_query and copyback_or_materialization share that total.",
+    "This artifact does not authorize any public speedup claim."
+  ],
+  "path_name": "prepared_db_session_regional_dashboard",
+  "phase_seconds": {
+    "backend_prepare": 7.359810529975221,
+    "copyback_or_materialization": 0.14785595203284174,
+    "input_pack_or_table_build": 0.05515438597649336,
+    "native_query": 0.14785595203284174,
+    "python_summary_postprocess": 7.135968189686537e-06
+  },
+  "phase_separated": true,
+  "repeated_runs": 10,
+  "required_phase_coverage": [
+    "input_pack_or_table_build",
+    "backend_prepare",
+    "native_query",
+    "copyback_or_materialization",
+    "python_summary_postprocess"
+  ],
+  "source_backend": "postgresql",
+  "status": "ok",
+  "summary": {
+    "prepared_session_section": {
+      "app": "regional_order_dashboard",
+      "backend": "postgresql",
+      "copies": 20000,
+      "execution_mode": "prepared_session_semantics",
+      "fallback_note": null,
+      "output_mode": "compact_summary",
+      "requested_backend": "postgresql",
+      "results": {},
+      "row_counts": null,
+      "run_phases": {
+        "python_summary_postprocess_sec": 7.135968189686537e-06,
+        "query_conjunctive_scan_and_materialize_sec": 0.09857224498409778,
+        "query_grouped_count_and_materialize_sec": 0.025353269011247903,
+        "query_grouped_sum_and_materialize_sec": 0.02393043803749606
+      },
+      "session": {
+        "backend_selection_sec": 0.0,
+        "prepare_sec": 7.359810529975221,
+        "table_construction_sec": 0.05515438597649336
+      },
+      "summary": {
+        "open_order_count_by_region": {
+          "east": 40000,
+          "south": 20000,
+          "west": 40000
+        },
+        "promo_order_count": 80000,
+        "web_revenue_by_region": {
+          "east": 3600000,
+          "west": 4800000
+        }
+      }
+    },
+    "scenario": "regional_dashboard"
+  },
+  "summary_sha256": "56b190c5ec8c8c0799f493522af8fd2776d8107f287269dbd417fe5e701cbfb6",
+  "validation": {
+    "date": "2026-04-23",
+    "goal": "Goal842 PostgreSQL prepared DB baseline collector",
+    "reference_backend": "cpu",
+    "reference_summary": {
+      "output_mode": "compact_summary",
+      "row_counts": null,
+      "summary": {
+        "open_order_count_by_region": {
+          "east": 40000,
+          "south": 20000,
+          "west": 40000
+        },
+        "promo_order_count": 80000,
+        "web_revenue_by_region": {
+          "east": 3600000,
+          "west": 4800000
+        }
+      }
+    },
+    "scenario": "regional_dashboard",
+    "target_backend": "postgresql",
+    "target_summary": {
+      "output_mode": "compact_summary",
+      "row_counts": null,
+      "summary": {
+        "open_order_count_by_region": {
+          "east": 40000,
+          "south": 20000,
+          "west": 40000
+        },
+        "promo_order_count": 80000,
+        "web_revenue_by_region": {
+          "east": 3600000,
+          "west": 4800000
+        }
+      }
+    }
+  }
+}

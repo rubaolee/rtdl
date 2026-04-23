@@ -1,0 +1,165 @@
+{
+  "actions": [
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+      "baseline": "postgresql_same_semantics_on_linux_when_available",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal842_postgresql_db_prepared_baseline",
+      "command": [
+        "python3",
+        "scripts/goal842_postgresql_db_prepared_baseline.py",
+        "--scenario",
+        "sales_risk",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json"
+      ],
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
+      "path_name": "prepared_db_session_sales_risk",
+      "reason": "project policy says live PostgreSQL baseline collection is required on Linux, not on this macOS host",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "linux_postgresql_required"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+      "baseline": "postgresql_same_semantics_on_linux_when_available",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal842_postgresql_db_prepared_baseline",
+      "command": [
+        "python3",
+        "scripts/goal842_postgresql_db_prepared_baseline.py",
+        "--scenario",
+        "regional_dashboard",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json"
+      ],
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "none; the collector writes the Goal836 baseline artifact schema directly",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "reason": "project policy says live PostgreSQL baseline collection is required on Linux, not on this macOS host",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "linux_postgresql_required"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
+      "baseline": "cpu_oracle_pose_count",
+      "benchmark_scale": {
+        "iterations": 3,
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      },
+      "collector_kind": "goal839_robot_pose_count_baseline",
+      "command": [
+        "python3",
+        "scripts/goal839_robot_pose_count_baseline.py",
+        "--backend",
+        "cpu",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024",
+        "--iterations",
+        "3",
+        "--output-json",
+        "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json"
+      ],
+      "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+      "path_name": "prepared_pose_flags",
+      "reason": "collector exists, but this exact large-scale robot oracle is too expensive for an efficient unattended macOS local batch",
+      "required_phases": [
+        "pose_and_obstacle_generation",
+        "ray_pack",
+        "backend_scene_prepare",
+        "pose_index_prepare",
+        "native_anyhit_query",
+        "scalar_copyback",
+        "oracle_validation_separate"
+      ],
+      "section": "active",
+      "status": "linux_preferred_for_large_exact_oracle"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
+      "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+      "benchmark_scale": {
+        "iterations": 3,
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      },
+      "collector_kind": "goal839_robot_pose_count_baseline",
+      "command": [
+        "python3",
+        "scripts/goal839_robot_pose_count_baseline.py",
+        "--backend",
+        "embree",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024",
+        "--iterations",
+        "3",
+        "--output-json",
+        "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json"
+      ],
+      "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+      "path_name": "prepared_pose_flags",
+      "reason": "collector exists, but this exact large-scale robot Embree validation is better collected on Linux in the same batch as the CPU oracle",
+      "required_phases": [
+        "pose_and_obstacle_generation",
+        "ray_pack",
+        "backend_scene_prepare",
+        "pose_index_prepare",
+        "native_anyhit_query",
+        "scalar_copyback",
+        "oracle_validation_separate"
+      ],
+      "section": "active",
+      "status": "linux_preferred_for_large_exact_oracle"
+    }
+  ],
+  "boundary": "This batch targets the remaining active Linux-only baselines: live PostgreSQL DB compact summaries and large exact robot pose-count validation. It does not promote deferred apps or authorize speedup claims.",
+  "date": "2026-04-23",
+  "failure_count": 0,
+  "goal": "Goal843 Linux active baseline batch runner",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "result_count": 0,
+  "results": [],
+  "selected_count": 4,
+  "selected_statuses": [
+    "linux_postgresql_required",
+    "linux_preferred_for_large_exact_oracle"
+  ],
+  "status": "plan_only"
+}
