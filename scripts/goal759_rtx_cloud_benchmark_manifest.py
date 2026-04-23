@@ -256,24 +256,25 @@ def build_manifest() -> dict[str, Any]:
                 path_name="segment_polygon_hitcount_native_experimental",
                 command=[
                     python,
-                    "examples/rtdl_segment_polygon_hitcount.py",
-                    "--backend",
-                    "optix",
-                    "--optix-mode",
-                    "native",
+                    "scripts/goal807_segment_polygon_optix_mode_gate.py",
                     "--dataset",
                     "derived/br_county_subset_segment_polygon_tiled_x256",
+                    "--strict",
+                    "--output-json",
+                    "docs/reports/goal807_segment_polygon_optix_mode_gate_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
-                    "Native OptiX hit-count exists behind an explicit environment gate, "
-                    "but historical Goal120 evidence showed no performance win and the "
-                    "default public app path remains host-indexed."
+                    "Native OptiX hit-count exists behind an explicit app mode, but "
+                    "historical Goal120 evidence showed no performance win and the "
+                    "default public app path remains host-indexed. Goal807 now provides "
+                    "the required focused native-vs-host-indexed gate, but the gate has "
+                    "not passed on RTX hardware yet."
                 ),
                 activation_gate=(
-                    "Promote only after a focused native-vs-host-indexed-vs-PostGIS "
-                    "correctness/performance harness passes on RTX hardware and the "
-                    "app readiness matrix is updated."
+                    "Promote only after Goal807 strict mode passes on RTX hardware, "
+                    "PostGIS parity is recorded where PostGIS is available, and the "
+                    "app readiness matrix is updated after independent review."
                 ),
                 claim_scope="experimental native custom-AABB segment/polygon hit-count traversal",
                 non_claim="not default public app behavior and not a row-returning any-hit claim",

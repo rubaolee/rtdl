@@ -83,6 +83,20 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("prepared native pose-flag summary", robot["optix_performance_note"])
         self.assertNotIn("future ABI work", robot["optix_performance_note"])
 
+    def test_deferred_segment_polygon_entry_uses_goal807_gate(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        segment = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "segment_polygon_hitcount"
+        )
+        self.assertIn("scripts/goal807_segment_polygon_optix_mode_gate.py", segment["command"])
+        self.assertIn("--strict", segment["command"])
+        self.assertIn("Goal807 strict mode", segment["activation_gate"])
+
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(
             [sys.executable, str(SCRIPT)],

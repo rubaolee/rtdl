@@ -1,0 +1,56 @@
+{
+  "activation_rule": "segment_polygon_hitcount can only move from deferred RTX candidate to active RTX benchmark target after optix_native and optix_host_indexed both run, match the CPU reference, and are reviewed against the PostGIS baseline where PostGIS is available.",
+  "boundary": "This gate makes the native custom-AABB OptiX mode replayable. It does not authorize a public NVIDIA RT-core speedup claim by itself.",
+  "dataset": "authored_segment_polygon_minimal",
+  "date": "2026-04-23",
+  "generated_at": "2026-04-23T06:40:47",
+  "goal": "Goal807 segment/polygon OptiX native-mode gate",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "include_postgis": false,
+  "records": [
+    {
+      "backend": "cpu_python_reference",
+      "label": "cpu_python_reference",
+      "optix_mode": "not_applicable",
+      "optix_performance": {
+        "class": "host_indexed_fallback",
+        "note": "Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates."
+      },
+      "parity_vs_cpu_python_reference": true,
+      "row_digest": {
+        "row_count": 2,
+        "sha256": "072953b91142607004f2c21198cd7f3d870235e021f52c388d93db4c55a6a074"
+      },
+      "sec": 0.00011833396274596453,
+      "status": "ok"
+    },
+    {
+      "error": "librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "error_type": "FileNotFoundError",
+      "label": "optix_host_indexed",
+      "parity_vs_cpu_python_reference": false,
+      "sec": 0.00047224992886185646,
+      "status": "unavailable_or_failed"
+    },
+    {
+      "error": "librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "error_type": "FileNotFoundError",
+      "label": "optix_native",
+      "parity_vs_cpu_python_reference": false,
+      "sec": 0.00023154192604124546,
+      "status": "unavailable_or_failed"
+    }
+  ],
+  "status": "non_strict_recorded_gaps",
+  "strict": false,
+  "strict_failures": [
+    "optix_host_indexed did not run",
+    "optix_native did not run"
+  ],
+  "strict_pass": false
+}
