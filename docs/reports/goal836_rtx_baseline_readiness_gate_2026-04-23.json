@@ -1,0 +1,367 @@
+{
+  "active_count": 5,
+  "boundary": "This readiness gate only inspects local baseline evidence. It does not run benchmarks, start cloud resources, promote deferred apps, or authorize RTX speedup claims.",
+  "date": "2026-04-23",
+  "deferred_count": 3,
+  "goal": "Goal836 RTX baseline readiness gate",
+  "invalid_artifact_count": 0,
+  "missing_artifact_count": 23,
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "required_artifact_count": 23,
+  "row_count": 8,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_oracle_compact_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_compact_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "postgresql_same_semantics_on_linux_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "required_baselines": [
+        "cpu_oracle_compact_summary",
+        "embree_compact_summary",
+        "postgresql_same_semantics_on_linux_when_available"
+      ],
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "row_status": "needs_baselines",
+      "section": "active"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_oracle_compact_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_compact_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "postgresql_same_semantics_on_linux_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "required_baselines": [
+        "cpu_oracle_compact_summary",
+        "embree_compact_summary",
+        "postgresql_same_semantics_on_linux_when_available"
+      ],
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "row_status": "needs_baselines",
+      "section": "active"
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_scalar_threshold_count_oracle",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_scalar_or_summary_path",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "required_baselines": [
+        "cpu_scalar_threshold_count_oracle",
+        "embree_scalar_or_summary_path",
+        "scipy_or_reference_neighbor_baseline_when_used_in_app_report"
+      ],
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "row_status": "needs_baselines",
+      "section": "active"
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_scalar_threshold_count_oracle",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_scalar_or_summary_path",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "required_baselines": [
+        "cpu_scalar_threshold_count_oracle",
+        "embree_scalar_or_summary_path",
+        "scipy_or_reference_neighbor_baseline_when_used_in_app_report"
+      ],
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "row_status": "needs_baselines",
+      "section": "active"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_oracle_pose_count",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+      "path_name": "prepared_pose_flags",
+      "required_baselines": [
+        "cpu_oracle_pose_count",
+        "embree_anyhit_pose_count_or_equivalent_compact_summary"
+      ],
+      "required_phases": [
+        "pose_and_obstacle_generation",
+        "ray_pack",
+        "backend_scene_prepare",
+        "pose_index_prepare",
+        "native_anyhit_query",
+        "scalar_copyback",
+        "oracle_validation_separate"
+      ],
+      "row_status": "needs_baselines",
+      "section": "active"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "scipy_baseline_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+      "path_name": "prepared_gap_summary",
+      "required_baselines": [
+        "cpu_oracle_summary",
+        "embree_summary_path",
+        "scipy_baseline_when_available"
+      ],
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "row_status": "needs_baselines",
+      "section": "deferred"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_embree_summary_path_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "scipy_baseline_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+      "path_name": "prepared_count_summary",
+      "required_baselines": [
+        "cpu_oracle_summary",
+        "embree_summary_path",
+        "scipy_baseline_when_available"
+      ],
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "row_status": "needs_baselines",
+      "section": "deferred"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact_checks": [
+        {
+          "baseline": "cpu_python_reference",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_cpu_python_reference_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "optix_host_indexed",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_optix_host_indexed_2026-04-23.json",
+          "status": "missing"
+        },
+        {
+          "baseline": "postgis_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_postgis_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "claim_limit": "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "required_baselines": [
+        "cpu_python_reference",
+        "optix_host_indexed",
+        "postgis_when_available"
+      ],
+      "required_phases": [
+        "records",
+        "strict_pass",
+        "strict_failures",
+        "status"
+      ],
+      "row_status": "needs_baselines",
+      "section": "deferred"
+    }
+  ],
+  "source_plan_goal": "Goal835 RTX baseline collection plan",
+  "status": "needs_baselines",
+  "valid_artifact_count": 0
+}
