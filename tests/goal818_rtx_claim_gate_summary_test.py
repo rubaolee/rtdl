@@ -25,7 +25,7 @@ class Goal818RtxClaimGateSummaryTest(unittest.TestCase):
         text = REPORT.read_text(encoding="utf-8")
         for phrase in (
             "Do not restart a paid cloud pod per app",
-            "55 tests OK",
+            "66 tests OK",
             "excluded/gated apps must not be benchmarked as RT-core claims",
             "machine-readable statuses",
         ):

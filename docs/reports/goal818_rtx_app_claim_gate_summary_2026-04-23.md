@@ -62,16 +62,16 @@ PYTHONPATH=src:. python3 -m unittest \
   tests.goal815_db_rt_core_claim_gate_test \
   tests.goal816_polygon_overlap_rt_core_boundary_test \
   tests.goal817_cuda_through_optix_claim_gate_test \
+  tests.goal818_rtx_claim_gate_summary_test \
   tests.goal819_spatial_prepared_summary_rt_core_gate_test \
+  tests.goal820_segment_polygon_rt_core_gate_test \
   tests.goal705_optix_app_benchmark_readiness_test \
   tests.goal803_rt_core_app_maturity_contract_test \
   tests.goal759_rtx_cloud_benchmark_manifest_test \
   tests.goal761_rtx_cloud_run_all_test
 ```
 
-Result before Goal819: `55 tests OK`. Result after Goal819 focused update:
-`19 tests OK` for the spatial prepared-summary gate plus readiness/maturity
-checks.
+Current result after Goals813-820: `66 tests OK`.
 
 ## Cloud Policy
 
