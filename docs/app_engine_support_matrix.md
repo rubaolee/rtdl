@@ -49,9 +49,9 @@ For OptiX performance classification specifically, use
 - `service_coverage_gaps`: Spatial radius-join app currently exposes CPU, Embree, and SciPy baseline; other RT engines are not app CLI options.
 - `event_hotspot_screening`: Spatial self-join app currently exposes CPU, Embree, and SciPy baseline.
 - `facility_knn_assignment`: Spatial KNN app currently exposes CPU, Embree, and SciPy baseline.
-- `road_hazard_screening`: Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan.
-- `segment_polygon_hitcount`: Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan.
-- `segment_polygon_anyhit_rows`: Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan.
+- `road_hazard_screening`: Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection, but native mode is still gated.
+- `segment_polygon_hitcount`: Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection.
+- `segment_polygon_anyhit_rows`: Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan; compact modes can request native OptiX hit-count mode, while pair-row mode stays host-indexed.
 - `polygon_pair_overlap_area_rows`: Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact area refinement.
 - `polygon_set_jaccard`: Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact set-area/Jaccard refinement.
 - `hausdorff_distance`: KNN app exposes CPU, Embree, OptiX, and Vulkan.
@@ -88,9 +88,9 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | `examples/rtdl_service_coverage_gaps.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
 | `examples/rtdl_event_hotspot_screening.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
 | `examples/rtdl_facility_knn_assignment.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
-| `examples/rtdl_road_hazard_screening.py` | `host_indexed_fallback` | Default segment/polygon OptiX app path uses host-indexed candidate reduction unless native OptiX mode is explicitly enabled and separately gated. |
-| `examples/rtdl_segment_polygon_hitcount.py` | `host_indexed_fallback` | Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates. |
-| `examples/rtdl_segment_polygon_anyhit_rows.py` | `host_indexed_fallback` | Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. |
+| `examples/rtdl_road_hazard_screening.py` | `host_indexed_fallback` | Default segment/polygon OptiX app path uses host-indexed candidate reduction. Explicit native mode is now exposed for hit-count execution, but remains separately gated before any RT-core claim. |
+| `examples/rtdl_segment_polygon_hitcount.py` | `host_indexed_fallback` | Default segment/polygon OptiX path is host-indexed; explicit native OptiX mode exists and must pass Goal807 strict correctness/performance gating before promotion. |
+| `examples/rtdl_segment_polygon_anyhit_rows.py` | `host_indexed_fallback` | Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. Compact flags/counts can request native hit-count mode, but pair-row native output does not exist yet. |
 | `examples/rtdl_polygon_pair_overlap_area_rows.py` | `not_optix_exposed` | Public script is CPU-reference only today. |
 | `examples/rtdl_polygon_set_jaccard.py` | `not_optix_exposed` | Public script is CPU-reference only today. |
 | `examples/rtdl_hausdorff_distance_app.py` | `cuda_through_optix` | Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
@@ -147,9 +147,9 @@ materialization, validation, and post-processing.
 | `examples/rtdl_service_coverage_gaps.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
 | `examples/rtdl_event_hotspot_screening.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
 | `examples/rtdl_facility_knn_assignment.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
-| `examples/rtdl_road_hazard_screening.py` | `needs_native_kernel_tuning` | Goal708 | no RTX road-hazard speedup claim today |
-| `examples/rtdl_segment_polygon_hitcount.py` | `needs_native_kernel_tuning` | Goal708 | no RTX segment/polygon hit-count speedup claim today |
-| `examples/rtdl_segment_polygon_anyhit_rows.py` | `needs_native_kernel_tuning` | Goal708 | no RTX pair-row speedup claim today |
+| `examples/rtdl_road_hazard_screening.py` | `needs_native_kernel_tuning` | Goal807/808 | no RTX road-hazard speedup claim today |
+| `examples/rtdl_segment_polygon_hitcount.py` | `needs_native_kernel_tuning` | Goal807 | no RTX segment/polygon hit-count speedup claim today |
+| `examples/rtdl_segment_polygon_anyhit_rows.py` | `needs_native_kernel_tuning` | Goal807/808 | no RTX pair-row speedup claim today |
 | `examples/rtdl_polygon_pair_overlap_area_rows.py` | `exclude_from_rtx_app_benchmark` | none | CPU correctness app only |
 | `examples/rtdl_polygon_set_jaccard.py` | `exclude_from_rtx_app_benchmark` | none | CPU correctness app only |
 | `examples/rtdl_hausdorff_distance_app.py` | `exclude_from_rtx_app_benchmark` | Goal709 | GPU-compute comparison only; no RT-core acceleration claim |
@@ -198,9 +198,9 @@ then run one batched cloud validation session for all eligible RT-core paths.
 | `service_coverage_gaps` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if the radius-join slice is implemented as true prepared traversal or compact native summary. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
 | `event_hotspot_screening` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if self-join candidate discovery and compact summaries use true RT traversal. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
 | `facility_knn_assignment` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal primitive rather than CUDA-through-OptiX KNN rows. | Cloud only after a native traversal design exists. |
-| `road_hazard_screening` | `needs_rt_core_redesign` | `rt_core_ready` | Promote a native segment/polygon compact summary path and make the road-hazard app use it by default for OptiX. | No paid RTX road-hazard benchmark while the public path is host-indexed. |
-| `segment_polygon_hitcount` | `needs_rt_core_redesign` | `rt_core_ready` | Turn the env-gated native hit-count path into a default, profiled, correctness-gated path only if it beats or justifies replacing host-indexed fallback. | Cloud only in a focused native-vs-host-indexed-vs-PostGIS batch after local gate passes. |
-| `segment_polygon_anyhit_rows` | `needs_rt_core_redesign` | `rt_core_ready` | Implement native OptiX any-hit rows or compact flags/counts; avoid broad row-output speedup claims when row volume dominates. | No cloud benchmark until native any-hit or compact summary exists locally. |
+| `road_hazard_screening` | `needs_rt_core_redesign` | `rt_core_ready` | Run the explicit native segment/polygon mode through Goal807 strict RTX gating before changing default OptiX behavior or claims. | Cloud only in the focused Goal807 native-vs-host-indexed batch; no road-hazard speedup claim until that passes. |
+| `segment_polygon_hitcount` | `needs_rt_core_redesign` | `rt_core_ready` | Use Goal807 to prove explicit native hit-count correctness/performance against host-indexed and PostGIS where available before promotion. | Cloud only in a focused Goal807 native-vs-host-indexed batch after local gate packaging is complete. |
+| `segment_polygon_anyhit_rows` | `needs_rt_core_redesign` | `rt_core_ready` | Use native hit-count mode only for compact flags/counts after Goal807; implement a true native pair-row emitter before any row-output acceleration claim. | No pair-row cloud benchmark until native any-hit rows exist; compact modes may join the Goal807 batch only as bounded summary evidence. |
 | `polygon_pair_overlap_area_rows` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only after polygon-pair overlap is mapped to true traversal plus bounded exact refinement. | Cloud only after native OptiX surface and local correctness gate exist. |
 | `polygon_set_jaccard` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only after Jaccard candidate discovery and compact overlap summaries use true traversal. | Cloud only after native OptiX surface and local correctness gate exist. |
 | `hausdorff_distance` | `needs_rt_core_redesign` | `rt_core_ready` | Replace CUDA-through-OptiX KNN rows with a true traversal-friendly Hausdorff candidate/summary design or keep it as GPU-compute only. | No RT-core cloud claim until a true traversal design exists. |
