@@ -1,0 +1,35 @@
+{
+  "boundary": "This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. optix mode can support future RTX claim review only on RTX-class hardware with exported prepared OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing. packed_arrays input mode avoids per-ray Python object construction but remains app-specific. pose_count result mode returns only a scalar colliding-pose count for clean native summary timing.",
+  "date": "2026-04-22",
+  "edge_ray_count": 2000000,
+  "input_mode": "packed_arrays",
+  "iterations": 12,
+  "matches_oracle": null,
+  "mode": "optix",
+  "obstacle_count": 2048,
+  "obstacle_triangle_count": 4096,
+  "phases": {
+    "close_sec": 0.0002790819853544235,
+    "optix_prepare_pose_indices_sec": 0.00086948461830616,
+    "optix_prepare_rays_sec": 0.02911842055618763,
+    "optix_prepare_scene_sec": 0.30019391514360905,
+    "oracle_validate_sec": 0.0,
+    "prepared_pose_flags_warm_query_sec": {
+      "max_sec": 0.051614440977573395,
+      "median_sec": 0.00043328385800123215,
+      "min_sec": 0.0004224274307489395
+    },
+    "python_input_construction_sec": 0.21489117480814457,
+    "total_sec": 0.6999953482300043
+  },
+  "pose_count": 500000,
+  "result": {
+    "colliding_pose_count": 473554,
+    "colliding_pose_ids_sample": [],
+    "oracle_colliding_pose_count": null,
+    "pose_collision_flags_sample": []
+  },
+  "result_mode": "pose_count",
+  "suite": "Goal760 OptiX robot pose-flags phase profiler",
+  "validated": false
+}

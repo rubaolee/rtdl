@@ -1,0 +1,88 @@
+{
+  "boundary": "GTX 1070 evidence validates OptiX prepared-scene behavior only. RTX RT-core speedup claims require RTX-class hardware.",
+  "copies": 100000,
+  "iterations": 8,
+  "result_mode": "threshold_count",
+  "results": [
+    {
+      "app": "outlier_detection",
+      "copies": 100000,
+      "one_shot_total_sec": null,
+      "phase_contract": {
+        "native_warm_query": "prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back",
+        "postprocess": "none in scalar-summary mode",
+        "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
+      },
+      "point_count": 800000,
+      "prepared_optix_close_sec": 0.0012810640037059784,
+      "prepared_optix_pack_points_sec": 0.8880988955497742,
+      "prepared_optix_postprocess_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_prepare_sec": 0.7675289511680603,
+      "prepared_optix_validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_warm_query_sec": {
+        "max_sec": 0.00751829519867897,
+        "median_sec": 0.002407885156571865,
+        "min_sec": 0.0022363122552633286
+      },
+      "prepared_output": {
+        "matches_oracle": true,
+        "oracle_outlier_count": null,
+        "outlier_count": 200000,
+        "point_count": 800000,
+        "threshold_reached_count": 600000
+      },
+      "result_mode": "threshold_count",
+      "speedup_one_shot_over_warm_query_median": null,
+      "validation_mode": "skipped"
+    },
+    {
+      "app": "dbscan_clustering",
+      "copies": 100000,
+      "one_shot_total_sec": null,
+      "phase_contract": {
+        "native_warm_query": "prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back",
+        "postprocess": "none in scalar-summary mode; full DBSCAN cluster expansion remains outside this profiler",
+        "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
+      },
+      "point_count": 800000,
+      "prepared_optix_close_sec": 0.0012930072844028473,
+      "prepared_optix_pack_points_sec": 0.9285975378006697,
+      "prepared_optix_postprocess_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_prepare_sec": 0.013813642784953117,
+      "prepared_optix_validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_warm_query_sec": {
+        "max_sec": 0.0030919089913368225,
+        "median_sec": 0.002031712792813778,
+        "min_sec": 0.001856660470366478
+      },
+      "prepared_output": {
+        "core_count": 700000,
+        "matches_oracle": true,
+        "oracle_core_count": null,
+        "point_count": 800000,
+        "threshold_reached_count": 700000
+      },
+      "result_mode": "threshold_count",
+      "speedup_one_shot_over_warm_query_median": null,
+      "validation_mode": "skipped"
+    }
+  ],
+  "skip_validation": true,
+  "suite": "goal757_optix_fixed_radius_prepared_perf"
+}
