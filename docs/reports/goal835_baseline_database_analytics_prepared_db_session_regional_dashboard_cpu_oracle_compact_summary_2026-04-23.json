@@ -19,10 +19,10 @@
   "path_name": "prepared_db_session_regional_dashboard",
   "phase_seconds": {
     "backend_prepare": 0.0,
-    "copyback_or_materialization": 0,
-    "input_pack_or_table_build": 0.0,
-    "native_query": 0,
-    "python_summary_postprocess": 4.541012458503246e-06
+    "copyback_or_materialization": 0.5169126660330221,
+    "input_pack_or_table_build": 0.05030899995472282,
+    "native_query": 0.5169126660330221,
+    "python_summary_postprocess": 8.167000487446785e-06
   },
   "phase_separated": true,
   "repeated_runs": 10,
@@ -133,13 +133,13 @@
       },
       "requested_backend": "cpu_reference",
       "run_phases": {
-        "cpu_reference_execute_and_postprocess_sec": 0.2663185839774087,
-        "python_summary_postprocess_sec": 4.541012458503246e-06
+        "cpu_reference_execute_and_postprocess_sec": 0.5169126660330221,
+        "python_summary_postprocess_sec": 8.167000487446785e-06
       },
       "session": {
-        "backend_selection_sec": 3.500026650726795e-06,
+        "backend_selection_sec": 7.166992872953415e-06,
         "prepare_sec": 0.0,
-        "table_construction_sec": 0.022643000003881752
+        "table_construction_sec": 0.05030899995472282
       },
       "summary": {
         "open_order_count_by_region": {
@@ -156,7 +156,7 @@
     },
     "scenario": "regional_dashboard"
   },
-  "summary_sha256": "d48a9d73ac910095fa418dc98d31b51eef1b85a136b8cf4bdfca70653cd140dd",
+  "summary_sha256": "8e063b525a44f031c87e490aa407e2ed3cfb782991583e97845e210eee73c3f6",
   "validation": {
     "date": "2026-04-23",
     "goal": "Goal840 local prepared DB baseline collector",

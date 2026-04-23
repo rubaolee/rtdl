@@ -50,6 +50,21 @@ class Goal840DbPreparedBaselineTest(unittest.TestCase):
         self.assertEqual(artifact["validation"]["reference_backend"], "cpu")
         self.assertEqual(artifact["summary"]["prepared_session_section"]["backend"], "embree")
 
+    def test_build_cpu_regional_dashboard_artifact_uses_cpu_reference_execution_timer(self) -> None:
+        module = __import__("scripts.goal840_db_prepared_baseline", fromlist=["build_db_baseline_artifact"])
+        artifact = module.build_db_baseline_artifact(
+            backend="cpu",
+            scenario="regional_dashboard",
+            copies=20,
+            iterations=2,
+        )
+        self.assertGreater(artifact["phase_seconds"]["native_query"], 0.0)
+        self.assertEqual(
+            artifact["phase_seconds"]["native_query"],
+            artifact["phase_seconds"]["copyback_or_materialization"],
+        )
+        self.assertGreater(artifact["phase_seconds"]["input_pack_or_table_build"], 0.0)
+
     def test_cli_writes_artifact_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "artifact.json"

@@ -62,8 +62,13 @@ def _collect_phase_seconds(result: dict[str, Any], scenario: str) -> dict[str, f
         for key, value in run.items()
         if key.startswith("query_") and key.endswith("_sec")
     )
+    if query_and_materialize == 0.0 and "cpu_reference_execute_and_postprocess_sec" in run:
+        query_and_materialize = float(run["cpu_reference_execute_and_postprocess_sec"])
+    input_build = prepare.get("input_construction_sec")
+    if input_build is None:
+        input_build = prepare.get("table_construction_sec", 0.0)
     return {
-        "input_pack_or_table_build": float(prepare.get("input_construction_sec", 0.0)),
+        "input_pack_or_table_build": float(input_build),
         "backend_prepare": float(prepare.get("prepare_sec", 0.0)),
         "native_query": query_and_materialize,
         "copyback_or_materialization": query_and_materialize,
