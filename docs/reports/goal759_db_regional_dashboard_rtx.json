@@ -1,0 +1,321 @@
+{
+  "boundary": "Prepared DB session profiler compares one-shot app calls with reused prepared sessions. GTX 1070 evidence is backend behavior evidence only, not RTX RT-core speedup evidence.",
+  "copies": 20000,
+  "iterations": 10,
+  "results": [
+    {
+      "backend": "optix",
+      "one_shot_output": {
+        "app": "database_analytics",
+        "copies": 20000,
+        "data_flow": [
+          "application-owned denormalized rows",
+          "bounded RTDL DB kernels",
+          "scan and grouped aggregate rows",
+          "Python-owned dashboard or risk-summary JSON"
+        ],
+        "execution_mode": "one_shot",
+        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "optix_performance": {
+          "class": "python_interface_dominated",
+          "note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization."
+        },
+        "output_mode": "summary",
+        "requested_backend": "optix",
+        "retired_compatibility_helpers": [
+          "examples/rtdl_v0_7_db_app_demo.py",
+          "examples/rtdl_sales_risk_screening.py"
+        ],
+        "scenario": "regional_dashboard",
+        "sections": {
+          "regional_dashboard": {
+            "app": "regional_order_dashboard",
+            "backend": "optix",
+            "copies": 20000,
+            "data_flow": [
+              "app order rows",
+              "RTDL v0.7 bounded DB workload",
+              "prepared RT dataset over encoded row boxes",
+              "application-ready JSON rows"
+            ],
+            "execution_mode": "one_shot",
+            "fallback_note": null,
+            "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+            "input_table": {
+              "fields": [
+                "channel",
+                "discount",
+                "quantity",
+                "region",
+                "revenue",
+                "row_id",
+                "ship_date"
+              ],
+              "row_count": 140000
+            },
+            "output_mode": "summary",
+            "prepared_dataset": {
+              "row_count": 140000,
+              "transfer": "columnar"
+            },
+            "queries": {
+              "open_order_count_by_region": {
+                "meaning": "How many small post-window orders remain by region?",
+                "operation": "grouped_count",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "quantity",
+                      "lt",
+                      20
+                    ]
+                  ]
+                }
+              },
+              "promo_order_ids": {
+                "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+                "operation": "conjunctive_scan",
+                "predicates": [
+                  [
+                    "ship_date",
+                    "between",
+                    12,
+                    15
+                  ],
+                  [
+                    "discount",
+                    "eq",
+                    6
+                  ],
+                  [
+                    "quantity",
+                    "lt",
+                    20
+                  ]
+                ]
+              },
+              "web_revenue_by_region": {
+                "meaning": "How much web-channel revenue is covered by region?",
+                "operation": "grouped_sum",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "channel",
+                      "eq",
+                      "web"
+                    ]
+                  ],
+                  "value_field": "revenue"
+                }
+              }
+            },
+            "requested_backend": "optix",
+            "summary": {
+              "open_order_count_by_region": {
+                "east": 40000,
+                "south": 20000,
+                "west": 40000
+              },
+              "promo_order_count": 80000,
+              "web_revenue_by_region": {
+                "east": 3600000,
+                "west": 4800000
+              }
+            }
+          }
+        }
+      },
+      "one_shot_total_sec": 2.353828739374876,
+      "phase_contract": {
+        "not_yet_split": "native DB launch/traversal, candidate copy-back, exact filtering/grouping, and Python materialization are still grouped inside session.run unless a backend exposes lower-level timers",
+        "one_shot_total": "complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess",
+        "prepared_session_prepare_total": "public app prepare_session call including fixture construction and native prepared dataset creation where available",
+        "prepared_session_warm_query": "session.run only: prepared queries plus result materialization and app summary construction",
+        "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON"
+      },
+      "prepared_session_close_sec": 0.000441012904047966,
+      "prepared_session_output": {
+        "app": "database_analytics",
+        "copies": 20000,
+        "data_flow": [
+          "application-owned denormalized rows",
+          "reused bounded RTDL DB prepared sessions",
+          "scan and grouped aggregate rows",
+          "Python-owned dashboard or risk-summary JSON"
+        ],
+        "execution_mode": "prepared_session",
+        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "optix_performance": {
+          "class": "python_interface_dominated",
+          "note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization."
+        },
+        "output_mode": "summary",
+        "prepared_session": {
+          "prepare_session_sec": 1.045995268970728,
+          "scenario_count": 1
+        },
+        "requested_backend": "optix",
+        "retired_compatibility_helpers": [
+          "examples/rtdl_v0_7_db_app_demo.py",
+          "examples/rtdl_sales_risk_screening.py"
+        ],
+        "scenario": "regional_dashboard",
+        "sections": {
+          "regional_dashboard": {
+            "app": "regional_order_dashboard",
+            "backend": "optix",
+            "copies": 20000,
+            "data_flow": [
+              "app order rows",
+              "RTDL v0.7 bounded DB workload",
+              "reused prepared RT dataset over encoded row boxes",
+              "application-ready JSON rows"
+            ],
+            "execution_mode": "prepared_session",
+            "fallback_note": null,
+            "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
+            "input_table": {
+              "fields": [
+                "channel",
+                "discount",
+                "quantity",
+                "region",
+                "revenue",
+                "row_id",
+                "ship_date"
+              ],
+              "row_count": 140000
+            },
+            "output_mode": "summary",
+            "prepared_dataset": {
+              "row_count": 140000,
+              "transfer": "columnar"
+            },
+            "queries": {
+              "open_order_count_by_region": {
+                "meaning": "How many small post-window orders remain by region?",
+                "operation": "grouped_count",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "quantity",
+                      "lt",
+                      20
+                    ]
+                  ]
+                }
+              },
+              "promo_order_ids": {
+                "meaning": "Which discounted small-quantity orders shipped during the campaign window?",
+                "operation": "conjunctive_scan",
+                "predicates": [
+                  [
+                    "ship_date",
+                    "between",
+                    12,
+                    15
+                  ],
+                  [
+                    "discount",
+                    "eq",
+                    6
+                  ],
+                  [
+                    "quantity",
+                    "lt",
+                    20
+                  ]
+                ]
+              },
+              "web_revenue_by_region": {
+                "meaning": "How much web-channel revenue is covered by region?",
+                "operation": "grouped_sum",
+                "query": {
+                  "group_keys": [
+                    "region"
+                  ],
+                  "predicates": [
+                    [
+                      "ship_date",
+                      "ge",
+                      12
+                    ],
+                    [
+                      "channel",
+                      "eq",
+                      "web"
+                    ]
+                  ],
+                  "value_field": "revenue"
+                }
+              }
+            },
+            "requested_backend": "optix",
+            "session": {
+              "backend_selection_sec": 1.1754222214221954e-05,
+              "prepare_sec": 0.985242648050189,
+              "table_construction_sec": 0.06071465741842985
+            },
+            "summary": {
+              "open_order_count_by_region": {
+                "east": 40000,
+                "south": 20000,
+                "west": 40000
+              },
+              "promo_order_count": 80000,
+              "web_revenue_by_region": {
+                "east": 3600000,
+                "west": 4800000
+              }
+            }
+          }
+        }
+      },
+      "prepared_session_prepare_total_sec": 1.0460273874923587,
+      "prepared_session_warm_query_sec": {
+        "max_sec": 0.23679708037525415,
+        "median_sec": 0.20409445371478796,
+        "min_sec": 0.20150986220687628
+      },
+      "reported_prepare_phases_sec": {
+        "regional_dashboard": {
+          "backend_selection_sec": 1.1754222214221954e-05,
+          "prepare_sec": 0.985242648050189,
+          "table_construction_sec": 0.06071465741842985
+        },
+        "unified_session": {
+          "prepare_session_sec": 1.045995268970728,
+          "scenario_count": 1
+        }
+      },
+      "speedup_one_shot_over_warm_query_median": 11.533036280663643,
+      "status": "ok"
+    }
+  ],
+  "scenario": "regional_dashboard",
+  "suite": "goal756_db_prepared_session_perf"
+}

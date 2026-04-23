@@ -1,0 +1,181 @@
+{
+  "boundary": "Prepared DB session profiler compares one-shot app calls with reused prepared sessions. GTX 1070 evidence is backend behavior evidence only, not RTX RT-core speedup evidence.",
+  "copies": 20000,
+  "iterations": 10,
+  "results": [
+    {
+      "backend": "optix",
+      "one_shot_output": {
+        "app": "database_analytics",
+        "copies": 20000,
+        "data_flow": [
+          "application-owned denormalized rows",
+          "bounded RTDL DB kernels",
+          "scan and grouped aggregate rows",
+          "Python-owned dashboard or risk-summary JSON"
+        ],
+        "execution_mode": "one_shot",
+        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "optix_performance": {
+          "class": "python_interface_dominated",
+          "note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization."
+        },
+        "output_mode": "summary",
+        "requested_backend": "optix",
+        "retired_compatibility_helpers": [
+          "examples/rtdl_v0_7_db_app_demo.py",
+          "examples/rtdl_sales_risk_screening.py"
+        ],
+        "scenario": "sales_risk",
+        "sections": {
+          "sales_risk": {
+            "app": "sales_risk_screening",
+            "backend": "optix",
+            "copies": 20000,
+            "execution_mode": "one_shot",
+            "output_mode": "summary",
+            "prepared_dataset": {
+              "row_count": 120000,
+              "transfer": "columnar"
+            },
+            "row_counts": {
+              "grouped_count": 3,
+              "grouped_sum": 3,
+              "scan": 80000
+            },
+            "summary": {
+              "highest_risk_region": "west",
+              "risky_order_count": 80000,
+              "risky_order_count_by_region": {
+                "central": 20000,
+                "east": 20000,
+                "west": 40000
+              },
+              "risky_order_id_sample": [
+                2,
+                3,
+                4,
+                6,
+                8,
+                9,
+                10,
+                12,
+                14,
+                15
+              ],
+              "risky_revenue_by_region": {
+                "central": 5200000,
+                "east": 6200000,
+                "west": 8600000
+              }
+            }
+          }
+        }
+      },
+      "one_shot_total_sec": 1.9723956817761064,
+      "phase_contract": {
+        "not_yet_split": "native DB launch/traversal, candidate copy-back, exact filtering/grouping, and Python materialization are still grouped inside session.run unless a backend exposes lower-level timers",
+        "one_shot_total": "complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess",
+        "prepared_session_prepare_total": "public app prepare_session call including fixture construction and native prepared dataset creation where available",
+        "prepared_session_warm_query": "session.run only: prepared queries plus result materialization and app summary construction",
+        "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON"
+      },
+      "prepared_session_close_sec": 0.00044414401054382324,
+      "prepared_session_output": {
+        "app": "database_analytics",
+        "copies": 20000,
+        "data_flow": [
+          "application-owned denormalized rows",
+          "reused bounded RTDL DB prepared sessions",
+          "scan and grouped aggregate rows",
+          "Python-owned dashboard or risk-summary JSON"
+        ],
+        "execution_mode": "prepared_session",
+        "honesty_boundary": "Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.",
+        "optix_performance": {
+          "class": "python_interface_dominated",
+          "note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization."
+        },
+        "output_mode": "summary",
+        "prepared_session": {
+          "prepare_session_sec": 0.8188228001818061,
+          "scenario_count": 1
+        },
+        "requested_backend": "optix",
+        "retired_compatibility_helpers": [
+          "examples/rtdl_v0_7_db_app_demo.py",
+          "examples/rtdl_sales_risk_screening.py"
+        ],
+        "scenario": "sales_risk",
+        "sections": {
+          "sales_risk": {
+            "app": "sales_risk_screening",
+            "backend": "optix",
+            "copies": 20000,
+            "execution_mode": "prepared_session",
+            "output_mode": "summary",
+            "prepared_dataset": {
+              "row_count": 120000,
+              "transfer": "columnar"
+            },
+            "row_counts": {
+              "grouped_count": 3,
+              "grouped_sum": 3,
+              "scan": 80000
+            },
+            "session": {
+              "input_construction_sec": 0.046477869153022766,
+              "prepare_sec": 0.7722933562472463
+            },
+            "summary": {
+              "highest_risk_region": "west",
+              "risky_order_count": 80000,
+              "risky_order_count_by_region": {
+                "central": 20000,
+                "east": 20000,
+                "west": 40000
+              },
+              "risky_order_id_sample": [
+                2,
+                3,
+                4,
+                6,
+                8,
+                9,
+                10,
+                12,
+                14,
+                15
+              ],
+              "risky_revenue_by_region": {
+                "central": 5200000,
+                "east": 6200000,
+                "west": 8600000
+              }
+            }
+          }
+        }
+      },
+      "prepared_session_prepare_total_sec": 0.8188792308792472,
+      "prepared_session_warm_query_sec": {
+        "max_sec": 0.16356414929032326,
+        "median_sec": 0.13713113591074944,
+        "min_sec": 0.13616052642464638
+      },
+      "reported_prepare_phases_sec": {
+        "sales_risk": {
+          "input_construction_sec": 0.046477869153022766,
+          "prepare_sec": 0.7722933562472463
+        },
+        "unified_session": {
+          "prepare_session_sec": 0.8188228001818061,
+          "scenario_count": 1
+        }
+      },
+      "speedup_one_shot_over_warm_query_median": 14.38328114673988,
+      "status": "ok"
+    }
+  ],
+  "scenario": "sales_risk",
+  "suite": "goal756_db_prepared_session_perf"
+}

@@ -1,0 +1,160 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 5,
+  "failed_count": 0,
+  "git_head": "e74c54e89e3548627b69b24a73d36870b7b6d08e",
+  "git_status_short": "?? docs/reports/goal759_db_regional_dashboard_rtx.json\n?? docs/reports/goal759_db_sales_risk_rtx.json\n?? docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json\n?? docs/reports/goal759_robot_pose_flags_phase_rtx.json\n?? docs/reports/goal763_rtx_cloud_bootstrap_check_runpod_2026-04-22.json\n?? docs/reports/goal763_rtx_cloud_bootstrap_check_runpod_2026-04-23.json",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Thu Apr 23 07:54:06 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:4F:00.0 Off |                  Off |\n| 30%   34C    P0             88W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl_python_only",
+  "results": [
+    {
+      "app": "database_analytics",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_sales_risk_rtx.json"
+        ],
+        "elapsed_sec": 5.072372866794467,
+        "returncode": 0,
+        "started_at": "2026-04-23T07:53:06+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "nless a backend exposes lower-level timers\",\n        \"one_shot_total\": \"complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess\",\n        \"prepared_session_prepare_total\": \"public app prepare_session call including fixture construction and native prepared dataset creation where available\",\n        \"prepared_session_warm_query\": \"session.run only: prepared queries plus result materialization and app summary construction\",\n        \"reported_prepare_phases\": \"scenario-provided construction/selection/prepare timers embedded in app JSON\"\n      },\n      \"prepared_session_close_sec\": 0.00044414401054382324,\n      \"prepared_session_output\": {\n        \"app\": \"database_analytics\",\n        \"copies\": 20000,\n        \"data_flow\": [\n          \"application-owned denormalized rows\",\n          \"reused bounded RTDL DB prepared sessions\",\n          \"scan and grouped aggregate rows\",\n          \"Python-owned dashboard or risk-summary JSON\"\n        ],\n        \"execution_mode\": \"prepared_session\",\n        \"honesty_boundary\": \"Unified app over bounded v0.7 DB kernels; not SQL, indexes, joins, transactions, query planning, or a DBMS.\",\n        \"optix_performance\": {\n          \"class\": \"python_interface_dominated\",\n          \"note\": \"Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.\"\n        },\n        \"output_mode\": \"summary\",\n        \"prepared_session\": {\n          \"prepare_session_sec\": 0.8188228001818061,\n          \"scenario_count\": 1\n        },\n        \"requested_backend\": \"optix\",\n        \"retired_compatibility_helpers\": [\n          \"examples/rtdl_v0_7_db_app_demo.py\",\n          \"examples/rtdl_sales_risk_screening.py\"\n        ],\n        \"scenario\": \"sales_risk\",\n        \"sections\": {\n          \"sales_risk\": {\n            \"app\": \"sales_risk_screening\",\n            \"backend\": \"optix\",\n            \"copies\": 20000,\n            \"execution_mode\": \"prepared_session\",\n            \"output_mode\": \"summary\",\n            \"prepared_dataset\": {\n              \"row_count\": 120000,\n              \"transfer\": \"columnar\"\n            },\n            \"row_counts\": {\n              \"grouped_count\": 3,\n              \"grouped_sum\": 3,\n              \"scan\": 80000\n            },\n            \"session\": {\n              \"input_construction_sec\": 0.046477869153022766,\n              \"prepare_sec\": 0.7722933562472463\n            },\n            \"summary\": {\n              \"highest_risk_region\": \"west\",\n              \"risky_order_count\": 80000,\n              \"risky_order_count_by_region\": {\n                \"central\": 20000,\n                \"east\": 20000,\n                \"west\": 40000\n              },\n              \"risky_order_id_sample\": [\n                2,\n                3,\n                4,\n                6,\n                8,\n                9,\n                10,\n                12,\n                14,\n                15\n              ],\n              \"risky_revenue_by_region\": {\n                \"central\": 5200000,\n                \"east\": 6200000,\n                \"west\": 8600000\n              }\n            }\n          }\n        }\n      },\n      \"prepared_session_prepare_total_sec\": 0.8188792308792472,\n      \"prepared_session_warm_query_sec\": {\n        \"max_sec\": 0.16356414929032326,\n        \"median_sec\": 0.13713113591074944,\n        \"min_sec\": 0.13616052642464638\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.046477869153022766,\n          \"prepare_sec\": 0.7722933562472463\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.8188228001818061,\n          \"scenario_count\": 1\n        }\n      },\n      \"speedup_one_shot_over_warm_query_median\": 14.38328114673988,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+      }
+    },
+    {
+      "app": "database_analytics",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "regional_dashboard",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_regional_dashboard_rtx.json"
+        ],
+        "elapsed_sec": 6.223164590075612,
+        "returncode": 0,
+        "started_at": "2026-04-23T07:53:11+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "o of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.\",\n            \"input_table\": {\n              \"fields\": [\n                \"channel\",\n                \"discount\",\n                \"quantity\",\n                \"region\",\n                \"revenue\",\n                \"row_id\",\n                \"ship_date\"\n              ],\n              \"row_count\": 140000\n            },\n            \"output_mode\": \"summary\",\n            \"prepared_dataset\": {\n              \"row_count\": 140000,\n              \"transfer\": \"columnar\"\n            },\n            \"queries\": {\n              \"open_order_count_by_region\": {\n                \"meaning\": \"How many small post-window orders remain by region?\",\n                \"operation\": \"grouped_count\",\n                \"query\": {\n                  \"group_keys\": [\n                    \"region\"\n                  ],\n                  \"predicates\": [\n                    [\n                      \"ship_date\",\n                      \"ge\",\n                      12\n                    ],\n                    [\n                      \"quantity\",\n                      \"lt\",\n                      20\n                    ]\n                  ]\n                }\n              },\n              \"promo_order_ids\": {\n                \"meaning\": \"Which discounted small-quantity orders shipped during the campaign window?\",\n                \"operation\": \"conjunctive_scan\",\n                \"predicates\": [\n                  [\n                    \"ship_date\",\n                    \"between\",\n                    12,\n                    15\n                  ],\n                  [\n                    \"discount\",\n                    \"eq\",\n                    6\n                  ],\n                  [\n                    \"quantity\",\n                    \"lt\",\n                    20\n                  ]\n                ]\n              },\n              \"web_revenue_by_region\": {\n                \"meaning\": \"How much web-channel revenue is covered by region?\",\n                \"operation\": \"grouped_sum\",\n                \"query\": {\n                  \"group_keys\": [\n                    \"region\"\n                  ],\n                  \"predicates\": [\n                    [\n                      \"ship_date\",\n                      \"ge\",\n                      12\n                    ],\n                    [\n                      \"channel\",\n                      \"eq\",\n                      \"web\"\n                    ]\n                  ],\n                  \"value_field\": \"revenue\"\n                }\n              }\n            },\n            \"requested_backend\": \"optix\",\n            \"session\": {\n              \"backend_selection_sec\": 1.1754222214221954e-05,\n              \"prepare_sec\": 0.985242648050189,\n              \"table_construction_sec\": 0.06071465741842985\n            },\n            \"summary\": {\n              \"open_order_count_by_region\": {\n                \"east\": 40000,\n                \"south\": 20000,\n                \"west\": 40000\n              },\n              \"promo_order_count\": 80000,\n              \"web_revenue_by_region\": {\n                \"east\": 3600000,\n                \"west\": 4800000\n              }\n            }\n          }\n        }\n      },\n      \"prepared_session_prepare_total_sec\": 1.0460273874923587,\n      \"prepared_session_warm_query_sec\": {\n        \"max_sec\": 0.23679708037525415,\n        \"median_sec\": 0.20409445371478796,\n        \"min_sec\": 0.20150986220687628\n      },\n      \"reported_prepare_phases_sec\": {\n        \"regional_dashboard\": {\n          \"backend_selection_sec\": 1.1754222214221954e-05,\n          \"prepare_sec\": 0.985242648050189,\n          \"table_construction_sec\": 0.06071465741842985\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 1.045995268970728,\n          \"scenario_count\": 1\n        }\n      },\n      \"speedup_one_shot_over_warm_query_median\": 11.533036280663643,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"regional_dashboard\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+      }
+    },
+    {
+      "app": "outlier_detection",
+      "claim_scope": "prepared fixed-radius threshold summary traversal only",
+      "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+        ],
+        "elapsed_sec": 18.989507904276252,
+        "returncode": 0,
+        "started_at": "2026-04-23T07:53:17+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "_count\": 3,\n            \"point_id\": 1\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 2\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 3\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 4\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 5\n          }\n        ],\n        \"embree_summary_mode\": \"not_applicable\",\n        \"epsilon\": 0.35,\n        \"k_max\": 16,\n        \"matches_oracle\": true,\n        \"min_points\": 3,\n        \"neighbor_row_count\": 0,\n        \"noise_point_ids_count\": 0,\n        \"noise_point_ids_sample\": [],\n        \"optix_summary_mode\": \"rt_core_flags\",\n        \"oracle_core_flag_rows_count\": 160000,\n        \"oracle_core_flag_rows_sample\": [\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 1\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 2\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 3\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 4\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 5\n          }\n        ],\n        \"output_mode\": \"core_flags\",\n        \"point_count\": 160000,\n        \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. output_mode=core_flags emits only thresholded core flags; Embree uses a prepared fixed-radius threshold traversal for this compact path.\"\n      },\n      \"one_shot_total_sec\": 1.2226784881204367,\n      \"phase_contract\": {\n        \"excluded\": \"full DBSCAN cluster expansion remains outside this prepared core-flag profiler\",\n        \"native_warm_query\": \"prepared_obj.run only: OptiX traversal, threshold counting, and native row copy-back\",\n        \"postprocess\": \"Python conversion from count rows to app DBSCAN core flags\",\n        \"validation\": \"oracle construction/comparison timing; omitted when skip_validation=true\"\n      },\n      \"point_count\": 160000,\n      \"prepared_optix_close_sec\": 0.0006702011451125145,\n      \"prepared_optix_postprocess_sec\": {\n        \"max_sec\": 0.1435885028913617,\n        \"median_sec\": 0.1359967808239162,\n        \"min_sec\": 0.13049791660159826\n      },\n      \"prepared_optix_prepare_sec\": 0.23117807693779469,\n      \"prepared_optix_validation_sec\": {\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0\n      },\n      \"prepared_optix_warm_query_sec\": {\n        \"max_sec\": 0.49361347686499357,\n        \"median_sec\": 0.4740920555777848,\n        \"min_sec\": 0.4358337027952075\n      },\n      \"prepared_output\": {\n        \"core_count\": 140000,\n        \"core_flag_rows_count\": 160000,\n        \"core_flag_rows_sample\": [\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 1\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 2\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 3\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 4\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 5\n          }\n        ],\n        \"matches_oracle\": true,\n        \"oracle_core_flag_rows_count\": 0,\n        \"oracle_core_flag_rows_sample\": [],\n        \"point_count\": 160000\n      },\n      \"speedup_one_shot_over_warm_query_median\": 2.5789896154879366,\n      \"validation_mode\": \"skipped\"\n    }\n  ],\n  \"skip_validation\": true,\n  \"suite\": \"goal757_optix_fixed_radius_prepared_perf\"\n}\n"
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "claim_scope": "prepared fixed-radius core-flag traversal only",
+      "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+        ],
+        "elapsed_sec": 18.631343126296997,
+        "returncode": 0,
+        "started_at": "2026-04-23T07:53:36+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "bor_count\": 3,\n            \"point_id\": 1\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 2\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 3\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 4\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 5\n          }\n        ],\n        \"embree_summary_mode\": \"not_applicable\",\n        \"epsilon\": 0.35,\n        \"k_max\": 16,\n        \"matches_oracle\": true,\n        \"min_points\": 3,\n        \"neighbor_row_count\": 0,\n        \"noise_point_ids_count\": 0,\n        \"noise_point_ids_sample\": [],\n        \"optix_summary_mode\": \"rt_core_flags\",\n        \"oracle_core_flag_rows_count\": 160000,\n        \"oracle_core_flag_rows_sample\": [\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 1\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 2\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 3\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 4\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 5\n          }\n        ],\n        \"output_mode\": \"core_flags\",\n        \"point_count\": 160000,\n        \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. output_mode=core_flags emits only thresholded core flags; Embree uses a prepared fixed-radius threshold traversal for this compact path.\"\n      },\n      \"one_shot_total_sec\": 1.231997319497168,\n      \"phase_contract\": {\n        \"excluded\": \"full DBSCAN cluster expansion remains outside this prepared core-flag profiler\",\n        \"native_warm_query\": \"prepared_obj.run only: OptiX traversal, threshold counting, and native row copy-back\",\n        \"postprocess\": \"Python conversion from count rows to app DBSCAN core flags\",\n        \"validation\": \"oracle construction/comparison timing; omitted when skip_validation=true\"\n      },\n      \"point_count\": 160000,\n      \"prepared_optix_close_sec\": 0.0006175199523568153,\n      \"prepared_optix_postprocess_sec\": {\n        \"max_sec\": 0.1533079519867897,\n        \"median_sec\": 0.1377384434454143,\n        \"min_sec\": 0.13339018542319536\n      },\n      \"prepared_optix_prepare_sec\": 0.24122537951916456,\n      \"prepared_optix_validation_sec\": {\n        \"max_sec\": 0.0,\n        \"median_sec\": 0.0,\n        \"min_sec\": 0.0\n      },\n      \"prepared_optix_warm_query_sec\": {\n        \"max_sec\": 0.4953827504068613,\n        \"median_sec\": 0.4824242773465812,\n        \"min_sec\": 0.4328988417983055\n      },\n      \"prepared_output\": {\n        \"core_count\": 140000,\n        \"core_flag_rows_count\": 160000,\n        \"core_flag_rows_sample\": [\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 1\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 2\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 3\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 4\n          },\n          {\n            \"is_core\": true,\n            \"neighbor_count\": 3,\n            \"point_id\": 5\n          }\n        ],\n        \"matches_oracle\": true,\n        \"oracle_core_flag_rows_count\": 0,\n        \"oracle_core_flag_rows_sample\": [],\n        \"point_count\": 160000\n      },\n      \"speedup_one_shot_over_warm_query_median\": 2.553763103037374,\n      \"validation_mode\": \"skipped\"\n    }\n  ],\n  \"skip_validation\": true,\n  \"suite\": \"goal757_optix_fixed_radius_prepared_perf\"\n}\n"
+      }
+    },
+    {
+      "app": "robot_collision_screening",
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "path_name": "prepared_pose_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+          "--mode",
+          "optix",
+          "--pose-count",
+          "200000",
+          "--obstacle-count",
+          "1024",
+          "--iterations",
+          "10",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
+        ],
+        "elapsed_sec": 10.254565053619444,
+        "returncode": 0,
+        "started_at": "2026-04-23T07:53:55+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\n  \"boundary\": \"This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. optix mode can support future RTX claim review only on RTX-class hardware with exported prepared OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing.\",\n  \"date\": \"2026-04-22\",\n  \"edge_ray_count\": 800000,\n  \"iterations\": 10,\n  \"matches_oracle\": null,\n  \"mode\": \"optix\",\n  \"obstacle_count\": 1024,\n  \"obstacle_triangle_count\": 2048,\n  \"phases\": {\n    \"close_sec\": 0.00022878777235746384,\n    \"optix_prepare_rays_sec\": 1.893762357532978,\n    \"optix_prepare_scene_sec\": 0.9420478018000722,\n    \"oracle_validate_sec\": 0.0,\n    \"prepared_pose_flags_warm_query_sec\": {\n      \"max_sec\": 0.673868065699935,\n      \"median_sec\": 0.24042322859168053,\n      \"min_sec\": 0.23211224377155304\n    },\n    \"python_input_construction_sec\": 3.0384278632700443,\n    \"total_sec\": 9.281152011826634\n  },\n  \"pose_count\": 200000,\n  \"result\": {\n    \"colliding_pose_count\": 193750,\n    \"colliding_pose_ids_sample\": [\n      2,\n      3,\n      4,\n      5,\n      6,\n      7,\n      8,\n      9,\n      10,\n      11\n    ],\n    \"oracle_colliding_pose_count\": null,\n    \"pose_collision_flags_sample\": [\n      {\n        \"collides\": false,\n        \"pose_id\": 1\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 2\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 3\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 4\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 5\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 6\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 7\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 8\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 9\n      },\n      {\n        \"collides\": true,\n        \"pose_id\": 10\n      }\n    ]\n  },\n  \"suite\": \"Goal760 OptiX robot pose-flags phase profiler\",\n  \"validated\": false\n}\n"
+      }
+    }
+  ],
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-23T07:54:05+0000"
+}
