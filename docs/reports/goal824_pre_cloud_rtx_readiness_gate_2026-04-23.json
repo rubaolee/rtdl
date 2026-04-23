@@ -1,0 +1,76 @@
+{
+  "boundary": "Local readiness only; does not start cloud and does not authorize speedup claims.",
+  "checks": {
+    "active_runner_dry_run": {
+      "dry_run": true,
+      "entry_count": 5,
+      "status": "ok",
+      "unique_command_count": 4
+    },
+    "bootstrap_dry_run": {
+      "dry_run": true,
+      "status": "ok",
+      "step_names": [
+        "build_optix",
+        "native_optix_focused_tests"
+      ]
+    },
+    "deferred_runner_dry_run": {
+      "dry_run": true,
+      "entry_count": 8,
+      "include_deferred": true,
+      "status": "ok",
+      "unique_command_count": 7
+    },
+    "docs": {
+      "goal822_report_exists": true,
+      "plan_exists": true,
+      "valid": true
+    },
+    "git": {
+      "head": {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "output_tail": "f75353dfc05a31caf71378415bd838bb6f6a970e\n",
+        "returncode": 0
+      },
+      "status_short": {
+        "command": [
+          "git",
+          "status",
+          "--short"
+        ],
+        "output_tail": "?? docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.md\n?? scripts/goal824_pre_cloud_rtx_readiness_gate.py\n?? tests/goal824_pre_cloud_rtx_readiness_gate_test.py\n",
+        "returncode": 0
+      }
+    },
+    "manifest": {
+      "active_count": 5,
+      "active_errors": [],
+      "deferred_count": 3,
+      "excluded_count": 12,
+      "missing_deferred": [],
+      "missing_excluded": [],
+      "valid": true
+    },
+    "public_command_audit": {
+      "command_count": 252,
+      "coverage_counts": {
+        "goal410_harness_exact": 226,
+        "goal410_harness_family": 13,
+        "goal513_front_page_smoke_exact": 6,
+        "goal593_public_example_smoke_exact": 4,
+        "goal821_require_rt_core_doc_gate_exact": 2,
+        "postgresql_validation_command": 1
+      },
+      "valid": true
+    }
+  },
+  "invalid_checks": [],
+  "next_cloud_policy": "Start one RTX cloud pod only after this gate is valid. Run the active Goal759/Goal761 batch first, optionally include deferred entries only after their activation gates are met, collect artifacts, then shut down.",
+  "suite": "goal824_pre_cloud_rtx_readiness_gate",
+  "valid": true
+}
