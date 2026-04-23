@@ -58,9 +58,26 @@ def _summarize(rows) -> dict[str, object]:
     }
 
 
-def run_backend(backend: str, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "graph_bfs OptiX path is host-indexed fallback today, not NVIDIA RT-core traversal"
+    )
+
+
+def run_backend(
+    backend: str,
+    copies: int = 1,
+    output_mode: str = "rows",
+    *,
+    require_rt_core: bool = False,
+) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = make_case(copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(bfs_expand_kernel, **case)
@@ -86,6 +103,7 @@ def run_backend(backend: str, copies: int = 1, output_mode: str = "rows") -> dic
         "visited_size": len(case["visited"]),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
+        "rt_core_accelerated": False,
         "optix_performance": {
             "class": "host_indexed_fallback",
             "note": (
@@ -105,8 +123,24 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic graph fixture this many times.")
     parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_backend(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_backend(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
