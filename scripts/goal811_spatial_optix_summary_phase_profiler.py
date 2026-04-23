@@ -22,6 +22,34 @@ from examples import rtdl_service_coverage_gaps as service_app
 
 GOAL = "Goal811 spatial OptiX prepared-summary phase profiler"
 DATE = "2026-04-23"
+SCHEMA_VERSION = "goal826_tier2_phase_contract_v1"
+
+
+def _cloud_claim_contract(scenario: str) -> dict[str, object]:
+    if scenario == "service_coverage_gaps":
+        claim_scope = "prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries"
+        non_claim = "not nearest-clinic row output, not a full service coverage optimizer, and not a whole-app RTX speedup claim"
+    elif scenario == "event_hotspot_screening":
+        claim_scope = "prepared OptiX fixed-radius count traversal for hotspot compact summaries"
+        non_claim = "not neighbor-row output, not a full hotspot analytics system, and not a whole-app RTX speedup claim"
+    else:
+        claim_scope = "prepared OptiX fixed-radius compact summary traversal"
+        non_claim = "not a broad RTX app speedup claim"
+    return {
+        "claim_scope": claim_scope,
+        "non_claim": non_claim,
+        "required_phase_groups": (
+            "input_build",
+            "optix_prepare",
+            "optix_query",
+            "python_postprocess",
+        ),
+        "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+        "cloud_policy": (
+            "do not start a paid pod for this app alone; include only in the "
+            "single consolidated RTX batch after local readiness passes"
+        ),
+    }
 
 
 def _time_call(fn):
@@ -179,6 +207,8 @@ def run_profile(*, scenario: str, mode: str, copies: int) -> dict[str, object]:
     return {
         "goal": GOAL,
         "date": DATE,
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract(scenario),
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "host": {
             "hostname": socket.gethostname(),

@@ -34,7 +34,7 @@
           "rev-parse",
           "HEAD"
         ],
-        "output_tail": "3e6011bff7d4388f3e411058b2457f11c8b9d354\n",
+        "output_tail": "bd9813e2fea660d816224dc1b8912aae0287f6ee\n",
         "returncode": 0
       },
       "status_short": {
@@ -43,7 +43,7 @@
           "status",
           "--short"
         ],
-        "output_tail": " M scripts/goal756_db_prepared_session_perf.py\n M scripts/goal757_optix_fixed_radius_prepared_perf.py\n M scripts/goal760_optix_robot_pose_flags_phase_profiler.py\n M tests/goal756_db_prepared_session_perf_test.py\n M tests/goal757_prepared_optix_fixed_radius_count_test.py\n M tests/goal760_optix_robot_pose_flags_phase_profiler_test.py\n?? docs/reports/goal825_tier1_profiler_contract_refresh_2026-04-23.md\n?? tests/goal825_tier1_profiler_contract_test.py\n",
+        "output_tail": " M scripts/goal811_spatial_optix_summary_phase_profiler.py\n?? docs/reports/goal826_tier2_phase_profiler_contract_2026-04-23.md\n?? tests/goal826_tier2_phase_profiler_contract_test.py\n",
         "returncode": 0
       }
     },
