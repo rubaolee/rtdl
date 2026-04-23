@@ -2350,6 +2350,19 @@ struct PreparedRays2D {
     }
 };
 
+struct PreparedPoseIndices2D {
+    size_t count;
+    DevPtr d_pose_indices;
+
+    explicit PreparedPoseIndices2D(const uint32_t* source, size_t index_count)
+        : count(index_count), d_pose_indices(sizeof(uint32_t) * index_count)
+    {
+        if (!source && index_count != 0)
+            throw std::runtime_error("pose_indices pointer must not be null when index_count is nonzero");
+        upload(d_pose_indices.ptr, source, index_count);
+    }
+};
+
 static PreparedRayAnyHit2D* prepare_ray_anyhit_2d_optix(
         const RtdlTriangle* triangles, size_t triangle_count)
 {
@@ -2361,6 +2374,12 @@ static PreparedRays2D* prepare_rays_2d_optix(
         const RtdlRay2D* rays, size_t ray_count)
 {
     return new PreparedRays2D(rays, ray_count);
+}
+
+static PreparedPoseIndices2D* prepare_pose_indices_2d_optix(
+        const uint32_t* pose_indices, size_t pose_index_count)
+{
+    return new PreparedPoseIndices2D(pose_indices, pose_index_count);
 }
 
 static void count_prepared_ray_anyhit_2d_gpu_optix(
@@ -2473,6 +2492,53 @@ static void pose_flags_prepared_ray_anyhit_2d_packed_optix(
     lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
     lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
     lp.pose_indices = reinterpret_cast<const uint32_t*>(d_pose_indices.ptr);
+    lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
+    lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
+    lp.pose_count = static_cast<uint32_t>(pose_count);
+
+    DevPtr d_params(sizeof(RayAnyHitPoseFlagsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_pose_flags.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitPoseFlagsLaunchParams),
+                            &g_rayanyhit_pose_flags.pipe->sbt,
+                            static_cast<unsigned>(prepared_rays->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    download(pose_flags_out, d_pose_flags.ptr, pose_count);
+}
+
+static void pose_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
+        PreparedRayAnyHit2D* prepared,
+        PreparedRays2D* prepared_rays,
+        PreparedPoseIndices2D* prepared_pose_indices,
+        uint32_t* pose_flags_out,
+        size_t pose_count)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
+    if (!prepared_pose_indices) throw std::runtime_error("prepared OptiX pose-indices handle must not be null");
+    if (!pose_flags_out && pose_count != 0) throw std::runtime_error("pose_flags_out must not be null when pose_count is nonzero");
+    if (prepared_pose_indices->count != prepared_rays->ray_count)
+        throw std::runtime_error("prepared pose-index count must match prepared ray count");
+
+    for (size_t i = 0; i < pose_count; ++i)
+        pose_flags_out[i] = 0u;
+    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || pose_count == 0)
+        return;
+
+    ensure_ray_anyhit_pose_flags_2d_pipeline();
+
+    DevPtr d_pose_flags(sizeof(uint32_t) * pose_count);
+    std::vector<uint32_t> zero_flags(pose_count, 0u);
+    upload(d_pose_flags.ptr, zero_flags.data(), zero_flags.size());
+
+    RayAnyHitPoseFlagsLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
+    lp.pose_indices = reinterpret_cast<const uint32_t*>(prepared_pose_indices->d_pose_indices.ptr);
     lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
     lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
     lp.pose_count = static_cast<uint32_t>(pose_count);

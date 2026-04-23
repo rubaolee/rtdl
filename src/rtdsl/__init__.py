@@ -153,12 +153,14 @@ from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
 from .optix_runtime import OptixRay2DBuffer
+from .optix_runtime import OptixPoseIndexBuffer
 from .optix_runtime import OptixRowView
 from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
+from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
@@ -704,11 +706,13 @@ __all__ = [
     "OptixRowView",
     "optix_version",
     "OptixRay2DBuffer",
+    "OptixPoseIndexBuffer",
     "pack_rays_2d_from_arrays",
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_count_threshold_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
+    "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",

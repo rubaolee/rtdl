@@ -33,6 +33,7 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
             "python_input_construction_sec",
             "optix_prepare_scene_sec",
             "optix_prepare_rays_sec",
+            "optix_prepare_pose_indices_sec",
             "prepared_pose_flags_warm_query_sec",
             "oracle_validate_sec",
             "close_sec",
@@ -43,6 +44,7 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
 
         self.assertEqual(phases["optix_prepare_scene_sec"], 0.0)
         self.assertEqual(phases["optix_prepare_rays_sec"], 0.0)
+        self.assertEqual(phases["optix_prepare_pose_indices_sec"], 0.0)
         self.assertGreaterEqual(phases["prepared_pose_flags_warm_query_sec"]["median_sec"], 0.0)
         self.assertIn("colliding_pose_count", payload["result"])
 

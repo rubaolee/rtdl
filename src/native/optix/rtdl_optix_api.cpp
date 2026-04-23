@@ -214,6 +214,49 @@ extern "C" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_pose_indices_2d(
+        const uint32_t* pose_indices,
+        size_t pose_index_count,
+        void** pose_indices_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!pose_indices_out)
+            throw std::runtime_error("pose_indices_out must not be null");
+        if (!pose_indices && pose_index_count != 0)
+            throw std::runtime_error("pose_indices pointer must not be null when pose_index_count is nonzero");
+        *pose_indices_out = nullptr;
+        *pose_indices_out = prepare_pose_indices_2d_optix(pose_indices, pose_index_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices(
+        void* prepared,
+        void* prepared_rays,
+        void* prepared_pose_indices,
+        uint32_t* pose_flags_out,
+        size_t pose_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_rays)
+            throw std::runtime_error("prepared_rays must not be null");
+        if (!prepared_pose_indices)
+            throw std::runtime_error("prepared_pose_indices must not be null");
+        pose_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            reinterpret_cast<PreparedRays2D*>(prepared_rays),
+            reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices),
+            pose_flags_out,
+            pose_count);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices)
+{
+    delete reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays)
 {
     delete reinterpret_cast<PreparedRays2D*>(prepared_rays);

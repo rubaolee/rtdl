@@ -172,6 +172,7 @@ def run_suite(
 
     prepare_scene_sec = 0.0
     prepare_rays_sec = 0.0
+    prepare_pose_indices_sec = 0.0
     close_sec = 0.0
     run_samples: list[float] = []
     last_pose_flags: tuple[bool, ...] = ()
@@ -187,19 +188,36 @@ def run_suite(
             lambda: rt.prepare_optix_ray_triangle_any_hit_2d(obstacle_triangles)
         )
         prepared_rays = None
+        prepared_pose_indices = None
         try:
             prepared_rays, prepare_rays_sec = _time_call(lambda: rt.prepare_optix_rays_2d(edge_rays))
-            for _ in range(iterations):
-                raw_flags, elapsed = _time_call(
-                    lambda: prepared_scene.pose_flags_packed(
-                        prepared_rays,
-                        pose_indices,
-                        pose_count=len(poses),
-                    )
+            if input_mode == "packed_arrays":
+                prepared_pose_indices, prepare_pose_indices_sec = _time_call(
+                    lambda: rt.prepare_optix_pose_indices_2d(pose_indices)
                 )
+            for _ in range(iterations):
+                if prepared_pose_indices is None:
+                    raw_flags, elapsed = _time_call(
+                        lambda: prepared_scene.pose_flags_packed(
+                            prepared_rays,
+                            pose_indices,
+                            pose_count=len(poses),
+                        )
+                    )
+                else:
+                    raw_flags, elapsed = _time_call(
+                        lambda: prepared_scene.pose_flags_prepared_indices(
+                            prepared_rays,
+                            prepared_pose_indices,
+                            pose_count=len(poses),
+                        )
+                    )
                 last_pose_flags = tuple(bool(flag) for flag in raw_flags)
                 run_samples.append(elapsed)
         finally:
+            if prepared_pose_indices is not None:
+                _, pose_indices_close_sec = _time_call(prepared_pose_indices.close)
+                close_sec += pose_indices_close_sec
             if prepared_rays is not None:
                 _, rays_close_sec = _time_call(prepared_rays.close)
                 close_sec += rays_close_sec
@@ -234,6 +252,7 @@ def run_suite(
             "python_input_construction_sec": input_sec,
             "optix_prepare_scene_sec": prepare_scene_sec,
             "optix_prepare_rays_sec": prepare_rays_sec,
+            "optix_prepare_pose_indices_sec": prepare_pose_indices_sec,
             "prepared_pose_flags_warm_query_sec": _stats(run_samples),
             "oracle_validate_sec": oracle_sec,
             "close_sec": close_sec,
