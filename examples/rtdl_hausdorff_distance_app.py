@@ -92,6 +92,16 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "hausdorff_distance OptiX path is CUDA-through-OptiX KNN rows today, not NVIDIA RT-core traversal"
+    )
+
+
 def _directed_from_rows(rows: Iterable[dict[str, object]], label: str) -> dict[str, object]:
     nearest_rows = list(rows)
     if not nearest_rows:
@@ -188,6 +198,7 @@ def run_app(
     copies: int = 1,
     *,
     embree_result_mode: str = "rows",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     case = make_authored_point_sets(copies=copies)
     points_a = case["points_a"]
@@ -196,6 +207,7 @@ def run_app(
         raise ValueError("Hausdorff distance requires non-empty point sets")
     if embree_result_mode not in {"rows", "directed_summary"}:
         raise ValueError("embree_result_mode must be 'rows' or 'directed_summary'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
 
     if backend == "embree" and embree_result_mode == "directed_summary":
         directed_ab = rt.directed_hausdorff_2d_embree(points_a, points_b)
@@ -252,6 +264,7 @@ def run_app(
         ),
         "rtdl_role": rtdl_role,
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
     }
 
 
@@ -271,10 +284,20 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="Embree-only: emit KNN rows or native directed-Hausdorff summaries",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
-            run_app(args.backend, args.copies, embree_result_mode=args.embree_result_mode),
+            run_app(
+                args.backend,
+                args.copies,
+                embree_result_mode=args.embree_result_mode,
+                require_rt_core=args.require_rt_core,
+            ),
             indent=2,
             sort_keys=True,
         )

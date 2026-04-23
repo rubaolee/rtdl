@@ -87,6 +87,16 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "ann_candidate_search OptiX path is CUDA-through-OptiX KNN rows today, not NVIDIA RT-core traversal"
+    )
+
+
 def exact_knn_rows(
     query_points: tuple[rt.Point, ...],
     search_points: tuple[rt.Point, ...],
@@ -168,9 +178,11 @@ def run_app(
     *,
     copies: int = 1,
     output_mode: str = "full",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"full", "rerank_summary", "quality_summary"}:
         raise ValueError("output_mode must be 'full', 'rerank_summary', or 'quality_summary'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = make_ann_case(copies=copies)
     approximate_rows = _run_rows(backend, case)
     base_payload = {
@@ -185,6 +197,7 @@ def run_app(
         **_approximate_summary(approximate_rows),
         "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
         "boundary": "Bounded ANN candidate-search demo only; RTDL does not yet provide an ANN index, training phase, or recall/latency optimizer. rerank_summary measures only the RTDL candidate-subset KNN reranking slice; full quality evaluation still uses Python exact full-set comparison.",
     }
     if output_mode == "rerank_summary":
@@ -219,8 +232,24 @@ def main(argv: list[str] | None = None) -> int:
         default="full",
         help="choose full quality rows, RTDL candidate-rerank summary, or compact quality metrics",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_app(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_app(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

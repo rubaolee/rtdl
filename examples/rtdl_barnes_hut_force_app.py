@@ -151,6 +151,16 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "barnes_hut_force_app OptiX path is CUDA-through-OptiX radius candidate generation today, not NVIDIA RT-core traversal"
+    )
+
+
 def _force_from_mass(body: Body, mass: float, cx: float, cy: float) -> tuple[float, float]:
     dx = cx - body.x
     dy = cy - body.y
@@ -272,9 +282,11 @@ def run_app(
     theta: float = THETA,
     body_count: int | None = None,
     output_mode: str = "full",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"full", "candidate_summary", "force_summary"}:
         raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
     nodes = build_one_level_quadtree(bodies)
     candidate_rows = _run_node_candidates(backend, bodies, nodes)
@@ -289,6 +301,7 @@ def run_app(
         "output_mode": output_mode,
         "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
         "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
         "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
     }
     if output_mode == "candidate_summary":
@@ -332,10 +345,21 @@ def main(argv: list[str] | None = None) -> int:
         default="full",
         help="choose full rows, RTDL candidate summary only, or force-reduction summary",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
-            run_app(args.backend, theta=args.theta, body_count=args.body_count, output_mode=args.output_mode),
+            run_app(
+                args.backend,
+                theta=args.theta,
+                body_count=args.body_count,
+                output_mode=args.output_mode,
+                require_rt_core=args.require_rt_core,
+            ),
             indent=2,
             sort_keys=True,
         )
