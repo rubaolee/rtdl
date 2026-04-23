@@ -165,3 +165,48 @@ for broad app benchmarking until the next local optimization batch is ready.
 The preserved RTX 4090 evidence is enough for claim-review discussion of the
 three prepared scalar sub-paths above, but not enough for broad whole-app
 speedup claims.
+
+## RT-Core App Maturity Contract
+
+Status: v1.0 direction contract.
+
+The machine-readable source of truth is
+`rtdsl.rt_core_app_maturity_matrix()`.
+
+This table answers the direct product question: what must happen before each
+public app can honestly be called a NVIDIA RT-core app? The target for general
+apps is `rt_core_ready`. Engine-specific apps such as Apple RT and HIPRT remain
+outside the NVIDIA RT-core target rather than being forced into the OptiX table.
+
+Cloud policy: do not restart or stop a paid cloud pod per app. Finish local
+implementation, local correctness, docs, manifests, and review packets first;
+then run one batched cloud validation session for all eligible RT-core paths.
+
+| Status | Meaning |
+| --- | --- |
+| `rt_core_ready` | Current app or bounded sub-path uses OptiX traversal over an acceleration structure and may enter RTX claim review with phase-clean evidence. |
+| `rt_core_partial_ready` | Real RT-core work exists, but the whole app or public claim path is still dominated by interface/materialization/postprocess. |
+| `needs_rt_core_redesign` | Current app path is host-indexed, CUDA-through-OptiX, or otherwise not a true RT-core traversal claim. |
+| `needs_optix_app_surface` | Public app does not expose OptiX today; it needs an OptiX surface plus true RT traversal design before any NVIDIA claim. |
+| `not_nvidia_rt_core_target` | Engine-specific app; keep it out of NVIDIA OptiX/RTX maturity and cloud batches. |
+
+| App | Current RT-core status | Target status | Required action | Cloud policy |
+| --- | --- | --- | --- | --- |
+| `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Move filtering, grouping, sum/count aggregation, and compact outputs deeper into native OptiX prepared kernels so Python is orchestration only. | Do not cloud-test new DB speedup claims until native phase counters prove Python/materialization is no longer dominant. |
+| `graph_analytics` | `needs_rt_core_redesign` | `rt_core_ready` | Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets. | No paid graph RTX benchmark until a native traversal design and local correctness gate exist. |
+| `apple_rt_demo` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables. | Never include in NVIDIA cloud batches. |
+| `service_coverage_gaps` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if the radius-join slice is implemented as true prepared traversal or compact native summary. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
+| `event_hotspot_screening` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if self-join candidate discovery and compact summaries use true RT traversal. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
+| `facility_knn_assignment` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal primitive rather than CUDA-through-OptiX KNN rows. | Cloud only after a native traversal design exists. |
+| `road_hazard_screening` | `needs_rt_core_redesign` | `rt_core_ready` | Promote a native segment/polygon compact summary path and make the road-hazard app use it by default for OptiX. | No paid RTX road-hazard benchmark while the public path is host-indexed. |
+| `segment_polygon_hitcount` | `needs_rt_core_redesign` | `rt_core_ready` | Turn the env-gated native hit-count path into a default, profiled, correctness-gated path only if it beats or justifies replacing host-indexed fallback. | Cloud only in a focused native-vs-host-indexed-vs-PostGIS batch after local gate passes. |
+| `segment_polygon_anyhit_rows` | `needs_rt_core_redesign` | `rt_core_ready` | Implement native OptiX any-hit rows or compact flags/counts; avoid broad row-output speedup claims when row volume dominates. | No cloud benchmark until native any-hit or compact summary exists locally. |
+| `polygon_pair_overlap_area_rows` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only after polygon-pair overlap is mapped to true traversal plus bounded exact refinement. | Cloud only after native OptiX surface and local correctness gate exist. |
+| `polygon_set_jaccard` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only after Jaccard candidate discovery and compact overlap summaries use true traversal. | Cloud only after native OptiX surface and local correctness gate exist. |
+| `hausdorff_distance` | `needs_rt_core_redesign` | `rt_core_ready` | Replace CUDA-through-OptiX KNN rows with a true traversal-friendly Hausdorff candidate/summary design or keep it as GPU-compute only. | No RT-core cloud claim until a true traversal design exists. |
+| `ann_candidate_search` | `needs_rt_core_redesign` | `rt_core_ready` | Redesign candidate search around a true RT traversal primitive or keep it as GPU-compute/re-ranking evidence. | No RT-core cloud claim until a true traversal design exists. |
+| `outlier_detection` | `rt_core_ready` | `rt_core_ready` | Keep prepared scalar threshold-count as the RT-core claim path and prevent default row mode from being presented as the claim. | Include in the next batched cloud run only with the prepared scalar profiler. |
+| `dbscan_clustering` | `rt_core_ready` | `rt_core_ready` | Keep prepared scalar core-threshold summary as the RT-core claim path and split Python cluster expansion from native timing. | Include in the next batched cloud run only with the prepared scalar profiler. |
+| `robot_collision_screening` | `rt_core_ready` | `rt_core_ready` | Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers. | Include in the next batched cloud run with prepared packed input and scalar pose-count mode. |
+| `barnes_hut_force_app` | `needs_rt_core_redesign` | `rt_core_ready` | Redesign node candidate discovery around a true RT traversal primitive and keep force/opening reduction split from RTDL traversal timing. | No RT-core cloud claim until a true traversal design exists. |
+| `hiprt_ray_triangle_hitcount` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity. | Never include in NVIDIA OptiX cloud batches. |

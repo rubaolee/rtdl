@@ -67,6 +67,15 @@ class OptixAppBenchmarkReadiness:
     allowed_claim: str
 
 
+@dataclass(frozen=True)
+class RtCoreAppMaturity:
+    app: str
+    current_status: str
+    target_status: str
+    required_action: str
+    cloud_policy: str
+
+
 READY_FOR_RTX_CLAIM_REVIEW = "ready_for_rtx_claim_review"
 NEEDS_PHASE_CONTRACT = "needs_phase_contract"
 NEEDS_INTERFACE_TUNING = "needs_interface_tuning"
@@ -81,6 +90,20 @@ OPTIX_APP_BENCHMARK_READINESS_STATUSES = (
     NEEDS_NATIVE_KERNEL_TUNING,
     NEEDS_POSTPROCESS_SPLIT,
     EXCLUDE_FROM_RTX_APP_BENCHMARK,
+)
+
+RT_CORE_READY = "rt_core_ready"
+RT_CORE_PARTIAL_READY = "rt_core_partial_ready"
+NEEDS_RT_CORE_REDESIGN = "needs_rt_core_redesign"
+NEEDS_OPTIX_APP_SURFACE = "needs_optix_app_surface"
+NOT_NVIDIA_RT_CORE_TARGET = "not_nvidia_rt_core_target"
+
+RT_CORE_APP_MATURITY_STATUSES = (
+    RT_CORE_READY,
+    RT_CORE_PARTIAL_READY,
+    NEEDS_RT_CORE_REDESIGN,
+    NEEDS_OPTIX_APP_SURFACE,
+    NOT_NVIDIA_RT_CORE_TARGET,
 )
 
 
@@ -561,6 +584,152 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
 }
 
 
+def _maturity(
+    app: str,
+    current_status: str,
+    target_status: str,
+    required_action: str,
+    cloud_policy: str,
+) -> RtCoreAppMaturity:
+    return RtCoreAppMaturity(
+        app=app,
+        current_status=current_status,
+        target_status=target_status,
+        required_action=required_action,
+        cloud_policy=cloud_policy,
+    )
+
+
+_RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
+    "database_analytics": _maturity(
+        "database_analytics",
+        RT_CORE_PARTIAL_READY,
+        RT_CORE_READY,
+        "Move filtering, grouping, sum/count aggregation, and compact outputs deeper into native OptiX prepared kernels so Python is orchestration only.",
+        "Do not cloud-test new DB speedup claims until native phase counters prove Python/materialization is no longer dominant.",
+    ),
+    "graph_analytics": _maturity(
+        "graph_analytics",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets.",
+        "No paid graph RTX benchmark until a native traversal design and local correctness gate exist.",
+    ),
+    "apple_rt_demo": _maturity(
+        "apple_rt_demo",
+        NOT_NVIDIA_RT_CORE_TARGET,
+        NOT_NVIDIA_RT_CORE_TARGET,
+        "Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables.",
+        "Never include in NVIDIA cloud batches.",
+    ),
+    "service_coverage_gaps": _maturity(
+        "service_coverage_gaps",
+        NEEDS_OPTIX_APP_SURFACE,
+        RT_CORE_READY,
+        "Add an OptiX app surface only if the radius-join slice is implemented as true prepared traversal or compact native summary.",
+        "Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist.",
+    ),
+    "event_hotspot_screening": _maturity(
+        "event_hotspot_screening",
+        NEEDS_OPTIX_APP_SURFACE,
+        RT_CORE_READY,
+        "Add an OptiX app surface only if self-join candidate discovery and compact summaries use true RT traversal.",
+        "Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist.",
+    ),
+    "facility_knn_assignment": _maturity(
+        "facility_knn_assignment",
+        NEEDS_OPTIX_APP_SURFACE,
+        RT_CORE_READY,
+        "Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal primitive rather than CUDA-through-OptiX KNN rows.",
+        "Cloud only after a native traversal design exists.",
+    ),
+    "road_hazard_screening": _maturity(
+        "road_hazard_screening",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Promote a native segment/polygon compact summary path and make the road-hazard app use it by default for OptiX.",
+        "No paid RTX road-hazard benchmark while the public path is host-indexed.",
+    ),
+    "segment_polygon_hitcount": _maturity(
+        "segment_polygon_hitcount",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Turn the env-gated native hit-count path into a default, profiled, correctness-gated path only if it beats or justifies replacing host-indexed fallback.",
+        "Cloud only in a focused native-vs-host-indexed-vs-PostGIS batch after local gate passes.",
+    ),
+    "segment_polygon_anyhit_rows": _maturity(
+        "segment_polygon_anyhit_rows",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Implement native OptiX any-hit rows or compact flags/counts; avoid broad row-output speedup claims when row volume dominates.",
+        "No cloud benchmark until native any-hit or compact summary exists locally.",
+    ),
+    "polygon_pair_overlap_area_rows": _maturity(
+        "polygon_pair_overlap_area_rows",
+        NEEDS_OPTIX_APP_SURFACE,
+        RT_CORE_READY,
+        "Add an OptiX app surface only after polygon-pair overlap is mapped to true traversal plus bounded exact refinement.",
+        "Cloud only after native OptiX surface and local correctness gate exist.",
+    ),
+    "polygon_set_jaccard": _maturity(
+        "polygon_set_jaccard",
+        NEEDS_OPTIX_APP_SURFACE,
+        RT_CORE_READY,
+        "Add an OptiX app surface only after Jaccard candidate discovery and compact overlap summaries use true traversal.",
+        "Cloud only after native OptiX surface and local correctness gate exist.",
+    ),
+    "hausdorff_distance": _maturity(
+        "hausdorff_distance",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Replace CUDA-through-OptiX KNN rows with a true traversal-friendly Hausdorff candidate/summary design or keep it as GPU-compute only.",
+        "No RT-core cloud claim until a true traversal design exists.",
+    ),
+    "ann_candidate_search": _maturity(
+        "ann_candidate_search",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Redesign candidate search around a true RT traversal primitive or keep it as GPU-compute/re-ranking evidence.",
+        "No RT-core cloud claim until a true traversal design exists.",
+    ),
+    "outlier_detection": _maturity(
+        "outlier_detection",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep prepared scalar threshold-count as the RT-core claim path and prevent default row mode from being presented as the claim.",
+        "Include in the next batched cloud run only with the prepared scalar profiler.",
+    ),
+    "dbscan_clustering": _maturity(
+        "dbscan_clustering",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep prepared scalar core-threshold summary as the RT-core claim path and split Python cluster expansion from native timing.",
+        "Include in the next batched cloud run only with the prepared scalar profiler.",
+    ),
+    "robot_collision_screening": _maturity(
+        "robot_collision_screening",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
+        "Include in the next batched cloud run with prepared packed input and scalar pose-count mode.",
+    ),
+    "barnes_hut_force_app": _maturity(
+        "barnes_hut_force_app",
+        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_READY,
+        "Redesign node candidate discovery around a true RT traversal primitive and keep force/opening reduction split from RTDL traversal timing.",
+        "No RT-core cloud claim until a true traversal design exists.",
+    ),
+    "hiprt_ray_triangle_hitcount": _maturity(
+        "hiprt_ray_triangle_hitcount",
+        NOT_NVIDIA_RT_CORE_TARGET,
+        NOT_NVIDIA_RT_CORE_TARGET,
+        "Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity.",
+        "Never include in NVIDIA OptiX cloud batches.",
+    ),
+}
+
+
 def public_apps() -> tuple[str, ...]:
     return tuple(_APP_MATRIX)
 
@@ -596,3 +765,14 @@ def optix_app_benchmark_readiness(app: str) -> OptixAppBenchmarkReadiness:
 
 def optix_app_benchmark_readiness_matrix() -> dict[str, OptixAppBenchmarkReadiness]:
     return dict(_OPTIX_BENCHMARK_READINESS_MATRIX)
+
+
+def rt_core_app_maturity(app: str) -> RtCoreAppMaturity:
+    try:
+        return _RT_CORE_APP_MATURITY_MATRIX[app]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL app: app={app!r}") from exc
+
+
+def rt_core_app_maturity_matrix() -> dict[str, RtCoreAppMaturity]:
+    return dict(_RT_CORE_APP_MATURITY_MATRIX)
