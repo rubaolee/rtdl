@@ -22,8 +22,8 @@ scope, or guarded/excluded with fail-fast `--require-rt-core` behavior.
 | --- | --- | --- |
 | `database_analytics` | `rt_core_partial_ready` | `--require-rt-core` allowed only for `--backend optix --output-mode compact_summary`; broad DB speedup remains disallowed. |
 | `graph_analytics` | `needs_rt_core_redesign` | `--require-rt-core` rejects the current host-indexed OptiX CSR fallback. |
-| `service_coverage_gaps` | `rt_core_partial_ready` | Prepared OptiX gap-summary mode exists; needs phase-clean RTX evidence before any claim. |
-| `event_hotspot_screening` | `rt_core_partial_ready` | Prepared OptiX count-summary mode exists; needs phase-clean RTX evidence before any claim. |
+| `service_coverage_gaps` | `rt_core_partial_ready` | `--require-rt-core` allowed only for `--backend optix --optix-summary-mode gap_summary_prepared`; needs phase-clean RTX evidence before any claim. |
+| `event_hotspot_screening` | `rt_core_partial_ready` | `--require-rt-core` allowed only for `--backend optix --optix-summary-mode count_summary_prepared`; needs phase-clean RTX evidence before any claim. |
 | `facility_knn_assignment` | `needs_optix_app_surface` | No OptiX app surface; KNN ranking cannot be replaced by fixed-radius threshold counts. |
 | `road_hazard_screening` | `needs_rt_core_redesign` | Explicit native segment/polygon mode exists but remains gated by strict Goal807 RTX validation. |
 | `segment_polygon_hitcount` | `needs_rt_core_redesign` | Native hit-count mode exists but remains gated by strict Goal807 RTX validation. |
@@ -48,6 +48,7 @@ scope, or guarded/excluded with fail-fast `--require-rt-core` behavior.
 | Goal815 | DB analytics | Allows `--require-rt-core` only for bounded OptiX compact-summary DB path. |
 | Goal816 | Polygon overlap/Jaccard | Adds `--require-rt-core` rejection for apps with no OptiX surface. |
 | Goal817 | Hausdorff/ANN/Barnes-Hut | Adds `--require-rt-core` rejection for CUDA-through-OptiX compute paths. |
+| Goal819 | Service coverage / event hotspot | Adds `--require-rt-core` enforcement for prepared OptiX summary modes only. |
 
 ## Verification
 
@@ -60,13 +61,16 @@ PYTHONPATH=src:. python3 -m unittest \
   tests.goal815_db_rt_core_claim_gate_test \
   tests.goal816_polygon_overlap_rt_core_boundary_test \
   tests.goal817_cuda_through_optix_claim_gate_test \
+  tests.goal819_spatial_prepared_summary_rt_core_gate_test \
   tests.goal705_optix_app_benchmark_readiness_test \
   tests.goal803_rt_core_app_maturity_contract_test \
   tests.goal759_rtx_cloud_benchmark_manifest_test \
   tests.goal761_rtx_cloud_run_all_test
 ```
 
-Result: `55 tests OK`.
+Result before Goal819: `55 tests OK`. Result after Goal819 focused update:
+`19 tests OK` for the spatial prepared-summary gate plus readiness/maturity
+checks.
 
 ## Cloud Policy
 

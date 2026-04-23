@@ -86,18 +86,36 @@ def _run_optix_prepared_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> tu
         )
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("service_coverage_gaps")
+    return {"class": support.performance_class, "note": support.note}
+
+
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    if optix_summary_mode != "gap_summary_prepared":
+        raise RuntimeError(
+            "service_coverage_gaps RT-core claim path requires --optix-summary-mode gap_summary_prepared"
+        )
+
+
 def run_case(
     backend: str,
     *,
     copies: int = 1,
     embree_summary_mode: str = "rows",
     optix_summary_mode: str = "rows",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     case = make_service_coverage_case(copies=copies)
     if embree_summary_mode not in {"rows", "gap_summary"}:
         raise ValueError("embree_summary_mode must be 'rows' or 'gap_summary'")
     if optix_summary_mode not in {"rows", "gap_summary_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'gap_summary_prepared'")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     clinics_by_household: dict[int, list[dict[str, object]]] = {}
     clinic_loads: dict[int, int] = {}
     household_ids = tuple(point.id for point in case["households"])
@@ -146,6 +164,8 @@ def run_case(
         "clinic_loads": dict(sorted(clinic_loads.items())),
         "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
+        "optix_performance": _optix_performance(),
+        "rt_core_accelerated": backend == "optix" and optix_summary_mode == "gap_summary_prepared",
         "summary_boundary": (
             "gap_summary reports covered/uncovered households only; use rows mode when clinic ids, "
             "distances, or clinic_loads are required."
@@ -180,6 +200,11 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="OptiX-only: use prepared fixed-radius threshold traversal for compact covered/uncovered household summaries",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail unless the selected path is the prepared OptiX gap-summary traversal path.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -188,6 +213,7 @@ def main(argv: list[str] | None = None) -> int:
                 copies=args.copies,
                 embree_summary_mode=args.embree_summary_mode,
                 optix_summary_mode=args.optix_summary_mode,
+                require_rt_core=args.require_rt_core,
             ),
             indent=2,
             sort_keys=True,

@@ -94,18 +94,36 @@ def _run_optix_prepared_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> 
     )
 
 
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("event_hotspot_screening")
+    return {"class": support.performance_class, "note": support.note}
+
+
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    if optix_summary_mode != "count_summary_prepared":
+        raise RuntimeError(
+            "event_hotspot_screening RT-core claim path requires --optix-summary-mode count_summary_prepared"
+        )
+
+
 def run_case(
     backend: str,
     *,
     copies: int = 1,
     embree_summary_mode: str = "rows",
     optix_summary_mode: str = "rows",
+    require_rt_core: bool = False,
 ) -> dict[str, object]:
     case = make_event_hotspot_case(copies=copies)
     if embree_summary_mode not in {"rows", "count_summary"}:
         raise ValueError("embree_summary_mode must be 'rows' or 'count_summary'")
     if optix_summary_mode not in {"rows", "count_summary_prepared"}:
         raise ValueError("optix_summary_mode must be 'rows' or 'count_summary_prepared'")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     rows: tuple[dict[str, object], ...]
     summary_rows: tuple[dict[str, int], ...]
     if backend == "embree" and embree_summary_mode == "count_summary":
@@ -144,6 +162,8 @@ def run_case(
         "hotspot_threshold": HOTSPOT_THRESHOLD,
         "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
+        "optix_performance": _optix_performance(),
+        "rt_core_accelerated": backend == "optix" and optix_summary_mode == "count_summary_prepared",
     }
 
 
@@ -169,6 +189,11 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="OptiX-only: use prepared fixed-radius count traversal for compact hotspot summaries",
     )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail unless the selected path is the prepared OptiX count-summary traversal path.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -177,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
                 copies=args.copies,
                 embree_summary_mode=args.embree_summary_mode,
                 optix_summary_mode=args.optix_summary_mode,
+                require_rt_core=args.require_rt_core,
             ),
             indent=2,
             sort_keys=True,

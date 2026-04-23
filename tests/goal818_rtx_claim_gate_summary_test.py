@@ -17,7 +17,7 @@ class Goal818RtxClaimGateSummaryTest(unittest.TestCase):
 
     def test_report_records_gate_goal_sequence(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
-        for goal in ("Goal813", "Goal814", "Goal815", "Goal816", "Goal817"):
+        for goal in ("Goal813", "Goal814", "Goal815", "Goal816", "Goal817", "Goal819"):
             with self.subTest(goal=goal):
                 self.assertIn(goal, text)
 
