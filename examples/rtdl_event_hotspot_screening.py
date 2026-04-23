@@ -78,20 +78,43 @@ def _run_embree_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[di
     )
 
 
+def _run_optix_prepared_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
+    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["events"], max_radius=RADIUS) as prepared:
+        count_rows = prepared.run(
+            case["events"],
+            radius=RADIUS,
+            threshold=0,
+        )
+    return tuple(
+        {
+            "query_id": int(row["query_id"]),
+            "neighbor_count": max(0, int(row["neighbor_count"]) - 1),
+        }
+        for row in count_rows
+    )
+
+
 def run_case(
     backend: str,
     *,
     copies: int = 1,
     embree_summary_mode: str = "rows",
+    optix_summary_mode: str = "rows",
 ) -> dict[str, object]:
     case = make_event_hotspot_case(copies=copies)
     if embree_summary_mode not in {"rows", "count_summary"}:
         raise ValueError("embree_summary_mode must be 'rows' or 'count_summary'")
+    if optix_summary_mode not in {"rows", "count_summary_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'count_summary_prepared'")
     rows: tuple[dict[str, object], ...]
     summary_rows: tuple[dict[str, int], ...]
     if backend == "embree" and embree_summary_mode == "count_summary":
         rows = ()
         summary_rows = _run_embree_count_summary(case)
+        neighbor_counts = {int(row["query_id"]): int(row["neighbor_count"]) for row in summary_rows}
+    elif backend == "optix" and optix_summary_mode == "count_summary_prepared":
+        rows = ()
+        summary_rows = _run_optix_prepared_count_summary(case)
         neighbor_counts = {int(row["query_id"]): int(row["neighbor_count"]) for row in summary_rows}
     else:
         raw_rows = _run_rows(backend, case)
@@ -120,6 +143,7 @@ def run_case(
         "hotspots": hotspots,
         "hotspot_threshold": HOTSPOT_THRESHOLD,
         "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
     }
 
 
@@ -129,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "scipy"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "scipy"),
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
@@ -139,10 +163,21 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="Embree-only: emit neighbor rows or compact native count summaries",
     )
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "count_summary_prepared"),
+        default="rows",
+        help="OptiX-only: use prepared fixed-radius count traversal for compact hotspot summaries",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
-            run_case(args.backend, copies=args.copies, embree_summary_mode=args.embree_summary_mode),
+            run_case(
+                args.backend,
+                copies=args.copies,
+                embree_summary_mode=args.embree_summary_mode,
+                optix_summary_mode=args.optix_summary_mode,
+            ),
             indent=2,
             sort_keys=True,
         )

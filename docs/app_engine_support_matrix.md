@@ -25,8 +25,8 @@ For OptiX performance classification specifically, use
 | `examples/rtdl_database_analytics_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_graph_analytics_app.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_compatibility_fallback` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_apple_rt_demo_app.py` | `partial_cpu_oracle` | `apple_specific` | `apple_specific` | `apple_specific` | `apple_specific` | `direct_cli_native_assisted` |
-| `examples/rtdl_service_coverage_gaps.py` | `portable_cpu_oracle` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
-| `examples/rtdl_event_hotspot_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_service_coverage_gaps.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
+| `examples/rtdl_event_hotspot_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_facility_knn_assignment.py` | `portable_cpu_oracle` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_road_hazard_screening.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_compatibility_fallback` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
 | `examples/rtdl_segment_polygon_hitcount.py` | `portable_cpu_oracle` | `direct_cli_native` | `direct_cli_compatibility_fallback` | `direct_cli_native` | `not_exposed_by_app_cli` | `not_exposed_by_app_cli` |
@@ -46,8 +46,8 @@ For OptiX performance classification specifically, use
 - `database_analytics`: Primary DB app exposes CPU/Embree/OptiX/Vulkan; HIPRT and Apple DB feature paths exist below the app layer but are not exposed by this app CLI.
 - `graph_analytics`: Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios.
 - `apple_rt_demo`: Primary Apple RT demo is Apple-specific; closest-hit has CPU reference parity, visibility-count is hardware-gated and may skip if Apple RT is unavailable.
-- `service_coverage_gaps`: Spatial radius-join app currently exposes CPU, Embree, and SciPy baseline; other RT engines are not app CLI options.
-- `event_hotspot_screening`: Spatial self-join app currently exposes CPU, Embree, and SciPy baseline.
+- `service_coverage_gaps`: Spatial radius-join app exposes CPU, Embree, SciPy baseline, and an OptiX prepared gap-summary mode; Vulkan/HIPRT/Apple are not app CLI options.
+- `event_hotspot_screening`: Spatial self-join app exposes CPU, Embree, SciPy baseline, and an OptiX prepared count-summary mode.
 - `facility_knn_assignment`: Spatial KNN app currently exposes CPU, Embree, and SciPy baseline.
 - `road_hazard_screening`: Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection, but native mode is still gated.
 - `segment_polygon_hitcount`: Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection.
@@ -85,8 +85,8 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | `examples/rtdl_database_analytics_app.py` | `python_interface_dominated` | Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless `compact_summary` is selected. |
 | `examples/rtdl_graph_analytics_app.py` | `host_indexed_fallback` | Current OptiX-facing BFS and triangle routines are host-indexed correctness paths, not dominant OptiX ray traversal or RT-core acceleration paths. |
 | `examples/rtdl_apple_rt_demo_app.py` | `not_optix_applicable` | Apple-specific app; OptiX is not an applicable app entry point. |
-| `examples/rtdl_service_coverage_gaps.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
-| `examples/rtdl_event_hotspot_screening.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
+| `examples/rtdl_service_coverage_gaps.py` | `optix_traversal_prepared_summary` | Explicit `gap_summary_prepared` mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path. |
+| `examples/rtdl_event_hotspot_screening.py` | `optix_traversal_prepared_summary` | Explicit `count_summary_prepared` mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path. |
 | `examples/rtdl_facility_knn_assignment.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
 | `examples/rtdl_road_hazard_screening.py` | `host_indexed_fallback` | Default segment/polygon OptiX app path uses host-indexed candidate reduction. Explicit native mode is now exposed for hit-count execution, but remains separately gated before any RT-core claim. |
 | `examples/rtdl_segment_polygon_hitcount.py` | `host_indexed_fallback` | Default segment/polygon OptiX path is host-indexed; explicit native OptiX mode exists and must pass Goal807 strict correctness/performance gating before promotion. |
@@ -144,8 +144,8 @@ materialization, validation, and post-processing.
 | `examples/rtdl_database_analytics_app.py` | `needs_interface_tuning` | Goal706 | correctness-capable OptiX DB path only; no RTX app speedup claim yet |
 | `examples/rtdl_graph_analytics_app.py` | `needs_native_kernel_tuning` | Goal707 | no RTX graph acceleration claim today |
 | `examples/rtdl_apple_rt_demo_app.py` | `exclude_from_rtx_app_benchmark` | none | Apple RT demo claim only, not NVIDIA OptiX |
-| `examples/rtdl_service_coverage_gaps.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
-| `examples/rtdl_event_hotspot_screening.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
+| `examples/rtdl_service_coverage_gaps.py` | `needs_phase_contract` | Goal810 | bounded prepared gap-summary path only; no whole-app service-coverage speedup claim |
+| `examples/rtdl_event_hotspot_screening.py` | `needs_phase_contract` | Goal810 | bounded prepared count-summary path only; no whole-app hotspot-screening speedup claim |
 | `examples/rtdl_facility_knn_assignment.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until an OptiX path is added |
 | `examples/rtdl_road_hazard_screening.py` | `needs_native_kernel_tuning` | Goal807/808 | no RTX road-hazard speedup claim today |
 | `examples/rtdl_segment_polygon_hitcount.py` | `needs_native_kernel_tuning` | Goal807 | no RTX segment/polygon hit-count speedup claim today |
@@ -195,8 +195,8 @@ then run one batched cloud validation session for all eligible RT-core paths.
 | `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only. | No broad DB speedup claim until `compact_summary` is rerun on RTX hardware and native phase counters prove materialization is not dominant. |
 | `graph_analytics` | `needs_rt_core_redesign` | `rt_core_ready` | Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets. | No paid graph RTX benchmark until a native traversal design and local correctness gate exist. |
 | `apple_rt_demo` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables. | Never include in NVIDIA cloud batches. |
-| `service_coverage_gaps` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if the radius-join slice is implemented as true prepared traversal or compact native summary. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
-| `event_hotspot_screening` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if self-join candidate discovery and compact summaries use true RT traversal. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
+| `service_coverage_gaps` | `rt_core_partial_ready` | `rt_core_ready` | Add a phase-clean profiler for the prepared OptiX gap-summary mode and validate it on RTX before any claim. | Cloud only after local profiler packaging; include only as bounded prepared summary evidence. |
+| `event_hotspot_screening` | `rt_core_partial_ready` | `rt_core_ready` | Add a phase-clean profiler for the prepared OptiX count-summary mode and validate it on RTX before any claim. | Cloud only after local profiler packaging; include only as bounded prepared summary evidence. |
 | `facility_knn_assignment` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal primitive rather than CUDA-through-OptiX KNN rows. | Cloud only after a native traversal design exists. |
 | `road_hazard_screening` | `needs_rt_core_redesign` | `rt_core_ready` | Run the explicit native segment/polygon mode through Goal807 strict RTX gating before changing default OptiX behavior or claims. | Cloud only in the focused Goal807 native-vs-host-indexed batch; no road-hazard speedup claim until that passes. |
 | `segment_polygon_hitcount` | `needs_rt_core_redesign` | `rt_core_ready` | Use Goal807 to prove explicit native hit-count correctness/performance against host-indexed and PostGIS where available before promotion. | Cloud only in a focused Goal807 native-vs-host-indexed batch after local gate packaging is complete. |

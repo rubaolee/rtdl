@@ -51,6 +51,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         expected = {
             "database_analytics": "needs_interface_tuning",
             "graph_analytics": "needs_native_kernel_tuning",
+            "service_coverage_gaps": "needs_phase_contract",
+            "event_hotspot_screening": "needs_phase_contract",
             "road_hazard_screening": "needs_native_kernel_tuning",
             "segment_polygon_hitcount": "needs_native_kernel_tuning",
             "segment_polygon_anyhit_rows": "needs_native_kernel_tuning",
@@ -78,8 +80,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "database_analytics": "python_interface_dominated",
             "graph_analytics": "host_indexed_fallback",
             "apple_rt_demo": "not_optix_applicable",
-            "service_coverage_gaps": "not_optix_exposed",
-            "event_hotspot_screening": "not_optix_exposed",
+            "service_coverage_gaps": "optix_traversal_prepared_summary",
+            "event_hotspot_screening": "optix_traversal_prepared_summary",
             "facility_knn_assignment": "not_optix_exposed",
             "road_hazard_screening": "host_indexed_fallback",
             "segment_polygon_hitcount": "host_indexed_fallback",
@@ -104,6 +106,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         allowed = {
             "outlier_detection": "rt_count_threshold_prepared summary sub-path uses OptiX traversal",
             "dbscan_clustering": "rt_core_flags_prepared summary sub-path uses OptiX traversal",
+            "service_coverage_gaps": "gap_summary_prepared mode uses OptiX traversal",
+            "event_hotspot_screening": "count_summary_prepared mode uses OptiX traversal",
         }
         non_excluded_prepared_summary_apps = {
             app

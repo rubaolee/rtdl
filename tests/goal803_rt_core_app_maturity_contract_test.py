@@ -31,6 +31,13 @@ class Goal803RtCoreAppMaturityContractTest(unittest.TestCase):
                 "robot_collision_screening",
             ],
         )
+        partial = {
+            app
+            for app, row in maturity.items()
+            if row.current_status == "rt_core_partial_ready"
+        }
+        self.assertIn("service_coverage_gaps", partial)
+        self.assertIn("event_hotspot_screening", partial)
 
     def test_every_general_app_targets_rt_core_or_is_engine_specific(self) -> None:
         for app, row in rt.rt_core_app_maturity_matrix().items():
