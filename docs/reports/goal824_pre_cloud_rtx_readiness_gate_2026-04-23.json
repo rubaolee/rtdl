@@ -34,7 +34,7 @@
           "rev-parse",
           "HEAD"
         ],
-        "output_tail": "bd9813e2fea660d816224dc1b8912aae0287f6ee\n",
+        "output_tail": "a96bc177dcafec08cdaec70d370a55c04ea8faff\n",
         "returncode": 0
       },
       "status_short": {
@@ -43,7 +43,7 @@
           "status",
           "--short"
         ],
-        "output_tail": " M scripts/goal811_spatial_optix_summary_phase_profiler.py\n?? docs/reports/goal826_tier2_phase_profiler_contract_2026-04-23.md\n?? tests/goal826_tier2_phase_profiler_contract_test.py\n",
+        "output_tail": " M docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json\n M scripts/goal762_rtx_cloud_artifact_report.py\n M tests/goal762_rtx_cloud_artifact_report_test.py\n?? docs/reports/goal827_cloud_artifact_contract_audit_2026-04-23.md\n?? tests/goal827_cloud_artifact_contract_audit_test.py\n",
         "returncode": 0
       }
     },

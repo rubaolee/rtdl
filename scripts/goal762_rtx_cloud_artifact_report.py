@@ -40,6 +40,29 @@ def _find_result_for_app(payload: dict[str, Any], app: str) -> dict[str, Any] | 
     return None
 
 
+def _contract_check(contract: Any, phase_source: Any) -> dict[str, Any]:
+    if not isinstance(contract, dict):
+        return {
+            "cloud_contract_status": "missing",
+            "cloud_contract_missing_phases": [],
+        }
+    required = contract.get("required_phase_groups")
+    if not isinstance(required, (list, tuple)):
+        return {
+            "cloud_contract_status": "malformed",
+            "cloud_contract_missing_phases": [],
+        }
+    if not isinstance(phase_source, dict):
+        phase_source = {}
+    missing = [str(key) for key in required if str(key) not in phase_source]
+    return {
+        "cloud_contract_status": "ok" if not missing else "missing_required_phases",
+        "cloud_contract_missing_phases": missing,
+        "cloud_contract_claim_scope": contract.get("claim_scope"),
+        "cloud_contract_non_claim": contract.get("non_claim"),
+    }
+
+
 def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -> dict[str, Any]:
     app = str(entry["app"])
     if app == "database_analytics":
@@ -49,8 +72,9 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             optix = next((row for row in results if isinstance(row, dict) and row.get("backend") == "optix"), None)
         if not isinstance(optix, dict):
             return {"artifact_status": "unrecognized", "note": "no optix result row found"}
-        return {
+        metrics = {
             "artifact_status": "ok",
+            "schema_version": optix.get("schema_version", artifact.get("schema_version")),
             "one_shot_total_sec": optix.get("one_shot_total_sec"),
             "prepare_total_sec": optix.get("prepared_session_prepare_total_sec"),
             "warm_query_median_sec": _median(optix.get("prepared_session_warm_query_sec")),
@@ -58,12 +82,15 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "speedup_one_shot_over_warm_query_median": optix.get("speedup_one_shot_over_warm_query_median"),
             "phase_contract_present": isinstance(optix.get("phase_contract"), dict),
         }
+        metrics.update(_contract_check(optix.get("cloud_claim_contract"), optix))
+        return metrics
     if app in {"outlier_detection", "dbscan_clustering"}:
         result = _find_result_for_app(artifact, app)
         if result is None:
             return {"artifact_status": "unrecognized", "note": f"no {app} result row found"}
-        return {
+        metrics = {
             "artifact_status": "ok",
+            "schema_version": result.get("schema_version", artifact.get("schema_version")),
             "one_shot_total_sec": result.get("one_shot_total_sec"),
             "pack_points_sec": result.get("prepared_optix_pack_points_sec"),
             "prepare_sec": result.get("prepared_optix_prepare_sec"),
@@ -78,12 +105,15 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "speedup_one_shot_over_warm_query_median": result.get("speedup_one_shot_over_warm_query_median"),
             "phase_contract_present": isinstance(result.get("phase_contract"), dict),
         }
+        metrics.update(_contract_check(result.get("cloud_claim_contract"), result))
+        return metrics
     if app == "robot_collision_screening":
         phases = artifact.get("phases")
         if not isinstance(phases, dict):
             return {"artifact_status": "unrecognized", "note": "no phases object found"}
-        return {
+        metrics = {
             "artifact_status": "ok",
+            "schema_version": artifact.get("schema_version"),
             "mode": artifact.get("mode"),
             "input_mode": artifact.get("input_mode"),
             "result_mode": artifact.get("result_mode"),
@@ -100,6 +130,29 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "matches_oracle": artifact.get("matches_oracle"),
             "validated": artifact.get("validated"),
         }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phases))
+        return metrics
+    if app in {"service_coverage_gaps", "event_hotspot_screening"}:
+        scenario = artifact.get("scenario")
+        if not isinstance(scenario, dict):
+            return {"artifact_status": "unrecognized", "note": "no scenario object found"}
+        timings = scenario.get("timings_sec")
+        if not isinstance(timings, dict):
+            return {"artifact_status": "unrecognized", "note": "no scenario timings object found"}
+        metrics = {
+            "artifact_status": "ok",
+            "schema_version": artifact.get("schema_version"),
+            "mode": scenario.get("mode"),
+            "input_build_sec": timings.get("input_build"),
+            "prepare_sec": timings.get("optix_prepare"),
+            "warm_query_median_sec": timings.get("optix_query"),
+            "postprocess_median_sec": timings.get("python_postprocess"),
+            "native_summary_row_count": (scenario.get("result") or {}).get("native_summary_row_count")
+            if isinstance(scenario.get("result"), dict)
+            else None,
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), timings))
+        return metrics
     return {"artifact_status": "not_applicable", "note": "no extractor for app"}
 
 
@@ -139,6 +192,7 @@ def analyze(summary_path: Path) -> dict[str, Any]:
         row for row in rows
         if row.get("runner_status") not in {"ok", "dry_run"}
         or row.get("artifact_status") in {"missing", "parse_failed", "unrecognized", "missing_output_json_argument"}
+        or row.get("cloud_contract_status") in {"missing", "malformed", "missing_required_phases"}
     ]
     return {
         "suite": "goal762_rtx_cloud_artifact_report",
@@ -192,6 +246,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
     for row in payload["rows"]:
         validation = row.get("validation_median_sec", row.get("oracle_validate_sec"))
         input_pack = row.get("pack_points_sec", row.get("prepare_pose_indices_sec"))
+        if input_pack is None:
+            input_pack = row.get("input_build_sec", row.get("prepare_sec"))
         lines.append(
             "| "
             + " | ".join(
