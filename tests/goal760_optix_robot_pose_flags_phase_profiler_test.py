@@ -22,6 +22,9 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
             validate=True,
         )
         self.assertEqual(payload["suite"], "Goal760 OptiX robot pose-flags phase profiler")
+        self.assertEqual(payload["schema_version"], "goal825_tier1_phase_contract_v1")
+        self.assertIn("cloud_claim_contract", payload)
+        self.assertIn("prepared OptiX ray/triangle any-hit", payload["cloud_claim_contract"]["claim_scope"])
         self.assertEqual(payload["mode"], "dry-run")
         self.assertTrue(payload["validated"])
         self.assertTrue(payload["matches_oracle"])

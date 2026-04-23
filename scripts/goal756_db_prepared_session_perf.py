@@ -18,6 +18,23 @@ from examples import rtdl_database_analytics_app as db_app
 
 
 BACKENDS = ("cpu", "cpu_reference", "cpu_python_reference", "embree", "optix", "vulkan")
+SCHEMA_VERSION = "goal825_tier1_phase_contract_v1"
+
+
+def _cloud_claim_contract() -> dict[str, Any]:
+    return {
+        "claim_scope": "prepared DB compact-summary sessions only",
+        "non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+        "required_phase_groups": (
+            "one_shot_total_sec",
+            "prepared_session_prepare_total_sec",
+            "prepared_session_warm_query_sec",
+            "reported_prepare_phases_sec",
+            "reported_run_phases_sec",
+            "reported_native_db_phases_sec",
+        ),
+        "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+    }
 
 
 def _time_call(fn: Callable[[], Any]) -> tuple[Any, float]:
@@ -125,6 +142,8 @@ def _profile_backend(
     return {
         "backend": backend,
         "status": "ok",
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract(),
         "output_mode": output_mode,
         "one_shot_total_sec": one_shot_sec,
         "prepared_session_prepare_total_sec": prepare_total_sec,
@@ -181,6 +200,8 @@ def run_suite(
 
     return {
         "suite": "goal756_db_prepared_session_perf",
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract(),
         "scenario": scenario,
         "copies": copies,
         "iterations": iterations,

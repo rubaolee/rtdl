@@ -38,9 +38,14 @@ class Goal756DbPreparedSessionPerfTest(unittest.TestCase):
             "--strict",
         )
         self.assertEqual(payload["suite"], "goal756_db_prepared_session_perf")
+        self.assertEqual(payload["schema_version"], "goal825_tier1_phase_contract_v1")
+        self.assertIn("cloud_claim_contract", payload)
         result = payload["results"][0]
         self.assertEqual(result["backend"], "cpu")
         self.assertEqual(result["status"], "ok")
+        self.assertEqual(result["schema_version"], "goal825_tier1_phase_contract_v1")
+        self.assertIn("prepared DB compact-summary sessions only", result["cloud_claim_contract"]["claim_scope"])
+        self.assertIn("not SQL", result["cloud_claim_contract"]["non_claim"])
         self.assertIn("one_shot_total_sec", result)
         self.assertIn("prepared_session_warm_query_sec", result)
         self.assertIn("phase_contract", result)

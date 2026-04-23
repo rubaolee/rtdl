@@ -20,6 +20,26 @@ from examples import rtdl_robot_collision_screening_app as robot_app
 
 GOAL = "Goal760 OptiX robot pose-flags phase profiler"
 DATE = "2026-04-22"
+SCHEMA_VERSION = "goal825_tier1_phase_contract_v1"
+
+
+def _cloud_claim_contract(result_mode: str) -> dict[str, object]:
+    return {
+        "claim_scope": "prepared OptiX ray/triangle any-hit compact pose summary",
+        "non_claim": "not continuous collision detection, full robot planning, full kinematics, witness-row speedup, or mesh-engine replacement",
+        "result_mode": result_mode,
+        "required_phase_groups": (
+            "python_input_construction_sec",
+            "optix_prepare_scene_sec",
+            "optix_prepare_rays_sec",
+            "optix_prepare_pose_indices_sec",
+            "prepared_pose_flags_warm_query_sec",
+            "oracle_validate_sec",
+            "close_sec",
+            "total_sec",
+        ),
+        "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+    }
 
 
 def _time_call(fn: Callable[[], Any]) -> tuple[Any, float]:
@@ -258,6 +278,8 @@ def run_suite(
     total_sec = time.perf_counter() - total_start
     return {
         "suite": GOAL,
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract(result_mode),
         "date": DATE,
         "mode": mode,
         "input_mode": input_mode,

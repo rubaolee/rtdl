@@ -17,6 +17,34 @@ import rtdsl as rt
 from examples import rtdl_dbscan_clustering_app as dbscan_app
 from examples import rtdl_outlier_detection_app as outlier_app
 
+SCHEMA_VERSION = "goal825_tier1_phase_contract_v1"
+
+
+def _cloud_claim_contract(app: str, result_mode: str) -> dict[str, Any]:
+    if app == "outlier_detection":
+        claim_scope = "prepared fixed-radius threshold summary traversal only"
+        non_claim = "not KNN, Hausdorff, ANN, Barnes-Hut, anomaly-system, row-output, or whole-app RTX speedup"
+    elif app == "dbscan_clustering":
+        claim_scope = "prepared fixed-radius core-flag summary traversal only"
+        non_claim = "not full DBSCAN clustering, cluster expansion, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup"
+    else:
+        claim_scope = "prepared fixed-radius summary traversal only"
+        non_claim = "not a broad RTX app speedup claim"
+    return {
+        "claim_scope": claim_scope,
+        "non_claim": non_claim,
+        "result_mode": result_mode,
+        "required_phase_groups": (
+            "prepared_optix_pack_points_sec",
+            "prepared_optix_prepare_sec",
+            "prepared_optix_warm_query_sec",
+            "prepared_optix_postprocess_sec",
+            "prepared_optix_validation_sec",
+            "prepared_optix_close_sec",
+        ),
+        "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+    }
+
 
 def _time_call(fn: Callable[[], Any]) -> tuple[Any, float]:
     start = time.perf_counter()
@@ -106,6 +134,8 @@ def _profile_outlier(copies: int, iterations: int, *, skip_validation: bool) -> 
     median = statistics.median(native_samples)
     return {
         "app": "outlier_detection",
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract("outlier_detection", "rows"),
         "copies": copies,
         "point_count": len(case["points"]),
         "one_shot_total_sec": one_shot_sec,
@@ -169,6 +199,8 @@ def _profile_outlier_threshold_count(copies: int, iterations: int, *, skip_valid
     median = statistics.median(native_samples)
     return {
         "app": "outlier_detection",
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract("outlier_detection", "threshold_count"),
         "copies": copies,
         "point_count": point_count,
         "one_shot_total_sec": None,
@@ -246,6 +278,8 @@ def _profile_dbscan(copies: int, iterations: int, *, skip_validation: bool) -> d
     median = statistics.median(native_samples)
     return {
         "app": "dbscan_clustering",
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract("dbscan_clustering", "rows"),
         "copies": copies,
         "point_count": len(case["points"]),
         "one_shot_total_sec": one_shot_sec,
@@ -307,6 +341,8 @@ def _profile_dbscan_threshold_count(copies: int, iterations: int, *, skip_valida
     median = statistics.median(native_samples)
     return {
         "app": "dbscan_clustering",
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract("dbscan_clustering", "threshold_count"),
         "copies": copies,
         "point_count": point_count,
         "one_shot_total_sec": None,
@@ -348,10 +384,15 @@ def run_suite(
     profile_dbscan = _profile_dbscan if result_mode == "rows" else _profile_dbscan_threshold_count
     return {
         "suite": "goal757_optix_fixed_radius_prepared_perf",
+        "schema_version": SCHEMA_VERSION,
         "copies": copies,
         "iterations": iterations,
         "skip_validation": skip_validation,
         "result_mode": result_mode,
+        "cloud_claim_contract": {
+            "outlier_detection": _cloud_claim_contract("outlier_detection", result_mode),
+            "dbscan_clustering": _cloud_claim_contract("dbscan_clustering", result_mode),
+        },
         "results": (
             profile_outlier(copies, iterations, skip_validation=skip_validation),
             profile_dbscan(copies, iterations, skip_validation=skip_validation),

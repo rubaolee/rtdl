@@ -168,9 +168,14 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         with mock.patch.object(rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
             payload = profiler.run_suite(copies=1, iterations=1, result_mode="threshold_count")
 
+        self.assertEqual(payload["schema_version"], "goal825_tier1_phase_contract_v1")
+        self.assertIn("cloud_claim_contract", payload)
         self.assertEqual(payload["result_mode"], "threshold_count")
         for result in payload["results"]:
             with self.subTest(app=result["app"]):
+                self.assertEqual(result["schema_version"], "goal825_tier1_phase_contract_v1")
+                self.assertIn("cloud_claim_contract", result)
+                self.assertIn("required_phase_groups", result["cloud_claim_contract"])
                 self.assertEqual(result["result_mode"], "threshold_count")
                 self.assertTrue(result["prepared_output"]["matches_oracle"])
                 self.assertEqual(result["prepared_optix_postprocess_sec"]["median_sec"], 0.0)
