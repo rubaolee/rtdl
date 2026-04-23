@@ -9,8 +9,10 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
     def test_public_docs_explain_optix_is_not_rt_core_claim(self) -> None:
         for relative in (
             "README.md",
+            "docs/quick_tutorial.md",
             "docs/application_catalog.md",
             "docs/release_facing_examples.md",
+            "docs/rtdl_feature_guide.md",
         ):
             with self.subTest(relative=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")

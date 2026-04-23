@@ -1,16 +1,17 @@
 {
   "valid": true,
   "public_doc_count": 14,
-  "command_count": 248,
+  "command_count": 252,
   "coverage_counts": {
     "goal410_harness_exact": 226,
-    "goal410_harness_family": 11,
+    "goal410_harness_family": 13,
     "goal513_front_page_smoke_exact": 6,
     "goal593_public_example_smoke_exact": 4,
+    "goal821_require_rt_core_doc_gate_exact": 2,
     "postgresql_validation_command": 1
   },
   "classification_counts": {
-    "linux_gpu_backend_gated": 33,
+    "linux_gpu_backend_gated": 37,
     "linux_postgresql_gated": 1,
     "optional_native_backend_gated": 50,
     "portable_python_cpu": 157,
@@ -20,7 +21,7 @@
   "commands": [
     {
       "path": "README.md",
-      "line": 381,
+      "line": 407,
       "command": "PYTHONPATH=src:. python examples/rtdl_hello_world.py",
       "normalized": "python examples/rtdl_hello_world.py",
       "program": "examples/rtdl_hello_world.py",
@@ -30,7 +31,7 @@
     },
     {
       "path": "README.md",
-      "line": 387,
+      "line": 413,
       "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "program": "examples/rtdl_segment_polygon_hitcount.py",
@@ -40,7 +41,7 @@
     },
     {
       "path": "README.md",
-      "line": 394,
+      "line": 420,
       "command": "PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py",
       "normalized": "python examples/rtdl_feature_quickstart_cookbook.py",
       "program": "examples/rtdl_feature_quickstart_cookbook.py",
@@ -50,7 +51,7 @@
     },
     {
       "path": "README.md",
-      "line": 406,
+      "line": 432,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_analytics_app.py",
@@ -60,7 +61,7 @@
     },
     {
       "path": "README.md",
-      "line": 407,
+      "line": 433,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_bfs.py",
@@ -70,7 +71,7 @@
     },
     {
       "path": "README.md",
-      "line": 408,
+      "line": 434,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -80,7 +81,7 @@
     },
     {
       "path": "README.md",
-      "line": 414,
+      "line": 440,
       "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -90,7 +91,7 @@
     },
     {
       "path": "README.md",
-      "line": 415,
+      "line": 441,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -100,7 +101,7 @@
     },
     {
       "path": "README.md",
-      "line": 416,
+      "line": 442,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -110,7 +111,7 @@
     },
     {
       "path": "README.md",
-      "line": 417,
+      "line": 443,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -120,7 +121,7 @@
     },
     {
       "path": "README.md",
-      "line": 425,
+      "line": 451,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -130,7 +131,7 @@
     },
     {
       "path": "README.md",
-      "line": 426,
+      "line": 452,
       "command": "PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_ann_candidate_app.py",
@@ -140,7 +141,7 @@
     },
     {
       "path": "README.md",
-      "line": 427,
+      "line": 453,
       "command": "PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_outlier_detection_app.py",
@@ -150,7 +151,7 @@
     },
     {
       "path": "README.md",
-      "line": 428,
+      "line": 454,
       "command": "PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_dbscan_clustering_app.py",
@@ -160,7 +161,7 @@
     },
     {
       "path": "README.md",
-      "line": 429,
+      "line": 455,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -170,7 +171,7 @@
     },
     {
       "path": "README.md",
-      "line": 430,
+      "line": 456,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -180,7 +181,7 @@
     },
     {
       "path": "README.md",
-      "line": 440,
+      "line": 466,
       "command": "PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py",
       "normalized": "python examples/rtdl_hiprt_ray_triangle_hitcount.py",
       "program": "examples/rtdl_hiprt_ray_triangle_hitcount.py",
@@ -190,7 +191,7 @@
     },
     {
       "path": "README.md",
-      "line": 452,
+      "line": 478,
       "command": "PYTHONPATH=src:. python examples/rtdl_apple_rt_demo_app.py",
       "normalized": "python examples/rtdl_apple_rt_demo_app.py",
       "program": "examples/rtdl_apple_rt_demo_app.py",
@@ -200,7 +201,7 @@
     },
     {
       "path": "README.md",
-      "line": 481,
+      "line": 507,
       "command": "python examples\\rtdl_hello_world.py",
       "normalized": "python examples/rtdl_hello_world.py",
       "program": "examples/rtdl_hello_world.py",
@@ -210,7 +211,7 @@
     },
     {
       "path": "README.md",
-      "line": 482,
+      "line": 508,
       "command": "python examples\\rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "program": "examples/rtdl_segment_polygon_hitcount.py",
@@ -220,7 +221,7 @@
     },
     {
       "path": "README.md",
-      "line": 483,
+      "line": 509,
       "command": "python examples\\rtdl_graph_bfs.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_bfs.py",
@@ -230,7 +231,7 @@
     },
     {
       "path": "README.md",
-      "line": 484,
+      "line": 510,
       "command": "python examples\\rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -240,7 +241,7 @@
     },
     {
       "path": "README.md",
-      "line": 485,
+      "line": 511,
       "command": "python examples\\rtdl_database_analytics_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -250,7 +251,7 @@
     },
     {
       "path": "README.md",
-      "line": 486,
+      "line": 512,
       "command": "python examples\\rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -260,7 +261,7 @@
     },
     {
       "path": "README.md",
-      "line": 487,
+      "line": 513,
       "command": "python examples\\rtdl_db_grouped_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -270,7 +271,7 @@
     },
     {
       "path": "README.md",
-      "line": 488,
+      "line": 514,
       "command": "python examples\\rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -280,7 +281,7 @@
     },
     {
       "path": "README.md",
-      "line": 489,
+      "line": 515,
       "command": "python examples\\rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -290,7 +291,7 @@
     },
     {
       "path": "README.md",
-      "line": 490,
+      "line": 516,
       "command": "python examples\\rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_ann_candidate_app.py",
@@ -300,7 +301,7 @@
     },
     {
       "path": "README.md",
-      "line": 491,
+      "line": 517,
       "command": "python examples\\rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_outlier_detection_app.py",
@@ -310,7 +311,7 @@
     },
     {
       "path": "README.md",
-      "line": 492,
+      "line": 518,
       "command": "python examples\\rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_dbscan_clustering_app.py",
@@ -320,7 +321,7 @@
     },
     {
       "path": "README.md",
-      "line": 493,
+      "line": 519,
       "command": "python examples\\rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -330,7 +331,7 @@
     },
     {
       "path": "README.md",
-      "line": 494,
+      "line": 520,
       "command": "python examples\\rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -340,7 +341,7 @@
     },
     {
       "path": "README.md",
-      "line": 501,
+      "line": 527,
       "command": "python examples/rtdl_hello_world.py",
       "normalized": "python examples/rtdl_hello_world.py",
       "program": "examples/rtdl_hello_world.py",
@@ -350,7 +351,7 @@
     },
     {
       "path": "README.md",
-      "line": 502,
+      "line": 528,
       "command": "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "program": "examples/rtdl_segment_polygon_hitcount.py",
@@ -360,7 +361,7 @@
     },
     {
       "path": "README.md",
-      "line": 503,
+      "line": 529,
       "command": "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_bfs.py",
@@ -370,7 +371,7 @@
     },
     {
       "path": "README.md",
-      "line": 504,
+      "line": 530,
       "command": "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -380,7 +381,7 @@
     },
     {
       "path": "README.md",
-      "line": 505,
+      "line": 531,
       "command": "python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -390,7 +391,7 @@
     },
     {
       "path": "README.md",
-      "line": 506,
+      "line": 532,
       "command": "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -400,7 +401,7 @@
     },
     {
       "path": "README.md",
-      "line": 507,
+      "line": 533,
       "command": "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -410,7 +411,7 @@
     },
     {
       "path": "README.md",
-      "line": 508,
+      "line": 534,
       "command": "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -420,7 +421,7 @@
     },
     {
       "path": "README.md",
-      "line": 509,
+      "line": 535,
       "command": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -430,7 +431,7 @@
     },
     {
       "path": "README.md",
-      "line": 510,
+      "line": 536,
       "command": "python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_ann_candidate_app.py",
@@ -440,7 +441,7 @@
     },
     {
       "path": "README.md",
-      "line": 511,
+      "line": 537,
       "command": "python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_outlier_detection_app.py",
@@ -450,7 +451,7 @@
     },
     {
       "path": "README.md",
-      "line": 512,
+      "line": 538,
       "command": "python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_dbscan_clustering_app.py",
@@ -460,7 +461,7 @@
     },
     {
       "path": "README.md",
-      "line": 513,
+      "line": 539,
       "command": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -470,7 +471,7 @@
     },
     {
       "path": "README.md",
-      "line": 514,
+      "line": 540,
       "command": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -480,7 +481,37 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 119,
+      "line": 41,
+      "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
+      "normalized": "python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
+      "program": "examples/rtdl_database_analytics_app.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal410_harness_family"
+    },
+    {
+      "path": "docs/release_facing_examples.md",
+      "line": 42,
+      "command": "PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
+      "normalized": "python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
+      "program": "examples/rtdl_service_coverage_gaps.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal821_require_rt_core_doc_gate_exact"
+    },
+    {
+      "path": "docs/release_facing_examples.md",
+      "line": 43,
+      "command": "PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
+      "normalized": "python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
+      "program": "examples/rtdl_event_hotspot_screening.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal821_require_rt_core_doc_gate_exact"
+    },
+    {
+      "path": "docs/release_facing_examples.md",
+      "line": 137,
       "command": "PYTHONPATH=src:. python examples/rtdl_feature_quickstart_cookbook.py",
       "normalized": "python examples/rtdl_feature_quickstart_cookbook.py",
       "program": "examples/rtdl_feature_quickstart_cookbook.py",
@@ -490,7 +521,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 131,
+      "line": 149,
       "command": "PYTHONPATH=src:. python examples/rtdl_ray_triangle_any_hit.py",
       "normalized": "python examples/rtdl_ray_triangle_any_hit.py",
       "program": "examples/rtdl_ray_triangle_any_hit.py",
@@ -500,7 +531,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 132,
+      "line": 150,
       "command": "PYTHONPATH=src:. python examples/rtdl_visibility_rows.py",
       "normalized": "python examples/rtdl_visibility_rows.py",
       "program": "examples/rtdl_visibility_rows.py",
@@ -510,7 +541,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 133,
+      "line": 151,
       "command": "PYTHONPATH=src:. python examples/rtdl_reduce_rows.py",
       "normalized": "python examples/rtdl_reduce_rows.py",
       "program": "examples/rtdl_reduce_rows.py",
@@ -520,7 +551,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 169,
+      "line": 187,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -530,7 +561,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 170,
+      "line": 188,
       "command": "PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_ann_candidate_app.py",
@@ -540,7 +571,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 171,
+      "line": 189,
       "command": "PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_outlier_detection_app.py",
@@ -550,7 +581,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 172,
+      "line": 190,
       "command": "PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_dbscan_clustering_app.py",
@@ -560,7 +591,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 173,
+      "line": 191,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -570,7 +601,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 174,
+      "line": 192,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -580,7 +611,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 181,
+      "line": 199,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend embree",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -590,7 +621,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 182,
+      "line": 200,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend optix",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -600,7 +631,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 183,
+      "line": 201,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend vulkan",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend vulkan",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -610,7 +641,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 225,
+      "line": 243,
       "command": "PYTHONPATH=src:. python examples/rtdl_hiprt_ray_triangle_hitcount.py",
       "normalized": "python examples/rtdl_hiprt_ray_triangle_hitcount.py",
       "program": "examples/rtdl_hiprt_ray_triangle_hitcount.py",
@@ -620,7 +651,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 259,
+      "line": 277,
       "command": "PYTHONPATH=src:. python examples/rtdl_apple_rt_demo_app.py",
       "normalized": "python examples/rtdl_apple_rt_demo_app.py",
       "program": "examples/rtdl_apple_rt_demo_app.py",
@@ -630,7 +661,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 311,
+      "line": 329,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -640,7 +671,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 321,
+      "line": 339,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "program": "examples/rtdl_knn_rows.py",
@@ -650,7 +681,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 339,
+      "line": 357,
       "command": "PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference",
       "program": "examples/rtdl_service_coverage_gaps.py",
@@ -660,7 +691,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 340,
+      "line": 358,
       "command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_hausdorff_distance_app.py",
@@ -670,7 +701,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 341,
+      "line": 359,
       "command": "PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_ann_candidate_app.py",
@@ -680,7 +711,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 342,
+      "line": 360,
       "command": "PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_outlier_detection_app.py",
@@ -690,7 +721,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 343,
+      "line": 361,
       "command": "PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_dbscan_clustering_app.py",
@@ -700,7 +731,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 382,
+      "line": 400,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -710,7 +741,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 383,
+      "line": 401,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend embree",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend embree",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -720,7 +751,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 384,
+      "line": 402,
       "command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix",
       "normalized": "python examples/rtdl_robot_collision_screening_app.py --backend optix",
       "program": "examples/rtdl_robot_collision_screening_app.py",
@@ -730,7 +761,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 410,
+      "line": 428,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -740,7 +771,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 411,
+      "line": 429,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend embree",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend embree",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -750,7 +781,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 412,
+      "line": 430,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend optix",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend optix",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -760,7 +791,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 413,
+      "line": 431,
       "command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend vulkan",
       "normalized": "python examples/rtdl_barnes_hut_force_app.py --backend vulkan",
       "program": "examples/rtdl_barnes_hut_force_app.py",
@@ -770,7 +801,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 447,
+      "line": 465,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_bfs.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_bfs.py",
@@ -780,7 +811,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 448,
+      "line": 466,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend cpu",
       "normalized": "python examples/rtdl_graph_bfs.py --backend cpu",
       "program": "examples/rtdl_graph_bfs.py",
@@ -790,7 +821,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 450,
+      "line": 468,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -800,7 +831,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 451,
+      "line": 469,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend cpu",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend cpu",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -810,7 +841,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 457,
+      "line": 475,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend embree",
       "normalized": "python examples/rtdl_graph_bfs.py --backend embree",
       "program": "examples/rtdl_graph_bfs.py",
@@ -820,7 +851,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 458,
+      "line": 476,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend embree",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend embree",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -830,7 +861,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 467,
+      "line": 485,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix",
       "normalized": "python examples/rtdl_graph_bfs.py --backend optix",
       "program": "examples/rtdl_graph_bfs.py",
@@ -840,7 +871,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 468,
+      "line": 486,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend vulkan",
       "normalized": "python examples/rtdl_graph_bfs.py --backend vulkan",
       "program": "examples/rtdl_graph_bfs.py",
@@ -850,7 +881,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 469,
+      "line": 487,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend optix",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -860,7 +891,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 470,
+      "line": 488,
       "command": "PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend vulkan",
       "normalized": "python examples/rtdl_graph_triangle_count.py --backend vulkan",
       "program": "examples/rtdl_graph_triangle_count.py",
@@ -870,7 +901,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 497,
+      "line": 515,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -880,7 +911,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 498,
+      "line": 516,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend cpu",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend cpu",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -890,7 +921,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 500,
+      "line": 518,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -900,7 +931,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 501,
+      "line": 519,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend cpu",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend cpu",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -910,7 +941,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 503,
+      "line": 521,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -920,7 +951,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 504,
+      "line": 522,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend cpu",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend cpu",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -930,7 +961,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 505,
+      "line": 523,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend embree",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend embree",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -940,7 +971,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 506,
+      "line": 524,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend embree",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend embree",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -950,7 +981,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 507,
+      "line": 525,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend embree",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend embree",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -960,7 +991,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 509,
+      "line": 527,
       "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend cpu_python_reference",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -970,7 +1001,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 510,
+      "line": 528,
       "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend cpu",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend cpu",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -980,7 +1011,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 511,
+      "line": 529,
       "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend embree",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend embree",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -990,7 +1021,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 520,
+      "line": 538,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend optix",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend optix",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -1000,7 +1031,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 521,
+      "line": 539,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_conjunctive_scan.py --backend vulkan",
       "normalized": "python examples/rtdl_db_conjunctive_scan.py --backend vulkan",
       "program": "examples/rtdl_db_conjunctive_scan.py",
@@ -1010,7 +1041,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 522,
+      "line": 540,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend optix",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend optix",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -1020,7 +1051,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 523,
+      "line": 541,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_count.py --backend vulkan",
       "normalized": "python examples/rtdl_db_grouped_count.py --backend vulkan",
       "program": "examples/rtdl_db_grouped_count.py",
@@ -1030,7 +1061,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 524,
+      "line": 542,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend optix",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend optix",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -1040,7 +1071,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 525,
+      "line": 543,
       "command": "PYTHONPATH=src:. python examples/rtdl_db_grouped_sum.py --backend vulkan",
       "normalized": "python examples/rtdl_db_grouped_sum.py --backend vulkan",
       "program": "examples/rtdl_db_grouped_sum.py",
@@ -1050,7 +1081,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 526,
+      "line": 544,
       "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend optix",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -1060,7 +1091,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 527,
+      "line": 545,
       "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend vulkan",
       "normalized": "python examples/rtdl_database_analytics_app.py --backend vulkan",
       "program": "examples/rtdl_database_analytics_app.py",
@@ -1070,7 +1101,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 558,
+      "line": 576,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1080,7 +1111,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 559,
+      "line": 577,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1090,7 +1121,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 560,
+      "line": 578,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1100,7 +1131,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 562,
+      "line": 580,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "program": "examples/rtdl_knn_rows.py",
@@ -1110,7 +1141,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 563,
+      "line": 581,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu",
       "program": "examples/rtdl_knn_rows.py",
@@ -1120,7 +1151,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 564,
+      "line": 582,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree",
       "normalized": "python examples/rtdl_knn_rows.py --backend embree",
       "program": "examples/rtdl_knn_rows.py",
@@ -1130,7 +1161,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 589,
+      "line": 607,
       "command": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1140,7 +1171,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 590,
+      "line": 608,
       "command": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1150,7 +1181,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 591,
+      "line": 609,
       "command": "python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -1160,7 +1191,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 603,
+      "line": 621,
       "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16",
       "program": "examples/rtdl_segment_polygon_hitcount.py",
@@ -1170,7 +1201,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 613,
+      "line": 631,
       "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16",
       "normalized": "python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16",
       "program": "examples/rtdl_segment_polygon_anyhit_rows.py",
@@ -1180,7 +1211,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 623,
+      "line": 641,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -1190,7 +1221,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 624,
+      "line": 642,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -1200,7 +1231,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 634,
+      "line": 652,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -1210,7 +1241,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 635,
+      "line": 653,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -1220,7 +1251,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 666,
+      "line": 684,
       "command": "PYTHONPATH=src:. python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo",
       "normalized": "python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo",
       "program": "examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py",
@@ -1230,7 +1261,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 683,
+      "line": 701,
       "command": "PYTHONPATH=src:. python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm",
       "normalized": "python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm",
       "program": "examples/visual_demo/rtdl_lit_ball_demo.py",
@@ -1240,7 +1271,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 689,
+      "line": 707,
       "command": "PYTHONPATH=src:. python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo",
       "normalized": "python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo",
       "program": "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
@@ -1250,7 +1281,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 705,
+      "line": 723,
       "command": "PYTHONPATH=src:. python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle",
       "normalized": "python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle",
       "program": "scripts/rtdl_generate_only.py",
@@ -1460,7 +1491,17 @@
     },
     {
       "path": "docs/tutorials/db_workloads.md",
-      "line": 144,
+      "line": 135,
+      "command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
+      "normalized": "python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
+      "program": "examples/rtdl_database_analytics_app.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal410_harness_family"
+    },
+    {
+      "path": "docs/tutorials/db_workloads.md",
+      "line": 155,
       "command": "RTDL_POSTGRESQL_DSN=\"dbname=postgres\" PYTHONPATH=src:. python -m unittest tests.goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_test tests.goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_test tests.goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_test tests.goal423_v0_7_postgresql_db_correctness_test tests.goal424_v0_7_postgresql_db_grouped_correctness_test -v",
       "normalized": "python -m unittest tests.goal420_v0_7_rt_db_conjunctive_scan_native_oracle_truth_path_test tests.goal421_v0_7_rt_db_grouped_count_native_oracle_truth_path_test tests.goal422_v0_7_rt_db_grouped_sum_native_oracle_truth_path_test tests.goal423_v0_7_postgresql_db_correctness_test tests.goal424_v0_7_postgresql_db_grouped_correctness_test -v",
       "program": "python -m unittest",
@@ -1990,7 +2031,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 226,
+      "line": 232,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -2000,7 +2041,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 227,
+      "line": 233,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "program": "examples/rtdl_knn_rows.py",
@@ -2010,7 +2051,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 234,
+      "line": 240,
       "command": "python examples\\rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -2020,7 +2061,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 235,
+      "line": 241,
       "command": "python examples\\rtdl_knn_rows.py --backend cpu_python_reference",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu_python_reference",
       "program": "examples/rtdl_knn_rows.py",
@@ -2030,7 +2071,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 242,
+      "line": 248,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -2040,7 +2081,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 243,
+      "line": 249,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu",
       "program": "examples/rtdl_knn_rows.py",
@@ -2050,7 +2091,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 244,
+      "line": 250,
       "command": "PYTHONPATH=src:. python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -2060,7 +2101,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 245,
+      "line": 251,
       "command": "PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend embree",
       "normalized": "python examples/rtdl_knn_rows.py --backend embree",
       "program": "examples/rtdl_knn_rows.py",
@@ -2070,7 +2111,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 252,
+      "line": 258,
       "command": "python examples\\rtdl_fixed_radius_neighbors.py --backend cpu",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend cpu",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -2080,7 +2121,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 253,
+      "line": 259,
       "command": "python examples\\rtdl_knn_rows.py --backend cpu",
       "normalized": "python examples/rtdl_knn_rows.py --backend cpu",
       "program": "examples/rtdl_knn_rows.py",
@@ -2090,7 +2131,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 254,
+      "line": 260,
       "command": "python examples\\rtdl_fixed_radius_neighbors.py --backend embree",
       "normalized": "python examples/rtdl_fixed_radius_neighbors.py --backend embree",
       "program": "examples/rtdl_fixed_radius_neighbors.py",
@@ -2100,7 +2141,7 @@
     },
     {
       "path": "docs/tutorials/nearest_neighbor_workloads.md",
-      "line": 255,
+      "line": 261,
       "command": "python examples\\rtdl_knn_rows.py --backend embree",
       "normalized": "python examples/rtdl_knn_rows.py --backend embree",
       "program": "examples/rtdl_knn_rows.py",
@@ -2250,7 +2291,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 207,
+      "line": 216,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -2260,7 +2301,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 208,
+      "line": 217,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -2270,7 +2311,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 215,
+      "line": 224,
       "command": "python examples\\rtdl_polygon_set_jaccard.py",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -2280,7 +2321,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 216,
+      "line": 225,
       "command": "python examples\\rtdl_polygon_set_jaccard.py --backend embree",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "program": "examples/rtdl_polygon_set_jaccard.py",

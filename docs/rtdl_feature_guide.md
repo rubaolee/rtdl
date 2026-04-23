@@ -80,6 +80,14 @@ now has local overhead reductions for prepared closest-hit, hit-count, and
 segment-intersection, plus v0.9.4 Metal compute DB/graph coverage, but still is
 not a broad Apple speedup claim.
 
+NVIDIA RT-core claim note: `--backend optix` is not enough for a public
+RT-core acceleration claim. Claim-sensitive app commands must use
+`--require-rt-core`, and apps reject that flag unless the selected mode is a
+documented bounded OptiX traversal path. Current accepted paths are partial
+compact/summary modes only; graph, facility KNN, polygon overlap/Jaccard,
+segment/polygon, Hausdorff, ANN, and Barnes-Hut remain non-claim or
+CUDA-through-OptiX paths today.
+
 Current supported workload families:
 
 - `lsi`

@@ -45,6 +45,11 @@ GOAL593_COMMANDS = [
     "python examples/rtdl_apple_rt_demo_app.py",
 ]
 
+GOAL821_COMMANDS = [
+    "python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
+    "python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
+]
+
 PUBLIC_VALIDATION_COMMAND_KEYS = {
     ("python -m unittest", "default"): "postgresql_validation_command",
 }
@@ -145,6 +150,9 @@ def build_coverage_maps() -> tuple[dict[str, str], dict[tuple[str, str], str]]:
     for command in GOAL593_COMMANDS:
         exact_keys.setdefault(command, "goal593_public_example_smoke_exact")
         family_keys.setdefault(command_key(command), "goal593_public_example_smoke_family")
+    for command in GOAL821_COMMANDS:
+        exact_keys.setdefault(command, "goal821_require_rt_core_doc_gate_exact")
+        family_keys.setdefault(command_key(command), "goal821_require_rt_core_doc_gate_family")
     family_keys.update(PUBLIC_VALIDATION_COMMAND_KEYS)
     return exact_keys, family_keys
 
