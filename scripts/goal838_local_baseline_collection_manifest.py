@@ -52,17 +52,20 @@ def _db_command(row: dict[str, Any], backend: str, baseline: str) -> list[str]:
 
 def _fixed_radius_command(row: dict[str, Any], baseline: str) -> list[str]:
     scale = row.get("scale") or {}
+    backend = "cpu" if baseline == "cpu_scalar_threshold_count_oracle" else "embree"
     return [
         "python3",
-        "scripts/goal715_embree_fixed_radius_summary_perf.py",
+        "scripts/goal839_fixed_radius_baseline.py",
+        "--app",
+        str(row["app"]),
+        "--backend",
+        backend,
         "--copies",
         str(scale.get("copies", 20000)),
-        "--repeats",
+        "--iterations",
         str(scale.get("iterations", 10)),
-        "--warmups",
-        "1",
-        "--output",
-        _raw_output_path(row, baseline),
+        "--output-json",
+        _artifact_path(row, baseline),
     ]
 
 
@@ -70,7 +73,7 @@ def _robot_command(row: dict[str, Any], backend: str, baseline: str) -> list[str
     scale = row.get("scale") or {}
     return [
         "python3",
-        "scripts/goal838_robot_pose_count_baseline.py",
+        "scripts/goal839_robot_pose_count_baseline.py",
         "--backend",
         backend,
         "--pose-count",
@@ -80,7 +83,7 @@ def _robot_command(row: dict[str, Any], backend: str, baseline: str) -> list[str
         "--iterations",
         str(scale.get("iterations", 10)),
         "--output-json",
-        _raw_output_path(row, baseline),
+        _artifact_path(row, baseline),
     ]
 
 
@@ -132,16 +135,16 @@ def _row_actions(row: dict[str, Any]) -> list[dict[str, Any]]:
             action.update(
                 {
                     "status": "local_command_ready",
-                    "collector_kind": "goal715_embree_fixed_radius_summary_perf",
+                    "collector_kind": "goal839_fixed_radius_baseline",
                     "command": _fixed_radius_command(row, baseline_name),
-                    "normalization_required": "select the app-specific summary row and wrap it in the Goal836 baseline artifact schema",
                 }
             )
         elif app in {"outlier_detection", "dbscan_clustering"} and baseline_name == "cpu_scalar_threshold_count_oracle":
             action.update(
                 {
-                    "status": "collector_needed",
-                    "reason": "the oracle exists in app fixtures, but no scalar threshold-count artifact writer exists yet",
+                    "status": "local_command_ready",
+                    "collector_kind": "goal839_fixed_radius_baseline",
+                    "command": _fixed_radius_command(row, baseline_name),
                 }
             )
         elif app in {"outlier_detection", "dbscan_clustering"} and baseline_name == "scipy_or_reference_neighbor_baseline_when_used_in_app_report":
@@ -154,17 +157,17 @@ def _row_actions(row: dict[str, Any]) -> list[dict[str, Any]]:
         elif app == "robot_collision_screening" and baseline_name == "cpu_oracle_pose_count":
             action.update(
                 {
-                    "status": "collector_needed",
-                    "reason": "Goal760 has a CPU dry-run pose-flag path, but not yet a schema-ready pose-count baseline writer",
-                    "proposed_command": _robot_command(row, "cpu", baseline_name),
+                    "status": "local_command_ready",
+                    "collector_kind": "goal839_robot_pose_count_baseline",
+                    "command": _robot_command(row, "cpu", baseline_name),
                 }
             )
         elif app == "robot_collision_screening" and baseline_name == "embree_anyhit_pose_count_or_equivalent_compact_summary":
             action.update(
                 {
-                    "status": "collector_needed",
-                    "reason": "Embree any-hit exists through the app backend, but a compact pose-count baseline writer is still needed",
-                    "proposed_command": _robot_command(row, "embree", baseline_name),
+                    "status": "local_command_ready",
+                    "collector_kind": "goal839_robot_pose_count_baseline",
+                    "command": _robot_command(row, "embree", baseline_name),
                 }
             )
         elif row["section"] == "deferred":

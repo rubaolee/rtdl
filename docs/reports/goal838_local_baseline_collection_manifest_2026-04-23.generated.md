@@ -4,10 +4,9 @@ This is a local collection manifest only. It does not run heavy benchmarks, writ
 
 ## Summary
 
-- collector_needed: `4`
 - deferred_until_app_gate_active: `9`
 - linux_postgresql_required: `2`
-- local_command_ready: `6`
+- local_command_ready: `10`
 - optional_dependency_or_reference_required: `2`
 
 ## Actions
@@ -20,14 +19,14 @@ This is a local collection manifest only. It does not run heavy benchmarks, writ
 | local_command_ready | database_analytics | prepared_db_session_regional_dashboard | cpu_oracle_compact_summary | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json |
 | local_command_ready | database_analytics | prepared_db_session_regional_dashboard | embree_compact_summary | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json |
 | linux_postgresql_required | database_analytics | prepared_db_session_regional_dashboard | postgresql_same_semantics_on_linux_when_available | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json |
-| collector_needed | outlier_detection | prepared_fixed_radius_density_summary | cpu_scalar_threshold_count_oracle | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json |
+| local_command_ready | outlier_detection | prepared_fixed_radius_density_summary | cpu_scalar_threshold_count_oracle | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json |
 | local_command_ready | outlier_detection | prepared_fixed_radius_density_summary | embree_scalar_or_summary_path | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.json |
 | optional_dependency_or_reference_required | outlier_detection | prepared_fixed_radius_density_summary | scipy_or_reference_neighbor_baseline_when_used_in_app_report | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json |
-| collector_needed | dbscan_clustering | prepared_fixed_radius_core_flags | cpu_scalar_threshold_count_oracle | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json |
+| local_command_ready | dbscan_clustering | prepared_fixed_radius_core_flags | cpu_scalar_threshold_count_oracle | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json |
 | local_command_ready | dbscan_clustering | prepared_fixed_radius_core_flags | embree_scalar_or_summary_path | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json |
 | optional_dependency_or_reference_required | dbscan_clustering | prepared_fixed_radius_core_flags | scipy_or_reference_neighbor_baseline_when_used_in_app_report | {"copies": 20000, "iterations": 10} | docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json |
-| collector_needed | robot_collision_screening | prepared_pose_flags | cpu_oracle_pose_count | {"iterations": 10, "obstacle_count": 1024, "pose_count": 200000} | docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json |
-| collector_needed | robot_collision_screening | prepared_pose_flags | embree_anyhit_pose_count_or_equivalent_compact_summary | {"iterations": 10, "obstacle_count": 1024, "pose_count": 200000} | docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json |
+| local_command_ready | robot_collision_screening | prepared_pose_flags | cpu_oracle_pose_count | {"iterations": 10, "obstacle_count": 1024, "pose_count": 200000} | docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json |
+| local_command_ready | robot_collision_screening | prepared_pose_flags | embree_anyhit_pose_count_or_equivalent_compact_summary | {"iterations": 10, "obstacle_count": 1024, "pose_count": 200000} | docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json |
 | deferred_until_app_gate_active | service_coverage_gaps | prepared_gap_summary | cpu_oracle_summary |  | docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json |
 | deferred_until_app_gate_active | service_coverage_gaps | prepared_gap_summary | embree_summary_path |  | docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json |
 | deferred_until_app_gate_active | service_coverage_gaps | prepared_gap_summary | scipy_baseline_when_available |  | docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json |
@@ -64,15 +63,39 @@ python3 scripts/goal756_db_prepared_session_perf.py --backend cpu --scenario reg
 python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario regional_dashboard --copies 20000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.raw.json
 ```
 
+### outlier_detection / prepared_fixed_radius_density_summary / cpu_scalar_threshold_count_oracle
+
+```bash
+python3 scripts/goal839_fixed_radius_baseline.py --app outlier_detection --backend cpu --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json
+```
+
 ### outlier_detection / prepared_fixed_radius_density_summary / embree_scalar_or_summary_path
 
 ```bash
-python3 scripts/goal715_embree_fixed_radius_summary_perf.py --copies 20000 --repeats 10 --warmups 1 --output docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.raw.json
+python3 scripts/goal839_fixed_radius_baseline.py --app outlier_detection --backend embree --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.json
+```
+
+### dbscan_clustering / prepared_fixed_radius_core_flags / cpu_scalar_threshold_count_oracle
+
+```bash
+python3 scripts/goal839_fixed_radius_baseline.py --app dbscan_clustering --backend cpu --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json
 ```
 
 ### dbscan_clustering / prepared_fixed_radius_core_flags / embree_scalar_or_summary_path
 
 ```bash
-python3 scripts/goal715_embree_fixed_radius_summary_perf.py --copies 20000 --repeats 10 --warmups 1 --output docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.raw.json
+python3 scripts/goal839_fixed_radius_baseline.py --app dbscan_clustering --backend embree --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json
+```
+
+### robot_collision_screening / prepared_pose_flags / cpu_oracle_pose_count
+
+```bash
+python3 scripts/goal839_robot_pose_count_baseline.py --backend cpu --pose-count 200000 --obstacle-count 1024 --iterations 10 --output-json docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json
+```
+
+### robot_collision_screening / prepared_pose_flags / embree_anyhit_pose_count_or_equivalent_compact_summary
+
+```bash
+python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 1024 --iterations 10 --output-json docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json
 ```
 

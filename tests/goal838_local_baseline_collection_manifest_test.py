@@ -29,9 +29,8 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
         module = __import__("scripts.goal838_local_baseline_collection_manifest", fromlist=["build_collection_manifest"])
         payload = module.build_collection_manifest()
         self.assertEqual(payload["action_count"], 23)
-        self.assertEqual(payload["status_counts"]["local_command_ready"], 6)
+        self.assertEqual(payload["status_counts"]["local_command_ready"], 10)
         self.assertEqual(payload["status_counts"]["linux_postgresql_required"], 2)
-        self.assertEqual(payload["status_counts"]["collector_needed"], 4)
         self.assertEqual(payload["status_counts"]["deferred_until_app_gate_active"], 9)
         self.assertIn("does not run heavy benchmarks", payload["boundary"])
 
@@ -58,8 +57,9 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
             action for action in payload["actions"]
             if action["app"] == "robot_collision_screening"
         ]
-        self.assertEqual({action["status"] for action in robot}, {"collector_needed"})
-        self.assertTrue(all("proposed_command" in action for action in robot))
+        self.assertEqual({action["status"] for action in robot}, {"local_command_ready"})
+        self.assertTrue(all(action["collector_kind"] == "goal839_robot_pose_count_baseline" for action in robot))
+        self.assertTrue(all(action["command"][1] == "scripts/goal839_robot_pose_count_baseline.py" for action in robot))
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
