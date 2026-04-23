@@ -1,0 +1,130 @@
+{
+  "artifact_bundle": {
+    "member_count": 4,
+    "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal769_rtx_pod_artifacts_dry_run_2026-04-23.tgz",
+    "status": "dry_run"
+  },
+  "boundary": "This one-shot runner is an execution bundle for paid RTX pod time. It does not authorize public RTX speedup claims; generated artifacts still require review.",
+  "branch": "codex/rtx-cloud-run-2026-04-22",
+  "cuda_prefix": "/usr/local/cuda",
+  "date": "2026-04-23",
+  "dry_run": true,
+  "nvcc": "/usr/local/cuda/bin/nvcc",
+  "optix_prefix": "/Users/rl2025/vendor/optix-dev-9.0.0",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "status": "ok",
+  "steps": [
+    {
+      "name": "git_fetch",
+      "result": {
+        "command": [
+          "git",
+          "fetch",
+          "origin",
+          "codex/rtx-cloud-run-2026-04-22"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-23T04:24:03-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "name": "git_checkout_branch",
+      "result": {
+        "command": [
+          "git",
+          "checkout",
+          "-B",
+          "codex/rtx-cloud-run-2026-04-22",
+          "origin/codex/rtx-cloud-run-2026-04-22"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-23T04:24:03-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "name": "install_optix_dev_headers",
+      "result": {
+        "command": [
+          "git",
+          "clone",
+          "--depth",
+          "1",
+          "--branch",
+          "v9.0.0",
+          "https://github.com/NVIDIA/optix-dev.git",
+          "/Users/rl2025/vendor/optix-dev-9.0.0"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-23T04:24:03-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "name": "goal763_bootstrap",
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/goal763_rtx_cloud_bootstrap_check.py",
+          "--output-json",
+          "docs/reports/goal763_rtx_cloud_bootstrap_check.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-23T04:24:03-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "name": "goal761_run_manifest",
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/goal761_rtx_cloud_run_all.py",
+          "--output-json",
+          "docs/reports/goal761_rtx_cloud_run_all_summary.json"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-23T04:24:03-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "name": "goal762_analyze_artifacts",
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/goal762_rtx_cloud_artifact_report.py",
+          "--summary-json",
+          "docs/reports/goal761_rtx_cloud_run_all_summary.json",
+          "--output-json",
+          "docs/reports/goal762_rtx_cloud_artifact_report_dry_run_2026-04-23.json",
+          "--output-md",
+          "docs/reports/goal762_rtx_cloud_artifact_report_dry_run_2026-04-23.md"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "started_at": "2026-04-23T04:24:03-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "suite": "goal769_rtx_pod_one_shot"
+}
