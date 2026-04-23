@@ -724,6 +724,24 @@ extern "C" int rtdl_optix_db_dataset_conjunctive_scan(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_db_dataset_conjunctive_scan_count(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbClause* clauses, size_t clause_count,
+        size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!row_count_out) {
+            throw std::runtime_error("row_count_out pointer must not be null");
+        }
+        *row_count_out = 0;
+        run_db_conjunctive_scan_count_optix_prepared(
+            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            clauses, clause_count,
+            row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_db_dataset_grouped_count(
         RtdlOptixDbDataset* dataset,
         const RtdlDbClause* clauses, size_t clause_count,

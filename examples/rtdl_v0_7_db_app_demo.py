@@ -158,7 +158,7 @@ class PreparedRegionalDashboardSession:
     def run(self, output_mode: str = "full") -> dict[str, Any]:
         if self._closed:
             raise RuntimeError("prepared regional dashboard session is closed")
-        if output_mode not in {"full", "summary"}:
+        if output_mode not in {"full", "summary", "compact_summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
         run_phases: dict[str, float] = {}
         if self.backend == "cpu_reference":
@@ -168,9 +168,16 @@ class PreparedRegionalDashboardSession:
             prepared_summary = None
         else:
             assert self._dataset is not None
-            promo_order_ids, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
-                lambda: _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN))
-            )
+            if output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
+                promo_order_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
+                    lambda: self._dataset.conjunctive_scan_count(PROMO_SCAN)
+                )
+                promo_order_ids = []
+            else:
+                promo_order_ids, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                    lambda: _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN))
+                )
+                promo_order_count = len(promo_order_ids)
             open_order_count_by_region, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
                 lambda: _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD))
             )
@@ -188,6 +195,8 @@ class PreparedRegionalDashboardSession:
             }
         summary_start = time.perf_counter()
         summary = _summarize_results(results)
+        if self.backend != "cpu_reference" and output_mode == "compact_summary":
+            summary["promo_order_count"] = promo_order_count
         run_phases["python_summary_postprocess_sec"] = time.perf_counter() - summary_start
 
         return {
@@ -276,8 +285,11 @@ def _summarize_results(results: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_app(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, Any]:
-    if output_mode not in {"full", "summary"}:
+    if output_mode not in {"full", "summary", "compact_summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if output_mode == "compact_summary" and _canonical_backend(backend) != "cpu_reference":
+        with prepare_session(backend, copies=copies) as session:
+            return session.run(output_mode=output_mode)
     table = make_orders(copies)
     selected_backend, fallback_note = choose_backend(backend, table)
     if selected_backend == "cpu_reference":
@@ -341,7 +353,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Use the CPU reference everywhere, or run a prepared RT backend when available.",
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic order table this many times.")
-    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary", "compact_summary"))
     args = parser.parse_args(argv)
     print(json.dumps(run_app(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0

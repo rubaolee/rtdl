@@ -45,6 +45,8 @@
         "20000",
         "--iterations",
         "10",
+        "--output-mode",
+        "compact_summary",
         "--strict",
         "--output-json",
         "docs/reports/goal759_db_sales_risk_rtx.json"
@@ -52,13 +54,13 @@
       "env": {},
       "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
       "optix_performance_class": "python_interface_dominated",
-      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless compact_summary is selected.",
       "path_name": "prepared_db_session_sales_risk",
       "preconditions": [
         "OptiX DB backend must be available.",
         "Use prepared-session profiler, not only one-shot CLI timing."
       ],
-      "readiness_blocker": "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
+      "readiness_blocker": "candidate bitset copy-back, native host-side exact filtering/grouping, grouped-row decoding, and row materialization still need finer phase evidence",
       "readiness_next_goal": "Goal706",
       "scale": {
         "copies": 20000,
@@ -83,6 +85,8 @@
         "20000",
         "--iterations",
         "10",
+        "--output-mode",
+        "compact_summary",
         "--strict",
         "--output-json",
         "docs/reports/goal759_db_regional_dashboard_rtx.json"
@@ -90,13 +94,13 @@
       "env": {},
       "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
       "optix_performance_class": "python_interface_dominated",
-      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless compact_summary is selected.",
       "path_name": "prepared_db_session_regional_dashboard",
       "preconditions": [
         "OptiX DB backend must be available.",
         "Use prepared-session profiler, not only one-shot CLI timing."
       ],
-      "readiness_blocker": "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
+      "readiness_blocker": "candidate bitset copy-back, native host-side exact filtering/grouping, grouped-row decoding, and row materialization still need finer phase evidence",
       "readiness_next_goal": "Goal706",
       "scale": {
         "copies": 20000,

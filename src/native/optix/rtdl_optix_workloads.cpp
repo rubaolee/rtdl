@@ -988,6 +988,28 @@ static void run_db_conjunctive_scan_optix_prepared(
     *row_count_out = rows.size();
 }
 
+static void run_db_conjunctive_scan_count_optix_prepared(
+        OptixDbDatasetImpl* dataset,
+        const RtdlDbClause* clauses,
+        size_t clause_count,
+        size_t* row_count_out)
+{
+    if (!dataset) {
+        throw std::runtime_error("OptiX prepared DB dataset must not be null");
+    }
+    if (!row_count_out) {
+        throw std::runtime_error("row_count_out pointer must not be null");
+    }
+    if (clause_count > 0 && !clauses) {
+        throw std::runtime_error("DB clause pointer must not be null when clause_count > 0");
+    }
+    *row_count_out = 0;
+
+    const std::vector<size_t> candidate_row_indices =
+        db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+    *row_count_out = candidate_row_indices.size();
+}
+
 static void run_db_grouped_count_optix_prepared(
         OptixDbDatasetImpl* dataset,
         const RtdlDbClause* clauses,

@@ -454,6 +454,11 @@ int  rtdl_optix_db_dataset_conjunctive_scan(
          const RtdlDbClause* clauses, size_t clause_count,
          RtdlDbRowIdRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_db_dataset_conjunctive_scan_count(
+         RtdlOptixDbDataset* dataset,
+         const RtdlDbClause* clauses, size_t clause_count,
+         size_t* row_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_db_dataset_grouped_count(
          RtdlOptixDbDataset* dataset,
          const RtdlDbClause* clauses, size_t clause_count,

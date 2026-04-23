@@ -195,7 +195,7 @@ class PreparedSalesRiskSession:
     def run(self, output_mode: str = "full") -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared sales-risk session is closed")
-        if output_mode not in {"full", "summary"}:
+        if output_mode not in {"full", "summary", "compact_summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
         prepared_dataset = None
         run_phases: dict[str, float] = {}
@@ -207,9 +207,16 @@ class PreparedSalesRiskSession:
                 "predicates": query["predicates"],
                 "group_keys": query["group_keys"],
             }
-            risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
-                lambda: tuple(self._dataset.conjunctive_scan(predicates))
-            )
+            if output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
+                risky_scan_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
+                    lambda: self._dataset.conjunctive_scan_count(predicates)
+                )
+                risky_rows = ()
+            else:
+                risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                    lambda: tuple(self._dataset.conjunctive_scan(predicates))
+                )
+                risky_scan_count = len(risky_rows)
             count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
                 lambda: tuple(self._dataset.grouped_count(count_query))
             )
@@ -224,6 +231,7 @@ class PreparedSalesRiskSession:
             risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
                 lambda: _run_scan_rows(self.backend, self.scan_case)
             )
+            risky_scan_count = len(risky_rows)
             count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
                 lambda: _run_grouped_count_rows(self.backend, self.grouped_case)
             )
@@ -239,6 +247,14 @@ class PreparedSalesRiskSession:
         risky_order_ids = [int(row["row_id"]) for row in risky_rows]
         highest_risk_region = max(region_counts.items(), key=lambda item: (item[1], item[0]))[0]
         run_phases["python_summary_postprocess_sec"] = time.perf_counter() - postprocess_start
+        summary = {
+            "risky_order_count": risky_scan_count,
+            "risky_order_count_by_region": region_counts,
+            "risky_revenue_by_region": region_revenue,
+            "highest_risk_region": highest_risk_region,
+        }
+        if output_mode != "compact_summary":
+            summary["risky_order_ids"] = risky_order_ids
         return {
             "app": "sales_risk_screening",
             "backend": self.backend,
@@ -251,18 +267,13 @@ class PreparedSalesRiskSession:
             },
             "run_phases": run_phases,
             "prepared_dataset": prepared_dataset,
-            "summary": {
-                "risky_order_ids": risky_order_ids,
-                "risky_order_count_by_region": region_counts,
-                "risky_revenue_by_region": region_revenue,
-                "highest_risk_region": highest_risk_region,
-            },
+            "summary": summary,
             "row_counts": {
-                "scan": len(risky_rows),
+                "scan": risky_scan_count,
                 "grouped_count": len(count_rows),
                 "grouped_sum": len(sum_rows),
             },
-            "rows": {} if output_mode == "summary" else {
+            "rows": {} if output_mode in {"summary", "compact_summary"} else {
                 "scan": list(risky_rows),
                 "grouped_count": list(count_rows),
                 "grouped_sum": list(sum_rows),
@@ -275,8 +286,11 @@ def prepare_session(backend: str, copies: int = 1) -> PreparedSalesRiskSession:
 
 
 def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, object]:
-    if output_mode not in {"full", "summary"}:
+    if output_mode not in {"full", "summary", "compact_summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if output_mode == "compact_summary" and backend in {"embree", "optix", "vulkan"}:
+        with prepare_session(backend, copies=copies) as session:
+            return session.run(output_mode=output_mode)
     scan_case, grouped_case = make_sales_case(copies)
     prepared_dataset = None
     if backend in {"embree", "optix", "vulkan"}:
@@ -298,6 +312,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
         "execution_mode": "one_shot",
         "prepared_dataset": prepared_dataset,
         "summary": {
+            "risky_order_count": len(risky_rows),
             "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
             "risky_order_count_by_region": region_counts,
             "risky_revenue_by_region": region_revenue,
@@ -308,7 +323,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
             "grouped_count": len(count_rows),
             "grouped_sum": len(sum_rows),
         },
-        "rows": {} if output_mode == "summary" else {
+        "rows": {} if output_mode in {"summary", "compact_summary"} else {
             "scan": list(risky_rows),
             "grouped_count": list(count_rows),
             "grouped_sum": list(sum_rows),
@@ -326,7 +341,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic sales table this many times.")
-    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary", "compact_summary"))
     args = parser.parse_args(argv)
     print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0

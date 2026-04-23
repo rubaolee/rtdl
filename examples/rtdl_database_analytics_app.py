@@ -19,6 +19,7 @@ import rtdsl as rt
 
 BACKENDS = ("auto", "cpu_python_reference", "cpu_reference", "cpu", "embree", "optix", "vulkan")
 SCENARIOS = ("regional_dashboard", "sales_risk", "all")
+OUTPUT_MODES = ("full", "summary", "compact_summary")
 
 
 def _optix_performance() -> dict[str, str]:
@@ -77,7 +78,7 @@ class PreparedDatabaseAnalyticsSession:
     def run(self, output_mode: str = "full") -> dict[str, Any]:
         if self._closed:
             raise RuntimeError("prepared database analytics session is closed")
-        if output_mode not in {"full", "summary"}:
+        if output_mode not in OUTPUT_MODES:
             raise ValueError(f"unsupported output_mode: {output_mode}")
         per_section_run_sec: dict[str, float] = {}
         sections: dict[str, Any] = {}
@@ -124,7 +125,7 @@ def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: s
         raise ValueError(f"unsupported scenario: {scenario}")
     if copies <= 0:
         raise ValueError("copies must be positive")
-    if output_mode not in {"full", "summary"}:
+    if output_mode not in OUTPUT_MODES:
         raise ValueError(f"unsupported output_mode: {output_mode}")
 
     sections: dict[str, Any] = {}
@@ -176,7 +177,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Run one DB app scenario or the complete unified app.",
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat deterministic DB fixtures this many times.")
-    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
+    parser.add_argument("--output-mode", default="full", choices=OUTPUT_MODES)
     parser.add_argument("--execution-mode", default="one_shot", choices=("one_shot", "prepared_session"))
     parser.add_argument("--session-iterations", type=int, default=1)
     args = parser.parse_args(argv)

@@ -1097,6 +1097,27 @@ class OptixPreparedDbDataset:
             field_names=("row_id",),
         )
 
+    def conjunctive_scan_count(self, clauses_array) -> int:
+        symbol = getattr(self.library, "rtdl_optix_db_dataset_conjunctive_scan_count", None)
+        if symbol is None:
+            rows = self.conjunctive_scan(clauses_array)
+            try:
+                return int(rows.row_count)
+            finally:
+                rows.close()
+        row_count_out = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self.handle,
+            clauses_array,
+            ctypes.c_size_t(len(clauses_array)),
+            ctypes.byref(row_count_out),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(row_count_out.value)
+
     def grouped_count(self, clauses_array, group_key_field: bytes) -> OptixRowView:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
@@ -1195,6 +1216,11 @@ class PreparedOptixDbDataset:
             return rows.to_dict_rows()
         finally:
             rows.close()
+
+    def conjunctive_scan_count(self, predicates) -> int:
+        bundle = normalize_predicate_bundle(predicates)
+        clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
+        return self._dataset.conjunctive_scan_count(clauses_array)
 
     def grouped_count(self, query) -> tuple[dict[str, object], ...]:
         normalized_query = normalize_grouped_query(query)
@@ -2918,6 +2944,18 @@ def _register_argtypes(lib) -> None:
             ctypes.c_void_p,
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_conjunctive_scan_count")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p,
             ctypes.c_size_t,

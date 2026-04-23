@@ -97,9 +97,10 @@ def _profile_backend(
     scenario: str,
     copies: int,
     iterations: int,
+    output_mode: str,
 ) -> dict[str, Any]:
     one_shot_payload, one_shot_sec = _time_call(
-        lambda: db_app.run_app(backend, scenario=scenario, copies=copies, output_mode="summary")
+        lambda: db_app.run_app(backend, scenario=scenario, copies=copies, output_mode=output_mode)
     )
 
     session, prepare_total_sec = _time_call(lambda: db_app.prepare_session(backend, scenario=scenario, copies=copies))
@@ -108,7 +109,7 @@ def _profile_backend(
     close_sec = 0.0
     try:
         for _ in range(iterations):
-            last_payload, elapsed = _time_call(lambda: session.run(output_mode="summary"))
+            last_payload, elapsed = _time_call(lambda: session.run(output_mode=output_mode))
             run_samples.append(elapsed)
     finally:
         _, close_sec = _time_call(session.close)
@@ -116,6 +117,7 @@ def _profile_backend(
     return {
         "backend": backend,
         "status": "ok",
+        "output_mode": output_mode,
         "one_shot_total_sec": one_shot_sec,
         "prepared_session_prepare_total_sec": prepare_total_sec,
         "prepared_session_warm_query_sec": _stats(run_samples),
@@ -131,7 +133,7 @@ def _profile_backend(
             "prepared_session_warm_query": "session.run only: prepared queries plus result materialization and app summary construction",
             "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON",
             "reported_run_phases": "scenario-provided per-operation query/materialization and Python summary timers embedded in app JSON",
-            "not_yet_split": "backend-native traversal, candidate copy-back, exact filtering/grouping, and Python object conversion are still grouped inside each per-operation query timer unless the native backend exposes lower-level timers",
+            "not_yet_split": "backend-native traversal, candidate bitset copy-back, exact native filtering/grouping, and Python object conversion are still grouped inside each per-operation query timer unless the native backend exposes lower-level timers",
         },
         "one_shot_output": _compact(one_shot_payload),
         "prepared_session_output": _compact(last_payload or {}),
@@ -144,6 +146,7 @@ def run_suite(
     scenario: str,
     copies: int,
     iterations: int,
+    output_mode: str,
     strict: bool,
 ) -> dict[str, Any]:
     if copies <= 0:
@@ -154,7 +157,13 @@ def run_suite(
     results: list[dict[str, Any]] = []
     for backend in backends:
         try:
-            results.append(_profile_backend(backend, scenario=scenario, copies=copies, iterations=iterations))
+            results.append(_profile_backend(
+                backend,
+                scenario=scenario,
+                copies=copies,
+                iterations=iterations,
+                output_mode=output_mode,
+            ))
         except Exception as exc:
             if strict:
                 raise
@@ -165,6 +174,7 @@ def run_suite(
         "scenario": scenario,
         "copies": copies,
         "iterations": iterations,
+        "output_mode": output_mode,
         "results": results,
         "boundary": "Prepared DB session profiler compares one-shot app calls with reused prepared sessions. GTX 1070 evidence is backend behavior evidence only, not RTX RT-core speedup evidence.",
     }
@@ -176,6 +186,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--scenario", choices=("regional_dashboard", "sales_risk", "all"), default="all")
     parser.add_argument("--copies", type=int, default=100)
     parser.add_argument("--iterations", type=int, default=5)
+    parser.add_argument("--output-mode", choices=("summary", "compact_summary"), default="summary")
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--output-json")
     args = parser.parse_args(argv)
@@ -185,6 +196,7 @@ def main(argv: list[str] | None = None) -> int:
         scenario=args.scenario,
         copies=args.copies,
         iterations=args.iterations,
+        output_mode=args.output_mode,
         strict=args.strict,
     )
     text = json.dumps(payload, indent=2, sort_keys=True)

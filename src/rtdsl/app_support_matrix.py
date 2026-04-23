@@ -328,7 +328,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "database_analytics": OptixAppPerformanceSupport(
         app="database_analytics",
         performance_class=PYTHON_INTERFACE_DOMINATED,
-        note="Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+        note="Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless compact_summary is selected.",
     ),
     "graph_analytics": OptixAppPerformanceSupport(
         app="graph_analytics",
@@ -442,7 +442,7 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
         NEEDS_INTERFACE_TUNING,
         "Goal706",
         "prepared dataset timing must split packing, BVH/build, launch/traversal, copy-back, exact filtering, grouping, and Python materialization",
-        "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
+        "candidate bitset copy-back, native host-side exact filtering/grouping, grouped-row decoding, and row materialization still need finer phase evidence",
         "correctness-capable OptiX DB path only; no RTX app speedup claim yet",
     ),
     "graph_analytics": _readiness(
@@ -605,8 +605,8 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "database_analytics",
         RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Move filtering, grouping, sum/count aggregation, and compact outputs deeper into native OptiX prepared kernels so Python is orchestration only.",
-        "Do not cloud-test new DB speedup claims until native phase counters prove Python/materialization is no longer dominant.",
+        "Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only.",
+        "No broad DB speedup claim until compact_summary is rerun on RTX hardware and native phase counters prove materialization is not dominant.",
     ),
     "graph_analytics": _maturity(
         "graph_analytics",

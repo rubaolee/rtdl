@@ -76,13 +76,13 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | `optix_traversal_prepared_summary` | An explicit prepared summary mode uses OptiX traversal and compact native output, while the app's default/full-row path may still be CUDA-through-OptiX or Python/postprocess dominated. |
 | `cuda_through_optix` | App uses CUDA-style kernels through the OptiX backend library; useful GPU compute, but not an RT-core traversal claim. |
 | `host_indexed_fallback` | OptiX-facing app path currently dispatches to host-indexed CPU-side logic. |
-| `python_interface_dominated` | Real native/backend work exists, but app-level performance is currently dominated by Python packing, row materialization, reduction, or CPU post-processing. |
+| `python_interface_dominated` | Real native/backend work exists, but app-level performance is currently dominated by Python packing, row materialization, grouped-row decoding, or host-side post-processing. |
 | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
 | `not_optix_applicable` | App is for another engine family and OptiX is not an applicable entry point. |
 
 | App | OptiX performance class | Note |
 | --- | --- | --- |
-| `examples/rtdl_database_analytics_app.py` | `python_interface_dominated` | Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization. |
+| `examples/rtdl_database_analytics_app.py` | `python_interface_dominated` | Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless `compact_summary` is selected. |
 | `examples/rtdl_graph_analytics_app.py` | `host_indexed_fallback` | Current OptiX-facing BFS and triangle routines are host-indexed correctness paths, not dominant OptiX ray traversal or RT-core acceleration paths. |
 | `examples/rtdl_apple_rt_demo_app.py` | `not_optix_applicable` | Apple-specific app; OptiX is not an applicable app entry point. |
 | `examples/rtdl_service_coverage_gaps.py` | `not_optix_exposed` | Public app CLI does not expose OptiX today. |
@@ -192,7 +192,7 @@ then run one batched cloud validation session for all eligible RT-core paths.
 
 | App | Current RT-core status | Target status | Required action | Cloud policy |
 | --- | --- | --- | --- | --- |
-| `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Move filtering, grouping, sum/count aggregation, and compact outputs deeper into native OptiX prepared kernels so Python is orchestration only. | Do not cloud-test new DB speedup claims until native phase counters prove Python/materialization is no longer dominant. |
+| `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only. | No broad DB speedup claim until `compact_summary` is rerun on RTX hardware and native phase counters prove materialization is not dominant. |
 | `graph_analytics` | `needs_rt_core_redesign` | `rt_core_ready` | Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets. | No paid graph RTX benchmark until a native traversal design and local correctness gate exist. |
 | `apple_rt_demo` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables. | Never include in NVIDIA cloud batches. |
 | `service_coverage_gaps` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if the radius-join slice is implemented as true prepared traversal or compact native summary. | Cloud only after local OptiX surface, correctness tests, and phase-clean profiler exist. |
