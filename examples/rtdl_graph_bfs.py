@@ -86,6 +86,13 @@ def run_backend(backend: str, copies: int = 1, output_mode: str = "rows") -> dic
         "visited_size": len(case["visited"]),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
+        "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": (
+                "OptiX BFS currently uses a host-indexed CSR expansion correctness path; "
+                "this is not an RTX graph acceleration claim."
+            ),
+        },
     }
 
 

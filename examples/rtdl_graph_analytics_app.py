@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from examples import rtdl_graph_bfs
 from examples import rtdl_graph_triangle_count
+import rtdsl as rt
 
 
 BACKENDS = ("cpu_python_reference", "cpu", "embree", "optix", "vulkan")
@@ -51,6 +52,10 @@ def run_app(backend: str, scenario: str = "all", copies: int = 1, output_mode: s
             "examples/rtdl_graph_bfs.py",
             "examples/rtdl_graph_triangle_count.py",
         ],
+        "optix_performance": {
+            "class": rt.optix_app_performance_support("graph_analytics").performance_class,
+            "note": rt.optix_app_performance_support("graph_analytics").note,
+        },
         "honesty_boundary": "Unified app over bounded v0.6.1 graph kernels; not a full graph database or distributed graph analytics system.",
     }
 

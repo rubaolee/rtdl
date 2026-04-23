@@ -76,6 +76,13 @@ def run_backend(backend: str, copies: int = 1, output_mode: str = "rows") -> dic
         "seed_count": len(case["seeds"]),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
+        "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": (
+                "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; "
+                "this is not an RTX graph acceleration claim."
+            ),
+        },
     }
 
 

@@ -41,6 +41,18 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
                 self.assertEqual(payload["optix_performance"]["class"], "host_indexed_fallback")
                 self.assertIn("RT-core performance", payload["boundary"])
 
+    def test_graph_apps_expose_host_indexed_optix_classification(self) -> None:
+        cases = (
+            ("examples/rtdl_graph_analytics_app.py", ("--backend", "cpu_python_reference", "--output-mode", "summary")),
+            ("examples/rtdl_graph_bfs.py", ("--backend", "cpu_python_reference", "--output-mode", "summary")),
+            ("examples/rtdl_graph_triangle_count.py", ("--backend", "cpu_python_reference", "--output-mode", "summary")),
+        )
+        for script, extra_args in cases:
+            with self.subTest(script=script):
+                payload = run_json(script, *extra_args)
+                self.assertEqual(payload["optix_performance"]["class"], "host_indexed_fallback")
+                self.assertIn("not", payload["optix_performance"]["note"].lower())
+
     def test_segment_polygon_anyhit_summary_modes_preserve_counts(self) -> None:
         rows_payload = run_json(
             "examples/rtdl_segment_polygon_anyhit_rows.py",
