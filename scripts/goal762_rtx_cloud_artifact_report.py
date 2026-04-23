@@ -63,6 +63,42 @@ def _contract_check(contract: Any, phase_source: Any) -> dict[str, Any]:
     }
 
 
+def _baseline_review_contract_check(contract: Any) -> dict[str, Any]:
+    if not isinstance(contract, dict):
+        return {"baseline_review_contract_status": "missing"}
+    required = {
+        "status",
+        "minimum_repeated_runs",
+        "requires_correctness_parity",
+        "requires_phase_separation",
+        "forbidden_comparison",
+        "comparable_metric_scope",
+        "required_baselines",
+        "required_phases",
+        "claim_limit",
+    }
+    missing = sorted(required - set(contract))
+    status = "ok"
+    if missing:
+        status = "malformed"
+    elif contract.get("status") != "required_before_public_speedup_claim":
+        status = "bad_status"
+    elif not contract.get("requires_correctness_parity"):
+        status = "missing_correctness_parity"
+    elif not contract.get("requires_phase_separation"):
+        status = "missing_phase_separation"
+    elif not isinstance(contract.get("required_baselines"), list) or not contract.get("required_baselines"):
+        status = "missing_required_baselines"
+    elif not isinstance(contract.get("required_phases"), list) or not contract.get("required_phases"):
+        status = "missing_required_phases"
+    return {
+        "baseline_review_contract_status": status,
+        "baseline_review_contract_missing_fields": missing,
+        "baseline_review_contract_scope": contract.get("comparable_metric_scope"),
+        "baseline_review_contract_claim_limit": contract.get("claim_limit"),
+    }
+
+
 def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -> dict[str, Any]:
     app = str(entry["app"])
     if app == "database_analytics":
@@ -200,6 +236,7 @@ def analyze(summary_path: Path) -> dict[str, Any]:
             "runner_returncode": result.get("returncode") if isinstance(result, dict) else None,
             "artifact_path": str(artifact_path) if artifact_path is not None else None,
         }
+        row.update(_baseline_review_contract_check(item.get("baseline_review_contract")))
         if row["runner_status"] == "dry_run":
             row["artifact_status"] = "dry_run_not_expected"
         elif artifact_path is None:
@@ -219,6 +256,7 @@ def analyze(summary_path: Path) -> dict[str, Any]:
         if row.get("runner_status") not in {"ok", "dry_run"}
         or row.get("artifact_status") in {"missing", "parse_failed", "unrecognized", "missing_output_json_argument"}
         or row.get("cloud_contract_status") in {"missing", "malformed", "missing_required_phases"}
+        or (row.get("runner_status") != "dry_run" and row.get("baseline_review_contract_status") != "ok")
     ]
     return {
         "suite": "goal762_rtx_cloud_artifact_report",
@@ -287,6 +325,29 @@ def to_markdown(payload: dict[str, Any]) -> str:
                     _fmt(row.get("postprocess_median_sec")),
                     _fmt(validation),
                     _fmt(row.get("non_claim")),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Baseline Review Contracts",
+            "",
+            "| App | Path | Status | Comparable metric scope | Claim limit |",
+            "|---|---|---:|---|---|",
+        ]
+    )
+    for row in payload["rows"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _fmt(row.get("app")),
+                    _fmt(row.get("path_name")),
+                    _fmt(row.get("baseline_review_contract_status")),
+                    _fmt(row.get("baseline_review_contract_scope")),
+                    _fmt(row.get("baseline_review_contract_claim_limit")),
                 ]
             )
             + " |"

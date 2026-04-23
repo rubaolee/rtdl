@@ -37,6 +37,10 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
             self.assertEqual(payload["entry_count"], 1)
             self.assertEqual(payload["unique_command_count"], 1)
             self.assertEqual(payload["results"][0]["app"], "robot_collision_screening")
+            self.assertEqual(
+                payload["results"][0]["baseline_review_contract"]["status"],
+                "required_before_public_speedup_claim",
+            )
             self.assertEqual(payload["results"][0]["result"]["status"], "dry_run")
             self.assertEqual(payload["results"][0]["result"]["execution_mode"], "executed")
             self.assertTrue(output.exists())
@@ -77,6 +81,7 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
         self.assertTrue(payload["include_deferred"])
         self.assertEqual(payload["results"][0]["manifest_section"], "deferred_entries")
         self.assertEqual(payload["results"][0]["app"], "service_coverage_gaps")
+        self.assertIn("baseline_review_contract", payload["results"][0])
 
     def test_runner_caches_distinct_env_overrides_separately(self) -> None:
         module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["_run_command"])

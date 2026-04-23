@@ -4,6 +4,22 @@ from scripts.goal824_pre_cloud_rtx_readiness_gate import run_gate
 
 
 class Goal824PreCloudRtxReadinessGateTest(unittest.TestCase):
+    def test_goal834_two_ai_consensus_artifacts_exist(self) -> None:
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[1]
+        ledger = root / "docs" / "reports" / "goal834_two_ai_consensus_2026-04-23.md"
+        codex = root / "docs" / "reports" / "goal834_codex_consensus_review_2026-04-23.md"
+        gemini = root / "docs" / "reports" / "goal834_gemini_external_consensus_review_2026-04-23.md"
+
+        for path in (ledger, codex, gemini):
+            self.assertTrue(path.exists(), str(path))
+
+        ledger_text = ledger.read_text(encoding="utf-8")
+        self.assertIn("Codex: ACCEPT", ledger_text)
+        self.assertIn("Gemini 2.5 Flash: ACCEPT", ledger_text)
+        self.assertIn("No Claude verdict is claimed", ledger_text)
+
     def test_gate_is_valid_without_starting_cloud(self) -> None:
         payload = run_gate()
         self.assertTrue(payload["valid"], payload["invalid_checks"])
@@ -17,6 +33,8 @@ class Goal824PreCloudRtxReadinessGateTest(unittest.TestCase):
         self.assertEqual(manifest["deferred_count"], 3)
         self.assertEqual(manifest["excluded_count"], 12)
         self.assertEqual(manifest["active_errors"], [])
+        self.assertEqual(manifest["baseline_contract_count"], 8)
+        self.assertEqual(manifest["baseline_contract_errors"], [])
         self.assertEqual(manifest["missing_excluded"], [])
         self.assertEqual(manifest["missing_deferred"], [])
 

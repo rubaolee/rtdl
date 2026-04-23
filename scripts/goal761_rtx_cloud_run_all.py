@@ -109,6 +109,7 @@ def run_all(*, dry_run: bool, only: set[str] | None = None, include_deferred: bo
                 "manifest_section": entry["_manifest_section"],
                 "claim_scope": entry["claim_scope"],
                 "non_claim": entry["non_claim"],
+                "baseline_review_contract": entry.get("baseline_review_contract"),
                 "result": result,
             }
         )

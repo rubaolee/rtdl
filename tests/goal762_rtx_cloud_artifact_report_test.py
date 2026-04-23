@@ -11,6 +11,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _baseline_contract() -> dict[str, object]:
+    return {
+        "status": "required_before_public_speedup_claim",
+        "minimum_repeated_runs": 3,
+        "requires_correctness_parity": True,
+        "requires_phase_separation": True,
+        "forbidden_comparison": "do not compare scalar/prepared sub-paths against whole-app baselines",
+        "comparable_metric_scope": "same result semantics",
+        "required_baselines": ["cpu_oracle_same_semantics"],
+        "required_phases": ["native_query"],
+        "claim_limit": "bounded sub-path only",
+    }
+
+
 class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
     def test_dry_run_summary_is_ok_without_benchmark_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -54,6 +68,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 "path_name": "prepared_pose_flags",
                                 "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
                                 "non_claim": "not continuous collision detection",
+                                "baseline_review_contract": _baseline_contract(),
                                 "result": {
                                     "status": "ok",
                                     "returncode": 0,
@@ -127,6 +142,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                     "path_name": "prepared_fixed_radius_density_summary",
                                     "claim_scope": "prepared fixed-radius threshold summary traversal only",
                                     "non_claim": "not a whole-app RTX speedup claim",
+                                    "baseline_review_contract": _baseline_contract(),
                                     "result": {
                                         "status": "ok",
                                         "returncode": 0,
@@ -189,6 +205,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                     "path_name": "prepared_fixed_radius_density_summary",
                                     "claim_scope": "prepared fixed-radius threshold summary traversal only",
                                     "non_claim": "not a whole-app RTX speedup claim",
+                                    "baseline_review_contract": _baseline_contract(),
                                     "result": {
                                         "status": "ok",
                                         "returncode": 0,
@@ -259,6 +276,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                     "path_name": "prepared_gap_summary",
                                     "claim_scope": "prepared OptiX fixed-radius threshold traversal",
                                     "non_claim": "not whole app",
+                                    "baseline_review_contract": _baseline_contract(),
                                     "result": {
                                         "status": "ok",
                                         "returncode": 0,
@@ -281,6 +299,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
             self.assertEqual(row["artifact_status"], "ok")
             self.assertEqual(row["schema_version"], "goal826_tier2_phase_contract_v1")
             self.assertEqual(row["cloud_contract_status"], "ok")
+            self.assertEqual(row["baseline_review_contract_status"], "ok")
             self.assertEqual(row["warm_query_median_sec"], 0.3)
             self.assertEqual(row["native_summary_row_count"], 8)
         finally:

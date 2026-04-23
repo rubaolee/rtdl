@@ -34,7 +34,7 @@
           "rev-parse",
           "HEAD"
         ],
-        "output_tail": "38a9c8a7f6af080a889f25af4e608a2f25e692bf\n",
+        "output_tail": "dd4db4c3f70325b2839c89ae4c63dcd514e2a1d9\n",
         "returncode": 0
       },
       "status_short": {
@@ -43,13 +43,15 @@
           "status",
           "--short"
         ],
-        "output_tail": " M docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json\n M scripts/goal762_rtx_cloud_artifact_report.py\n M scripts/goal807_segment_polygon_optix_mode_gate.py\n M tests/goal807_segment_polygon_optix_mode_gate_test.py\n?? docs/handoff/GOAL831_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23.md\n?? docs/reports/goal831_codex_consensus_review_2026-04-23.md\n?? docs/reports/goal831_gemini_external_consensus_review_2026-04-23.md\n?? docs/reports/goal831_segment_polygon_native_artifact_contract_2026-04-23.md\n?? docs/reports/goal831_two_ai_consensus_2026-04-23.md\n?? tests/goal831_segment_polygon_native_artifact_contract_test.py\n",
+        "output_tail": " M scripts/goal761_rtx_cloud_run_all.py\n M scripts/goal762_rtx_cloud_artifact_report.py\n M scripts/goal824_pre_cloud_rtx_readiness_gate.py\n M tests/goal761_rtx_cloud_run_all_test.py\n M tests/goal762_rtx_cloud_artifact_report_test.py\n M tests/goal824_pre_cloud_rtx_readiness_gate_test.py\n?? docs/handoff/GOAL834_EXTERNAL_CONSENSUS_REVIEW_REQUEST_2026-04-23.md\n?? docs/reports/goal834_baseline_contract_gate_enforcement_2026-04-23.md\n?? docs/reports/goal834_codex_consensus_review_2026-04-23.md\n?? docs/reports/goal834_gemini_external_consensus_review_2026-04-23.md\n?? docs/reports/goal834_two_ai_consensus_2026-04-23.md\n",
         "returncode": 0
       }
     },
     "manifest": {
       "active_count": 5,
       "active_errors": [],
+      "baseline_contract_count": 8,
+      "baseline_contract_errors": [],
       "deferred_count": 3,
       "excluded_count": 12,
       "missing_deferred": [],

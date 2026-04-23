@@ -36,6 +36,17 @@ REQUIRED_EXCLUDED_APPS = {
     "hiprt_ray_triangle_hitcount",
 }
 REQUIRED_DEFERRED_APPS = {"service_coverage_gaps", "event_hotspot_screening", "segment_polygon_hitcount"}
+REQUIRED_BASELINE_CONTRACT_FIELDS = {
+    "status",
+    "minimum_repeated_runs",
+    "requires_correctness_parity",
+    "requires_phase_separation",
+    "forbidden_comparison",
+    "comparable_metric_scope",
+    "required_baselines",
+    "required_phases",
+    "claim_limit",
+}
 
 
 def _probe(command: list[str]) -> dict[str, Any]:
@@ -56,6 +67,7 @@ def _probe(command: list[str]) -> dict[str, Any]:
 
 def _check_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
     active_errors: list[str] = []
+    baseline_contract_errors: list[str] = []
     for entry in manifest["entries"]:
         maturity = rt.rt_core_app_maturity(entry["app"])
         if maturity.current_status not in {"rt_core_ready", "rt_core_partial_ready"}:
@@ -64,8 +76,11 @@ def _check_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
             active_errors.append(f"{entry['path_name']} has forbidden class {entry['optix_performance_class']}")
         if entry["benchmark_readiness"] in {"exclude_from_rtx_app_benchmark", "needs_native_kernel_tuning"}:
             active_errors.append(f"{entry['path_name']} has non-active readiness {entry['benchmark_readiness']}")
+        baseline_contract_errors.extend(_baseline_contract_errors(entry))
     excluded = set(manifest["excluded_apps"])
     deferred = {entry["app"] for entry in manifest.get("deferred_entries", ())}
+    for entry in manifest.get("deferred_entries", ()):
+        baseline_contract_errors.extend(_baseline_contract_errors(entry))
     missing_excluded = sorted(REQUIRED_EXCLUDED_APPS - excluded)
     missing_deferred = sorted(REQUIRED_DEFERRED_APPS - deferred)
     return {
@@ -73,10 +88,32 @@ def _check_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
         "deferred_count": len(manifest.get("deferred_entries", ())),
         "excluded_count": len(manifest["excluded_apps"]),
         "active_errors": active_errors,
+        "baseline_contract_count": len(manifest["entries"]) + len(manifest.get("deferred_entries", ())),
+        "baseline_contract_errors": baseline_contract_errors,
         "missing_excluded": missing_excluded,
         "missing_deferred": missing_deferred,
-        "valid": not active_errors and not missing_excluded and not missing_deferred,
+        "valid": not active_errors and not baseline_contract_errors and not missing_excluded and not missing_deferred,
     }
+
+
+def _baseline_contract_errors(entry: dict[str, Any]) -> list[str]:
+    path_name = str(entry.get("path_name", "<unknown>"))
+    contract = entry.get("baseline_review_contract")
+    if not isinstance(contract, dict):
+        return [f"{path_name} missing baseline_review_contract"]
+    missing = sorted(REQUIRED_BASELINE_CONTRACT_FIELDS - set(contract))
+    errors = [f"{path_name} baseline_review_contract missing {field}" for field in missing]
+    if contract.get("status") != "required_before_public_speedup_claim":
+        errors.append(f"{path_name} baseline_review_contract has bad status {contract.get('status')}")
+    if not contract.get("requires_correctness_parity"):
+        errors.append(f"{path_name} baseline_review_contract does not require correctness parity")
+    if not contract.get("requires_phase_separation"):
+        errors.append(f"{path_name} baseline_review_contract does not require phase separation")
+    if not isinstance(contract.get("required_baselines"), list) or not contract.get("required_baselines"):
+        errors.append(f"{path_name} baseline_review_contract has no required baselines")
+    if not isinstance(contract.get("required_phases"), list) or not contract.get("required_phases"):
+        errors.append(f"{path_name} baseline_review_contract has no required phases")
+    return errors
 
 
 def run_gate() -> dict[str, Any]:
