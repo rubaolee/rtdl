@@ -284,6 +284,9 @@
     "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
     "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
     "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
+    "polygon_pair_overlap_area_rows": "current public app has no OptiX/NVIDIA RT-core surface",
+    "polygon_set_jaccard": "current public app has no OptiX/NVIDIA RT-core surface",
+    "road_hazard_screening": "current default OptiX app path is host-indexed fallback and native mode remains behind strict validation",
     "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback and row-volume sensitive",
     "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback"
   },

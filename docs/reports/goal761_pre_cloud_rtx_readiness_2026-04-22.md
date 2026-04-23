@@ -55,8 +55,8 @@ The runner executes the five Goal759 manifest entries:
 | `robot_collision_screening` | `prepared_pose_flags` | prepared OptiX ray/triangle any-hit pose-flag summary |
 
 Excluded apps remain excluded from RTX-core claims: Hausdorff, ANN, Barnes-Hut,
-graph analytics, segment/polygon default paths, Apple-specific apps, and
-HIPRT-specific apps.
+graph analytics, facility KNN, road hazard, segment/polygon default paths,
+polygon overlap/Jaccard, Apple-specific apps, and HIPRT-specific apps.
 
 ## Verification
 
