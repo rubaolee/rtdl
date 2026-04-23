@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import multiprocessing
+import os
 import statistics
 import sys
 import time
@@ -19,6 +21,11 @@ from scripts.goal839_baseline_artifact_schema import build_baseline_artifact
 from scripts.goal839_baseline_artifact_schema import load_goal835_row
 from scripts.goal839_baseline_artifact_schema import write_baseline_artifact
 import rtdsl as rt
+
+_PARALLEL_RAYS = ()
+_PARALLEL_TRIANGLES = ()
+_PARALLEL_POSE_INDICES = ()
+_PARALLEL_POSE_COUNT = 0
 
 
 def _time_call(fn: Callable[[], Any]) -> tuple[Any, float]:
@@ -68,7 +75,62 @@ def _summary_from_pose_flags(flags: tuple[bool, ...], poses: tuple[dict[str, obj
     }
 
 
-def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) -> dict[str, Any]:
+def _default_cpu_oracle_workers(*, pose_count: int) -> int:
+    if not sys.platform.startswith("linux"):
+        return 1
+    if pose_count < 50000:
+        return 1
+    cpu_total = os.cpu_count() or 1
+    return max(1, min(cpu_total, 8))
+
+
+def _parallel_pose_flag_chunk(bounds: tuple[int, int]) -> tuple[bool, ...]:
+    start, end = bounds
+    return rt.ray_triangle_pose_flags_cpu(
+        _PARALLEL_RAYS[start:end],
+        _PARALLEL_TRIANGLES,
+        _PARALLEL_POSE_INDICES[start:end],
+        pose_count=_PARALLEL_POSE_COUNT,
+    )
+
+
+def _exact_pose_flags_cpu(
+    rays: tuple[rt.Ray2D, ...],
+    triangles: tuple[rt.Triangle, ...],
+    pose_indices: tuple[int, ...],
+    *,
+    pose_count: int,
+    worker_count: int,
+) -> tuple[bool, ...]:
+    if worker_count <= 1 or not sys.platform.startswith("linux") or len(rays) < 10000:
+        return rt.ray_triangle_pose_flags_cpu(
+            rays,
+            triangles,
+            pose_indices,
+            pose_count=pose_count,
+        )
+
+    globals()["_PARALLEL_RAYS"] = rays
+    globals()["_PARALLEL_TRIANGLES"] = triangles
+    globals()["_PARALLEL_POSE_INDICES"] = pose_indices
+    globals()["_PARALLEL_POSE_COUNT"] = pose_count
+    chunk_size = max(1, (len(rays) + worker_count - 1) // worker_count)
+    bounds = [
+        (start, min(len(rays), start + chunk_size))
+        for start in range(0, len(rays), chunk_size)
+    ]
+    ctx = multiprocessing.get_context("fork")
+    with ctx.Pool(processes=min(worker_count, len(bounds))) as pool:
+        partial_flags = pool.map(_parallel_pose_flag_chunk, bounds)
+    merged = [False] * pose_count
+    for flags in partial_flags:
+        for index, flag in enumerate(flags):
+            if flag:
+                merged[index] = True
+    return tuple(merged)
+
+
+def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int, *, worker_count: int) -> dict[str, Any]:
     row = load_goal835_row(
         app="robot_collision_screening",
         path_name="prepared_pose_flags",
@@ -82,11 +144,12 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) 
     last_summary: dict[str, Any] = {}
     for _ in range(iterations):
         last_flags, query_sec = _time_call(
-            lambda: rt.ray_triangle_pose_flags_cpu(
+            lambda: _exact_pose_flags_cpu(
                 case["edge_rays"],
                 case["obstacle_triangles"],
                 pose_indices,
                 pose_count=len(case["poses"]),
+                worker_count=worker_count,
             )
         )
         last_summary, post_sec = _time_call(
@@ -113,17 +176,19 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int) 
         summary=last_summary,
         notes=[
             "CPU oracle uses direct pose-flag aggregation during any-hit traversal and compact pose-count postprocess.",
+            f"CPU oracle worker_count={worker_count}. On Linux, worker_count>1 uses exact process-level OR-reduction over disjoint ray chunks.",
             "No separate backend scene prepare or pose-index prepare phase exists on the CPU oracle path.",
         ],
         validation={
             "method": "oracle path by construction using exact CPU pose-flag traversal",
             "matches_reference": True,
+            "worker_count": worker_count,
         },
     )
     return artifact
 
 
-def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int) -> dict[str, Any]:
+def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int, *, worker_count: int) -> dict[str, Any]:
     row = load_goal835_row(
         app="robot_collision_screening",
         path_name="prepared_pose_flags",
@@ -132,11 +197,12 @@ def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int) -> d
     case, input_sec = _time_call(lambda: robot_app.make_scaled_case(pose_count=pose_count, obstacle_count=obstacle_count))
     pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
     oracle_flags, oracle_query_sec = _time_call(
-        lambda: rt.ray_triangle_pose_flags_cpu(
+        lambda: _exact_pose_flags_cpu(
             case["edge_rays"],
             case["obstacle_triangles"],
             pose_indices,
             pose_count=len(case["poses"]),
+            worker_count=worker_count,
         )
     )
     oracle_summary, oracle_post_sec = _time_call(
@@ -183,24 +249,29 @@ def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int) -> d
         notes=[
             "Embree baseline uses prepared RTDL kernel binding and compact pose-count postprocess.",
             "This is an equivalent compact summary baseline, not a native scalar ABI.",
+            f"CPU oracle validation worker_count={worker_count}. On Linux, worker_count>1 uses exact process-level OR-reduction over disjoint ray chunks.",
         ],
         validation={
             "method": "compare Embree compact pose summary against CPU oracle compact pose summary",
             "matches_reference": parity,
+            "worker_count": worker_count,
         },
     )
     return artifact
 
 
-def build_artifact(*, backend: str, pose_count: int, obstacle_count: int, iterations: int) -> dict[str, Any]:
+def build_artifact(*, backend: str, pose_count: int, obstacle_count: int, iterations: int, worker_count: int | None = None) -> dict[str, Any]:
     if iterations <= 0:
         raise ValueError("iterations must be positive")
     if pose_count <= 0 or obstacle_count <= 0:
         raise ValueError("pose_count and obstacle_count must be positive")
+    resolved_worker_count = int(worker_count or _default_cpu_oracle_workers(pose_count=pose_count))
+    if resolved_worker_count <= 0:
+        raise ValueError("worker_count must be positive")
     if backend == "cpu":
-        return _cpu_oracle_artifact(pose_count, obstacle_count, iterations)
+        return _cpu_oracle_artifact(pose_count, obstacle_count, iterations, worker_count=resolved_worker_count)
     if backend == "embree":
-        return _embree_artifact(pose_count, obstacle_count, iterations)
+        return _embree_artifact(pose_count, obstacle_count, iterations, worker_count=resolved_worker_count)
     raise ValueError(f"unsupported backend {backend}")
 
 
@@ -210,6 +281,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pose-count", type=int, default=200000)
     parser.add_argument("--obstacle-count", type=int, default=1024)
     parser.add_argument("--iterations", type=int, default=10)
+    parser.add_argument("--worker-count", type=int)
     parser.add_argument("--output-json", required=True)
     args = parser.parse_args(argv)
     artifact = build_artifact(
@@ -217,6 +289,7 @@ def main(argv: list[str] | None = None) -> int:
         pose_count=args.pose_count,
         obstacle_count=args.obstacle_count,
         iterations=args.iterations,
+        worker_count=args.worker_count,
     )
     write_baseline_artifact(args.output_json, artifact)
     print(json.dumps(artifact, indent=2, sort_keys=True))

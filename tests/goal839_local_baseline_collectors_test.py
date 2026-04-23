@@ -66,6 +66,18 @@ class Goal839LocalBaselineCollectorsTest(unittest.TestCase):
         self.assertIn("native_anyhit_query", artifact["required_phase_coverage"])
         self.assertEqual(artifact["summary"]["pose_count"], 8)
 
+    def test_robot_cpu_pose_count_artifact_records_worker_count(self) -> None:
+        module = __import__("scripts.goal839_robot_pose_count_baseline", fromlist=["build_artifact"])
+        artifact = module.build_artifact(
+            backend="cpu",
+            pose_count=8,
+            obstacle_count=4,
+            iterations=1,
+            worker_count=3,
+        )
+        self.assertEqual(artifact["validation"]["worker_count"], 3)
+        self.assertIn("worker_count=3", " ".join(artifact["notes"]))
+
     def test_cli_writes_artifact_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "artifact.json"
