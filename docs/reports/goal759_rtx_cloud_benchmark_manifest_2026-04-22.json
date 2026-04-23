@@ -3,6 +3,56 @@
   "date": "2026-04-22",
   "deferred_entries": [
     {
+      "activation_gate": "Promote only after Goal811 optix mode runs on RTX hardware, phase outputs are reviewed, and the app readiness matrix is updated.",
+      "app": "service_coverage_gaps",
+      "app_path": "examples/rtdl_service_coverage_gaps.py",
+      "benchmark_readiness": "needs_phase_contract",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
+      "command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "service_coverage_gaps",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal811_service_coverage_rtx.json"
+      ],
+      "env": {},
+      "non_claim": "not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Explicit gap_summary_prepared mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path.",
+      "path_name": "prepared_gap_summary",
+      "reason_deferred": "Goal810 exposes an OptiX prepared gap-summary path, and Goal811 adds a phase profiler. It remains deferred until RTX timing and review prove preparation/query/postprocess behavior."
+    },
+    {
+      "activation_gate": "Promote only after Goal811 optix mode runs on RTX hardware, phase outputs are reviewed, and the app readiness matrix is updated.",
+      "app": "event_hotspot_screening",
+      "app_path": "examples/rtdl_event_hotspot_screening.py",
+      "benchmark_readiness": "needs_phase_contract",
+      "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot summaries",
+      "command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "event_hotspot_screening",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal811_event_hotspot_rtx.json"
+      ],
+      "env": {},
+      "non_claim": "not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Explicit count_summary_prepared mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path.",
+      "path_name": "prepared_count_summary",
+      "reason_deferred": "Goal810 exposes an OptiX prepared count-summary path, and Goal811 adds a phase profiler. It remains deferred until RTX timing and review prove preparation/query/postprocess behavior."
+    },
+    {
       "activation_gate": "Promote only after Goal807 strict mode passes on RTX hardware, PostGIS parity is recorded where PostGIS is available, and the app readiness matrix is updated after independent review.",
       "app": "segment_polygon_hitcount",
       "app_path": "examples/rtdl_segment_polygon_hitcount.py",
@@ -20,7 +70,7 @@
       "env": {},
       "non_claim": "not default public app behavior and not a row-returning any-hit claim",
       "optix_performance_class": "host_indexed_fallback",
-      "optix_performance_note": "Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates.",
+      "optix_performance_note": "Default segment/polygon OptiX path is host-indexed; explicit native OptiX mode exists and must pass Goal807 strict correctness/performance gating before promotion.",
       "path_name": "segment_polygon_hitcount_native_experimental",
       "reason_deferred": "Native OptiX hit-count exists behind an explicit app mode, but historical Goal120 evidence showed no performance win and the default public app path remains host-indexed. Goal807 now provides the required focused native-vs-host-indexed gate, but the gate has not passed on RTX hardware yet."
     }
@@ -230,6 +280,7 @@
     "ann_candidate_search": "current OptiX path is CUDA-through-OptiX KNN rows plus Python recall/quality work",
     "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
     "barnes_hut_force_app": "current app is CUDA-through-OptiX candidate generation plus Python tree/opening/reduction",
+    "facility_knn_assignment": "current app has no true RT-core KNN ranking path; fixed-radius threshold summaries are not KNN",
     "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
     "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
     "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",

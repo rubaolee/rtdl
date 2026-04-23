@@ -1,0 +1,103 @@
+{
+  "boundary": "This profiler separates input construction, OptiX preparation, prepared query, and Python postprocess for compact spatial summaries. It does not authorize an RTX speedup claim without a real RTX run and review.",
+  "copies": 4,
+  "date": "2026-04-23",
+  "generated_at": "2026-04-23T07:21:34",
+  "goal": "Goal811 spatial OptiX prepared-summary phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "scenario": {
+    "mode": "dry-run",
+    "result": {
+      "event_count": 24,
+      "hotspot_count": 19,
+      "hotspots": [
+        {
+          "event_id": 101,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 102,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 103,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 201,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 202,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 203,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 301,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 302,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 303,
+          "neighbor_count": 4
+        },
+        {
+          "event_id": 1,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 2,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 3,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 4,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 6,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 104,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 106,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 204,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 206,
+          "neighbor_count": 3
+        },
+        {
+          "event_id": 304,
+          "neighbor_count": 3
+        }
+      ]
+    },
+    "scenario": "event_hotspot_screening",
+    "timings_sec": {
+      "cpu_reference_total": 0.0003726249560713768,
+      "input_build": 2.2249994799494743e-05
+    }
+  }
+}

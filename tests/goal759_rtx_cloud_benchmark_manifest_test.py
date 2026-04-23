@@ -97,6 +97,19 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("--strict", segment["command"])
         self.assertIn("Goal807 strict mode", segment["activation_gate"])
 
+    def test_deferred_spatial_entries_use_goal811_profiler(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        deferred = {entry["app"]: entry for entry in payload["deferred_entries"]}
+        for app in ("service_coverage_gaps", "event_hotspot_screening"):
+            with self.subTest(app=app):
+                self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", deferred[app]["command"])
+                self.assertIn("--mode", deferred[app]["command"])
+                self.assertIn("optix", deferred[app]["command"])
+                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_phase_contract")
+
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(
             [sys.executable, str(SCRIPT)],

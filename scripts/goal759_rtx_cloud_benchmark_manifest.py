@@ -246,10 +246,69 @@ def build_manifest() -> dict[str, Any]:
             "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
             "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
             "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback and row-volume sensitive",
+            "facility_knn_assignment": "current app has no true RT-core KNN ranking path; fixed-radius threshold summaries are not KNN",
             "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
             "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
         },
         "deferred_entries": [
+            _deferred_entry(
+                app="service_coverage_gaps",
+                app_path="examples/rtdl_service_coverage_gaps.py",
+                path_name="prepared_gap_summary",
+                command=[
+                    python,
+                    "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+                    "--scenario",
+                    "service_coverage_gaps",
+                    "--mode",
+                    "optix",
+                    "--copies",
+                    "20000",
+                    "--output-json",
+                    "docs/reports/goal811_service_coverage_rtx.json",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal810 exposes an OptiX prepared gap-summary path, and Goal811 "
+                    "adds a phase profiler. It remains deferred until RTX timing and "
+                    "review prove preparation/query/postprocess behavior."
+                ),
+                activation_gate=(
+                    "Promote only after Goal811 optix mode runs on RTX hardware, phase "
+                    "outputs are reviewed, and the app readiness matrix is updated."
+                ),
+                claim_scope="prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
+                non_claim="not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim",
+            ),
+            _deferred_entry(
+                app="event_hotspot_screening",
+                app_path="examples/rtdl_event_hotspot_screening.py",
+                path_name="prepared_count_summary",
+                command=[
+                    python,
+                    "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+                    "--scenario",
+                    "event_hotspot_screening",
+                    "--mode",
+                    "optix",
+                    "--copies",
+                    "20000",
+                    "--output-json",
+                    "docs/reports/goal811_event_hotspot_rtx.json",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal810 exposes an OptiX prepared count-summary path, and Goal811 "
+                    "adds a phase profiler. It remains deferred until RTX timing and "
+                    "review prove preparation/query/postprocess behavior."
+                ),
+                activation_gate=(
+                    "Promote only after Goal811 optix mode runs on RTX hardware, phase "
+                    "outputs are reviewed, and the app readiness matrix is updated."
+                ),
+                claim_scope="prepared OptiX fixed-radius count traversal for hotspot summaries",
+                non_claim="not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+            ),
             _deferred_entry(
                 app="segment_polygon_hitcount",
                 app_path="examples/rtdl_segment_polygon_hitcount.py",
