@@ -173,6 +173,11 @@ PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend vulkan
 ```
 
+OptiX graph commands are compatibility paths today, not NVIDIA RT-core claims.
+The current graph OptiX implementation is a host-indexed CSR fallback. If a
+script requires a true RT-core claim, add `--require-rt-core`; the graph apps
+reject it intentionally until a strict graph-to-RT traversal design exists.
+
 ---
 
 ## Next

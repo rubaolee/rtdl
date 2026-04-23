@@ -187,6 +187,11 @@ This app has no OptiX/NVIDIA RT-core surface today. For claim-sensitive scripts,
 `--require-rt-core` fails intentionally instead of treating the Embree
 native-assisted path as a GPU RT-core result.
 
+The segment/polygon road-screening and direct segment/polygon apps also reject
+`--require-rt-core` today, including their current OptiX native-mode
+experiments. Those commands remain useful for compatibility work, but they are
+not released NVIDIA RT-core claims until strict RTX validation passes.
+
 Kernel shape:
 
 ```python

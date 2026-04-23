@@ -36,6 +36,31 @@ These are bounded visibility/count optimizations, not broad speedup claims for
 DB, graph, one-shot calls, or full emitted-row workloads. `reduce_rows` is a
 standard-library helper, not a native RT backend reduction.
 
+## NVIDIA RT-Core Claim Boundary
+
+`--backend optix` means the app selected an OptiX-capable execution path. It is
+not, by itself, a claim that NVIDIA RT cores accelerated the app. Claim-sensitive
+commands must also pass `--require-rt-core`; apps reject that flag unless the
+selected mode is a documented bounded OptiX traversal path with a narrow claim
+scope.
+
+Accepted claim-sensitive app modes today are partial and bounded:
+
+- unified DB app: `--backend optix --output-mode compact_summary --require-rt-core`
+- service coverage gaps: `--backend optix --optix-summary-mode gap_summary_prepared --require-rt-core`
+- event hotspot screening: `--backend optix --optix-summary-mode count_summary_prepared --require-rt-core`
+- outlier detection: `--backend optix --optix-summary-mode rt_count_threshold_prepared`
+- DBSCAN core flags: `--backend optix --optix-summary-mode rt_core_flags_prepared`
+- robot collision screening: `--backend optix --optix-summary-mode prepared_count` or `prepared_pose_flags`
+
+Rejected under `--require-rt-core` today: graph apps, facility KNN, polygon
+overlap/Jaccard, segment/polygon apps, Hausdorff, ANN candidate search, and
+Barnes-Hut. Those apps may still run with OptiX for compatibility or
+CUDA-through-OptiX experimentation, but they must not be described as NVIDIA
+RT-core accelerated until a strict traversal design and RTX-class validation
+exist. See `docs/app_engine_support_matrix.md` and
+`docs/reports/goal818_rtx_app_claim_gate_summary_2026-04-23.md`.
+
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
 core can power a bounded Python application.

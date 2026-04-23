@@ -21,6 +21,29 @@ traversal path on RTX-class hardware.
 For app-level support across CPU/Python, Embree, OptiX, Vulkan, HIPRT, and
 Apple RT, see the [App Engine Support Matrix](app_engine_support_matrix.md).
 
+## NVIDIA RT-Core Claim-Sensitive Runs
+
+Use `--require-rt-core` when a script or benchmark is intended to make a real
+NVIDIA RT-core claim. The flag is deliberately stricter than `--backend optix`:
+it fails before backend dispatch unless the selected app mode is a documented
+bounded OptiX traversal path with a narrow claim scope.
+
+Accepted partial claim modes today:
+
+| App | Claim-sensitive command shape | Current claim scope |
+| --- | --- | --- |
+| Unified DB app | `--backend optix --output-mode compact_summary --require-rt-core` | compact summary only; not full row materialization or DBMS behavior |
+| Service coverage gaps | `--backend optix --optix-summary-mode gap_summary_prepared --require-rt-core` | prepared uncovered-household summary only |
+| Event hotspot screening | `--backend optix --optix-summary-mode count_summary_prepared --require-rt-core` | prepared event count/hotspot summary only |
+| Outlier detection | `--backend optix --optix-summary-mode rt_count_threshold_prepared` | prepared fixed-radius density-threshold summary; RTX-class performance still gated |
+| DBSCAN clustering | `--backend optix --optix-summary-mode rt_core_flags_prepared` | prepared core-flag summary only; Python cluster expansion remains host-side |
+| Robot collision screening | `--backend optix --optix-summary-mode prepared_count` or `prepared_pose_flags` | prepared any-hit count or pose flags; witness rows remain outside the compact claim |
+
+Rejected under `--require-rt-core` today: graph apps, facility KNN, polygon
+overlap/Jaccard, segment/polygon apps, Hausdorff, ANN candidate search, and
+Barnes-Hut. Those may be useful OptiX compatibility or CUDA-through-OptiX paths,
+but they are not public NVIDIA RT-core claims yet.
+
 The original RTDL root spatial workloads are still first-class:
 [LSI](features/lsi/README.md) turns segment sets into segment-intersection
 rows, and [PIP](features/pip/README.md) turns point/polygon inputs into

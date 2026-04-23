@@ -30,6 +30,24 @@ It currently covers:
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
 
+## OptiX Versus NVIDIA RT-Core Claims
+
+`--backend optix` is a backend-selection flag, not an automatic NVIDIA RT-core
+performance claim. For claim-sensitive scripts, add `--require-rt-core`; the
+app fails fast unless the selected mode is one of the documented bounded
+RT-core claim paths. Current accepted partial modes include:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core
+```
+
+Graph, facility KNN, polygon overlap/Jaccard, segment/polygon, Hausdorff, ANN,
+and Barnes-Hut examples intentionally reject `--require-rt-core` today. Their
+OptiX commands are compatibility or experimental paths until a strict RT-core
+traversal design and RTX-class validation exist.
+
 If you want a guided learning order instead of a flat example list, start with:
 
 - [RTDL Tutorials](tutorials/README.md)
