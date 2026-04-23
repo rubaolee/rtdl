@@ -69,10 +69,25 @@ def _reported_session_phases(payload: dict[str, Any]) -> dict[str, Any]:
     phases: dict[str, Any] = {}
     session = payload.get("prepared_session")
     if isinstance(session, dict):
-        phases["unified_session"] = dict(session)
+        phases["unified_session"] = {
+            key: value
+            for key, value in session.items()
+            if key != "per_section_run_sec"
+        }
     for name, section in payload.get("sections", {}).items():
         if isinstance(section, dict) and isinstance(section.get("session"), dict):
             phases[name] = dict(section["session"])
+    return phases
+
+
+def _reported_run_phases(payload: dict[str, Any]) -> dict[str, Any]:
+    phases: dict[str, Any] = {}
+    session = payload.get("prepared_session")
+    if isinstance(session, dict) and isinstance(session.get("per_section_run_sec"), dict):
+        phases["unified_session"] = {"per_section_run_sec": dict(session["per_section_run_sec"])}
+    for name, section in payload.get("sections", {}).items():
+        if isinstance(section, dict) and isinstance(section.get("run_phases"), dict):
+            phases[name] = dict(section["run_phases"])
     return phases
 
 
@@ -109,12 +124,14 @@ def _profile_backend(
             one_shot_sec / statistics.median(run_samples) if run_samples and statistics.median(run_samples) > 0.0 else 0.0
         ),
         "reported_prepare_phases_sec": _reported_session_phases(last_payload or {}),
+        "reported_run_phases_sec": _reported_run_phases(last_payload or {}),
         "phase_contract": {
             "one_shot_total": "complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess",
             "prepared_session_prepare_total": "public app prepare_session call including fixture construction and native prepared dataset creation where available",
             "prepared_session_warm_query": "session.run only: prepared queries plus result materialization and app summary construction",
             "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON",
-            "not_yet_split": "native DB launch/traversal, candidate copy-back, exact filtering/grouping, and Python materialization are still grouped inside session.run unless a backend exposes lower-level timers",
+            "reported_run_phases": "scenario-provided per-operation query/materialization and Python summary timers embedded in app JSON",
+            "not_yet_split": "backend-native traversal, candidate copy-back, exact filtering/grouping, and Python object conversion are still grouped inside each per-operation query timer unless the native backend exposes lower-level timers",
         },
         "one_shot_output": _compact(one_shot_payload),
         "prepared_session_output": _compact(last_payload or {}),

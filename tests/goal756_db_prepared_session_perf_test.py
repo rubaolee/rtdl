@@ -45,7 +45,14 @@ class Goal756DbPreparedSessionPerfTest(unittest.TestCase):
         self.assertIn("prepared_session_warm_query_sec", result)
         self.assertIn("phase_contract", result)
         self.assertIn("reported_prepare_phases_sec", result)
+        self.assertIn("reported_run_phases_sec", result)
+        self.assertIn("reported_run_phases", result["phase_contract"])
         self.assertEqual(result["prepared_session_output"]["execution_mode"], "prepared_session")
+        self.assertIn("sales_risk", result["reported_run_phases_sec"])
+        self.assertIn(
+            "query_conjunctive_scan_and_materialize_sec",
+            result["reported_run_phases_sec"]["sales_risk"],
+        )
         self.assertIn("GTX 1070", payload["boundary"])
 
     def test_optional_backend_failure_is_recorded_without_strict(self) -> None:

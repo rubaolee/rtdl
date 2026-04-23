@@ -79,7 +79,12 @@ class PreparedDatabaseAnalyticsSession:
             raise RuntimeError("prepared database analytics session is closed")
         if output_mode not in {"full", "summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
-        sections = {name: session.run(output_mode=output_mode) for name, session in self._sessions.items()}
+        per_section_run_sec: dict[str, float] = {}
+        sections: dict[str, Any] = {}
+        for name, session in self._sessions.items():
+            section_start = time.perf_counter()
+            sections[name] = session.run(output_mode=output_mode)
+            per_section_run_sec[name] = time.perf_counter() - section_start
         return {
             "app": "database_analytics",
             "requested_backend": self.requested_backend,
@@ -90,6 +95,7 @@ class PreparedDatabaseAnalyticsSession:
             "prepared_session": {
                 "scenario_count": len(self._sessions),
                 "prepare_session_sec": self.prepare_session_sec,
+                "per_section_run_sec": per_section_run_sec,
             },
             "sections": sections,
             "data_flow": [

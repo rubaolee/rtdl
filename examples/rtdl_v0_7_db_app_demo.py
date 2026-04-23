@@ -23,6 +23,12 @@ from rtdsl.db_reference import normalize_predicate_bundle
 BACKENDS = ("cpu_python_reference", "cpu_reference", "embree", "optix", "vulkan")
 
 
+def _timed_call(fn):
+    start = time.perf_counter()
+    value = fn()
+    return value, time.perf_counter() - start
+
+
 def make_orders(copies: int = 1) -> tuple[dict[str, object], ...]:
     """Small denormalized app table; a real app would load this from its own store."""
     if copies <= 0:
@@ -154,20 +160,35 @@ class PreparedRegionalDashboardSession:
             raise RuntimeError("prepared regional dashboard session is closed")
         if output_mode not in {"full", "summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
+        run_phases: dict[str, float] = {}
         if self.backend == "cpu_reference":
-            results = _run_cpu_reference(self.table)
+            results, run_phases["cpu_reference_execute_and_postprocess_sec"] = _timed_call(
+                lambda: _run_cpu_reference(self.table)
+            )
             prepared_summary = None
         else:
             assert self._dataset is not None
+            promo_order_ids, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                lambda: _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN))
+            )
+            open_order_count_by_region, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                lambda: _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD))
+            )
+            web_revenue_by_region, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                lambda: _sort_rows(self._dataset.grouped_sum(REGION_REVENUE))
+            )
             results = {
-                "promo_order_ids": _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN)),
-                "open_order_count_by_region": _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD)),
-                "web_revenue_by_region": _sort_rows(self._dataset.grouped_sum(REGION_REVENUE)),
+                "promo_order_ids": promo_order_ids,
+                "open_order_count_by_region": open_order_count_by_region,
+                "web_revenue_by_region": web_revenue_by_region,
             }
             prepared_summary = {
                 "transfer": self._dataset._dataset.transfer,
                 "row_count": self._dataset.row_count,
             }
+        summary_start = time.perf_counter()
+        summary = _summarize_results(results)
+        run_phases["python_summary_postprocess_sec"] = time.perf_counter() - summary_start
 
         return {
             "app": "regional_order_dashboard",
@@ -182,6 +203,7 @@ class PreparedRegionalDashboardSession:
                 "backend_selection_sec": self.backend_selection_sec,
                 "prepare_sec": self.prepare_sec,
             },
+            "run_phases": run_phases,
             "data_flow": [
                 "app order rows",
                 "RTDL v0.7 bounded DB workload",
@@ -211,7 +233,7 @@ class PreparedRegionalDashboardSession:
             },
             "prepared_dataset": prepared_summary,
             "results": results if output_mode == "full" else {},
-            "summary": _summarize_results(results),
+            "summary": summary,
             "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
         }
 

@@ -13,6 +13,12 @@ sys.path.insert(0, str(ROOT))
 import rtdsl as rt
 
 
+def _timed_call(fn):
+    start = time.perf_counter()
+    value = fn()
+    return value, time.perf_counter() - start
+
+
 @rt.kernel(backend="rtdl", precision="float_approx")
 def risky_order_scan():
     predicates = rt.input("predicates", rt.PredicateSet, role="probe")
@@ -192,6 +198,7 @@ class PreparedSalesRiskSession:
         if output_mode not in {"full", "summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
         prepared_dataset = None
+        run_phases: dict[str, float] = {}
         if self.backend in {"embree", "optix", "vulkan"}:
             assert self._dataset is not None
             predicates = self.scan_case["predicates"]
@@ -200,22 +207,38 @@ class PreparedSalesRiskSession:
                 "predicates": query["predicates"],
                 "group_keys": query["group_keys"],
             }
-            risky_rows = tuple(self._dataset.conjunctive_scan(predicates))
-            count_rows = tuple(self._dataset.grouped_count(count_query))
-            sum_rows = tuple(self._dataset.grouped_sum(query))
+            risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                lambda: tuple(self._dataset.conjunctive_scan(predicates))
+            )
+            count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                lambda: tuple(self._dataset.grouped_count(count_query))
+            )
+            sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                lambda: tuple(self._dataset.grouped_sum(query))
+            )
             prepared_dataset = {
                 "transfer": self._dataset._dataset.transfer,
                 "row_count": self._dataset.row_count,
             }
         else:
-            risky_rows = _run_scan_rows(self.backend, self.scan_case)
-            count_rows = _run_grouped_count_rows(self.backend, self.grouped_case)
-            sum_rows = _run_grouped_sum_rows(self.backend, self.grouped_case)
+            risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                lambda: _run_scan_rows(self.backend, self.scan_case)
+            )
+            count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                lambda: _run_grouped_count_rows(self.backend, self.grouped_case)
+            )
+            sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                lambda: _run_grouped_sum_rows(self.backend, self.grouped_case)
+            )
+        postprocess_start = time.perf_counter()
         region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
         region_revenue = {
             str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
             for row in sum_rows
         }
+        risky_order_ids = [int(row["row_id"]) for row in risky_rows]
+        highest_risk_region = max(region_counts.items(), key=lambda item: (item[1], item[0]))[0]
+        run_phases["python_summary_postprocess_sec"] = time.perf_counter() - postprocess_start
         return {
             "app": "sales_risk_screening",
             "backend": self.backend,
@@ -226,12 +249,13 @@ class PreparedSalesRiskSession:
                 "input_construction_sec": self.input_construction_sec,
                 "prepare_sec": self.prepare_sec,
             },
+            "run_phases": run_phases,
             "prepared_dataset": prepared_dataset,
             "summary": {
-                "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
+                "risky_order_ids": risky_order_ids,
                 "risky_order_count_by_region": region_counts,
                 "risky_revenue_by_region": region_revenue,
-                "highest_risk_region": max(region_counts.items(), key=lambda item: (item[1], item[0]))[0],
+                "highest_risk_region": highest_risk_region,
             },
             "row_counts": {
                 "scan": len(risky_rows),
