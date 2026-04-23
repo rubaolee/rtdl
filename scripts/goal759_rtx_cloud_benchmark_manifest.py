@@ -48,6 +48,7 @@ def _entry(
         "allowed_claim_today": readiness.allowed_claim,
         "claim_scope": claim_scope,
         "non_claim": non_claim,
+        "baseline_review_contract": _baseline_review_contract(app, path_name),
         "preconditions": preconditions,
         "env": dict(env or {}),
     }
@@ -80,6 +81,128 @@ def _deferred_entry(
         "activation_gate": activation_gate,
         "claim_scope": claim_scope,
         "non_claim": non_claim,
+        "baseline_review_contract": _baseline_review_contract(app, path_name),
+    }
+
+
+def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
+    common = {
+        "status": "required_before_public_speedup_claim",
+        "minimum_repeated_runs": 3,
+        "requires_correctness_parity": True,
+        "requires_phase_separation": True,
+        "forbidden_comparison": (
+            "Do not compare a scalar/prepared RTX sub-path against a whole-app, "
+            "row-output, validation-included, or different-result-mode baseline."
+        ),
+    }
+    if app == "database_analytics":
+        return {
+            **common,
+            "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+            "required_baselines": [
+                "cpu_oracle_compact_summary",
+                "embree_compact_summary",
+                "postgresql_same_semantics_on_linux_when_available",
+            ],
+            "required_phases": [
+                "input_pack_or_table_build",
+                "backend_prepare",
+                "native_query",
+                "copyback_or_materialization",
+                "python_summary_postprocess",
+            ],
+            "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        }
+    if app in {"outlier_detection", "dbscan_clustering"}:
+        return {
+            **common,
+            "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+            "required_baselines": [
+                "cpu_scalar_threshold_count_oracle",
+                "embree_scalar_or_summary_path",
+                "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+            ],
+            "required_phases": [
+                "point_pack",
+                "backend_prepare",
+                "native_threshold_query",
+                "scalar_copyback",
+                "python_postprocess",
+            ],
+            "claim_limit": (
+                "outlier threshold-count or DBSCAN core-count summary only; "
+                "not row-returning neighbors or full DBSCAN cluster expansion"
+            ),
+        }
+    if app == "robot_collision_screening":
+        return {
+            **common,
+            "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+            "required_baselines": [
+                "cpu_oracle_pose_count",
+                "embree_anyhit_pose_count_or_equivalent_compact_summary",
+            ],
+            "required_phases": [
+                "pose_and_obstacle_generation",
+                "ray_pack",
+                "backend_scene_prepare",
+                "pose_index_prepare",
+                "native_anyhit_query",
+                "scalar_copyback",
+                "oracle_validation_separate",
+            ],
+            "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+        }
+    if app in {"service_coverage_gaps", "event_hotspot_screening"}:
+        return {
+            **common,
+            "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+            "required_baselines": [
+                "cpu_oracle_summary",
+                "embree_summary_path",
+                "scipy_baseline_when_available",
+            ],
+            "required_phases": [
+                "input_build",
+                "optix_prepare",
+                "optix_query",
+                "python_postprocess",
+            ],
+            "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+        }
+    if app == "segment_polygon_hitcount":
+        return {
+            **common,
+            "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+            "required_baselines": [
+                "cpu_python_reference",
+                "optix_host_indexed",
+                "postgis_when_available",
+            ],
+            "required_phases": [
+                "records",
+                "strict_pass",
+                "strict_failures",
+                "status",
+            ],
+            "claim_limit": "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+        }
+    return {
+        **common,
+        "comparable_metric_scope": f"same app/path semantics for {app}:{path_name}",
+        "required_baselines": [
+            "cpu_oracle_same_semantics",
+            "best_available_non_optix_backend_same_semantics",
+        ],
+        "required_phases": [
+            "input_build",
+            "backend_prepare",
+            "native_query",
+            "materialization_or_copyback",
+            "postprocess",
+        ],
+        "claim_limit": "bounded sub-path only",
     }
 
 

@@ -12,6 +12,19 @@ SCRIPT = ROOT / "scripts" / "goal759_rtx_cloud_benchmark_manifest.py"
 
 
 class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
+    def test_goal832_two_ai_consensus_artifacts_exist(self):
+        ledger = ROOT / "docs" / "reports" / "goal832_two_ai_consensus_2026-04-23.md"
+        codex = ROOT / "docs" / "reports" / "goal832_codex_consensus_review_2026-04-23.md"
+        gemini = ROOT / "docs" / "reports" / "goal832_gemini_external_consensus_review_2026-04-23.md"
+
+        for path in (ledger, codex, gemini):
+            self.assertTrue(path.exists(), str(path))
+
+        ledger_text = ledger.read_text(encoding="utf-8")
+        self.assertIn("Codex: ACCEPT", ledger_text)
+        self.assertIn("Gemini 2.5 Flash: ACCEPT", ledger_text)
+        self.assertIn("No Claude verdict is claimed", ledger_text)
+
     def test_manifest_entries_match_machine_readable_matrices(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
@@ -38,6 +51,34 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
                 self.assertTrue(entry["claim_scope"])
                 self.assertTrue(entry["non_claim"])
                 self.assertTrue(entry["preconditions"])
+                self.assertEqual(
+                    entry["baseline_review_contract"]["status"],
+                    "required_before_public_speedup_claim",
+                )
+                self.assertTrue(entry["baseline_review_contract"]["required_baselines"])
+                self.assertTrue(entry["baseline_review_contract"]["requires_phase_separation"])
+
+    def test_active_entries_have_comparable_baseline_contracts(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        by_path = {entry["path_name"]: entry for entry in payload["entries"]}
+
+        db = by_path["prepared_db_session_sales_risk"]["baseline_review_contract"]
+        self.assertIn("postgresql_same_semantics_on_linux_when_available", db["required_baselines"])
+        self.assertIn("compact_summary prepared DB", db["comparable_metric_scope"])
+        self.assertIn("not a DBMS", db["claim_limit"])
+
+        fixed_radius = by_path["prepared_fixed_radius_density_summary"]["baseline_review_contract"]
+        self.assertIn("cpu_scalar_threshold_count_oracle", fixed_radius["required_baselines"])
+        self.assertIn("threshold-count", fixed_radius["claim_limit"])
+        self.assertIn("full DBSCAN", fixed_radius["claim_limit"])
+
+        robot = by_path["prepared_pose_flags"]["baseline_review_contract"]
+        self.assertIn("embree_anyhit_pose_count_or_equivalent_compact_summary", robot["required_baselines"])
+        self.assertIn("native_anyhit_query", robot["required_phases"])
+        self.assertIn("not full robot planning", robot["claim_limit"])
 
     def test_prepared_summary_apps_are_classified_without_whole_app_claims(self):
         payload = __import__(
@@ -109,6 +150,8 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
                 self.assertIn("--mode", deferred[app]["command"])
                 self.assertIn("optix", deferred[app]["command"])
                 self.assertEqual(deferred[app]["benchmark_readiness"], "needs_phase_contract")
+                self.assertIn("baseline_review_contract", deferred[app])
+                self.assertIn("prepared compact summary", deferred[app]["baseline_review_contract"]["claim_limit"])
 
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(
