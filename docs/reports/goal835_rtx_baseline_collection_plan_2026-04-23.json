@@ -50,6 +50,10 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -94,6 +98,10 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -134,6 +142,10 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -174,6 +186,10 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -221,6 +237,11 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": {
+        "iterations": 10,
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      },
       "section": "active"
     },
     {
@@ -259,6 +280,7 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": null,
       "section": "deferred"
     },
     {
@@ -297,6 +319,7 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": null,
       "section": "deferred"
     },
     {
@@ -332,6 +355,7 @@
       ],
       "requires_correctness_parity": true,
       "requires_phase_separation": true,
+      "scale": null,
       "section": "deferred"
     }
   ],

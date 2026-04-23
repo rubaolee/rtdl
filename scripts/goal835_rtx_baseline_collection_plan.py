@@ -31,6 +31,7 @@ def _rows(section: str, entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "app": entry.get("app"),
                 "path_name": entry.get("path_name"),
                 "command": entry.get("command"),
+                "scale": entry.get("scale"),
                 "claim_scope": entry.get("claim_scope"),
                 "non_claim": entry.get("non_claim"),
                 "baseline_status": contract.get("status"),

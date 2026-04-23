@@ -52,6 +52,7 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
                     "required_phases": ["build", "query", "copyback"],
                     "minimum_repeated_runs": 3,
                     "comparable_metric_scope": "same synthetic compact summary",
+                    "scale": {"copies": 7, "iterations": 3},
                     "claim_limit": "synthetic only",
                 }
             ],
@@ -74,6 +75,7 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
                         "repeated_runs": 3,
                         "required_phase_coverage": ["build", "query", "copyback"],
                         "comparable_metric_scope": "same synthetic compact summary",
+                        "benchmark_scale": {"copies": 7, "iterations": 3},
                     }
                 ),
                 encoding="utf-8",
@@ -101,6 +103,7 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
                     "required_phases": ["build", "query"],
                     "minimum_repeated_runs": 3,
                     "comparable_metric_scope": "same synthetic compact summary",
+                    "scale": {"copies": 7, "iterations": 3},
                     "claim_limit": "synthetic only",
                 }
             ],
@@ -123,6 +126,7 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
                         "repeated_runs": 1,
                         "required_phase_coverage": ["build"],
                         "comparable_metric_scope": "same synthetic compact summary",
+                        "benchmark_scale": {"copies": 1, "iterations": 3},
                     }
                 ),
                 encoding="utf-8",
@@ -134,6 +138,7 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
             self.assertIn("correctness_parity must be true", errors)
             self.assertTrue(any("repeated_runs" in error for error in errors))
             self.assertTrue(any("missing required phase coverage" in error for error in errors))
+            self.assertIn("benchmark_scale does not match Goal835 plan", errors)
 
     def test_cli_writes_artifacts_and_exits_nonzero_when_baselines_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

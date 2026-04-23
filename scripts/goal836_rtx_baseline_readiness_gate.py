@@ -95,6 +95,10 @@ def validate_artifact(row: dict[str, Any], baseline_name: str, path: Path) -> di
     if metric_scope != row.get("comparable_metric_scope"):
         errors.append("comparable_metric_scope does not match Goal835 plan")
 
+    expected_scale = row.get("scale")
+    if expected_scale is not None and payload.get("benchmark_scale") != expected_scale:
+        errors.append("benchmark_scale does not match Goal835 plan")
+
     return {
         "baseline": baseline_name,
         "path": str(path),
@@ -132,6 +136,7 @@ def analyze_plan(plan: dict[str, Any] | None = None, artifact_root: Path = ROOT)
                 "path_name": row.get("path_name"),
                 "required_baselines": required_baselines,
                 "required_phases": row.get("required_phases"),
+                "scale": row.get("scale"),
                 "claim_limit": row.get("claim_limit"),
                 "artifact_checks": artifact_checks,
                 "row_status": "ok" if not missing and not invalid else "needs_baselines",

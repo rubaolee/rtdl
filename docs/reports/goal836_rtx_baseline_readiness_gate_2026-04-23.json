@@ -53,6 +53,10 @@
         "python_summary_postprocess"
       ],
       "row_status": "needs_baselines",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -98,6 +102,10 @@
         "python_summary_postprocess"
       ],
       "row_status": "needs_baselines",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -143,6 +151,10 @@
         "python_postprocess"
       ],
       "row_status": "needs_baselines",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -188,6 +200,10 @@
         "python_postprocess"
       ],
       "row_status": "needs_baselines",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
       "section": "active"
     },
     {
@@ -226,6 +242,11 @@
         "oracle_validation_separate"
       ],
       "row_status": "needs_baselines",
+      "scale": {
+        "iterations": 10,
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      },
       "section": "active"
     },
     {
@@ -270,6 +291,7 @@
         "python_postprocess"
       ],
       "row_status": "needs_baselines",
+      "scale": null,
       "section": "deferred"
     },
     {
@@ -314,6 +336,7 @@
         "python_postprocess"
       ],
       "row_status": "needs_baselines",
+      "scale": null,
       "section": "deferred"
     },
     {
@@ -358,6 +381,7 @@
         "status"
       ],
       "row_status": "needs_baselines",
+      "scale": null,
       "section": "deferred"
     }
   ],

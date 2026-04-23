@@ -27,6 +27,7 @@ For every required baseline listed by Goal835, the gate expects a JSON artifact 
 - `repeated_runs` greater than or equal to the Goal835 minimum;
 - `required_phase_coverage` covering every required phase from Goal835;
 - matching `comparable_metric_scope`.
+- matching `benchmark_scale` when the Goal835 row defines a scale.
 
 ## Current Result
 

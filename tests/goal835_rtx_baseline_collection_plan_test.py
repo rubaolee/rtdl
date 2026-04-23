@@ -50,14 +50,17 @@ class Goal835RtxBaselineCollectionPlanTest(unittest.TestCase):
         db = rows[("database_analytics", "prepared_db_session_sales_risk")]
         self.assertIn("postgresql_same_semantics_on_linux_when_available", db["required_baselines"])
         self.assertIn("native_query", db["required_phases"])
+        self.assertEqual(db["scale"], {"copies": 20000, "iterations": 10})
 
         fixed = rows[("outlier_detection", "prepared_fixed_radius_density_summary")]
         self.assertIn("cpu_scalar_threshold_count_oracle", fixed["required_baselines"])
         self.assertIn("not row-returning neighbors", fixed["claim_limit"])
+        self.assertEqual(fixed["scale"], {"copies": 20000, "iterations": 10})
 
         robot = rows[("robot_collision_screening", "prepared_pose_flags")]
         self.assertIn("embree_anyhit_pose_count_or_equivalent_compact_summary", robot["required_baselines"])
         self.assertIn("native_anyhit_query", robot["required_phases"])
+        self.assertEqual(robot["scale"], {"pose_count": 200000, "obstacle_count": 1024, "iterations": 10})
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
