@@ -820,6 +820,49 @@ def get_last_phase_timings() -> dict[str, float] | None:
     }
 
 
+def get_last_db_phase_timings() -> dict[str, float | int] | None:
+    return _get_last_db_phase_timings_from_library(_load_optix_library())
+
+
+def _get_last_db_phase_timings_from_library(lib) -> dict[str, float | int] | None:
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_get_last_phase_timings")
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+    )
+    symbol.restype = ctypes.c_int
+    traversal = ctypes.c_double(0.0)
+    bitset_copy = ctypes.c_double(0.0)
+    exact_filter = ctypes.c_double(0.0)
+    output_pack = ctypes.c_double(0.0)
+    raw_candidates = ctypes.c_size_t(0)
+    emitted = ctypes.c_size_t(0)
+    status = symbol(
+        ctypes.byref(traversal),
+        ctypes.byref(bitset_copy),
+        ctypes.byref(exact_filter),
+        ctypes.byref(output_pack),
+        ctypes.byref(raw_candidates),
+        ctypes.byref(emitted),
+    )
+    if status != 0:
+        return None
+    return {
+        "traversal": float(traversal.value),
+        "bitset_copyback": float(bitset_copy.value),
+        "exact_filter": float(exact_filter.value),
+        "output_pack": float(output_pack.value),
+        "raw_candidate_count": int(raw_candidates.value),
+        "emitted_count": int(emitted.value),
+    }
+
+
 def _run_db_optix(compiled: CompiledKernel, normalized_inputs, lib, *, result_mode: str):
     predicate_name = compiled.refine_op.predicate.name
     if predicate_name == "conjunctive_scan":
@@ -1118,6 +1161,9 @@ class OptixPreparedDbDataset:
         _check_status(status, error)
         return int(row_count_out.value)
 
+    def last_phase_timings(self) -> dict[str, float | int] | None:
+        return _get_last_db_phase_timings_from_library(self.library)
+
     def grouped_count(self, clauses_array, group_key_field: bytes) -> OptixRowView:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
@@ -1221,6 +1267,9 @@ class PreparedOptixDbDataset:
         bundle = normalize_predicate_bundle(predicates)
         clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
         return self._dataset.conjunctive_scan_count(clauses_array)
+
+    def last_phase_timings(self) -> dict[str, float | int] | None:
+        return self._dataset.last_phase_timings()
 
     def grouped_count(self, query) -> tuple[dict[str, object], ...]:
         normalized_query = normalize_grouped_query(query)

@@ -472,6 +472,13 @@ int  rtdl_optix_db_dataset_grouped_sum(
          const char* value_field,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_db_get_last_phase_timings(
+         double* traversal_out,
+         double* bitset_copy_out,
+         double* exact_filter_out,
+         double* output_pack_out,
+         size_t* raw_candidate_count_out,
+         size_t* emitted_count_out);
 int  rtdl_optix_get_last_phase_timings(
          double* bvh_build_out,
          double* traversal_out,

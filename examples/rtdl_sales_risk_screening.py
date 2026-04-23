@@ -199,6 +199,7 @@ class PreparedSalesRiskSession:
             raise ValueError(f"unsupported output_mode: {output_mode}")
         prepared_dataset = None
         run_phases: dict[str, float] = {}
+        native_db_phases: dict[str, object] = {}
         if self.backend in {"embree", "optix", "vulkan"}:
             assert self._dataset is not None
             predicates = self.scan_case["predicates"]
@@ -212,17 +213,25 @@ class PreparedSalesRiskSession:
                     lambda: self._dataset.conjunctive_scan_count(predicates)
                 )
                 risky_rows = ()
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan_count"] = self._dataset.last_phase_timings()
             else:
                 risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
                     lambda: tuple(self._dataset.conjunctive_scan(predicates))
                 )
                 risky_scan_count = len(risky_rows)
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
             count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
                 lambda: tuple(self._dataset.grouped_count(count_query))
             )
+            if hasattr(self._dataset, "last_phase_timings"):
+                native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
             sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
                 lambda: tuple(self._dataset.grouped_sum(query))
             )
+            if hasattr(self._dataset, "last_phase_timings"):
+                native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
             prepared_dataset = {
                 "transfer": self._dataset._dataset.transfer,
                 "row_count": self._dataset.row_count,
@@ -266,6 +275,7 @@ class PreparedSalesRiskSession:
                 "prepare_sec": self.prepare_sec,
             },
             "run_phases": run_phases,
+            "native_db_phases": native_db_phases,
             "prepared_dataset": prepared_dataset,
             "summary": summary,
             "row_counts": {

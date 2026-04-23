@@ -59,6 +59,11 @@ class _FakeRegionalDataset:
 
 
 class Goal804DbCompactSummaryScanCountTest(unittest.TestCase):
+    def test_public_api_exports_db_phase_timing_probe(self) -> None:
+        import rtdsl as rt
+
+        self.assertTrue(callable(rt.get_last_db_phase_timings))
+
     def test_sales_compact_summary_uses_scan_count_not_row_materialization(self) -> None:
         from examples import rtdl_sales_risk_screening as sales
 
@@ -74,6 +79,18 @@ class Goal804DbCompactSummaryScanCountTest(unittest.TestCase):
         self.assertNotIn("risky_order_ids", payload["summary"])
         self.assertIn("query_conjunctive_scan_count_sec", payload["run_phases"])
         self.assertNotIn("query_conjunctive_scan_and_materialize_sec", payload["run_phases"])
+
+    def test_native_sources_define_db_phase_counter_abi(self) -> None:
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[1]
+        prelude = (root / "src/native/optix/rtdl_optix_prelude.h").read_text(encoding="utf-8")
+        workloads = (root / "src/native/optix/rtdl_optix_workloads.cpp").read_text(encoding="utf-8")
+        self.assertIn("rtdl_optix_db_get_last_phase_timings", prelude)
+        self.assertIn("g_optix_last_db_traversal_s", workloads)
+        self.assertIn("g_optix_last_db_bitset_copy_s", workloads)
+        self.assertIn("g_optix_last_db_exact_filter_s", workloads)
+        self.assertIn("g_optix_last_db_output_pack_s", workloads)
 
     def test_regional_compact_summary_uses_scan_count_not_row_materialization(self) -> None:
         from examples import rtdl_v0_7_db_app_demo as regional

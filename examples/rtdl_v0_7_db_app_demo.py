@@ -161,6 +161,7 @@ class PreparedRegionalDashboardSession:
         if output_mode not in {"full", "summary", "compact_summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
         run_phases: dict[str, float] = {}
+        native_db_phases: dict[str, object] = {}
         if self.backend == "cpu_reference":
             results, run_phases["cpu_reference_execute_and_postprocess_sec"] = _timed_call(
                 lambda: _run_cpu_reference(self.table)
@@ -173,17 +174,25 @@ class PreparedRegionalDashboardSession:
                     lambda: self._dataset.conjunctive_scan_count(PROMO_SCAN)
                 )
                 promo_order_ids = []
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan_count"] = self._dataset.last_phase_timings()
             else:
                 promo_order_ids, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
                     lambda: _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN))
                 )
                 promo_order_count = len(promo_order_ids)
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
             open_order_count_by_region, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
                 lambda: _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD))
             )
+            if hasattr(self._dataset, "last_phase_timings"):
+                native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
             web_revenue_by_region, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
                 lambda: _sort_rows(self._dataset.grouped_sum(REGION_REVENUE))
             )
+            if hasattr(self._dataset, "last_phase_timings"):
+                native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
             results = {
                 "promo_order_ids": promo_order_ids,
                 "open_order_count_by_region": open_order_count_by_region,
@@ -213,6 +222,7 @@ class PreparedRegionalDashboardSession:
                 "prepare_sec": self.prepare_sec,
             },
             "run_phases": run_phases,
+            "native_db_phases": native_db_phases,
             "data_flow": [
                 "app order rows",
                 "RTDL v0.7 bounded DB workload",

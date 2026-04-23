@@ -155,6 +155,7 @@ from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
+from .optix_runtime import get_last_db_phase_timings
 from .optix_runtime import OptixRay2DBuffer
 from .optix_runtime import OptixPoseIndexBuffer
 from .optix_runtime import OptixRowView

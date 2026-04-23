@@ -51,6 +51,30 @@ struct OptixDbDatasetImpl {
     AccelHolder accel;
 };
 
+thread_local double g_optix_last_db_traversal_s = 0.0;
+thread_local double g_optix_last_db_bitset_copy_s = 0.0;
+thread_local double g_optix_last_db_exact_filter_s = 0.0;
+thread_local double g_optix_last_db_output_pack_s = 0.0;
+thread_local size_t g_optix_last_db_raw_candidate_count = 0;
+thread_local size_t g_optix_last_db_emitted_count = 0;
+
+extern "C" int rtdl_optix_db_get_last_phase_timings(
+        double* traversal,
+        double* bitset_copy,
+        double* exact_filter,
+        double* output_pack,
+        size_t* raw_candidate_count,
+        size_t* emitted_count)
+{
+    if (traversal) *traversal = g_optix_last_db_traversal_s;
+    if (bitset_copy) *bitset_copy = g_optix_last_db_bitset_copy_s;
+    if (exact_filter) *exact_filter = g_optix_last_db_exact_filter_s;
+    if (output_pack) *output_pack = g_optix_last_db_output_pack_s;
+    if (raw_candidate_count) *raw_candidate_count = g_optix_last_db_raw_candidate_count;
+    if (emitted_count) *emitted_count = g_optix_last_db_emitted_count;
+    return 0;
+}
+
 static size_t db_find_field_index_or_throw(
         const RtdlDbField* fields,
         size_t field_count,
@@ -559,6 +583,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix(
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
+    auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(
         g_dbscan.pipe->pipeline,
         stream,
@@ -654,12 +679,19 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         y_count,
         1));
     CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_trav = std::chrono::steady_clock::now();
+    g_optix_last_db_traversal_s = std::chrono::duration<double>(t_end_trav - t_start_trav).count();
 
+    auto t_start_copy = std::chrono::steady_clock::now();
     std::vector<uint32_t> hit_words(hit_word_count, 0u);
     if (hit_word_count > 0) {
         download(hit_words.data(), d_hit_words.ptr, hit_word_count);
     }
+    auto t_end_copy = std::chrono::steady_clock::now();
+    g_optix_last_db_bitset_copy_s = std::chrono::duration<double>(t_end_copy - t_start_copy).count();
 
+    auto t_start_filter = std::chrono::steady_clock::now();
+    size_t raw_candidate_count = 0;
     std::vector<size_t> row_indices;
     row_indices.reserve(std::min(dataset.row_count, kDbMaxCandidateRowsPerJob));
     for (size_t row_index = 0; row_index < dataset.row_count; ++row_index) {
@@ -668,6 +700,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         if ((hit_words[word] & bit) == 0u) {
             continue;
         }
+        raw_candidate_count += 1;
         if (row_indices.size() >= kDbMaxCandidateRowsPerJob) {
             throw std::runtime_error("first-wave OptiX DB lowering exceeded the 250000-candidate ceiling");
         }
@@ -682,6 +715,10 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
         }
         row_indices.push_back(row_index);
     }
+    auto t_end_filter = std::chrono::steady_clock::now();
+    g_optix_last_db_exact_filter_s = std::chrono::duration<double>(t_end_filter - t_start_filter).count();
+    g_optix_last_db_raw_candidate_count = raw_candidate_count;
+    g_optix_last_db_emitted_count = row_indices.size();
     return row_indices;
 }
 
@@ -969,6 +1006,7 @@ static void run_db_conjunctive_scan_optix_prepared(
 
     const std::vector<size_t> candidate_row_indices =
         db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+    auto t_start_output = std::chrono::steady_clock::now();
     std::vector<RtdlDbRowIdRow> rows;
     rows.reserve(candidate_row_indices.size());
     for (size_t row_index : candidate_row_indices) {
@@ -986,6 +1024,9 @@ static void run_db_conjunctive_scan_optix_prepared(
     }
     *rows_out = out;
     *row_count_out = rows.size();
+    auto t_end_output = std::chrono::steady_clock::now();
+    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_db_emitted_count = rows.size();
 }
 
 static void run_db_conjunctive_scan_count_optix_prepared(
@@ -1007,7 +1048,11 @@ static void run_db_conjunctive_scan_count_optix_prepared(
 
     const std::vector<size_t> candidate_row_indices =
         db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+    auto t_start_output = std::chrono::steady_clock::now();
     *row_count_out = candidate_row_indices.size();
+    auto t_end_output = std::chrono::steady_clock::now();
+    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_db_emitted_count = candidate_row_indices.size();
 }
 
 static void run_db_grouped_count_optix_prepared(
@@ -1037,6 +1082,7 @@ static void run_db_grouped_count_optix_prepared(
         db_find_field_index_or_throw(dataset->fields.data(), dataset->fields.size(), group_key_field);
     const std::vector<size_t> candidate_row_indices =
         db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+    auto t_start_output = std::chrono::steady_clock::now();
     std::unordered_map<int64_t, int64_t> counts;
     for (size_t row_index : candidate_row_indices) {
         const RtdlDbScalar& group_value =
@@ -1063,6 +1109,9 @@ static void run_db_grouped_count_optix_prepared(
     }
     *rows_out = out;
     *row_count_out = rows.size();
+    auto t_end_output = std::chrono::steady_clock::now();
+    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_db_emitted_count = rows.size();
 }
 
 static void run_db_grouped_sum_optix_prepared(
@@ -1099,6 +1148,7 @@ static void run_db_grouped_sum_optix_prepared(
     }
     const std::vector<size_t> candidate_row_indices =
         db_collect_candidate_row_indices_optix_prepared(*dataset, clauses, clause_count);
+    auto t_start_output = std::chrono::steady_clock::now();
     std::unordered_map<int64_t, int64_t> sums;
     for (size_t row_index : candidate_row_indices) {
         const RtdlDbScalar& group_value =
@@ -1127,6 +1177,9 @@ static void run_db_grouped_sum_optix_prepared(
     }
     *rows_out = out;
     *row_count_out = rows.size();
+    auto t_end_output = std::chrono::steady_clock::now();
+    g_optix_last_db_output_pack_s = std::chrono::duration<double>(t_end_output - t_start_output).count();
+    g_optix_last_db_emitted_count = rows.size();
 }
 
 static void run_seg_poly_hitcount_optix_host_indexed(
