@@ -1946,6 +1946,56 @@ class PreparedOptixRayTriangleAnyHit2D:
         _check_status(status, error)
         return tuple(bool(pose_flag_buffer[index]) for index in range(pose_count))
 
+    def pose_count_prepared_indices(
+        self,
+        rays: "OptixRay2DBuffer",
+        pose_indices: "OptixPoseIndexBuffer",
+        *,
+        pose_count: int,
+    ) -> int:
+        """Return only the number of colliding poses using prepared buffers."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX any-hit handle is closed")
+        if not isinstance(rays, OptixRay2DBuffer):
+            raise ValueError("pose_count_prepared_indices requires an OptixRay2DBuffer")
+        if not isinstance(pose_indices, OptixPoseIndexBuffer):
+            raise ValueError("pose_count_prepared_indices requires an OptixPoseIndexBuffer")
+        if rays.closed:
+            raise RuntimeError("prepared OptiX ray buffer is closed")
+        if pose_indices.closed:
+            raise RuntimeError("prepared OptiX pose-index buffer is closed")
+        if pose_count < 0:
+            raise ValueError("pose_count must be non-negative")
+        if pose_indices.count != rays.count:
+            raise ValueError("prepared pose-index count must match prepared ray count")
+        if rays.count == 0 or self._packed_triangles.count == 0 or pose_count == 0:
+            return 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        colliding_pose_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            rays.handle,
+            pose_indices.handle,
+            pose_count,
+            ctypes.byref(colliding_pose_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(colliding_pose_count.value)
+
     def close(self) -> None:
         if self._closed:
             return
@@ -2553,6 +2603,21 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_pose_flags_anyhit2d_prepared_indices.restype = ctypes.c_int
+    optional_pose_count_anyhit2d_prepared_indices = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+    )
+    if optional_pose_count_anyhit2d_prepared_indices is not None:
+        optional_pose_count_anyhit2d_prepared_indices.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_pose_count_anyhit2d_prepared_indices.restype = ctypes.c_int
     optional_destroy_pose_indices2d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_pose_indices_2d")
     if optional_destroy_pose_indices2d is not None:
         optional_destroy_pose_indices2d.argtypes = [ctypes.c_void_p]

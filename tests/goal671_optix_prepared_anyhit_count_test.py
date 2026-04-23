@@ -55,6 +55,10 @@ def optix_prepared_pose_indices_available() -> bool:
             lib,
             "rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices",
         ) is not None
+        and _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices",
+        ) is not None
         and _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_pose_indices_2d") is not None
     )
 
@@ -234,6 +238,18 @@ class Goal767OptixPreparedPoseIndicesNativeTest(unittest.TestCase):
                     self.assertEqual(
                         prepared.pose_flags_prepared_indices(packed_rays, packed_pose_indices, pose_count=2),
                         prepared.pose_flags_packed(packed_rays, pose_indices, pose_count=2),
+                    )
+                    self.assertEqual(
+                        prepared.pose_count_prepared_indices(packed_rays, packed_pose_indices, pose_count=2),
+                        sum(
+                            1
+                            for flag in prepared.pose_flags_packed(
+                                packed_rays,
+                                pose_indices,
+                                pose_count=2,
+                            )
+                            if flag
+                        ),
                     )
 
 

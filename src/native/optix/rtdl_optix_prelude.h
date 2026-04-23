@@ -320,6 +320,13 @@ int  rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices(
          uint32_t* pose_flags_out,
          size_t pose_count,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices(
+         void* prepared,
+         void* prepared_rays,
+         void* prepared_pose_indices,
+         size_t pose_count,
+         size_t* colliding_pose_count_out,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices);
 void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays);
 int  rtdl_optix_run_segment_polygon_hitcount(

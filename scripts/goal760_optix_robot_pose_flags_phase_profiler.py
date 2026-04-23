@@ -135,15 +135,24 @@ def run_suite(
     iterations: int,
     validate: bool,
     input_mode: str = "python_objects",
+    result_mode: str = "pose_flags",
 ) -> dict[str, Any]:
     if mode not in {"optix", "dry-run"}:
         raise ValueError("mode must be 'optix' or 'dry-run'")
     if input_mode not in {"python_objects", "packed_arrays"}:
         raise ValueError("input_mode must be 'python_objects' or 'packed_arrays'")
+    if result_mode not in {"pose_flags", "pose_count"}:
+        raise ValueError("result_mode must be 'pose_flags' or 'pose_count'")
     if input_mode == "packed_arrays" and mode != "optix":
         raise ValueError("packed_arrays input mode is only supported with mode='optix'")
     if input_mode == "packed_arrays" and validate:
         raise ValueError("packed_arrays input mode requires --skip-validation; run python_objects mode for oracle checks")
+    if result_mode == "pose_count" and mode != "optix":
+        raise ValueError("pose_count result mode is only supported with mode='optix'")
+    if result_mode == "pose_count" and input_mode != "packed_arrays":
+        raise ValueError("pose_count result mode requires input_mode='packed_arrays'")
+    if result_mode == "pose_count" and validate:
+        raise ValueError("pose_count result mode requires --skip-validation")
     if pose_count <= 0:
         raise ValueError("pose_count must be positive")
     if obstacle_count <= 0:
@@ -176,6 +185,7 @@ def run_suite(
     close_sec = 0.0
     run_samples: list[float] = []
     last_pose_flags: tuple[bool, ...] = ()
+    last_colliding_pose_count: int | None = None
 
     if mode == "dry-run":
         for _ in range(iterations):
@@ -204,6 +214,16 @@ def run_suite(
                             pose_count=len(poses),
                         )
                     )
+                elif result_mode == "pose_count":
+                    last_colliding_pose_count, elapsed = _time_call(
+                        lambda: prepared_scene.pose_count_prepared_indices(
+                            prepared_rays,
+                            prepared_pose_indices,
+                            pose_count=len(poses),
+                        )
+                    )
+                    run_samples.append(elapsed)
+                    continue
                 else:
                     raw_flags, elapsed = _time_call(
                         lambda: prepared_scene.pose_flags_prepared_indices(
@@ -234,13 +254,14 @@ def run_suite(
         matches_oracle = tuple(last_pose_flags) == tuple(oracle_flags)
         oracle_summary = _flag_summary(oracle_flags, poses)
 
-    result_summary = _flag_summary(last_pose_flags, poses)
+    result_summary = None if result_mode == "pose_count" else _flag_summary(last_pose_flags, poses)
     total_sec = time.perf_counter() - total_start
     return {
         "suite": GOAL,
         "date": DATE,
         "mode": mode,
         "input_mode": input_mode,
+        "result_mode": result_mode,
         "pose_count": len(poses),
         "obstacle_count": obstacle_count,
         "edge_ray_count": edge_ray_count,
@@ -259,9 +280,13 @@ def run_suite(
             "total_sec": total_sec,
         },
         "result": {
-            "colliding_pose_count": result_summary["colliding_pose_count"],
-            "colliding_pose_ids_sample": list(result_summary["colliding_pose_ids"][:10]),
-            "pose_collision_flags_sample": list(result_summary["pose_collision_flags"][:10]),
+            "colliding_pose_count": (
+                int(last_colliding_pose_count)
+                if result_mode == "pose_count"
+                else result_summary["colliding_pose_count"]
+            ),
+            "colliding_pose_ids_sample": [] if result_mode == "pose_count" else list(result_summary["colliding_pose_ids"][:10]),
+            "pose_collision_flags_sample": [] if result_mode == "pose_count" else list(result_summary["pose_collision_flags"][:10]),
             "oracle_colliding_pose_count": None
             if oracle_summary is None
             else oracle_summary["colliding_pose_count"],
@@ -270,7 +295,8 @@ def run_suite(
             "This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. "
             "optix mode can support future RTX claim review only on RTX-class hardware with exported prepared "
             "OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing. "
-            "packed_arrays input mode avoids per-ray Python object construction but remains app-specific."
+            "packed_arrays input mode avoids per-ray Python object construction but remains app-specific. "
+            "pose_count result mode returns only a scalar colliding-pose count for clean native summary timing."
         ),
     }
 
@@ -282,6 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--obstacle-count", type=int, default=64)
     parser.add_argument("--iterations", type=int, default=3)
     parser.add_argument("--input-mode", choices=("python_objects", "packed_arrays"), default="python_objects")
+    parser.add_argument("--result-mode", choices=("pose_flags", "pose_count"), default="pose_flags")
     parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--output-json")
     args = parser.parse_args(argv)
@@ -293,6 +320,7 @@ def main(argv: list[str] | None = None) -> int:
         iterations=args.iterations,
         validate=not args.skip_validation,
         input_mode=args.input_mode,
+        result_mode=args.result_mode,
     )
     text = json.dumps(payload, indent=2, sort_keys=True)
     if args.output_json:

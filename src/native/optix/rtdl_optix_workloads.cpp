@@ -2005,6 +2005,7 @@ struct RayAnyHitPoseFlagsLaunchParams {
     const GpuTriangle*     triangles;
     const uint32_t*        pose_indices;
     uint32_t*              pose_flags;
+    uint32_t*              colliding_pose_count;
     uint32_t               ray_count;
     uint32_t               pose_count;
 };
@@ -2081,6 +2082,7 @@ static std::string ray_anyhit_pose_flags_kernel_source_2d()
     const std::string new_output_field =
         "    const uint32_t* pose_indices;\n"
         "    uint32_t* pose_flags;\n"
+        "    uint32_t* colliding_pose_count;\n"
         "    uint32_t ray_count;\n"
         "    uint32_t pose_count;\n";
     size_t pos = src.find(old_output_field);
@@ -2103,7 +2105,10 @@ static std::string ray_anyhit_pose_flags_kernel_source_2d()
     const std::string new_final_write =
         "    if (p1 != 0u) {\n"
         "        const uint32_t pose_index = params.pose_indices[idx];\n"
-        "        if (pose_index < params.pose_count) atomicExch(&params.pose_flags[pose_index], 1u);\n"
+        "        if (pose_index < params.pose_count) {\n"
+        "            const uint32_t previous = atomicExch(&params.pose_flags[pose_index], 1u);\n"
+        "            if (previous == 0u && params.colliding_pose_count != nullptr) atomicAdd(params.colliding_pose_count, 1u);\n"
+        "        }\n"
         "    }\n";
     pos = src.find(old_final_write);
     if (pos == std::string::npos)
@@ -2493,6 +2498,7 @@ static void pose_flags_prepared_ray_anyhit_2d_packed_optix(
     lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
     lp.pose_indices = reinterpret_cast<const uint32_t*>(d_pose_indices.ptr);
     lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
+    lp.colliding_pose_count = nullptr;
     lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
     lp.pose_count = static_cast<uint32_t>(pose_count);
 
@@ -2540,6 +2546,7 @@ static void pose_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
     lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
     lp.pose_indices = reinterpret_cast<const uint32_t*>(prepared_pose_indices->d_pose_indices.ptr);
     lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
+    lp.colliding_pose_count = nullptr;
     lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
     lp.pose_count = static_cast<uint32_t>(pose_count);
 
@@ -2554,6 +2561,57 @@ static void pose_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
     CU_CHECK(cuStreamSynchronize(stream));
 
     download(pose_flags_out, d_pose_flags.ptr, pose_count);
+}
+
+static void count_poses_prepared_ray_anyhit_2d_prepared_indices_optix(
+        PreparedRayAnyHit2D* prepared,
+        PreparedRays2D* prepared_rays,
+        PreparedPoseIndices2D* prepared_pose_indices,
+        size_t pose_count,
+        size_t* colliding_pose_count_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX any-hit handle must not be null");
+    if (!prepared_rays) throw std::runtime_error("prepared OptiX rays handle must not be null");
+    if (!prepared_pose_indices) throw std::runtime_error("prepared OptiX pose-indices handle must not be null");
+    if (!colliding_pose_count_out) throw std::runtime_error("colliding_pose_count_out must not be null");
+    if (prepared_pose_indices->count != prepared_rays->ray_count)
+        throw std::runtime_error("prepared pose-index count must match prepared ray count");
+    *colliding_pose_count_out = 0;
+    if (prepared_rays->ray_count == 0 || prepared->triangles.empty() || pose_count == 0)
+        return;
+
+    ensure_ray_anyhit_pose_flags_2d_pipeline();
+
+    DevPtr d_pose_flags(sizeof(uint32_t) * pose_count);
+    DevPtr d_colliding_pose_count(sizeof(uint32_t));
+    std::vector<uint32_t> zero_flags(pose_count, 0u);
+    uint32_t zero_count = 0u;
+    upload(d_pose_flags.ptr, zero_flags.data(), zero_flags.size());
+    upload(d_colliding_pose_count.ptr, &zero_count, 1);
+
+    RayAnyHitPoseFlagsLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.rays = reinterpret_cast<const GpuRay*>(prepared_rays->d_rays.ptr);
+    lp.triangles = reinterpret_cast<const GpuTriangle*>(prepared->d_triangles.ptr);
+    lp.pose_indices = reinterpret_cast<const uint32_t*>(prepared_pose_indices->d_pose_indices.ptr);
+    lp.pose_flags = reinterpret_cast<uint32_t*>(d_pose_flags.ptr);
+    lp.colliding_pose_count = reinterpret_cast<uint32_t*>(d_colliding_pose_count.ptr);
+    lp.ray_count = static_cast<uint32_t>(prepared_rays->ray_count);
+    lp.pose_count = static_cast<uint32_t>(pose_count);
+
+    DevPtr d_params(sizeof(RayAnyHitPoseFlagsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_rayanyhit_pose_flags.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(RayAnyHitPoseFlagsLaunchParams),
+                            &g_rayanyhit_pose_flags.pipe->sbt,
+                            static_cast<unsigned>(prepared_rays->ray_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t count = 0u;
+    download(&count, d_colliding_pose_count.ptr, 1);
+    *colliding_pose_count_out = static_cast<size_t>(count);
 }
 
 // ---------- 3-D ray-triangle hit count (OptiX-accelerated) ------------------

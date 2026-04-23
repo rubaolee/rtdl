@@ -252,6 +252,30 @@ extern "C" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices(
+        void* prepared,
+        void* prepared_rays,
+        void* prepared_pose_indices,
+        size_t pose_count,
+        size_t* colliding_pose_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_rays)
+            throw std::runtime_error("prepared_rays must not be null");
+        if (!prepared_pose_indices)
+            throw std::runtime_error("prepared_pose_indices must not be null");
+        if (!colliding_pose_count_out)
+            throw std::runtime_error("colliding_pose_count_out must not be null");
+        count_poses_prepared_ray_anyhit_2d_prepared_indices_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            reinterpret_cast<PreparedRays2D*>(prepared_rays),
+            reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices),
+            pose_count,
+            colliding_pose_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices)
 {
     delete reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices);

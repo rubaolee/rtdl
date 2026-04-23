@@ -86,6 +86,34 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
                 validate=True,
                 input_mode="packed_arrays",
             )
+        with self.assertRaisesRegex(ValueError, "pose_count result mode is only supported"):
+            module.run_suite(
+                mode="dry-run",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=False,
+                result_mode="pose_count",
+            )
+        with self.assertRaisesRegex(ValueError, "requires --skip-validation"):
+            module.run_suite(
+                mode="optix",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=True,
+                input_mode="packed_arrays",
+                result_mode="pose_count",
+            )
+        with self.assertRaisesRegex(ValueError, "pose_count result mode requires input_mode='packed_arrays'"):
+            module.run_suite(
+                mode="optix",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=False,
+                result_mode="pose_count",
+            )
 
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(
