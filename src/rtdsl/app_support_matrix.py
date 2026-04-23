@@ -200,7 +200,7 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Spatial KNN app currently exposes CPU, Embree, and SciPy baseline.",
+        note="Spatial KNN app currently exposes CPU, Embree, and SciPy baseline. It intentionally does not expose OptiX because KNN ranking needs nearest-neighbor ordering, not fixed-radius threshold summaries.",
     ),
     "road_hazard_screening": _row(
         "road_hazard_screening",
@@ -353,7 +353,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "facility_knn_assignment": OptixAppPerformanceSupport(
         app="facility_knn_assignment",
         performance_class=NOT_OPTIX_EXPOSED,
-        note="Public app CLI does not expose OptiX today.",
+        note="Public app CLI does not expose OptiX today. Existing generic OptiX KNN support is CUDA-through-OptiX, and fixed-radius threshold traversal cannot emit ranked nearest-depot assignments.",
     ),
     "road_hazard_screening": OptixAppPerformanceSupport(
         app="road_hazard_screening",
@@ -481,9 +481,9 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
         "facility_knn_assignment",
         EXCLUDE_FROM_RTX_APP_BENCHMARK,
         "none",
-        "not an OptiX-exposed app today",
-        "public app CLI does not expose OptiX",
-        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+        "not an OptiX-exposed app today; a future path must prove traversal-based KNN ranking, not only threshold counts",
+        "public app CLI does not expose OptiX because the current fixed-radius prepared primitive cannot produce nearest-neighbor ordering",
+        "CPU/Embree/SciPy baseline app only until a real RT traversal plus ranking design is added",
     ),
     "road_hazard_screening": _readiness(
         "road_hazard_screening",
@@ -640,8 +640,8 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "facility_knn_assignment",
         NEEDS_OPTIX_APP_SURFACE,
         RT_CORE_READY,
-        "Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal primitive rather than CUDA-through-OptiX KNN rows.",
-        "Cloud only after a native traversal design exists.",
+        "Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal plus native ranking primitive rather than CUDA-through-OptiX KNN rows or fixed-radius count thresholds.",
+        "Cloud only after a native traversal/ranking design exists and has a local correctness gate.",
     ),
     "road_hazard_screening": _maturity(
         "road_hazard_screening",
