@@ -22,6 +22,32 @@ from examples import rtdl_segment_polygon_hitcount as app
 
 GOAL = "Goal807 segment/polygon OptiX native-mode gate"
 DATE = "2026-04-23"
+SCHEMA_VERSION = "goal831_segment_polygon_native_gate_contract_v1"
+
+
+def _cloud_claim_contract() -> dict[str, object]:
+    return {
+        "claim_scope": "experimental native custom-AABB segment/polygon hit-count traversal gate",
+        "non_claim": (
+            "not default public app behavior, not pair-row any-hit output, "
+            "not road-hazard whole-app speedup, and not a public RTX speedup claim"
+        ),
+        "required_phase_groups": (
+            "records",
+            "strict_pass",
+            "strict_failures",
+            "status",
+        ),
+        "required_record_labels": (
+            "cpu_python_reference",
+            "optix_host_indexed",
+            "optix_native",
+        ),
+        "cloud_policy": (
+            "keep deferred; include only in a single consolidated RTX batch after "
+            "local readiness passes, then review native-vs-host-indexed/PostGIS evidence"
+        ),
+    }
 
 
 def _row_digest(rows: tuple[dict[str, object], ...]) -> dict[str, object]:
@@ -152,6 +178,8 @@ def run_gate(
     payload: dict[str, Any] = {
         "goal": GOAL,
         "date": DATE,
+        "schema_version": SCHEMA_VERSION,
+        "cloud_claim_contract": _cloud_claim_contract(),
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "host": {
             "hostname": socket.gethostname(),

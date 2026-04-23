@@ -153,6 +153,32 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         }
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), timings))
         return metrics
+    if app == "segment_polygon_hitcount":
+        records = artifact.get("records")
+        if not isinstance(records, list):
+            return {"artifact_status": "unrecognized", "note": "no records array found"}
+        by_label = {
+            str(record.get("label")): record
+            for record in records
+            if isinstance(record, dict)
+        }
+        metrics = {
+            "artifact_status": "ok",
+            "schema_version": artifact.get("schema_version"),
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failure_count": len(artifact.get("strict_failures", ()))
+            if isinstance(artifact.get("strict_failures"), list)
+            else None,
+            "cpu_reference_sec": by_label.get("cpu_python_reference", {}).get("sec"),
+            "optix_host_indexed_sec": by_label.get("optix_host_indexed", {}).get("sec"),
+            "optix_native_sec": by_label.get("optix_native", {}).get("sec"),
+            "optix_native_status": by_label.get("optix_native", {}).get("status"),
+            "optix_native_parity": by_label.get("optix_native", {}).get("parity_vs_cpu_python_reference"),
+            "postgis_sec": by_label.get("postgis", {}).get("sec"),
+            "postgis_parity": by_label.get("postgis", {}).get("parity_vs_cpu_python_reference"),
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), artifact))
+        return metrics
     return {"artifact_status": "not_applicable", "note": "no extractor for app"}
 
 

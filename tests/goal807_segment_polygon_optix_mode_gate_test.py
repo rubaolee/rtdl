@@ -38,6 +38,9 @@ class Goal807SegmentPolygonOptixModeGateTest(unittest.TestCase):
         self.assertEqual(payload["status"], "pass")
         self.assertTrue(payload["strict_pass"])
         self.assertEqual(payload["strict_failures"], [])
+        self.assertEqual(payload["schema_version"], "goal831_segment_polygon_native_gate_contract_v1")
+        self.assertIn("cloud_claim_contract", payload)
+        self.assertIn("optix_native", payload["cloud_claim_contract"]["required_record_labels"])
 
     def test_non_strict_gate_records_missing_native_optix_without_throwing(self) -> None:
         def fake_run_case(backend: str, dataset: str, *, optix_mode: str = "auto"):
