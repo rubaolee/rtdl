@@ -235,9 +235,24 @@ def _run_embree_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, .
     return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_pairs
 
 
-def run_case(backend: str = "cpu_python_reference", *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+def _enforce_rt_core_requirement(require_rt_core: bool) -> None:
+    if require_rt_core:
+        raise RuntimeError(
+            "polygon_pair_overlap_area_rows has no OptiX RT-core surface today; "
+            "Embree mode is CPU native-assisted candidate discovery plus exact CPU/Python area refinement"
+        )
+
+
+def run_case(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    require_rt_core: bool = False,
+) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError("output_mode must be 'rows' or 'summary'")
+    _enforce_rt_core_requirement(require_rt_core)
     case = make_authored_polygon_pair_overlap_case(copies=copies)
     rows: tuple[dict[str, int], ...] = ()
     if backend == "cpu_python_reference":
@@ -268,6 +283,11 @@ def run_case(backend: str = "cpu_python_reference", *, copies: int = 1, output_m
         "row_count": summary["overlap_pair_count"],
         "candidate_row_count": candidate_row_count,
         "summary": summary,
+        "rt_core_accelerated": False,
+        "optix_performance": {
+            "class": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").performance_class,
+            "note": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").note,
+        },
         "boundary": (
             "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
             "grid-cell area refinement. It is native-assisted, not a fully native area-overlay kernel."
@@ -283,8 +303,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail because this app has no NVIDIA OptiX RT-core path today.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

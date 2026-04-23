@@ -84,7 +84,21 @@ def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Po
     return rows, candidate_pairs
 
 
-def run_case(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[str, object]:
+def _enforce_rt_core_requirement(require_rt_core: bool) -> None:
+    if require_rt_core:
+        raise RuntimeError(
+            "polygon_set_jaccard has no OptiX RT-core surface today; "
+            "Embree mode is CPU native-assisted candidate discovery plus exact CPU/Python set-area refinement"
+        )
+
+
+def run_case(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    require_rt_core: bool = False,
+) -> dict[str, object]:
+    _enforce_rt_core_requirement(require_rt_core)
     case = make_authored_polygon_set_jaccard_case(copies=copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(polygon_set_jaccard_reference, **case)
@@ -107,6 +121,11 @@ def run_case(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[
         "row_count": len(rows),
         "candidate_row_count": candidate_row_count,
         "rows": rows,
+        "rt_core_accelerated": False,
+        "optix_performance": {
+            "class": rt.optix_app_performance_support("polygon_set_jaccard").performance_class,
+            "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
+        },
         "boundary": (
             "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
             "grid-cell set-area refinement. It is native-assisted, not a fully native Jaccard kernel."
@@ -118,8 +137,23 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run bounded polygon-set Jaccard.")
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail because this app has no NVIDIA OptiX RT-core path today.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

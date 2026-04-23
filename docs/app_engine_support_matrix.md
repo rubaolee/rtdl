@@ -52,8 +52,8 @@ For OptiX performance classification specifically, use
 - `road_hazard_screening`: Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection, but native mode is still gated.
 - `segment_polygon_hitcount`: Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection.
 - `segment_polygon_anyhit_rows`: Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan; compact modes can request native OptiX hit-count mode, while pair-row mode stays host-indexed.
-- `polygon_pair_overlap_area_rows`: Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact area refinement.
-- `polygon_set_jaccard`: Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact set-area/Jaccard refinement.
+- `polygon_pair_overlap_area_rows`: Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact area refinement. `--require-rt-core` fails because there is no OptiX app surface today.
+- `polygon_set_jaccard`: Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact set-area/Jaccard refinement. `--require-rt-core` fails because there is no OptiX app surface today.
 - `hausdorff_distance`: KNN app exposes CPU, Embree, OptiX, and Vulkan.
 - `ann_candidate_search`: Candidate-search app exposes CPU, Embree, OptiX, Vulkan, and SciPy baseline.
 - `outlier_detection`: Density app exposes CPU, Embree, OptiX, Vulkan, and SciPy baseline.

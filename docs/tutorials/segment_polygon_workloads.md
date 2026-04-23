@@ -183,6 +183,10 @@ The Embree mode is native-assisted: Embree performs polygon overlay/candidate
 discovery and the app keeps exact grid-cell overlap-area refinement in
 CPU/Python.
 
+This app has no OptiX/NVIDIA RT-core surface today. For claim-sensitive scripts,
+`--require-rt-core` fails intentionally instead of treating the Embree
+native-assisted path as a GPU RT-core result.
+
 Kernel shape:
 
 ```python
@@ -220,6 +224,10 @@ This workload is packaged under a bounded pathology-style overlap contract. It
 is not framed as a generic polygon-similarity engine for every use case. Its
 Embree mode is native-assisted: Embree performs candidate discovery and
 CPU/Python computes exact set-area/Jaccard refinement.
+
+This app has no OptiX/NVIDIA RT-core surface today. For claim-sensitive scripts,
+`--require-rt-core` fails intentionally instead of treating the Embree
+native-assisted path as a GPU RT-core result.
 
 ---
 
