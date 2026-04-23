@@ -259,10 +259,12 @@ def build_manifest() -> dict[str, Any]:
                     "examples/rtdl_segment_polygon_hitcount.py",
                     "--backend",
                     "optix",
+                    "--optix-mode",
+                    "native",
                     "--dataset",
                     "derived/br_county_subset_segment_polygon_tiled_x256",
                 ],
-                env={"RTDL_OPTIX_SEGPOLY_MODE": "native"},
+                env={},
                 reason_deferred=(
                     "Native OptiX hit-count exists behind an explicit environment gate, "
                     "but historical Goal120 evidence showed no performance win and the "
