@@ -34,7 +34,7 @@
           "rev-parse",
           "HEAD"
         ],
-        "output_tail": "a96bc177dcafec08cdaec70d370a55c04ea8faff\n",
+        "output_tail": "9d15710bf6314c6e5ec7e7e765f3a51063c1aa15\n",
         "returncode": 0
       },
       "status_short": {
@@ -43,7 +43,7 @@
           "status",
           "--short"
         ],
-        "output_tail": " M docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json\n M scripts/goal762_rtx_cloud_artifact_report.py\n M tests/goal762_rtx_cloud_artifact_report_test.py\n?? docs/reports/goal827_cloud_artifact_contract_audit_2026-04-23.md\n?? tests/goal827_cloud_artifact_contract_audit_test.py\n",
+        "output_tail": " M scripts/goal769_rtx_pod_one_shot.py\n M tests/goal769_rtx_pod_one_shot_test.py\n?? docs/reports/goal828_one_shot_deferred_batch_controls_2026-04-23.md\n",
         "returncode": 0
       }
     },

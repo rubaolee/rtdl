@@ -53,6 +53,45 @@ class Goal769RtxPodOneShotTest(unittest.TestCase):
             self.assertEqual(payload["artifact_bundle"]["status"], "dry_run")
             self.assertTrue(output_json.exists())
 
+    def test_dry_run_can_batch_deferred_and_only_filters(self) -> None:
+        (ROOT / "build").mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
+            tmp = Path(tmpdir)
+            output_json = tmp / "summary.json"
+            artifact_json = tmp / "artifact.json"
+            artifact_md = tmp / "artifact.md"
+            bundle = tmp / "bundle.tgz"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--dry-run",
+                    "--include-deferred",
+                    "--only",
+                    "service_coverage_gaps",
+                    "--output-json",
+                    str(output_json.relative_to(ROOT)),
+                    "--artifact-json",
+                    str(artifact_json.relative_to(ROOT)),
+                    "--artifact-md",
+                    str(artifact_md.relative_to(ROOT)),
+                    "--bundle-tgz",
+                    str(bundle.relative_to(ROOT)),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            payload = json.loads(completed.stdout)
+            self.assertTrue(payload["include_deferred"])
+            self.assertEqual(payload["only"], ["service_coverage_gaps"])
+            manifest_step = next(step for step in payload["steps"] if step["name"] == "goal761_run_manifest")
+            command = manifest_step["result"]["command"]
+            self.assertIn("--include-deferred", command)
+            self.assertIn("service_coverage_gaps", command)
+
 
 if __name__ == "__main__":
     unittest.main()

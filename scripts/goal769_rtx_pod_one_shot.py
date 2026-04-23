@@ -107,6 +107,8 @@ def run_one_shot(
     artifact_json: Path,
     artifact_md: Path,
     bundle_tgz: Path,
+    include_deferred: bool,
+    only: tuple[str, ...],
 ) -> dict[str, Any]:
     cuda_prefix = _cuda_prefix()
     nvcc = _nvcc(cuda_prefix)
@@ -168,15 +170,20 @@ def run_one_shot(
             )
         )
     if not any(step["result"]["status"] == "failed" for step in steps):
+        manifest_command = [
+            sys.executable,
+            "scripts/goal761_rtx_cloud_run_all.py",
+            "--output-json",
+            "docs/reports/goal761_rtx_cloud_run_all_summary.json",
+        ]
+        if include_deferred:
+            manifest_command.append("--include-deferred")
+        for item in only:
+            manifest_command.extend(["--only", item])
         steps.append(
             _step(
                 "goal761_run_manifest",
-                [
-                    sys.executable,
-                    "scripts/goal761_rtx_cloud_run_all.py",
-                    "--output-json",
-                    "docs/reports/goal761_rtx_cloud_run_all_summary.json",
-                ],
+                manifest_command,
                 env=env,
                 dry_run=dry_run,
             )
@@ -209,6 +216,8 @@ def run_one_shot(
         "optix_prefix": str(optix_prefix),
         "cuda_prefix": str(cuda_prefix),
         "nvcc": str(nvcc),
+        "include_deferred": include_deferred,
+        "only": list(only),
         "steps": steps,
         "status": "ok" if not any(step["result"]["status"] == "failed" for step in steps) else "failed",
         "boundary": (
@@ -232,6 +241,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-git-update", action="store_true")
     parser.add_argument("--skip-optix-install", action="store_true")
+    parser.add_argument("--include-deferred", action="store_true", help="Pass through to Goal761 so one pod run can include deferred readiness gates.")
+    parser.add_argument("--only", action="append", default=[], help="Pass through an app or manifest path_name filter to Goal761. May be repeated.")
     parser.add_argument("--output-json", default=f"docs/reports/goal769_rtx_pod_one_shot_summary_{DATE}.json")
     parser.add_argument("--artifact-json", default=f"docs/reports/goal762_rtx_cloud_artifact_report_{DATE}.json")
     parser.add_argument("--artifact-md", default=f"docs/reports/goal762_rtx_cloud_artifact_report_{DATE}.md")
@@ -248,6 +259,8 @@ def main(argv: list[str] | None = None) -> int:
         artifact_json=ROOT / args.artifact_json,
         artifact_md=ROOT / args.artifact_md,
         bundle_tgz=ROOT / args.bundle_tgz,
+        include_deferred=args.include_deferred,
+        only=tuple(args.only),
     )
     return 0 if payload["status"] == "ok" else 1
 
