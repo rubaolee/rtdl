@@ -1,0 +1,619 @@
+{
+  "action_count": 23,
+  "actions": [
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.json",
+      "baseline": "cpu_oracle_compact_summary",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal756_db_prepared_session_perf",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "cpu",
+        "--scenario",
+        "sales_risk",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.raw.json"
+      ],
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "path_name": "prepared_db_session_sales_risk",
+      "reason": "no local collector has been assigned for this baseline yet",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "local_command_ready"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.json",
+      "baseline": "embree_compact_summary",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal756_db_prepared_session_perf",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "sales_risk",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.raw.json"
+      ],
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "path_name": "prepared_db_session_sales_risk",
+      "reason": "no local collector has been assigned for this baseline yet",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "local_command_ready"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+      "baseline": "postgresql_same_semantics_on_linux_when_available",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "command": null,
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "path_name": "prepared_db_session_sales_risk",
+      "reason": "project policy says PostgreSQL baseline is required on Linux, not on this macOS host",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "linux_postgresql_required"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json",
+      "baseline": "cpu_oracle_compact_summary",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal756_db_prepared_session_perf",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "cpu",
+        "--scenario",
+        "regional_dashboard",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.raw.json"
+      ],
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "reason": "no local collector has been assigned for this baseline yet",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "local_command_ready"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json",
+      "baseline": "embree_compact_summary",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal756_db_prepared_session_perf",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "embree",
+        "--scenario",
+        "regional_dashboard",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.raw.json"
+      ],
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "normalization_required": "extract the single backend result and wrap it in the Goal836 baseline artifact schema",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "reason": "no local collector has been assigned for this baseline yet",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "local_command_ready"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+      "baseline": "postgresql_same_semantics_on_linux_when_available",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "command": null,
+      "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "reason": "project policy says PostgreSQL baseline is required on Linux, not on this macOS host",
+      "required_phases": [
+        "input_pack_or_table_build",
+        "backend_prepare",
+        "native_query",
+        "copyback_or_materialization",
+        "python_summary_postprocess"
+      ],
+      "section": "active",
+      "status": "linux_postgresql_required"
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_path": "docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+      "baseline": "cpu_scalar_threshold_count_oracle",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "command": null,
+      "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "reason": "the oracle exists in app fixtures, but no scalar threshold-count artifact writer exists yet",
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "section": "active",
+      "status": "collector_needed"
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_path": "docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.json",
+      "baseline": "embree_scalar_or_summary_path",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal715_embree_fixed_radius_summary_perf",
+      "command": [
+        "python3",
+        "scripts/goal715_embree_fixed_radius_summary_perf.py",
+        "--copies",
+        "20000",
+        "--repeats",
+        "10",
+        "--warmups",
+        "1",
+        "--output",
+        "docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.raw.json"
+      ],
+      "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+      "normalization_required": "select the app-specific summary row and wrap it in the Goal836 baseline artifact schema",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "reason": "no local collector has been assigned for this baseline yet",
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "section": "active",
+      "status": "local_command_ready"
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_path": "docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+      "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "command": null,
+      "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "reason": "SciPy/reference neighbor baseline should be collected only if used in the app report",
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "section": "active",
+      "status": "optional_dependency_or_reference_required"
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact_path": "docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+      "baseline": "cpu_scalar_threshold_count_oracle",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "command": null,
+      "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "reason": "the oracle exists in app fixtures, but no scalar threshold-count artifact writer exists yet",
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "section": "active",
+      "status": "collector_needed"
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact_path": "docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json",
+      "baseline": "embree_scalar_or_summary_path",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "collector_kind": "goal715_embree_fixed_radius_summary_perf",
+      "command": [
+        "python3",
+        "scripts/goal715_embree_fixed_radius_summary_perf.py",
+        "--copies",
+        "20000",
+        "--repeats",
+        "10",
+        "--warmups",
+        "1",
+        "--output",
+        "docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.raw.json"
+      ],
+      "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+      "normalization_required": "select the app-specific summary row and wrap it in the Goal836 baseline artifact schema",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "reason": "no local collector has been assigned for this baseline yet",
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "section": "active",
+      "status": "local_command_ready"
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact_path": "docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+      "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+      "benchmark_scale": {
+        "copies": 20000,
+        "iterations": 10
+      },
+      "command": null,
+      "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "reason": "SciPy/reference neighbor baseline should be collected only if used in the app report",
+      "required_phases": [
+        "point_pack",
+        "backend_prepare",
+        "native_threshold_query",
+        "scalar_copyback",
+        "python_postprocess"
+      ],
+      "section": "active",
+      "status": "optional_dependency_or_reference_required"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
+      "baseline": "cpu_oracle_pose_count",
+      "benchmark_scale": {
+        "iterations": 10,
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      },
+      "command": null,
+      "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+      "path_name": "prepared_pose_flags",
+      "proposed_command": [
+        "python3",
+        "scripts/goal838_robot_pose_count_baseline.py",
+        "--backend",
+        "cpu",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.raw.json"
+      ],
+      "reason": "Goal760 has a CPU dry-run pose-flag path, but not yet a schema-ready pose-count baseline writer",
+      "required_phases": [
+        "pose_and_obstacle_generation",
+        "ray_pack",
+        "backend_scene_prepare",
+        "pose_index_prepare",
+        "native_anyhit_query",
+        "scalar_copyback",
+        "oracle_validation_separate"
+      ],
+      "section": "active",
+      "status": "collector_needed"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
+      "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+      "benchmark_scale": {
+        "iterations": 10,
+        "obstacle_count": 1024,
+        "pose_count": 200000
+      },
+      "command": null,
+      "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+      "path_name": "prepared_pose_flags",
+      "proposed_command": [
+        "python3",
+        "scripts/goal838_robot_pose_count_baseline.py",
+        "--backend",
+        "embree",
+        "--pose-count",
+        "200000",
+        "--obstacle-count",
+        "1024",
+        "--iterations",
+        "10",
+        "--output-json",
+        "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.raw.json"
+      ],
+      "reason": "Embree any-hit exists through the app backend, but a compact pose-count baseline writer is still needed",
+      "required_phases": [
+        "pose_and_obstacle_generation",
+        "ray_pack",
+        "backend_scene_prepare",
+        "pose_index_prepare",
+        "native_anyhit_query",
+        "scalar_copyback",
+        "oracle_validation_separate"
+      ],
+      "section": "active",
+      "status": "collector_needed"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact_path": "docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json",
+      "baseline": "cpu_oracle_summary",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+      "path_name": "prepared_gap_summary",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact_path": "docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json",
+      "baseline": "embree_summary_path",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+      "path_name": "prepared_gap_summary",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact_path": "docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json",
+      "baseline": "scipy_baseline_when_available",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+      "path_name": "prepared_gap_summary",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_path": "docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json",
+      "baseline": "cpu_oracle_summary",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+      "path_name": "prepared_count_summary",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_path": "docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_embree_summary_path_2026-04-23.json",
+      "baseline": "embree_summary_path",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+      "path_name": "prepared_count_summary",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_path": "docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json",
+      "baseline": "scipy_baseline_when_available",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+      "path_name": "prepared_count_summary",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "input_build",
+        "optix_prepare",
+        "optix_query",
+        "python_postprocess"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact_path": "docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_cpu_python_reference_2026-04-23.json",
+      "baseline": "cpu_python_reference",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "records",
+        "strict_pass",
+        "strict_failures",
+        "status"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact_path": "docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_optix_host_indexed_2026-04-23.json",
+      "baseline": "optix_host_indexed",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "records",
+        "strict_pass",
+        "strict_failures",
+        "status"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact_path": "docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_postgis_when_available_2026-04-23.json",
+      "baseline": "postgis_when_available",
+      "benchmark_scale": null,
+      "command": null,
+      "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "reason": "deferred baseline should not be collected until the corresponding app activation gate is selected for the batch",
+      "required_phases": [
+        "records",
+        "strict_pass",
+        "strict_failures",
+        "status"
+      ],
+      "section": "deferred",
+      "status": "deferred_until_app_gate_active"
+    }
+  ],
+  "boundary": "This is a local collection manifest only. It does not run heavy benchmarks, write valid baseline artifacts, start cloud, or authorize speedup claims.",
+  "date": "2026-04-23",
+  "goal": "Goal838 local RTX baseline collection manifest",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "source_plan_goal": "Goal835 RTX baseline collection plan",
+  "status_counts": {
+    "collector_needed": 4,
+    "deferred_until_app_gate_active": 9,
+    "linux_postgresql_required": 2,
+    "local_command_ready": 6,
+    "optional_dependency_or_reference_required": 2
+  }
+}
