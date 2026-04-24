@@ -51,14 +51,45 @@ class Goal756DbPreparedSessionPerfTest(unittest.TestCase):
         self.assertIn("phase_contract", result)
         self.assertIn("reported_prepare_phases_sec", result)
         self.assertIn("reported_run_phases_sec", result)
+        self.assertIn("reported_run_phase_modes", result)
         self.assertIn("reported_run_phases", result["phase_contract"])
+        self.assertIn("reported_run_phase_modes", result["phase_contract"])
         self.assertEqual(result["prepared_session_output"]["execution_mode"], "prepared_session")
         self.assertIn("sales_risk", result["reported_run_phases_sec"])
+        self.assertIn("sales_risk", result["reported_run_phase_modes"])
         self.assertIn(
             "query_conjunctive_scan_and_materialize_sec",
             result["reported_run_phases_sec"]["sales_risk"],
         )
+        self.assertEqual(result["reported_run_phase_modes"]["sales_risk"]["scan"], "row_materializing")
         self.assertIn("GTX 1070", payload["boundary"])
+
+    def test_phase_mode_helper_recognizes_summary_and_materializing_paths(self) -> None:
+        module = __import__("scripts.goal756_db_prepared_session_perf", fromlist=["_reported_run_phase_modes"])
+        modes = module._reported_run_phase_modes(
+            {
+                "sections": {
+                    "regional_dashboard": {
+                        "run_phases": {
+                            "query_conjunctive_scan_count_sec": 0.1,
+                            "query_grouped_count_summary_sec": 0.2,
+                            "query_grouped_sum_summary_sec": 0.3,
+                        }
+                    },
+                    "sales_risk": {
+                        "run_phases": {
+                            "query_conjunctive_scan_and_materialize_sec": 0.1,
+                            "query_grouped_count_and_materialize_sec": 0.2,
+                            "query_grouped_sum_and_materialize_sec": 0.3,
+                        }
+                    },
+                }
+            }
+        )
+        self.assertEqual(modes["regional_dashboard"]["scan"], "count_summary")
+        self.assertEqual(modes["regional_dashboard"]["grouped_count"], "group_summary")
+        self.assertEqual(modes["regional_dashboard"]["grouped_sum"], "group_summary")
+        self.assertEqual(modes["sales_risk"]["scan"], "row_materializing")
 
     def test_optional_backend_failure_is_recorded_without_strict(self) -> None:
         payload = run_json(

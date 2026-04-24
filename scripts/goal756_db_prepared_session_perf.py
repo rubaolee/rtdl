@@ -108,6 +108,40 @@ def _reported_run_phases(payload: dict[str, Any]) -> dict[str, Any]:
     return phases
 
 
+def _reported_run_phase_modes(payload: dict[str, Any]) -> dict[str, Any]:
+    phase_modes: dict[str, Any] = {}
+    for name, section in payload.get("sections", {}).items():
+        if not isinstance(section, dict):
+            continue
+        run_phases = section.get("run_phases")
+        if not isinstance(run_phases, dict):
+            continue
+        phase_modes[name] = {
+            "scan": (
+                "count_summary"
+                if "query_conjunctive_scan_count_sec" in run_phases
+                else "row_materializing"
+                if "query_conjunctive_scan_and_materialize_sec" in run_phases
+                else "unknown"
+            ),
+            "grouped_count": (
+                "group_summary"
+                if "query_grouped_count_summary_sec" in run_phases
+                else "row_materializing"
+                if "query_grouped_count_and_materialize_sec" in run_phases
+                else "unknown"
+            ),
+            "grouped_sum": (
+                "group_summary"
+                if "query_grouped_sum_summary_sec" in run_phases
+                else "row_materializing"
+                if "query_grouped_sum_and_materialize_sec" in run_phases
+                else "unknown"
+            ),
+        }
+    return phase_modes
+
+
 def _reported_native_db_phases(payload: dict[str, Any]) -> dict[str, Any]:
     phases: dict[str, Any] = {}
     for name, section in payload.get("sections", {}).items():
@@ -154,13 +188,15 @@ def _profile_backend(
         ),
         "reported_prepare_phases_sec": _reported_session_phases(last_payload or {}),
         "reported_run_phases_sec": _reported_run_phases(last_payload or {}),
+        "reported_run_phase_modes": _reported_run_phase_modes(last_payload or {}),
         "reported_native_db_phases_sec": _reported_native_db_phases(last_payload or {}),
         "phase_contract": {
             "one_shot_total": "complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess",
             "prepared_session_prepare_total": "public app prepare_session call including fixture construction and native prepared dataset creation where available",
-            "prepared_session_warm_query": "session.run only: prepared queries plus result materialization and app summary construction",
+            "prepared_session_warm_query": "session.run only: prepared queries plus any required grouped/row output shaping and app summary construction",
             "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON",
-            "reported_run_phases": "scenario-provided per-operation query/materialization and Python summary timers embedded in app JSON",
+            "reported_run_phases": "scenario-provided per-operation query timers embedded in app JSON; grouped compact-summary fast paths use query_*_summary_sec while row paths use query_*_and_materialize_sec",
+            "reported_run_phase_modes": "per-section classification of scan/grouped_count/grouped_sum as count_summary, group_summary, or row_materializing",
             "reported_native_db_phases": "OptiX prepared DB native counters when exported: traversal, candidate bitset copy-back, exact native filtering/grouping, output packing, raw candidate count, and emitted result count",
             "not_yet_split": "backend-native traversal, candidate bitset copy-back, exact native filtering/grouping, and Python object conversion are still grouped inside each per-operation query timer unless the native backend exposes lower-level timers",
         },

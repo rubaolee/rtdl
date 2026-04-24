@@ -104,7 +104,8 @@ def _row_note(app: str) -> str:
     if app == "database_analytics":
         return (
             "DB review stays bounded to prepared compact-summary semantics. "
-            "Warm-query comparison is meaningful, but one-shot totals still include substantial non-query work."
+            "Warm-query comparison is meaningful, but one-shot totals still include substantial non-query work. "
+            "Local Goals850/851 removed grouped row materialization on compact-summary paths; a fresh RTX rerun is still required before that reduction appears in this package."
         )
     if app in {"outlier_detection", "dbscan_clustering"}:
         return (
