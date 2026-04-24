@@ -25,6 +25,7 @@ class Goal886RtxCloudStartPacketTest(unittest.TestCase):
         for app in (
             "service_coverage_gaps",
             "event_hotspot_screening",
+            "road_hazard_screening",
             "segment_polygon_hitcount",
             "segment_polygon_anyhit_rows",
             "hausdorff_distance",

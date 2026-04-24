@@ -171,10 +171,16 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
             ],
             "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
         }
-    if app == "segment_polygon_hitcount":
+    if app in {"road_hazard_screening", "segment_polygon_hitcount"}:
+        if app == "road_hazard_screening":
+            comparable = "strict road-hazard native OptiX summary result on the same copies/output-mode semantics"
+            claim_limit = "experimental native road-hazard summary gate only; not default public app behavior or full GIS/routing speedup"
+        else:
+            comparable = "strict segment/polygon hit-count result on the same dataset and output count semantics"
+            claim_limit = "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup"
         return {
             **common,
-            "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+            "comparable_metric_scope": comparable,
             "required_baselines": [
                 "cpu_python_reference",
                 "optix_host_indexed",
@@ -186,7 +192,7 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
                 "strict_failures",
                 "status",
             ],
-            "claim_limit": "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+            "claim_limit": claim_limit,
         }
     if app == "segment_polygon_anyhit_rows":
         return {
@@ -414,7 +420,7 @@ def build_manifest() -> dict[str, Any]:
         ],
         "excluded_apps": {
             "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
-            "road_hazard_screening": "current default OptiX app path is host-indexed fallback and native mode remains behind strict validation",
+            "road_hazard_screening": "current default OptiX app path is host-indexed fallback; deferred native gate must pass before any promotion",
             "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
             "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
             "polygon_pair_overlap_area_rows": "native-assisted OptiX candidate discovery exists, but exact area refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
@@ -482,6 +488,35 @@ def build_manifest() -> dict[str, Any]:
                 non_claim="not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
             ),
             _deferred_entry(
+                app="road_hazard_screening",
+                app_path="examples/rtdl_road_hazard_screening.py",
+                path_name="road_hazard_native_summary_gate",
+                command=[
+                    python,
+                    "scripts/goal888_road_hazard_native_optix_gate.py",
+                    "--copies",
+                    "20000",
+                    "--output-mode",
+                    "summary",
+                    "--strict",
+                    "--output-json",
+                    "docs/reports/goal888_road_hazard_native_optix_gate_rtx.json",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal888 packages the road-hazard app around the explicit native "
+                    "segment/polygon OptiX mode and compact summary output. It remains "
+                    "deferred until strict RTX validation proves parity."
+                ),
+                activation_gate=(
+                    "Promote only after Goal888 strict mode passes on RTX hardware, "
+                    "the default host-indexed path remains clearly separated, and "
+                    "independent review accepts the artifact."
+                ),
+                claim_scope="native OptiX segment/polygon traversal for compact road-hazard summaries",
+                non_claim="not default public road-hazard behavior and not a full GIS/routing speedup claim",
+            ),
+            _deferred_entry(
                 app="segment_polygon_hitcount",
                 app_path="examples/rtdl_segment_polygon_hitcount.py",
                 path_name="segment_polygon_hitcount_native_experimental",
@@ -516,14 +551,20 @@ def build_manifest() -> dict[str, Any]:
                 path_name="directed_threshold_prepared",
                 command=[
                     python,
-                    "examples/rtdl_hausdorff_distance_app.py",
-                    "--backend",
+                    "scripts/goal887_prepared_decision_phase_profiler.py",
+                    "--scenario",
+                    "hausdorff_threshold",
+                    "--mode",
                     "optix",
-                    "--optix-summary-mode",
-                    "directed_threshold_prepared",
-                    "--hausdorff-threshold",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--radius",
                     "0.4",
-                    "--require-rt-core",
+                    "--skip-validation",
+                    "--output-json",
+                    "docs/reports/goal887_hausdorff_threshold_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
@@ -543,14 +584,20 @@ def build_manifest() -> dict[str, Any]:
                 path_name="candidate_threshold_prepared",
                 command=[
                     python,
-                    "examples/rtdl_ann_candidate_app.py",
-                    "--backend",
+                    "scripts/goal887_prepared_decision_phase_profiler.py",
+                    "--scenario",
+                    "ann_candidate_coverage",
+                    "--mode",
                     "optix",
-                    "--optix-summary-mode",
-                    "candidate_threshold_prepared",
-                    "--candidate-radius",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--radius",
                     "0.2",
-                    "--require-rt-core",
+                    "--skip-validation",
+                    "--output-json",
+                    "docs/reports/goal887_ann_candidate_coverage_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
@@ -570,14 +617,20 @@ def build_manifest() -> dict[str, Any]:
                 path_name="coverage_threshold_prepared",
                 command=[
                     python,
-                    "examples/rtdl_facility_knn_assignment.py",
-                    "--backend",
+                    "scripts/goal887_prepared_decision_phase_profiler.py",
+                    "--scenario",
+                    "facility_service_coverage",
+                    "--mode",
                     "optix",
-                    "--optix-summary-mode",
-                    "coverage_threshold_prepared",
-                    "--service-radius",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--radius",
                     "1.0",
-                    "--require-rt-core",
+                    "--skip-validation",
+                    "--output-json",
+                    "docs/reports/goal887_facility_service_coverage_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
@@ -597,14 +650,20 @@ def build_manifest() -> dict[str, Any]:
                 path_name="node_coverage_prepared",
                 command=[
                     python,
-                    "examples/rtdl_barnes_hut_force_app.py",
-                    "--backend",
+                    "scripts/goal887_prepared_decision_phase_profiler.py",
+                    "--scenario",
+                    "barnes_hut_node_coverage",
+                    "--mode",
                     "optix",
-                    "--optix-summary-mode",
-                    "node_coverage_prepared",
-                    "--node-radius",
+                    "--body-count",
+                    "200000",
+                    "--iterations",
+                    "10",
+                    "--radius",
                     "10.0",
-                    "--require-rt-core",
+                    "--skip-validation",
+                    "--output-json",
+                    "docs/reports/goal887_barnes_hut_node_coverage_rtx.json",
                 ],
                 env={},
                 reason_deferred=(

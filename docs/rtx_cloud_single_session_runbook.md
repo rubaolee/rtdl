@@ -62,6 +62,7 @@ Current deferred targets:
 
 - `service_coverage_gaps`
 - `event_hotspot_screening`
+- `road_hazard_screening`
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
 - `hausdorff_distance`
@@ -81,6 +82,7 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --include-deferred \
   --only service_coverage_gaps \
   --only event_hotspot_screening \
+  --only road_hazard_screening \
   --only segment_polygon_hitcount \
   --only segment_polygon_anyhit_rows \
   --only hausdorff_distance \

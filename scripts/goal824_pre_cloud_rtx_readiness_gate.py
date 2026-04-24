@@ -34,6 +34,7 @@ REQUIRED_EXCLUDED_APPS = {
 REQUIRED_DEFERRED_APPS = {
     "service_coverage_gaps",
     "event_hotspot_screening",
+    "road_hazard_screening",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
     "hausdorff_distance",

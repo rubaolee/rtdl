@@ -144,6 +144,24 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("scripts/goal807_segment_polygon_optix_mode_gate.py", segment["command"])
         self.assertIn("--strict", segment["command"])
         self.assertIn("Goal807 strict mode", segment["activation_gate"])
+        self.assertEqual(segment["benchmark_readiness"], "needs_real_rtx_artifact")
+
+    def test_deferred_road_hazard_entry_uses_goal888_gate(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        road = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "road_hazard_screening"
+        )
+        self.assertIn("scripts/goal888_road_hazard_native_optix_gate.py", road["command"])
+        self.assertIn("--strict", road["command"])
+        self.assertIn("--output-mode", road["command"])
+        self.assertIn("summary", road["command"])
+        self.assertEqual(road["benchmark_readiness"], "needs_real_rtx_artifact")
+        self.assertIn("Goal888 strict mode", road["activation_gate"])
 
     def test_deferred_segment_polygon_anyhit_rows_entry_uses_goal873_gate(self):
         payload = __import__(

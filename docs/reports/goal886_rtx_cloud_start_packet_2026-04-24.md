@@ -19,7 +19,7 @@ goal824_pre_cloud_rtx_readiness_gate: valid=true
 active_runner_dry_run: status=ok, entry_count=5, unique_command_count=4
 deferred_runner_dry_run: status=ok, entry_count=15, unique_command_count=14
 one-shot active dry-run: status=ok
-one-shot deferred dry-run: status=ok, include_deferred=true, only_count=10
+one-shot deferred dry-run: status=ok, include_deferred=true, only_count=11
 ```
 
 ## Pod Requirement
@@ -62,6 +62,7 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --include-deferred \
   --only service_coverage_gaps \
   --only event_hotspot_screening \
+  --only road_hazard_screening \
   --only segment_polygon_hitcount \
   --only segment_polygon_anyhit_rows \
   --only hausdorff_distance \
