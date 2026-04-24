@@ -208,6 +208,8 @@ class PreparedSalesRiskSession:
                 "predicates": query["predicates"],
                 "group_keys": query["group_keys"],
             }
+            compact_count_summary = None
+            compact_sum_summary = None
             if output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
                 risky_scan_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
                     lambda: self._dataset.conjunctive_scan_count(predicates)
@@ -222,16 +224,32 @@ class PreparedSalesRiskSession:
                 risky_scan_count = len(risky_rows)
                 if hasattr(self._dataset, "last_phase_timings"):
                     native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
-            count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
-                lambda: tuple(self._dataset.grouped_count(count_query))
-            )
-            if hasattr(self._dataset, "last_phase_timings"):
-                native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
-            sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
-                lambda: tuple(self._dataset.grouped_sum(query))
-            )
-            if hasattr(self._dataset, "last_phase_timings"):
-                native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
+            if output_mode == "compact_summary" and hasattr(self._dataset, "grouped_count_summary"):
+                compact_count_summary, run_phases["query_grouped_count_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_count_summary(count_query)
+                )
+                count_rows = ()
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count_summary"] = self._dataset.last_phase_timings()
+            else:
+                count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                    lambda: tuple(self._dataset.grouped_count(count_query))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
+            if output_mode == "compact_summary" and hasattr(self._dataset, "grouped_sum_summary"):
+                compact_sum_summary, run_phases["query_grouped_sum_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_sum_summary(query)
+                )
+                sum_rows = ()
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum_summary"] = self._dataset.last_phase_timings()
+            else:
+                sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                    lambda: tuple(self._dataset.grouped_sum(query))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
             prepared_dataset = {
                 "transfer": self._dataset._dataset.transfer,
                 "row_count": self._dataset.row_count,
@@ -247,12 +265,18 @@ class PreparedSalesRiskSession:
             sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
                 lambda: _run_grouped_sum_rows(self.backend, self.grouped_case)
             )
+            compact_count_summary = None
+            compact_sum_summary = None
         postprocess_start = time.perf_counter()
-        region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
-        region_revenue = {
-            str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
-            for row in sum_rows
-        }
+        if output_mode == "compact_summary" and compact_count_summary is not None and compact_sum_summary is not None:
+            region_counts = {str(key): int(value) for key, value in compact_count_summary.items()}
+            region_revenue = {str(key): int(value) for key, value in compact_sum_summary.items()}
+        else:
+            region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
+            region_revenue = {
+                str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
+                for row in sum_rows
+            }
         risky_order_ids = [int(row["row_id"]) for row in risky_rows]
         highest_risk_region = max(region_counts.items(), key=lambda item: (item[1], item[0]))[0]
         run_phases["python_summary_postprocess_sec"] = time.perf_counter() - postprocess_start
@@ -280,8 +304,8 @@ class PreparedSalesRiskSession:
             "summary": summary,
             "row_counts": {
                 "scan": risky_scan_count,
-                "grouped_count": len(count_rows),
-                "grouped_sum": len(sum_rows),
+                "grouped_count": len(count_rows) if count_rows else len(region_counts),
+                "grouped_sum": len(sum_rows) if sum_rows else len(region_revenue),
             },
             "rows": {} if output_mode in {"summary", "compact_summary"} else {
                 "scan": list(risky_rows),
