@@ -341,6 +341,13 @@ int  rtdl_optix_run_segment_polygon_anyhit_rows(
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
+         const RtdlSegment*   segments,  size_t segment_count,
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_point_nearest_segment(
          const RtdlPoint*   points,   size_t point_count,
          const RtdlSegment* segments, size_t segment_count,

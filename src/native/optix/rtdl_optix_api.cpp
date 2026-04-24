@@ -323,6 +323,41 @@ extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
+        const RtdlSegment* segments, size_t segment_count,
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!emitted_count_out || !overflowed_out)
+            throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+        *emitted_count_out = 0;
+        *overflowed_out = 0;
+        if (!rows_out && output_capacity != 0)
+            throw std::runtime_error("rows_out must not be null when output_capacity is nonzero");
+        if (!segments && segment_count != 0)
+            throw std::runtime_error("segments pointer must not be null when segment_count is nonzero");
+        if (!polygons && polygon_count != 0)
+            throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
+        (void)segments;
+        (void)segment_count;
+        (void)polygons;
+        (void)polygon_count;
+        (void)vertices_xy;
+        (void)vertex_xy_count;
+        (void)rows_out;
+        (void)output_capacity;
+        throw std::runtime_error(
+            "native bounded segment_polygon_anyhit_rows emitter is not implemented yet; "
+            "the ABI shape is reserved for future OptiX pair-row emission work");
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_run_point_nearest_segment(
         const RtdlPoint*   points,   size_t point_count,
         const RtdlSegment* segments, size_t segment_count,
