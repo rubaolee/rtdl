@@ -50,7 +50,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
     def test_high_risk_or_non_optix_apps_are_not_benchmark_candidates(self):
         expected = {
             "database_analytics": "needs_interface_tuning",
-            "graph_analytics": "needs_native_kernel_tuning",
+            "graph_analytics": "needs_real_rtx_artifact",
             "service_coverage_gaps": "needs_real_rtx_artifact",
             "event_hotspot_screening": "needs_real_rtx_artifact",
             "facility_knn_assignment": "needs_real_rtx_artifact",
@@ -81,7 +81,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
     def test_goal705_pins_optix_performance_class_for_every_app(self):
         expected = {
             "database_analytics": "python_interface_dominated",
-            "graph_analytics": "host_indexed_fallback",
+            "graph_analytics": "optix_traversal",
             "apple_rt_demo": "not_optix_applicable",
             "service_coverage_gaps": "optix_traversal_prepared_summary",
             "event_hotspot_screening": "optix_traversal_prepared_summary",

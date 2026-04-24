@@ -60,6 +60,7 @@ second.
 
 Current deferred targets:
 
+- `graph_analytics`
 - `service_coverage_gaps`
 - `event_hotspot_screening`
 - `road_hazard_screening`
@@ -80,6 +81,7 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --branch codex/rtx-cloud-run-2026-04-22 \
   --optix-prefix /workspace/vendor/optix-dev-9.0.0 \
   --include-deferred \
+  --only graph_analytics \
   --only service_coverage_gaps \
   --only event_hotspot_screening \
   --only road_hazard_screening \

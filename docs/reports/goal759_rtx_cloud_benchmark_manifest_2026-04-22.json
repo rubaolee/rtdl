@@ -3,6 +3,50 @@
   "date": "2026-04-22",
   "deferred_entries": [
     {
+      "activation_gate": "Promote only after Goal889 strict mode passes on RTX hardware, BFS/triangle-count exclusions remain explicit, and independent review accepts the artifact.",
+      "app": "graph_analytics",
+      "app_path": "examples/rtdl_graph_analytics_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "visibility-edge filtering sub-path only; not BFS, triangle-count, shortest-path, or general graph analytics acceleration",
+        "comparable_metric_scope": "strict graph visibility-edge summary/row result for the same copies/output-mode semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference_visibility_edges",
+          "optix_visibility_anyhit",
+          "embree_visibility_anyhit_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
+      "command": [
+        "python3",
+        "scripts/goal889_graph_visibility_optix_gate.py",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal889_graph_visibility_optix_gate_rtx.json"
+      ],
+      "env": {},
+      "non_claim": "not BFS, triangle-count, shortest-path, graph database, or general graph analytics acceleration",
+      "optix_performance_class": "optix_traversal",
+      "optix_performance_note": "Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal. BFS and triangle_count remain host-indexed fallback and are outside the RT-core claim.",
+      "path_name": "graph_visibility_edges_gate",
+      "reason_deferred": "Goal889 adds a bounded graph visibility-edge sub-path that maps candidate graph edges to RTDL visibility rows and OptiX any-hit traversal. BFS and triangle-count remain outside the claim."
+    },
+    {
       "activation_gate": "Promote only after Goal811 optix mode runs on RTX hardware, phase outputs are reviewed, and the app readiness matrix is updated.",
       "app": "service_coverage_gaps",
       "app_path": "examples/rtdl_service_coverage_gaps.py",
@@ -830,7 +874,7 @@
   ],
   "excluded_apps": {
     "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
-    "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
+    "graph_analytics": "BFS and triangle-count remain host-indexed fallback; deferred visibility-edge gate must pass before any graph RT-core claim",
     "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
     "polygon_pair_overlap_area_rows": "native-assisted OptiX candidate discovery exists, but exact area refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
     "polygon_set_jaccard": "native-assisted OptiX candidate discovery exists, but exact Jaccard refinement is CPU/Python-owned and lacks phase-clean RTX artifact",

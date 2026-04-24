@@ -30,6 +30,7 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
 
         self.assertIn("--include-deferred", text)
         for app in (
+            "graph_analytics",
             "service_coverage_gaps",
             "event_hotspot_screening",
             "road_hazard_screening",

@@ -154,6 +154,23 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
             ],
             "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
         }
+    if app == "graph_analytics":
+        return {
+            **common,
+            "comparable_metric_scope": "strict graph visibility-edge summary/row result for the same copies/output-mode semantics",
+            "required_baselines": [
+                "cpu_python_reference_visibility_edges",
+                "optix_visibility_anyhit",
+                "embree_visibility_anyhit_when_available",
+            ],
+            "required_phases": [
+                "records",
+                "strict_pass",
+                "strict_failures",
+                "status",
+            ],
+            "claim_limit": "visibility-edge filtering sub-path only; not BFS, triangle-count, shortest-path, or general graph analytics acceleration",
+        }
     if app in {"service_coverage_gaps", "event_hotspot_screening"}:
         return {
             **common,
@@ -419,7 +436,7 @@ def build_manifest() -> dict[str, Any]:
             ),
         ],
         "excluded_apps": {
-            "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
+            "graph_analytics": "BFS and triangle-count remain host-indexed fallback; deferred visibility-edge gate must pass before any graph RT-core claim",
             "road_hazard_screening": "current default OptiX app path is host-indexed fallback; deferred native gate must pass before any promotion",
             "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
             "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
@@ -429,6 +446,35 @@ def build_manifest() -> dict[str, Any]:
             "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
         },
         "deferred_entries": [
+            _deferred_entry(
+                app="graph_analytics",
+                app_path="examples/rtdl_graph_analytics_app.py",
+                path_name="graph_visibility_edges_gate",
+                command=[
+                    python,
+                    "scripts/goal889_graph_visibility_optix_gate.py",
+                    "--copies",
+                    "20000",
+                    "--output-mode",
+                    "summary",
+                    "--strict",
+                    "--output-json",
+                    "docs/reports/goal889_graph_visibility_optix_gate_rtx.json",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal889 adds a bounded graph visibility-edge sub-path that maps "
+                    "candidate graph edges to RTDL visibility rows and OptiX any-hit "
+                    "traversal. BFS and triangle-count remain outside the claim."
+                ),
+                activation_gate=(
+                    "Promote only after Goal889 strict mode passes on RTX hardware, "
+                    "BFS/triangle-count exclusions remain explicit, and independent "
+                    "review accepts the artifact."
+                ),
+                claim_scope="OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
+                non_claim="not BFS, triangle-count, shortest-path, graph database, or general graph analytics acceleration",
+            ),
             _deferred_entry(
                 app="service_coverage_gaps",
                 app_path="examples/rtdl_service_coverage_gaps.py",

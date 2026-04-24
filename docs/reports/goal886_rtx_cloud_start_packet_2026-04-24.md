@@ -19,7 +19,7 @@ goal824_pre_cloud_rtx_readiness_gate: valid=true
 active_runner_dry_run: status=ok, entry_count=5, unique_command_count=4
 deferred_runner_dry_run: status=ok, entry_count=15, unique_command_count=14
 one-shot active dry-run: status=ok
-one-shot deferred dry-run: status=ok, include_deferred=true, only_count=11
+one-shot deferred dry-run: status=ok, include_deferred=true, only_count=12
 ```
 
 ## Pod Requirement
@@ -60,6 +60,7 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --branch codex/rtx-cloud-run-2026-04-22 \
   --optix-prefix /workspace/vendor/optix-dev-9.0.0 \
   --include-deferred \
+  --only graph_analytics \
   --only service_coverage_gaps \
   --only event_hotspot_screening \
   --only road_hazard_screening \

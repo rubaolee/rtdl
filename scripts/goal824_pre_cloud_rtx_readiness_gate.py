@@ -32,6 +32,7 @@ REQUIRED_EXCLUDED_APPS = {
     "hiprt_ray_triangle_hitcount",
 }
 REQUIRED_DEFERRED_APPS = {
+    "graph_analytics",
     "service_coverage_gaps",
     "event_hotspot_screening",
     "road_hazard_screening",

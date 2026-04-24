@@ -23,6 +23,7 @@ class Goal886RtxCloudStartPacketTest(unittest.TestCase):
     def test_packet_covers_all_deferred_targets(self) -> None:
         text = PACKET.read_text(encoding="utf-8")
         for app in (
+            "graph_analytics",
             "service_coverage_gaps",
             "event_hotspot_screening",
             "road_hazard_screening",

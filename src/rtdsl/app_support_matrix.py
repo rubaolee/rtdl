@@ -334,8 +334,8 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "graph_analytics": OptixAppPerformanceSupport(
         app="graph_analytics",
-        performance_class=HOST_INDEXED_FALLBACK,
-        note="Current OptiX-facing BFS and triangle routines are host-indexed correctness paths, not dominant OptiX ray traversal or RT-core acceleration paths.",
+        performance_class=OPTIX_TRAVERSAL,
+        note="Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal. BFS and triangle_count remain host-indexed fallback and are outside the RT-core claim.",
     ),
     "apple_rt_demo": OptixAppPerformanceSupport(
         app="apple_rt_demo",
@@ -449,11 +449,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "graph_analytics": _readiness(
         "graph_analytics",
-        NEEDS_NATIVE_KERNEL_TUNING,
-        "Goal707",
-        "BFS and triangle-count must run native GPU/OptiX traversal or be explicitly excluded from RTX app benchmarking",
-        "current OptiX-facing graph paths are host-indexed correctness paths",
-        "no RTX graph acceleration claim today",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal889",
+        "visibility_edges mode must pass strict RTX validation against CPU reference before any graph RT-core claim",
+        "BFS and triangle-count remain host-indexed fallback; only visibility_edges has a local RT-core gate",
+        "graph visibility-edge filtering sub-path only; no BFS, triangle-count, or general graph analytics speedup claim",
     ),
     "apple_rt_demo": _readiness(
         "apple_rt_demo",
@@ -612,10 +612,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "graph_analytics": _maturity(
         "graph_analytics",
-        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets.",
-        "No paid graph RTX benchmark until a native traversal design and local correctness gate exist.",
+        "Use visibility_edges as the bounded graph-to-RT lowering; keep BFS and triangle-count excluded until separate native traversal designs exist.",
+        "Cloud only in the deferred Goal889 visibility-edge gate; no BFS or triangle-count RT-core claim.",
     ),
     "apple_rt_demo": _maturity(
         "apple_rt_demo",

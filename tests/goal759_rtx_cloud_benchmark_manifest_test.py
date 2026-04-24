@@ -195,6 +195,24 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
                 self.assertIn("baseline_review_contract", deferred[app])
                 self.assertIn("prepared compact summary", deferred[app]["baseline_review_contract"]["claim_limit"])
 
+    def test_deferred_graph_entry_uses_goal889_gate(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        graph = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "graph_analytics"
+        )
+        self.assertIn("scripts/goal889_graph_visibility_optix_gate.py", graph["command"])
+        self.assertIn("--strict", graph["command"])
+        self.assertIn("--output-mode", graph["command"])
+        self.assertIn("summary", graph["command"])
+        self.assertEqual(graph["benchmark_readiness"], "needs_real_rtx_artifact")
+        self.assertIn("visibility-edge", graph["claim_scope"])
+        self.assertIn("not BFS", graph["non_claim"])
+
     def test_deferred_polygon_overlap_entries_use_goal877_profiler(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",

@@ -16,17 +16,88 @@ import rtdsl as rt
 
 
 BACKENDS = ("cpu_python_reference", "cpu", "embree", "optix", "vulkan")
-SCENARIOS = ("bfs", "triangle_count", "all")
+SCENARIOS = ("bfs", "triangle_count", "visibility_edges", "all")
 
 
-def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+def _enforce_rt_core_requirement(backend: str, scenario: str, require_rt_core: bool) -> None:
     if not require_rt_core:
         return
     if backend != "optix":
         raise ValueError("--require-rt-core is only meaningful with --backend optix")
-    raise RuntimeError(
-        "graph_analytics OptiX path is host-indexed fallback today, not NVIDIA RT-core traversal"
+    if scenario != "visibility_edges":
+        raise RuntimeError(
+            "graph_analytics RT-core path is limited to --scenario visibility_edges; "
+            "BFS and triangle_count remain host-indexed fallback today"
+        )
+
+
+def make_visibility_edge_case(copies: int = 1) -> dict[str, tuple[object, ...]]:
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    observers: list[rt.Point] = []
+    targets: list[rt.Point] = []
+    blockers: list[rt.Triangle] = []
+    for copy_index in range(copies):
+        offset = float(copy_index * 20)
+        id_offset = copy_index * 100
+        observers.extend(
+            (
+                rt.Point(id=id_offset + 1, x=0.0 + offset, y=0.0),
+                rt.Point(id=id_offset + 2, x=0.0 + offset, y=2.0),
+            )
+        )
+        targets.extend(
+            (
+                rt.Point(id=id_offset + 10, x=10.0 + offset, y=0.0),
+                rt.Point(id=id_offset + 11, x=10.0 + offset, y=2.0),
+            )
+        )
+        blockers.append(
+            rt.Triangle(
+                id=id_offset + 100,
+                x0=5.0 + offset,
+                y0=-1.0,
+                x1=5.0 + offset,
+                y1=1.0,
+                x2=6.0 + offset,
+                y2=0.0,
+            )
+        )
+    return {"observers": tuple(observers), "targets": tuple(targets), "blockers": tuple(blockers)}
+
+
+def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[str, Any]:
+    case = make_visibility_edge_case(copies)
+    visibility_backend = "cpu" if backend == "cpu_python_reference" else backend
+    rows = rt.visibility_rows(
+        case["observers"],
+        case["targets"],
+        case["blockers"],
+        backend=visibility_backend,
     )
+    visible_count = sum(1 for row in rows if int(row["visible"]) == 1)
+    blocked_count = len(rows) - visible_count
+    return {
+        "app": "graph_visibility_edges",
+        "backend": backend,
+        "copies": copies,
+        "output_mode": output_mode,
+        "observer_count": len(case["observers"]),
+        "target_count": len(case["targets"]),
+        "blocker_count": len(case["blockers"]),
+        "row_count": len(rows),
+        "rows": rows if output_mode == "rows" else [],
+        "summary": {
+            "visible_edge_count": visible_count,
+            "blocked_edge_count": blocked_count,
+        },
+        "rt_core_accelerated": backend == "optix",
+        "boundary": (
+            "Graph visibility_edges maps candidate graph edges to RTDL visibility "
+            "rays and uses ray/triangle any-hit traversal. It is not BFS, "
+            "triangle-count, shortest path, or general graph database acceleration."
+        ),
+    }
 
 
 def run_app(
@@ -45,13 +116,15 @@ def run_app(
         raise ValueError("copies must be positive")
     if output_mode not in {"rows", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
-    _enforce_rt_core_requirement(backend, require_rt_core)
+    _enforce_rt_core_requirement(backend, scenario, require_rt_core)
 
     sections: dict[str, Any] = {}
     if scenario in {"bfs", "all"}:
         sections["bfs"] = rtdl_graph_bfs.run_backend(backend, copies=copies, output_mode=output_mode)
     if scenario in {"triangle_count", "all"}:
         sections["triangle_count"] = rtdl_graph_triangle_count.run_backend(backend, copies=copies, output_mode=output_mode)
+    if scenario in {"visibility_edges", "all"}:
+        sections["visibility_edges"] = _run_visibility_edges(backend, copies=copies, output_mode=output_mode)
 
     return {
         "app": "graph_analytics",
@@ -64,6 +137,7 @@ def run_app(
             "application graph data",
             "bounded RTDL graph kernels",
             "BFS discovery rows and triangle rows",
+            "visibility edge rows for the RT-core sub-path",
             "Python-owned graph analytics summary JSON",
         ],
         "unifies": [
@@ -75,7 +149,12 @@ def run_app(
             "note": rt.optix_app_performance_support("graph_analytics").note,
         },
         "rt_core_accelerated": False,
-        "honesty_boundary": "Unified app over bounded v0.6.1 graph kernels; not a full graph database or distributed graph analytics system.",
+        "honesty_boundary": (
+            "Unified app over bounded graph kernels. Only visibility_edges is a "
+            "ray/triangle any-hit RT-core candidate; BFS and triangle_count remain "
+            "host-indexed fallback and this is not a full graph database or "
+            "distributed graph analytics system."
+        ),
     }
 
 

@@ -1,0 +1,76 @@
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from examples import rtdl_graph_analytics_app as graph_app
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "goal889_graph_visibility_optix_gate.py"
+
+
+class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
+    def test_graph_app_visibility_edges_cpu_summary(self) -> None:
+        payload = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
+        section = payload["sections"]["visibility_edges"]
+        self.assertEqual(section["row_count"], 4)
+        self.assertIn("visible_edge_count", section["summary"])
+        self.assertFalse(payload["rt_core_accelerated"])
+        self.assertIn("Only visibility_edges", payload["honesty_boundary"])
+
+    def test_require_rt_core_all_still_rejects_bfs_triangle_count(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "limited to --scenario visibility_edges"):
+            graph_app.run_app("optix", "all", require_rt_core=True)
+
+    def test_non_strict_gate_records_missing_optix_without_failing(self) -> None:
+        from scripts import goal889_graph_visibility_optix_gate as goal889
+
+        cpu = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
+        with mock.patch.object(goal889.graph_app, "run_app", side_effect=[cpu, RuntimeError("no optix")]):
+            payload = goal889.run_gate(copies=1, output_mode="summary", strict=False)
+        self.assertEqual(payload["status"], "non_strict_recorded_gaps")
+        self.assertFalse(payload["strict_pass"])
+        self.assertIn("optix_visibility_anyhit did not run", payload["strict_failures"])
+
+    def test_strict_passes_when_optix_matches_cpu_digest(self) -> None:
+        from scripts import goal889_graph_visibility_optix_gate as goal889
+
+        cpu = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
+        with mock.patch.object(goal889.graph_app, "run_app", side_effect=[cpu, cpu]):
+            payload = goal889.run_gate(copies=1, output_mode="summary", strict=True)
+        self.assertEqual(payload["status"], "pass")
+        self.assertTrue(payload["records"][1]["parity_vs_cpu_python_reference"])
+
+    def test_cli_writes_non_strict_json(self) -> None:
+        with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
+            output = Path(tmpdir) / "graph.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--copies",
+                    "1",
+                    "--output-mode",
+                    "summary",
+                    "--output-json",
+                    str(output.relative_to(ROOT)),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            summary = json.loads(completed.stdout)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(summary["output_json"], str(output.relative_to(ROOT)))
+            self.assertIn(payload["status"], {"pass", "non_strict_recorded_gaps"})
+            self.assertIn("cloud_claim_contract", payload)
+
+
+if __name__ == "__main__":
+    unittest.main()

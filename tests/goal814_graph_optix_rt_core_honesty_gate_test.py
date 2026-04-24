@@ -13,26 +13,26 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
-    def test_graph_app_metadata_remains_host_indexed_fallback(self) -> None:
+    def test_graph_app_metadata_records_visibility_only_rt_path(self) -> None:
         self.assertEqual(
             rt.app_engine_support("graph_analytics", "optix").status,
             "direct_cli_compatibility_fallback",
         )
         self.assertEqual(
             rt.optix_app_performance_support("graph_analytics").performance_class,
-            "host_indexed_fallback",
+            "optix_traversal",
         )
         self.assertEqual(
             rt.optix_app_benchmark_readiness("graph_analytics").status,
-            "needs_native_kernel_tuning",
+            "needs_real_rtx_artifact",
         )
         self.assertEqual(
             rt.rt_core_app_maturity("graph_analytics").current_status,
-            "needs_rt_core_redesign",
+            "rt_core_partial_ready",
         )
 
     def test_graph_app_require_rt_core_fails_before_running_optix(self) -> None:
-        with self.assertRaisesRegex(RuntimeError, "host-indexed fallback"):
+        with self.assertRaisesRegex(RuntimeError, "limited to --scenario visibility_edges"):
             rtdl_graph_analytics_app.run_app("optix", "all", require_rt_core=True)
 
     def test_component_apps_require_rt_core_fail_before_running_optix(self) -> None:
@@ -55,6 +55,17 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertFalse(payload["rt_core_accelerated"])
         self.assertEqual(payload["sections"]["bfs"]["summary"]["discovered_edge_count"], 4)
         self.assertEqual(payload["sections"]["triangle_count"]["summary"]["triangle_count"], 2)
+        self.assertEqual(payload["sections"]["visibility_edges"]["summary"]["visible_edge_count"], 7)
+
+    def test_visibility_edges_is_the_only_graph_rt_core_candidate(self) -> None:
+        payload = rtdl_graph_analytics_app.run_app(
+            "cpu_python_reference",
+            "visibility_edges",
+            output_mode="summary",
+        )
+        self.assertIn("visibility_edges", payload["sections"])
+        self.assertEqual(payload["sections"]["visibility_edges"]["row_count"], 4)
+        self.assertIn("Only visibility_edges", payload["honesty_boundary"])
 
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
         result = subprocess.run(
@@ -72,7 +83,7 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
             check=False,
         )
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("host-indexed fallback", result.stderr)
+        self.assertIn("limited to --scenario visibility_edges", result.stderr)
 
 
 if __name__ == "__main__":
