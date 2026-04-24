@@ -72,6 +72,14 @@ def _run_native_assisted(
         candidate_pairs = _positive_candidate_pairs_optix(left, right)
     else:
         raise ValueError("candidate_backend must be 'embree' or 'optix'")
+    return _exact_jaccard_rows_for_candidates(left, right, candidate_pairs), candidate_pairs
+
+
+def _exact_jaccard_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+):
     left_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in left}
     right_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in right}
     left_cells = _polygon_set_unit_cells(left)
@@ -92,7 +100,7 @@ def _run_native_assisted(
             "jaccard_similarity": 0.0 if union_area == 0 else intersection_area / union_area,
         },
     )
-    return rows, candidate_pairs
+    return rows
 
 
 def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):

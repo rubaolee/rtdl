@@ -181,6 +181,100 @@
       "optix_performance_note": "Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. Compact flags/counts can request native hit-count mode, and the native bounded pair-row emitter now exists as a deferred Goal873 strict RTX gate rather than default public behavior.",
       "path_name": "segment_polygon_anyhit_rows_native_bounded_gate",
       "reason_deferred": "Goal872 implements a native bounded device-side pair-row emitter, and Goal873 adds the strict gate. The public rows path remains host-indexed until a real RTX strict artifact proves CPU row-digest parity and no output overflow."
+    },
+    {
+      "activation_gate": "Promote only after Goal877 optix mode passes on RTX hardware, phases are reviewed, and top-level claims stay limited to candidate discovery.",
+      "app": "polygon_pair_overlap_area_rows",
+      "app_path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery path only; exact area/Jaccard refinement remains CPU/Python",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus CPU exact area refinement",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_interface_tuning",
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "pair_overlap",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal877_pair_overlap_phase_rtx.json"
+      ],
+      "env": {},
+      "non_claim": "not a fully native polygon-area kernel and not a full app RTX speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then CPU/Python exact grid-cell area refinement. This is real traversal-assisted filtering, not a fully native polygon-area kernel.",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "reason_deferred": "Goal876 exposes OptiX native-assisted candidate discovery, and Goal877 adds phase separation. It remains deferred until a real RTX artifact proves candidate-discovery timing, CPU refinement timing, and parity."
+    },
+    {
+      "activation_gate": "Promote only after Goal877 optix mode passes on RTX hardware, phases are reviewed, and top-level claims stay limited to candidate discovery.",
+      "app": "polygon_set_jaccard",
+      "app_path": "examples/rtdl_polygon_set_jaccard.py",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery path only; exact area/Jaccard refinement remains CPU/Python",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus CPU exact Jaccard refinement",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_interface_tuning",
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "jaccard",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal877_jaccard_phase_rtx.json"
+      ],
+      "env": {},
+      "non_claim": "not a fully native Jaccard kernel and not a full app RTX speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then CPU/Python exact grid-cell set-area/Jaccard refinement. This is real traversal-assisted filtering, not a fully native Jaccard kernel.",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "reason_deferred": "Goal876 exposes OptiX native-assisted candidate discovery, and Goal877 adds phase separation. It remains deferred until a real RTX artifact proves candidate-discovery timing, CPU refinement timing, and parity."
     }
   ],
   "entries": [

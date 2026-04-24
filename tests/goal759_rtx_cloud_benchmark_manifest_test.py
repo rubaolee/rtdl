@@ -170,6 +170,22 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
                 self.assertIn("baseline_review_contract", deferred[app])
                 self.assertIn("prepared compact summary", deferred[app]["baseline_review_contract"]["claim_limit"])
 
+    def test_deferred_polygon_overlap_entries_use_goal877_profiler(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        deferred = {entry["app"]: entry for entry in payload["deferred_entries"]}
+        for app in ("polygon_pair_overlap_area_rows", "polygon_set_jaccard"):
+            with self.subTest(app=app):
+                entry = deferred[app]
+                self.assertIn("scripts/goal877_polygon_overlap_optix_phase_profiler.py", entry["command"])
+                self.assertIn("--mode", entry["command"])
+                self.assertIn("optix", entry["command"])
+                self.assertIn("candidate discovery", entry["claim_scope"])
+                self.assertIn("cpu_exact_refinement_sec", entry["baseline_review_contract"]["required_phases"])
+                self.assertIn("not a full app RTX speedup claim", entry["non_claim"])
+
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(
             [sys.executable, str(SCRIPT)],
