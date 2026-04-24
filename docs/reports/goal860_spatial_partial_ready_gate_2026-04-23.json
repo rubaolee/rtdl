@@ -1,0 +1,91 @@
+{
+  "boundary": "This gate is for the two spatial prepared-summary apps only. It requires same-semantics local baselines before the apps can move toward active RTX review, and it still requires a real OptiX phase artifact before any promotion or claim review.",
+  "date": "2026-04-23",
+  "goal": "Goal860 spatial partial-ready gate",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "required_invalid_artifact_count": 0,
+  "required_missing_artifact_count": 0,
+  "required_valid_artifact_count": 4,
+  "row_count": 2,
+  "rows": [
+    {
+      "app": "service_coverage_gaps",
+      "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+      "optional_checks": [
+        {
+          "baseline": "scipy_baseline_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "path_name": "prepared_gap_summary",
+      "required_checks": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "covered_phase_count": 4,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json",
+          "repeated_runs": 3,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "covered_phase_count": 4,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json",
+          "repeated_runs": 3,
+          "status": "valid"
+        }
+      ],
+      "row_status": "needs_real_rtx_artifact",
+      "rtx_artifact": {
+        "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal811_service_coverage_rtx.json",
+        "reason": "real RTX phase artifact has not been collected yet",
+        "status": "missing"
+      }
+    },
+    {
+      "app": "event_hotspot_screening",
+      "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+      "optional_checks": [
+        {
+          "baseline": "scipy_baseline_when_available",
+          "errors": [
+            "artifact file is missing"
+          ],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "path_name": "prepared_count_summary",
+      "required_checks": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "covered_phase_count": 4,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json",
+          "repeated_runs": 3,
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "covered_phase_count": 4,
+          "errors": [],
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_embree_summary_path_2026-04-23.json",
+          "repeated_runs": 3,
+          "status": "valid"
+        }
+      ],
+      "row_status": "needs_real_rtx_artifact",
+      "rtx_artifact": {
+        "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal811_event_hotspot_rtx.json",
+        "reason": "real RTX phase artifact has not been collected yet",
+        "status": "missing"
+      }
+    }
+  ],
+  "status": "needs_real_rtx_artifact"
+}
