@@ -1304,6 +1304,32 @@ static void run_seg_poly_anyhit_rows_optix_host_indexed(
     *row_count_out = out_rows.size();
 }
 
+static void run_seg_poly_anyhit_rows_optix_native_bounded(
+        const RtdlSegment* segments, size_t segment_count,
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out)
+{
+    if (!emitted_count_out || !overflowed_out) {
+        throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+    }
+    *emitted_count_out = 0;
+    *overflowed_out = 0;
+    if (segment_count == 0 || polygon_count == 0) {
+        return;
+    }
+    (void)segments;
+    (void)polygons;
+    (void)vertices_xy;
+    (void)vertex_xy_count;
+    (void)rows_out;
+    (void)output_capacity;
+    throw std::runtime_error(
+        "native bounded segment_polygon_anyhit_rows emitter is not implemented yet; "
+        "the bounded ABI contract is in place, but OptiX pair-row emission is still pending");
+}
+
 static void run_bfs_expand_optix_host_indexed(
         const uint32_t* row_offsets, size_t row_offset_count,
         const uint32_t* column_indices, size_t column_index_count,

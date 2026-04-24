@@ -344,17 +344,12 @@ extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
             throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
         if (!vertices_xy && vertex_xy_count != 0)
             throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
-        (void)segments;
-        (void)segment_count;
-        (void)polygons;
-        (void)polygon_count;
-        (void)vertices_xy;
-        (void)vertex_xy_count;
-        (void)rows_out;
-        (void)output_capacity;
-        throw std::runtime_error(
-            "native bounded segment_polygon_anyhit_rows emitter is not implemented yet; "
-            "the ABI shape is reserved for future OptiX pair-row emission work");
+        run_seg_poly_anyhit_rows_optix_native_bounded(
+            segments, segment_count,
+            polygons, polygon_count,
+            vertices_xy, vertex_xy_count,
+            rows_out, output_capacity,
+            emitted_count_out, overflowed_out);
     }, error_out, error_size);
 }
 

@@ -1,0 +1,24 @@
+{
+  "boundary": "This goal moves the bounded rows contract into a named workload-layer helper and gives empty inputs correct zero-row behavior. It still does not implement native OptiX pair-row emission or authorize readiness.",
+  "current_behavior": {
+    "empty_input": "success_zero_rows",
+    "non_empty_input": "explicit_not_implemented_until_native_emitter_exists",
+    "public_rows_path": "unchanged_host_indexed"
+  },
+  "date": "2026-04-24",
+  "evidence": {
+    "api_delegates_to_helper": true,
+    "empty_input_success_path_present": true,
+    "helper_present": true,
+    "not_implemented_boundary_present": true,
+    "outputs_zeroed_before_work": true,
+    "public_rows_path_still_host_indexed": true
+  },
+  "goal": "Goal871 native pair-row bounded helper packet",
+  "helper": "run_seg_poly_anyhit_rows_optix_native_bounded",
+  "recommended_status": "bounded_helper_added",
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "workloads_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_workloads.cpp"
+  }
+}
