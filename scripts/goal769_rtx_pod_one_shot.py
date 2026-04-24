@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 DEFAULT_BRANCH = "codex/rtx-cloud-run-2026-04-22"
 DEFAULT_OPTIX_PREFIX = Path.home() / "vendor" / "optix-dev-9.0.0"
 DEFAULT_OPTIX_TAG = "v9.0.0"
-DATE = "2026-04-23"
+DATE = time.strftime("%Y-%m-%d")
 
 from scripts.goal759_rtx_cloud_benchmark_manifest import build_manifest
 
