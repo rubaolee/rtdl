@@ -1,0 +1,39 @@
+{
+  "acceptance_conditions": [
+    "A public OptiX rows ABI exists that no longer dispatches to the host-indexed helper.",
+    "The native rows implementation is backed by the custom-AABB traversal foundation, not a disguised CPU loop.",
+    "A local gate proves exact row-digest parity against the CPU reference.",
+    "A real OptiX artifact exists before any RT-core readiness or RTX claim review."
+  ],
+  "app": "segment_polygon_anyhit_rows",
+  "boundary": "This packet is implementation-facing only. It does not authorize promotion of rows mode. Its purpose is to turn the current blocker into a concrete engineering plan tied to the existing native hit-count foundation.",
+  "current_blocker": "variable_length_native_pair_output_missing",
+  "current_truth": {
+    "existing_native_output_shape": "fixed_one_row_per_segment",
+    "native_hitcount_foundation": "present",
+    "public_rows_execution": "host_indexed",
+    "rows_output_shape": "variable_length_pair_rows"
+  },
+  "date": "2026-04-23",
+  "goal": "Goal869 native pair-row emitter implementation packet",
+  "implementation_plan": [
+    "Reuse the existing native segment-polygon custom-AABB traversal foundation rather than creating a second unrelated geometry encoding.",
+    "Add a bounded native pair-row emission contract for variable-length output instead of the current fixed one-row-per-segment output buffer.",
+    "Choose and document an overflow-safe strategy before promotion: either a two-pass count-then-emit contract or an explicit bounded-capacity plus overflow-status contract.",
+    "Only after the native rows ABI exists should the public rows path stop calling the host-indexed helper and move into a strict correctness/performance gate."
+  ],
+  "mode": "rows",
+  "recommended_status": "implementation_packet_ready",
+  "source_evidence": {
+    "fixed_size_hitcount_output_present": true,
+    "native_hitcount_pipeline_present": true,
+    "native_rows_impl_present": false,
+    "public_rows_abi_present": true,
+    "rows_abi_calls_host_indexed": true
+  },
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "prelude_h": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_prelude.h",
+    "workloads_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_workloads.cpp"
+  }
+}
