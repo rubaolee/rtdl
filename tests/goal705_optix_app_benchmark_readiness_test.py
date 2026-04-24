@@ -59,7 +59,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "polygon_pair_overlap_area_rows": "needs_interface_tuning",
             "polygon_set_jaccard": "needs_interface_tuning",
             "hausdorff_distance": "needs_real_rtx_artifact",
-            "ann_candidate_search": "exclude_from_rtx_app_benchmark",
+            "ann_candidate_search": "needs_real_rtx_artifact",
             "barnes_hut_force_app": "exclude_from_rtx_app_benchmark",
             "apple_rt_demo": "exclude_from_rtx_app_benchmark",
             "hiprt_ray_triangle_hitcount": "exclude_from_rtx_app_benchmark",
@@ -91,7 +91,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "polygon_pair_overlap_area_rows": "python_interface_dominated",
             "polygon_set_jaccard": "python_interface_dominated",
             "hausdorff_distance": "optix_traversal_prepared_summary",
-            "ann_candidate_search": "cuda_through_optix",
+            "ann_candidate_search": "optix_traversal_prepared_summary",
             "outlier_detection": "optix_traversal_prepared_summary",
             "dbscan_clustering": "optix_traversal_prepared_summary",
             "robot_collision_screening": "optix_traversal",
@@ -111,6 +111,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "service_coverage_gaps": "gap_summary_prepared mode uses OptiX traversal",
             "event_hotspot_screening": "count_summary_prepared mode uses OptiX traversal",
             "hausdorff_distance": "directed_threshold_prepared mode uses OptiX traversal",
+            "ann_candidate_search": "candidate_threshold_prepared mode uses OptiX traversal",
         }
         non_excluded_prepared_summary_apps = {
             app

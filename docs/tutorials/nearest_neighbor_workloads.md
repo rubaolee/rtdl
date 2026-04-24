@@ -216,11 +216,13 @@ app on the measured Linux host, but mature nearest-neighbor libraries such as
 SciPy `cKDTree` and FAISS `IndexFlatL2` remain faster for exact 2D 1-NN
 Hausdorff distance in that evidence.
 
-The current Hausdorff and ANN app OptiX paths are not NVIDIA RT-core claims.
-They are CUDA-through-OptiX/compatibility paths until the app is rewritten
-around a strict traversal primitive that computes the needed nearest-neighbor
-or candidate-ranking result. Claim-sensitive scripts using `--require-rt-core`
-reject these apps today.
+The current exact Hausdorff and ANN ranking OptiX paths are not NVIDIA RT-core
+claims. Hausdorff now has an explicit `directed_threshold_prepared` decision
+mode, and ANN candidate search now has an explicit
+`candidate_threshold_prepared` candidate-coverage decision mode. Those bounded
+decision modes use prepared fixed-radius traversal; they do not compute exact
+nearest-neighbor ranking or authorize whole-app speedup claims. Claim-sensitive
+scripts using `--require-rt-core` still reject the default row/ranking modes.
 
 ---
 

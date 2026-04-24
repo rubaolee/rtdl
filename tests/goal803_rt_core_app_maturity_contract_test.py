@@ -38,6 +38,7 @@ class Goal803RtCoreAppMaturityContractTest(unittest.TestCase):
         }
         self.assertIn("service_coverage_gaps", partial)
         self.assertIn("event_hotspot_screening", partial)
+        self.assertIn("ann_candidate_search", partial)
 
     def test_every_general_app_targets_rt_core_or_is_engine_specific(self) -> None:
         for app, row in rt.rt_core_app_maturity_matrix().items():

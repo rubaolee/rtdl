@@ -133,8 +133,11 @@ Current v0.8 app example boundary:
   `--output-mode rerank_summary` measures the RTDL candidate-subset reranking
   slice without exact full-set quality comparison or heavy row output;
   `quality_summary` preserves compact recall/distance metrics but remains
-  Python exact-comparison dominated. This is not a full ANN index and it is
-  not an external ANN-baseline speedup
+  Python exact-comparison dominated. The optional OptiX
+  `--optix-summary-mode candidate_threshold_prepared` path answers whether
+  every query has at least one Python-selected candidate within a radius using
+  prepared fixed-radius traversal; it is not a ranking speedup. This is not a
+  full ANN index and it is not an external ANN-baseline speedup
   claim
 - `rtdl_outlier_detection_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, `vulkan`, and optional `scipy`; RTDL emits fixed-radius

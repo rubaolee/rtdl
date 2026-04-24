@@ -389,8 +389,8 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "ann_candidate_search": OptixAppPerformanceSupport(
         app="ann_candidate_search",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Uses KNN rows through CUDA-style kernels in the OptiX backend library; recall metrics remain app/Python work.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.",
     ),
     "outlier_detection": OptixAppPerformanceSupport(
         app="outlier_detection",
@@ -537,11 +537,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "ann_candidate_search": _readiness(
         "ann_candidate_search",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "Goal709",
-        "must be benchmarked against ANN/KNN baselines as GPU compute unless a true traversal design is implemented",
-        "current OptiX path is CUDA-through-OptiX KNN rows",
-        "GPU-compute comparison only; no RT-core acceleration claim",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal880",
+        "candidate_threshold_prepared decision mode needs RTX phase artifact and same-semantics threshold-decision baselines before any claim",
+        "candidate reranking remains CUDA-through-OptiX KNN rows; only the threshold decision sub-path is traversal-backed",
+        "prepared ANN candidate-coverage decision sub-path only; no full ANN index or ranking speedup claim",
     ),
     "outlier_detection": _readiness(
         "outlier_detection",
@@ -689,10 +689,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "ann_candidate_search": _maturity(
         "ann_candidate_search",
-        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Redesign candidate search around a true RT traversal primitive or keep it as GPU-compute/re-ranking evidence.",
-        "No RT-core cloud claim until a true traversal design exists.",
+        "Use candidate_threshold_prepared for traversal-backed candidate-coverage decisions; candidate-subset KNN ranking remains outside the RT-core claim until a native ranking design exists.",
+        "Cloud only after the candidate-threshold profiler and baselines are packaged; no full ANN or ranking RT-core claim.",
     ),
     "outlier_detection": _maturity(
         "outlier_detection",
