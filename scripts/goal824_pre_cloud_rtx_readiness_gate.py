@@ -183,9 +183,11 @@ def run_gate() -> dict[str, Any]:
         "invalid_checks": invalid,
         "checks": checks,
         "next_cloud_policy": (
-            "Start one RTX cloud pod only after this gate is valid. Run the active "
-            "Goal759/Goal761 batch first, optionally include deferred entries only "
-            "after their activation gates are met, collect artifacts, then shut down."
+            "Start one RTX cloud pod only after this gate is valid. Run one full "
+            "Goal769 pod batch with --include-deferred so active entries and "
+            "deferred readiness gates execute in the same paid pod session, collect "
+            "the artifact bundle, then shut down. Use --only only for same-pod "
+            "targeted retry after a deferred gate fails."
         ),
         "boundary": "Local readiness only; does not start cloud and does not authorize speedup claims.",
     }
