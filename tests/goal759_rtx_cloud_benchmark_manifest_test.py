@@ -211,7 +211,10 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("summary", graph["command"])
         self.assertEqual(graph["benchmark_readiness"], "needs_real_rtx_artifact")
         self.assertIn("visibility-edge", graph["claim_scope"])
-        self.assertIn("not BFS", graph["non_claim"])
+        self.assertIn("native OptiX graph-ray", graph["claim_scope"])
+        self.assertIn("cpu_python_reference_bfs", graph["baseline_review_contract"]["required_baselines"])
+        self.assertIn("optix_native_graph_ray_triangle_count", graph["baseline_review_contract"]["required_baselines"])
+        self.assertIn("not shortest-path", graph["non_claim"])
 
     def test_deferred_polygon_overlap_entries_use_goal877_profiler(self):
         payload = __import__(

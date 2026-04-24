@@ -169,6 +169,7 @@ struct GraphBfsExpandQueryState {
 
 struct GraphTriangleProbeQueryState {
   const std::vector<GraphEdgePoint>* edge_points;
+  uint32_t query_vertex;
   std::vector<uint32_t>* neighbor_marks;
   uint32_t mark;
   std::vector<uint32_t>* neighbors;
@@ -725,6 +726,41 @@ void polygon_intersect_filter(const RTCFilterFunctionNArguments* args) {
   const auto* hit = reinterpret_cast<const RTCHit*>(args->hit);
   state->candidate_polygon_indices->insert(hit->primID);
   args->valid[0] = 0;
+}
+
+void graph_edge_point_intersect(const RTCIntersectFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
+    return;
+  }
+  auto* data = static_cast<GraphEdgePointSceneData*>(args->geometryUserPtr);
+  const GraphEdgePoint& edge_point = (*data->points)[args->primID];
+  if (g_query_kind == QueryKind::kGraphBfsExpand) {
+    auto* state = static_cast<GraphBfsExpandQueryState*>(g_query_state);
+    if (edge_point.src_vertex != state->frontier_vertex->vertex_id) {
+      return;
+    }
+    if ((*state->visited_flags)[edge_point.dst_vertex] != 0u) {
+      return;
+    }
+    if (state->dedupe != 0u && (*state->discovered_flags)[edge_point.dst_vertex] != 0u) {
+      return;
+    }
+    (*state->discovered_flags)[edge_point.dst_vertex] = 1u;
+    state->rows->push_back(
+        {state->frontier_vertex->vertex_id, edge_point.dst_vertex, state->frontier_vertex->level + 1u});
+    return;
+  }
+  if (g_query_kind == QueryKind::kGraphTriangleProbe) {
+    auto* state = static_cast<GraphTriangleProbeQueryState*>(g_query_state);
+    if (edge_point.src_vertex != state->query_vertex) {
+      return;
+    }
+    if ((*state->neighbor_marks)[edge_point.dst_vertex] == state->mark) {
+      return;
+    }
+    (*state->neighbor_marks)[edge_point.dst_vertex] = state->mark;
+    state->neighbors->push_back(edge_point.dst_vertex);
+  }
 }
 
 bool polygon_point_query_collect(RTCPointQueryFunctionArguments* args) {

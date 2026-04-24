@@ -157,19 +157,31 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
     if app == "graph_analytics":
         return {
             **common,
-            "comparable_metric_scope": "strict graph visibility-edge summary/row result for the same copies/output-mode semantics",
+            "comparable_metric_scope": (
+                "strict graph visibility-edge, native BFS graph-ray, and native "
+                "triangle-count graph-ray row-digest results for the same copies semantics"
+            ),
             "required_baselines": [
                 "cpu_python_reference_visibility_edges",
+                "cpu_python_reference_bfs",
+                "cpu_python_reference_triangle_count",
                 "optix_visibility_anyhit",
-                "embree_visibility_anyhit_when_available",
+                "optix_native_graph_ray_bfs",
+                "optix_native_graph_ray_triangle_count",
+                "embree_graph_ray_bfs_and_triangle_when_available",
             ],
             "required_phases": [
                 "records",
+                "row_digest",
                 "strict_pass",
                 "strict_failures",
                 "status",
             ],
-            "claim_limit": "visibility-edge filtering sub-path only; not BFS, triangle-count, shortest-path, or general graph analytics acceleration",
+            "claim_limit": (
+                "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle "
+                "candidate generation; not shortest-path, graph database, distributed "
+                "graph analytics, or whole-app graph-system acceleration"
+            ),
         }
     if app in {"service_coverage_gaps", "event_hotspot_screening"}:
         return {
@@ -436,7 +448,7 @@ def build_manifest() -> dict[str, Any]:
             ),
         ],
         "excluded_apps": {
-            "graph_analytics": "BFS and triangle-count remain host-indexed fallback; deferred visibility-edge gate must pass before any graph RT-core claim",
+            "graph_analytics": "deferred graph gate must pass for visibility any-hit plus explicit native BFS/triangle graph-ray mode before any graph RT-core claim",
             "road_hazard_screening": "current default OptiX app path is host-indexed fallback; deferred native gate must pass before any promotion",
             "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
             "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
@@ -463,17 +475,27 @@ def build_manifest() -> dict[str, Any]:
                 ],
                 env={},
                 reason_deferred=(
-                    "Goal889 adds a bounded graph visibility-edge sub-path that maps "
+                    "Goal889/905 packages bounded graph RT sub-paths: visibility maps "
                     "candidate graph edges to RTDL visibility rows and OptiX any-hit "
-                    "traversal. BFS and triangle-count remain outside the claim."
+                    "traversal, while BFS and triangle-count use explicit native "
+                    "OptiX graph-ray mode for candidate generation."
                 ),
                 activation_gate=(
-                    "Promote only after Goal889 strict mode passes on RTX hardware, "
-                    "BFS/triangle-count exclusions remain explicit, and independent "
-                    "review accepts the artifact."
+                    "Promote only after strict mode passes on RTX hardware for "
+                    "visibility, native BFS graph-ray, and native triangle graph-ray; "
+                    "higher-level graph-system exclusions must remain explicit and "
+                    "independent review must accept the artifact."
                 ),
-                claim_scope="OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
-                non_claim="not BFS, triangle-count, shortest-path, graph database, or general graph analytics acceleration",
+                claim_scope=(
+                    "OptiX ray/triangle any-hit traversal for graph visibility-edge "
+                    "filtering plus native OptiX graph-ray traversal candidate "
+                    "generation for BFS and triangle-count"
+                ),
+                non_claim=(
+                    "not shortest-path, graph database, distributed graph analytics, "
+                    "or whole-app graph-system acceleration; BFS visited/frontier "
+                    "bookkeeping and triangle set-intersection remain outside RT traversal"
+                ),
             ),
             _deferred_entry(
                 app="service_coverage_gaps",

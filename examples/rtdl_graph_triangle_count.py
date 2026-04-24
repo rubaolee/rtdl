@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -65,9 +66,12 @@ def run_backend(
     output_mode: str = "rows",
     *,
     require_rt_core: bool = False,
+    optix_graph_mode: str = "auto",
 ) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if optix_graph_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError(f"unsupported optix_graph_mode: {optix_graph_mode}")
     _enforce_rt_core_requirement(backend, require_rt_core)
     case = make_case(copies)
     if backend == "cpu_python_reference":
@@ -77,7 +81,17 @@ def run_backend(
     elif backend == "embree":
         rows = rt.run_embree(triangle_probe_kernel, **case)
     elif backend == "optix":
-        rows = rt.run_optix(triangle_probe_kernel, **case)
+        previous = os.environ.get("RTDL_OPTIX_GRAPH_MODE")
+        if optix_graph_mode != "auto":
+            os.environ["RTDL_OPTIX_GRAPH_MODE"] = "native" if optix_graph_mode == "native" else "host_indexed"
+        try:
+            rows = rt.run_optix(triangle_probe_kernel, **case)
+        finally:
+            if optix_graph_mode != "auto":
+                if previous is None:
+                    os.environ.pop("RTDL_OPTIX_GRAPH_MODE", None)
+                else:
+                    os.environ["RTDL_OPTIX_GRAPH_MODE"] = previous
     elif backend == "vulkan":
         rows = rt.run_vulkan(triangle_probe_kernel, **case)
     else:
@@ -88,17 +102,27 @@ def run_backend(
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
+        "optix_graph_mode": optix_graph_mode if backend == "optix" else "not_applicable",
         "graph_vertex_count": 4 * copies,
         "graph_edge_count": 6 * copies,
         "seed_count": len(case["seeds"]),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
+        "ray_tracing_accelerated": backend == "embree",
+        "ray_tracing_note": (
+            "Embree uses ray traversal over graph-edge primitives to collect "
+            "candidate neighbor sets; CPU-side set intersection and uniqueness "
+            "bookkeeping remain outside the RT traversal."
+            if backend == "embree"
+            else "This backend is not currently classified as the graph triangle-count ray-tracing path."
+        ),
         "rt_core_accelerated": False,
         "optix_performance": {
             "class": "host_indexed_fallback",
             "note": (
                 "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; "
-                "this is not an RTX graph acceleration claim."
+                "native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native "
+                "but is not an RTX graph acceleration claim until cloud-gated."
             ),
         },
     }
@@ -113,6 +137,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic triangle fixture this many times.")
     parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
+    parser.add_argument("--optix-graph-mode", default="auto", choices=("auto", "host_indexed", "native"))
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
@@ -126,6 +151,7 @@ def main(argv: list[str] | None = None) -> int:
                 copies=args.copies,
                 output_mode=args.output_mode,
                 require_rt_core=args.require_rt_core,
+                optix_graph_mode=args.optix_graph_mode,
             ),
             indent=2,
             sort_keys=True,

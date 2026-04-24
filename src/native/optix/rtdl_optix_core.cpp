@@ -1986,6 +1986,190 @@ extern "C" __global__ void __anyhit__db_scan_anyhit() {
 }
 )CUDA";
 
+static const char* kGraphBfsRayKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct FrontierVertex {
+    uint32_t vertex_id;
+    uint32_t level;
+};
+
+struct EdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct GraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct BfsRow {
+    uint32_t src_vertex;
+    uint32_t dst_vertex;
+    uint32_t level;
+};
+
+struct GraphBfsParams {
+    OptixTraversableHandle traversable;
+    const GraphEdge* edges;
+    const FrontierVertex* frontier;
+    const uint32_t* visited_flags;
+    uint32_t* discovered_flags;
+    BfsRow* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t frontier_count;
+    uint32_t vertex_count;
+    uint32_t dedupe;
+};
+
+extern "C" {
+__constant__ GraphBfsParams params;
+}
+
+extern "C" __global__ void __raygen__graph_bfs_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.frontier_count) {
+        return;
+    }
+    const FrontierVertex f = params.frontier[idx];
+    if (f.vertex_id >= params.vertex_count) {
+        return;
+    }
+    uint32_t p0 = idx;
+    optixTrace(
+        params.traversable,
+        make_float3(static_cast<float>(f.vertex_id), -1.0f, 0.0f),
+        make_float3(0.0f, 1.0f, 0.0f),
+        0.0f,
+        static_cast<float>(params.vertex_count + 2u),
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0,
+        p0);
+}
+
+extern "C" __global__ void __miss__graph_bfs_miss() {}
+
+extern "C" __global__ void __intersection__graph_bfs_isect() {
+    optixReportIntersection(optixGetRayTmin() + 1.0e-6f, 0u);
+}
+
+extern "C" __global__ void __anyhit__graph_bfs_anyhit() {
+    const uint32_t frontier_index = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const FrontierVertex f = params.frontier[frontier_index];
+    const GraphEdge edge = params.edges[prim];
+    if (edge.src != f.vertex_id) {
+        optixIgnoreIntersection();
+        return;
+    }
+    if (params.visited_flags[edge.dst] != 0u) {
+        optixIgnoreIntersection();
+        return;
+    }
+    if (params.dedupe != 0u) {
+        if (atomicExch(params.discovered_flags + edge.dst, 1u) != 0u) {
+            optixIgnoreIntersection();
+            return;
+        }
+    }
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        params.output[slot] = {edge.src, edge.dst, f.level + 1u};
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kGraphTriangleRayKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct EdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct GraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct TriangleCandidate {
+    uint32_t seed_index;
+    uint32_t side;
+    uint32_t dst_vertex;
+};
+
+struct GraphTriangleParams {
+    OptixTraversableHandle traversable;
+    const GraphEdge* edges;
+    const EdgeSeed* seeds;
+    TriangleCandidate* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t seed_count;
+    uint32_t vertex_count;
+};
+
+extern "C" {
+__constant__ GraphTriangleParams params;
+}
+
+extern "C" __global__ void __raygen__graph_triangle_probe() {
+    const uint32_t ray_index = optixGetLaunchIndex().x;
+    const uint32_t seed_index = ray_index >> 1;
+    if (seed_index >= params.seed_count) {
+        return;
+    }
+    const EdgeSeed seed = params.seeds[seed_index];
+    const uint32_t src = (ray_index & 1u) == 0u ? seed.u : seed.v;
+    if (src >= params.vertex_count) {
+        return;
+    }
+    uint32_t p0 = ray_index;
+    optixTrace(
+        params.traversable,
+        make_float3(static_cast<float>(src), -1.0f, 0.0f),
+        make_float3(0.0f, 1.0f, 0.0f),
+        0.0f,
+        static_cast<float>(params.vertex_count + 2u),
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0,
+        p0);
+}
+
+extern "C" __global__ void __miss__graph_triangle_miss() {}
+
+extern "C" __global__ void __intersection__graph_triangle_isect() {
+    optixReportIntersection(optixGetRayTmin() + 1.0e-6f, 0u);
+}
+
+extern "C" __global__ void __anyhit__graph_triangle_anyhit() {
+    const uint32_t ray_index = optixGetPayload_0();
+    const uint32_t seed_index = ray_index >> 1;
+    const uint32_t side = ray_index & 1u;
+    const EdgeSeed seed = params.seeds[seed_index];
+    const uint32_t src = side == 0u ? seed.u : seed.v;
+    const GraphEdge edge = params.edges[optixGetPrimitiveIndex()];
+    if (edge.src != src) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        params.output[slot] = {seed_index, side, edge.dst};
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kKnnRows3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -2098,6 +2282,11 @@ struct DbScanPipeline {
     std::once_flag init;
 };
 
+struct GraphEdgePipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag init;
+};
+
 struct PnsCuFunction {
     CUmodule   module   = nullptr;
     CUfunction fn       = nullptr;
@@ -2129,6 +2318,8 @@ static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;
 static SegPolyPipeline     g_segpoly_rows;
 static DbScanPipeline      g_dbscan;
+static GraphEdgePipeline   g_graph_bfs;
+static GraphEdgePipeline   g_graph_triangle;
 static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;

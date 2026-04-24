@@ -42,7 +42,7 @@ In short, the remaining NVIDIA app-performance evidence requires real RTX artifa
 | App | Purpose | Current RT use | Missing / not-yet RT use | Next move |
 | --- | --- | --- | --- | --- |
 | `database_analytics` | DB-style filtered/grouped analytics | Native OptiX/Embree/Vulkan DB BVH candidate discovery and exact filtering/grouping; compact OptiX summary path is the bounded RT-core candidate | Full row/materialized DB output is still Python/interface dominated; not a DBMS or SQL-engine acceleration claim | Run active cloud DB compact-summary entries, inspect native query vs materialization/postprocess phases, compare to CPU/Embree/PostgreSQL where available |
-| `graph_analytics` | Graph visibility and graph analytics demos | Bounded `visibility_edges` scenario maps candidate edges to ray/triangle any-hit traversal | BFS, triangle-count, shortest path, and general graph analytics are not RT-core accelerated | Run deferred Goal889 visibility-edge RTX gate; keep BFS/triangle-count excluded until separate native traversal designs exist |
+| `graph_analytics` | Graph visibility and graph analytics demos | Bounded `visibility_edges` scenario maps candidate edges to ray/triangle any-hit traversal; Embree BFS and triangle-count now use ray traversal over graph-edge primitives; OptiX BFS/triangle-count now have explicit native graph-ray mode behind a gate | Shortest path, graph database, distributed graph analytics, and whole-app graph-system acceleration are not RT-core claims | Run the combined deferred Goal889/905 graph RTX gate for visibility any-hit plus explicit OptiX native BFS/triangle-count graph-ray mode before any promotion |
 | `apple_rt_demo` | Apple Metal/MPS RT demo | Apple-specific closest-hit / visibility style RT paths | Not a NVIDIA RT-core target; DB/graph-style Apple acceleration is not part of the NVIDIA cloud packet | Keep in Apple engine track; do not include in NVIDIA OptiX cloud batch |
 | `service_coverage_gaps` | Coverage-gap detection for facilities vs demand points | Prepared OptiX fixed-radius threshold traversal in compact `gap_summary_prepared` path | Full rows / nearest-clinic style outputs are not the RT-core claim path | Run deferred Goal811 service coverage RTX artifact; compare prepared traversal/query/postprocess phases against CPU/Embree/SciPy baselines |
 | `event_hotspot_screening` | Hotspot density screening over event points | Prepared OptiX fixed-radius count traversal in compact `count_summary_prepared` path | Full neighbor rows and whole-app hotspot workflows are not the RT-core claim path | Run deferred Goal811 event hotspot RTX artifact; review native query vs Python summary cost |
@@ -105,18 +105,24 @@ Core operations:
 - triangle-count style graph analytics
 
 Current RT use: the bounded `visibility_edges` mode maps graph edge candidates
-to ray/triangle any-hit visibility tests. That is the only current RT-core app
-candidate for this app.
+to ray/triangle any-hit visibility tests. In addition, the Embree BFS and
+triangle-count paths now use ray traversal over graph-edge primitives for
+candidate generation. OptiX BFS and triangle-count also expose an explicit
+native graph-ray mode behind `RTDL_OPTIX_GRAPH_MODE=native` /
+`--optix-graph-mode native`.
 
-Not-yet RT use: BFS, triangle counting, shortest paths, and general graph
-analytics are not currently RT-core accelerated. They remain CPU/host-indexed
-or non-claim paths.
+Not-yet RT use: OptiX/NVIDIA BFS, triangle counting, shortest paths, and
+general graph analytics are not currently RT-core claims. OptiX BFS and
+triangle-count native graph-ray mode still needs a real RTX artifact and
+external review before promotion.
 
 Next move:
 
 - run deferred Goal889 on real RTX hardware
-- accept only the visibility-edge sub-path if parity and phase evidence pass
-- keep BFS/triangle-count excluded until a separate RT formulation is designed
+- accept only the bounded graph sub-paths that pass strict parity and phase
+  evidence: visibility any-hit plus explicit native BFS/triangle graph-ray
+  candidate generation
+- keep the default host-indexed path until native graph-ray passes on RTX
 
 ### `apple_rt_demo`
 

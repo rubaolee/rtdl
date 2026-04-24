@@ -14,6 +14,7 @@ constexpr size_t kDbMaxRowsPerJob = 1000000;
 constexpr size_t kDbMaxCandidateRowsPerJob = 250000;
 constexpr size_t kDbMaxGroupsPerJob = 65536;
 constexpr float kDbBoxPad = 1.0e-3f;
+constexpr float kGraphEdgeBoxPad = 1.0e-3f;
 
 struct DbPrimaryAxis {
     size_t field_index;
@@ -49,6 +50,17 @@ struct OptixDbDatasetImpl {
     std::vector<DbRowMeta> row_metas;
     std::vector<OptixAabb> aabbs;
     AccelHolder accel;
+};
+
+struct GpuGraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct GpuGraphTriangleCandidate {
+    uint32_t seed_index;
+    uint32_t side;
+    uint32_t dst_vertex;
 };
 
 thread_local double g_optix_last_db_traversal_s = 0.0;
@@ -1531,6 +1543,201 @@ static void run_bfs_expand_optix_host_indexed(
     *row_count_out = rows.size();
 }
 
+static void validate_graph_csr_or_throw(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count)
+{
+    if (!row_offsets || row_offset_count == 0) {
+        throw std::runtime_error("CSR graph row_offsets must not be empty");
+    }
+    if (column_index_count > 0 && !column_indices) {
+        throw std::runtime_error("CSR graph column_indices pointer must not be null");
+    }
+    if (row_offsets[0] != 0u) {
+        throw std::runtime_error("CSR graph row_offsets must start at 0");
+    }
+    if (row_offsets[row_offset_count - 1] != column_index_count) {
+        throw std::runtime_error("CSR graph final row_offset must equal edge_count");
+    }
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    for (size_t index = 1; index < row_offset_count; ++index) {
+        if (row_offsets[index] < row_offsets[index - 1]) {
+            throw std::runtime_error("CSR graph row_offsets must be non-decreasing");
+        }
+    }
+    for (size_t index = 0; index < column_index_count; ++index) {
+        if (column_indices[index] >= vertex_count) {
+            throw std::runtime_error("CSR graph column_indices must be valid vertex IDs");
+        }
+    }
+}
+
+static std::vector<GpuGraphEdge> build_graph_edges(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count)
+{
+    std::vector<GpuGraphEdge> edges;
+    edges.reserve(column_index_count);
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    for (uint32_t src = 0; src < vertex_count; ++src) {
+        for (uint32_t offset = row_offsets[src]; offset < row_offsets[src + 1]; ++offset) {
+            edges.push_back({src, column_indices[offset]});
+        }
+    }
+    return edges;
+}
+
+static std::vector<OptixAabb> build_graph_edge_aabbs(const std::vector<GpuGraphEdge>& edges)
+{
+    std::vector<OptixAabb> aabbs;
+    aabbs.reserve(edges.size());
+    for (const GpuGraphEdge& edge : edges) {
+        const float x = static_cast<float>(edge.src);
+        OptixAabb aabb;
+        aabb.minX = x - kGraphEdgeBoxPad;
+        aabb.maxX = x + kGraphEdgeBoxPad;
+        aabb.minY = -kGraphEdgeBoxPad;
+        aabb.maxY = kGraphEdgeBoxPad;
+        aabb.minZ = -kGraphEdgeBoxPad;
+        aabb.maxZ = kGraphEdgeBoxPad;
+        aabbs.push_back(aabb);
+    }
+    return aabbs;
+}
+
+struct GraphBfsLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuGraphEdge* edges;
+    const RtdlFrontierVertex* frontier;
+    const uint32_t* visited_flags;
+    uint32_t* discovered_flags;
+    RtdlBfsExpandRow* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t frontier_count;
+    uint32_t vertex_count;
+    uint32_t dedupe;
+};
+
+struct GraphTriangleLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuGraphEdge* edges;
+    const RtdlEdgeSeed* seeds;
+    GpuGraphTriangleCandidate* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t seed_count;
+    uint32_t vertex_count;
+};
+
+static void run_bfs_expand_optix_graph_ray(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count,
+        const RtdlFrontierVertex* frontier, size_t frontier_count,
+        const uint32_t* visited_vertices, size_t visited_count,
+        uint32_t dedupe,
+        RtdlBfsExpandRow** rows_out, size_t* row_count_out)
+{
+    validate_graph_csr_or_throw(row_offsets, row_offset_count, column_indices, column_index_count);
+    if (frontier_count > 0 && !frontier) {
+        throw std::runtime_error("frontier pointer must not be null when frontier_count > 0");
+    }
+    if (visited_count > 0 && !visited_vertices) {
+        throw std::runtime_error("visited pointer must not be null when visited_count > 0");
+    }
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    if (frontier_count > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("frontier count exceeds uint32 launch limit");
+    }
+    std::vector<uint32_t> visited_flags(vertex_count, 0u);
+    for (size_t i = 0; i < visited_count; ++i) {
+        if (visited_vertices[i] >= vertex_count) {
+            throw std::runtime_error("visited vertex_id must be a valid graph vertex");
+        }
+        visited_flags[visited_vertices[i]] = 1u;
+    }
+    size_t output_capacity = 0;
+    for (size_t i = 0; i < frontier_count; ++i) {
+        if (frontier[i].vertex_id >= vertex_count) {
+            throw std::runtime_error("frontier vertex_id must be a valid graph vertex");
+        }
+        output_capacity += row_offsets[frontier[i].vertex_id + 1] - row_offsets[frontier[i].vertex_id];
+    }
+    if (output_capacity > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("graph BFS output capacity exceeds uint32 limit");
+    }
+    if (frontier_count == 0 || output_capacity == 0) {
+        return;
+    }
+
+    std::call_once(g_graph_bfs.init, [&]() {
+        std::string ptx = compile_to_ptx(kGraphBfsRayKernelSrc, "graph_bfs_ray_kernel.cu");
+        g_graph_bfs.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__graph_bfs_probe",
+            "__miss__graph_bfs_miss",
+            "__intersection__graph_bfs_isect",
+            "__anyhit__graph_bfs_anyhit",
+            nullptr,
+            1).release();
+    });
+
+    const std::vector<GpuGraphEdge> edges = build_graph_edges(row_offsets, row_offset_count, column_indices, column_index_count);
+    const std::vector<OptixAabb> aabbs = build_graph_edge_aabbs(edges);
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+    DevPtr d_edges(sizeof(GpuGraphEdge) * edges.size());
+    DevPtr d_frontier(sizeof(RtdlFrontierVertex) * frontier_count);
+    DevPtr d_visited(sizeof(uint32_t) * visited_flags.size());
+    DevPtr d_discovered(sizeof(uint32_t) * visited_flags.size());
+    DevPtr d_output(sizeof(RtdlBfsExpandRow) * output_capacity);
+    DevPtr d_count(sizeof(uint32_t));
+    upload(d_edges.ptr, edges.data(), edges.size());
+    upload(d_frontier.ptr, frontier, frontier_count);
+    upload(d_visited.ptr, visited_flags.data(), visited_flags.size());
+    CU_CHECK(cuMemsetD32(d_discovered.ptr, 0u, visited_flags.size()));
+    CU_CHECK(cuMemsetD32(d_count.ptr, 0u, 1));
+
+    GraphBfsLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.edges = reinterpret_cast<const GpuGraphEdge*>(d_edges.ptr);
+    lp.frontier = reinterpret_cast<const RtdlFrontierVertex*>(d_frontier.ptr);
+    lp.visited_flags = reinterpret_cast<const uint32_t*>(d_visited.ptr);
+    lp.discovered_flags = reinterpret_cast<uint32_t*>(d_discovered.ptr);
+    lp.output = reinterpret_cast<RtdlBfsExpandRow*>(d_output.ptr);
+    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = static_cast<uint32_t>(output_capacity);
+    lp.frontier_count = static_cast<uint32_t>(frontier_count);
+    lp.vertex_count = vertex_count;
+    lp.dedupe = dedupe;
+    DevPtr d_params(sizeof(GraphBfsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_graph_bfs.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(GraphBfsLaunchParams),
+                             &g_graph_bfs.pipe->sbt,
+                             static_cast<unsigned>(frontier_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t emitted = 0;
+    download(&emitted, d_count.ptr, 1);
+    const size_t rows_to_copy = std::min<size_t>(emitted, output_capacity);
+    std::vector<RtdlBfsExpandRow> rows(rows_to_copy);
+    if (rows_to_copy != 0) {
+        download(rows.data(), d_output.ptr, rows_to_copy);
+    }
+    std::sort(rows.begin(), rows.end(), [](const RtdlBfsExpandRow& left, const RtdlBfsExpandRow& right) {
+        if (left.level != right.level) return left.level < right.level;
+        if (left.dst_vertex != right.dst_vertex) return left.dst_vertex < right.dst_vertex;
+        return left.src_vertex < right.src_vertex;
+    });
+    auto* out = static_cast<RtdlBfsExpandRow*>(std::malloc(sizeof(RtdlBfsExpandRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) std::memcpy(out, rows.data(), sizeof(RtdlBfsExpandRow) * rows.size());
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
 static void run_triangle_probe_optix_host_indexed(
         const uint32_t* row_offsets, size_t row_offset_count,
         const uint32_t* column_indices, size_t column_index_count,
@@ -1638,6 +1845,154 @@ static void run_triangle_probe_optix_host_indexed(
     if (!rows.empty()) {
         std::memcpy(out, rows.data(), sizeof(RtdlTriangleRow) * rows.size());
     }
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+static void run_triangle_probe_optix_graph_ray(
+        const uint32_t* row_offsets, size_t row_offset_count,
+        const uint32_t* column_indices, size_t column_index_count,
+        const RtdlEdgeSeed* seeds, size_t seed_count,
+        uint32_t enforce_id_ascending,
+        uint32_t unique,
+        RtdlTriangleRow** rows_out, size_t* row_count_out)
+{
+    validate_graph_csr_or_throw(row_offsets, row_offset_count, column_indices, column_index_count);
+    if (seed_count > 0 && !seeds) {
+        throw std::runtime_error("edge seed pointer must not be null when seed_count > 0");
+    }
+    const uint32_t vertex_count = static_cast<uint32_t>(row_offset_count - 1);
+    if (seed_count > static_cast<size_t>(UINT32_MAX / 2u)) {
+        throw std::runtime_error("seed count exceeds graph triangle launch limit");
+    }
+    size_t output_capacity = 0;
+    for (size_t seed_index = 0; seed_index < seed_count; ++seed_index) {
+        const uint32_t u = seeds[seed_index].u;
+        const uint32_t v = seeds[seed_index].v;
+        if (u >= vertex_count || v >= vertex_count) {
+            throw std::runtime_error("edge seed vertices must be valid graph vertex IDs");
+        }
+        if (u == v || (enforce_id_ascending != 0u && !(u < v))) {
+            continue;
+        }
+        output_capacity += row_offsets[u + 1] - row_offsets[u];
+        output_capacity += row_offsets[v + 1] - row_offsets[v];
+    }
+    if (output_capacity > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("graph triangle candidate capacity exceeds uint32 limit");
+    }
+    if (seed_count == 0 || output_capacity == 0) {
+        return;
+    }
+
+    std::call_once(g_graph_triangle.init, [&]() {
+        std::string ptx = compile_to_ptx(kGraphTriangleRayKernelSrc, "graph_triangle_ray_kernel.cu");
+        g_graph_triangle.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__graph_triangle_probe",
+            "__miss__graph_triangle_miss",
+            "__intersection__graph_triangle_isect",
+            "__anyhit__graph_triangle_anyhit",
+            nullptr,
+            1).release();
+    });
+
+    const std::vector<GpuGraphEdge> edges = build_graph_edges(row_offsets, row_offset_count, column_indices, column_index_count);
+    const std::vector<OptixAabb> aabbs = build_graph_edge_aabbs(edges);
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+    DevPtr d_edges(sizeof(GpuGraphEdge) * edges.size());
+    DevPtr d_seeds(sizeof(RtdlEdgeSeed) * seed_count);
+    DevPtr d_output(sizeof(GpuGraphTriangleCandidate) * output_capacity);
+    DevPtr d_count(sizeof(uint32_t));
+    upload(d_edges.ptr, edges.data(), edges.size());
+    upload(d_seeds.ptr, seeds, seed_count);
+    CU_CHECK(cuMemsetD32(d_count.ptr, 0u, 1));
+
+    GraphTriangleLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.edges = reinterpret_cast<const GpuGraphEdge*>(d_edges.ptr);
+    lp.seeds = reinterpret_cast<const RtdlEdgeSeed*>(d_seeds.ptr);
+    lp.output = reinterpret_cast<GpuGraphTriangleCandidate*>(d_output.ptr);
+    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.output_capacity = static_cast<uint32_t>(output_capacity);
+    lp.seed_count = static_cast<uint32_t>(seed_count);
+    lp.vertex_count = vertex_count;
+    DevPtr d_params(sizeof(GraphTriangleLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_graph_triangle.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(GraphTriangleLaunchParams),
+                             &g_graph_triangle.pipe->sbt,
+                             static_cast<unsigned>(seed_count * 2u), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t emitted = 0;
+    download(&emitted, d_count.ptr, 1);
+    const size_t candidates_to_copy = std::min<size_t>(emitted, output_capacity);
+    std::vector<GpuGraphTriangleCandidate> candidates(candidates_to_copy);
+    if (candidates_to_copy != 0) {
+        download(candidates.data(), d_output.ptr, candidates_to_copy);
+    }
+
+    std::vector<std::vector<uint32_t>> u_neighbors(seed_count);
+    std::vector<std::vector<uint32_t>> v_neighbors(seed_count);
+    for (const GpuGraphTriangleCandidate& candidate : candidates) {
+        if (candidate.seed_index >= seed_count) {
+            continue;
+        }
+        std::vector<uint32_t>& bucket = candidate.side == 0u
+            ? u_neighbors[candidate.seed_index]
+            : v_neighbors[candidate.seed_index];
+        bucket.push_back(candidate.dst_vertex);
+    }
+
+    std::vector<uint32_t> marks(vertex_count, 0u);
+    uint32_t stamp = 1u;
+    std::vector<RtdlTriangleRow> rows;
+    for (size_t seed_index = 0; seed_index < seed_count; ++seed_index) {
+        const uint32_t u = seeds[seed_index].u;
+        const uint32_t v = seeds[seed_index].v;
+        if (u == v || (enforce_id_ascending != 0u && !(u < v))) {
+            continue;
+        }
+        for (uint32_t w : u_neighbors[seed_index]) {
+            marks[w] = stamp;
+        }
+        std::vector<uint32_t> common_neighbors;
+        for (uint32_t w : v_neighbors[seed_index]) {
+            if (marks[w] != stamp) {
+                continue;
+            }
+            if (enforce_id_ascending != 0u && !(v < w)) {
+                continue;
+            }
+            common_neighbors.push_back(w);
+        }
+        std::sort(common_neighbors.begin(), common_neighbors.end());
+        common_neighbors.erase(std::unique(common_neighbors.begin(), common_neighbors.end()), common_neighbors.end());
+        for (uint32_t w : common_neighbors) {
+            if (unique != 0u) {
+                const bool already_seen = std::any_of(
+                    rows.begin(),
+                    rows.end(),
+                    [&](const RtdlTriangleRow& row) { return row.u == u && row.v == v && row.w == w; });
+                if (already_seen) {
+                    continue;
+                }
+            }
+            rows.push_back({u, v, w});
+        }
+        stamp += 1u;
+        if (stamp == 0u) {
+            std::fill(marks.begin(), marks.end(), 0u);
+            stamp = 1u;
+        }
+    }
+
+    auto* out = static_cast<RtdlTriangleRow*>(std::malloc(sizeof(RtdlTriangleRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty()) std::memcpy(out, rows.data(), sizeof(RtdlTriangleRow) * rows.size());
     *rows_out = out;
     *row_count_out = rows.size();
 }

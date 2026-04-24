@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import platform
 import socket
@@ -21,17 +22,75 @@ sys.path.insert(0, str(ROOT))
 from examples import rtdl_graph_analytics_app as graph_app
 
 
-GOAL = "Goal889 graph visibility OptiX gate"
+GOAL = "Goal889/905 graph OptiX native traversal gate"
 DATE = "2026-04-24"
 
 
-def _canonical(payload: dict[str, object]) -> dict[str, object]:
-    section = payload["sections"]["visibility_edges"]  # type: ignore[index]
-    return {
-        "row_count": section["row_count"],
-        "summary": section["summary"],
-        "rows": section.get("rows", ()),
+def _json_default(value: object) -> object:
+    if hasattr(value, "_asdict"):
+        return value._asdict()  # type: ignore[attr-defined]
+    raise TypeError(f"object of type {type(value).__name__} is not JSON serializable")
+
+
+def _row_digest(rows: object) -> str:
+    encoded = json.dumps(rows, sort_keys=True, default=_json_default, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _canonical(payload: dict[str, object], section_name: str, *, include_rows: bool) -> dict[str, object]:
+    section = payload["sections"][section_name]  # type: ignore[index]
+    rows = section.get("rows", ())  # type: ignore[attr-defined]
+    canonical = {
+        "row_count": section.get("row_count", len(rows)),  # type: ignore[attr-defined]
+        "summary": section["summary"],  # type: ignore[index]
+        "row_digest": _row_digest(rows),
     }
+    if include_rows:
+        canonical["rows"] = rows
+    return canonical
+
+
+def _run_cpu_record(scenario: str, copies: int, include_rows: bool) -> dict[str, object]:
+    start = time.perf_counter()
+    payload = graph_app.run_app("cpu_python_reference", scenario, copies=copies, output_mode="rows")
+    return {
+        "label": f"cpu_python_reference_{scenario}",
+        "scenario": scenario,
+        "status": "ok",
+        "sec": time.perf_counter() - start,
+        "digest": _canonical(payload, scenario, include_rows=include_rows),
+    }
+
+
+def _run_optix_record(scenario: str, copies: int, include_rows: bool) -> dict[str, object]:
+    start = time.perf_counter()
+    kwargs: dict[str, object] = {}
+    label = "optix_visibility_anyhit"
+    if scenario in {"bfs", "triangle_count"}:
+        kwargs["optix_graph_mode"] = "native"
+        label = f"optix_native_graph_ray_{scenario}"
+    else:
+        kwargs["require_rt_core"] = True
+    try:
+        payload = graph_app.run_app("optix", scenario, copies=copies, output_mode="rows", **kwargs)
+        return {
+            "label": label,
+            "scenario": scenario,
+            "status": "ok",
+            "sec": time.perf_counter() - start,
+            "digest": _canonical(payload, scenario, include_rows=include_rows),
+            "optix_graph_mode": kwargs.get("optix_graph_mode", "not_applicable"),
+        }
+    except Exception as exc:  # noqa: BLE001 - optional backend gate records absence.
+        return {
+            "label": label,
+            "scenario": scenario,
+            "status": "unavailable_or_failed",
+            "sec": time.perf_counter() - start,
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+            "optix_graph_mode": kwargs.get("optix_graph_mode", "not_applicable"),
+        }
 
 
 def run_gate(*, copies: int, output_mode: str, strict: bool) -> dict[str, object]:
@@ -41,53 +100,27 @@ def run_gate(*, copies: int, output_mode: str, strict: bool) -> dict[str, object
         raise ValueError("output_mode must be rows or summary")
 
     records: list[dict[str, object]] = []
-    start = time.perf_counter()
-    cpu_payload = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=copies, output_mode=output_mode)
-    records.append(
-        {
-            "label": "cpu_python_reference",
-            "status": "ok",
-            "sec": time.perf_counter() - start,
-            "digest": _canonical(cpu_payload),
-        }
-    )
-
-    start = time.perf_counter()
-    try:
-        optix_payload = graph_app.run_app(
-            "optix",
-            "visibility_edges",
-            copies=copies,
-            output_mode=output_mode,
-            require_rt_core=True,
-        )
-        records.append(
-            {
-                "label": "optix_visibility_anyhit",
-                "status": "ok",
-                "sec": time.perf_counter() - start,
-                "digest": _canonical(optix_payload),
-            }
-        )
-    except Exception as exc:  # noqa: BLE001 - optional backend gate records absence.
-        records.append(
-            {
-                "label": "optix_visibility_anyhit",
-                "status": "unavailable_or_failed",
-                "sec": time.perf_counter() - start,
-                "error_type": type(exc).__name__,
-                "error": str(exc),
-            }
-        )
+    include_rows = output_mode == "rows"
+    scenarios = ("visibility_edges", "bfs", "triangle_count")
+    cpu_by_scenario: dict[str, dict[str, object]] = {}
+    for scenario in scenarios:
+        record = _run_cpu_record(scenario, copies, include_rows)
+        records.append(record)
+        cpu_by_scenario[scenario] = record
+    for scenario in scenarios:
+        records.append(_run_optix_record(scenario, copies, include_rows))
 
     strict_failures: list[str] = []
-    optix = records[1]
-    if optix["status"] != "ok":
-        strict_failures.append("optix_visibility_anyhit did not run")
-    else:
-        optix["parity_vs_cpu_python_reference"] = optix["digest"] == records[0]["digest"]
-        if not optix["parity_vs_cpu_python_reference"]:
-            strict_failures.append("optix_visibility_anyhit failed digest parity")
+    for record in records:
+        if not str(record["label"]).startswith("optix_"):
+            continue
+        scenario = str(record["scenario"])
+        if record["status"] != "ok":
+            strict_failures.append(f"{record['label']} did not run")
+            continue
+        record["parity_vs_cpu_python_reference"] = record["digest"] == cpu_by_scenario[scenario]["digest"]
+        if not record["parity_vs_cpu_python_reference"]:
+            strict_failures.append(f"{record['label']} failed digest parity")
 
     return {
         "goal": GOAL,
@@ -107,14 +140,30 @@ def run_gate(*, copies: int, output_mode: str, strict: bool) -> dict[str, object
         "strict_pass": not strict_failures,
         "status": "pass" if not strict_failures else ("fail" if strict else "non_strict_recorded_gaps"),
         "cloud_claim_contract": {
-            "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
-            "non_claim": "not BFS, triangle-count, shortest-path, graph database, or general graph analytics acceleration",
-            "required_phase_groups": ("cpu_python_reference", "optix_visibility_anyhit", "strict_pass", "strict_failures"),
+            "claim_scope": (
+                "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering, "
+                "plus explicit native OptiX graph-ray traversal candidate generation for BFS and triangle-count"
+            ),
+            "non_claim": (
+                "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; "
+                "BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal"
+            ),
+            "required_phase_groups": (
+                "cpu_python_reference_visibility_edges",
+                "cpu_python_reference_bfs",
+                "cpu_python_reference_triangle_count",
+                "optix_visibility_anyhit",
+                "optix_native_graph_ray_bfs",
+                "optix_native_graph_ray_triangle_count",
+                "strict_pass",
+                "strict_failures",
+            ),
         },
         "boundary": (
-            "This gate validates only the graph visibility_edges RT sub-path. "
-            "BFS and triangle_count remain host-indexed fallback and are not "
-            "promoted by this gate."
+            "This gate validates bounded graph RT sub-paths only. Visibility uses "
+            "ray/triangle any-hit. BFS and triangle-count use explicit native "
+            "OptiX graph-ray mode for candidate generation, while higher-level graph "
+            "state management remains app/Python-owned."
         ),
     }
 

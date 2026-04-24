@@ -587,13 +587,24 @@ extern "C" int rtdl_optix_run_bfs_expand(
             throw std::runtime_error("output pointers must not be null");
         *rows_out = nullptr; *row_count_out = 0;
         if (frontier_count == 0) return;
-        run_bfs_expand_optix_host_indexed(
-            row_offsets, row_offset_count,
-            column_indices, column_index_count,
-            frontier, frontier_count,
-            visited_vertices, visited_count,
-            dedupe,
-            rows_out, row_count_out);
+        const char* mode = std::getenv("RTDL_OPTIX_GRAPH_MODE");
+        if (mode != nullptr && std::strcmp(mode, "native") == 0) {
+            run_bfs_expand_optix_graph_ray(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                frontier, frontier_count,
+                visited_vertices, visited_count,
+                dedupe,
+                rows_out, row_count_out);
+        } else {
+            run_bfs_expand_optix_host_indexed(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                frontier, frontier_count,
+                visited_vertices, visited_count,
+                dedupe,
+                rows_out, row_count_out);
+        }
     }, error_out, error_size);
 }
 
@@ -611,13 +622,24 @@ extern "C" int rtdl_optix_run_triangle_probe(
             throw std::runtime_error("output pointers must not be null");
         *rows_out = nullptr; *row_count_out = 0;
         if (seed_count == 0) return;
-        run_triangle_probe_optix_host_indexed(
-            row_offsets, row_offset_count,
-            column_indices, column_index_count,
-            seeds, seed_count,
-            enforce_id_ascending,
-            unique,
-            rows_out, row_count_out);
+        const char* mode = std::getenv("RTDL_OPTIX_GRAPH_MODE");
+        if (mode != nullptr && std::strcmp(mode, "native") == 0) {
+            run_triangle_probe_optix_graph_ray(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                seeds, seed_count,
+                enforce_id_ascending,
+                unique,
+                rows_out, row_count_out);
+        } else {
+            run_triangle_probe_optix_host_indexed(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                seeds, seed_count,
+                enforce_id_ascending,
+                unique,
+                rows_out, row_count_out);
+        }
     }, error_out, error_size);
 }
 

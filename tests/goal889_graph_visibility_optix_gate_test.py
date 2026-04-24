@@ -29,21 +29,53 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
     def test_non_strict_gate_records_missing_optix_without_failing(self) -> None:
         from scripts import goal889_graph_visibility_optix_gate as goal889
 
-        cpu = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
-        with mock.patch.object(goal889.graph_app, "run_app", side_effect=[cpu, RuntimeError("no optix")]):
+        cpu_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="rows")
+        cpu_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="rows")
+        cpu_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="rows")
+        with mock.patch.object(
+            goal889.graph_app,
+            "run_app",
+            side_effect=[
+                cpu_visibility,
+                cpu_bfs,
+                cpu_triangle,
+                RuntimeError("no optix"),
+                RuntimeError("no optix"),
+                RuntimeError("no optix"),
+            ],
+        ):
             payload = goal889.run_gate(copies=1, output_mode="summary", strict=False)
         self.assertEqual(payload["status"], "non_strict_recorded_gaps")
         self.assertFalse(payload["strict_pass"])
         self.assertIn("optix_visibility_anyhit did not run", payload["strict_failures"])
+        self.assertIn("optix_native_graph_ray_bfs did not run", payload["strict_failures"])
+        self.assertIn("optix_native_graph_ray_triangle_count did not run", payload["strict_failures"])
 
     def test_strict_passes_when_optix_matches_cpu_digest(self) -> None:
         from scripts import goal889_graph_visibility_optix_gate as goal889
 
-        cpu = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
-        with mock.patch.object(goal889.graph_app, "run_app", side_effect=[cpu, cpu]):
+        cpu_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="rows")
+        cpu_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="rows")
+        cpu_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="rows")
+        with mock.patch.object(
+            goal889.graph_app,
+            "run_app",
+            side_effect=[
+                cpu_visibility,
+                cpu_bfs,
+                cpu_triangle,
+                cpu_visibility,
+                cpu_bfs,
+                cpu_triangle,
+            ],
+        ):
             payload = goal889.run_gate(copies=1, output_mode="summary", strict=True)
         self.assertEqual(payload["status"], "pass")
-        self.assertTrue(payload["records"][1]["parity_vs_cpu_python_reference"])
+        optix_records = [record for record in payload["records"] if str(record["label"]).startswith("optix_")]
+        self.assertEqual(len(optix_records), 3)
+        self.assertTrue(all(record["parity_vs_cpu_python_reference"] for record in optix_records))
+        self.assertEqual(optix_records[1]["optix_graph_mode"], "native")
+        self.assertEqual(optix_records[2]["optix_graph_mode"], "native")
 
     def test_cli_writes_non_strict_json(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
@@ -70,6 +102,9 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
             self.assertEqual(summary["output_json"], str(output.relative_to(ROOT)))
             self.assertIn(payload["status"], {"pass", "non_strict_recorded_gaps"})
             self.assertIn("cloud_claim_contract", payload)
+            labels = {record["label"] for record in payload["records"]}
+            self.assertIn("optix_native_graph_ray_bfs", labels)
+            self.assertIn("optix_native_graph_ray_triangle_count", labels)
 
 
 if __name__ == "__main__":

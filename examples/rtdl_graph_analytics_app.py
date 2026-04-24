@@ -107,6 +107,7 @@ def run_app(
     output_mode: str = "rows",
     *,
     require_rt_core: bool = False,
+    optix_graph_mode: str = "auto",
 ) -> dict[str, Any]:
     if backend not in BACKENDS:
         raise ValueError(f"unsupported backend: {backend}")
@@ -116,13 +117,25 @@ def run_app(
         raise ValueError("copies must be positive")
     if output_mode not in {"rows", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if optix_graph_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError(f"unsupported optix_graph_mode: {optix_graph_mode}")
     _enforce_rt_core_requirement(backend, scenario, require_rt_core)
 
     sections: dict[str, Any] = {}
     if scenario in {"bfs", "all"}:
-        sections["bfs"] = rtdl_graph_bfs.run_backend(backend, copies=copies, output_mode=output_mode)
+        sections["bfs"] = rtdl_graph_bfs.run_backend(
+            backend,
+            copies=copies,
+            output_mode=output_mode,
+            optix_graph_mode=optix_graph_mode,
+        )
     if scenario in {"triangle_count", "all"}:
-        sections["triangle_count"] = rtdl_graph_triangle_count.run_backend(backend, copies=copies, output_mode=output_mode)
+        sections["triangle_count"] = rtdl_graph_triangle_count.run_backend(
+            backend,
+            copies=copies,
+            output_mode=output_mode,
+            optix_graph_mode=optix_graph_mode,
+        )
     if scenario in {"visibility_edges", "all"}:
         sections["visibility_edges"] = _run_visibility_edges(backend, copies=copies, output_mode=output_mode)
 
@@ -132,6 +145,7 @@ def run_app(
         "scenario": scenario,
         "copies": copies,
         "output_mode": output_mode,
+        "optix_graph_mode": optix_graph_mode if backend == "optix" else "not_applicable",
         "sections": sections,
         "data_flow": [
             "application graph data",
@@ -148,11 +162,24 @@ def run_app(
             "class": rt.optix_app_performance_support("graph_analytics").performance_class,
             "note": rt.optix_app_performance_support("graph_analytics").note,
         },
+        "ray_tracing_accelerated": backend == "embree" or (
+            backend == "optix" and scenario == "visibility_edges"
+        ),
+        "ray_tracing_note": (
+            "For Embree, BFS and triangle_count now use ray traversal over "
+            "graph-edge primitives for candidate generation, and visibility_edges "
+            "uses ray/triangle any-hit. For OptiX, BFS and triangle_count have "
+            "an explicit native graph-ray mode behind --optix-graph-mode native, "
+            "but only visibility_edges is a current RT-core claim until cloud "
+            "validation promotes the graph-ray path."
+        ),
         "rt_core_accelerated": False,
         "honesty_boundary": (
-            "Unified app over bounded graph kernels. Only visibility_edges is a "
-            "ray/triangle any-hit RT-core candidate; BFS and triangle_count remain "
-            "host-indexed fallback and this is not a full graph database or "
+            "Unified app over bounded graph kernels. Embree BFS and triangle_count "
+            "use CPU ray-tracing traversal for candidate generation. Only "
+            "visibility_edges is an OptiX ray/triangle any-hit RT-core candidate; "
+            "OptiX BFS and triangle_count remain host-indexed by default, and "
+            "native graph-ray mode remains gated. This is not a full graph database or "
             "distributed graph analytics system."
         ),
     }
@@ -175,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic graph fixture this many times.")
     parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
+    parser.add_argument("--optix-graph-mode", default="auto", choices=("auto", "host_indexed", "native"))
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
@@ -189,6 +217,7 @@ def main(argv: list[str] | None = None) -> int:
                 copies=args.copies,
                 output_mode=args.output_mode,
                 require_rt_core=args.require_rt_core,
+                optix_graph_mode=args.optix_graph_mode,
             ),
             indent=2,
             sort_keys=True,

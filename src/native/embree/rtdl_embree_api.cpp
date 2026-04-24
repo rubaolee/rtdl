@@ -2164,7 +2164,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(edge_points.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
     rtcSetGeometryBoundsFunction(holder.geometry, graph_edge_point_bounds, nullptr);
-    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcSetGeometryIntersectFunction(holder.geometry, graph_edge_point_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
@@ -2184,17 +2184,19 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_bfs_expand(
           dedupe,
           &rows,
       };
-      RTCPointQuery point_query;
-      point_query.x = static_cast<float>(frontier_vertex.vertex_id);
-      point_query.y = 0.0f;
-      point_query.z = 0.0f;
-      point_query.time = 0.0f;
-      point_query.radius = static_cast<float>(kEps * 2.0);
-      RTCPointQueryContext context;
-      rtcInitPointQueryContext(&context);
+      RTCRayHit rayhit;
+      set_ray(
+          &rayhit,
+          {static_cast<double>(frontier_vertex.vertex_id), -1.0},
+          {0.0, 1.0},
+          static_cast<float>(vertex_count + 2u));
+      RTCIntersectArguments args;
+      rtcInitIntersectArguments(&args);
       g_query_kind = QueryKind::kGraphBfsExpand;
-      rtcPointQuery(holder.scene, &point_query, &context, point_point_query_collect, &state);
+      g_query_state = &state;
+      rtcIntersect1(holder.scene, &rayhit, &args);
       g_query_kind = QueryKind::kNone;
+      g_query_state = nullptr;
     }
 
     std::sort(
@@ -2284,7 +2286,7 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
     rtcSetGeometryUserPrimitiveCount(holder.geometry, static_cast<unsigned>(edge_points.size()));
     rtcSetGeometryUserData(holder.geometry, &data);
     rtcSetGeometryBoundsFunction(holder.geometry, graph_edge_point_bounds, nullptr);
-    rtcSetGeometryPointQueryFunction(holder.geometry, point_point_query_collect);
+    rtcSetGeometryIntersectFunction(holder.geometry, graph_edge_point_intersect);
     rtcCommitGeometry(holder.geometry);
     rtcAttachGeometry(holder.scene, holder.geometry);
     rtcCommitScene(holder.scene);
@@ -2310,38 +2312,35 @@ RTDL_EMBREE_EXPORT int rtdl_embree_run_triangle_probe(
       std::vector<uint32_t> u_neighbors;
       GraphTriangleProbeQueryState u_state {
           &edge_points,
+          u,
           &u_neighbor_marks,
           stamp,
           &u_neighbors,
       };
-      RTCPointQuery u_query;
-      u_query.x = static_cast<float>(u);
-      u_query.y = 0.0f;
-      u_query.z = 0.0f;
-      u_query.time = 0.0f;
-      u_query.radius = static_cast<float>(kEps * 2.0);
-      RTCPointQueryContext u_context;
-      rtcInitPointQueryContext(&u_context);
+      RTCRayHit u_rayhit;
+      set_ray(&u_rayhit, {static_cast<double>(u), -1.0}, {0.0, 1.0}, static_cast<float>(vertex_count + 2u));
+      RTCIntersectArguments u_args;
+      rtcInitIntersectArguments(&u_args);
       g_query_kind = QueryKind::kGraphTriangleProbe;
-      rtcPointQuery(holder.scene, &u_query, &u_context, point_point_query_collect, &u_state);
+      g_query_state = &u_state;
+      rtcIntersect1(holder.scene, &u_rayhit, &u_args);
 
       std::vector<uint32_t> v_neighbors;
       GraphTriangleProbeQueryState v_state {
           &edge_points,
+          v,
           &v_neighbor_marks,
           stamp,
           &v_neighbors,
       };
-      RTCPointQuery v_query;
-      v_query.x = static_cast<float>(v);
-      v_query.y = 0.0f;
-      v_query.z = 0.0f;
-      v_query.time = 0.0f;
-      v_query.radius = static_cast<float>(kEps * 2.0);
-      RTCPointQueryContext v_context;
-      rtcInitPointQueryContext(&v_context);
-      rtcPointQuery(holder.scene, &v_query, &v_context, point_point_query_collect, &v_state);
+      RTCRayHit v_rayhit;
+      set_ray(&v_rayhit, {static_cast<double>(v), -1.0}, {0.0, 1.0}, static_cast<float>(vertex_count + 2u));
+      RTCIntersectArguments v_args;
+      rtcInitIntersectArguments(&v_args);
+      g_query_state = &v_state;
+      rtcIntersect1(holder.scene, &v_rayhit, &v_args);
       g_query_kind = QueryKind::kNone;
+      g_query_state = nullptr;
 
       const std::vector<uint32_t>& smaller = (u_neighbors.size() <= v_neighbors.size()) ? u_neighbors : v_neighbors;
       const std::vector<uint32_t>& other_neighbor_marks =

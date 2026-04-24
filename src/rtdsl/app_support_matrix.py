@@ -162,7 +162,7 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NATIVE,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios.",
+        note="Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios; Embree BFS/triangle-count use ray traversal over graph-edge primitives for candidate generation.",
     ),
     "apple_rt_demo": _row(
         "apple_rt_demo",
@@ -335,7 +335,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "graph_analytics": OptixAppPerformanceSupport(
         app="graph_analytics",
         performance_class=OPTIX_TRAVERSAL,
-        note="Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal. BFS and triangle_count remain host-indexed fallback and are outside the RT-core claim.",
+        note="Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, but the default remains host-indexed until RTX validation.",
     ),
     "apple_rt_demo": OptixAppPerformanceSupport(
         app="apple_rt_demo",
@@ -452,8 +452,8 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
         NEEDS_REAL_RTX_ARTIFACT,
         "Goal889",
         "visibility_edges mode must pass strict RTX validation against CPU reference before any graph RT-core claim",
-        "BFS and triangle-count remain host-indexed fallback; only visibility_edges has a local RT-core gate",
-        "graph visibility-edge filtering sub-path only; no BFS, triangle-count, or general graph analytics speedup claim",
+        "Embree BFS/triangle-count and explicit OptiX native graph-ray mode now exist; OptiX native mode still needs build/runtime RTX validation",
+        "graph visibility-edge filtering sub-path only for NVIDIA claims today; no OptiX BFS, triangle-count, or general graph analytics speedup claim before native graph-ray cloud artifact",
     ),
     "apple_rt_demo": _readiness(
         "apple_rt_demo",
