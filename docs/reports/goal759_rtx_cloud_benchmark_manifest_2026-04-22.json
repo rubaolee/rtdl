@@ -133,6 +133,54 @@
       "optix_performance_note": "Default segment/polygon OptiX path is host-indexed; explicit native OptiX mode exists and must pass Goal807 strict correctness/performance gating before promotion.",
       "path_name": "segment_polygon_hitcount_native_experimental",
       "reason_deferred": "Native OptiX hit-count exists behind an explicit app mode, but historical Goal120 evidence showed no performance win and the default public app path remains host-indexed. Goal807 now provides the required focused native-vs-host-indexed gate, but the gate has not passed on RTX hardware yet."
+    },
+    {
+      "activation_gate": "Promote only after Goal873 strict mode passes on RTX hardware, row digest matches CPU reference, overflow is zero, and independent review accepts the artifact.",
+      "app": "segment_polygon_anyhit_rows",
+      "app_path": "examples/rtdl_segment_polygon_anyhit_rows.py",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+        "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_native_bounded_pair_rows",
+          "postgis_when_available_for_same_pair_semantics"
+        ],
+        "required_phases": [
+          "records",
+          "row_digest",
+          "emitted_count",
+          "copied_count",
+          "overflowed",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_native_kernel_tuning",
+      "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
+      "command": [
+        "python3",
+        "scripts/goal873_native_pair_row_optix_gate.py",
+        "--dataset",
+        "authored_segment_polygon_minimal",
+        "--output-capacity",
+        "1024",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json"
+      ],
+      "env": {},
+      "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
+      "optix_performance_class": "host_indexed_fallback",
+      "optix_performance_note": "Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. Compact flags/counts can request native hit-count mode, but pair-row native output does not exist yet.",
+      "path_name": "segment_polygon_anyhit_rows_native_bounded_gate",
+      "reason_deferred": "Goal872 implements a native bounded device-side pair-row emitter, and Goal873 adds the strict gate. The public rows path remains host-indexed until a real RTX strict artifact proves CPU row-digest parity and no output overflow."
     }
   ],
   "entries": [
@@ -453,7 +501,7 @@
     "polygon_pair_overlap_area_rows": "current public app has no OptiX/NVIDIA RT-core surface",
     "polygon_set_jaccard": "current public app has no OptiX/NVIDIA RT-core surface",
     "road_hazard_screening": "current default OptiX app path is host-indexed fallback and native mode remains behind strict validation",
-    "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback and row-volume sensitive",
+    "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
     "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback"
   },
   "global_preconditions": [

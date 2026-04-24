@@ -188,6 +188,30 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
             ],
             "claim_limit": "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
         }
+    if app == "segment_polygon_anyhit_rows":
+        return {
+            **common,
+            "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
+            "required_baselines": [
+                "cpu_python_reference",
+                "optix_native_bounded_pair_rows",
+                "postgis_when_available_for_same_pair_semantics",
+            ],
+            "required_phases": [
+                "records",
+                "row_digest",
+                "emitted_count",
+                "copied_count",
+                "overflowed",
+                "strict_pass",
+                "strict_failures",
+                "status",
+            ],
+            "claim_limit": (
+                "experimental native bounded pair-row gate only; not default public app behavior "
+                "and not unbounded row-volume performance"
+            ),
+        }
     return {
         **common,
         "comparable_metric_scope": f"same app/path semantics for {app}:{path_name}",
@@ -369,7 +393,7 @@ def build_manifest() -> dict[str, Any]:
             "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
             "road_hazard_screening": "current default OptiX app path is host-indexed fallback and native mode remains behind strict validation",
             "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
-            "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback and row-volume sensitive",
+            "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
             "facility_knn_assignment": "current app has no true RT-core KNN ranking path; fixed-radius threshold summaries are not KNN",
             "polygon_pair_overlap_area_rows": "current public app has no OptiX/NVIDIA RT-core surface",
             "polygon_set_jaccard": "current public app has no OptiX/NVIDIA RT-core surface",
@@ -463,6 +487,34 @@ def build_manifest() -> dict[str, Any]:
                 ),
                 claim_scope="experimental native custom-AABB segment/polygon hit-count traversal",
                 non_claim="not default public app behavior and not a row-returning any-hit claim",
+            ),
+            _deferred_entry(
+                app="segment_polygon_anyhit_rows",
+                app_path="examples/rtdl_segment_polygon_anyhit_rows.py",
+                path_name="segment_polygon_anyhit_rows_native_bounded_gate",
+                command=[
+                    python,
+                    "scripts/goal873_native_pair_row_optix_gate.py",
+                    "--dataset",
+                    "authored_segment_polygon_minimal",
+                    "--output-capacity",
+                    "1024",
+                    "--strict",
+                    "--output-json",
+                    "docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal872 implements a native bounded device-side pair-row emitter, and Goal873 "
+                    "adds the strict gate. The public rows path remains host-indexed until a real "
+                    "RTX strict artifact proves CPU row-digest parity and no output overflow."
+                ),
+                activation_gate=(
+                    "Promote only after Goal873 strict mode passes on RTX hardware, row digest "
+                    "matches CPU reference, overflow is zero, and independent review accepts the artifact."
+                ),
+                claim_scope="experimental native bounded custom-AABB segment/polygon pair-row traversal",
+                non_claim="not default public app behavior and not an unbounded pair-row performance claim",
             ),
         ],
         "boundary": (

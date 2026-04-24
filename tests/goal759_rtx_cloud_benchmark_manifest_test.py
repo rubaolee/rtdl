@@ -138,6 +138,23 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("--strict", segment["command"])
         self.assertIn("Goal807 strict mode", segment["activation_gate"])
 
+    def test_deferred_segment_polygon_anyhit_rows_entry_uses_goal873_gate(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        segment = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "segment_polygon_anyhit_rows"
+        )
+        self.assertIn("scripts/goal873_native_pair_row_optix_gate.py", segment["command"])
+        self.assertIn("--strict", segment["command"])
+        self.assertIn("--output-capacity", segment["command"])
+        self.assertIn("Goal873 strict mode", segment["activation_gate"])
+        self.assertIn("overflowed", segment["baseline_review_contract"]["required_phases"])
+        self.assertIn("not default public app behavior", segment["non_claim"])
+
     def test_deferred_spatial_entries_use_goal811_profiler(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
