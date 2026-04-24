@@ -13,10 +13,13 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 DEFAULT_BRANCH = "codex/rtx-cloud-run-2026-04-22"
 DEFAULT_OPTIX_PREFIX = Path.home() / "vendor" / "optix-dev-9.0.0"
 DEFAULT_OPTIX_TAG = "v9.0.0"
 DATE = "2026-04-23"
+
+from scripts.goal759_rtx_cloud_benchmark_manifest import build_manifest
 
 
 def _cuda_prefix() -> Path:
@@ -75,7 +78,23 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def _tar_reports(path: Path, *, dry_run: bool) -> dict[str, Any]:
+def _manifest_output_members(*, include_deferred: bool) -> list[Path]:
+    manifest = build_manifest()
+    entries = list(manifest["entries"])
+    if include_deferred:
+        entries.extend(manifest.get("deferred_entries", ()))
+    members: list[Path] = []
+    for entry in entries:
+        command = [str(part) for part in entry.get("command", ())]
+        for index, part in enumerate(command):
+            if part == "--output-json" and index + 1 < len(command):
+                candidate = ROOT / command[index + 1]
+                if candidate.exists():
+                    members.append(candidate)
+    return members
+
+
+def _tar_reports(path: Path, *, dry_run: bool, include_deferred: bool) -> dict[str, Any]:
     patterns = (
         "goal759_*_rtx.json",
         "goal761_rtx_cloud_run_all_summary.json",
@@ -86,13 +105,25 @@ def _tar_reports(path: Path, *, dry_run: bool) -> dict[str, Any]:
     members: list[Path] = []
     for pattern in patterns:
         members.extend(sorted((ROOT / "docs" / "reports").glob(pattern)))
+    members.extend(_manifest_output_members(include_deferred=include_deferred))
+    members = sorted(set(members))
     if dry_run:
-        return {"status": "dry_run", "path": str(path), "member_count": len(members)}
+        return {
+            "status": "dry_run",
+            "path": str(path),
+            "member_count": len(members),
+            "include_deferred": include_deferred,
+        }
     path.parent.mkdir(parents=True, exist_ok=True)
     with tarfile.open(path, "w:gz") as tar:
         for member in members:
             tar.add(member, arcname=str(member.relative_to(ROOT)))
-    return {"status": "ok", "path": str(path), "member_count": len(members)}
+    return {
+        "status": "ok",
+        "path": str(path),
+        "member_count": len(members),
+        "include_deferred": include_deferred,
+    }
 
 
 def run_one_shot(
@@ -226,7 +257,7 @@ def run_one_shot(
         ),
     }
     _write_json(output_json, payload)
-    bundle = _tar_reports(bundle_tgz, dry_run=dry_run)
+    bundle = _tar_reports(bundle_tgz, dry_run=dry_run, include_deferred=include_deferred)
     payload["artifact_bundle"] = bundle
     _write_json(output_json, payload)
     print(json.dumps(payload, indent=2, sort_keys=True))

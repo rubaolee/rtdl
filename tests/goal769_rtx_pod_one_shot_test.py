@@ -44,6 +44,7 @@ class Goal769RtxPodOneShotTest(unittest.TestCase):
             payload = json.loads(completed.stdout)
             self.assertEqual(payload["suite"], "goal769_rtx_pod_one_shot")
             self.assertEqual(payload["status"], "ok")
+            self.assertFalse(payload["artifact_bundle"]["include_deferred"])
             step_names = [step["name"] for step in payload["steps"]]
             self.assertIn("git_fetch", step_names)
             self.assertIn("install_optix_dev_headers", step_names)
@@ -87,10 +88,42 @@ class Goal769RtxPodOneShotTest(unittest.TestCase):
             payload = json.loads(completed.stdout)
             self.assertTrue(payload["include_deferred"])
             self.assertEqual(payload["only"], ["service_coverage_gaps"])
+            self.assertTrue(payload["artifact_bundle"]["include_deferred"])
             manifest_step = next(step for step in payload["steps"] if step["name"] == "goal761_run_manifest")
             command = manifest_step["result"]["command"]
             self.assertIn("--include-deferred", command)
             self.assertIn("service_coverage_gaps", command)
+
+    def test_bundle_includes_deferred_manifest_outputs_when_requested(self) -> None:
+        report_path = ROOT / "docs" / "reports" / "goal887_hausdorff_threshold_rtx.json"
+        if report_path.exists():
+            self.skipTest(f"test would overwrite existing artifact: {report_path}")
+        report_path.write_text('{"fixture": "deferred"}\n', encoding="utf-8")
+        try:
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "from pathlib import Path; "
+                        "from scripts.goal769_rtx_pod_one_shot import _tar_reports; "
+                        "base=_tar_reports(Path('build/test_bundle.tgz'), "
+                        "dry_run=True, include_deferred=False)['member_count']; "
+                        "full=_tar_reports(Path('build/test_bundle.tgz'), "
+                        "dry_run=True, include_deferred=True)['member_count']; "
+                        "print(base, full)"
+                    ),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            base, full = [int(part) for part in completed.stdout.strip().split()]
+            self.assertGreater(full, base)
+        finally:
+            report_path.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
