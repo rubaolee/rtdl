@@ -198,11 +198,11 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         "facility_knn_assignment",
         cpu_python_reference=_CPU,
         embree=_NATIVE,
-        optix=_NOCLI,
+        optix=_NATIVE,
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Spatial KNN app currently exposes CPU, Embree, and SciPy baseline. It intentionally does not expose OptiX because KNN ranking needs nearest-neighbor ordering, not fixed-radius threshold summaries.",
+        note="Spatial KNN app exposes CPU, Embree, SciPy baseline, and an OptiX prepared coverage-threshold mode. Ranked KNN assignment remains CPU/Embree/SciPy only.",
     ),
     "road_hazard_screening": _row(
         "road_hazard_screening",
@@ -354,8 +354,8 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "facility_knn_assignment": OptixAppPerformanceSupport(
         app="facility_knn_assignment",
-        performance_class=NOT_OPTIX_EXPOSED,
-        note="Public app CLI does not expose OptiX today. Existing generic OptiX KNN support is CUDA-through-OptiX, and fixed-radius threshold traversal cannot emit ranked nearest-depot assignments.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Explicit coverage_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for service-coverage decisions only; ranked nearest-depot assignment remains outside the OptiX claim.",
     ),
     "road_hazard_screening": OptixAppPerformanceSupport(
         app="road_hazard_screening",
@@ -481,11 +481,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "facility_knn_assignment": _readiness(
         "facility_knn_assignment",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "none",
-        "not an OptiX-exposed app today; a future path must prove traversal-based KNN ranking, not only threshold counts",
-        "public app CLI does not expose OptiX because the current fixed-radius prepared primitive cannot produce nearest-neighbor ordering",
-        "CPU/Embree/SciPy baseline app only until a real RT traversal plus ranking design is added",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal881",
+        "coverage_threshold_prepared decision mode needs RTX phase artifact and same-semantics threshold-decision baselines before any claim",
+        "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
+        "prepared facility service-coverage decision sub-path only; no KNN assignment or ranking speedup claim",
     ),
     "road_hazard_screening": _readiness(
         "road_hazard_screening",
@@ -640,10 +640,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "facility_knn_assignment": _maturity(
         "facility_knn_assignment",
-        NEEDS_OPTIX_APP_SURFACE,
+        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal plus native ranking primitive rather than CUDA-through-OptiX KNN rows or fixed-radius count thresholds.",
-        "Cloud only after a native traversal/ranking design exists and has a local correctness gate.",
+        "Use coverage_threshold_prepared for traversal-backed service-coverage decisions; KNN ranking and fallback assignment remain outside the RT-core claim until a native ranking design exists.",
+        "Cloud only after the facility coverage-threshold profiler and baselines are packaged; no ranked KNN assignment RT-core claim.",
     ),
     "road_hazard_screening": _maturity(
         "road_hazard_screening",

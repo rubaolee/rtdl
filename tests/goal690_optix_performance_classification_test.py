@@ -22,6 +22,7 @@ class Goal690OptixPerformanceClassificationTest(unittest.TestCase):
             "road_hazard_screening": "host_indexed_fallback",
             "segment_polygon_hitcount": "host_indexed_fallback",
             "segment_polygon_anyhit_rows": "host_indexed_fallback",
+            "facility_knn_assignment": "optix_traversal_prepared_summary",
             "hausdorff_distance": "optix_traversal_prepared_summary",
             "ann_candidate_search": "optix_traversal_prepared_summary",
             "outlier_detection": "optix_traversal_prepared_summary",

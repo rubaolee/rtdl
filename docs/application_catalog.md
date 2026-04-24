@@ -40,10 +40,12 @@ Accepted partial claim modes today:
 | Robot collision screening | `--backend optix --optix-summary-mode prepared_count` or `prepared_pose_flags` | prepared any-hit count or pose flags; witness rows remain outside the compact claim |
 | Segment/polygon any-hit rows | `--backend optix --output-mode rows --optix-mode native --require-rt-core` | bounded native pair-row traversal path only; speedup promotion still needs Goal873 RTX artifact review |
 | Hausdorff distance | `--backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core` | Hausdorff <= radius decision only; exact-distance KNN rows remain outside the claim |
+| Facility KNN assignment | `--backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` | service-radius coverage decision only; ranked nearest-depot assignment remains outside the claim |
+| ANN candidate search | `--backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core` | candidate-coverage decision only; ANN ranking remains outside the claim |
 
-Rejected under `--require-rt-core` today: graph apps, facility KNN, polygon
-overlap/Jaccard, segment/polygon hitcount/road-hazard compact modes, exact
-Hausdorff distance, ANN candidate search, and Barnes-Hut. Those may be useful OptiX compatibility
+Rejected under `--require-rt-core` today: graph apps, ranked facility KNN,
+polygon overlap/Jaccard, segment/polygon hitcount/road-hazard compact modes,
+exact Hausdorff distance, ANN candidate ranking, and Barnes-Hut. Those may be useful OptiX compatibility
 or CUDA-through-OptiX paths, but they are not public NVIDIA RT-core claims yet.
 
 The original RTDL root spatial workloads are still first-class:
@@ -63,7 +65,7 @@ direct spatial joins and app-level proximity joins.
 | --- | --- | --- | --- |
 | Service coverage gaps | `examples/rtdl_service_coverage_gaps.py` | households plus clinic locations become uncovered household IDs | radius spatial join with `fixed_radius_neighbors` |
 | Event hotspot screening | `examples/rtdl_event_hotspot_screening.py` | events become hotspot event IDs after an event/event radius self-join | radius self-join with `fixed_radius_neighbors` |
-| Facility KNN assignment | `examples/rtdl_facility_knn_assignment.py` | customers plus depots become nearest depot assignments | KNN spatial join with `knn_rows` |
+| Facility KNN assignment | `examples/rtdl_facility_knn_assignment.py` | customers plus depots become nearest depot assignments or a service-radius coverage decision | KNN spatial join with `knn_rows`; optional OptiX `coverage_threshold_prepared` maps the coverage-decision form to fixed-radius traversal |
 | Road hazard screening | `examples/rtdl_road_hazard_screening.py` | road segments plus hazard polygons become per-road hit counts | segment/polygon spatial join |
 | Segment/polygon hit count | `examples/rtdl_segment_polygon_hitcount.py` | segments plus polygons become per-segment intersection counts | direct segment/polygon join |
 | Segment/polygon any-hit rows | `examples/rtdl_segment_polygon_anyhit_rows.py` | segments plus polygons become intersecting segment/polygon pairs | direct segment/polygon join |
@@ -107,7 +109,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_graph_analytics_app.py` | `--output-mode summary` with `--copies N` | BFS discovery counts and triangle-count summaries over repeated deterministic graph fixtures | scales the public graph app for Embree characterization while omitting full discovery/triangle rows from JSON |
 | `examples/rtdl_service_coverage_gaps.py` | `--embree-summary-mode gap_summary` | covered/uncovered household summary rows | omits clinic ids, distances, and clinic-load counts |
 | `examples/rtdl_event_hotspot_screening.py` | `--embree-summary-mode count_summary` | one neighbor-count row per event plus hotspot flags | omits neighbor-pair rows and distances |
-| `examples/rtdl_facility_knn_assignment.py` | `--output-mode primary_assignments` / `summary` | primary depot assignments or depot-load summaries | uses K=1 and omits K=3 fallback choices |
+| `examples/rtdl_facility_knn_assignment.py` | `--output-mode primary_assignments` / `summary`; OptiX `--optix-summary-mode coverage_threshold_prepared` | primary depot assignments, depot-load summaries, or a service-coverage decision | KNN modes use K=1 and omit K=3 fallback choices; OptiX threshold mode does not claim ranked assignment |
 | `examples/rtdl_hausdorff_distance_app.py` | `--embree-result-mode directed_summary` | directed Hausdorff distance and witness summaries | omits full KNN rows |
 | `examples/rtdl_ann_candidate_app.py` | `--output-mode rerank_summary` / `quality_summary`; OptiX `--optix-summary-mode candidate_threshold_prepared` | candidate-rerank summaries, compact recall/distance metrics, or a candidate-coverage decision | separates RTDL candidate-subset KNN reranking from Python exact full-set quality comparison; OptiX threshold mode does not claim full ANN indexing or ranking |
 | `examples/rtdl_robot_collision_screening_app.py` | `--output-mode hit_count` / `pose_flags` | hit-edge counts or pose collision flags | omits full witness rows; Embree still uses native any-hit row path internally |

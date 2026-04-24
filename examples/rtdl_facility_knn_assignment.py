@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -14,6 +15,7 @@ import rtdsl as rt
 
 K = 3
 PRIMARY_K = 1
+DEFAULT_SERVICE_RADIUS = 1.0
 
 
 @rt.kernel(backend="rtdl", precision="float_approx")
@@ -80,10 +82,120 @@ def _run_rows(
     raise ValueError(f"unsupported backend `{backend}`")
 
 
-def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    if optix_summary_mode != "coverage_threshold_prepared":
+        raise RuntimeError(
+            "facility_knn_assignment RT-core path requires --backend optix "
+            "--optix-summary-mode coverage_threshold_prepared"
+        )
+
+
+def facility_coverage_oracle(
+    customers: tuple[rt.Point, ...],
+    depots: tuple[rt.Point, ...],
+    *,
+    radius: float,
+) -> dict[str, object]:
+    uncovered: list[int] = []
+    for customer in customers:
+        has_depot = any(math.hypot(customer.x - depot.x, customer.y - depot.y) <= radius for depot in depots)
+        if not has_depot:
+            uncovered.append(customer.id)
+    return {
+        "radius": radius,
+        "customer_count": len(customers),
+        "covered_customer_count": len(customers) - len(uncovered),
+        "all_customers_covered": not uncovered,
+        "uncovered_customer_ids": uncovered,
+    }
+
+
+def _coverage_threshold_from_count_rows(
+    rows: tuple[dict[str, object], ...],
+    *,
+    customers: tuple[rt.Point, ...],
+    radius: float,
+) -> dict[str, object]:
+    by_query = {int(row["query_id"]): row for row in rows}
+    uncovered = [
+        customer.id
+        for customer in customers
+        if int(by_query.get(customer.id, {}).get("threshold_reached", 0)) == 0
+    ]
+    return {
+        "radius": radius,
+        "customer_count": len(customers),
+        "covered_customer_count": len(customers) - len(uncovered),
+        "all_customers_covered": not uncovered,
+        "uncovered_customer_ids": uncovered,
+        "row_count": len(by_query),
+    }
+
+
+def _run_optix_coverage_threshold(
+    case: dict[str, tuple[rt.Point, ...]],
+    *,
+    radius: float,
+) -> dict[str, object]:
+    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["depots"], max_radius=radius) as prepared:
+        rows = tuple(prepared.run(case["customers"], radius=radius, threshold=1))
+    return _coverage_threshold_from_count_rows(rows, customers=case["customers"], radius=radius)
+
+
+def run_case(
+    backend: str,
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    optix_summary_mode: str = "rows",
+    service_radius: float = DEFAULT_SERVICE_RADIUS,
+    require_rt_core: bool = False,
+) -> dict[str, object]:
     if output_mode not in {"rows", "primary_assignments", "summary"}:
         raise ValueError("output_mode must be 'rows', 'primary_assignments', or 'summary'")
+    if optix_summary_mode not in {"rows", "coverage_threshold_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'coverage_threshold_prepared'")
+    if service_radius < 0:
+        raise ValueError("service_radius must be non-negative")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     case = make_facility_knn_case(copies=copies)
+    if backend == "optix" and optix_summary_mode == "coverage_threshold_prepared":
+        coverage = _run_optix_coverage_threshold(case, radius=service_radius)
+        oracle = facility_coverage_oracle(case["customers"], case["depots"], radius=service_radius)
+        return {
+            "app": "facility_knn_assignment",
+            "backend": backend,
+            "k": None,
+            "copies": copies,
+            "output_mode": output_mode,
+            "optix_summary_mode": optix_summary_mode,
+            "service_radius": service_radius,
+            "customer_count": len(case["customers"]),
+            "depot_count": len(case["depots"]),
+            "coverage_threshold": coverage,
+            "oracle_coverage_threshold": oracle,
+            "matches_oracle": coverage["all_customers_covered"] == oracle["all_customers_covered"]
+            and coverage["uncovered_customer_ids"] == oracle["uncovered_customer_ids"],
+            "rt_core_accelerated": True,
+            "rtdl_role": (
+                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                "the bounded facility-coverage decision: every customer has at least "
+                "one depot within the service radius."
+            ),
+            "boundary": (
+                "Coverage-threshold decision only; this is not nearest-depot ranking, "
+                "not K=3 fallback assignment, and not a facility-location optimizer."
+            ),
+        }
+    if backend == "optix":
+        raise RuntimeError(
+            "facility_knn_assignment OptiX support is limited to "
+            "--optix-summary-mode coverage_threshold_prepared"
+        )
     primary_only = output_mode != "rows"
     rows = _run_rows(backend, case, primary_only=primary_only)
     choices: dict[int, list[dict[str, object]]] = {}
@@ -112,6 +224,8 @@ def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dic
         "k": PRIMARY_K if primary_only else K,
         "copies": copies,
         "output_mode": output_mode,
+        "optix_summary_mode": None,
+        "service_radius": None,
         "customer_count": len(case["customers"]),
         "depot_count": len(case["depots"]),
         "primary_depot_by_customer": dict(sorted(primary_depot_by_customer.items())),
@@ -137,7 +251,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--backend",
-        choices=("cpu_python_reference", "cpu", "embree", "scipy"),
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "scipy"),
         default="cpu_python_reference",
     )
     parser.add_argument("--copies", type=int, default=1)
@@ -147,8 +261,38 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="Use compact primary_assignments or summary when K=3 fallback choices are not needed.",
     )
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "coverage_threshold_prepared"),
+        default="rows",
+        help="OptiX-only: use prepared fixed-radius threshold traversal for service-coverage decisions.",
+    )
+    parser.add_argument(
+        "--service-radius",
+        type=float,
+        default=DEFAULT_SERVICE_RADIUS,
+        help="service radius for --optix-summary-mode coverage_threshold_prepared",
+    )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                optix_summary_mode=args.optix_summary_mode,
+                service_radius=args.service_radius,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

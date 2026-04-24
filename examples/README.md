@@ -169,7 +169,10 @@ Current v0.8 app example boundary:
 - `rtdl_facility_knn_assignment.py` keeps full K=3 nearest-depot fallback
   choices in `--output-mode rows`. Its compact `primary_assignments` and
   `summary` modes run a K=1 RTDL KNN kernel when the app only needs primary
-  depot assignments or depot-load summaries
+  depot assignments or depot-load summaries. The optional OptiX
+  `--optix-summary-mode coverage_threshold_prepared` path answers whether
+  every customer has at least one depot within a service radius using prepared
+  fixed-radius traversal; it is not a ranked-assignment speedup
 - `rtdl_robot_collision_screening_app.py` runs on `cpu_python_reference`,
   `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
   plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed
