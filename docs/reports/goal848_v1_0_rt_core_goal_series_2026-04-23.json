@@ -166,7 +166,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-24T08:25:15",
+  "generated_at": "2026-04-24T19:15:19",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
@@ -215,13 +215,14 @@
     },
     {
       "acceptance": [
-        "There is a native traversal design or an explicit scope removal.",
-        "Host-indexed fallback is no longer presented as an RT-core path."
+        "Strict RTX artifact proves row-digest parity for visibility, native BFS, and native triangle-count sub-paths.",
+        "Host-indexed fallback remains the default until the native graph-ray path passes review.",
+        "Shortest-path, graph database, distributed graph analytics, and whole-app graph-system claims remain excluded."
       ],
       "consensus_requirement": "3-AI because it changes strategic scope",
       "goal_id": "Goal852",
-      "scope": "Either implement a real graph-to-RT lowering or remove graph analytics from NVIDIA RT-core targets.",
-      "title": "Decide graph analytics RT-core future"
+      "scope": "Run the combined graph gate for visibility any-hit plus explicit native BFS/triangle graph-ray candidate generation on RTX hardware.",
+      "title": "Validate graph analytics native RT-core sub-paths"
     },
     {
       "acceptance": [

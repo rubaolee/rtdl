@@ -97,14 +97,15 @@ Acceptance:
 
 Consensus: `2-AI before completion`
 
-### Goal852: Decide graph analytics RT-core future
+### Goal852: Validate graph analytics native RT-core sub-paths
 
-Either implement a real graph-to-RT lowering or remove graph analytics from NVIDIA RT-core targets.
+Run the combined graph gate for visibility any-hit plus explicit native BFS/triangle graph-ray candidate generation on RTX hardware.
 
 Acceptance:
 
-- There is a native traversal design or an explicit scope removal.
-- Host-indexed fallback is no longer presented as an RT-core path.
+- Strict RTX artifact proves row-digest parity for visibility, native BFS, and native triangle-count sub-paths.
+- Host-indexed fallback remains the default until the native graph-ray path passes review.
+- Shortest-path, graph database, distributed graph analytics, and whole-app graph-system claims remain excluded.
 
 Consensus: `3-AI because it changes strategic scope`
 

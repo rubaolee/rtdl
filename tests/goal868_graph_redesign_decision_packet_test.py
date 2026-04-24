@@ -26,6 +26,18 @@ class Goal868GraphRedesignDecisionPacketTest(unittest.TestCase):
         self.assertEqual(packet["current_truth"]["bfs_optix_path"], "host_indexed_correctness_path")
         self.assertEqual(packet["current_truth"]["public_app_rt_core_status"], "rejected")
 
+    def test_detects_packaged_native_graph_ray_gate(self) -> None:
+        packet = goal868.build_packet(
+            "static void run_bfs_expand_optix_graph_ray() {}\nstatic void run_triangle_probe_optix_graph_ray() {}\n",
+            "run_bfs_expand_optix_graph_ray();\nrun_triangle_probe_optix_graph_ray();\n",
+            'raise RuntimeError("graph_analytics RT-core path is limited to --scenario visibility_edges; BFS and triangle_count native graph-ray mode remain RTX-gated before any RT-core claim")\n',
+            '"graph_analytics"\nperformance_class=OPTIX_TRAVERSAL\nneeds_real_rtx_artifact\nexplicit native graph-ray mode\n',
+        )
+        self.assertEqual(packet["recommended_status"], "native_graph_ray_packaged_needs_rtx_artifact")
+        self.assertEqual(packet["current_truth"]["bfs_optix_path"], "explicit_native_graph_ray_rtx_gated")
+        self.assertTrue(packet["evidence"]["bfs_native_graph_ray_present"])
+        self.assertEqual(packet["decision"]["local_recommendation"], "run_combined_graph_rtx_gate")
+
     def test_cli_writes_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workloads_cpp = Path(tmp) / "workloads.cpp"

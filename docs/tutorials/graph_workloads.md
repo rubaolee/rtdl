@@ -173,10 +173,22 @@ PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend vulkan
 ```
 
-OptiX graph commands are compatibility paths today, not NVIDIA RT-core claims.
-The current graph OptiX implementation is a host-indexed CSR fallback. If a
-script requires a true RT-core claim, add `--require-rt-core`; the graph apps
-reject it intentionally until a strict graph-to-RT traversal design exists.
+OptiX graph commands are compatibility paths by default, not NVIDIA RT-core
+claims. The default graph OptiX mode remains a host-indexed CSR fallback so
+existing users get the conservative correctness path. An explicit native
+graph-ray mode now exists for BFS and triangle-count candidate generation:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix --optix-graph-mode native
+PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix --optix-graph-mode native
+```
+
+These native commands still reject `--require-rt-core` intentionally until the
+combined Goal889/905 RTX cloud gate proves row-digest parity on real RTX
+hardware. Visibility rows are the only graph sub-path that can use
+`--require-rt-core` before that gate, and even then it is bounded to
+line-of-sight filtering, not shortest path, graph databases, distributed graph
+analytics, or whole-app graph-system speedup.
 
 ---
 

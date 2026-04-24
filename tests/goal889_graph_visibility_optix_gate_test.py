@@ -20,7 +20,8 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
         self.assertEqual(section["row_count"], 4)
         self.assertIn("visible_edge_count", section["summary"])
         self.assertFalse(payload["rt_core_accelerated"])
-        self.assertIn("Only visibility_edges", payload["honesty_boundary"])
+        self.assertIn("visibility_edges is an OptiX", payload["honesty_boundary"])
+        self.assertIn("native graph-ray mode remains gated", payload["honesty_boundary"])
 
     def test_require_rt_core_all_still_rejects_bfs_triangle_count(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "limited to --scenario visibility_edges"):

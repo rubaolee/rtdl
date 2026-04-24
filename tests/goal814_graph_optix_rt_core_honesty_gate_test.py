@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
-    def test_graph_app_metadata_records_visibility_only_rt_path(self) -> None:
+    def test_graph_app_metadata_records_bounded_rt_paths(self) -> None:
         self.assertEqual(
             rt.app_engine_support("graph_analytics", "optix").status,
             "direct_cli_compatibility_fallback",
@@ -36,9 +36,9 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
             rtdl_graph_analytics_app.run_app("optix", "all", require_rt_core=True)
 
     def test_component_apps_require_rt_core_fail_before_running_optix(self) -> None:
-        with self.assertRaisesRegex(RuntimeError, "graph_bfs OptiX path is host-indexed fallback"):
+        with self.assertRaisesRegex(RuntimeError, "not NVIDIA RT-core traversal"):
             rtdl_graph_bfs.run_backend("optix", require_rt_core=True)
-        with self.assertRaisesRegex(RuntimeError, "graph_triangle_count OptiX path is host-indexed fallback"):
+        with self.assertRaisesRegex(RuntimeError, "not NVIDIA RT-core traversal"):
             rtdl_graph_triangle_count.run_backend("optix", require_rt_core=True)
 
     def test_require_rt_core_is_optix_only(self) -> None:
@@ -57,7 +57,7 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertEqual(payload["sections"]["triangle_count"]["summary"]["triangle_count"], 2)
         self.assertEqual(payload["sections"]["visibility_edges"]["summary"]["visible_edge_count"], 7)
 
-    def test_visibility_edges_is_the_only_graph_rt_core_candidate(self) -> None:
+    def test_visibility_edges_is_only_require_rt_core_graph_candidate(self) -> None:
         payload = rtdl_graph_analytics_app.run_app(
             "cpu_python_reference",
             "visibility_edges",
@@ -65,7 +65,8 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         )
         self.assertIn("visibility_edges", payload["sections"])
         self.assertEqual(payload["sections"]["visibility_edges"]["row_count"], 4)
-        self.assertIn("Only visibility_edges", payload["honesty_boundary"])
+        self.assertIn("visibility_edges is an OptiX", payload["honesty_boundary"])
+        self.assertIn("native graph-ray mode remains gated", payload["honesty_boundary"])
 
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
         result = subprocess.run(

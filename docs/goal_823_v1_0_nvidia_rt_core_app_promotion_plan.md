@@ -59,7 +59,7 @@ host-indexed or CUDA-through-OptiX, not an RT-core claim path.
 | `segment_polygon_hitcount` | native OptiX mode exists but is strict-validation gated | finish Goal807 strict native-vs-host-indexed correctness/perf gate |
 | `segment_polygon_anyhit_rows` | compact count path is easier than pair-row output | promote compact flags/counts first; native pair-row output later |
 | `road_hazard_screening` | depends on segment/polygon core | promote only after segment/polygon strict gate passes |
-| `graph_analytics` | host-indexed CSR fallback | design real graph-to-RT traversal or keep out of RTX claims |
+| `graph_analytics` | explicit native OptiX graph-ray mode is packaged but RTX-gated | validate combined Goal889/905 graph gate for visibility any-hit plus BFS/triangle candidate generation; keep graph-system claims excluded |
 | `hausdorff_distance` exact distance | exact distance still uses KNN rows | design native ranking/nearest-distance reduction before any exact-distance RT-core claim |
 | `ann_candidate_search` ranking | candidate reranking still uses KNN rows | design native ranking/refinement before any ANN ranking RT-core claim |
 | `facility_knn_assignment` ranking | ranked depot assignment still uses KNN rows | design native nearest-depot ranking before any KNN-assignment RT-core claim |
@@ -94,6 +94,10 @@ These apps have Embree/native-assisted paths but no OptiX/NVIDIA app surface.
 8. Goal830+: return to segment/polygon strict packaging and the design reports
    for graph, Hausdorff/ANN, Barnes-Hut, facility KNN, and polygon
    overlap/Jaccard before implementation.
+9. Goal903-905: convert graph BFS/triangle-count from paper-level possibility
+   into Embree graph-ray candidate generation, OptiX native graph-ray source
+   paths, and a combined RTX cloud gate. Graph remains deferred until the gate
+   passes on RTX hardware and is independently reviewed.
 
 ## Exit Criteria
 

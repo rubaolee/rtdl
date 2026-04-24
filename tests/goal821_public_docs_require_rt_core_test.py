@@ -45,7 +45,11 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
 
     def test_tutorials_record_rejected_app_families(self) -> None:
         checks = {
-            "docs/tutorials/graph_workloads.md": ("host-indexed CSR fallback", "reject it intentionally"),
+            "docs/tutorials/graph_workloads.md": (
+                "host-indexed CSR fallback",
+                "--optix-graph-mode native",
+                "reject `--require-rt-core` intentionally",
+            ),
             "docs/tutorials/nearest_neighbor_workloads.md": (
                 "not NVIDIA RT-core claims",
                 "reject these apps today",

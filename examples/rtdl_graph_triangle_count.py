@@ -56,7 +56,8 @@ def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
     if backend != "optix":
         raise ValueError("--require-rt-core is only meaningful with --backend optix")
     raise RuntimeError(
-        "graph_triangle_count OptiX path is host-indexed fallback today, not NVIDIA RT-core traversal"
+        "graph_triangle_count OptiX native graph-ray mode is not NVIDIA RT-core "
+        "traversal claim-safe until the RTX cloud gate passes"
     )
 
 

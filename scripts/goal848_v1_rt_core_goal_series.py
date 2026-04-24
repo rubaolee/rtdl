@@ -111,11 +111,15 @@ def build_goal_series() -> dict[str, object]:
         },
         {
             "goal_id": "Goal852",
-            "title": "Decide graph analytics RT-core future",
-            "scope": "Either implement a real graph-to-RT lowering or remove graph analytics from NVIDIA RT-core targets.",
+            "title": "Validate graph analytics native RT-core sub-paths",
+            "scope": (
+                "Run the combined graph gate for visibility any-hit plus explicit "
+                "native BFS/triangle graph-ray candidate generation on RTX hardware."
+            ),
             "acceptance": [
-                "There is a native traversal design or an explicit scope removal.",
-                "Host-indexed fallback is no longer presented as an RT-core path.",
+                "Strict RTX artifact proves row-digest parity for visibility, native BFS, and native triangle-count sub-paths.",
+                "Host-indexed fallback remains the default until the native graph-ray path passes review.",
+                "Shortest-path, graph database, distributed graph analytics, and whole-app graph-system claims remain excluded.",
             ],
             "consensus_requirement": "3-AI because it changes strategic scope",
         },

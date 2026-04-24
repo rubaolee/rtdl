@@ -27,7 +27,8 @@ def _enforce_rt_core_requirement(backend: str, scenario: str, require_rt_core: b
     if scenario != "visibility_edges":
         raise RuntimeError(
             "graph_analytics RT-core path is limited to --scenario visibility_edges; "
-            "BFS and triangle_count remain host-indexed fallback today"
+            "BFS and triangle_count native graph-ray mode remain RTX-gated before "
+            "any RT-core claim"
         )
 
 

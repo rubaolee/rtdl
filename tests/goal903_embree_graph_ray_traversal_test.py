@@ -40,7 +40,8 @@ class Goal903EmbreeGraphRayTraversalTest(unittest.TestCase):
         self.assertTrue(payload["ray_tracing_accelerated"])
         self.assertFalse(payload["rt_core_accelerated"])
         self.assertIn("Embree BFS and triangle_count", payload["honesty_boundary"])
-        self.assertIn("OptiX BFS and triangle_count remain host-indexed", payload["honesty_boundary"])
+        self.assertIn("OptiX BFS and triangle_count remain host-indexed by default", payload["honesty_boundary"])
+        self.assertIn("native graph-ray mode remains gated", payload["honesty_boundary"])
 
     def test_native_embree_graph_path_uses_intersection_not_point_query(self) -> None:
         source = (ROOT / "src/native/embree/rtdl_embree_api.cpp").read_text()
