@@ -111,7 +111,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_robot_collision_screening_app.py` | `--output-mode hit_count` / `pose_flags` | hit-edge counts or pose collision flags | omits full witness rows; Embree still uses native any-hit row path internally |
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `--output-mode segment_counts` / `segment_flags` | one hit-count or any-hit flag row per segment | omits polygon ids and pair rows |
 | `examples/rtdl_road_hazard_screening.py` | `--output-mode priority_segments` / `summary` | priority road ids and counts | omits full per-road hit-count rows from the JSON payload |
-| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows; Embree app path uses positive LSI/PIP candidate discovery |
+| `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows; Embree/OptiX app paths use positive LSI/PIP candidate discovery |
 | `examples/rtdl_barnes_hut_force_app.py` | `--output-mode candidate_summary` / `force_summary` | candidate-generation summaries or force-reduction summaries | separates RTDL candidate generation from Python Barnes-Hut force reduction |
 
 ## DB-Style App Examples

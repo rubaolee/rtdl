@@ -498,8 +498,8 @@
     "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
     "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
     "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
-    "polygon_pair_overlap_area_rows": "current public app has no OptiX/NVIDIA RT-core surface",
-    "polygon_set_jaccard": "current public app has no OptiX/NVIDIA RT-core surface",
+    "polygon_pair_overlap_area_rows": "native-assisted OptiX candidate discovery exists, but exact area refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
+    "polygon_set_jaccard": "native-assisted OptiX candidate discovery exists, but exact Jaccard refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
     "road_hazard_screening": "current default OptiX app path is host-indexed fallback and native mode remains behind strict validation",
     "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
     "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback"

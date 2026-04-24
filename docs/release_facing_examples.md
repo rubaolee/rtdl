@@ -640,6 +640,7 @@ PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend c
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 ### Polygon-Pair Overlap Area Rows
@@ -651,11 +652,13 @@ PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
-For both polygon-overlap examples, `--backend embree` is native-assisted:
-Embree performs candidate discovery and CPU/Python performs exact bounded
-area/Jaccard refinement.
+For both polygon-overlap examples, `--backend embree` and `--backend optix` are
+native-assisted: the backend performs LSI/PIP candidate discovery and
+CPU/Python performs exact bounded area/Jaccard refinement. This is not a fully
+native polygon-area/Jaccard kernel or a public RTX speedup claim.
 
 ## App-style example
 

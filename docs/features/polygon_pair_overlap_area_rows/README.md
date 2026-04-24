@@ -52,6 +52,7 @@ Run:
 
 ```bash
 python examples/rtdl_polygon_pair_overlap_area_rows.py
+python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
 Use `python3` instead if that is what your shell exposes.
@@ -61,8 +62,8 @@ Use `python3` instead if that is what your shell exposes.
 - use only orthogonal integer-grid polygons that fit the unit-cell contract
 - explain area as covered unit cells, not generic continuous polygon area
 - use this primitive when you need pairwise overlap rows before an aggregate like Jaccard
-- if you run it through `embree`, `optix`, or `vulkan`, describe those public
-  surfaces honestly as documented native CPU/oracle fallback today
+- if you run it through `embree` or `optix`, describe those public surfaces as
+  native-assisted candidate discovery plus CPU exact area refinement
 
 ## Try
 
@@ -81,6 +82,6 @@ Use `python3` instead if that is what your shell exposes.
 - narrow contract only: orthogonal integer-grid unit-cell polygons
 - not full polygon overlay
 - current backend maturity is intentionally narrower than the segment/polygon line
-- the public `embree`, `optix`, and `vulkan` surfaces are available for this
-  line, but through documented native CPU/oracle fallback rather than
-  backend-specific Jaccard kernels
+- Embree and OptiX app modes use native LSI/PIP positive candidate discovery,
+  then CPU/Python exact grid-cell area refinement
+- this is not a fully native polygon-area kernel or a public RTX speedup claim

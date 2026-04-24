@@ -137,10 +137,14 @@ def _first_vertex_points(polygons: tuple[rt.Polygon, ...]) -> tuple[rt.Point, ..
     )
 
 
-def _positive_candidate_pairs_embree(
+def _positive_candidate_pairs_backend(
+    backend: str,
     left: tuple[rt.Polygon, ...],
     right: tuple[rt.Polygon, ...],
 ) -> set[tuple[int, int]]:
+    if backend not in {"embree", "optix"}:
+        raise ValueError("candidate backend must be 'embree' or 'optix'")
+    run_backend = rt.run_embree if backend == "embree" else rt.run_optix
     left_ids = {polygon.id for polygon in left}
     right_ids = {polygon.id for polygon in right}
 
@@ -153,17 +157,17 @@ def _positive_candidate_pairs_embree(
 
     left_segments = _segments_from_polygons(left)
     right_segments = _segments_from_polygons(right)
-    lsi_rows = rt.run_embree(
+    lsi_rows = run_backend(
         polygon_edge_intersections_embree_kernel,
         left=left_segments,
         right=right_segments,
     )
-    left_in_right = rt.run_embree(
+    left_in_right = run_backend(
         polygon_point_in_polygon_positive_embree_kernel,
         points=_first_vertex_points(left),
         polygons=right,
     )
-    right_in_left = rt.run_embree(
+    right_in_left = run_backend(
         polygon_point_in_polygon_positive_embree_kernel,
         points=_first_vertex_points(right),
         polygons=left,
@@ -186,6 +190,20 @@ def _positive_candidate_pairs_embree(
         if pair is not None:
             pairs.add(pair)
     return pairs
+
+
+def _positive_candidate_pairs_embree(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    return _positive_candidate_pairs_backend("embree", left, right)
+
+
+def _positive_candidate_pairs_optix(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    return _positive_candidate_pairs_backend("optix", left, right)
 
 
 def _summarize_rows(rows: tuple[dict[str, int], ...]) -> dict[str, int]:
@@ -235,12 +253,22 @@ def _run_embree_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, .
     return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_pairs
 
 
-def _enforce_rt_core_requirement(require_rt_core: bool) -> None:
-    if require_rt_core:
-        raise RuntimeError(
-            "polygon_pair_overlap_area_rows has no OptiX RT-core surface today; "
-            "Embree mode is CPU native-assisted candidate discovery plus exact CPU/Python area refinement"
-        )
+def _run_optix_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    rows = _exact_overlap_rows_for_candidates(left, right, candidate_pairs)
+    return rows, candidate_pairs
+
+
+def _run_optix_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_pairs
+
+
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
 
 
 def run_case(
@@ -252,7 +280,7 @@ def run_case(
 ) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError("output_mode must be 'rows' or 'summary'")
-    _enforce_rt_core_requirement(require_rt_core)
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = make_authored_polygon_pair_overlap_case(copies=copies)
     rows: tuple[dict[str, int], ...] = ()
     if backend == "cpu_python_reference":
@@ -270,12 +298,24 @@ def run_case(
             rows, candidate_pairs = _run_embree_native_assisted(case["left"], case["right"])
             summary = _summarize_rows(tuple(rows))
         candidate_row_count = len(candidate_pairs)
+    elif backend == "optix":
+        if output_mode == "summary":
+            summary, candidate_pairs = _run_optix_summary(case["left"], case["right"])
+        else:
+            rows, candidate_pairs = _run_optix_native_assisted(case["left"], case["right"])
+            summary = _summarize_rows(tuple(rows))
+        candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
+    backend_mode = (
+        "embree_native_assisted" if backend == "embree"
+        else "optix_native_assisted" if backend == "optix"
+        else "cpu_exact"
+    )
     payload: dict[str, object] = {
         "app": "polygon_pair_overlap_area_rows",
         "backend": backend,
-        "backend_mode": "embree_native_assisted" if backend == "embree" else "cpu_exact",
+        "backend_mode": backend_mode,
         "copies": copies,
         "output_mode": output_mode,
         "left_polygon_count": len(case["left"]),
@@ -284,13 +324,16 @@ def run_case(
         "candidate_row_count": candidate_row_count,
         "summary": summary,
         "rt_core_accelerated": False,
+        "rt_core_candidate_discovery_active": backend == "optix",
         "optix_performance": {
             "class": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").performance_class,
             "note": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").note,
         },
         "boundary": (
             "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
-            "grid-cell area refinement. It is native-assisted, not a fully native area-overlay kernel."
+            "grid-cell area refinement. OptiX mode uses native OptiX LSI/PIP positive candidate discovery "
+            "and the same CPU/Python exact refinement. These modes are native-assisted, not fully native "
+            "area-overlay kernels."
         ),
     }
     if output_mode == "rows":
@@ -300,13 +343,13 @@ def run_case(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run bounded polygon-pair overlap area rows.")
-    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree"), default="cpu_python_reference")
+    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
-        help="Fail because this app has no NVIDIA OptiX RT-core path today.",
+        help="Require the native-assisted OptiX candidate-discovery path.",
     )
     args = parser.parse_args(argv)
     print(

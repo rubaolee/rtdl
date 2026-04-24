@@ -11,6 +11,7 @@ import rtdsl as rt
 from rtdsl.reference import _polygon_set_unit_cells
 from rtdsl.reference import _polygon_unit_cells
 from examples.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_embree
+from examples.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_optix
 from examples.rtdl_polygon_pair_overlap_area_rows import _shift_vertices
 
 
@@ -59,8 +60,18 @@ def make_authored_polygon_set_jaccard_case(*, copies: int = 1):
     return {"left": tuple(left), "right": tuple(right)}
 
 
-def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
-    candidate_pairs = _positive_candidate_pairs_embree(left, right)
+def _run_native_assisted(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    *,
+    candidate_backend: str,
+):
+    if candidate_backend == "embree":
+        candidate_pairs = _positive_candidate_pairs_embree(left, right)
+    elif candidate_backend == "optix":
+        candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    else:
+        raise ValueError("candidate_backend must be 'embree' or 'optix'")
     left_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in left}
     right_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in right}
     left_cells = _polygon_set_unit_cells(left)
@@ -84,12 +95,19 @@ def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Po
     return rows, candidate_pairs
 
 
-def _enforce_rt_core_requirement(require_rt_core: bool) -> None:
-    if require_rt_core:
-        raise RuntimeError(
-            "polygon_set_jaccard has no OptiX RT-core surface today; "
-            "Embree mode is CPU native-assisted candidate discovery plus exact CPU/Python set-area refinement"
-        )
+def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    return _run_native_assisted(left, right, candidate_backend="embree")
+
+
+def _run_optix_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    return _run_native_assisted(left, right, candidate_backend="optix")
+
+
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
 
 
 def run_case(
@@ -98,7 +116,7 @@ def run_case(
     copies: int = 1,
     require_rt_core: bool = False,
 ) -> dict[str, object]:
-    _enforce_rt_core_requirement(require_rt_core)
+    _enforce_rt_core_requirement(backend, require_rt_core)
     case = make_authored_polygon_set_jaccard_case(copies=copies)
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(polygon_set_jaccard_reference, **case)
@@ -109,12 +127,20 @@ def run_case(
     elif backend == "embree":
         rows, candidate_pairs = _run_embree_native_assisted(case["left"], case["right"])
         candidate_row_count = len(candidate_pairs)
+    elif backend == "optix":
+        rows, candidate_pairs = _run_optix_native_assisted(case["left"], case["right"])
+        candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
+    backend_mode = (
+        "embree_native_assisted" if backend == "embree"
+        else "optix_native_assisted" if backend == "optix"
+        else "cpu_exact"
+    )
     return {
         "app": "polygon_set_jaccard",
         "backend": backend,
-        "backend_mode": "embree_native_assisted" if backend == "embree" else "cpu_exact",
+        "backend_mode": backend_mode,
         "copies": copies,
         "left_polygon_count": len(case["left"]),
         "right_polygon_count": len(case["right"]),
@@ -122,25 +148,28 @@ def run_case(
         "candidate_row_count": candidate_row_count,
         "rows": rows,
         "rt_core_accelerated": False,
+        "rt_core_candidate_discovery_active": backend == "optix",
         "optix_performance": {
             "class": rt.optix_app_performance_support("polygon_set_jaccard").performance_class,
             "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
         },
         "boundary": (
             "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
-            "grid-cell set-area refinement. It is native-assisted, not a fully native Jaccard kernel."
+            "grid-cell set-area refinement. OptiX mode uses native OptiX LSI/PIP positive candidate "
+            "discovery and the same CPU/Python exact refinement. These modes are native-assisted, not "
+            "fully native Jaccard kernels."
         ),
     }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run bounded polygon-set Jaccard.")
-    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree"), default="cpu_python_reference")
+    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
-        help="Fail because this app has no NVIDIA OptiX RT-core path today.",
+        help="Require the native-assisted OptiX candidate-discovery path.",
     )
     args = parser.parse_args(argv)
     print(

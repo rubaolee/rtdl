@@ -45,6 +45,7 @@ Run:
 
 ```bash
 python examples/rtdl_polygon_set_jaccard.py
+python examples/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 Use `python3` instead if that is what your shell exposes.
@@ -61,9 +62,9 @@ python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset au
 - describe the current public-data story honestly as public-data-derived after conversion
 - use PostGIS-backed Linux validation when you need external correctness evidence
 - use the primitive `polygon_pair_overlap_area_rows` when you need pairwise overlap detail, not only the final aggregate
-- if you discuss `embree`, `optix`, or `vulkan` for this line, say explicitly
-  that the current public run surfaces are accepted through documented native
-  CPU/oracle fallback
+- if you discuss `embree` or `optix` for this line, say explicitly that they
+  use native-assisted candidate discovery plus CPU exact set-area/Jaccard
+  refinement
 
 ## Try
 
@@ -81,7 +82,8 @@ python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset au
 
 - narrow pathology/unit-cell contract only
 - not generic continuous polygon-set Jaccard
-- current strongest implementation/validation story is Python and native CPU plus Linux/PostGIS checking
-- the public `embree`, `optix`, and `vulkan` run surfaces exist for this line,
-  but through documented native CPU/oracle fallback rather than native Jaccard
-  backend kernels
+- current strongest validation story is Python/native CPU plus Linux/PostGIS
+  checking
+- Embree and OptiX app modes use native LSI/PIP positive candidate discovery,
+  then CPU/Python exact grid-cell Jaccard refinement
+- this is not a fully native Jaccard kernel or a public RTX speedup claim

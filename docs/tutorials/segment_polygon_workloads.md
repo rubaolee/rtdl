@@ -200,6 +200,7 @@ Run:
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
 Windows `cmd.exe`:
@@ -246,6 +247,7 @@ Run:
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 Windows `cmd.exe`:
