@@ -4,7 +4,7 @@ Date: 2026-04-17
 
 - Valid: `true`
 - Public docs scanned: `14`
-- Runnable public commands found: `252`
+- Runnable public commands found: `260`
 
 ## Coverage Counts
 
@@ -13,11 +13,12 @@ Date: 2026-04-17
 - `goal513_front_page_smoke_exact`: `6`
 - `goal593_public_example_smoke_exact`: `4`
 - `goal821_require_rt_core_doc_gate_exact`: `2`
+- `goal878_optix_doc_gate_exact`: `8`
 - `postgresql_validation_command`: `1`
 
 ## Classification Counts
 
-- `linux_gpu_backend_gated`: `37`
+- `linux_gpu_backend_gated`: `45`
 - `linux_postgresql_gated`: `1`
 - `optional_native_backend_gated`: `50`
 - `portable_python_cpu`: `157`
@@ -150,12 +151,14 @@ Date: 2026-04-17
 - `docs/release_facing_examples.md:631` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal410_harness_family`
 - `docs/release_facing_examples.md:641` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/release_facing_examples.md:642` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:652` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:653` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:684` `python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
-- `docs/release_facing_examples.md:701` `python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
-- `docs/release_facing_examples.md:707` `python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
-- `docs/release_facing_examples.md:723` `python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle` -> `portable_python_cpu` / `goal410_harness_family`
+- `docs/release_facing_examples.md:643` `python examples/rtdl_polygon_set_jaccard.py --backend optix` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/release_facing_examples.md:653` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:654` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:655` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/release_facing_examples.md:687` `python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
+- `docs/release_facing_examples.md:704` `python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
+- `docs/release_facing_examples.md:710` `python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
+- `docs/release_facing_examples.md:726` `python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle` -> `portable_python_cpu` / `goal410_harness_family`
 - `docs/tutorials/db_workloads.md:51` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/tutorials/db_workloads.md:52` `python examples/rtdl_db_conjunctive_scan.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
 - `docs/tutorials/db_workloads.md:53` `python examples/rtdl_db_conjunctive_scan.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
@@ -252,14 +255,20 @@ Date: 2026-04-17
 - `docs/tutorials/segment_polygon_workloads.md:98` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/tutorials/segment_polygon_workloads.md:105` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/tutorials/segment_polygon_workloads.md:112` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 4` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:170` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:171` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:178` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:179` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:216` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:217` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:224` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/tutorials/segment_polygon_workloads.md:225` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:171` `python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/tutorials/segment_polygon_workloads.md:172` `python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/tutorials/segment_polygon_workloads.md:173` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/tutorials/segment_polygon_workloads.md:174` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/tutorials/segment_polygon_workloads.md:203` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:204` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:205` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/tutorials/segment_polygon_workloads.md:212` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:213` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:250` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:251` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:252` `python examples/rtdl_polygon_set_jaccard.py --backend optix` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/tutorials/segment_polygon_workloads.md:259` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/tutorials/segment_polygon_workloads.md:260` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
 - `docs/tutorials/sorting_demo.md:23` `python scripts/rtdl_sorting_demo.py --backend cpu_python_reference 3 1 4 1 5 0 2 5` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/tutorials/sorting_demo.md:41` `python scripts/rtdl_sorting_demo.py --backend cpu_python_reference 3 1 4 1 5 0 2 5` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/tutorials/sorting_demo.md:48` `python scripts/rtdl_sorting_demo.py --backend cpu_python_reference 3 1 4 1 5 0 2 5` -> `portable_python_cpu` / `goal410_harness_exact`

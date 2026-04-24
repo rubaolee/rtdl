@@ -43,11 +43,20 @@ class Goal808SegmentPolygonAppNativeModePropagationTest(unittest.TestCase):
         self.assertEqual(payload["summary_source"], "segment_polygon_hitcount")
         self.assertEqual(payload["optix_mode"], "native")
 
-    def test_anyhit_pair_rows_reject_native_hitcount_mode(self) -> None:
+    def test_anyhit_pair_rows_can_use_native_bounded_emitter(self) -> None:
         from examples import rtdl_segment_polygon_anyhit_rows as app
 
-        with self.assertRaisesRegex(ValueError, "compact segment_flags or segment_counts"):
-            app.run_case("optix", "authored_segment_polygon_minimal", "rows", "native")
+        with mock.patch.object(
+            app,
+            "_run_native_anyhit_rows_optix",
+            return_value=({"segment_id": 1, "polygon_id": 10},),
+        ) as native:
+            payload = app.run_case("optix", "authored_segment_polygon_minimal", "rows", "native", output_capacity=16)
+
+        native.assert_called_once()
+        self.assertEqual(payload["summary_source"], "segment_polygon_anyhit_rows_native_bounded_optix")
+        self.assertTrue(payload["rt_core_accelerated"])
+        self.assertEqual(payload["native_output_capacity"], 16)
 
     def test_host_indexed_mode_restores_caller_env(self) -> None:
         from examples import rtdl_road_hazard_screening as app

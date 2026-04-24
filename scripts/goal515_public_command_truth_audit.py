@@ -50,6 +50,15 @@ GOAL821_COMMANDS = [
     "python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
 ]
 
+GOAL878_COMMANDS = [
+    "python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4",
+    "python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4",
+    "python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4",
+    "python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000",
+    "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
+    "python examples/rtdl_polygon_set_jaccard.py --backend optix",
+]
+
 PUBLIC_VALIDATION_COMMAND_KEYS = {
     ("python -m unittest", "default"): "postgresql_validation_command",
 }
@@ -153,6 +162,9 @@ def build_coverage_maps() -> tuple[dict[str, str], dict[tuple[str, str], str]]:
     for command in GOAL821_COMMANDS:
         exact_keys.setdefault(command, "goal821_require_rt_core_doc_gate_exact")
         family_keys.setdefault(command_key(command), "goal821_require_rt_core_doc_gate_family")
+    for command in GOAL878_COMMANDS:
+        exact_keys.setdefault(command, "goal878_optix_doc_gate_exact")
+        family_keys.setdefault(command_key(command), "goal878_optix_doc_gate_family")
     family_keys.update(PUBLIC_VALIDATION_COMMAND_KEYS)
     return exact_keys, family_keys
 

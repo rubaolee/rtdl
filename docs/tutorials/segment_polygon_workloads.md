@@ -171,17 +171,19 @@ Examples:
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4
 PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000
 ```
 
 Important boundary:
 
 - these commands are useful for local compatibility and future promotion work
 - they are **not** released NVIDIA RT-core claims
-- the segment/polygon app family also rejects
-`--require-rt-core` today
-- `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` also
-  fails intentionally because native bounded pair-row emission is still behind
-  the Goal873 strict RTX gate and has not been promoted to the public rows path
+- hitcount/road-hazard still reject `--require-rt-core` today until strict
+  native-mode validation passes
+- `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` now uses
+  the bounded native pair-row emitter. It is the explicit true-traversal rows
+  path, but speedup promotion still requires the Goal873 strict RTX gate,
+  row-digest parity, zero overflow, and independent review.
 
 ---
 

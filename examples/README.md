@@ -190,7 +190,10 @@ Current v0.8 app example boundary:
 - `rtdl_segment_polygon_anyhit_rows.py` keeps full pair-row output in
   `--output-mode rows`. Its compact `segment_flags` and `segment_counts` modes
   use the RTDL `segment_polygon_hitcount` primitive to avoid materializing full
-  segment/polygon pair rows when polygon ids are not needed
+  segment/polygon pair rows when polygon ids are not needed. Explicit
+  `--backend optix --output-mode rows --optix-mode native` uses the bounded
+  native OptiX pair-row emitter; overflow fails instead of truncating rows, and
+  speedup claims still require Goal873 RTX artifact review
 - `rtdl_road_hazard_screening.py` keeps full per-road hit-count rows in
   `--output-mode rows`. Its compact `priority_segments` and `summary` modes
   omit full rows from the app JSON payload when only priority road ids or

@@ -2378,6 +2378,63 @@ def _call_segment_polygon_anyhit_rows_optix_packed(compiled: CompiledKernel, pac
         field_names=("segment_id", "polygon_id"))
 
 
+def segment_polygon_anyhit_rows_native_bounded_optix(
+    segments,
+    polygons,
+    *,
+    output_capacity: int,
+) -> tuple[dict[str, int], ...]:
+    """Run the native bounded OptiX segment/polygon pair-row emitter.
+
+    This is intentionally explicit and bounded: callers must size the output
+    buffer and overflow is reported as an error instead of silently truncating
+    pair rows.
+    """
+    if output_capacity <= 0:
+        raise ValueError("output_capacity must be positive")
+    packed_segments = pack_segments(records=segments)
+    packed_polygons = pack_polygons(records=polygons)
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded",
+    )
+    if symbol is None:
+        raise ValueError(
+            "loaded OptiX backend does not export "
+            "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded; "
+            "rebuild the OptiX backend from current main"
+        )
+    row_array = (_RtdlSegmentPolygonAnyHitRow * output_capacity)()
+    emitted_count = ctypes.c_size_t()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        packed_segments.records,
+        packed_segments.count,
+        packed_polygons.refs,
+        packed_polygons.polygon_count,
+        packed_polygons.vertices_xy,
+        packed_polygons.vertex_xy_count,
+        row_array,
+        output_capacity,
+        ctypes.byref(emitted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    if int(overflowed.value) != 0:
+        raise RuntimeError(
+            "native bounded OptiX segment/polygon pair-row output overflowed "
+            f"capacity {output_capacity}; emitted at least {int(emitted_count.value)} rows"
+        )
+    return tuple(
+        {"segment_id": int(row_array[index].segment_id), "polygon_id": int(row_array[index].polygon_id)}
+        for index in range(int(emitted_count.value))
+    )
+
+
 def _call_point_nearest_segment_optix_packed(compiled: CompiledKernel, packed, lib) -> OptixRowView:
     points   = packed[compiled.candidates.left.name]
     segments = packed[compiled.candidates.right.name]

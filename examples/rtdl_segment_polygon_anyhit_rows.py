@@ -27,10 +27,6 @@ def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
         return
     if backend != "optix":
         raise ValueError("--require-rt-core is only meaningful with --backend optix")
-    raise RuntimeError(
-        "segment_polygon_anyhit_rows native OptiX compact mode remains gated by strict RTX validation; "
-        "pair-row native output does not exist, so no RT-core claim path is accepted today"
-    )
 
 
 @contextmanager
@@ -81,12 +77,20 @@ def _run_anyhit_rows(backend: str, case, *, optix_mode: str) -> tuple[dict[str, 
         return rt.run_embree(segment_polygon_anyhit_rows_reference, **case.inputs)
     if backend == "optix":
         if optix_mode == "native":
-            raise ValueError("optix_mode 'native' is only valid for compact segment_flags or segment_counts output")
+            raise ValueError("optix_mode 'native' rows require the bounded native pair-row helper")
         with _temporary_optix_segpoly_mode(optix_mode):
             return rt.run_optix(segment_polygon_anyhit_rows_reference, **case.inputs)
     if backend == "vulkan":
         return rt.run_vulkan(segment_polygon_anyhit_rows_reference, **case.inputs)
     raise ValueError(f"unsupported backend `{backend}`")
+
+
+def _run_native_anyhit_rows_optix(case, *, output_capacity: int) -> tuple[dict[str, int], ...]:
+    return rt.segment_polygon_anyhit_rows_native_bounded_optix(
+        case.inputs["segments"],
+        case.inputs["polygons"],
+        output_capacity=output_capacity,
+    )
 
 
 def _run_hitcount_rows(backend: str, case, *, optix_mode: str) -> tuple[dict[str, object], ...]:
@@ -127,18 +131,31 @@ def run_case(
     output_mode: str = "rows",
     optix_mode: str = "auto",
     require_rt_core: bool = False,
+    output_capacity: int = 1_000_000,
 ) -> dict[str, object]:
     if output_mode not in {"rows", "segment_flags", "segment_counts"}:
         raise ValueError("output_mode must be 'rows', 'segment_flags', or 'segment_counts'")
     if optix_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
     _enforce_rt_core_requirement(backend, require_rt_core)
+    if require_rt_core and (output_mode != "rows" or optix_mode != "native"):
+        raise RuntimeError(
+            "segment_polygon_anyhit_rows RT-core path requires "
+            "--backend optix --output-mode rows --optix-mode native"
+        )
     case = load_representative_case("segment_polygon_anyhit_rows", dataset)
     if output_mode == "rows":
-        rows = _run_anyhit_rows(backend, case, optix_mode=optix_mode)
+        if backend == "optix" and optix_mode == "native":
+            rows = _run_native_anyhit_rows_optix(case, output_capacity=output_capacity)
+        else:
+            rows = _run_anyhit_rows(backend, case, optix_mode=optix_mode)
         summary = _summarize_rows(rows, case.inputs["segments"])
         row_count = len(rows)
-        summary_source = "segment_polygon_anyhit_rows"
+        summary_source = (
+            "segment_polygon_anyhit_rows_native_bounded_optix"
+            if backend == "optix" and optix_mode == "native"
+            else "segment_polygon_anyhit_rows"
+        )
     else:
         rows = _run_hitcount_rows(backend, case, optix_mode=optix_mode)
         summary = _summarize_hitcount_rows(rows)
@@ -153,13 +170,16 @@ def run_case(
         "row_count": row_count,
         "summary_source": summary_source,
         "optix_performance": _optix_performance(),
-        "rt_core_accelerated": False,
+        "rt_core_accelerated": backend == "optix" and optix_mode == "native",
+        "native_output_capacity": output_capacity if backend == "optix" and optix_mode == "native" else None,
         "boundary": (
             "Rows mode emits segment/polygon pair rows. Compact segment_flags and "
             "segment_counts use the RTDL segment_polygon_hitcount primitive to avoid "
-            "materializing full pair rows. OptiX app exposure is still classified "
-            "separately from RT-core performance; use optix_performance for the "
-            "current classification."
+            "materializing full segment/polygon pair rows. Explicit "
+            "--backend optix --output-mode rows --optix-mode native uses the bounded "
+            "native OptiX pair-row emitter; overflow fails rather than truncating. "
+            "This exposes a true traversal path, but speedup claims still require "
+            "strict RTX artifact review."
         ),
     }
     if output_mode == "rows":
@@ -207,7 +227,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
-        help="Fail because segment/polygon native OptiX remains behind strict RTX validation.",
+        help="Fail unless the selected path is the explicit bounded native OptiX pair-row emitter.",
+    )
+    parser.add_argument(
+        "--output-capacity",
+        type=int,
+        default=1_000_000,
+        help="Maximum native OptiX pair rows to emit for --backend optix --output-mode rows --optix-mode native.",
     )
     args = parser.parse_args(argv)
     dataset = (
@@ -223,6 +249,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.output_mode,
                 args.optix_mode,
                 require_rt_core=args.require_rt_core,
+                output_capacity=args.output_capacity,
             ),
             indent=2,
             sort_keys=True,

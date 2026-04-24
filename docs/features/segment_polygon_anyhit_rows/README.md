@@ -54,24 +54,24 @@ python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mod
 Rows-mode boundary:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 16
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 16 --output-capacity 1000000
 ```
 
-That public app command fails intentionally because native OptiX pair-row
-emission is still gated. Goal872 added an internal native bounded pair-row
-emitter, and Goal873 added the strict RTX gate, but the public rows path is not promoted
-until a real RTX artifact proves CPU row-digest parity and zero
+That command uses the bounded native OptiX pair-row emitter. The bound matters:
+overflow fails rather than silently truncating rows. Goal873 added the strict RTX gate
+for promotion, so this is an explicit native traversal path but not a released
+speedup claim until a real RTX artifact proves CPU row-digest parity and zero
 overflow.
 
 Claim-sensitive boundary:
 
 ```bash
-python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --require-rt-core
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --require-rt-core
 ```
 
-That command also fails intentionally today. The compact native mode is useful
-for local evaluation, but it remains behind strict RTX validation and is not a
-released NVIDIA RT-core claim.
+That command enforces the explicit native pair-row traversal path. It does not
+authorize a speedup claim; the cloud/review gate still has to validate the
+artifact before docs may promote performance.
 
 ## Best Practices
 
@@ -98,8 +98,8 @@ released NVIDIA RT-core claim.
 
 - row materialization can be heavier than aggregated counting if you only need counts
 - current geometry path is float-based
-- internal OptiX native bounded pair-row output exists, but it is still behind
-  the Goal873 strict RTX gate and is not the public rows path today
-- released OptiX RT-core claims are still blocked; `--require-rt-core` rejects
-  this workload today
+- explicit OptiX native bounded pair-row output exists for rows mode, but it is
+  still behind the Goal873 strict RTX artifact gate for speedup promotion
+- released OptiX RT-core speedup claims are still blocked until the strict gate
+  has a real RTX artifact and independent review
 - strongest evidence remains on the accepted Linux/PostGIS validation surface

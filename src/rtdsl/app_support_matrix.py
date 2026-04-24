@@ -228,11 +228,11 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         "segment_polygon_anyhit_rows",
         cpu_python_reference=_CPU,
         embree=_NATIVE,
-        optix=_COMPAT,
+        optix=_NATIVE,
         vulkan=_NATIVE,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan; compact modes can request native OptiX hit-count mode, and native bounded pair-row OptiX emission exists behind the Goal873 strict RTX gate while the public rows path stays host-indexed.",
+        note="Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan; explicit --backend optix --output-mode rows --optix-mode native uses the bounded native OptiX pair-row emitter while auto mode remains conservative.",
     ),
     "polygon_pair_overlap_area_rows": _row(
         "polygon_pair_overlap_area_rows",
@@ -370,7 +370,7 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "segment_polygon_anyhit_rows": OptixAppPerformanceSupport(
         app="segment_polygon_anyhit_rows",
         performance_class=HOST_INDEXED_FALLBACK,
-        note="Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. Compact flags/counts can request native hit-count mode, and the native bounded pair-row emitter now exists as a deferred Goal873 strict RTX gate rather than default public behavior.",
+        note="Default segment/polygon OptiX pair-row path remains conservative, but explicit --output-mode rows --optix-mode native now calls the bounded native OptiX pair-row emitter. This is a true traversal path that still needs a real RTX artifact and overflow-free phase review before speedup claims.",
     ),
     "polygon_pair_overlap_area_rows": OptixAppPerformanceSupport(
         app="polygon_pair_overlap_area_rows",
@@ -505,11 +505,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "segment_polygon_anyhit_rows": _readiness(
         "segment_polygon_anyhit_rows",
-        NEEDS_NATIVE_KERNEL_TUNING,
+        NEEDS_REAL_RTX_ARTIFACT,
         "Goal873",
-        "native bounded pair-row output must pass the Goal873 strict RTX gate before any default-public-path or row-output claim",
-        "native bounded pair-row emitter exists, but strict RTX gate has not passed and public rows path remains host-indexed",
-        "no RTX pair-row speedup claim today",
+        "explicit native bounded pair-row output must pass the Goal873 strict RTX gate before any default-public-path or speedup claim",
+        "native bounded pair-row emitter is now exposed through explicit app CLI mode, but strict RTX artifact review has not passed",
+        "native bounded pair-row traversal path only; no pair-row speedup claim today",
     ),
     "polygon_pair_overlap_area_rows": _readiness(
         "polygon_pair_overlap_area_rows",
@@ -661,9 +661,9 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "segment_polygon_anyhit_rows": _maturity(
         "segment_polygon_anyhit_rows",
-        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Run the native bounded pair-row emitter through Goal873 strict RTX validation, then decide whether to promote the public rows path or keep it as an explicit bounded gate.",
+        "Run the explicit native bounded pair-row app mode through Goal873 strict RTX validation, then decide whether to promote the default public rows path or keep native mode as an explicit bounded gate.",
         "Cloud only after the deferred Goal873 strict gate has a prepared batch slot; require row-digest parity, zero overflow, and independent review on RTX hardware.",
     ),
     "polygon_pair_overlap_area_rows": _maturity(

@@ -20,7 +20,7 @@ class Goal858SegmentPolygonDocsOptixBoundaryTest(unittest.TestCase):
                 "--output-mode segment_counts --optix-mode native",
                 "--output-mode rows --optix-mode native",
                 "Goal873 added the strict RTX gate",
-                "public rows path is not promoted",
+                "bounded native OptiX pair-row emitter",
                 "--require-rt-core",
             ),
         }
@@ -38,7 +38,7 @@ class Goal858SegmentPolygonDocsOptixBoundaryTest(unittest.TestCase):
             "--optix-mode native",
             "not released NVIDIA RT-core claims",
             "Goal873 strict RTX gate",
-            "has not been promoted to the public rows path",
+            "bounded native pair-row emitter",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)

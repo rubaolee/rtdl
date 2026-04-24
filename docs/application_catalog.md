@@ -38,11 +38,12 @@ Accepted partial claim modes today:
 | Outlier detection | `--backend optix --optix-summary-mode rt_count_threshold_prepared` | prepared fixed-radius density-threshold summary; RTX-class performance still gated |
 | DBSCAN clustering | `--backend optix --optix-summary-mode rt_core_flags_prepared` | prepared core-flag summary only; Python cluster expansion remains host-side |
 | Robot collision screening | `--backend optix --optix-summary-mode prepared_count` or `prepared_pose_flags` | prepared any-hit count or pose flags; witness rows remain outside the compact claim |
+| Segment/polygon any-hit rows | `--backend optix --output-mode rows --optix-mode native --require-rt-core` | bounded native pair-row traversal path only; speedup promotion still needs Goal873 RTX artifact review |
 
 Rejected under `--require-rt-core` today: graph apps, facility KNN, polygon
-overlap/Jaccard, segment/polygon apps, Hausdorff, ANN candidate search, and
-Barnes-Hut. Those may be useful OptiX compatibility or CUDA-through-OptiX paths,
-but they are not public NVIDIA RT-core claims yet.
+overlap/Jaccard, segment/polygon hitcount/road-hazard compact modes, Hausdorff,
+ANN candidate search, and Barnes-Hut. Those may be useful OptiX compatibility
+or CUDA-through-OptiX paths, but they are not public NVIDIA RT-core claims yet.
 
 The original RTDL root spatial workloads are still first-class:
 [LSI](features/lsi/README.md) turns segment sets into segment-intersection

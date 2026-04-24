@@ -172,6 +172,7 @@ from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
 from .optix_runtime import run_optix
+from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .reduction_runtime import reduce_rows
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
 from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
@@ -726,6 +727,7 @@ __all__ = [
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
     "run_optix",
+    "segment_polygon_anyhit_rows_native_bounded_optix",
     "triangle_match_apple_rt",
     "triangle_match_hiprt",
     "VulkanRowView",

@@ -1,17 +1,18 @@
 {
   "valid": true,
   "public_doc_count": 14,
-  "command_count": 252,
+  "command_count": 260,
   "coverage_counts": {
     "goal410_harness_exact": 226,
     "goal410_harness_family": 13,
     "goal513_front_page_smoke_exact": 6,
     "goal593_public_example_smoke_exact": 4,
     "goal821_require_rt_core_doc_gate_exact": 2,
+    "goal878_optix_doc_gate_exact": 8,
     "postgresql_validation_command": 1
   },
   "classification_counts": {
-    "linux_gpu_backend_gated": 37,
+    "linux_gpu_backend_gated": 45,
     "linux_postgresql_gated": 1,
     "optional_native_backend_gated": 50,
     "portable_python_cpu": 157,
@@ -1231,7 +1232,17 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 652,
+      "line": 643,
+      "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix",
+      "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend optix",
+      "program": "examples/rtdl_polygon_set_jaccard.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/release_facing_examples.md",
+      "line": 653,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -1241,7 +1252,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 653,
+      "line": 654,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -1251,7 +1262,17 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 684,
+      "line": 655,
+      "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
+      "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
+      "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/release_facing_examples.md",
+      "line": 687,
       "command": "PYTHONPATH=src:. python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo",
       "normalized": "python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo",
       "program": "examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py",
@@ -1261,7 +1282,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 701,
+      "line": 704,
       "command": "PYTHONPATH=src:. python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm",
       "normalized": "python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm",
       "program": "examples/visual_demo/rtdl_lit_ball_demo.py",
@@ -1271,7 +1292,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 707,
+      "line": 710,
       "command": "PYTHONPATH=src:. python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo",
       "normalized": "python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo",
       "program": "examples/visual_demo/rtdl_smooth_camera_orbit_demo.py",
@@ -1281,7 +1302,7 @@
     },
     {
       "path": "docs/release_facing_examples.md",
-      "line": 723,
+      "line": 726,
       "command": "PYTHONPATH=src:. python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle",
       "normalized": "python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle",
       "program": "scripts/rtdl_generate_only.py",
@@ -2251,7 +2272,47 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 170,
+      "line": 171,
+      "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4",
+      "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4",
+      "program": "examples/rtdl_segment_polygon_hitcount.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "line": 172,
+      "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4",
+      "normalized": "python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4",
+      "program": "examples/rtdl_segment_polygon_hitcount.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "line": 173,
+      "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4",
+      "normalized": "python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4",
+      "program": "examples/rtdl_segment_polygon_anyhit_rows.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "line": 174,
+      "command": "PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000",
+      "normalized": "python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 4 --output-capacity 1000000",
+      "program": "examples/rtdl_segment_polygon_anyhit_rows.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "line": 203,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -2261,7 +2322,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 171,
+      "line": 204,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -2271,7 +2332,17 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 178,
+      "line": 205,
+      "command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
+      "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary",
+      "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "line": 212,
       "command": "python examples\\rtdl_polygon_pair_overlap_area_rows.py",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -2281,7 +2352,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 179,
+      "line": 213,
       "command": "python examples\\rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "normalized": "python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree",
       "program": "examples/rtdl_polygon_pair_overlap_area_rows.py",
@@ -2291,7 +2362,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 216,
+      "line": 250,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -2301,7 +2372,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 217,
+      "line": 251,
       "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -2311,7 +2382,17 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 224,
+      "line": 252,
+      "command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix",
+      "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend optix",
+      "program": "examples/rtdl_polygon_set_jaccard.py",
+      "backend": "optix",
+      "classification": "linux_gpu_backend_gated",
+      "coverage": "goal878_optix_doc_gate_exact"
+    },
+    {
+      "path": "docs/tutorials/segment_polygon_workloads.md",
+      "line": 259,
       "command": "python examples\\rtdl_polygon_set_jaccard.py",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py",
       "program": "examples/rtdl_polygon_set_jaccard.py",
@@ -2321,7 +2402,7 @@
     },
     {
       "path": "docs/tutorials/segment_polygon_workloads.md",
-      "line": 225,
+      "line": 260,
       "command": "python examples\\rtdl_polygon_set_jaccard.py --backend embree",
       "normalized": "python examples/rtdl_polygon_set_jaccard.py --backend embree",
       "program": "examples/rtdl_polygon_set_jaccard.py",

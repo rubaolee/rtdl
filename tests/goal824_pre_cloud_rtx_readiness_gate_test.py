@@ -30,10 +30,10 @@ class Goal824PreCloudRtxReadinessGateTest(unittest.TestCase):
         payload = run_gate()
         manifest = payload["checks"]["manifest"]
         self.assertEqual(manifest["active_count"], 5)
-        self.assertEqual(manifest["deferred_count"], 3)
+        self.assertEqual(manifest["deferred_count"], 6)
         self.assertEqual(manifest["excluded_count"], 12)
         self.assertEqual(manifest["active_errors"], [])
-        self.assertEqual(manifest["baseline_contract_count"], 8)
+        self.assertEqual(manifest["baseline_contract_count"], 11)
         self.assertEqual(manifest["baseline_contract_errors"], [])
         self.assertEqual(manifest["missing_excluded"], [])
         self.assertEqual(manifest["missing_deferred"], [])

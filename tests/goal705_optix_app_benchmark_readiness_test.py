@@ -55,7 +55,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "event_hotspot_screening": "needs_real_rtx_artifact",
             "road_hazard_screening": "needs_native_kernel_tuning",
             "segment_polygon_hitcount": "needs_native_kernel_tuning",
-            "segment_polygon_anyhit_rows": "needs_native_kernel_tuning",
+            "segment_polygon_anyhit_rows": "needs_real_rtx_artifact",
             "polygon_pair_overlap_area_rows": "needs_interface_tuning",
             "polygon_set_jaccard": "needs_interface_tuning",
             "hausdorff_distance": "exclude_from_rtx_app_benchmark",
