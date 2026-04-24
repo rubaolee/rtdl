@@ -408,6 +408,271 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
         finally:
             artifact_path.unlink(missing_ok=True)
 
+    def test_prepared_decision_deferred_artifact_is_extracted(self) -> None:
+        module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
+        artifact_path = ROOT / "docs" / "reports" / "goal762_test_prepared_decision_tmp.json"
+        try:
+            artifact_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "goal887_prepared_decision_phase_contract_v1",
+                        "cloud_claim_contract": {
+                            "claim_scope": "prepared OptiX fixed-radius threshold traversal",
+                            "non_claim": "not exact Hausdorff",
+                            "required_phase_groups": [
+                                "input_build_sec",
+                                "point_pack_sec",
+                                "optix_prepare_sec",
+                                "optix_query_sec",
+                                "python_postprocess_sec",
+                                "validation_sec",
+                                "optix_close_sec",
+                            ],
+                        },
+                        "scenario": {
+                            "scenario": "hausdorff_threshold",
+                            "mode": "optix",
+                            "timings_sec": {
+                                "input_build_sec": 0.1,
+                                "point_pack_sec": 0.2,
+                                "optix_prepare_sec": 0.3,
+                                "optix_query_sec": {"min_sec": 0.4, "median_sec": 0.5, "max_sec": 0.6},
+                                "python_postprocess_sec": {"min_sec": 0.01, "median_sec": 0.02, "max_sec": 0.03},
+                                "validation_sec": {"min_sec": 0.0, "median_sec": 0.0, "max_sec": 0.0},
+                                "optix_close_sec": 0.04,
+                            },
+                            "result": {"threshold_reached_count": 9, "matches_oracle": True},
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with tempfile.TemporaryDirectory() as tmpdir:
+                summary = Path(tmpdir) / "summary.json"
+                summary.write_text(
+                    json.dumps(
+                        {
+                            "status": "ok",
+                            "dry_run": False,
+                            "results": [
+                                {
+                                    "app": "hausdorff_distance",
+                                    "path_name": "directed_threshold_prepared",
+                                    "claim_scope": "prepared OptiX fixed-radius threshold traversal",
+                                    "non_claim": "not exact distance",
+                                    "baseline_review_contract": _baseline_contract(),
+                                    "result": {
+                                        "status": "ok",
+                                        "returncode": 0,
+                                        "command": ["python3", "script.py", "--output-json", "docs/reports/goal762_test_prepared_decision_tmp.json"],
+                                    },
+                                }
+                            ],
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                payload = module.analyze(summary)
+            row = payload["rows"][0]
+            self.assertEqual(payload["status"], "ok")
+            self.assertEqual(row["artifact_status"], "ok")
+            self.assertEqual(row["warm_query_median_sec"], 0.5)
+            self.assertEqual(row["postprocess_median_sec"], 0.02)
+            self.assertEqual(row["threshold_reached_count"], 9)
+            self.assertTrue(row["matches_oracle"])
+            self.assertEqual(row["cloud_contract_status"], "ok")
+        finally:
+            artifact_path.unlink(missing_ok=True)
+
+    def test_graph_visibility_gate_artifact_is_extracted(self) -> None:
+        module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
+        artifact_path = ROOT / "docs" / "reports" / "goal762_test_graph_visibility_tmp.json"
+        try:
+            artifact_path.write_text(
+                json.dumps(
+                    {
+                        "output_mode": "summary",
+                        "strict_pass": True,
+                        "strict_failures": [],
+                        "cloud_claim_contract": {
+                            "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
+                            "non_claim": "not BFS",
+                            "required_phase_groups": [
+                                "cpu_python_reference",
+                                "optix_visibility_anyhit",
+                                "strict_pass",
+                                "strict_failures",
+                            ],
+                        },
+                        "records": [
+                            {"label": "cpu_python_reference", "status": "ok", "sec": 0.1},
+                            {
+                                "label": "optix_visibility_anyhit",
+                                "status": "ok",
+                                "sec": 0.2,
+                                "parity_vs_cpu_python_reference": True,
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with tempfile.TemporaryDirectory() as tmpdir:
+                summary = Path(tmpdir) / "summary.json"
+                summary.write_text(
+                    json.dumps(
+                        {
+                            "status": "ok",
+                            "dry_run": False,
+                            "results": [
+                                {
+                                    "app": "graph_analytics",
+                                    "path_name": "graph_visibility_edges_gate",
+                                    "claim_scope": "OptiX ray/triangle any-hit traversal",
+                                    "non_claim": "not BFS",
+                                    "baseline_review_contract": _baseline_contract(),
+                                    "result": {
+                                        "status": "ok",
+                                        "returncode": 0,
+                                        "command": ["python3", "script.py", "--output-json", "docs/reports/goal762_test_graph_visibility_tmp.json"],
+                                    },
+                                }
+                            ],
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                payload = module.analyze(summary)
+            row = payload["rows"][0]
+            self.assertEqual(payload["status"], "ok")
+            self.assertEqual(row["warm_query_median_sec"], 0.2)
+            self.assertTrue(row["strict_pass"])
+            self.assertTrue(row["optix_native_parity"])
+            self.assertEqual(row["cloud_contract_status"], "ok")
+        finally:
+            artifact_path.unlink(missing_ok=True)
+
+    def test_segment_pair_rows_and_polygon_overlap_artifacts_are_extracted(self) -> None:
+        module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
+        pair_rows_path = ROOT / "docs" / "reports" / "goal762_test_pair_rows_tmp.json"
+        polygon_path = ROOT / "docs" / "reports" / "goal762_test_polygon_overlap_tmp.json"
+        try:
+            pair_rows_path.write_text(
+                json.dumps(
+                    {
+                        "output_capacity": 1024,
+                        "strict_pass": True,
+                        "strict_failures": [],
+                        "cloud_claim_contract": {
+                            "claim_scope": "native bounded pair rows",
+                            "non_claim": "not unbounded rows",
+                            "required_phase_groups": [
+                                "records",
+                                "row_digest",
+                                "emitted_count",
+                                "copied_count",
+                                "overflowed",
+                                "strict_pass",
+                                "strict_failures",
+                            ],
+                        },
+                        "records": [
+                            {"label": "cpu_python_reference", "status": "ok", "sec": 0.1},
+                            {
+                                "label": "optix_native_bounded",
+                                "status": "ok",
+                                "sec": 0.2,
+                                "row_digest": {"row_count": 2, "sha256": "abc"},
+                                "emitted_count": 2,
+                                "copied_count": 2,
+                                "overflowed": 0,
+                                "parity_vs_cpu_python_reference": True,
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            polygon_path.write_text(
+                json.dumps(
+                    {
+                        "mode": "optix",
+                        "parity_vs_cpu": True,
+                        "cloud_claim_contract": {
+                            "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery",
+                            "non_claim": "not full area kernel",
+                            "required_phase_groups": [
+                                "input_build_sec",
+                                "cpu_reference_sec",
+                                "optix_candidate_discovery_sec",
+                                "cpu_exact_refinement_sec",
+                                "parity_vs_cpu",
+                                "rt_core_candidate_discovery_active",
+                            ],
+                        },
+                        "phases": {
+                            "input_build_sec": 0.1,
+                            "cpu_reference_sec": 0.2,
+                            "optix_candidate_discovery_sec": 0.3,
+                            "cpu_exact_refinement_sec": 0.4,
+                        },
+                        "optix_metadata": {"rt_core_candidate_discovery_active": True},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with tempfile.TemporaryDirectory() as tmpdir:
+                summary = Path(tmpdir) / "summary.json"
+                summary.write_text(
+                    json.dumps(
+                        {
+                            "status": "ok",
+                            "dry_run": False,
+                            "results": [
+                                {
+                                    "app": "segment_polygon_anyhit_rows",
+                                    "path_name": "segment_polygon_anyhit_rows_native_bounded_gate",
+                                    "claim_scope": "native bounded rows",
+                                    "non_claim": "not default",
+                                    "baseline_review_contract": _baseline_contract(),
+                                    "result": {
+                                        "status": "ok",
+                                        "returncode": 0,
+                                        "command": ["python3", "script.py", "--output-json", "docs/reports/goal762_test_pair_rows_tmp.json"],
+                                    },
+                                },
+                                {
+                                    "app": "polygon_pair_overlap_area_rows",
+                                    "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+                                    "claim_scope": "candidate discovery",
+                                    "non_claim": "not full area",
+                                    "baseline_review_contract": _baseline_contract(),
+                                    "result": {
+                                        "status": "ok",
+                                        "returncode": 0,
+                                        "command": ["python3", "script.py", "--output-json", "docs/reports/goal762_test_polygon_overlap_tmp.json"],
+                                    },
+                                },
+                            ],
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                payload = module.analyze(summary)
+            self.assertEqual(payload["status"], "ok")
+            pair_row = payload["rows"][0]
+            polygon_row = payload["rows"][1]
+            self.assertEqual(pair_row["emitted_count"], 2)
+            self.assertEqual(pair_row["overflowed"], 0)
+            self.assertEqual(pair_row["cloud_contract_status"], "ok")
+            self.assertEqual(polygon_row["warm_query_median_sec"], 0.3)
+            self.assertEqual(polygon_row["postprocess_median_sec"], 0.4)
+            self.assertTrue(polygon_row["rt_core_candidate_discovery_active"])
+            self.assertEqual(polygon_row["cloud_contract_status"], "ok")
+        finally:
+            pair_rows_path.unlink(missing_ok=True)
+            polygon_path.unlink(missing_ok=True)
+
 
 if __name__ == "__main__":
     unittest.main()

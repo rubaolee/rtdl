@@ -184,6 +184,26 @@ def run_profile(*, app: str, mode: str, copies: int) -> dict[str, Any]:
             "This profiler separates OptiX LSI/PIP candidate discovery from CPU/Python exact "
             "area/Jaccard refinement. It does not authorize full polygon-overlap RTX speedup claims."
         ),
+        "cloud_claim_contract": {
+            "claim_scope": (
+                "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap"
+                if app == "pair_overlap"
+                else "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard"
+            ),
+            "non_claim": (
+                "not a fully native polygon-area kernel and not a full app RTX speedup claim"
+                if app == "pair_overlap"
+                else "not a fully native Jaccard kernel and not a full app RTX speedup claim"
+            ),
+            "required_phase_groups": (
+                "input_build_sec",
+                "cpu_reference_sec",
+                "optix_candidate_discovery_sec",
+                "cpu_exact_refinement_sec",
+                "parity_vs_cpu",
+                "rt_core_candidate_discovery_active",
+            ),
+        },
     }
 
 

@@ -67,6 +67,15 @@ def _sum_phase_prefix(phases: Any, prefix: str) -> float | None:
     return total if found else None
 
 
+def _record_by_label(records: Any, label: str) -> dict[str, Any]:
+    if not isinstance(records, list):
+        return {}
+    for record in records:
+        if isinstance(record, dict) and record.get("label") == label:
+            return record
+    return {}
+
+
 def _contract_check(contract: Any, phase_source: Any) -> dict[str, Any]:
     if not isinstance(contract, dict):
         return {
@@ -226,6 +235,83 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         }
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), timings))
         return metrics
+    if app in {"hausdorff_distance", "ann_candidate_search", "facility_knn_assignment", "barnes_hut_force_app"}:
+        scenario = artifact.get("scenario")
+        if not isinstance(scenario, dict):
+            return {"artifact_status": "unrecognized", "note": "no scenario object found"}
+        timings = scenario.get("timings_sec")
+        if not isinstance(timings, dict):
+            return {"artifact_status": "unrecognized", "note": "no scenario timings object found"}
+        result = scenario.get("result") if isinstance(scenario.get("result"), dict) else {}
+        metrics = {
+            "artifact_status": "ok",
+            "schema_version": artifact.get("schema_version"),
+            "scenario": scenario.get("scenario"),
+            "mode": scenario.get("mode"),
+            "input_build_sec": timings.get("input_build_sec"),
+            "pack_points_sec": timings.get("point_pack_sec"),
+            "prepare_sec": timings.get("optix_prepare_sec"),
+            "warm_query_median_sec": _median(timings.get("optix_query_sec")),
+            "postprocess_median_sec": _median(timings.get("python_postprocess_sec")),
+            "validation_median_sec": _median(timings.get("validation_sec")),
+            "close_sec": timings.get("optix_close_sec"),
+            "threshold_reached_count": result.get("threshold_reached_count"),
+            "matches_oracle": result.get("matches_oracle"),
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), timings))
+        return metrics
+    if app == "graph_analytics":
+        records = artifact.get("records")
+        if not isinstance(records, list):
+            return {"artifact_status": "unrecognized", "note": "no records array found"}
+        cpu = _record_by_label(records, "cpu_python_reference")
+        optix = _record_by_label(records, "optix_visibility_anyhit")
+        metrics = {
+            "artifact_status": "ok",
+            "output_mode": artifact.get("output_mode"),
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failure_count": len(artifact.get("strict_failures", ()))
+            if isinstance(artifact.get("strict_failures"), list)
+            else None,
+            "cpu_reference_sec": cpu.get("sec"),
+            "warm_query_median_sec": optix.get("sec"),
+            "optix_native_status": optix.get("status"),
+            "optix_native_parity": optix.get("parity_vs_cpu_python_reference"),
+        }
+        phase_source = {
+            "cpu_python_reference": cpu,
+            "optix_visibility_anyhit": optix,
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failures": artifact.get("strict_failures"),
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
+        return metrics
+    if app == "road_hazard_screening":
+        records = artifact.get("records")
+        if not isinstance(records, list):
+            return {"artifact_status": "unrecognized", "note": "no records array found"}
+        cpu = _record_by_label(records, "cpu_python_reference")
+        optix = _record_by_label(records, "optix_native")
+        metrics = {
+            "artifact_status": "ok",
+            "output_mode": artifact.get("output_mode"),
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failure_count": len(artifact.get("strict_failures", ()))
+            if isinstance(artifact.get("strict_failures"), list)
+            else None,
+            "cpu_reference_sec": cpu.get("sec"),
+            "warm_query_median_sec": optix.get("sec"),
+            "optix_native_status": optix.get("status"),
+            "optix_native_parity": optix.get("parity_vs_cpu_python_reference"),
+        }
+        phase_source = {
+            "cpu_python_reference": cpu,
+            "optix_native": optix,
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failures": artifact.get("strict_failures"),
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
+        return metrics
     if app == "segment_polygon_hitcount":
         records = artifact.get("records")
         if not isinstance(records, list):
@@ -251,6 +337,66 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "postgis_parity": by_label.get("postgis", {}).get("parity_vs_cpu_python_reference"),
         }
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), artifact))
+        return metrics
+    if app == "segment_polygon_anyhit_rows":
+        records = artifact.get("records")
+        if not isinstance(records, list):
+            return {"artifact_status": "unrecognized", "note": "no records array found"}
+        cpu = _record_by_label(records, "cpu_python_reference")
+        native = _record_by_label(records, "optix_native_bounded")
+        metrics = {
+            "artifact_status": "ok",
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failure_count": len(artifact.get("strict_failures", ()))
+            if isinstance(artifact.get("strict_failures"), list)
+            else None,
+            "output_capacity": artifact.get("output_capacity"),
+            "cpu_reference_sec": cpu.get("sec"),
+            "warm_query_median_sec": native.get("sec"),
+            "optix_native_status": native.get("status"),
+            "optix_native_parity": native.get("parity_vs_cpu_python_reference"),
+            "emitted_count": native.get("emitted_count"),
+            "copied_count": native.get("copied_count"),
+            "overflowed": native.get("overflowed"),
+        }
+        phase_source = {
+            "records": records,
+            "row_digest": native.get("row_digest"),
+            "emitted_count": native.get("emitted_count"),
+            "copied_count": native.get("copied_count"),
+            "overflowed": native.get("overflowed"),
+            "strict_pass": artifact.get("strict_pass"),
+            "strict_failures": artifact.get("strict_failures"),
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
+        return metrics
+    if app in {"polygon_pair_overlap_area_rows", "polygon_set_jaccard"}:
+        phases = artifact.get("phases")
+        if not isinstance(phases, dict):
+            return {"artifact_status": "unrecognized", "note": "no phases object found"}
+        metrics = {
+            "artifact_status": "ok",
+            "mode": artifact.get("mode"),
+            "input_build_sec": phases.get("input_build_sec"),
+            "cpu_reference_sec": phases.get("cpu_reference_sec"),
+            "warm_query_median_sec": phases.get("optix_candidate_discovery_sec"),
+            "postprocess_median_sec": phases.get("cpu_exact_refinement_sec"),
+            "parity_vs_cpu": artifact.get("parity_vs_cpu"),
+            "rt_core_candidate_discovery_active": (artifact.get("optix_metadata") or {}).get(
+                "rt_core_candidate_discovery_active"
+            )
+            if isinstance(artifact.get("optix_metadata"), dict)
+            else None,
+        }
+        phase_source = {
+            "input_build_sec": phases.get("input_build_sec"),
+            "cpu_reference_sec": phases.get("cpu_reference_sec"),
+            "optix_candidate_discovery_sec": phases.get("optix_candidate_discovery_sec"),
+            "cpu_exact_refinement_sec": phases.get("cpu_exact_refinement_sec"),
+            "parity_vs_cpu": artifact.get("parity_vs_cpu"),
+            "rt_core_candidate_discovery_active": metrics["rt_core_candidate_discovery_active"],
+        }
+        metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
         return metrics
     return {"artifact_status": "not_applicable", "note": "no extractor for app"}
 

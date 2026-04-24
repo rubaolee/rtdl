@@ -155,6 +155,19 @@ def run_gate(*, dataset: str, output_capacity: int, strict: bool = False) -> dic
             "This gate validates the new native bounded pair-row OptiX symbol. "
             "It does not promote the public segment_polygon_anyhit_rows path by itself."
         ),
+        "cloud_claim_contract": {
+            "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
+            "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
+            "required_phase_groups": (
+                "records",
+                "row_digest",
+                "emitted_count",
+                "copied_count",
+                "overflowed",
+                "strict_pass",
+                "strict_failures",
+            ),
+        },
     }
     return payload
 
