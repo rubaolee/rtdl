@@ -42,10 +42,11 @@ Accepted partial claim modes today:
 | Hausdorff distance | `--backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core` | Hausdorff <= radius decision only; exact-distance KNN rows remain outside the claim |
 | Facility KNN assignment | `--backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` | service-radius coverage decision only; ranked nearest-depot assignment remains outside the claim |
 | ANN candidate search | `--backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core` | candidate-coverage decision only; ANN ranking remains outside the claim |
+| Barnes-Hut force approximation | `--backend optix --optix-summary-mode node_coverage_prepared --require-rt-core` | quadtree-node coverage decision only; opening-rule and force reduction remain outside the claim |
 
 Rejected under `--require-rt-core` today: graph apps, ranked facility KNN,
 polygon overlap/Jaccard, segment/polygon hitcount/road-hazard compact modes,
-exact Hausdorff distance, ANN candidate ranking, and Barnes-Hut. Those may be useful OptiX compatibility
+exact Hausdorff distance, ANN candidate ranking, and Barnes-Hut force reduction. Those may be useful OptiX compatibility
 or CUDA-through-OptiX paths, but they are not public NVIDIA RT-core claims yet.
 
 The original RTDL root spatial workloads are still first-class:
@@ -96,7 +97,7 @@ the ITRE model: input, traverse, refine, emit.
 | Outlier detection | `examples/rtdl_outlier_detection_app.py` | points become neighbor rows, density counts, and outlier labels | radius-neighbor rows plus Python thresholding; optional OptiX `rt_count_threshold_prepared` uses prepared traversal and Embree `rt_count_threshold_prepared` uses prepared CPU BVH traversal to emit one density-threshold summary row per query |
 | DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | points become neighbor rows, core counts, and cluster labels | radius-neighbor rows plus Python expansion; optional OptiX `rt_core_flags_prepared` uses prepared traversal and Embree `rt_core_flags_prepared` uses prepared CPU BVH traversal to emit core flags only, not full cluster expansion |
 | Robot collision screening | `examples/rtdl_robot_collision_screening_app.py` | robot link rays plus obstacle triangles become pose collision flags | any-hit rows plus `rt.reduce_rows(any)`; compact output modes and scaled fixtures expose Embree any-hit performance without full witness rows |
-| Barnes-Hut force approximation | `examples/rtdl_barnes_hut_force_app.py` | bodies plus tree nodes become candidate rows and approximate force vectors | candidate generation; compact candidate summaries expose the RTDL/Embree slice separately from Python force reduction |
+| Barnes-Hut force approximation | `examples/rtdl_barnes_hut_force_app.py` | bodies plus tree nodes become candidate rows, a node-coverage decision, and approximate force vectors | candidate generation; compact candidate summaries expose the RTDL/Embree slice separately from Python force reduction; optional OptiX `node_coverage_prepared` maps the node-coverage decision to fixed-radius traversal |
 
 ## Spatial Join App Summary Modes
 
@@ -116,7 +117,7 @@ compact answers instead of all emitted neighbor rows.
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `--output-mode segment_counts` / `segment_flags` | one hit-count or any-hit flag row per segment | omits polygon ids and pair rows |
 | `examples/rtdl_road_hazard_screening.py` | `--output-mode priority_segments` / `summary` | priority road ids and counts | omits full per-road hit-count rows from the JSON payload |
 | `examples/rtdl_polygon_pair_overlap_area_rows.py` | `--output-mode summary` | aggregate overlap-pair count and total areas | omits full per-pair area rows; Embree/OptiX app paths use positive LSI/PIP candidate discovery |
-| `examples/rtdl_barnes_hut_force_app.py` | `--output-mode candidate_summary` / `force_summary` | candidate-generation summaries or force-reduction summaries | separates RTDL candidate generation from Python Barnes-Hut force reduction |
+| `examples/rtdl_barnes_hut_force_app.py` | `--output-mode candidate_summary` / `force_summary`; OptiX `--optix-summary-mode node_coverage_prepared` | candidate-generation summaries, force-reduction summaries, or a node-coverage decision | separates RTDL candidate generation from Python Barnes-Hut force reduction; OptiX threshold mode does not claim opening-rule or force-vector acceleration |
 
 ## DB-Style App Examples
 

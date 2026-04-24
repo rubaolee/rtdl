@@ -61,7 +61,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "polygon_set_jaccard": "needs_interface_tuning",
             "hausdorff_distance": "needs_real_rtx_artifact",
             "ann_candidate_search": "needs_real_rtx_artifact",
-            "barnes_hut_force_app": "exclude_from_rtx_app_benchmark",
+            "barnes_hut_force_app": "needs_real_rtx_artifact",
             "apple_rt_demo": "exclude_from_rtx_app_benchmark",
             "hiprt_ray_triangle_hitcount": "exclude_from_rtx_app_benchmark",
         }
@@ -96,7 +96,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "outlier_detection": "optix_traversal_prepared_summary",
             "dbscan_clustering": "optix_traversal_prepared_summary",
             "robot_collision_screening": "optix_traversal",
-            "barnes_hut_force_app": "cuda_through_optix",
+            "barnes_hut_force_app": "optix_traversal_prepared_summary",
             "hiprt_ray_triangle_hitcount": "not_optix_exposed",
         }
         self.assertEqual(set(expected), set(rt.public_apps()))
@@ -114,6 +114,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "facility_knn_assignment": "coverage_threshold_prepared mode uses OptiX traversal",
             "hausdorff_distance": "directed_threshold_prepared mode uses OptiX traversal",
             "ann_candidate_search": "candidate_threshold_prepared mode uses OptiX traversal",
+            "barnes_hut_force_app": "node_coverage_prepared mode uses OptiX traversal",
         }
         non_excluded_prepared_summary_apps = {
             app

@@ -195,7 +195,11 @@ Current v0.8 app example boundary:
   separates RTDL candidate-generation timing from Python opening-rule and
   force-reduction timing. Goal734 shows Embree candidate summary is reasonable
   at larger local/Linux scales, but the full force path is still Python
-  dominated and is not a fully native Barnes-Hut force engine
+  dominated and is not a fully native Barnes-Hut force engine. The optional
+  OptiX `--optix-summary-mode node_coverage_prepared` path answers whether
+  every body has at least one quadtree node candidate within the discovery
+  radius using prepared fixed-radius traversal; it is not an opening-rule or
+  force-vector speedup
 - `rtdl_segment_polygon_anyhit_rows.py` keeps full pair-row output in
   `--output-mode rows`. Its compact `segment_flags` and `segment_counts` modes
   use the RTDL `segment_polygon_hitcount` primitive to avoid materializing full

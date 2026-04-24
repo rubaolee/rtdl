@@ -101,15 +101,22 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("--result-mode", by_app["dbscan_clustering"]["command"])
         self.assertIn("threshold_count", by_app["dbscan_clustering"]["command"])
 
-    def test_excluded_cuda_through_optix_apps_do_not_enter_manifest_entries(self):
+    def test_prepared_decision_apps_are_deferred_not_active(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
             fromlist=["build_manifest"],
         ).build_manifest()
         manifest_apps = {entry["app"] for entry in payload["entries"]}
-        excluded = {"hausdorff_distance", "ann_candidate_search", "barnes_hut_force_app"}
-        self.assertTrue(excluded.isdisjoint(manifest_apps))
-        self.assertTrue(excluded.issubset(payload["excluded_apps"]))
+        deferred = {entry["app"] for entry in payload["deferred_entries"]}
+        expected = {
+            "hausdorff_distance",
+            "ann_candidate_search",
+            "facility_knn_assignment",
+            "barnes_hut_force_app",
+        }
+        self.assertTrue(expected.isdisjoint(manifest_apps))
+        self.assertTrue(expected.issubset(deferred))
+        self.assertTrue(expected.isdisjoint(payload["excluded_apps"]))
 
     def test_robot_entry_uses_current_prepared_pose_flag_status(self):
         payload = __import__(

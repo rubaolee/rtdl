@@ -25,6 +25,7 @@ class Goal690OptixPerformanceClassificationTest(unittest.TestCase):
             "facility_knn_assignment": "optix_traversal_prepared_summary",
             "hausdorff_distance": "optix_traversal_prepared_summary",
             "ann_candidate_search": "optix_traversal_prepared_summary",
+            "barnes_hut_force_app": "optix_traversal_prepared_summary",
             "outlier_detection": "optix_traversal_prepared_summary",
             "dbscan_clustering": "optix_traversal_prepared_summary",
             "robot_collision_screening": "optix_traversal",

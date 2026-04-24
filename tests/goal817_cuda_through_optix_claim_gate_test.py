@@ -10,7 +10,7 @@ from examples import rtdl_hausdorff_distance_app as hausdorff_app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CUDA_THROUGH_OPTIX_APPS = (
+PREPARED_DECISION_APPS = (
     "hausdorff_distance",
     "ann_candidate_search",
     "barnes_hut_force_app",
@@ -18,19 +18,22 @@ CUDA_THROUGH_OPTIX_APPS = (
 
 
 class Goal817CudaThroughOptixClaimGateTest(unittest.TestCase):
-    def test_metadata_remains_cuda_through_optix_not_rt_core_ready(self) -> None:
-        for app in CUDA_THROUGH_OPTIX_APPS:
+    def test_metadata_promotes_only_bounded_prepared_decision_paths(self) -> None:
+        for app in PREPARED_DECISION_APPS:
             with self.subTest(app=app):
-                self.assertEqual(rt.optix_app_performance_support(app).performance_class, "cuda_through_optix")
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "exclude_from_rtx_app_benchmark")
-                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "needs_rt_core_redesign")
+                self.assertEqual(
+                    rt.optix_app_performance_support(app).performance_class,
+                    "optix_traversal_prepared_summary",
+                )
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
+                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
 
-    def test_require_rt_core_rejects_optix_cuda_through_paths(self) -> None:
-        with self.assertRaisesRegex(RuntimeError, "CUDA-through-OptiX KNN rows"):
+    def test_require_rt_core_rejects_default_optix_row_paths(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "directed_threshold_prepared"):
             hausdorff_app.run_app("optix", require_rt_core=True)
-        with self.assertRaisesRegex(RuntimeError, "CUDA-through-OptiX KNN rows"):
+        with self.assertRaisesRegex(RuntimeError, "candidate_threshold_prepared"):
             ann_app.run_app("optix", output_mode="rerank_summary", require_rt_core=True)
-        with self.assertRaisesRegex(RuntimeError, "CUDA-through-OptiX radius candidate generation"):
+        with self.assertRaisesRegex(RuntimeError, "node_coverage_prepared"):
             barnes_app.run_app("optix", output_mode="candidate_summary", require_rt_core=True)
 
     def test_require_rt_core_is_optix_only(self) -> None:
@@ -48,9 +51,9 @@ class Goal817CudaThroughOptixClaimGateTest(unittest.TestCase):
 
     def test_cli_require_rt_core_exits_nonzero_for_optix(self) -> None:
         cases = (
-            ("examples/rtdl_hausdorff_distance_app.py", "CUDA-through-OptiX KNN rows"),
-            ("examples/rtdl_ann_candidate_app.py", "CUDA-through-OptiX KNN rows"),
-            ("examples/rtdl_barnes_hut_force_app.py", "CUDA-through-OptiX radius candidate generation"),
+            ("examples/rtdl_hausdorff_distance_app.py", "directed_threshold_prepared"),
+            ("examples/rtdl_ann_candidate_app.py", "candidate_threshold_prepared"),
+            ("examples/rtdl_barnes_hut_force_app.py", "node_coverage_prepared"),
         )
         for script, expected in cases:
             with self.subTest(script=script):

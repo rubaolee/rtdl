@@ -135,6 +135,182 @@
       "reason_deferred": "Native OptiX hit-count exists behind an explicit app mode, but historical Goal120 evidence showed no performance win and the default public app path remains host-indexed. Goal807 now provides the required focused native-vs-host-indexed gate, but the gate has not passed on RTX hardware yet."
     },
     {
+      "activation_gate": "Promote only after a Goal879 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
+      "app": "hausdorff_distance",
+      "app_path": "examples/rtdl_hausdorff_distance_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for hausdorff_distance:directed_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+      "command": [
+        "python3",
+        "examples/rtdl_hausdorff_distance_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "directed_threshold_prepared",
+        "--hausdorff-threshold",
+        "0.4",
+        "--require-rt-core"
+      ],
+      "env": {},
+      "non_claim": "not an exact Hausdorff distance, KNN-row, or nearest-neighbor ranking speedup claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.",
+      "path_name": "directed_threshold_prepared",
+      "reason_deferred": "Goal879 exposes a prepared OptiX threshold-decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
+    },
+    {
+      "activation_gate": "Promote only after a Goal880 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
+      "app": "ann_candidate_search",
+      "app_path": "examples/rtdl_ann_candidate_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for ann_candidate_search:candidate_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for ANN candidate-coverage decisions",
+      "command": [
+        "python3",
+        "examples/rtdl_ann_candidate_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "candidate_threshold_prepared",
+        "--candidate-radius",
+        "0.2",
+        "--require-rt-core"
+      ],
+      "env": {},
+      "non_claim": "not a full ANN index, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ, or recall-optimizer claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.",
+      "path_name": "candidate_threshold_prepared",
+      "reason_deferred": "Goal880 exposes a prepared OptiX candidate-coverage decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
+    },
+    {
+      "activation_gate": "Promote only after a Goal881 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
+      "app": "facility_knn_assignment",
+      "app_path": "examples/rtdl_facility_knn_assignment.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+      "command": [
+        "python3",
+        "examples/rtdl_facility_knn_assignment.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "coverage_threshold_prepared",
+        "--service-radius",
+        "1.0",
+        "--require-rt-core"
+      ],
+      "env": {},
+      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Explicit coverage_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for service-coverage decisions only; ranked nearest-depot assignment remains outside the OptiX claim.",
+      "path_name": "coverage_threshold_prepared",
+      "reason_deferred": "Goal881 exposes a prepared OptiX service-coverage decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
+    },
+    {
+      "activation_gate": "Promote only after a Goal882 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
+      "app": "barnes_hut_force_app",
+      "app_path": "examples/rtdl_barnes_hut_force_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for barnes_hut_force_app:node_coverage_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+      "command": [
+        "python3",
+        "examples/rtdl_barnes_hut_force_app.py",
+        "--backend",
+        "optix",
+        "--optix-summary-mode",
+        "node_coverage_prepared",
+        "--node-radius",
+        "10.0",
+        "--require-rt-core"
+      ],
+      "env": {},
+      "non_claim": "not a Barnes-Hut opening-rule, force-vector reduction, or N-body solver speedup claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default candidate rows use radius-style GPU compute; explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.",
+      "path_name": "node_coverage_prepared",
+      "reason_deferred": "Goal882 exposes a prepared OptiX node-coverage decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
+    },
+    {
       "activation_gate": "Promote only after Goal873 strict mode passes on RTX hardware, row digest matches CPU reference, overflow is zero, and independent review accepts the artifact.",
       "app": "segment_polygon_anyhit_rows",
       "app_path": "examples/rtdl_segment_polygon_anyhit_rows.py",
@@ -162,7 +338,7 @@
         "requires_phase_separation": true,
         "status": "required_before_public_speedup_claim"
       },
-      "benchmark_readiness": "needs_native_kernel_tuning",
+      "benchmark_readiness": "needs_real_rtx_artifact",
       "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
       "command": [
         "python3",
@@ -178,7 +354,7 @@
       "env": {},
       "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
       "optix_performance_class": "host_indexed_fallback",
-      "optix_performance_note": "Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated. Compact flags/counts can request native hit-count mode, and the native bounded pair-row emitter now exists as a deferred Goal873 strict RTX gate rather than default public behavior.",
+      "optix_performance_note": "Default segment/polygon OptiX pair-row path remains conservative, but explicit --output-mode rows --optix-mode native now calls the bounded native OptiX pair-row emitter. This is a true traversal path that still needs a real RTX artifact and overflow-free phase review before speedup claims.",
       "path_name": "segment_polygon_anyhit_rows_native_bounded_gate",
       "reason_deferred": "Goal872 implements a native bounded device-side pair-row emitter, and Goal873 adds the strict gate. The public rows path remains host-indexed until a real RTX strict artifact proves CPU row-digest parity and no output overflow."
     },
@@ -585,12 +761,8 @@
     }
   ],
   "excluded_apps": {
-    "ann_candidate_search": "current OptiX path is CUDA-through-OptiX KNN rows plus Python recall/quality work",
     "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
-    "barnes_hut_force_app": "current app is CUDA-through-OptiX candidate generation plus Python tree/opening/reduction",
-    "facility_knn_assignment": "current app has no true RT-core KNN ranking path; fixed-radius threshold summaries are not KNN",
     "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
-    "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
     "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
     "polygon_pair_overlap_area_rows": "native-assisted OptiX candidate discovery exists, but exact area refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
     "polygon_set_jaccard": "native-assisted OptiX candidate discovery exists, but exact Jaccard refinement is CPU/Python-owned and lacks phase-clean RTX artifact",

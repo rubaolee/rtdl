@@ -413,14 +413,10 @@ def build_manifest() -> dict[str, Any]:
             ),
         ],
         "excluded_apps": {
-            "hausdorff_distance": "current OptiX path is CUDA-through-OptiX KNN rows, not RT-core traversal",
-            "ann_candidate_search": "current OptiX path is CUDA-through-OptiX KNN rows plus Python recall/quality work",
-            "barnes_hut_force_app": "current app is CUDA-through-OptiX candidate generation plus Python tree/opening/reduction",
             "graph_analytics": "current OptiX-facing graph paths are host-indexed fallback",
             "road_hazard_screening": "current default OptiX app path is host-indexed fallback and native mode remains behind strict validation",
             "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
             "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
-            "facility_knn_assignment": "current app has no true RT-core KNN ranking path; fixed-radius threshold summaries are not KNN",
             "polygon_pair_overlap_area_rows": "native-assisted OptiX candidate discovery exists, but exact area refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
             "polygon_set_jaccard": "native-assisted OptiX candidate discovery exists, but exact Jaccard refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
             "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
@@ -513,6 +509,114 @@ def build_manifest() -> dict[str, Any]:
                 ),
                 claim_scope="experimental native custom-AABB segment/polygon hit-count traversal",
                 non_claim="not default public app behavior and not a row-returning any-hit claim",
+            ),
+            _deferred_entry(
+                app="hausdorff_distance",
+                app_path="examples/rtdl_hausdorff_distance_app.py",
+                path_name="directed_threshold_prepared",
+                command=[
+                    python,
+                    "examples/rtdl_hausdorff_distance_app.py",
+                    "--backend",
+                    "optix",
+                    "--optix-summary-mode",
+                    "directed_threshold_prepared",
+                    "--hausdorff-threshold",
+                    "0.4",
+                    "--require-rt-core",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal879 exposes a prepared OptiX threshold-decision sub-path, "
+                    "but a phase profiler and same-semantics RTX artifact are still required."
+                ),
+                activation_gate=(
+                    "Promote only after a Goal879 RTX artifact separates prepare/query/postprocess "
+                    "and is reviewed against same-semantics threshold baselines."
+                ),
+                claim_scope="prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+                non_claim="not an exact Hausdorff distance, KNN-row, or nearest-neighbor ranking speedup claim",
+            ),
+            _deferred_entry(
+                app="ann_candidate_search",
+                app_path="examples/rtdl_ann_candidate_app.py",
+                path_name="candidate_threshold_prepared",
+                command=[
+                    python,
+                    "examples/rtdl_ann_candidate_app.py",
+                    "--backend",
+                    "optix",
+                    "--optix-summary-mode",
+                    "candidate_threshold_prepared",
+                    "--candidate-radius",
+                    "0.2",
+                    "--require-rt-core",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal880 exposes a prepared OptiX candidate-coverage decision sub-path, "
+                    "but a phase profiler and same-semantics RTX artifact are still required."
+                ),
+                activation_gate=(
+                    "Promote only after a Goal880 RTX artifact separates prepare/query/postprocess "
+                    "and is reviewed against same-semantics threshold baselines."
+                ),
+                claim_scope="prepared OptiX fixed-radius threshold traversal for ANN candidate-coverage decisions",
+                non_claim="not a full ANN index, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ, or recall-optimizer claim",
+            ),
+            _deferred_entry(
+                app="facility_knn_assignment",
+                app_path="examples/rtdl_facility_knn_assignment.py",
+                path_name="coverage_threshold_prepared",
+                command=[
+                    python,
+                    "examples/rtdl_facility_knn_assignment.py",
+                    "--backend",
+                    "optix",
+                    "--optix-summary-mode",
+                    "coverage_threshold_prepared",
+                    "--service-radius",
+                    "1.0",
+                    "--require-rt-core",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal881 exposes a prepared OptiX service-coverage decision sub-path, "
+                    "but a phase profiler and same-semantics RTX artifact are still required."
+                ),
+                activation_gate=(
+                    "Promote only after a Goal881 RTX artifact separates prepare/query/postprocess "
+                    "and is reviewed against same-semantics threshold baselines."
+                ),
+                claim_scope="prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+                non_claim="not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+            ),
+            _deferred_entry(
+                app="barnes_hut_force_app",
+                app_path="examples/rtdl_barnes_hut_force_app.py",
+                path_name="node_coverage_prepared",
+                command=[
+                    python,
+                    "examples/rtdl_barnes_hut_force_app.py",
+                    "--backend",
+                    "optix",
+                    "--optix-summary-mode",
+                    "node_coverage_prepared",
+                    "--node-radius",
+                    "10.0",
+                    "--require-rt-core",
+                ],
+                env={},
+                reason_deferred=(
+                    "Goal882 exposes a prepared OptiX node-coverage decision sub-path, "
+                    "but a phase profiler and same-semantics RTX artifact are still required."
+                ),
+                activation_gate=(
+                    "Promote only after a Goal882 RTX artifact separates prepare/query/postprocess "
+                    "and is reviewed against same-semantics threshold baselines."
+                ),
+                claim_scope="prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+                non_claim="not a Barnes-Hut opening-rule, force-vector reduction, or N-body solver speedup claim",
             ),
             _deferred_entry(
                 app="segment_polygon_anyhit_rows",

@@ -23,19 +23,26 @@ from scripts.goal763_rtx_cloud_bootstrap_check import run_check
 FORBIDDEN_ACTIVE_CLASSES = {"cuda_through_optix", "host_indexed_fallback", "not_optix_exposed"}
 REQUIRED_EXCLUDED_APPS = {
     "graph_analytics",
-    "facility_knn_assignment",
     "road_hazard_screening",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
-    "hausdorff_distance",
-    "ann_candidate_search",
-    "barnes_hut_force_app",
     "apple_rt_demo",
     "hiprt_ray_triangle_hitcount",
 }
-REQUIRED_DEFERRED_APPS = {"service_coverage_gaps", "event_hotspot_screening", "segment_polygon_hitcount"}
+REQUIRED_DEFERRED_APPS = {
+    "service_coverage_gaps",
+    "event_hotspot_screening",
+    "segment_polygon_hitcount",
+    "segment_polygon_anyhit_rows",
+    "hausdorff_distance",
+    "ann_candidate_search",
+    "facility_knn_assignment",
+    "barnes_hut_force_app",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+}
 REQUIRED_BASELINE_CONTRACT_FIELDS = {
     "status",
     "minimum_repeated_runs",

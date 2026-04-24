@@ -151,14 +151,16 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
-def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
     if not require_rt_core:
         return
     if backend != "optix":
         raise ValueError("--require-rt-core is only meaningful with --backend optix")
-    raise RuntimeError(
-        "barnes_hut_force_app OptiX path is CUDA-through-OptiX radius candidate generation today, not NVIDIA RT-core traversal"
-    )
+    if optix_summary_mode != "node_coverage_prepared":
+        raise RuntimeError(
+            "barnes_hut_force_app RT-core path requires --backend optix "
+            "--optix-summary-mode node_coverage_prepared"
+        )
 
 
 def _force_from_mass(body: Body, mass: float, cx: float, cy: float) -> tuple[float, float]:
@@ -268,6 +270,59 @@ def _candidate_summary(candidate_rows: tuple[dict[str, object], ...]) -> dict[st
     }
 
 
+def node_coverage_oracle(
+    bodies: tuple[Body, ...],
+    nodes: tuple[QuadNode, ...],
+    *,
+    radius: float,
+) -> dict[str, object]:
+    uncovered: list[int] = []
+    for body in bodies:
+        has_node = any(math.hypot(body.x - node.cx, body.y - node.cy) <= radius for node in nodes)
+        if not has_node:
+            uncovered.append(body.id)
+    return {
+        "radius": radius,
+        "body_count": len(bodies),
+        "covered_body_count": len(bodies) - len(uncovered),
+        "all_bodies_have_node_candidate": not uncovered,
+        "uncovered_body_ids": uncovered,
+    }
+
+
+def _node_coverage_from_count_rows(
+    rows: tuple[dict[str, object], ...],
+    *,
+    bodies: tuple[Body, ...],
+    radius: float,
+) -> dict[str, object]:
+    by_query = {int(row["query_id"]): row for row in rows}
+    uncovered = [
+        body.id
+        for body in bodies
+        if int(by_query.get(body.id, {}).get("threshold_reached", 0)) == 0
+    ]
+    return {
+        "radius": radius,
+        "body_count": len(bodies),
+        "covered_body_count": len(bodies) - len(uncovered),
+        "all_bodies_have_node_candidate": not uncovered,
+        "uncovered_body_ids": uncovered,
+        "row_count": len(by_query),
+    }
+
+
+def _run_optix_node_coverage(
+    bodies: tuple[Body, ...],
+    nodes: tuple[QuadNode, ...],
+    *,
+    radius: float,
+) -> dict[str, object]:
+    with rt.prepare_optix_fixed_radius_count_threshold_2d(_node_points(nodes), max_radius=radius) as prepared:
+        rows = tuple(prepared.run(_body_points(bodies), radius=radius, threshold=1))
+    return _node_coverage_from_count_rows(rows, bodies=bodies, radius=radius)
+
+
 def _force_summary(force_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
     return {
         "force_row_count": len(force_rows),
@@ -282,13 +337,51 @@ def run_app(
     theta: float = THETA,
     body_count: int | None = None,
     output_mode: str = "full",
+    optix_summary_mode: str = "rows",
+    node_radius: float = NODE_DISCOVERY_RADIUS,
     require_rt_core: bool = False,
 ) -> dict[str, object]:
     if output_mode not in {"full", "candidate_summary", "force_summary"}:
         raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
-    _enforce_rt_core_requirement(backend, require_rt_core)
+    if optix_summary_mode not in {"rows", "node_coverage_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'node_coverage_prepared'")
+    if node_radius < 0:
+        raise ValueError("node_radius must be non-negative")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
     bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
     nodes = build_one_level_quadtree(bodies)
+    if backend == "optix" and optix_summary_mode == "node_coverage_prepared":
+        coverage = _run_optix_node_coverage(bodies, nodes, radius=node_radius)
+        oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
+        return {
+            "app": "barnes_hut_force_app",
+            "backend": backend,
+            "theta": theta,
+            "body_count": len(bodies),
+            "node_count": len(nodes),
+            "output_mode": output_mode,
+            "optix_summary_mode": optix_summary_mode,
+            "node_radius": node_radius,
+            "node_coverage": coverage,
+            "oracle_node_coverage": oracle,
+            "matches_oracle": (
+                coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
+                and coverage["uncovered_body_ids"] == oracle["uncovered_body_ids"]
+            ),
+            "rtdl_role": (
+                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                "the bounded Barnes-Hut node-coverage decision: every body has at "
+                "least one quadtree node candidate within the discovery radius."
+            ),
+            "optix_performance": _optix_performance(),
+            "rt_core_accelerated": True,
+            "boundary": (
+                "Node-coverage decision only; this is not Barnes-Hut opening-rule "
+                "evaluation, not force-vector reduction, and not a fully native "
+                "N-body solver."
+            ),
+        }
+
     candidate_rows = _run_node_candidates(backend, bodies, nodes)
     candidate_summary = _candidate_summary(tuple(candidate_rows))
     base_payload = {
@@ -297,6 +390,8 @@ def run_app(
         "theta": theta,
         "body_count": len(bodies),
         "node_count": len(nodes),
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
+        "node_radius": None,
         **candidate_summary,
         "output_mode": output_mode,
         "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
@@ -346,6 +441,18 @@ def main(argv: list[str] | None = None) -> int:
         help="choose full rows, RTDL candidate summary only, or force-reduction summary",
     )
     parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "node_coverage_prepared"),
+        default="rows",
+        help="OptiX-only: use prepared fixed-radius threshold traversal for node-coverage decisions",
+    )
+    parser.add_argument(
+        "--node-radius",
+        type=float,
+        default=NODE_DISCOVERY_RADIUS,
+        help="node discovery radius for --optix-summary-mode node_coverage_prepared",
+    )
+    parser.add_argument(
         "--require-rt-core",
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
@@ -358,6 +465,8 @@ def main(argv: list[str] | None = None) -> int:
                 theta=args.theta,
                 body_count=args.body_count,
                 output_mode=args.output_mode,
+                optix_summary_mode=args.optix_summary_mode,
+                node_radius=args.node_radius,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,

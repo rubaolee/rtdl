@@ -409,8 +409,8 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "barnes_hut_force_app": OptixAppPerformanceSupport(
         app="barnes_hut_force_app",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Candidate generation uses KNN/radius-style GPU compute; Python tree/opening-rule/force reduction dominates the end-to-end app.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default candidate rows use radius-style GPU compute; explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.",
     ),
     "hiprt_ray_triangle_hitcount": OptixAppPerformanceSupport(
         app="hiprt_ray_triangle_hitcount",
@@ -569,11 +569,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "barnes_hut_force_app": _readiness(
         "barnes_hut_force_app",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "Goal709",
-        "must be benchmarked as CUDA/GPU compute or redesigned around a valid traversal primitive",
-        "current app is CUDA-through-OptiX plus Python tree/opening-rule/reduction work",
-        "no RT-core Barnes-Hut claim today",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal882",
+        "node_coverage_prepared decision mode needs RTX phase artifact and same-semantics threshold-decision baselines before any claim",
+        "candidate rows, opening-rule evaluation, and force reduction remain outside the OptiX claim; only the node-coverage decision sub-path is traversal-backed",
+        "prepared Barnes-Hut node-coverage decision sub-path only; no force or opening-rule speedup claim",
     ),
     "hiprt_ray_triangle_hitcount": _readiness(
         "hiprt_ray_triangle_hitcount",
@@ -717,10 +717,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "barnes_hut_force_app": _maturity(
         "barnes_hut_force_app",
-        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Redesign node candidate discovery around a true RT traversal primitive and keep force/opening reduction split from RTDL traversal timing.",
-        "No RT-core cloud claim until a true traversal design exists.",
+        "Use node_coverage_prepared for traversal-backed node-coverage decisions; candidate rows, opening-rule evaluation, and force reduction remain outside the RT-core claim until native reduction designs exist.",
+        "Cloud only after the Barnes-Hut node-coverage profiler and baselines are packaged; no force-vector or opening-rule RT-core claim.",
     ),
     "hiprt_ray_triangle_hitcount": _maturity(
         "hiprt_ray_triangle_hitcount",

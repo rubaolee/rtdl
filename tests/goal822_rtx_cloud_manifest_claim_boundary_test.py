@@ -19,15 +19,11 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
         active_apps = {entry["app"] for entry in manifest["entries"]}
         for app in (
             "graph_analytics",
-            "facility_knn_assignment",
             "road_hazard_screening",
             "segment_polygon_hitcount",
             "segment_polygon_anyhit_rows",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
-            "hausdorff_distance",
-            "ann_candidate_search",
-            "barnes_hut_force_app",
         ):
             with self.subTest(app=app):
                 self.assertNotIn(app, active_apps)
@@ -37,12 +33,19 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
         manifest = build_manifest()
         active_apps = {entry["app"] for entry in manifest["entries"]}
         deferred = {entry["app"]: entry for entry in manifest["deferred_entries"]}
-        for app in ("service_coverage_gaps", "event_hotspot_screening"):
+        for app in (
+            "service_coverage_gaps",
+            "event_hotspot_screening",
+            "hausdorff_distance",
+            "ann_candidate_search",
+            "facility_knn_assignment",
+            "barnes_hut_force_app",
+        ):
             with self.subTest(app=app):
                 self.assertNotIn(app, active_apps)
                 self.assertIn(app, deferred)
                 self.assertEqual(deferred[app]["benchmark_readiness"], "needs_real_rtx_artifact")
-                self.assertIn("Goal811", deferred[app]["activation_gate"])
+                self.assertIn("Promote only after", deferred[app]["activation_gate"])
 
 
 if __name__ == "__main__":
