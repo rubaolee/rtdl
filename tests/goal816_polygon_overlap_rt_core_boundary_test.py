@@ -29,7 +29,7 @@ class Goal816PolygonOverlapRtCoreBoundaryTest(unittest.TestCase):
             with self.subTest(app=app):
                 self.assertEqual(rt.app_engine_support(app, "optix").status, "direct_cli_native_assisted")
                 self.assertEqual(rt.optix_app_performance_support(app).performance_class, "python_interface_dominated")
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_interface_tuning")
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
                 self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
 
     def test_require_rt_core_is_optix_only(self) -> None:

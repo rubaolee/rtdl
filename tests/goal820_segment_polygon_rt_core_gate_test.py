@@ -10,12 +10,12 @@ DATASET = "authored_segment_polygon_minimal"
 
 
 class Goal820SegmentPolygonRtCoreGateTest(unittest.TestCase):
-    def test_segment_polygon_apps_remain_native_tuning_candidates(self) -> None:
+    def test_segment_polygon_apps_have_deferred_native_rtx_gates(self) -> None:
         for app in ("road_hazard_screening", "segment_polygon_hitcount"):
             with self.subTest(app=app):
                 self.assertEqual(rt.optix_app_performance_support(app).performance_class, "host_indexed_fallback")
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_native_kernel_tuning")
-                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "needs_rt_core_redesign")
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
+                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
         self.assertEqual(
             rt.optix_app_performance_support("segment_polygon_anyhit_rows").performance_class,
             "host_indexed_fallback",
