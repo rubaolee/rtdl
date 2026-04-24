@@ -48,8 +48,30 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --bundle-tgz docs/reports/goal769_rtx_pod_artifacts_latest.tgz
 ```
 
-If Tier-2 deferred service/hotspot evidence is intentionally being gathered in
-the same pod session, use:
+## Same-Pod Deferred Exploration Batch
+
+Run the active one-shot command first. If it succeeds and the pod is still
+healthy, use the same pod for deferred evidence before shutdown. This keeps
+cloud cost under control while preserving the difference between release-grade
+active evidence and exploratory/deferred gates.
+
+Short form: release-grade active evidence first; exploratory/deferred gates
+second.
+
+Current deferred targets:
+
+- `service_coverage_gaps`
+- `event_hotspot_screening`
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `hausdorff_distance`
+- `ann_candidate_search`
+- `facility_knn_assignment`
+- `barnes_hut_force_app`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
+
+Use this deferred batch command:
 
 ```bash
 cd /workspace/rtdl_python_only
@@ -59,11 +81,22 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --include-deferred \
   --only service_coverage_gaps \
   --only event_hotspot_screening \
+  --only segment_polygon_hitcount \
+  --only segment_polygon_anyhit_rows \
+  --only hausdorff_distance \
+  --only ann_candidate_search \
+  --only facility_knn_assignment \
+  --only barnes_hut_force_app \
+  --only polygon_pair_overlap_area_rows \
+  --only polygon_set_jaccard \
   --output-json docs/reports/goal769_rtx_pod_one_shot_summary_latest.json \
   --artifact-json docs/reports/goal762_rtx_cloud_artifact_report_latest.json \
   --artifact-md docs/reports/goal762_rtx_cloud_artifact_report_latest.md \
   --bundle-tgz docs/reports/goal769_rtx_pod_artifacts_latest.tgz
 ```
+
+The deferred batch is allowed to expose failures. Preserve all artifacts and
+treat failures as local follow-up work, not as public RTX claim evidence.
 
 ## Required Success Conditions
 

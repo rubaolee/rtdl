@@ -29,10 +29,30 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         text = RUNBOOK.read_text(encoding="utf-8")
 
         self.assertIn("--include-deferred", text)
-        self.assertIn("--only service_coverage_gaps", text)
-        self.assertIn("--only event_hotspot_screening", text)
+        for app in (
+            "service_coverage_gaps",
+            "event_hotspot_screening",
+            "segment_polygon_hitcount",
+            "segment_polygon_anyhit_rows",
+            "hausdorff_distance",
+            "ann_candidate_search",
+            "facility_knn_assignment",
+            "barnes_hut_force_app",
+            "polygon_pair_overlap_area_rows",
+            "polygon_set_jaccard",
+        ):
+            with self.subTest(app=app):
+                self.assertIn(f"--only {app}", text)
         self.assertIn("After copying artifacts back, stop or terminate the pod.", text)
         self.assertIn("does not authorize public RTX speedup claims", text)
+
+    def test_runbook_separates_active_and_deferred_evidence(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("Run the active one-shot command first", text)
+        self.assertIn("release-grade active evidence", text)
+        self.assertIn("exploratory/deferred gates", text)
+        self.assertIn("The deferred batch is allowed to expose failures", text)
 
 
 if __name__ == "__main__":
