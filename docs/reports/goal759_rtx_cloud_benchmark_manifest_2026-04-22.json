@@ -26,7 +26,7 @@
         "requires_phase_separation": true,
         "status": "required_before_public_speedup_claim"
       },
-      "benchmark_readiness": "needs_phase_contract",
+      "benchmark_readiness": "needs_real_rtx_artifact",
       "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
       "command": [
         "python3",
@@ -71,7 +71,7 @@
         "requires_phase_separation": true,
         "status": "required_before_public_speedup_claim"
       },
-      "benchmark_readiness": "needs_phase_contract",
+      "benchmark_readiness": "needs_real_rtx_artifact",
       "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot summaries",
       "command": [
         "python3",
