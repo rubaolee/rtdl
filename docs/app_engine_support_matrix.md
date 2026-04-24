@@ -134,6 +134,7 @@ materialization, validation, and post-processing.
 | --- | --- |
 | `ready_for_rtx_claim_review` | The app has enough phase-clean RTX evidence to enter claim review. This is not automatic release authorization. |
 | `needs_phase_contract` | The app is a credible RTX candidate, but timing must split preparation, traversal, materialization, postprocess, and validation before a cloud benchmark is trusted. |
+| `needs_real_rtx_artifact` | Local dry-run and same-semantics baseline work are complete, but a real RTX optix-mode artifact still has to be collected and reviewed before promotion. |
 | `needs_interface_tuning` | Native/backend work exists, but Python/interface, row materialization, or host-side reduction can dominate the app result. |
 | `needs_native_kernel_tuning` | The public OptiX app path still needs native GPU/OptiX kernel work or must stay classified as fallback. |
 | `needs_postprocess_split` | The accelerated sub-result exists, but app-level post-processing must be separated before performance claims. |
@@ -144,8 +145,8 @@ materialization, validation, and post-processing.
 | `examples/rtdl_database_analytics_app.py` | `needs_interface_tuning` | Goal706 | correctness-capable OptiX DB path only; no RTX app speedup claim yet |
 | `examples/rtdl_graph_analytics_app.py` | `needs_native_kernel_tuning` | Goal707 | no RTX graph acceleration claim today |
 | `examples/rtdl_apple_rt_demo_app.py` | `exclude_from_rtx_app_benchmark` | none | Apple RT demo claim only, not NVIDIA OptiX |
-| `examples/rtdl_service_coverage_gaps.py` | `needs_phase_contract` | Goal810 | bounded prepared gap-summary path only; no whole-app service-coverage speedup claim |
-| `examples/rtdl_event_hotspot_screening.py` | `needs_phase_contract` | Goal810 | bounded prepared count-summary path only; no whole-app hotspot-screening speedup claim |
+| `examples/rtdl_service_coverage_gaps.py` | `needs_real_rtx_artifact` | Goal862 | bounded prepared gap-summary path only; no whole-app service-coverage speedup claim |
+| `examples/rtdl_event_hotspot_screening.py` | `needs_real_rtx_artifact` | Goal862 | bounded prepared count-summary path only; no whole-app hotspot-screening speedup claim |
 | `examples/rtdl_facility_knn_assignment.py` | `exclude_from_rtx_app_benchmark` | none | CPU/Embree/SciPy baseline app only until a real RT traversal plus ranking design is added |
 | `examples/rtdl_road_hazard_screening.py` | `needs_native_kernel_tuning` | Goal807/808 | no RTX road-hazard speedup claim today |
 | `examples/rtdl_segment_polygon_hitcount.py` | `needs_native_kernel_tuning` | Goal807 | no RTX segment/polygon hit-count speedup claim today |
@@ -198,8 +199,8 @@ batched run, copy artifacts, then shut down.
 | `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only. | No broad DB speedup claim until `compact_summary` is rerun on RTX hardware and native phase counters prove materialization is not dominant. |
 | `graph_analytics` | `needs_rt_core_redesign` | `rt_core_ready` | Replace host-indexed CSR helpers with a real graph-to-RT lowering or explicitly remove graph from NVIDIA RT-core app targets. | No paid graph RTX benchmark until a native traversal design and local correctness gate exist. |
 | `apple_rt_demo` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables. | Never include in NVIDIA cloud batches. |
-| `service_coverage_gaps` | `rt_core_partial_ready` | `rt_core_ready` | Add a phase-clean profiler for the prepared OptiX gap-summary mode and validate it on RTX before any claim. | Cloud only after local profiler packaging; include only as bounded prepared summary evidence. |
-| `event_hotspot_screening` | `rt_core_partial_ready` | `rt_core_ready` | Add a phase-clean profiler for the prepared OptiX count-summary mode and validate it on RTX before any claim. | Cloud only after local profiler packaging; include only as bounded prepared summary evidence. |
+| `service_coverage_gaps` | `rt_core_partial_ready` | `rt_core_ready` | Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim. | Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app. |
+| `event_hotspot_screening` | `rt_core_partial_ready` | `rt_core_ready` | Keep the prepared OptiX count-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim. | Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app. |
 | `facility_knn_assignment` | `needs_optix_app_surface` | `rt_core_ready` | Add an OptiX app surface only if KNN assignment is redesigned around a true RT traversal plus native ranking primitive rather than CUDA-through-OptiX KNN rows or fixed-radius count thresholds. | Cloud only after a native traversal/ranking design exists and has a local correctness gate. |
 | `road_hazard_screening` | `needs_rt_core_redesign` | `rt_core_ready` | Run the explicit native segment/polygon mode through Goal807 strict RTX gating before changing default OptiX behavior or claims. | Cloud only in the focused Goal807 native-vs-host-indexed batch; no road-hazard speedup claim until that passes. |
 | `segment_polygon_hitcount` | `needs_rt_core_redesign` | `rt_core_ready` | Use Goal807 to prove explicit native hit-count correctness/performance against host-indexed and PostGIS where available before promotion. | Cloud only in a focused Goal807 native-vs-host-indexed batch after local gate packaging is complete. |

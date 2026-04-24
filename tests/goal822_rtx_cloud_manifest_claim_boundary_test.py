@@ -33,7 +33,7 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
                 self.assertNotIn(app, active_apps)
                 self.assertIn(app, manifest["excluded_apps"])
 
-    def test_phase_contract_spatial_apps_are_deferred_not_active(self) -> None:
+    def test_spatial_apps_waiting_on_real_rtx_artifacts_are_deferred_not_active(self) -> None:
         manifest = build_manifest()
         active_apps = {entry["app"] for entry in manifest["entries"]}
         deferred = {entry["app"]: entry for entry in manifest["deferred_entries"]}
@@ -41,7 +41,7 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
             with self.subTest(app=app):
                 self.assertNotIn(app, active_apps)
                 self.assertIn(app, deferred)
-                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_phase_contract")
+                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_real_rtx_artifact")
                 self.assertIn("Goal811", deferred[app]["activation_gate"])
 
 

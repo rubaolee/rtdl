@@ -78,6 +78,7 @@ class RtCoreAppMaturity:
 
 READY_FOR_RTX_CLAIM_REVIEW = "ready_for_rtx_claim_review"
 NEEDS_PHASE_CONTRACT = "needs_phase_contract"
+NEEDS_REAL_RTX_ARTIFACT = "needs_real_rtx_artifact"
 NEEDS_INTERFACE_TUNING = "needs_interface_tuning"
 NEEDS_NATIVE_KERNEL_TUNING = "needs_native_kernel_tuning"
 NEEDS_POSTPROCESS_SPLIT = "needs_postprocess_split"
@@ -86,6 +87,7 @@ EXCLUDE_FROM_RTX_APP_BENCHMARK = "exclude_from_rtx_app_benchmark"
 OPTIX_APP_BENCHMARK_READINESS_STATUSES = (
     READY_FOR_RTX_CLAIM_REVIEW,
     NEEDS_PHASE_CONTRACT,
+    NEEDS_REAL_RTX_ARTIFACT,
     NEEDS_INTERFACE_TUNING,
     NEEDS_NATIVE_KERNEL_TUNING,
     NEEDS_POSTPROCESS_SPLIT,
@@ -463,18 +465,18 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "service_coverage_gaps": _readiness(
         "service_coverage_gaps",
-        NEEDS_PHASE_CONTRACT,
-        "Goal810",
-        "prepared gap-summary mode must be timed with preparation, traversal, output packing, and Python summary separated before any cloud claim",
-        "OptiX prepared summary surface exists, but no RTX phase-clean app evidence has been recorded for this app yet",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal862",
+        "prepared gap-summary mode already has local dry-run and same-semantics baseline evidence; promotion now requires a real RTX optix-mode artifact reviewed against those local baselines",
+        "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
         "bounded prepared gap-summary path only; no whole-app service-coverage speedup claim",
     ),
     "event_hotspot_screening": _readiness(
         "event_hotspot_screening",
-        NEEDS_PHASE_CONTRACT,
-        "Goal810",
-        "prepared count-summary mode must be timed with preparation, traversal, output packing, and Python hotspot postprocess separated before any cloud claim",
-        "OptiX prepared summary surface exists, but no RTX phase-clean app evidence has been recorded for this app yet",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal862",
+        "prepared count-summary mode already has local dry-run and same-semantics baseline evidence; promotion now requires a real RTX optix-mode artifact reviewed against those local baselines",
+        "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
         "bounded prepared count-summary path only; no whole-app hotspot-screening speedup claim",
     ),
     "facility_knn_assignment": _readiness(
@@ -626,15 +628,15 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "service_coverage_gaps",
         RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Add a phase-clean profiler for the prepared OptiX gap-summary mode and validate it on RTX before any claim.",
-        "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+        "Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
+        "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
     ),
     "event_hotspot_screening": _maturity(
         "event_hotspot_screening",
         RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Add a phase-clean profiler for the prepared OptiX count-summary mode and validate it on RTX before any claim.",
-        "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+        "Keep the prepared OptiX count-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
+        "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
     ),
     "facility_knn_assignment": _maturity(
         "facility_knn_assignment",

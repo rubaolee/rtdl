@@ -22,12 +22,12 @@ DATE = "2026-04-23"
 SCENARIOS = {
     "service_coverage_gaps": {
         "require_rt_core_mode": "gap_summary_prepared",
-        "next_goal": "Goal810/811 local packet -> future RTX run",
+        "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
         "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries",
     },
     "event_hotspot_screening": {
         "require_rt_core_mode": "count_summary_prepared",
-        "next_goal": "Goal810/811 local packet -> future RTX run",
+        "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
         "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot compact summaries",
     },
 }
@@ -68,7 +68,7 @@ def build_packet() -> dict[str, object]:
         "ready_for_local_promotion_packet": True,
         "ready_for_rtx_claim_review_now": False,
         "boundary": (
-            "This packet proves local claim-path readiness only. "
+            "This packet proves local claim-path readiness and completed same-semantics baseline coverage only. "
             "It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim."
         ),
     }

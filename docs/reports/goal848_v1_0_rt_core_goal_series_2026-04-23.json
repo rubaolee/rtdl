@@ -29,20 +29,20 @@
     },
     {
       "app": "service_coverage_gaps",
-      "benchmark_readiness": "needs_phase_contract",
-      "cloud_policy": "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
       "current_status": "rt_core_partial_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "required_action": "Add a phase-clean profiler for the prepared OptiX gap-summary mode and validate it on RTX before any claim.",
+      "required_action": "Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "event_hotspot_screening",
-      "benchmark_readiness": "needs_phase_contract",
-      "cloud_policy": "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+      "benchmark_readiness": "needs_real_rtx_artifact",
+      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
       "current_status": "rt_core_partial_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "required_action": "Add a phase-clean profiler for the prepared OptiX count-summary mode and validate it on RTX before any claim.",
+      "required_action": "Keep the prepared OptiX count-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
       "target_status": "rt_core_ready"
     },
     {
@@ -166,7 +166,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-23T15:51:01",
+  "generated_at": "2026-04-23T21:50:39",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {

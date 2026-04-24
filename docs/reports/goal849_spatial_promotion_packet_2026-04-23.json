@@ -3,7 +3,7 @@
     {
       "app": "service_coverage_gaps",
       "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries",
-      "cloud_policy": "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
       "current_maturity": "rt_core_partial_ready",
       "local_dry_run_result": {
         "clinic_count": 3,
@@ -15,22 +15,22 @@
         ]
       },
       "local_dry_run_timings_sec": {
-        "cpu_reference_total": 7.05420970916748e-05,
-        "input_build": 8.541974239051342e-06
+        "cpu_reference_total": 9.325006976723671e-05,
+        "input_build": 1.0333023965358734e-05
       },
-      "next_goal": "Goal810/811 local packet -> future RTX run",
+      "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
       "performance_class": "optix_traversal_prepared_summary",
-      "promotion_blocker": "OptiX prepared summary surface exists, but no RTX phase-clean app evidence has been recorded for this app yet",
+      "promotion_blocker": "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
       "promotion_condition": "real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion",
-      "readiness_status": "needs_phase_contract",
+      "readiness_status": "needs_real_rtx_artifact",
       "require_rt_core_mode": "gap_summary_prepared",
-      "required_action": "Add a phase-clean profiler for the prepared OptiX gap-summary mode and validate it on RTX before any claim.",
+      "required_action": "Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
       "target_maturity": "rt_core_ready"
     },
     {
       "app": "event_hotspot_screening",
       "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot compact summaries",
-      "cloud_policy": "Cloud only after local profiler packaging; include only as bounded prepared summary evidence.",
+      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
       "current_maturity": "rt_core_partial_ready",
       "local_dry_run_result": {
         "event_count": 6,
@@ -55,22 +55,22 @@
         ]
       },
       "local_dry_run_timings_sec": {
-        "cpu_reference_total": 0.00013229204341769218,
-        "input_build": 1.2125005014240742e-05
+        "cpu_reference_total": 0.00016441696789115667,
+        "input_build": 1.425005029886961e-05
       },
-      "next_goal": "Goal810/811 local packet -> future RTX run",
+      "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
       "performance_class": "optix_traversal_prepared_summary",
-      "promotion_blocker": "OptiX prepared summary surface exists, but no RTX phase-clean app evidence has been recorded for this app yet",
+      "promotion_blocker": "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
       "promotion_condition": "real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion",
-      "readiness_status": "needs_phase_contract",
+      "readiness_status": "needs_real_rtx_artifact",
       "require_rt_core_mode": "count_summary_prepared",
-      "required_action": "Add a phase-clean profiler for the prepared OptiX count-summary mode and validate it on RTX before any claim.",
+      "required_action": "Keep the prepared OptiX count-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
       "target_maturity": "rt_core_ready"
     }
   ],
-  "boundary": "This packet proves local claim-path readiness only. It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim.",
+  "boundary": "This packet proves local claim-path readiness and completed same-semantics baseline coverage only. It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-23T15:48:08",
+  "generated_at": "2026-04-23T21:50:39",
   "goal": "Goal849 spatial prepared-summary promotion packet",
   "ready_for_local_promotion_packet": true,
   "ready_for_rtx_claim_review_now": false

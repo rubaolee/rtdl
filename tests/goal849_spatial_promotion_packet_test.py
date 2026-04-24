@@ -11,8 +11,8 @@ class Goal849SpatialPromotionPacketTest(unittest.TestCase):
         self.assertTrue(payload["ready_for_local_promotion_packet"])
         self.assertFalse(payload["ready_for_rtx_claim_review_now"])
         by_app = {item["app"]: item for item in payload["apps"]}
-        self.assertEqual(by_app["service_coverage_gaps"]["readiness_status"], "needs_phase_contract")
-        self.assertEqual(by_app["event_hotspot_screening"]["readiness_status"], "needs_phase_contract")
+        self.assertEqual(by_app["service_coverage_gaps"]["readiness_status"], "needs_real_rtx_artifact")
+        self.assertEqual(by_app["event_hotspot_screening"]["readiness_status"], "needs_real_rtx_artifact")
         self.assertEqual(by_app["service_coverage_gaps"]["current_maturity"], "rt_core_partial_ready")
         self.assertEqual(by_app["event_hotspot_screening"]["current_maturity"], "rt_core_partial_ready")
 

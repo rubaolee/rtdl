@@ -17,7 +17,7 @@ class Goal819SpatialPreparedSummaryRtCoreGateTest(unittest.TestCase):
                     rt.optix_app_performance_support(app).performance_class,
                     "optix_traversal_prepared_summary",
                 )
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_phase_contract")
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
                 self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
                 self.assertIn(mode, rt.optix_app_performance_support(app).note)
 

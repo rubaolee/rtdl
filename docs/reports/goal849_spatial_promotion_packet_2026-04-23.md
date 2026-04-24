@@ -9,18 +9,18 @@ Package the existing local evidence for the two partial-ready spatial apps so th
 ## service_coverage_gaps
 
 - Performance class: `optix_traversal_prepared_summary`
-- Benchmark readiness: `needs_phase_contract`
+- Benchmark readiness: `needs_real_rtx_artifact`
 - Current maturity: `rt_core_partial_ready`
 - Target maturity: `rt_core_ready`
 - Required OptiX mode: `gap_summary_prepared`
 - Claim scope: prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries
-- Promotion blocker: OptiX prepared summary surface exists, but no RTX phase-clean app evidence has been recorded for this app yet
+- Promotion blocker: local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet
 - Promotion condition: real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion
 
 Dry-run timings:
 
-- `input_build`: `8.541974239051342e-06`
-- `cpu_reference_total`: `7.05420970916748e-05`
+- `input_build`: `1.0333023965358734e-05`
+- `cpu_reference_total`: `9.325006976723671e-05`
 
 Dry-run result keys:
 
@@ -33,18 +33,18 @@ Dry-run result keys:
 ## event_hotspot_screening
 
 - Performance class: `optix_traversal_prepared_summary`
-- Benchmark readiness: `needs_phase_contract`
+- Benchmark readiness: `needs_real_rtx_artifact`
 - Current maturity: `rt_core_partial_ready`
 - Target maturity: `rt_core_ready`
 - Required OptiX mode: `count_summary_prepared`
 - Claim scope: prepared OptiX fixed-radius count traversal for hotspot compact summaries
-- Promotion blocker: OptiX prepared summary surface exists, but no RTX phase-clean app evidence has been recorded for this app yet
+- Promotion blocker: local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet
 - Promotion condition: real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion
 
 Dry-run timings:
 
-- `input_build`: `1.2125005014240742e-05`
-- `cpu_reference_total`: `0.00013229204341769218`
+- `input_build`: `1.425005029886961e-05`
+- `cpu_reference_total`: `0.00016441696789115667`
 
 Dry-run result keys:
 
@@ -54,5 +54,5 @@ Dry-run result keys:
 
 ## Boundary
 
-This packet proves local claim-path readiness only. It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim.
+This packet proves local claim-path readiness and completed same-semantics baseline coverage only. It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim.
 

@@ -51,8 +51,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         expected = {
             "database_analytics": "needs_interface_tuning",
             "graph_analytics": "needs_native_kernel_tuning",
-            "service_coverage_gaps": "needs_phase_contract",
-            "event_hotspot_screening": "needs_phase_contract",
+            "service_coverage_gaps": "needs_real_rtx_artifact",
+            "event_hotspot_screening": "needs_real_rtx_artifact",
             "road_hazard_screening": "needs_native_kernel_tuning",
             "segment_polygon_hitcount": "needs_native_kernel_tuning",
             "segment_polygon_anyhit_rows": "needs_native_kernel_tuning",
@@ -125,6 +125,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "rtdsl.optix_app_benchmark_readiness_matrix()",
             "do not rent or keep a paid RTX instance",
             "needs_phase_contract",
+            "needs_real_rtx_artifact",
             "needs_interface_tuning",
             "needs_native_kernel_tuning",
             "needs_postprocess_split",

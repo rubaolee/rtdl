@@ -149,7 +149,7 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
                 self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", deferred[app]["command"])
                 self.assertIn("--mode", deferred[app]["command"])
                 self.assertIn("optix", deferred[app]["command"])
-                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_phase_contract")
+                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_real_rtx_artifact")
                 self.assertIn("baseline_review_contract", deferred[app])
                 self.assertIn("prepared compact summary", deferred[app]["baseline_review_contract"]["claim_limit"])
 
