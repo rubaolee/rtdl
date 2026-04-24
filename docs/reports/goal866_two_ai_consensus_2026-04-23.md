@@ -4,8 +4,8 @@ Date: 2026-04-23
 
 Goal:
 
-- Add a promotion-facing review packet for `segment_polygon_anyhit_rows` that
-  separates compact-mode readiness from pair-row readiness.
+- Add a review packet for `segment_polygon_anyhit_rows` that separates compact
+  mode readiness from pair-row readiness.
 
 Verdicts:
 
@@ -15,8 +15,8 @@ Verdicts:
 Consensus result:
 
 - compact modes correctly depend on the Goal864 segment-polygon native gate
-- `rows` mode correctly remains blocked by `needs_native_pair_row_emitter`
-- the packet does not overpromote anyhit-row RT readiness
+- rows mode correctly remains blocked by `needs_native_pair_row_emitter`
+- the packet does not overpromote anyhit-row readiness
 
 Evidence:
 

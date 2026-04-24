@@ -2,18 +2,18 @@
 
 Verdict: ACCEPT
 
-This is the correct boundary packet for `segment_polygon_anyhit_rows`.
+This is the correct promotion-boundary packet for
+`segment_polygon_anyhit_rows`.
 
-The app has two materially different RT stories:
+The app has two different capability lines:
 
-- compact modes can eventually inherit readiness from the native
-  segment-polygon hit-count foundation
-- `rows` mode still has no native pair-row emitter
+- compact modes can only ride the native segment-polygon hit-count path
+- rows mode needs a native pair-row emitter that does not exist
 
-Goal866 makes that split explicit without changing any runtime behavior or
-overstating readiness.
+Goal866 makes that architectural split explicit without changing behavior or
+claiming readiness that is not there.
 
-The current local result is correct:
+The local result is correct:
 
 - compact modes: `needs_segment_polygon_real_optix_artifact`
 - rows mode: `needs_native_pair_row_emitter`
