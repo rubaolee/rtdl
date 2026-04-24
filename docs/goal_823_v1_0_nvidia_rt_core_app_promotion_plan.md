@@ -44,6 +44,10 @@ until phase-clean evidence exists.
 | --- | --- | --- |
 | `service_coverage_gaps` | prepared OptiX gap summary | run Goal811 phase profiler locally/dry-run and later on RTX |
 | `event_hotspot_screening` | prepared OptiX count summary | run Goal811 phase profiler locally/dry-run and later on RTX |
+| `hausdorff_distance` | prepared OptiX threshold decision | package phase evidence for Hausdorff <= radius only; keep exact KNN distance outside the claim |
+| `ann_candidate_search` | prepared OptiX candidate-coverage decision | package phase evidence for candidate coverage only; keep ANN ranking/full-index behavior outside the claim |
+| `facility_knn_assignment` | prepared OptiX service-coverage decision | package phase evidence for depot coverage only; keep ranked KNN assignment outside the claim |
+| `barnes_hut_force_app` | prepared OptiX node-coverage decision | package phase evidence for node coverage only; keep opening-rule and force reduction outside the claim |
 
 ### Tier 3: Native OptiX Redesign Needed
 
@@ -56,9 +60,10 @@ host-indexed or CUDA-through-OptiX, not an RT-core claim path.
 | `segment_polygon_anyhit_rows` | compact count path is easier than pair-row output | promote compact flags/counts first; native pair-row output later |
 | `road_hazard_screening` | depends on segment/polygon core | promote only after segment/polygon strict gate passes |
 | `graph_analytics` | host-indexed CSR fallback | design real graph-to-RT traversal or keep out of RTX claims |
-| `hausdorff_distance` | CUDA-through-OptiX KNN compute | design traversal-friendly Hausdorff summary/candidate method |
-| `ann_candidate_search` | CUDA-through-OptiX KNN/ranking | design RT candidate culling plus explicit ranking/refinement |
-| `barnes_hut_force_app` | Python tree/opening/force reduction dominates | use RT traversal only for candidate node selection and split force timing |
+| `hausdorff_distance` exact distance | exact distance still uses KNN rows | design native ranking/nearest-distance reduction before any exact-distance RT-core claim |
+| `ann_candidate_search` ranking | candidate reranking still uses KNN rows | design native ranking/refinement before any ANN ranking RT-core claim |
+| `facility_knn_assignment` ranking | ranked depot assignment still uses KNN rows | design native nearest-depot ranking before any KNN-assignment RT-core claim |
+| `barnes_hut_force_app` force path | Python tree/opening/force reduction dominates | design native opening/reduction primitives before any force-vector RT-core claim |
 
 ### Tier 4: App Surface Needed First
 
@@ -66,7 +71,6 @@ These apps have Embree/native-assisted paths but no OptiX/NVIDIA app surface.
 
 | App | Required action |
 | --- | --- |
-| `facility_knn_assignment` | design real RT-assisted nearest/ranking path; do not substitute fixed-radius threshold |
 | `polygon_pair_overlap_area_rows` | add OptiX candidate-discovery surface before any claim |
 | `polygon_set_jaccard` | add OptiX candidate-discovery surface before any claim |
 
