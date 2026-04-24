@@ -154,6 +154,36 @@ Use when:
 
 ---
 
+## OptiX mode boundary
+
+The segment/polygon family exposes OptiX for compatibility work, but the public
+surface is still split into three distinct states:
+
+| OptiX request | What it means today |
+| --- | --- |
+| `--optix-mode auto` | preserve the current app default |
+| `--optix-mode host_indexed` | force the released host-indexed fallback path |
+| `--optix-mode native` | request the experimental native custom-AABB path |
+
+Examples:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode host_indexed --copies 4
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --copies 4
+PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 4
+```
+
+Important boundary:
+
+- these commands are useful for local compatibility and future promotion work
+- they are **not** released NVIDIA RT-core claims
+- the segment/polygon app family also rejects
+`--require-rt-core` today
+- `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` also
+  fails intentionally because pair-row native output does not exist yet
+
+---
+
 ## The overlap and Jaccard line
 
 The released package also includes two narrower polygon-overlap workloads:
