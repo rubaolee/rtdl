@@ -33,30 +33,34 @@ Use an RTX-class NVIDIA GPU with real RT cores. Acceptable examples:
 Avoid GTX 1070-class GPUs for RT-core claims. They can test CUDA/OptiX behavior
 but not NVIDIA RT-core acceleration.
 
-## One Command On The Pod
+## One Full-Batch Command On The Pod
 
-After SSH into the pod and checking out the repo, run one batched command:
+After SSH into the pod and checking out the repo, run one batched command for
+the current v0.9.8/v1.0 RT-core app-prep packet. This command runs active
+entries and deferred readiness gates in the same pod session, then runs the
+artifact analyzer and creates one tarball.
 
 ```bash
 cd /workspace/rtdl_python_only
 PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --branch codex/rtx-cloud-run-2026-04-22 \
   --optix-prefix /workspace/vendor/optix-dev-9.0.0 \
+  --include-deferred \
   --output-json docs/reports/goal769_rtx_pod_one_shot_summary_latest.json \
   --artifact-json docs/reports/goal762_rtx_cloud_artifact_report_latest.json \
   --artifact-md docs/reports/goal762_rtx_cloud_artifact_report_latest.md \
   --bundle-tgz docs/reports/goal769_rtx_pod_artifacts_latest.tgz
 ```
 
-## Same-Pod Deferred Exploration Batch
+If you intentionally want only active release-grade entries, omit
+`--include-deferred`. Do not start a separate pod for that unless there is a
+clear reason.
 
-Run the active one-shot command first. If it succeeds and the pod is still
-healthy, use the same pod for deferred evidence before shutdown. This keeps
-cloud cost under control while preserving the difference between release-grade
-active evidence and exploratory/deferred gates.
+## Optional Targeted Deferred Retry
 
-Short form: release-grade active evidence first; exploratory/deferred gates
-second.
+If the full-batch command succeeds for active entries but one deferred readiness
+gate fails, keep the same pod running and retry only that deferred target after
+local diagnosis. Do not restart the pod per app.
 
 Current deferred targets:
 
@@ -73,7 +77,7 @@ Current deferred targets:
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
 
-Use this deferred batch command:
+Use this targeted retry shape:
 
 ```bash
 cd /workspace/rtdl_python_only
@@ -82,17 +86,6 @@ PYTHONPATH=src:. python3 scripts/goal769_rtx_pod_one_shot.py \
   --optix-prefix /workspace/vendor/optix-dev-9.0.0 \
   --include-deferred \
   --only graph_analytics \
-  --only service_coverage_gaps \
-  --only event_hotspot_screening \
-  --only road_hazard_screening \
-  --only segment_polygon_hitcount \
-  --only segment_polygon_anyhit_rows \
-  --only hausdorff_distance \
-  --only ann_candidate_search \
-  --only facility_knn_assignment \
-  --only barnes_hut_force_app \
-  --only polygon_pair_overlap_area_rows \
-  --only polygon_set_jaccard \
   --output-json docs/reports/goal769_rtx_pod_one_shot_summary_latest.json \
   --artifact-json docs/reports/goal762_rtx_cloud_artifact_report_latest.json \
   --artifact-md docs/reports/goal762_rtx_cloud_artifact_report_latest.md \
@@ -133,6 +126,10 @@ Copy the bundle first:
 docs/reports/goal769_rtx_pod_artifacts_latest.tgz
 ```
 
+The bundle includes the one-shot summary, bootstrap output, Goal761 summary,
+Goal762 artifact report, active manifest outputs, and deferred manifest outputs
+when `--include-deferred` is used.
+
 Also copy these individual files if available:
 
 - `docs/reports/goal769_rtx_pod_one_shot_summary_latest.json`
@@ -140,7 +137,9 @@ Also copy these individual files if available:
 - `docs/reports/goal762_rtx_cloud_artifact_report_latest.md`
 - `docs/reports/goal761_rtx_cloud_run_all_summary.json`
 - `docs/reports/goal763_rtx_cloud_bootstrap_check.json`
-- `docs/reports/goal759_*_rtx.json`
+- all manifest `--output-json` artifacts, including `goal759_*`, `goal887_*`,
+  `goal888_*`, `goal889_*`, `goal873_*`, `goal877_*`, `goal811_*`, and
+  `goal807_*` outputs when present
 
 ## Shutdown Rule
 

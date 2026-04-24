@@ -44,17 +44,20 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
             "polygon_set_jaccard",
         ):
             with self.subTest(app=app):
-                self.assertIn(f"--only {app}", text)
+                self.assertIn(app, text)
         self.assertIn("After copying artifacts back, stop or terminate the pod.", text)
         self.assertIn("does not authorize public RTX speedup claims", text)
 
-    def test_runbook_separates_active_and_deferred_evidence(self) -> None:
+    def test_runbook_prefers_full_batch_and_targeted_retry(self) -> None:
         text = RUNBOOK.read_text(encoding="utf-8")
 
-        self.assertIn("Run the active one-shot command first", text)
-        self.assertIn("release-grade active evidence", text)
-        self.assertIn("exploratory/deferred gates", text)
+        self.assertIn("One Full-Batch Command On The Pod", text)
+        self.assertIn("This command runs active", text)
+        self.assertIn("entries and deferred readiness gates in the same pod session", text)
+        self.assertIn("Optional Targeted Deferred Retry", text)
+        self.assertIn("Do not restart the pod per app.", text)
         self.assertIn("The deferred batch is allowed to expose failures", text)
+        self.assertIn("all manifest `--output-json` artifacts", text)
 
 
 if __name__ == "__main__":
