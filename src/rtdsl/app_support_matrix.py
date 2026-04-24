@@ -450,10 +450,10 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "graph_analytics": _readiness(
         "graph_analytics",
         NEEDS_REAL_RTX_ARTIFACT,
-        "Goal889",
-        "visibility_edges mode must pass strict RTX validation against CPU reference before any graph RT-core claim",
+        "Goal889/Goal905",
+        "combined graph gate must pass strict RTX validation for visibility any-hit plus native BFS and triangle-count graph-ray candidate generation",
         "Embree BFS/triangle-count and explicit OptiX native graph-ray mode now exist; OptiX native mode still needs build/runtime RTX validation",
-        "graph visibility-edge filtering sub-path only for NVIDIA claims today; no OptiX BFS, triangle-count, or general graph analytics speedup claim before native graph-ray cloud artifact",
+        "graph visibility-edge filtering plus explicit native BFS/triangle graph-ray mode are claim candidates only after the combined cloud artifact passes; no shortest-path, graph database, distributed analytics, or whole-app graph-system speedup claim",
     ),
     "apple_rt_demo": _readiness(
         "apple_rt_demo",
@@ -614,8 +614,8 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "graph_analytics",
         RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Use visibility_edges as the bounded graph-to-RT lowering; keep BFS and triangle-count excluded until separate native traversal designs exist.",
-        "Cloud only in the deferred Goal889 visibility-edge gate; no BFS or triangle-count RT-core claim.",
+        "Use visibility_edges any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim.",
+        "Cloud only in the combined Goal889/905 graph gate; no graph RT-core claim until visibility, native BFS, and native triangle-count row digests pass on RTX hardware.",
     ),
     "apple_rt_demo": _maturity(
         "apple_rt_demo",

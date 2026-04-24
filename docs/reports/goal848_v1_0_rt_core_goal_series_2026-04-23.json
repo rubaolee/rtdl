@@ -12,10 +12,10 @@
     {
       "app": "graph_analytics",
       "benchmark_readiness": "needs_real_rtx_artifact",
-      "cloud_policy": "Cloud only in the deferred Goal889 visibility-edge gate; no BFS or triangle-count RT-core claim.",
+      "cloud_policy": "Cloud only in the combined Goal889/905 graph gate; no graph RT-core claim until visibility, native BFS, and native triangle-count row digests pass on RTX hardware.",
       "current_status": "rt_core_partial_ready",
       "performance_class": "optix_traversal",
-      "required_action": "Use visibility_edges as the bounded graph-to-RT lowering; keep BFS and triangle-count excluded until separate native traversal designs exist.",
+      "required_action": "Use visibility_edges any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim.",
       "target_status": "rt_core_ready"
     },
     {
@@ -166,7 +166,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-24T19:15:19",
+  "generated_at": "2026-04-24T19:37:38",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
