@@ -2802,6 +2802,23 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_segment_polygon_anyhit_rows.restype = ctypes.c_int
 
+    optional_segment_polygon_anyhit_rows_native_bounded = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded",
+    )
+    if optional_segment_polygon_anyhit_rows_native_bounded is not None:
+        optional_segment_polygon_anyhit_rows_native_bounded.argtypes = [
+            ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
+            ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_segment_polygon_anyhit_rows_native_bounded.restype = ctypes.c_int
+
     _require_backend_symbol(lib, "rtdl_optix_run_point_nearest_segment").argtypes = [
         ctypes.POINTER(_RtdlPoint),   ctypes.c_size_t,
         ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
