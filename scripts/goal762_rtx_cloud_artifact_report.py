@@ -40,6 +40,33 @@ def _find_result_for_app(payload: dict[str, Any], app: str) -> dict[str, Any] | 
     return None
 
 
+def _sum_phase_key(phases: Any, key: str) -> float | None:
+    if not isinstance(phases, dict):
+        return None
+    total = 0.0
+    found = False
+    for value in phases.values():
+        if isinstance(value, dict) and isinstance(value.get(key), (int, float)):
+            total += float(value[key])
+            found = True
+    return total if found else None
+
+
+def _sum_phase_prefix(phases: Any, prefix: str) -> float | None:
+    if not isinstance(phases, dict):
+        return None
+    total = 0.0
+    found = False
+    for value in phases.values():
+        if not isinstance(value, dict):
+            continue
+        for phase_key, phase_value in value.items():
+            if phase_key.startswith(prefix) and isinstance(phase_value, (int, float)):
+                total += float(phase_value)
+                found = True
+    return total if found else None
+
+
 def _contract_check(contract: Any, phase_source: Any) -> dict[str, Any]:
     if not isinstance(contract, dict):
         return {
@@ -113,10 +140,20 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "schema_version": optix.get("schema_version", artifact.get("schema_version")),
             "one_shot_total_sec": optix.get("one_shot_total_sec"),
             "prepare_total_sec": optix.get("prepared_session_prepare_total_sec"),
+            "prepare_sec": optix.get("prepared_session_prepare_total_sec"),
             "warm_query_median_sec": _median(optix.get("prepared_session_warm_query_sec")),
             "close_sec": optix.get("prepared_session_close_sec"),
             "speedup_one_shot_over_warm_query_median": optix.get("speedup_one_shot_over_warm_query_median"),
             "phase_contract_present": isinstance(optix.get("phase_contract"), dict),
+            "db_query_total_sec": _sum_phase_prefix(optix.get("reported_run_phases_sec"), "query_"),
+            "postprocess_median_sec": _sum_phase_key(
+                optix.get("reported_run_phases_sec"),
+                "python_summary_postprocess_sec",
+            ),
+            "db_run_phase_modes": optix.get("reported_run_phase_modes"),
+            "db_native_phase_groups": sorted((optix.get("reported_native_db_phases_sec") or {}).keys())
+            if isinstance(optix.get("reported_native_db_phases_sec"), dict)
+            else [],
         }
         metrics.update(_contract_check(optix.get("cloud_claim_contract"), optix))
         return metrics

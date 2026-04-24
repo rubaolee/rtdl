@@ -171,6 +171,109 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
         finally:
             artifact_path.unlink(missing_ok=True)
 
+    def test_db_compact_summary_phase_fields_are_extracted(self) -> None:
+        module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
+        artifact_path = ROOT / "docs" / "reports" / "goal762_test_db_compact_tmp.json"
+        try:
+            artifact_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "goal825_tier1_phase_contract_v1",
+                        "results": [
+                            {
+                                "backend": "optix",
+                                "schema_version": "goal825_tier1_phase_contract_v1",
+                                "one_shot_total_sec": 2.0,
+                                "prepared_session_prepare_total_sec": 0.5,
+                                "prepared_session_warm_query_sec": {
+                                    "min_sec": 0.1,
+                                    "median_sec": 0.2,
+                                    "max_sec": 0.3,
+                                },
+                                "prepared_session_close_sec": 0.01,
+                                "speedup_one_shot_over_warm_query_median": 10.0,
+                                "cloud_claim_contract": {
+                                    "claim_scope": "prepared DB compact-summary sessions only",
+                                    "non_claim": "not SQL",
+                                    "required_phase_groups": [
+                                        "one_shot_total_sec",
+                                        "prepared_session_prepare_total_sec",
+                                        "prepared_session_warm_query_sec",
+                                        "reported_prepare_phases_sec",
+                                        "reported_run_phases_sec",
+                                        "reported_native_db_phases_sec",
+                                    ],
+                                },
+                                "phase_contract": {},
+                                "reported_prepare_phases_sec": {"unified_session": {"prepare_session_sec": 0.5}},
+                                "reported_run_phases_sec": {
+                                    "regional_dashboard": {
+                                        "query_conjunctive_scan_count_sec": 0.02,
+                                        "query_grouped_count_summary_sec": 0.03,
+                                        "python_summary_postprocess_sec": 0.004,
+                                    },
+                                    "sales_risk": {
+                                        "query_conjunctive_scan_count_sec": 0.01,
+                                        "query_grouped_sum_summary_sec": 0.04,
+                                        "python_summary_postprocess_sec": 0.006,
+                                    },
+                                },
+                                "reported_run_phase_modes": {
+                                    "sales_risk": {"scan": "count_summary"},
+                                },
+                                "reported_native_db_phases_sec": {
+                                    "sales_risk": {"grouped_sum_summary": {"traversal_sec": 0.01}},
+                                },
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with tempfile.TemporaryDirectory() as tmpdir:
+                summary = Path(tmpdir) / "summary.json"
+                summary.write_text(
+                    json.dumps(
+                        {
+                            "status": "ok",
+                            "dry_run": False,
+                            "results": [
+                                {
+                                    "app": "database_analytics",
+                                    "path_name": "prepared_db_session_sales_risk",
+                                    "claim_scope": "prepared OptiX DB session behavior",
+                                    "non_claim": "not SQL",
+                                    "baseline_review_contract": _baseline_contract(),
+                                    "result": {
+                                        "status": "ok",
+                                        "returncode": 0,
+                                        "command": [
+                                            "python3",
+                                            "script.py",
+                                            "--output-json",
+                                            "docs/reports/goal762_test_db_compact_tmp.json",
+                                        ],
+                                    },
+                                }
+                            ],
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                payload = module.analyze(summary)
+            row = payload["rows"][0]
+            self.assertEqual(payload["status"], "ok")
+            self.assertEqual(row["artifact_status"], "ok")
+            self.assertEqual(row["cloud_contract_status"], "ok")
+            self.assertEqual(row["prepare_sec"], 0.5)
+            self.assertEqual(row["warm_query_median_sec"], 0.2)
+            self.assertAlmostEqual(row["db_query_total_sec"], 0.1)
+            self.assertAlmostEqual(row["postprocess_median_sec"], 0.01)
+            self.assertEqual(row["db_native_phase_groups"], ["sales_risk"])
+            self.assertEqual(row["db_run_phase_modes"]["sales_risk"]["scan"], "count_summary")
+        finally:
+            artifact_path.unlink(missing_ok=True)
+
     def test_ok_runner_with_missing_contract_needs_attention(self) -> None:
         module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
         artifact_path = ROOT / "docs" / "reports" / "goal762_test_missing_contract_tmp.json"
