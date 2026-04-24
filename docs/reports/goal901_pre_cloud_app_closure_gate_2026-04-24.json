@@ -1,0 +1,96 @@
+{
+  "apps": {
+    "active": [
+      "database_analytics",
+      "dbscan_clustering",
+      "outlier_detection",
+      "robot_collision_screening"
+    ],
+    "deferred": [
+      "ann_candidate_search",
+      "barnes_hut_force_app",
+      "event_hotspot_screening",
+      "facility_knn_assignment",
+      "graph_analytics",
+      "hausdorff_distance",
+      "polygon_pair_overlap_area_rows",
+      "polygon_set_jaccard",
+      "road_hazard_screening",
+      "segment_polygon_anyhit_rows",
+      "segment_polygon_hitcount",
+      "service_coverage_gaps"
+    ],
+    "non_nvidia": [
+      "apple_rt_demo",
+      "hiprt_ray_triangle_hitcount"
+    ],
+    "nvidia_target": [
+      "ann_candidate_search",
+      "barnes_hut_force_app",
+      "database_analytics",
+      "dbscan_clustering",
+      "event_hotspot_screening",
+      "facility_knn_assignment",
+      "graph_analytics",
+      "hausdorff_distance",
+      "outlier_detection",
+      "polygon_pair_overlap_area_rows",
+      "polygon_set_jaccard",
+      "road_hazard_screening",
+      "robot_collision_screening",
+      "segment_polygon_anyhit_rows",
+      "segment_polygon_hitcount",
+      "service_coverage_gaps"
+    ]
+  },
+  "boundary": "Local closure gate only. It confirms app coverage, analyzer coverage, and full-batch dry-run shape before cloud; it does not start cloud or authorize performance claims.",
+  "counts": {
+    "active_entry_count": 5,
+    "deferred_entry_count": 12,
+    "full_batch_entry_count": 17,
+    "full_batch_unique_command_count": 16,
+    "non_nvidia_app_count": 2,
+    "nvidia_target_app_count": 16,
+    "public_app_count": 18,
+    "supported_artifact_app_count": 16
+  },
+  "duplicate_output_paths": {
+    "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json": [
+      "prepared_fixed_radius_core_flags",
+      "prepared_fixed_radius_density_summary"
+    ]
+  },
+  "errors": {
+    "entries_without_output_json": [],
+    "full_batch_errors": [],
+    "missing_cloud_coverage": [],
+    "unexpected_cloud_apps": [],
+    "unsupported_artifact_apps": []
+  },
+  "git": {
+    "head": "34ed3e92cbb98fa34af442bea10e4206e4b8bf1d",
+    "status_short": "M docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json\n M scripts/goal762_rtx_cloud_artifact_report.py\n?? docs/reports/gemini_embree_applications_review_2026-04-23.md\n?? docs/reports/gemini_rtdl_feature_analysis_report_2026-04-23.md\n?? docs/reports/gemini_rtdl_next_gen_cuda_partner_brainstorming_2026-04-23.md\n?? docs/reports/goal850_claude_review_2026-04-23.md\n?? scripts/goal901_pre_cloud_app_closure_gate.py\n?? tests/goal901_pre_cloud_app_closure_gate_test.py"
+  },
+  "next_step_if_valid": "If no further local code/doc issue is found, the next material evidence requires a real RTX cloud run using docs/rtx_cloud_single_session_runbook.md.",
+  "output_paths": {
+    "candidate_threshold_prepared": "docs/reports/goal887_ann_candidate_coverage_rtx.json",
+    "coverage_threshold_prepared": "docs/reports/goal887_facility_service_coverage_rtx.json",
+    "directed_threshold_prepared": "docs/reports/goal887_hausdorff_threshold_rtx.json",
+    "graph_visibility_edges_gate": "docs/reports/goal889_graph_visibility_optix_gate_rtx.json",
+    "node_coverage_prepared": "docs/reports/goal887_barnes_hut_node_coverage_rtx.json",
+    "polygon_pair_overlap_optix_native_assisted_phase_gate": "docs/reports/goal877_pair_overlap_phase_rtx.json",
+    "polygon_set_jaccard_optix_native_assisted_phase_gate": "docs/reports/goal877_jaccard_phase_rtx.json",
+    "prepared_count_summary": "docs/reports/goal811_event_hotspot_rtx.json",
+    "prepared_db_session_regional_dashboard": "docs/reports/goal759_db_regional_dashboard_rtx.json",
+    "prepared_db_session_sales_risk": "docs/reports/goal759_db_sales_risk_rtx.json",
+    "prepared_fixed_radius_core_flags": "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+    "prepared_fixed_radius_density_summary": "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+    "prepared_gap_summary": "docs/reports/goal811_service_coverage_rtx.json",
+    "prepared_pose_flags": "docs/reports/goal759_robot_pose_flags_phase_rtx.json",
+    "road_hazard_native_summary_gate": "docs/reports/goal888_road_hazard_native_optix_gate_rtx.json",
+    "segment_polygon_anyhit_rows_native_bounded_gate": "docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json",
+    "segment_polygon_hitcount_native_experimental": "docs/reports/goal807_segment_polygon_optix_mode_gate_rtx.json"
+  },
+  "suite": "goal901_pre_cloud_app_closure_gate",
+  "valid": true
+}

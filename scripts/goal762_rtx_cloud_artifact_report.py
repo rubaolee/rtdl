@@ -9,6 +9,27 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+SUPPORTED_ARTIFACT_APPS = frozenset(
+    {
+        "database_analytics",
+        "outlier_detection",
+        "dbscan_clustering",
+        "robot_collision_screening",
+        "service_coverage_gaps",
+        "event_hotspot_screening",
+        "hausdorff_distance",
+        "ann_candidate_search",
+        "facility_knn_assignment",
+        "barnes_hut_force_app",
+        "graph_analytics",
+        "road_hazard_screening",
+        "segment_polygon_hitcount",
+        "segment_polygon_anyhit_rows",
+        "polygon_pair_overlap_area_rows",
+        "polygon_set_jaccard",
+    }
+)
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
