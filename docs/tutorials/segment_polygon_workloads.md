@@ -180,7 +180,8 @@ Important boundary:
 - the segment/polygon app family also rejects
 `--require-rt-core` today
 - `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` also
-  fails intentionally because pair-row native output does not exist yet
+  fails intentionally because native bounded pair-row emission is still behind
+  the Goal873 strict RTX gate and has not been promoted to the public rows path
 
 ---
 

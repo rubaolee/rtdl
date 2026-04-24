@@ -57,8 +57,11 @@ Rows-mode boundary:
 python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 16
 ```
 
-That command fails intentionally because native OptiX currently exists only for
-the compact count/flag path through `segment_polygon_hitcount`; pair-row native output does not exist yet.
+That public app command fails intentionally because native OptiX pair-row
+emission is still gated. Goal872 added an internal native bounded pair-row
+emitter, and Goal873 added the strict RTX gate, but the public rows path is not promoted
+until a real RTX artifact proves CPU row-digest parity and zero
+overflow.
 
 Claim-sensitive boundary:
 
@@ -95,8 +98,8 @@ released NVIDIA RT-core claim.
 
 - row materialization can be heavier than aggregated counting if you only need counts
 - current geometry path is float-based
-- OptiX native mode does not support pair-row output today; it only exists for
-  compact flag/count paths
+- internal OptiX native bounded pair-row output exists, but it is still behind
+  the Goal873 strict RTX gate and is not the public rows path today
 - released OptiX RT-core claims are still blocked; `--require-rt-core` rejects
   this workload today
 - strongest evidence remains on the accepted Linux/PostGIS validation surface
