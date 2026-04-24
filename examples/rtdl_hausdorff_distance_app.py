@@ -92,14 +92,16 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
-def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
     if not require_rt_core:
         return
     if backend != "optix":
         raise ValueError("--require-rt-core is only meaningful with --backend optix")
-    raise RuntimeError(
-        "hausdorff_distance OptiX path is CUDA-through-OptiX KNN rows today, not NVIDIA RT-core traversal"
-    )
+    if optix_summary_mode != "directed_threshold_prepared":
+        raise RuntimeError(
+            "hausdorff_distance RT-core path requires --backend optix "
+            "--optix-summary-mode directed_threshold_prepared"
+        )
 
 
 def _directed_from_rows(rows: Iterable[dict[str, object]], label: str) -> dict[str, object]:
@@ -193,11 +195,48 @@ def expected_tiled_hausdorff(*, copies: int) -> dict[str, object]:
     return expected
 
 
+def _directed_threshold_from_count_rows(
+    rows: Iterable[dict[str, object]],
+    *,
+    source: tuple[Point, ...],
+    radius: float,
+    label: str,
+) -> dict[str, object]:
+    by_query = {int(row["query_id"]): row for row in rows}
+    violating = [
+        point.id
+        for point in source
+        if int(by_query.get(point.id, {}).get("threshold_reached", 0)) == 0
+    ]
+    return {
+        "label": label,
+        "radius": radius,
+        "source_count": len(source),
+        "within_threshold": not violating,
+        "violating_source_ids": violating,
+        "row_count": len(by_query),
+    }
+
+
+def _run_optix_directed_threshold(
+    source: tuple[Point, ...],
+    target: tuple[Point, ...],
+    *,
+    radius: float,
+    label: str,
+) -> dict[str, object]:
+    with rt.prepare_optix_fixed_radius_count_threshold_2d(target, max_radius=radius) as prepared:
+        rows = prepared.run(source, radius=radius, threshold=1)
+    return _directed_threshold_from_count_rows(rows, source=source, radius=radius, label=label)
+
+
 def run_app(
     backend: str = "cpu_python_reference",
     copies: int = 1,
     *,
     embree_result_mode: str = "rows",
+    optix_summary_mode: str = "rows",
+    hausdorff_threshold: float = 0.4,
     require_rt_core: bool = False,
 ) -> dict[str, object]:
     case = make_authored_point_sets(copies=copies)
@@ -207,7 +246,53 @@ def run_app(
         raise ValueError("Hausdorff distance requires non-empty point sets")
     if embree_result_mode not in {"rows", "directed_summary"}:
         raise ValueError("embree_result_mode must be 'rows' or 'directed_summary'")
-    _enforce_rt_core_requirement(backend, require_rt_core)
+    if optix_summary_mode not in {"rows", "directed_threshold_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'directed_threshold_prepared'")
+    if hausdorff_threshold < 0:
+        raise ValueError("hausdorff_threshold must be non-negative")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
+
+    if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
+        directed_ab = _run_optix_directed_threshold(
+            points_a,
+            points_b,
+            radius=hausdorff_threshold,
+            label="a_to_b",
+        )
+        directed_ba = _run_optix_directed_threshold(
+            points_b,
+            points_a,
+            radius=hausdorff_threshold,
+            label="b_to_a",
+        )
+        oracle = expected_tiled_hausdorff(copies=copies)
+        within_threshold = bool(directed_ab["within_threshold"] and directed_ba["within_threshold"])
+        oracle_within_threshold = float(oracle["hausdorff_distance"]) <= hausdorff_threshold + 1e-12
+        return {
+            "app": "hausdorff_distance",
+            "backend": backend,
+            "copies": copies,
+            "point_count_a": len(points_a),
+            "point_count_b": len(points_b),
+            "embree_result_mode": None,
+            "optix_summary_mode": optix_summary_mode,
+            "hausdorff_threshold": hausdorff_threshold,
+            "directed_a_to_b": directed_ab,
+            "directed_b_to_a": directed_ba,
+            "hausdorff_distance": None,
+            "within_threshold": within_threshold,
+            "oracle": oracle,
+            "oracle_within_threshold": oracle_within_threshold,
+            "matches_oracle": within_threshold == oracle_within_threshold,
+            "rtdl_role": (
+                "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
+                "the Hausdorff decision subproblem: every source point has at least "
+                "one target within the threshold. Python combines the two directed "
+                "decisions and validates against the deterministic oracle."
+            ),
+            "optix_performance": _optix_performance(),
+            "rt_core_accelerated": True,
+        }
 
     if backend == "embree" and embree_result_mode == "directed_summary":
         directed_ab = rt.directed_hausdorff_2d_embree(points_a, points_b)
@@ -251,6 +336,8 @@ def run_app(
         "point_count_a": len(points_a),
         "point_count_b": len(points_b),
         "embree_result_mode": embree_result_mode if backend == "embree" else None,
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
+        "hausdorff_threshold": None,
         "directed_a_to_b": directed_ab,
         "directed_b_to_a": directed_ba,
         "hausdorff_distance": float(undirected[1]["distance"]),
@@ -285,6 +372,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Embree-only: emit KNN rows or native directed-Hausdorff summaries",
     )
     parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "directed_threshold_prepared"),
+        default="rows",
+        help="OptiX-only: use prepared fixed-radius threshold traversal for Hausdorff <= radius decisions",
+    )
+    parser.add_argument(
+        "--hausdorff-threshold",
+        type=float,
+        default=0.4,
+        help="Decision radius for --optix-summary-mode directed_threshold_prepared",
+    )
+    parser.add_argument(
         "--require-rt-core",
         action="store_true",
         help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
@@ -296,6 +395,8 @@ def main(argv: list[str] | None = None) -> int:
                 args.backend,
                 args.copies,
                 embree_result_mode=args.embree_result_mode,
+                optix_summary_mode=args.optix_summary_mode,
+                hausdorff_threshold=args.hausdorff_threshold,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,

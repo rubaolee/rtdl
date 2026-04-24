@@ -39,10 +39,11 @@ Accepted partial claim modes today:
 | DBSCAN clustering | `--backend optix --optix-summary-mode rt_core_flags_prepared` | prepared core-flag summary only; Python cluster expansion remains host-side |
 | Robot collision screening | `--backend optix --optix-summary-mode prepared_count` or `prepared_pose_flags` | prepared any-hit count or pose flags; witness rows remain outside the compact claim |
 | Segment/polygon any-hit rows | `--backend optix --output-mode rows --optix-mode native --require-rt-core` | bounded native pair-row traversal path only; speedup promotion still needs Goal873 RTX artifact review |
+| Hausdorff distance | `--backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core` | Hausdorff <= radius decision only; exact-distance KNN rows remain outside the claim |
 
 Rejected under `--require-rt-core` today: graph apps, facility KNN, polygon
-overlap/Jaccard, segment/polygon hitcount/road-hazard compact modes, Hausdorff,
-ANN candidate search, and Barnes-Hut. Those may be useful OptiX compatibility
+overlap/Jaccard, segment/polygon hitcount/road-hazard compact modes, exact
+Hausdorff distance, ANN candidate search, and Barnes-Hut. Those may be useful OptiX compatibility
 or CUDA-through-OptiX paths, but they are not public NVIDIA RT-core claims yet.
 
 The original RTDL root spatial workloads are still first-class:
@@ -88,7 +89,7 @@ the ITRE model: input, traverse, refine, emit.
 
 | App | File | What data becomes | RTDL role |
 | --- | --- | --- | --- |
-| Hausdorff distance | `examples/rtdl_hausdorff_distance_app.py` | two point sets become nearest-neighbor rows and one directed Hausdorff distance | emit KNN rows, reduce max distance in Python; optional Embree `directed_summary` keeps directed max reduction native |
+| Hausdorff distance | `examples/rtdl_hausdorff_distance_app.py` | two point sets become nearest-neighbor rows, one directed Hausdorff distance, or a Hausdorff <= radius decision | emit KNN rows and reduce max distance in Python; optional Embree `directed_summary` keeps directed max reduction native; optional OptiX `directed_threshold_prepared` maps the decision form to fixed-radius traversal |
 | ANN candidate search | `examples/rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become nearest rows and recall metrics | exact KNN over candidate subsets; compact rerank summaries expose the RTDL/Embree slice separately from Python exact quality comparison |
 | Outlier detection | `examples/rtdl_outlier_detection_app.py` | points become neighbor rows, density counts, and outlier labels | radius-neighbor rows plus Python thresholding; optional OptiX `rt_count_threshold_prepared` uses prepared traversal and Embree `rt_count_threshold_prepared` uses prepared CPU BVH traversal to emit one density-threshold summary row per query |
 | DBSCAN clustering | `examples/rtdl_dbscan_clustering_app.py` | points become neighbor rows, core counts, and cluster labels | radius-neighbor rows plus Python expansion; optional OptiX `rt_core_flags_prepared` uses prepared traversal and Embree `rt_core_flags_prepared` uses prepared CPU BVH traversal to emit core flags only, not full cluster expansion |

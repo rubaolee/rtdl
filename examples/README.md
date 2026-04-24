@@ -123,7 +123,10 @@ Current v0.8 app example boundary:
   evidence against RTDL and mature nearest-neighbor baselines. The optional
   Embree `--embree-result-mode directed_summary` path computes the directed
   Hausdorff summary in the native Embree traversal path and avoids returning
-  all KNN rows when the app only needs distance/witness output
+  all KNN rows when the app only needs distance/witness output. The optional
+  OptiX `--optix-summary-mode directed_threshold_prepared` path answers the
+  Hausdorff <= radius decision with prepared fixed-radius traversal; it is not
+  an exact-distance KNN speedup claim
 - `rtdl_ann_candidate_app.py` runs on `cpu_python_reference`, `cpu`, `embree`,
   `optix`, `vulkan`, and optional `scipy`; RTDL emits nearest-neighbor rows
   over a Python-selected approximate candidate set and Python evaluates recall.

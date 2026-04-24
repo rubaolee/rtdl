@@ -384,8 +384,8 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "hausdorff_distance": OptixAppPerformanceSupport(
         app="hausdorff_distance",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.",
     ),
     "ann_candidate_search": OptixAppPerformanceSupport(
         app="ann_candidate_search",
@@ -529,11 +529,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "hausdorff_distance": _readiness(
         "hausdorff_distance",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "Goal709",
-        "must be redesigned or explicitly benchmarked as CUDA/GPU compute, not RT-core traversal",
-        "current OptiX path is CUDA-through-OptiX KNN rows",
-        "GPU-compute comparison only; no RT-core acceleration claim",
+        NEEDS_REAL_RTX_ARTIFACT,
+        "Goal879",
+        "directed_threshold_prepared decision mode needs RTX phase artifact and same-semantics threshold-decision baselines before any claim",
+        "exact Hausdorff distance remains CUDA-through-OptiX KNN rows; only the threshold decision sub-path is traversal-backed",
+        "prepared Hausdorff <= radius decision sub-path only; no exact-distance speedup claim",
     ),
     "ann_candidate_search": _readiness(
         "ann_candidate_search",
@@ -682,10 +682,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "hausdorff_distance": _maturity(
         "hausdorff_distance",
-        NEEDS_RT_CORE_REDESIGN,
+        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Replace CUDA-through-OptiX KNN rows with a true traversal-friendly Hausdorff candidate/summary design or keep it as GPU-compute only.",
-        "No RT-core cloud claim until a true traversal design exists.",
+        "Use directed_threshold_prepared for traversal-backed Hausdorff decision workloads; exact-distance KNN rows remain outside the RT-core claim until a native ranking design exists.",
+        "Cloud only after the threshold-decision profiler and baselines are packaged; no exact Hausdorff distance RT-core claim.",
     ),
     "ann_candidate_search": _maturity(
         "ann_candidate_search",
