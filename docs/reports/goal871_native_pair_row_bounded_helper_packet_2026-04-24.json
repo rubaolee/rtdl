@@ -1,16 +1,18 @@
 {
-  "boundary": "This goal moves the bounded rows contract into a named workload-layer helper and gives empty inputs correct zero-row behavior. It still does not implement native OptiX pair-row emission or authorize readiness.",
+  "boundary": "This goal records the bounded rows helper and device-emission path. It still does not authorize readiness because the public rows path remains host-indexed until a real OptiX gate passes.",
   "current_behavior": {
     "empty_input": "success_zero_rows",
-    "non_empty_input": "explicit_not_implemented_until_native_emitter_exists",
+    "non_empty_input": "bounded_native_emission_attempt",
     "public_rows_path": "unchanged_host_indexed"
   },
   "date": "2026-04-24",
   "evidence": {
     "api_delegates_to_helper": true,
+    "bounded_output_copy_present": true,
+    "device_kernel_present": true,
+    "device_launch_present": true,
     "empty_input_success_path_present": true,
     "helper_present": true,
-    "not_implemented_boundary_present": true,
     "outputs_zeroed_before_work": true,
     "public_rows_path_still_host_indexed": true
   },

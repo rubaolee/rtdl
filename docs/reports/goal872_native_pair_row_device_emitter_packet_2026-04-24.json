@@ -1,0 +1,29 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "boundary": "This goal implements the first native bounded device-emission path, but it does not promote the public rows app path. No RT-core readiness claim is authorized until a real OptiX artifact passes the strict gate.",
+  "current_behavior": {
+    "native_bounded_symbol": "attempts_device_emission",
+    "overflow_semantics": "emitted_count_reports_total_hits; rows_out_receives_prefix_up_to_output_capacity; overflowed_out marks truncation",
+    "public_rows_path": "unchanged_host_indexed_until_gate"
+  },
+  "date": "2026-04-24",
+  "evidence": {
+    "anyhit_atomic_append_present": true,
+    "bounded_copy_present": true,
+    "kernel_present": true,
+    "launch_present": true,
+    "overflow_flag_present": true,
+    "pair_payload_present": true,
+    "pipeline_present": true,
+    "public_rows_path_still_host_indexed": true
+  },
+  "goal": "Goal872 native pair-row device emitter packet",
+  "mode": "native_bounded_rows",
+  "recommended_status": "device_emitter_implemented_pending_real_optix_gate",
+  "remaining_gate": "A Linux/RTX build must compile and run the new native bounded symbol, compare row digests against CPU reference, and then decide whether to promote the public rows path or keep it separate.",
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "core_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_core.cpp",
+    "workloads_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_workloads.cpp"
+  }
+}

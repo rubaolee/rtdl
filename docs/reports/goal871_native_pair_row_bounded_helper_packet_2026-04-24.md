@@ -9,16 +9,18 @@
 - API delegates to helper: `True`
 - empty-input success path present: `True`
 - outputs zeroed before work: `True`
-- not-implemented boundary present: `True`
+- device kernel present: `True`
+- device launch present: `True`
+- bounded output copy present: `True`
 - public rows path still host-indexed: `True`
 
 ## Current Behavior
 
 - empty input: `success_zero_rows`
-- non-empty input: `explicit_not_implemented_until_native_emitter_exists`
+- non-empty input: `bounded_native_emission_attempt`
 - public rows path: `unchanged_host_indexed`
 
 ## Boundary
 
-This goal moves the bounded rows contract into a named workload-layer helper and gives empty inputs correct zero-row behavior. It still does not implement native OptiX pair-row emission or authorize readiness.
+This goal records the bounded rows helper and device-emission path. It still does not authorize readiness because the public rows path remains host-indexed until a real OptiX gate passes.
 

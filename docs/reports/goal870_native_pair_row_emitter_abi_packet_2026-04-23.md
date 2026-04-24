@@ -8,10 +8,10 @@
 - declaration present: `True`
 - definition present: `True`
 - contract fields present: `True`
-- explicit not-implemented error present: `True`
+- API delegates to workload helper: `True`
 - public rows path still host-indexed: `True`
 
 ## Boundary
 
-This goal adds only the bounded ABI scaffold for a future native pair-row emitter. The public rows path still uses the host-indexed helper, and no readiness promotion follows from this scaffold alone.
+This goal records the bounded ABI scaffold for the native pair-row emitter. Later goals may add implementation behind the helper, but the public rows path still uses the host-indexed helper until a promotion gate passes.
 

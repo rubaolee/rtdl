@@ -30,7 +30,7 @@ def build_packet(prelude_h: str, api_cpp: str) -> dict[str, Any]:
             "uint32_t* overflowed_out",
         )
     )
-    explicit_not_implemented = "native bounded segment_polygon_anyhit_rows emitter is not implemented yet" in api_cpp
+    api_delegates_to_helper = "run_seg_poly_anyhit_rows_optix_native_bounded(" in api_cpp
     public_rows_still_host_indexed = "run_seg_poly_anyhit_rows_optix_host_indexed(" in api_cpp
     return {
         "goal": "Goal870 native pair-row emitter ABI packet",
@@ -41,12 +41,12 @@ def build_packet(prelude_h: str, api_cpp: str) -> dict[str, Any]:
             "declaration_present": declaration_present,
             "definition_present": definition_present,
             "contract_fields_present": contract_fields_present,
-            "explicit_not_implemented_error_present": explicit_not_implemented,
+            "api_delegates_to_workload_helper": api_delegates_to_helper,
             "public_rows_path_still_host_indexed": public_rows_still_host_indexed,
         },
         "boundary": (
-            "This goal adds only the bounded ABI scaffold for a future native pair-row emitter. "
-            "The public rows path still uses the host-indexed helper, and no readiness promotion follows from this scaffold alone."
+            "This goal records the bounded ABI scaffold for the native pair-row emitter. "
+            "Later goals may add implementation behind the helper, but the public rows path still uses the host-indexed helper until a promotion gate passes."
         ),
     }
 
@@ -65,7 +65,7 @@ def to_markdown(packet: dict[str, Any]) -> str:
             f"- declaration present: `{ev['declaration_present']}`",
             f"- definition present: `{ev['definition_present']}`",
             f"- contract fields present: `{ev['contract_fields_present']}`",
-            f"- explicit not-implemented error present: `{ev['explicit_not_implemented_error_present']}`",
+            f"- API delegates to workload helper: `{ev['api_delegates_to_workload_helper']}`",
             f"- public rows path still host-indexed: `{ev['public_rows_path_still_host_indexed']}`",
             "",
             "## Boundary",

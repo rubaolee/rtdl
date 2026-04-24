@@ -19,12 +19,13 @@ class Goal871NativePairRowBoundedHelperPacketTest(unittest.TestCase):
         helper = "run_seg_poly_anyhit_rows_optix_native_bounded"
         packet = goal871.build_packet(
             f"{helper}(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
-            f"static void {helper}(\n*emitted_count_out = 0;\n*overflowed_out = 0;\nif (segment_count == 0 || polygon_count == 0) {{\nreturn;\n}}\nOptiX pair-row emission is still pending\n",
+            f"static void {helper}(\n*emitted_count_out = 0;\n*overflowed_out = 0;\nif (segment_count == 0 || polygon_count == 0) {{\nreturn;\n}}\nkSegPolyAnyhitRowsKernelSrc\noptixLaunch(g_segpoly_rows.pipe->pipeline\nstd::min<size_t>(emitted, output_capacity)\n",
         )
         self.assertEqual(packet["recommended_status"], "bounded_helper_added")
         self.assertTrue(packet["evidence"]["helper_present"])
         self.assertTrue(packet["evidence"]["empty_input_success_path_present"])
-        self.assertEqual(packet["current_behavior"]["non_empty_input"], "explicit_not_implemented_until_native_emitter_exists")
+        self.assertTrue(packet["evidence"]["device_kernel_present"])
+        self.assertEqual(packet["current_behavior"]["non_empty_input"], "bounded_native_emission_attempt")
 
     def test_cli_writes_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -40,7 +41,9 @@ class Goal871NativePairRowBoundedHelperPacketTest(unittest.TestCase):
             workloads_cpp.write_text(
                 f"static void {helper}(\n*emitted_count_out = 0;\n*overflowed_out = 0;\n"
                 "if (segment_count == 0 || polygon_count == 0) {\nreturn;\n}\n"
-                "OptiX pair-row emission is still pending\n",
+                "kSegPolyAnyhitRowsKernelSrc\n"
+                "optixLaunch(g_segpoly_rows.pipe->pipeline\n"
+                "std::min<size_t>(emitted, output_capacity)\n",
                 encoding="utf-8",
             )
             completed = subprocess.run(

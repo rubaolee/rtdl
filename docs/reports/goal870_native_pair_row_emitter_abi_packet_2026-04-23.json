@@ -1,11 +1,11 @@
 {
-  "boundary": "This goal adds only the bounded ABI scaffold for a future native pair-row emitter. The public rows path still uses the host-indexed helper, and no readiness promotion follows from this scaffold alone.",
+  "boundary": "This goal records the bounded ABI scaffold for the native pair-row emitter. Later goals may add implementation behind the helper, but the public rows path still uses the host-indexed helper until a promotion gate passes.",
   "date": "2026-04-23",
   "evidence": {
+    "api_delegates_to_workload_helper": true,
     "contract_fields_present": true,
     "declaration_present": true,
     "definition_present": true,
-    "explicit_not_implemented_error_present": true,
     "public_rows_path_still_host_indexed": true
   },
   "goal": "Goal870 native pair-row emitter ABI packet",

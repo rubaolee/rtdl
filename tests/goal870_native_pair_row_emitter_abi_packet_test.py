@@ -19,10 +19,11 @@ class Goal870NativePairRowEmitterAbiPacketTest(unittest.TestCase):
         symbol = "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded"
         packet = goal870.build_packet(
             f"{symbol}(\n",
-            f"{symbol}(\nsize_t output_capacity\nsize_t* emitted_count_out\nuint32_t* overflowed_out\nnative bounded segment_polygon_anyhit_rows emitter is not implemented yet\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
+            f"{symbol}(\nsize_t output_capacity\nsize_t* emitted_count_out\nuint32_t* overflowed_out\nrun_seg_poly_anyhit_rows_optix_native_bounded(\nrun_seg_poly_anyhit_rows_optix_host_indexed(\n",
         )
         self.assertTrue(packet["evidence"]["declaration_present"])
         self.assertTrue(packet["evidence"]["definition_present"])
+        self.assertTrue(packet["evidence"]["api_delegates_to_workload_helper"])
         self.assertTrue(packet["evidence"]["public_rows_path_still_host_indexed"])
 
     def test_cli_writes_outputs(self) -> None:
@@ -35,7 +36,7 @@ class Goal870NativePairRowEmitterAbiPacketTest(unittest.TestCase):
             prelude_h.write_text(f"{symbol}(\n", encoding="utf-8")
             api_cpp.write_text(
                 f"{symbol}(\nsize_t output_capacity\nsize_t* emitted_count_out\nuint32_t* overflowed_out\n"
-                "native bounded segment_polygon_anyhit_rows emitter is not implemented yet\n"
+                "run_seg_poly_anyhit_rows_optix_native_bounded(\n"
                 "run_seg_poly_anyhit_rows_optix_host_indexed(\n",
                 encoding="utf-8",
             )

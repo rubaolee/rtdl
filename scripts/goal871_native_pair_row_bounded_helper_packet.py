@@ -24,7 +24,9 @@ def build_packet(api_cpp: str, workloads_cpp: str) -> dict[str, Any]:
     api_delegates = f"{helper_name}(" in api_cpp
     empty_success_present = "if (segment_count == 0 || polygon_count == 0)" in workloads_cpp and "return;" in workloads_cpp
     outputs_zeroed = "*emitted_count_out = 0;" in workloads_cpp and "*overflowed_out = 0;" in workloads_cpp
-    not_implemented_boundary = "OptiX pair-row emission is still pending" in workloads_cpp
+    device_kernel_present = "kSegPolyAnyhitRowsKernelSrc" in workloads_cpp
+    device_launch_present = "optixLaunch(g_segpoly_rows.pipe->pipeline" in workloads_cpp
+    bounded_output_present = "std::min<size_t>(emitted, output_capacity)" in workloads_cpp
     public_rows_still_host_indexed = "run_seg_poly_anyhit_rows_optix_host_indexed(" in api_cpp
     return {
         "goal": "Goal871 native pair-row bounded helper packet",
@@ -36,17 +38,19 @@ def build_packet(api_cpp: str, workloads_cpp: str) -> dict[str, Any]:
             "api_delegates_to_helper": api_delegates,
             "empty_input_success_path_present": empty_success_present,
             "outputs_zeroed_before_work": outputs_zeroed,
-            "not_implemented_boundary_present": not_implemented_boundary,
+            "device_kernel_present": device_kernel_present,
+            "device_launch_present": device_launch_present,
+            "bounded_output_copy_present": bounded_output_present,
             "public_rows_path_still_host_indexed": public_rows_still_host_indexed,
         },
         "current_behavior": {
             "empty_input": "success_zero_rows",
-            "non_empty_input": "explicit_not_implemented_until_native_emitter_exists",
+            "non_empty_input": "bounded_native_emission_attempt",
             "public_rows_path": "unchanged_host_indexed",
         },
         "boundary": (
-            "This goal moves the bounded rows contract into a named workload-layer helper and gives empty inputs correct zero-row behavior. "
-            "It still does not implement native OptiX pair-row emission or authorize readiness."
+            "This goal records the bounded rows helper and device-emission path. "
+            "It still does not authorize readiness because the public rows path remains host-indexed until a real OptiX gate passes."
         ),
     }
 
@@ -67,7 +71,9 @@ def to_markdown(packet: dict[str, Any]) -> str:
             f"- API delegates to helper: `{ev['api_delegates_to_helper']}`",
             f"- empty-input success path present: `{ev['empty_input_success_path_present']}`",
             f"- outputs zeroed before work: `{ev['outputs_zeroed_before_work']}`",
-            f"- not-implemented boundary present: `{ev['not_implemented_boundary_present']}`",
+            f"- device kernel present: `{ev['device_kernel_present']}`",
+            f"- device launch present: `{ev['device_launch_present']}`",
+            f"- bounded output copy present: `{ev['bounded_output_copy_present']}`",
             f"- public rows path still host-indexed: `{ev['public_rows_path_still_host_indexed']}`",
             "",
             "## Current Behavior",

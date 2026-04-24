@@ -1319,15 +1319,118 @@ static void run_seg_poly_anyhit_rows_optix_native_bounded(
     if (segment_count == 0 || polygon_count == 0) {
         return;
     }
-    (void)segments;
-    (void)polygons;
-    (void)vertices_xy;
-    (void)vertex_xy_count;
-    (void)rows_out;
-    (void)output_capacity;
-    throw std::runtime_error(
-        "native bounded segment_polygon_anyhit_rows emitter is not implemented yet; "
-        "the bounded ABI contract is in place, but OptiX pair-row emission is still pending");
+    if (segment_count > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("segment count exceeds uint32 launch limit");
+    }
+    if (polygon_count > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("polygon count exceeds uint32 primitive limit");
+    }
+    if (output_capacity > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("segment_polygon_anyhit_rows output_capacity exceeds uint32 limit");
+    }
+
+    std::call_once(g_segpoly_rows.init, [&]() {
+        std::string ptx = compile_to_ptx(kSegPolyAnyhitRowsKernelSrc, "segpoly_rows_kernel.cu");
+        g_segpoly_rows.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__segpoly_rows_probe",
+            "__miss__segpoly_rows_miss",
+            "__intersection__segpoly_rows_isect",
+            "__anyhit__segpoly_rows_anyhit",
+            nullptr,
+            4).release();
+    });
+
+    const size_t vert_count = vertex_xy_count / 2;
+    std::vector<GpuSegment> gpu_segments(segment_count);
+    std::vector<GpuPolygonRef> gpu_polygons(polygon_count);
+    std::vector<float> vx(vert_count), vy(vert_count);
+    for (size_t i = 0; i < segment_count; ++i) {
+        gpu_segments[i] = {
+            static_cast<float>(segments[i].x0),
+            static_cast<float>(segments[i].y0),
+            static_cast<float>(segments[i].x1),
+            static_cast<float>(segments[i].y1),
+            segments[i].id,
+        };
+    }
+    for (size_t i = 0; i < polygon_count; ++i) {
+        gpu_polygons[i] = {polygons[i].id, polygons[i].vertex_offset, polygons[i].vertex_count};
+    }
+    for (size_t i = 0; i < vert_count; ++i) {
+        vx[i] = static_cast<float>(vertices_xy[i * 2]);
+        vy[i] = static_cast<float>(vertices_xy[i * 2 + 1]);
+    }
+
+    DevPtr d_segments(sizeof(GpuSegment) * segment_count);
+    DevPtr d_polygons(sizeof(GpuPolygonRef) * polygon_count);
+    DevPtr d_vx(sizeof(float) * vert_count);
+    DevPtr d_vy(sizeof(float) * vert_count);
+    upload(d_segments.ptr, gpu_segments.data(), segment_count);
+    upload(d_polygons.ptr, gpu_polygons.data(), polygon_count);
+    upload(d_vx.ptr, vx.data(), vert_count);
+    upload(d_vy.ptr, vy.data(), vert_count);
+
+    std::vector<OptixAabb> aabbs(polygon_count);
+    for (size_t i = 0; i < polygon_count; ++i) {
+        aabbs[i] = aabb_for_polygon(vertices_xy, polygons[i].vertex_offset, polygons[i].vertex_count);
+    }
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+
+    DevPtr d_output(sizeof(RtdlSegmentPolygonAnyHitRow) * output_capacity);
+    DevPtr d_count(sizeof(uint32_t));
+    DevPtr d_overflowed(sizeof(uint32_t));
+    uint32_t zero = 0;
+    upload<uint32_t>(d_count.ptr, &zero, 1);
+    upload<uint32_t>(d_overflowed.ptr, &zero, 1);
+
+    struct SegPolyRowsLaunchParams {
+        OptixTraversableHandle traversable;
+        const GpuSegment* segments;
+        const GpuPolygonRef* polygons;
+        const float* vertices_x;
+        const float* vertices_y;
+        RtdlSegmentPolygonAnyHitRow* output;
+        uint32_t* output_count;
+        uint32_t* overflowed;
+        uint32_t output_capacity;
+        uint32_t segment_count;
+    };
+
+    SegPolyRowsLaunchParams lp;
+    lp.traversable = accel.handle;
+    lp.segments = reinterpret_cast<const GpuSegment*>(d_segments.ptr);
+    lp.polygons = reinterpret_cast<const GpuPolygonRef*>(d_polygons.ptr);
+    lp.vertices_x = reinterpret_cast<const float*>(d_vx.ptr);
+    lp.vertices_y = reinterpret_cast<const float*>(d_vy.ptr);
+    lp.output = output_capacity == 0
+        ? nullptr
+        : reinterpret_cast<RtdlSegmentPolygonAnyHitRow*>(d_output.ptr);
+    lp.output_count = reinterpret_cast<uint32_t*>(d_count.ptr);
+    lp.overflowed = reinterpret_cast<uint32_t*>(d_overflowed.ptr);
+    lp.output_capacity = static_cast<uint32_t>(output_capacity);
+    lp.segment_count = static_cast<uint32_t>(segment_count);
+
+    DevPtr d_params(sizeof(SegPolyRowsLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_segpoly_rows.pipe->pipeline, stream,
+                             d_params.ptr, sizeof(SegPolyRowsLaunchParams),
+                             &g_segpoly_rows.pipe->sbt,
+                             static_cast<unsigned>(segment_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    uint32_t emitted = 0;
+    uint32_t overflowed = 0;
+    download(&emitted, d_count.ptr, 1);
+    download(&overflowed, d_overflowed.ptr, 1);
+    const size_t rows_to_copy = std::min<size_t>(emitted, output_capacity);
+    if (rows_to_copy != 0) {
+        download(rows_out, d_output.ptr, rows_to_copy);
+    }
+    *emitted_count_out = static_cast<size_t>(emitted);
+    *overflowed_out = overflowed != 0 || emitted > output_capacity ? 1u : 0u;
 }
 
 static void run_bfs_expand_optix_host_indexed(
