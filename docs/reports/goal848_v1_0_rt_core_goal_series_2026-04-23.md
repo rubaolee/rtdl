@@ -6,8 +6,8 @@ Date: 2026-04-23
 
 - Public apps: `18`
 - RT-core ready now: `3`
-- RT-core partial-ready now: `3`
-- Need redesign or new surface: `10`
+- RT-core partial-ready now: `13`
+- Need redesign or new surface: `0`
 - Out of NVIDIA RT scope: `2`
 
 Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.

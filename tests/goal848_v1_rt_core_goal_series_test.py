@@ -11,8 +11,8 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         summary = payload["summary"]
         self.assertEqual(summary["public_app_count"], 18)
         self.assertEqual(summary["rt_core_ready_now"], 3)
-        self.assertEqual(summary["rt_core_partial_ready_now"], 3)
-        self.assertEqual(summary["needs_redesign_or_new_surface"], 10)
+        self.assertEqual(summary["rt_core_partial_ready_now"], 13)
+        self.assertEqual(summary["needs_redesign_or_new_surface"], 0)
         self.assertEqual(summary["out_of_scope_for_nvidia_rt"], 2)
 
     def test_priority_buckets_match_expected_apps(self) -> None:
