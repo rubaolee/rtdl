@@ -1,0 +1,36 @@
+{
+  "app": "graph_analytics",
+  "blocker": "host_indexed_graph_paths_not_rt_core",
+  "boundary": "This packet does not authorize graph_analytics for RT-core claims. It records that the current OptiX-facing graph paths are host-indexed correctness paths and therefore require redesign or explicit exclusion.",
+  "current_truth": {
+    "bfs_optix_path": "host_indexed_correctness_path",
+    "public_app_rt_core_status": "rejected",
+    "triangle_optix_path": "host_indexed_correctness_path"
+  },
+  "date": "2026-04-23",
+  "decision": {
+    "fallback_option": "remove graph_analytics from NVIDIA RT-core targets if no real graph-to-RT lowering is accepted",
+    "local_recommendation": "redesign_first",
+    "nvidia_rt_core_claim_today": "not_allowed"
+  },
+  "evidence": {
+    "bfs_host_indexed_helper_present": true,
+    "public_app_require_rt_core_rejects": true,
+    "support_matrix_calls_for_redesign_or_exclusion": true,
+    "support_matrix_marks_host_indexed_fallback": true,
+    "triangle_host_indexed_helper_present": true
+  },
+  "goal": "Goal868 graph redesign decision packet",
+  "recommended_status": "needs_graph_rt_redesign_or_exclusion",
+  "required_work": [
+    "Design a real graph-to-RT lowering for BFS and triangle expansion instead of host-indexed CSR helpers inside the OptiX module.",
+    "Add a local correctness gate that proves the redesigned graph path matches the bounded graph semantics.",
+    "Keep graph_analytics out of active RTX app benchmarking until the redesigned path exists and passes a real OptiX artifact gate."
+  ],
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "app_py": "/Users/rl2025/rtdl_python_only/examples/rtdl_graph_analytics_app.py",
+    "matrix_py": "/Users/rl2025/rtdl_python_only/src/rtdsl/app_support_matrix.py",
+    "workloads_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_workloads.cpp"
+  }
+}
