@@ -53,6 +53,41 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
             markdown = module.to_markdown(payload)
             self.assertIn("does not authorize RTX speedup claims", markdown)
 
+    def test_full_include_deferred_dry_run_is_analyzable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            summary = Path(tmpdir) / "full_deferred_dry_run_summary.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/goal761_rtx_cloud_run_all.py",
+                    "--dry-run",
+                    "--include-deferred",
+                    "--output-json",
+                    str(summary),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
+            payload = module.analyze(summary)
+
+            self.assertEqual(payload["status"], "ok")
+            self.assertEqual(payload["entry_count"], 17)
+            self.assertEqual(payload["failure_count"], 0)
+            apps = {row["app"] for row in payload["rows"]}
+            self.assertEqual(len(apps), 16)
+            self.assertIn("database_analytics", apps)
+            self.assertIn("graph_analytics", apps)
+            self.assertIn("polygon_set_jaccard", apps)
+            for row in payload["rows"]:
+                with self.subTest(path=row["path_name"]):
+                    self.assertEqual(row["runner_status"], "dry_run")
+                    self.assertEqual(row["artifact_status"], "dry_run_not_expected")
+                    self.assertEqual(row["baseline_review_contract_status"], "ok")
+
     def test_missing_artifact_after_ok_runner_needs_attention(self) -> None:
         module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
         with tempfile.TemporaryDirectory() as tmpdir:

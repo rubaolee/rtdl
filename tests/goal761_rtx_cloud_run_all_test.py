@@ -74,12 +74,25 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
         module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
         payload = module.run_all(
             dry_run=True,
-            only={"service_coverage_gaps"},
+            only={"graph_analytics"},
             include_deferred=True,
         )
         self.assertEqual(payload["entry_count"], 1)
         self.assertTrue(payload["include_deferred"])
         self.assertEqual(payload["results"][0]["manifest_section"], "deferred_entries")
+        self.assertEqual(payload["results"][0]["app"], "graph_analytics")
+        self.assertIn("baseline_review_contract", payload["results"][0])
+
+    def test_promoted_spatial_entries_are_active_not_deferred(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(
+            dry_run=True,
+            only={"service_coverage_gaps"},
+            include_deferred=True,
+        )
+        self.assertEqual(payload["entry_count"], 1)
+        self.assertTrue(payload["include_deferred"])
+        self.assertEqual(payload["results"][0]["manifest_section"], "entries")
         self.assertEqual(payload["results"][0]["app"], "service_coverage_gaps")
         self.assertIn("baseline_review_contract", payload["results"][0])
 
