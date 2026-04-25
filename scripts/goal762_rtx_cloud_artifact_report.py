@@ -418,6 +418,9 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         metrics = {
             "artifact_status": "ok",
             "mode": artifact.get("mode"),
+            "output_mode": artifact.get("output_mode"),
+            "validation_mode": artifact.get("validation_mode"),
+            "chunk_copies": artifact.get("chunk_copies"),
             "input_build_sec": phases.get("input_build_sec"),
             "cpu_reference_sec": phases.get("cpu_reference_sec"),
             "warm_query_median_sec": phases.get("optix_candidate_discovery_sec"),
@@ -436,6 +439,8 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "cpu_exact_refinement_sec": phases.get("cpu_exact_refinement_sec"),
             "parity_vs_cpu": artifact.get("parity_vs_cpu"),
             "rt_core_candidate_discovery_active": metrics["rt_core_candidate_discovery_active"],
+            "validation_mode": artifact.get("validation_mode"),
+            "output_mode": artifact.get("output_mode"),
         }
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
         return metrics

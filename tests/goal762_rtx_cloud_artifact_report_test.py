@@ -690,6 +690,9 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                 json.dumps(
                     {
                         "mode": "optix",
+                        "output_mode": "summary",
+                        "validation_mode": "analytic_summary",
+                        "chunk_copies": 100,
                         "parity_vs_cpu": True,
                         "cloud_claim_contract": {
                             "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery",
@@ -701,6 +704,8 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 "cpu_exact_refinement_sec",
                                 "parity_vs_cpu",
                                 "rt_core_candidate_discovery_active",
+                                "validation_mode",
+                                "output_mode",
                             ],
                         },
                         "phases": {
@@ -760,6 +765,9 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
             self.assertEqual(pair_row["cloud_contract_status"], "ok")
             self.assertEqual(polygon_row["warm_query_median_sec"], 0.3)
             self.assertEqual(polygon_row["postprocess_median_sec"], 0.4)
+            self.assertEqual(polygon_row["validation_mode"], "analytic_summary")
+            self.assertEqual(polygon_row["output_mode"], "summary")
+            self.assertEqual(polygon_row["chunk_copies"], 100)
             self.assertTrue(polygon_row["rt_core_candidate_discovery_active"])
             self.assertEqual(polygon_row["cloud_contract_status"], "ok")
         finally:

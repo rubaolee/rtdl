@@ -43,6 +43,40 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertTrue(payload["parity_vs_cpu"])
         self.assertIsNotNone(payload["phases"]["cpu_exact_refinement_sec"])
 
+    def test_pair_overlap_summary_analytic_chunks_without_cpu_reference(self) -> None:
+        with mock.patch.object(goal877.pair_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
+            payload = goal877.run_profile(
+                app="pair_overlap",
+                mode="optix",
+                copies=2,
+                output_mode="summary",
+                validation_mode="analytic_summary",
+                chunk_copies=1,
+            )
+        self.assertEqual(payload["status"], "pass")
+        self.assertEqual(payload["output_mode"], "summary")
+        self.assertEqual(payload["validation_mode"], "analytic_summary")
+        self.assertEqual(payload["chunk_count"], 2)
+        self.assertIsNone(payload["phases"]["cpu_reference_sec"])
+        self.assertTrue(payload["parity_vs_cpu"])
+        self.assertEqual(payload["optix_digest"]["summary"]["overlap_pair_count"], 4)
+
+    def test_jaccard_summary_analytic_chunks_without_cpu_reference(self) -> None:
+        with mock.patch.object(goal877.jaccard_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
+            payload = goal877.run_profile(
+                app="jaccard",
+                mode="optix",
+                copies=2,
+                output_mode="summary",
+                validation_mode="analytic_summary",
+                chunk_copies=1,
+            )
+        self.assertEqual(payload["status"], "pass")
+        self.assertEqual(payload["chunk_count"], 2)
+        self.assertTrue(payload["parity_vs_cpu"])
+        self.assertEqual(payload["optix_digest"]["summary"]["intersection_area"], 10)
+        self.assertAlmostEqual(payload["optix_digest"]["summary"]["jaccard_similarity"], 5 / 19)
+
     def test_cli_writes_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output_json = Path(tmp) / "profile.json"
