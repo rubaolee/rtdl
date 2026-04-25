@@ -1,0 +1,171 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 3,
+  "failed_count": 0,
+  "git_head": "fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nHEAD",
+  "git_status_short": "?? .github/\n?? .gitignore\n?? .rtdl_source_commit\n?? Makefile\n?? README.md\n?? VERSION\n?? apps/\n?? docs/\n?? examples/\n?? generated/\n?? history/\n?? requirements.txt\n?? schemas/\n?? scripts/\n?? src/\n?? tests/",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sat Apr 25 01:24:25 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   30C    P0             84W /  230W |       1MiB /  24564MiB |      2%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl_python_only",
+  "results": [
+    {
+      "app": "road_hazard_screening",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+        "comparable_metric_scope": "strict road-hazard native OptiX summary result on the same copies/output-mode semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_host_indexed",
+          "postgis_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "native OptiX segment/polygon traversal for compact road-hazard summaries",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not default public road-hazard behavior and not a full GIS/routing speedup claim",
+      "path_name": "road_hazard_native_summary_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal888_road_hazard_native_optix_gate.py",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal888_road_hazard_native_optix_gate_rtx.json"
+        ],
+        "elapsed_sec": 5.670586972497404,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T01:24:15+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal888_road_hazard_native_optix_gate_rtx.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
+      }
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+        "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_host_indexed",
+          "postgis_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "experimental native custom-AABB segment/polygon hit-count traversal",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not default public app behavior and not a row-returning any-hit claim",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal807_segment_polygon_optix_mode_gate.py",
+          "--dataset",
+          "derived/br_county_subset_segment_polygon_tiled_x256",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal807_segment_polygon_optix_mode_gate_rtx.json"
+        ],
+        "elapsed_sec": 2.040771416388452,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T01:24:20+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal807_segment_polygon_optix_mode_gate_rtx.json\", \"status\": \"pass\"}\n"
+      }
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+        "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_native_bounded_pair_rows",
+          "postgis_when_available_for_same_pair_semantics"
+        ],
+        "required_phases": [
+          "records",
+          "row_digest",
+          "emitted_count",
+          "copied_count",
+          "overflowed",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
+      "path_name": "segment_polygon_anyhit_rows_native_bounded_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal873_native_pair_row_optix_gate.py",
+          "--dataset",
+          "authored_segment_polygon_minimal",
+          "--output-capacity",
+          "1024",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json"
+        ],
+        "elapsed_sec": 2.231533007696271,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T01:24:22+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
+      }
+    }
+  ],
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-25T01:24:25+0000",
+  "unique_command_count": 3
+}

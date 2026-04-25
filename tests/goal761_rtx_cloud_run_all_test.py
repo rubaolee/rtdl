@@ -90,6 +90,12 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
         self.assertEqual(first["env_overrides"], {"A": "1"})
         self.assertEqual(second["env_overrides"], {"A": "2"})
 
+    def test_runner_reports_source_commit_metadata(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(dry_run=True, only={"robot_collision_screening"})
+        self.assertIn("source_commit", payload)
+        self.assertTrue(payload["source_commit"])
+
 
 if __name__ == "__main__":
     unittest.main()

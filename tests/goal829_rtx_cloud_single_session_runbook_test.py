@@ -34,6 +34,8 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal763_rtx_cloud_bootstrap_check.py", text)
         self.assertIn("Unsupported ABI version", text)
         self.assertIn("OptiX SDK headers `v8.0.0`", text)
+        self.assertIn("RTDL_OPTIX_PTX_COMPILER=nvcc", text)
+        self.assertIn("gnu/stubs-32.h", text)
         self.assertIn("cloud_claim_contract", text)
         self.assertIn("required_phase_groups", text)
         self.assertIn("needs_attention", text)

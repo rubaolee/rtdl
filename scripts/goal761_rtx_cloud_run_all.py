@@ -70,6 +70,18 @@ def _probe(command: list[str]) -> str:
         return f"probe failed: {exc}"
 
 
+def _source_commit() -> str:
+    git_head = _probe(["git", "rev-parse", "HEAD"])
+    if not git_head.startswith("fatal:") and "\n" not in git_head:
+        return git_head
+    marker = ROOT / ".rtdl_source_commit"
+    if marker.exists():
+        value = marker.read_text(encoding="utf-8").strip()
+        if value:
+            return value
+    return git_head
+
+
 def run_all(*, dry_run: bool, only: set[str] | None = None, include_deferred: bool = False) -> dict[str, Any]:
     manifest = build_manifest()
     active_entries = [
@@ -121,6 +133,7 @@ def run_all(*, dry_run: bool, only: set[str] | None = None, include_deferred: bo
         "include_deferred": include_deferred,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "git_head": _probe(["git", "rev-parse", "HEAD"]),
+        "source_commit": _source_commit(),
         "git_status_short": _probe(["git", "status", "--short"]),
         "nvidia_smi": _probe(["nvidia-smi"]),
         "python_version": _probe([sys.executable, "--version"]),

@@ -64,8 +64,13 @@ export PYTHONPATH=src:.
 export OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0
 export CUDA_PREFIX=/usr/local/cuda-12.4
 export NVCC=/usr/local/cuda-12.4/bin/nvcc
+export RTDL_NVCC=/usr/local/cuda-12.4/bin/nvcc
+export RTDL_OPTIX_PTX_COMPILER=nvcc
 export RTDL_OPTIX_LIB=/workspace/rtdl_python_only/build/librtdl_optix.so
 ```
+
+Use `RTDL_OPTIX_PTX_COMPILER=nvcc` on pods where NVRTC tries to include
+incomplete host libc headers such as missing `gnu/stubs-32.h`.
 
 ### Group A: Robot Flagship
 
