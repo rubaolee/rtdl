@@ -30,6 +30,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             [
                 "service_coverage_gaps",
                 "event_hotspot_screening",
+                "facility_knn_assignment",
                 "outlier_detection",
                 "dbscan_clustering",
                 "robot_collision_screening",
@@ -45,6 +46,10 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "event_hotspot_screening": (
                 "bounded prepared count-summary path",
                 "Goal917/Goal919",
+            ),
+            "facility_knn_assignment": (
+                "bounded prepared facility service-coverage decision sub-path",
+                "Goal887/Goal920",
             ),
             "robot_collision_screening": "prepared ray/triangle any-hit scalar pose-count sub-path",
             "outlier_detection": "prepared fixed-radius scalar threshold-count sub-path",
@@ -65,7 +70,6 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         expected = {
             "database_analytics": "needs_interface_tuning",
             "graph_analytics": "needs_real_rtx_artifact",
-            "facility_knn_assignment": "needs_real_rtx_artifact",
             "road_hazard_screening": "needs_real_rtx_artifact",
             "segment_polygon_hitcount": "needs_real_rtx_artifact",
             "segment_polygon_anyhit_rows": "needs_real_rtx_artifact",

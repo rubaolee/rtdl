@@ -40,7 +40,6 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
             "segment_polygon_anyhit_rows",
             "hausdorff_distance",
             "ann_candidate_search",
-            "facility_knn_assignment",
             "barnes_hut_force_app",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
@@ -51,16 +50,19 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
                 self.assertEqual(deferred[app]["benchmark_readiness"], "needs_real_rtx_artifact")
                 self.assertIn("Promote only after", deferred[app]["activation_gate"])
 
-    def test_spatial_prepared_summaries_have_reviewed_rtx_artifacts_and_are_active(self) -> None:
+    def test_reviewed_prepared_summaries_have_rtx_artifacts_and_are_active(self) -> None:
         manifest = build_manifest()
         active = {entry["app"]: entry for entry in manifest["entries"]}
         deferred_apps = {entry["app"] for entry in manifest["deferred_entries"]}
-        for app in ("service_coverage_gaps", "event_hotspot_screening"):
+        for app in ("service_coverage_gaps", "event_hotspot_screening", "facility_knn_assignment"):
             with self.subTest(app=app):
                 self.assertIn(app, active)
                 self.assertNotIn(app, deferred_apps)
                 self.assertEqual(active[app]["benchmark_readiness"], "ready_for_rtx_claim_review")
-                self.assertIn("Goal917", active[app]["readiness_next_goal"])
+                if app == "facility_knn_assignment":
+                    self.assertIn("Goal887/Goal920", active[app]["readiness_next_goal"])
+                else:
+                    self.assertIn("Goal917", active[app]["readiness_next_goal"])
 
 
 if __name__ == "__main__":

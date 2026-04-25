@@ -47,11 +47,11 @@
     },
     {
       "app": "facility_knn_assignment",
-      "benchmark_readiness": "needs_real_rtx_artifact",
-      "cloud_policy": "Cloud only after the facility coverage-threshold profiler and baselines are packaged; no ranked KNN assignment RT-core claim.",
-      "current_status": "rt_core_partial_ready",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "cloud_policy": "No new pod is needed for readiness; use the Goal887 RTX artifact and Goal920 same-scale CPU oracle baseline in claim-review packaging, and rerun only as part of a consolidated regression batch.",
+      "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "required_action": "Use coverage_threshold_prepared for traversal-backed service-coverage decisions; KNN ranking and fallback assignment remain outside the RT-core claim until a native ranking design exists.",
+      "required_action": "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
       "target_status": "rt_core_ready"
     },
     {
@@ -166,7 +166,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-25T00:27:00",
+  "generated_at": "2026-04-25T00:39:09",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
@@ -258,11 +258,11 @@
   ],
   "priority_buckets": {
     "already_ready_keep_and_optimize": [
+      "facility_knn_assignment",
       "outlier_detection",
       "dbscan_clustering"
     ],
     "major_redesign_wave": [
-      "facility_knn_assignment",
       "polygon_pair_overlap_area_rows",
       "polygon_set_jaccard",
       "hausdorff_distance",
@@ -290,7 +290,7 @@
     "needs_redesign_or_new_surface": 0,
     "out_of_scope_for_nvidia_rt": 2,
     "public_app_count": 18,
-    "rt_core_partial_ready_now": 11,
-    "rt_core_ready_now": 5
+    "rt_core_partial_ready_now": 10,
+    "rt_core_ready_now": 6
   }
 }

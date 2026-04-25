@@ -1,0 +1,51 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not ranked nearest-depot assignment, KNN fallback assignment, or facility-location optimization",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ]
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-04-25T00:36:17",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "parameters": {
+    "body_count": 1000,
+    "copies": 20000,
+    "iterations": 1,
+    "mode": "dry-run",
+    "radius": 1.0,
+    "skip_validation": false
+  },
+  "scenario": {
+    "mode": "dry-run",
+    "result": {
+      "all_customers_covered": true,
+      "covered_customer_count": 80000,
+      "customer_count": 80000,
+      "radius": 1.0,
+      "uncovered_customer_ids": []
+    },
+    "scenario": "facility_service_coverage",
+    "timings_sec": {
+      "cpu_reference_total_sec": 0.06989141600206494,
+      "input_build_sec": 0.060146708972752094
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1"
+}

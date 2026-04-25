@@ -111,12 +111,12 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         expected = {
             "hausdorff_distance",
             "ann_candidate_search",
-            "facility_knn_assignment",
             "barnes_hut_force_app",
         }
         self.assertTrue(expected.isdisjoint(manifest_apps))
         self.assertTrue(expected.issubset(deferred))
         self.assertTrue(expected.isdisjoint(payload["excluded_apps"]))
+        self.assertIn("facility_knn_assignment", manifest_apps)
 
     def test_robot_entry_uses_current_prepared_pose_flag_status(self):
         payload = __import__(

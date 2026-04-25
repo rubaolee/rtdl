@@ -6,7 +6,7 @@ from examples import rtdl_facility_knn_assignment as facility_app
 
 
 class Goal813FacilityKnnRtCoreBoundaryTest(unittest.TestCase):
-    def test_facility_knn_is_only_partially_promoted_to_optix(self) -> None:
+    def test_facility_coverage_decision_is_promoted_to_optix(self) -> None:
         self.assertEqual(
             rt.app_engine_support("facility_knn_assignment", "optix").status,
             "direct_cli_native",
@@ -17,11 +17,11 @@ class Goal813FacilityKnnRtCoreBoundaryTest(unittest.TestCase):
         )
         self.assertEqual(
             rt.optix_app_benchmark_readiness("facility_knn_assignment").status,
-            "needs_real_rtx_artifact",
+            "ready_for_rtx_claim_review",
         )
         self.assertEqual(
             rt.rt_core_app_maturity("facility_knn_assignment").current_status,
-            "rt_core_partial_ready",
+            "rt_core_ready",
         )
 
     def test_facility_knn_notes_explain_ranking_gap(self) -> None:

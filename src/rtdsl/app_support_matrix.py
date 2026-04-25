@@ -481,11 +481,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "facility_knn_assignment": _readiness(
         "facility_knn_assignment",
-        NEEDS_REAL_RTX_ARTIFACT,
-        "Goal881",
-        "coverage_threshold_prepared decision mode needs RTX phase artifact and same-semantics threshold-decision baselines before any claim",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal887/Goal920",
+        "coverage_threshold_prepared decision mode has an RTX phase artifact and same-scale CPU oracle parity for the bounded service-coverage decision",
         "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
-        "prepared facility service-coverage decision sub-path only; no KNN assignment or ranking speedup claim",
+        "bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim",
     ),
     "road_hazard_screening": _readiness(
         "road_hazard_screening",
@@ -640,10 +640,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "facility_knn_assignment": _maturity(
         "facility_knn_assignment",
-        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Use coverage_threshold_prepared for traversal-backed service-coverage decisions; KNN ranking and fallback assignment remain outside the RT-core claim until a native ranking design exists.",
-        "Cloud only after the facility coverage-threshold profiler and baselines are packaged; no ranked KNN assignment RT-core claim.",
+        RT_CORE_READY,
+        "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
+        "No new pod is needed for readiness; use the Goal887 RTX artifact and Goal920 same-scale CPU oracle baseline in claim-review packaging, and rerun only as part of a consolidated regression batch.",
     ),
     "road_hazard_screening": _maturity(
         "road_hazard_screening",

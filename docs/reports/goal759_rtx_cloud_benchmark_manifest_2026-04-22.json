@@ -242,56 +242,6 @@
       "reason_deferred": "Goal880 exposes a prepared OptiX candidate-coverage decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
     },
     {
-      "activation_gate": "Promote only after a Goal881 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
-      "app": "facility_knn_assignment",
-      "app_path": "examples/rtdl_facility_knn_assignment.py",
-      "baseline_review_contract": {
-        "claim_limit": "bounded sub-path only",
-        "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
-        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
-        "minimum_repeated_runs": 3,
-        "required_baselines": [
-          "cpu_oracle_same_semantics",
-          "best_available_non_optix_backend_same_semantics"
-        ],
-        "required_phases": [
-          "input_build",
-          "backend_prepare",
-          "native_query",
-          "materialization_or_copyback",
-          "postprocess"
-        ],
-        "requires_correctness_parity": true,
-        "requires_phase_separation": true,
-        "status": "required_before_public_speedup_claim"
-      },
-      "benchmark_readiness": "needs_real_rtx_artifact",
-      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
-      "command": [
-        "python3",
-        "scripts/goal887_prepared_decision_phase_profiler.py",
-        "--scenario",
-        "facility_service_coverage",
-        "--mode",
-        "optix",
-        "--copies",
-        "20000",
-        "--iterations",
-        "10",
-        "--radius",
-        "1.0",
-        "--skip-validation",
-        "--output-json",
-        "docs/reports/goal887_facility_service_coverage_rtx.json"
-      ],
-      "env": {},
-      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
-      "optix_performance_class": "optix_traversal_prepared_summary",
-      "optix_performance_note": "Explicit coverage_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for service-coverage decisions only; ranked nearest-depot assignment remains outside the OptiX claim.",
-      "path_name": "coverage_threshold_prepared",
-      "reason_deferred": "Goal881 exposes a prepared OptiX service-coverage decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
-    },
-    {
       "activation_gate": "Promote only after a Goal882 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
       "app": "barnes_hut_force_app",
       "app_path": "examples/rtdl_barnes_hut_force_app.py",
@@ -910,6 +860,67 @@
       "readiness_next_goal": "Goal917/Goal919",
       "scale": {
         "copies": 20000
+      }
+    },
+    {
+      "allowed_claim_today": "bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim",
+      "app": "facility_knn_assignment",
+      "app_path": "examples/rtdl_facility_knn_assignment.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "benchmark_contract": "coverage_threshold_prepared decision mode has an RTX phase artifact and same-scale CPU oracle parity for the bounded service-coverage decision",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "1.0",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal887_facility_service_coverage_rtx.json"
+      ],
+      "env": {},
+      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Explicit coverage_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for service-coverage decisions only; ranked nearest-depot assignment remains outside the OptiX claim.",
+      "path_name": "coverage_threshold_prepared",
+      "preconditions": [
+        "Use the prepared coverage-threshold profiler, not KNN ranking output.",
+        "Interpret with the Goal887 RTX artifact and Goal920 same-scale CPU oracle baseline.",
+        "Do not start a pod only for this app; rerun only in a consolidated regression batch."
+      ],
+      "readiness_blocker": "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
+      "readiness_next_goal": "Goal887/Goal920",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
       }
     }
   ],

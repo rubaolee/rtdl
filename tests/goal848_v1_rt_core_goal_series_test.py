@@ -10,8 +10,8 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         payload = goal848.build_goal_series()
         summary = payload["summary"]
         self.assertEqual(summary["public_app_count"], 18)
-        self.assertEqual(summary["rt_core_ready_now"], 5)
-        self.assertEqual(summary["rt_core_partial_ready_now"], 11)
+        self.assertEqual(summary["rt_core_ready_now"], 6)
+        self.assertEqual(summary["rt_core_partial_ready_now"], 10)
         self.assertEqual(summary["needs_redesign_or_new_surface"], 0)
         self.assertEqual(summary["out_of_scope_for_nvidia_rt"], 2)
 
@@ -20,7 +20,7 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         buckets = payload["priority_buckets"]
         self.assertEqual(
             buckets["already_ready_keep_and_optimize"],
-            ["outlier_detection", "dbscan_clustering"],
+            ["facility_knn_assignment", "outlier_detection", "dbscan_clustering"],
         )
         self.assertEqual(
             buckets["must_finish_first"],

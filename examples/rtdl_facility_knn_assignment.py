@@ -100,9 +100,45 @@ def facility_coverage_oracle(
     *,
     radius: float,
 ) -> dict[str, object]:
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
     uncovered: list[int] = []
+    if radius == 0:
+        depot_coordinates = {(depot.x, depot.y) for depot in depots}
+        for customer in customers:
+            if (customer.x, customer.y) not in depot_coordinates:
+                uncovered.append(customer.id)
+        return {
+            "radius": radius,
+            "customer_count": len(customers),
+            "covered_customer_count": len(customers) - len(uncovered),
+            "all_customers_covered": not uncovered,
+            "uncovered_customer_ids": uncovered,
+        }
+
+    cell_size = radius
+    depot_cells: dict[tuple[int, int], list[rt.Point]] = {}
+    for depot in depots:
+        cell = (math.floor(depot.x / cell_size), math.floor(depot.y / cell_size))
+        depot_cells.setdefault(cell, []).append(depot)
+
+    radius_sq = radius * radius
     for customer in customers:
-        has_depot = any(math.hypot(customer.x - depot.x, customer.y - depot.y) <= radius for depot in depots)
+        cx = math.floor(customer.x / cell_size)
+        cy = math.floor(customer.y / cell_size)
+        has_depot = False
+        for nx in (cx - 1, cx, cx + 1):
+            for ny in (cy - 1, cy, cy + 1):
+                for depot in depot_cells.get((nx, ny), ()):
+                    dx = customer.x - depot.x
+                    dy = customer.y - depot.y
+                    if dx * dx + dy * dy <= radius_sq:
+                        has_depot = True
+                        break
+                if has_depot:
+                    break
+            if has_depot:
+                break
         if not has_depot:
             uncovered.append(customer.id)
     return {

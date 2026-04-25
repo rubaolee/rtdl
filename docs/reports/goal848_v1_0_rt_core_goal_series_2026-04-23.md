@@ -5,8 +5,8 @@ Date: 2026-04-23
 ## Summary
 
 - Public apps: `18`
-- RT-core ready now: `5`
-- RT-core partial-ready now: `11`
+- RT-core ready now: `6`
+- RT-core partial-ready now: `10`
 - Need redesign or new surface: `0`
 - Out of NVIDIA RT scope: `2`
 
@@ -16,6 +16,7 @@ Priority buckets are execution buckets, not pure status buckets. An app can alre
 
 ### already_ready_keep_and_optimize
 
+- `facility_knn_assignment`
 - `outlier_detection`
 - `dbscan_clustering`
 
@@ -35,7 +36,6 @@ Priority buckets are execution buckets, not pure status buckets. An app can alre
 
 ### major_redesign_wave
 
-- `facility_knn_assignment`
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
 - `hausdorff_distance`

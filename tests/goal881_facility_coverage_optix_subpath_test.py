@@ -59,6 +59,28 @@ class Goal881FacilityCoverageOptixSubpathTest(unittest.TestCase):
     def test_negative_service_radius_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "service_radius must be non-negative"):
             app.run_case("optix", optix_summary_mode="coverage_threshold_prepared", service_radius=-0.1)
+        case = app.make_facility_knn_case()
+        with self.assertRaisesRegex(ValueError, "radius must be non-negative"):
+            app.facility_coverage_oracle(case["customers"], case["depots"], radius=-0.1)
+
+    def test_grid_oracle_matches_expected_scaled_fixture(self) -> None:
+        case = app.make_facility_knn_case(copies=200)
+        summary = app.facility_coverage_oracle(case["customers"], case["depots"], radius=1.0)
+
+        self.assertTrue(summary["all_customers_covered"])
+        self.assertEqual(summary["customer_count"], 800)
+        self.assertEqual(summary["covered_customer_count"], 800)
+        self.assertEqual(summary["uncovered_customer_ids"], [])
+
+    def test_zero_radius_oracle_requires_exact_coordinate_match(self) -> None:
+        customers = (app.rt.Point(id=1, x=0.0, y=0.0), app.rt.Point(id=2, x=1.0, y=0.0))
+        depots = (app.rt.Point(id=10, x=0.0, y=0.0),)
+
+        summary = app.facility_coverage_oracle(customers, depots, radius=0.0)
+
+        self.assertFalse(summary["all_customers_covered"])
+        self.assertEqual(summary["covered_customer_count"], 1)
+        self.assertEqual(summary["uncovered_customer_ids"], [2])
 
     def test_missing_rows_are_uncovered(self) -> None:
         case = app.make_facility_knn_case()

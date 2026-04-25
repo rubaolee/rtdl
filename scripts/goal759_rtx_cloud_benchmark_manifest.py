@@ -496,6 +496,36 @@ def build_manifest() -> dict[str, Any]:
                     "Do not start a pod only for this app; rerun only in a consolidated regression batch.",
                 ],
             ),
+            _entry(
+                app="facility_knn_assignment",
+                app_path="examples/rtdl_facility_knn_assignment.py",
+                path_name="coverage_threshold_prepared",
+                command=[
+                    python,
+                    "scripts/goal887_prepared_decision_phase_profiler.py",
+                    "--scenario",
+                    "facility_service_coverage",
+                    "--mode",
+                    "optix",
+                    "--copies",
+                    "20000",
+                    "--iterations",
+                    "10",
+                    "--radius",
+                    "1.0",
+                    "--skip-validation",
+                    "--output-json",
+                    "docs/reports/goal887_facility_service_coverage_rtx.json",
+                ],
+                scale={"copies": 20000, "iterations": 10},
+                claim_scope="prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+                non_claim="not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+                preconditions=[
+                    "Use the prepared coverage-threshold profiler, not KNN ranking output.",
+                    "Interpret with the Goal887 RTX artifact and Goal920 same-scale CPU oracle baseline.",
+                    "Do not start a pod only for this app; rerun only in a consolidated regression batch.",
+                ],
+            ),
         ],
         "excluded_apps": {
             "graph_analytics": "deferred graph gate must pass for visibility any-hit plus explicit native BFS/triangle graph-ray mode before any graph RT-core claim",
@@ -674,39 +704,6 @@ def build_manifest() -> dict[str, Any]:
                 ),
                 claim_scope="prepared OptiX fixed-radius threshold traversal for ANN candidate-coverage decisions",
                 non_claim="not a full ANN index, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ, or recall-optimizer claim",
-            ),
-            _deferred_entry(
-                app="facility_knn_assignment",
-                app_path="examples/rtdl_facility_knn_assignment.py",
-                path_name="coverage_threshold_prepared",
-                command=[
-                    python,
-                    "scripts/goal887_prepared_decision_phase_profiler.py",
-                    "--scenario",
-                    "facility_service_coverage",
-                    "--mode",
-                    "optix",
-                    "--copies",
-                    "20000",
-                    "--iterations",
-                    "10",
-                    "--radius",
-                    "1.0",
-                    "--skip-validation",
-                    "--output-json",
-                    "docs/reports/goal887_facility_service_coverage_rtx.json",
-                ],
-                env={},
-                reason_deferred=(
-                    "Goal881 exposes a prepared OptiX service-coverage decision sub-path, "
-                    "but a phase profiler and same-semantics RTX artifact are still required."
-                ),
-                activation_gate=(
-                    "Promote only after a Goal881 RTX artifact separates prepare/query/postprocess "
-                    "and is reviewed against same-semantics threshold baselines."
-                ),
-                claim_scope="prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
-                non_claim="not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
             ),
             _deferred_entry(
                 app="barnes_hut_force_app",
