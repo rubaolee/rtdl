@@ -5,8 +5,8 @@ Date: 2026-04-23
 ## Summary
 
 - Public apps: `18`
-- RT-core ready now: `4`
-- RT-core partial-ready now: `12`
+- RT-core ready now: `5`
+- RT-core partial-ready now: `11`
 - Need redesign or new surface: `0`
 - Out of NVIDIA RT scope: `2`
 

@@ -15,8 +15,8 @@
         ]
       },
       "local_dry_run_timings_sec": {
-        "cpu_reference_total": 0.00010408402886241674,
-        "input_build": 1.537497155368328e-05
+        "cpu_reference_total": 8.450006134808064e-05,
+        "input_build": 9.625102393329144e-06
       },
       "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
       "performance_class": "optix_traversal_prepared_summary",
@@ -30,8 +30,8 @@
     {
       "app": "event_hotspot_screening",
       "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot compact summaries",
-      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
-      "current_maturity": "rt_core_partial_ready",
+      "cloud_policy": "No new pod is needed for readiness; use the Goal917 RTX artifact and Goal919 same-scale baseline in claim-review packaging, and rerun only as part of a consolidated regression batch.",
+      "current_maturity": "rt_core_ready",
       "local_dry_run_result": {
         "event_count": 6,
         "hotspot_count": 4,
@@ -55,22 +55,22 @@
         ]
       },
       "local_dry_run_timings_sec": {
-        "cpu_reference_total": 0.00014458410441875458,
-        "input_build": 1.2458069249987602e-05
+        "cpu_reference_total": 0.00012258300557732582,
+        "input_build": 8.958973921835423e-06
       },
-      "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
+      "next_goal": "Goal917 RTX artifact + Goal919 same-scale baseline -> claim-review packaging",
       "performance_class": "optix_traversal_prepared_summary",
-      "promotion_blocker": "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
-      "promotion_condition": "real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion",
-      "readiness_status": "needs_real_rtx_artifact",
+      "promotion_blocker": "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
+      "promotion_condition": "real RTX optix-mode phase artifact has been reviewed for this bounded path; next step is claim-review packaging, not another per-app pod run",
+      "readiness_status": "ready_for_rtx_claim_review",
       "require_rt_core_mode": "count_summary_prepared",
-      "required_action": "Keep the prepared OptiX count-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
+      "required_action": "Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim.",
       "target_maturity": "rt_core_ready"
     }
   ],
-  "boundary": "This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed RTX artifact for its bounded gap-summary path; event hotspot remains held for same-scale baseline cleanup. The packet does not authorize a public RTX speedup claim.",
+  "boundary": "This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed RTX artifact for its bounded gap-summary path; event hotspot now has a reviewed RTX artifact and same-scale Embree baseline parity for its bounded count-summary path. The packet does not authorize a public RTX speedup claim.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-25T00:19:11",
+  "generated_at": "2026-04-25T00:27:00",
   "goal": "Goal849 spatial prepared-summary promotion packet",
   "ready_for_local_promotion_packet": true,
   "ready_for_rtx_claim_review_now": false

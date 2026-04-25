@@ -195,11 +195,11 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("baseline_review_contract", service)
         self.assertIn("prepared compact summary", service["baseline_review_contract"]["claim_limit"])
 
-        hotspot = deferred["event_hotspot_screening"]
+        hotspot = active["event_hotspot_screening"]
         self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", hotspot["command"])
         self.assertIn("--mode", hotspot["command"])
         self.assertIn("optix", hotspot["command"])
-        self.assertEqual(hotspot["benchmark_readiness"], "needs_real_rtx_artifact")
+        self.assertEqual(hotspot["benchmark_readiness"], "ready_for_rtx_claim_review")
         self.assertIn("baseline_review_contract", hotspot)
         self.assertIn("prepared compact summary", hotspot["baseline_review_contract"]["claim_limit"])
 

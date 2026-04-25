@@ -473,11 +473,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "event_hotspot_screening": _readiness(
         "event_hotspot_screening",
-        NEEDS_REAL_RTX_ARTIFACT,
-        "Goal862",
-        "prepared count-summary mode already has local dry-run and same-semantics baseline evidence; promotion now requires a real RTX optix-mode artifact reviewed against those local baselines",
-        "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
-        "bounded prepared count-summary path only; no whole-app hotspot-screening speedup claim",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal917/Goal919",
+        "prepared count-summary mode has a reviewed RTX phase artifact plus same-scale Embree baseline parity; public claims still require final claim-review packaging",
+        "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
+        "bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim",
     ),
     "facility_knn_assignment": _readiness(
         "facility_knn_assignment",
@@ -633,10 +633,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "event_hotspot_screening": _maturity(
         "event_hotspot_screening",
-        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Keep the prepared OptiX count-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
-        "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
+        RT_CORE_READY,
+        "Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim.",
+        "No new pod is needed for readiness; use the Goal917 RTX artifact and Goal919 same-scale baseline in claim-review packaging, and rerun only as part of a consolidated regression batch.",
     ),
     "facility_knn_assignment": _maturity(
         "facility_knn_assignment",

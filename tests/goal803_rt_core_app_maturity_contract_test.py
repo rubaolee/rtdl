@@ -27,6 +27,7 @@ class Goal803RtCoreAppMaturityContractTest(unittest.TestCase):
             ready,
             [
                 "service_coverage_gaps",
+                "event_hotspot_screening",
                 "outlier_detection",
                 "dbscan_clustering",
                 "robot_collision_screening",
@@ -37,7 +38,6 @@ class Goal803RtCoreAppMaturityContractTest(unittest.TestCase):
             for app, row in maturity.items()
             if row.current_status == "rt_core_partial_ready"
         }
-        self.assertIn("event_hotspot_screening", partial)
         self.assertIn("facility_knn_assignment", partial)
         self.assertIn("ann_candidate_search", partial)
         self.assertIn("barnes_hut_force_app", partial)

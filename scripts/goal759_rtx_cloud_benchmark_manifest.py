@@ -471,6 +471,31 @@ def build_manifest() -> dict[str, Any]:
                     "Do not start a pod only for this app; rerun only in a consolidated regression batch.",
                 ],
             ),
+            _entry(
+                app="event_hotspot_screening",
+                app_path="examples/rtdl_event_hotspot_screening.py",
+                path_name="prepared_count_summary",
+                command=[
+                    python,
+                    "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+                    "--scenario",
+                    "event_hotspot_screening",
+                    "--mode",
+                    "optix",
+                    "--copies",
+                    "20000",
+                    "--output-json",
+                    "docs/reports/goal811_event_hotspot_rtx.json",
+                ],
+                scale={"copies": 20000},
+                claim_scope="prepared OptiX fixed-radius count traversal for hotspot summaries",
+                non_claim="not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+                preconditions=[
+                    "Use the prepared count-summary profiler, not neighbor-row output.",
+                    "Interpret with the Goal917 RTX artifact and Goal919 same-scale Embree baseline review.",
+                    "Do not start a pod only for this app; rerun only in a consolidated regression batch.",
+                ],
+            ),
         ],
         "excluded_apps": {
             "graph_analytics": "deferred graph gate must pass for visibility any-hit plus explicit native BFS/triangle graph-ray mode before any graph RT-core claim",
@@ -525,35 +550,6 @@ def build_manifest() -> dict[str, Any]:
                     "or whole-app graph-system acceleration; BFS visited/frontier "
                     "bookkeeping and triangle set-intersection remain outside RT traversal"
                 ),
-            ),
-            _deferred_entry(
-                app="event_hotspot_screening",
-                app_path="examples/rtdl_event_hotspot_screening.py",
-                path_name="prepared_count_summary",
-                command=[
-                    python,
-                    "scripts/goal811_spatial_optix_summary_phase_profiler.py",
-                    "--scenario",
-                    "event_hotspot_screening",
-                    "--mode",
-                    "optix",
-                    "--copies",
-                    "20000",
-                    "--output-json",
-                    "docs/reports/goal811_event_hotspot_rtx.json",
-                ],
-                env={},
-                reason_deferred=(
-                    "Goal810 exposes an OptiX prepared count-summary path, and Goal811 "
-                    "adds a phase profiler. It remains deferred until RTX timing and "
-                    "review prove preparation/query/postprocess behavior."
-                ),
-                activation_gate=(
-                    "Promote only after Goal811 optix mode runs on RTX hardware, phase "
-                    "outputs are reviewed, and the app readiness matrix is updated."
-                ),
-                claim_scope="prepared OptiX fixed-radius count traversal for hotspot summaries",
-                non_claim="not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
             ),
             _deferred_entry(
                 app="road_hazard_screening",

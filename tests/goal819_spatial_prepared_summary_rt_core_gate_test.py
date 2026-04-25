@@ -15,8 +15,8 @@ class Goal819SpatialPreparedSummaryRtCoreGateTest(unittest.TestCase):
             ),
             "event_hotspot_screening": (
                 "count_summary_prepared",
-                "needs_real_rtx_artifact",
-                "rt_core_partial_ready",
+                "ready_for_rtx_claim_review",
+                "rt_core_ready",
             ),
         }
         for app, (mode, readiness_status, maturity_status) in expected.items():

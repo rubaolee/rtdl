@@ -27,7 +27,7 @@ SCENARIOS = {
     },
     "event_hotspot_screening": {
         "require_rt_core_mode": "count_summary_prepared",
-        "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
+        "next_goal": "Goal917 RTX artifact + Goal919 same-scale baseline -> claim-review packaging",
         "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot compact summaries",
     },
 }
@@ -76,8 +76,9 @@ def build_packet() -> dict[str, object]:
         "ready_for_rtx_claim_review_now": False,
         "boundary": (
             "This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed "
-            "RTX artifact for its bounded gap-summary path; event hotspot remains held for same-scale baseline "
-            "cleanup. The packet does not authorize a public RTX speedup claim."
+            "RTX artifact for its bounded gap-summary path; event hotspot now has a reviewed RTX artifact and "
+            "same-scale Embree baseline parity for its bounded count-summary path. The packet does not authorize "
+            "a public RTX speedup claim."
         ),
     }
 
