@@ -3,9 +3,9 @@
   "checks": {
     "active_runner_dry_run": {
       "dry_run": true,
-      "entry_count": 5,
+      "entry_count": 8,
       "status": "ok",
-      "unique_command_count": 4
+      "unique_command_count": 7
     },
     "bootstrap_dry_run": {
       "dry_run": true,
@@ -34,7 +34,7 @@
           "rev-parse",
           "HEAD"
         ],
-        "output_tail": "3380bfe72688f691929c88333a1deacf79b9287a\n",
+        "output_tail": "b798c51b03d3f9dd262c33ffb3e022b18b088249\n",
         "returncode": 0
       },
       "status_short": {
@@ -43,16 +43,16 @@
           "status",
           "--short"
         ],
-        "output_tail": " M docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json\n M docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json\n M docs/reports/goal848_v1_0_rt_core_goal_series_2026-04-23.json\n M docs/reports/goal901_pre_cloud_app_closure_gate_2026-04-24.json\n M src/rtdsl/app_support_matrix.py\n?? docs/reports/gemini_embree_applications_review_2026-04-23.md\n?? docs/reports/gemini_rtdl_feature_analysis_report_2026-04-23.md\n?? docs/reports/gemini_rtdl_next_gen_cuda_partner_brainstorming_2026-04-23.md\n?? docs/reports/goal850_claude_review_2026-04-23.md\n",
+        "output_tail": " M docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json\n?? docs/reports/cloud_2026_04_25/goal811_event_hotspot_rtx.json\n?? docs/reports/cloud_2026_04_25/goal811_service_coverage_rtx.json\n?? docs/reports/cloud_2026_04_25/goal888_road_hazard_native_optix_gate_rtx.json\n?? docs/reports/gemini_embree_applications_review_2026-04-23.md\n?? docs/reports/gemini_rtdl_feature_analysis_report_2026-04-23.md\n?? docs/reports/gemini_rtdl_next_gen_cuda_partner_brainstorming_2026-04-23.md\n?? docs/reports/goal850_claude_review_2026-04-23.md\n",
         "returncode": 0
       }
     },
     "manifest": {
-      "active_count": 5,
+      "active_count": 8,
       "active_errors": [],
       "baseline_contract_count": 17,
       "baseline_contract_errors": [],
-      "deferred_count": 12,
+      "deferred_count": 9,
       "excluded_count": 8,
       "missing_deferred": [],
       "missing_excluded": [],
@@ -73,7 +73,7 @@
     }
   },
   "invalid_checks": [],
-  "next_cloud_policy": "Start one RTX cloud pod only after this gate is valid. Run one full Goal769 pod batch with --include-deferred so active entries and deferred readiness gates execute in the same paid pod session, collect the artifact bundle, then shut down. Use --only only for same-pod targeted retry after a deferred gate fails.",
+  "next_cloud_policy": "Start one RTX cloud pod only after this gate is valid. Use the OOM-safe groups in docs/rtx_cloud_single_session_runbook.md so active entries and deferred readiness gates execute in the same paid pod session, copy artifacts back after each group, then shut down. Use --only only for same-pod targeted retry after a deferred gate fails.",
   "suite": "goal824_pre_cloud_rtx_readiness_gate",
   "valid": true
 }

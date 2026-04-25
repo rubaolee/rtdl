@@ -28,8 +28,8 @@ valid: true
 public_app_count: 18
 nvidia_target_app_count: 16
 non_nvidia_app_count: 2
-active_entry_count: 5
-deferred_entry_count: 12
+active_entry_count: 8
+deferred_entry_count: 9
 full_batch_entry_count: 17
 full_batch_unique_command_count: 16
 missing_cloud_coverage: []
@@ -69,18 +69,18 @@ PYTHONPATH=src:. python3 -m unittest \
 Result:
 
 ```text
-30 tests OK
+38 tests OK
 ```
 
 ## Interpretation
 
-This is the first mechanical local gate that says the app side of the NVIDIA
-RT-core cloud packet is closed for pre-cloud purposes:
+This mechanical local gate says the app side of the NVIDIA RT-core cloud packet
+is closed for pre-cloud process purposes:
 
 - all NVIDIA-target apps are represented in active or deferred cloud entries
 - all active/deferred apps have Goal762 analyzer support
 - all entries have manifest `--output-json` artifacts
-- the full-batch dry-run is valid
+- the full include-deferred dry-run shape is valid
 
 ## Boundary
 

@@ -26,12 +26,12 @@ new paid RTX session:
 
 ## Current Expected Counts
 
-- active entries: 5
-- deferred entries: 3
-- excluded apps: 12
-- active dry-run unique commands: 4
-- active-plus-deferred dry-run unique commands: 7
-- public commands covered by audit: 252
+- active entries: 8
+- deferred entries: 9
+- excluded apps: 8
+- active dry-run unique commands: 7
+- active-plus-deferred dry-run unique commands: 16
+- public commands covered by audit: 264
 
 ## How To Run Locally
 
@@ -40,9 +40,10 @@ PYTHONPATH=src:. python3 scripts/goal824_pre_cloud_rtx_readiness_gate.py \
   --output-json docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json
 ```
 
-Only after this gate is valid should a cloud pod be started. On cloud, run the
-active Goal759/Goal761 batch first, collect artifacts, and shut down. Deferred
-entries should only be included after their activation gates are satisfied.
+Only after this gate is valid should a cloud pod be started. On cloud, use
+`docs/rtx_cloud_single_session_runbook.md`: bootstrap first, run the OOM-safe
+groups, copy artifacts back after every group, and then shut down. Do not run
+one blind full batch and do not restart/stop the pod per app.
 
 ## Boundary
 
