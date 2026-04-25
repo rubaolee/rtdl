@@ -107,6 +107,7 @@ def run_backend(
         "graph_vertex_count": 4 * copies,
         "graph_edge_count": 6 * copies,
         "seed_count": len(case["seeds"]),
+        "row_count": len(rows),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
         "ray_tracing_accelerated": backend == "embree",

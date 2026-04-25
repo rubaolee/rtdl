@@ -40,6 +40,10 @@
         "20000",
         "--output-mode",
         "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "100",
         "--strict",
         "--output-json",
         "docs/reports/goal889_graph_visibility_optix_gate_rtx.json"

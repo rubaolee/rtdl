@@ -30,16 +30,10 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
     def test_non_strict_gate_records_missing_optix_without_failing(self) -> None:
         from scripts import goal889_graph_visibility_optix_gate as goal889
 
-        cpu_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="rows")
-        cpu_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="rows")
-        cpu_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="rows")
         with mock.patch.object(
             goal889.graph_app,
             "run_app",
             side_effect=[
-                cpu_visibility,
-                cpu_bfs,
-                cpu_triangle,
                 RuntimeError("no optix"),
                 RuntimeError("no optix"),
                 RuntimeError("no optix"),
@@ -55,9 +49,9 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
     def test_strict_passes_when_optix_matches_cpu_digest(self) -> None:
         from scripts import goal889_graph_visibility_optix_gate as goal889
 
-        cpu_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="rows")
-        cpu_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="rows")
-        cpu_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="rows")
+        cpu_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
+        cpu_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="summary")
+        cpu_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="summary")
         with mock.patch.object(
             goal889.graph_app,
             "run_app",
@@ -70,13 +64,45 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
                 cpu_triangle,
             ],
         ):
-            payload = goal889.run_gate(copies=1, output_mode="summary", strict=True)
+            payload = goal889.run_gate(
+                copies=1,
+                output_mode="summary",
+                strict=True,
+                validation_mode="full_reference",
+            )
         self.assertEqual(payload["status"], "pass")
         optix_records = [record for record in payload["records"] if str(record["label"]).startswith("optix_")]
         self.assertEqual(len(optix_records), 3)
         self.assertTrue(all(record["parity_vs_cpu_python_reference"] for record in optix_records))
         self.assertEqual(optix_records[1]["optix_graph_mode"], "native")
         self.assertEqual(optix_records[2]["optix_graph_mode"], "native")
+
+    def test_summary_strict_uses_analytic_validation_without_cpu_reference(self) -> None:
+        from scripts import goal889_graph_visibility_optix_gate as goal889
+
+        optix_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
+        optix_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=1, output_mode="summary")
+        optix_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=1, output_mode="summary")
+        with mock.patch.object(
+            goal889.graph_app,
+            "run_app",
+            side_effect=[optix_visibility, optix_bfs, optix_triangle],
+        ) as mocked:
+            payload = goal889.run_gate(
+                copies=1,
+                output_mode="summary",
+                strict=True,
+                validation_mode="analytic_summary",
+                chunk_copies=1,
+            )
+        self.assertEqual(payload["status"], "pass")
+        self.assertEqual(mocked.call_count, 3)
+        labels = {record["label"] for record in payload["records"]}
+        self.assertIn("analytic_expected_visibility_edges", labels)
+        self.assertIn("analytic_expected_bfs", labels)
+        self.assertIn("analytic_expected_triangle_count", labels)
+        optix_records = [record for record in payload["records"] if str(record["label"]).startswith("optix_")]
+        self.assertTrue(all(record["parity_vs_analytic_expected"] for record in optix_records))
 
     def test_cli_writes_non_strict_json(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:

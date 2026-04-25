@@ -285,26 +285,46 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         records = artifact.get("records")
         if not isinstance(records, list):
             return {"artifact_status": "unrecognized", "note": "no records array found"}
-        cpu = _record_by_label(records, "cpu_python_reference")
-        optix = _record_by_label(records, "optix_visibility_anyhit")
+        by_label = {
+            str(record.get("label")): record
+            for record in records
+            if isinstance(record, dict) and record.get("label") is not None
+        }
+        cpu = (
+            by_label.get("cpu_python_reference_visibility_edges")
+            or by_label.get("cpu_python_reference")
+            or {}
+        )
+        analytic = by_label.get("analytic_expected_visibility_edges", {})
+        optix = by_label.get("optix_visibility_anyhit", {})
         metrics = {
             "artifact_status": "ok",
             "output_mode": artifact.get("output_mode"),
+            "validation_mode": artifact.get("validation_mode"),
+            "chunk_copies": artifact.get("chunk_copies"),
             "strict_pass": artifact.get("strict_pass"),
             "strict_failure_count": len(artifact.get("strict_failures", ()))
             if isinstance(artifact.get("strict_failures"), list)
             else None,
             "cpu_reference_sec": cpu.get("sec"),
+            "analytic_reference_present": bool(analytic),
             "warm_query_median_sec": optix.get("sec"),
             "optix_native_status": optix.get("status"),
-            "optix_native_parity": optix.get("parity_vs_cpu_python_reference"),
+            "optix_native_parity": (
+                optix.get("parity_vs_cpu_python_reference")
+                if "parity_vs_cpu_python_reference" in optix
+                else optix.get("parity_vs_analytic_expected")
+            ),
         }
-        phase_source = {
+        phase_source = dict(by_label)
+        phase_source.update({
             "cpu_python_reference": cpu,
+            "cpu_python_reference_visibility_edges": cpu,
+            "analytic_expected_visibility_edges": analytic,
             "optix_visibility_anyhit": optix,
             "strict_pass": artifact.get("strict_pass"),
             "strict_failures": artifact.get("strict_failures"),
-        }
+        })
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
         return metrics
     if app == "road_hazard_screening":

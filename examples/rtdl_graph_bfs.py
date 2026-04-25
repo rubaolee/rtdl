@@ -117,6 +117,7 @@ def run_backend(
         "graph_edge_count": 5 * copies,
         "frontier_size": len(case["frontier"]),
         "visited_size": len(case["visited"]),
+        "row_count": len(rows),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
         "ray_tracing_accelerated": backend == "embree",

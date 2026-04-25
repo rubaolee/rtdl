@@ -552,6 +552,99 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
         finally:
             artifact_path.unlink(missing_ok=True)
 
+    def test_graph_visibility_gate_analytic_artifact_is_extracted(self) -> None:
+        module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
+        artifact_path = ROOT / "docs" / "reports" / "goal762_test_graph_visibility_analytic_tmp.json"
+        try:
+            artifact_path.write_text(
+                json.dumps(
+                    {
+                        "output_mode": "summary",
+                        "validation_mode": "analytic_summary",
+                        "chunk_copies": 100,
+                        "strict_pass": True,
+                        "strict_failures": [],
+                        "cloud_claim_contract": {
+                            "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
+                            "non_claim": "not BFS",
+                            "required_phase_groups": [
+                                "analytic_expected_visibility_edges",
+                                "analytic_expected_bfs",
+                                "analytic_expected_triangle_count",
+                                "optix_visibility_anyhit",
+                                "optix_native_graph_ray_bfs",
+                                "optix_native_graph_ray_triangle_count",
+                                "strict_pass",
+                                "strict_failures",
+                            ],
+                        },
+                        "records": [
+                            {"label": "analytic_expected_visibility_edges", "status": "ok", "sec": 0.0},
+                            {
+                                "label": "optix_visibility_anyhit",
+                                "status": "ok",
+                                "sec": 0.2,
+                                "parity_vs_analytic_expected": True,
+                            },
+                            {"label": "analytic_expected_bfs", "status": "ok", "sec": 0.0},
+                            {
+                                "label": "optix_native_graph_ray_bfs",
+                                "status": "ok",
+                                "sec": 0.3,
+                                "parity_vs_analytic_expected": True,
+                            },
+                            {"label": "analytic_expected_triangle_count", "status": "ok", "sec": 0.0},
+                            {
+                                "label": "optix_native_graph_ray_triangle_count",
+                                "status": "ok",
+                                "sec": 0.4,
+                                "parity_vs_analytic_expected": True,
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with tempfile.TemporaryDirectory() as tmpdir:
+                summary = Path(tmpdir) / "summary.json"
+                summary.write_text(
+                    json.dumps(
+                        {
+                            "status": "ok",
+                            "dry_run": False,
+                            "results": [
+                                {
+                                    "app": "graph_analytics",
+                                    "path_name": "graph_visibility_edges_gate",
+                                    "claim_scope": "OptiX ray/triangle any-hit traversal",
+                                    "non_claim": "not BFS",
+                                    "baseline_review_contract": _baseline_contract(),
+                                    "result": {
+                                        "status": "ok",
+                                        "returncode": 0,
+                                        "command": [
+                                            "python3",
+                                            "script.py",
+                                            "--output-json",
+                                            "docs/reports/goal762_test_graph_visibility_analytic_tmp.json",
+                                        ],
+                                    },
+                                }
+                            ],
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                payload = module.analyze(summary)
+            row = payload["rows"][0]
+            self.assertEqual(row["validation_mode"], "analytic_summary")
+            self.assertEqual(row["chunk_copies"], 100)
+            self.assertTrue(row["analytic_reference_present"])
+            self.assertTrue(row["optix_native_parity"])
+            self.assertEqual(row["cloud_contract_status"], "ok")
+        finally:
+            artifact_path.unlink(missing_ok=True)
+
     def test_segment_pair_rows_and_polygon_overlap_artifacts_are_extracted(self) -> None:
         module = __import__("scripts.goal762_rtx_cloud_artifact_report", fromlist=["analyze"])
         pair_rows_path = ROOT / "docs" / "reports" / "goal762_test_pair_rows_tmp.json"
