@@ -53,7 +53,7 @@
       "optix_performance_class": "optix_traversal",
       "optix_performance_note": "Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, but the default remains host-indexed until RTX validation.",
       "path_name": "graph_visibility_edges_gate",
-      "reason_deferred": "Goal889/905 packages bounded graph RT sub-paths: visibility maps candidate graph edges to RTDL visibility rows and OptiX any-hit traversal, while BFS and triangle-count use explicit native OptiX graph-ray mode for candidate generation."
+      "reason_deferred": "Goal889/905 packages bounded graph RT sub-paths: visibility maps candidate graph edges to RTDL visibility_pair_rows and OptiX any-hit traversal, while BFS and triangle-count use explicit native OptiX graph-ray mode for candidate generation."
     },
     {
       "activation_gate": "Promote only after Goal811 optix mode runs on RTX hardware, phase outputs are reviewed, and the app readiness matrix is updated.",

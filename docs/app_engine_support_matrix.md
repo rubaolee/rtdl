@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for current `main` after Goal889.
+Status: public app-level support map for current `main` after Goal914.
 
 This matrix answers which engines each public app entry point exposes today. It is intentionally app-level, not just feature-level: an underlying RTDL primitive may support an engine while a particular app CLI does not expose that engine yet.
 
@@ -44,7 +44,7 @@ For OptiX performance classification specifically, use
 ## Notes
 
 - `database_analytics`: Primary DB app exposes CPU/Embree/OptiX/Vulkan; HIPRT and Apple DB feature paths exist below the app layer but are not exposed by this app CLI. `--require-rt-core` is accepted only for `--backend optix --output-mode compact_summary` because full/row modes are interface/materialization dominated.
-- `graph_analytics`: Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios, and exposes a bounded `visibility_edges` scenario that maps candidate graph edges to `rt.visibility_rows(...)`. Embree BFS and triangle-count now use ray traversal over graph-edge primitives for candidate generation. OptiX BFS and triangle-count now expose an explicit native graph-ray mode behind `--optix-graph-mode native` / `RTDL_OPTIX_GRAPH_MODE=native`; the default remains host-indexed until this mode passes an RTX cloud gate.
+- `graph_analytics`: Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios, and exposes a bounded `visibility_edges` scenario that maps candidate graph edges to `rt.visibility_pair_rows(...)`. `visibility_rows(...)` remains the Cartesian observer-target matrix helper; graph candidate-edge workloads must use `visibility_pair_rows(...)` to avoid cross-copy Cartesian expansion. Embree BFS and triangle-count now use ray traversal over graph-edge primitives for candidate generation. OptiX BFS and triangle-count now expose an explicit native graph-ray mode behind `--optix-graph-mode native` / `RTDL_OPTIX_GRAPH_MODE=native`; the default remains host-indexed until this mode passes an RTX cloud gate.
 - `apple_rt_demo`: Primary Apple RT demo is Apple-specific; closest-hit has CPU reference parity, visibility-count is hardware-gated and may skip if Apple RT is unavailable.
 - `service_coverage_gaps`: Spatial radius-join app exposes CPU, Embree, SciPy baseline, and an OptiX prepared gap-summary mode; Vulkan/HIPRT/Apple are not app CLI options.
 - `event_hotspot_screening`: Spatial self-join app exposes CPU, Embree, SciPy baseline, and an OptiX prepared count-summary mode.

@@ -23,6 +23,22 @@ Do not start a pod for one app at a time. Once a pod is running, do not run the
 entire active+deferred manifest blindly. Run the OOM-safe groups below, copying
 artifacts back after each group.
 
+Current post-Goal913 rule: if the only pending follow-up is the graph/Jaccard
+cloud retry, use Goal914 first instead of the full group list:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal914_rtx_targeted_graph_jaccard_rerun.py \
+  --mode run \
+  --copies 20000 \
+  --graph-chunk-copies 100 \
+  --jaccard-chunk-copies 100,50,20 \
+  --output-json docs/reports/goal914_rtx_targeted_graph_jaccard_rerun_rtx.json
+```
+
+Goal914 intentionally runs the fixed graph gate once and then Jaccard
+production plus smaller diagnostic chunk sizes in the same pod session. It does
+not authorize RTX speedup claims.
+
 ## Recommended Pod Shape
 
 Use an RTX-class NVIDIA GPU with real RT cores. Acceptable examples:
@@ -129,6 +145,9 @@ This group intentionally uses the regenerated Goal759 manifest command. The
 current graph gate must run in summary analytic/chunked mode so it reaches
 OptiX before any CPU-reference validation:
 `--output-mode summary --validation-mode analytic_summary --chunk-copies 100`.
+After Goal913, graph `visibility_edges` uses `rt.visibility_pair_rows(...)`,
+not Cartesian `rt.visibility_rows(...)`, so the intended row count is
+`4 * copies` rather than all copied observers crossed with all copied targets.
 
 ```bash
 python3 scripts/goal761_rtx_cloud_run_all.py \
@@ -178,6 +197,8 @@ current polygon/Jaccard gates must run in summary analytic/chunked mode so the
 20k-copy cloud run does not build full CPU references or full row payloads
 before the OptiX candidate-discovery path:
 `--output-mode summary --validation-mode analytic_summary --chunk-copies 100`.
+After Goal913, the Jaccard artifact emits `candidate_diagnostics`; use those
+fields first if parity fails, before changing scale or restarting the pod.
 
 ```bash
 python3 scripts/goal761_rtx_cloud_run_all.py \

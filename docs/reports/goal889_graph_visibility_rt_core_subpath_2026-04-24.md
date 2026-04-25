@@ -10,9 +10,12 @@ Goal889 adds a bounded RT-core candidate to the unified graph app:
 graph_analytics / visibility_edges
 ```
 
-The new scenario maps graph candidate edges to RTDL visibility rows. In OptiX
-mode, the path dispatches ray/triangle any-hit traversal through
-`rt.visibility_rows(...)`.
+The original Goal889 scenario mapped graph candidate edges through RTDL
+visibility rows. Goal913 later corrected the copied-graph cloud shape by
+moving graph candidate edges to explicit pair semantics:
+`rt.visibility_pair_rows(...)`. In OptiX mode, the corrected path dispatches
+ray/triangle any-hit traversal for exactly the caller-provided graph edges
+instead of expanding copied observers and copied targets as a Cartesian matrix.
 
 This gives the graph app a real graph-to-RT sub-path without falsely claiming
 that existing BFS or triangle-count CSR paths use RT cores.

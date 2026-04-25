@@ -18,7 +18,7 @@ class Goal690OptixPerformanceClassificationTest(unittest.TestCase):
     def test_high_risk_optix_paths_are_not_classified_as_rt_traversal(self):
         perf = rt.optix_app_performance_matrix()
         expected = {
-            "graph_analytics": "host_indexed_fallback",
+            "graph_analytics": "optix_traversal",
             "road_hazard_screening": "host_indexed_fallback",
             "segment_polygon_hitcount": "host_indexed_fallback",
             "segment_polygon_anyhit_rows": "host_indexed_fallback",

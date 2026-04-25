@@ -480,7 +480,7 @@ def build_manifest() -> dict[str, Any]:
                 env={},
                 reason_deferred=(
                     "Goal889/905 packages bounded graph RT sub-paths: visibility maps "
-                    "candidate graph edges to RTDL visibility rows and OptiX any-hit "
+                    "candidate graph edges to RTDL visibility_pair_rows and OptiX any-hit "
                     "traversal, while BFS and triangle-count use explicit native "
                     "OptiX graph-ray mode for candidate generation."
                 ),
