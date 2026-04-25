@@ -23,8 +23,8 @@ Do not start a pod for one app at a time. Once a pod is running, do not run the
 entire active+deferred manifest blindly. Run the OOM-safe groups below, copying
 artifacts back after each group.
 
-Current post-Goal913 rule: if the only pending follow-up is the graph/Jaccard
-cloud retry, use Goal914 first instead of the full group list:
+If the only pending follow-up is the historical graph/Jaccard retry, use
+Goal914 instead of the full group list:
 
 ```bash
 PYTHONPATH=src:. python3 scripts/goal914_rtx_targeted_graph_jaccard_rerun.py \
@@ -37,7 +37,9 @@ PYTHONPATH=src:. python3 scripts/goal914_rtx_targeted_graph_jaccard_rerun.py \
 
 Goal914 intentionally runs the fixed graph gate once and then Jaccard
 production plus smaller diagnostic chunk sizes in the same pod session. It does
-not authorize RTX speedup claims.
+not authorize RTX speedup claims. For the current post-Goal923 v1.0 batch,
+prefer the OOM-safe groups below because the DB Goal921 rerun and several
+deferred app gates still need consolidated evidence.
 
 ## Recommended Pod Shape
 
@@ -54,8 +56,16 @@ but not NVIDIA RT-core acceleration.
 ## Bootstrap On The Pod
 
 After SSH into the pod and checking out the repo, first build and test the
-OptiX backend. On driver `550.127.05`, use OptiX SDK headers `v8.0.0`; newer
-OptiX 8.1/9.0 headers can fail at runtime with `Unsupported ABI version`.
+OptiX backend. Match OptiX headers to the installed driver:
+
+- Driver `550.127.05`: use OptiX SDK headers `v8.0.0`; newer OptiX 8.1/9.0
+  headers can fail at runtime with `Unsupported ABI version`.
+- Driver `580.126.09` or newer: OptiX SDK headers `v9.0.0` worked in the
+  previous RTDL A5000 run.
+
+Do not patch `OPTIX_ABI_VERSION` manually. If bootstrap reports
+`Unsupported ABI version`, switch to driver-compatible headers or a newer
+driver image before running benchmarks.
 
 ```bash
 cd /workspace/rtdl_python_only
@@ -227,17 +237,14 @@ If a small group succeeds except one deferred readiness gate, keep the same pod
 running and retry only that deferred target after local diagnosis. Do not
 restart the pod per app.
 
-Current deferred targets:
+Current deferred targets after Goal923:
 
 - `graph_analytics`
-- `service_coverage_gaps`
-- `event_hotspot_screening`
 - `road_hazard_screening`
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
 - `hausdorff_distance`
 - `ann_candidate_search`
-- `facility_knn_assignment`
 - `barnes_hut_force_app`
 - `polygon_pair_overlap_area_rows`
 - `polygon_set_jaccard`
@@ -247,7 +254,7 @@ Use this targeted retry shape:
 ```bash
 cd /workspace/rtdl_python_only
 PYTHONPATH=src:. python3 scripts/goal761_rtx_cloud_run_all.py \
-  --only graph_analytics \
+  --only graph_visibility_edges_gate \
   --include-deferred \
   --output-json docs/reports/goal761_retry_graph_summary.json
 ```

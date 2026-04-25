@@ -33,14 +33,11 @@ REQUIRED_EXCLUDED_APPS = {
 }
 REQUIRED_DEFERRED_APPS = {
     "graph_analytics",
-    "service_coverage_gaps",
-    "event_hotspot_screening",
     "road_hazard_screening",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
     "hausdorff_distance",
     "ann_candidate_search",
-    "facility_knn_assignment",
     "barnes_hut_force_app",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
@@ -183,11 +180,11 @@ def run_gate() -> dict[str, Any]:
         "invalid_checks": invalid,
         "checks": checks,
         "next_cloud_policy": (
-            "Start one RTX cloud pod only after this gate is valid. Run one full "
-            "Goal769 pod batch with --include-deferred so active entries and "
-            "deferred readiness gates execute in the same paid pod session, collect "
-            "the artifact bundle, then shut down. Use --only only for same-pod "
-            "targeted retry after a deferred gate fails."
+            "Start one RTX cloud pod only after this gate is valid. Use the "
+            "OOM-safe groups in docs/rtx_cloud_single_session_runbook.md so active "
+            "entries and deferred readiness gates execute in the same paid pod "
+            "session, copy artifacts back after each group, then shut down. Use "
+            "--only only for same-pod targeted retry after a deferred gate fails."
         ),
         "boundary": "Local readiness only; does not start cloud and does not authorize speedup claims.",
     }

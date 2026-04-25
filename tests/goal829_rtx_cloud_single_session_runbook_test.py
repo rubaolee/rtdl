@@ -34,6 +34,8 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal763_rtx_cloud_bootstrap_check.py", text)
         self.assertIn("Unsupported ABI version", text)
         self.assertIn("OptiX SDK headers `v8.0.0`", text)
+        self.assertIn("OptiX SDK headers `v9.0.0` worked", text)
+        self.assertIn("Do not patch `OPTIX_ABI_VERSION` manually", text)
         self.assertIn("RTDL_OPTIX_PTX_COMPILER=nvcc", text)
         self.assertIn("gnu/stubs-32.h", text)
         self.assertIn("cloud_claim_contract", text)
@@ -46,20 +48,18 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("--include-deferred", text)
         for app in (
             "graph_analytics",
-            "service_coverage_gaps",
-            "event_hotspot_screening",
             "road_hazard_screening",
             "segment_polygon_hitcount",
             "segment_polygon_anyhit_rows",
             "hausdorff_distance",
             "ann_candidate_search",
-            "facility_knn_assignment",
             "barnes_hut_force_app",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         ):
             with self.subTest(app=app):
                 self.assertIn(app, text)
+        self.assertIn("--only graph_visibility_edges_gate", text)
         self.assertIn("After copying artifacts back, stop or terminate the pod.", text)
         self.assertIn("does not authorize public RTX speedup claims", text)
 

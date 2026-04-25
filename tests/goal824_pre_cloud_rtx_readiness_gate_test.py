@@ -25,14 +25,15 @@ class Goal824PreCloudRtxReadinessGateTest(unittest.TestCase):
         self.assertTrue(payload["valid"], payload["invalid_checks"])
         self.assertIn("does not start cloud", payload["boundary"])
         self.assertIn("Start one RTX cloud pod only after this gate is valid", payload["next_cloud_policy"])
-        self.assertIn("one full Goal769 pod batch with --include-deferred", payload["next_cloud_policy"])
+        self.assertIn("OOM-safe groups in docs/rtx_cloud_single_session_runbook.md", payload["next_cloud_policy"])
+        self.assertIn("copy artifacts back after each group", payload["next_cloud_policy"])
         self.assertIn("Use --only only for same-pod targeted retry", payload["next_cloud_policy"])
 
     def test_gate_records_active_deferred_and_excluded_counts(self) -> None:
         payload = run_gate()
         manifest = payload["checks"]["manifest"]
-        self.assertEqual(manifest["active_count"], 5)
-        self.assertEqual(manifest["deferred_count"], 12)
+        self.assertEqual(manifest["active_count"], 8)
+        self.assertEqual(manifest["deferred_count"], 9)
         self.assertEqual(manifest["excluded_count"], 8)
         self.assertEqual(manifest["active_errors"], [])
         self.assertEqual(manifest["baseline_contract_count"], 17)
