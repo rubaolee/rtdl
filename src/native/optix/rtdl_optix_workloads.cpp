@@ -681,6 +681,7 @@ static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
+    auto t_start_trav = std::chrono::steady_clock::now();
     OPTIX_CHECK(optixLaunch(
         g_dbscan.pipe->pipeline,
         stream,
