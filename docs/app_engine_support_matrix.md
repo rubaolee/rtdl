@@ -1,6 +1,6 @@
 # RTDL App Engine Support Matrix
 
-Status: public app-level support map for current `main` after Goal914.
+Status: public app-level support map for current `main` after Goal922.
 
 This matrix answers which engines each public app entry point exposes today. It is intentionally app-level, not just feature-level: an underlying RTDL primitive may support an engine while a particular app CLI does not expose that engine yet.
 
@@ -196,8 +196,8 @@ batched run, copy artifacts, then shut down.
 
 | App | Current RT-core status | Target status | Required action | Cloud policy |
 | --- | --- | --- | --- | --- |
-| `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only. | No broad DB speedup claim until `compact_summary` is rerun on RTX hardware and native phase counters prove materialization is not dominant. |
-| `graph_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Keep the new Embree graph-ray BFS/triangle-count path as the local correctness prototype, and validate the explicit OptiX native graph-ray mode on RTX. | Cloud validates the combined Goal889/905 graph gate: visibility any-hit plus explicit native BFS/triangle graph-ray mode. No graph NVIDIA RT-core claim before that artifact passes review. |
+| `database_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Use compact prepared-kernel outputs where the app needs counts/summaries, then review exported native phase totals proving Python/materialization is not dominant. | No broad DB speedup claim until `compact_summary` is rerun on RTX hardware and Goal921 native phase totals pass same-semantics baseline review. |
+| `graph_analytics` | `rt_core_partial_ready` | `rt_core_ready` | Use `visibility_edges` any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim. | Cloud only in the combined Goal889/905 graph gate; no graph RT-core claim until visibility, native BFS, and native triangle-count row digests pass on RTX hardware. |
 | `apple_rt_demo` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables. | Never include in NVIDIA cloud batches. |
 | `service_coverage_gaps` | `rt_core_ready` | `rt_core_ready` | Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim. | No new pod is needed for readiness; use the Goal917 artifact in claim-review packaging, and rerun only as part of a consolidated regression batch. |
 | `event_hotspot_screening` | `rt_core_ready` | `rt_core_ready` | Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim. | No new pod is needed for readiness; use the Goal917 RTX artifact and Goal919 same-scale baseline in claim-review packaging, and rerun only as part of a consolidated regression batch. |

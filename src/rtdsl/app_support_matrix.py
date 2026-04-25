@@ -607,8 +607,8 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "database_analytics",
         RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Use compact prepared-kernel outputs where the app needs counts/summaries, then add native phase counters proving Python is orchestration only.",
-        "No broad DB speedup claim until compact_summary is rerun on RTX hardware and native phase counters prove materialization is not dominant.",
+        "Use compact prepared-kernel outputs where the app needs counts/summaries, then review exported native phase totals proving Python/materialization is not dominant.",
+        "No broad DB speedup claim until compact_summary is rerun on RTX hardware and Goal921 native phase totals pass same-semantics baseline review.",
     ),
     "graph_analytics": _maturity(
         "graph_analytics",

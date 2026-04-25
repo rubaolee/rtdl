@@ -47,7 +47,6 @@ class Goal707AppRtCoreRedlineAuditTest(unittest.TestCase):
     def test_host_indexed_optix_apps_are_marked_compatibility_fallback(self):
         matrix = rt.app_engine_support_matrix()
         for app in (
-            "graph_analytics",
             "road_hazard_screening",
             "segment_polygon_hitcount",
         ):
@@ -56,6 +55,11 @@ class Goal707AppRtCoreRedlineAuditTest(unittest.TestCase):
                 rt.optix_app_performance_support(app).performance_class,
                 "host_indexed_fallback",
             )
+        self.assertEqual(matrix["graph_analytics"]["optix"].status, "direct_cli_compatibility_fallback")
+        self.assertEqual(
+            rt.optix_app_performance_support("graph_analytics").performance_class,
+            "optix_traversal",
+        )
         self.assertEqual(matrix["segment_polygon_anyhit_rows"]["optix"].status, "direct_cli_native")
         self.assertEqual(
             rt.optix_app_performance_support("segment_polygon_anyhit_rows").performance_class,
