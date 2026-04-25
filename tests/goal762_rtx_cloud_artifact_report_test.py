@@ -178,11 +178,11 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
             artifact_path.write_text(
                 json.dumps(
                     {
-                        "schema_version": "goal825_tier1_phase_contract_v1",
+                        "schema_version": "goal921_db_phase_review_contract_v2",
                         "results": [
                             {
                                 "backend": "optix",
-                                "schema_version": "goal825_tier1_phase_contract_v1",
+                                "schema_version": "goal921_db_phase_review_contract_v2",
                                 "one_shot_total_sec": 2.0,
                                 "prepared_session_prepare_total_sec": 0.5,
                                 "prepared_session_warm_query_sec": {
@@ -202,6 +202,9 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                         "reported_prepare_phases_sec",
                                         "reported_run_phases_sec",
                                         "reported_native_db_phases_sec",
+                                        "reported_run_phase_totals_sec",
+                                        "reported_native_db_phase_totals_sec",
+                                        "db_review_observation",
                                     ],
                                 },
                                 "phase_contract": {},
@@ -223,6 +226,21 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 },
                                 "reported_native_db_phases_sec": {
                                     "sales_risk": {"grouped_sum_summary": {"traversal_sec": 0.01}},
+                                },
+                                "reported_run_phase_totals_sec": {
+                                    "all_sections_query_sec": 0.1,
+                                    "all_sections_python_summary_postprocess_sec": 0.01,
+                                    "row_materializing_operation_count": 0,
+                                    "compact_summary_operation_count": 5,
+                                },
+                                "reported_native_db_phase_totals_sec": {
+                                    "counter_status": "exported",
+                                    "operation_count": 1,
+                                    "traversal_sec": 0.01,
+                                },
+                                "db_review_observation": {
+                                    "status": "phase_clean_candidate_for_rtx_review",
+                                    "native_counter_status": "exported",
                                 },
                             }
                         ],
@@ -270,6 +288,8 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
             self.assertAlmostEqual(row["db_query_total_sec"], 0.1)
             self.assertAlmostEqual(row["postprocess_median_sec"], 0.01)
             self.assertEqual(row["db_native_phase_groups"], ["sales_risk"])
+            self.assertEqual(row["db_native_phase_totals"]["counter_status"], "exported")
+            self.assertEqual(row["db_review_observation"]["status"], "phase_clean_candidate_for_rtx_review")
             self.assertEqual(row["db_run_phase_modes"]["sales_risk"]["scan"], "count_summary")
         finally:
             artifact_path.unlink(missing_ok=True)

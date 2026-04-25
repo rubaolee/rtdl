@@ -2,6 +2,7 @@ import unittest
 
 
 SCHEMA = "goal825_tier1_phase_contract_v1"
+DB_SCHEMA = "goal921_db_phase_review_contract_v2"
 
 
 class Goal825Tier1ProfilerContractTest(unittest.TestCase):
@@ -15,9 +16,9 @@ class Goal825Tier1ProfilerContractTest(unittest.TestCase):
             output_mode="compact_summary",
             strict=True,
         )
-        self.assertEqual(payload["schema_version"], SCHEMA)
+        self.assertEqual(payload["schema_version"], DB_SCHEMA)
         result = payload["results"][0]
-        self.assertEqual(result["schema_version"], SCHEMA)
+        self.assertEqual(result["schema_version"], DB_SCHEMA)
         for key in result["cloud_claim_contract"]["required_phase_groups"]:
             self.assertIn(key, result)
 

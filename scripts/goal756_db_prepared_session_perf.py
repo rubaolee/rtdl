@@ -18,7 +18,7 @@ from examples import rtdl_database_analytics_app as db_app
 
 
 BACKENDS = ("cpu", "cpu_reference", "cpu_python_reference", "embree", "optix", "vulkan")
-SCHEMA_VERSION = "goal825_tier1_phase_contract_v1"
+SCHEMA_VERSION = "goal921_db_phase_review_contract_v2"
 
 
 def _cloud_claim_contract() -> dict[str, Any]:
@@ -32,6 +32,9 @@ def _cloud_claim_contract() -> dict[str, Any]:
             "reported_prepare_phases_sec",
             "reported_run_phases_sec",
             "reported_native_db_phases_sec",
+            "reported_run_phase_totals_sec",
+            "reported_native_db_phase_totals_sec",
+            "db_review_observation",
         ),
         "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
     }
@@ -142,12 +145,132 @@ def _reported_run_phase_modes(payload: dict[str, Any]) -> dict[str, Any]:
     return phase_modes
 
 
+def _reported_run_phase_totals(payload: dict[str, Any]) -> dict[str, Any]:
+    totals: dict[str, Any] = {
+        "all_sections_query_sec": 0.0,
+        "all_sections_python_summary_postprocess_sec": 0.0,
+        "row_materializing_operation_count": 0,
+        "compact_summary_operation_count": 0,
+        "sections": {},
+    }
+    modes = _reported_run_phase_modes(payload)
+    for name, section in payload.get("sections", {}).items():
+        if not isinstance(section, dict):
+            continue
+        run_phases = section.get("run_phases")
+        if not isinstance(run_phases, dict):
+            continue
+        query_sec = sum(
+            float(value)
+            for key, value in run_phases.items()
+            if key.startswith("query_") and isinstance(value, (int, float))
+        )
+        postprocess_sec = float(run_phases.get("python_summary_postprocess_sec", 0.0) or 0.0)
+        section_modes = modes.get(name, {})
+        row_materializing = sum(1 for mode in section_modes.values() if mode == "row_materializing")
+        compact_summary = sum(1 for mode in section_modes.values() if mode in {"count_summary", "group_summary"})
+        totals["all_sections_query_sec"] += query_sec
+        totals["all_sections_python_summary_postprocess_sec"] += postprocess_sec
+        totals["row_materializing_operation_count"] += row_materializing
+        totals["compact_summary_operation_count"] += compact_summary
+        totals["sections"][name] = {
+            "query_sec": query_sec,
+            "python_summary_postprocess_sec": postprocess_sec,
+            "row_materializing_operation_count": row_materializing,
+            "compact_summary_operation_count": compact_summary,
+        }
+    return totals
+
+
 def _reported_native_db_phases(payload: dict[str, Any]) -> dict[str, Any]:
     phases: dict[str, Any] = {}
     for name, section in payload.get("sections", {}).items():
         if isinstance(section, dict) and isinstance(section.get("native_db_phases"), dict):
             phases[name] = dict(section["native_db_phases"])
     return phases
+
+
+def _reported_native_db_phase_totals(native_phases: dict[str, Any]) -> dict[str, Any]:
+    totals: dict[str, Any] = {
+        "counter_status": "absent",
+        "operation_count": 0,
+        "traversal_sec": 0.0,
+        "bitset_copyback_sec": 0.0,
+        "exact_filter_sec": 0.0,
+        "output_pack_sec": 0.0,
+        "raw_candidate_count": 0,
+        "emitted_count": 0,
+        "sections": {},
+    }
+    for section_name, section_phases in native_phases.items():
+        if not isinstance(section_phases, dict):
+            continue
+        section_total = {
+            "operation_count": 0,
+            "traversal_sec": 0.0,
+            "bitset_copyback_sec": 0.0,
+            "exact_filter_sec": 0.0,
+            "output_pack_sec": 0.0,
+            "raw_candidate_count": 0,
+            "emitted_count": 0,
+        }
+        for phase in section_phases.values():
+            if not isinstance(phase, dict):
+                continue
+            section_total["operation_count"] += 1
+            section_total["traversal_sec"] += float(phase.get("traversal", 0.0) or 0.0)
+            section_total["bitset_copyback_sec"] += float(phase.get("bitset_copyback", 0.0) or 0.0)
+            section_total["exact_filter_sec"] += float(phase.get("exact_filter", 0.0) or 0.0)
+            section_total["output_pack_sec"] += float(phase.get("output_pack", 0.0) or 0.0)
+            section_total["raw_candidate_count"] += int(phase.get("raw_candidate_count", 0) or 0)
+            section_total["emitted_count"] += int(phase.get("emitted_count", 0) or 0)
+        if section_total["operation_count"]:
+            totals["sections"][section_name] = section_total
+            totals["operation_count"] += section_total["operation_count"]
+            totals["traversal_sec"] += section_total["traversal_sec"]
+            totals["bitset_copyback_sec"] += section_total["bitset_copyback_sec"]
+            totals["exact_filter_sec"] += section_total["exact_filter_sec"]
+            totals["output_pack_sec"] += section_total["output_pack_sec"]
+            totals["raw_candidate_count"] += section_total["raw_candidate_count"]
+            totals["emitted_count"] += section_total["emitted_count"]
+    if totals["operation_count"]:
+        totals["counter_status"] = "exported"
+    elif native_phases:
+        totals["counter_status"] = "empty"
+    return totals
+
+
+def _db_review_observation(
+    *,
+    output_mode: str,
+    run_phase_totals: dict[str, Any],
+    native_phase_totals: dict[str, Any],
+) -> dict[str, Any]:
+    row_materializing = int(run_phase_totals.get("row_materializing_operation_count", 0) or 0)
+    compact_summary = int(run_phase_totals.get("compact_summary_operation_count", 0) or 0)
+    native_status = str(native_phase_totals.get("counter_status", "absent"))
+    if output_mode != "compact_summary":
+        status = "not_claim_path"
+        blocker = "DB RT-core review requires compact_summary output mode."
+    elif row_materializing:
+        status = "needs_interface_tuning"
+        blocker = "One or more DB operations still materialize rows in the warm-query path."
+    elif native_status != "exported":
+        status = "needs_native_counter_artifact"
+        blocker = "Compact-summary shape is clean, but this artifact lacks exported OptiX native DB counters."
+    elif compact_summary:
+        status = "phase_clean_candidate_for_rtx_review"
+        blocker = "None for local shape; compare RTX artifact against baselines before promotion."
+    else:
+        status = "unrecognized"
+        blocker = "No DB run-phase operations were detected."
+    return {
+        "status": status,
+        "blocker": blocker,
+        "row_materializing_operation_count": row_materializing,
+        "compact_summary_operation_count": compact_summary,
+        "native_counter_status": native_status,
+    }
 
 
 def _profile_backend(
@@ -173,6 +296,10 @@ def _profile_backend(
     finally:
         _, close_sec = _time_call(session.close)
 
+    reported_native_db_phases = _reported_native_db_phases(last_payload or {})
+    run_phase_totals = _reported_run_phase_totals(last_payload or {})
+    native_phase_totals = _reported_native_db_phase_totals(reported_native_db_phases)
+
     return {
         "backend": backend,
         "status": "ok",
@@ -189,7 +316,14 @@ def _profile_backend(
         "reported_prepare_phases_sec": _reported_session_phases(last_payload or {}),
         "reported_run_phases_sec": _reported_run_phases(last_payload or {}),
         "reported_run_phase_modes": _reported_run_phase_modes(last_payload or {}),
-        "reported_native_db_phases_sec": _reported_native_db_phases(last_payload or {}),
+        "reported_run_phase_totals_sec": run_phase_totals,
+        "reported_native_db_phases_sec": reported_native_db_phases,
+        "reported_native_db_phase_totals_sec": native_phase_totals,
+        "db_review_observation": _db_review_observation(
+            output_mode=output_mode,
+            run_phase_totals=run_phase_totals,
+            native_phase_totals=native_phase_totals,
+        ),
         "phase_contract": {
             "one_shot_total": "complete public app call including fixture construction, backend selection, native prepare, query, materialization, and summary postprocess",
             "prepared_session_prepare_total": "public app prepare_session call including fixture construction and native prepared dataset creation where available",
@@ -197,8 +331,10 @@ def _profile_backend(
             "reported_prepare_phases": "scenario-provided construction/selection/prepare timers embedded in app JSON",
             "reported_run_phases": "scenario-provided per-operation query timers embedded in app JSON; grouped compact-summary fast paths use query_*_summary_sec while row paths use query_*_and_materialize_sec",
             "reported_run_phase_modes": "per-section classification of scan/grouped_count/grouped_sum as count_summary, group_summary, or row_materializing",
+            "reported_run_phase_totals": "summed query/postprocess phase time plus explicit row-materializing versus compact-summary operation counts",
             "reported_native_db_phases": "OptiX prepared DB native counters when exported: traversal, candidate bitset copy-back, exact native filtering/grouping, output packing, raw candidate count, and emitted result count",
-            "not_yet_split": "backend-native traversal, candidate bitset copy-back, exact native filtering/grouping, and Python object conversion are still grouped inside each per-operation query timer unless the native backend exposes lower-level timers",
+            "reported_native_db_phase_totals": "summed native DB counters across sections and operations; counter_status is exported, empty, or absent",
+            "db_review_observation": "machine-readable local readiness observation for DB compact-summary RTX review; not a public speedup claim",
         },
         "one_shot_output": _compact(one_shot_payload),
         "prepared_session_output": _compact(last_payload or {}),

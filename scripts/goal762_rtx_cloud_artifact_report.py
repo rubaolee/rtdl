@@ -181,9 +181,12 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
                 "python_summary_postprocess_sec",
             ),
             "db_run_phase_modes": optix.get("reported_run_phase_modes"),
+            "db_run_phase_totals": optix.get("reported_run_phase_totals_sec"),
             "db_native_phase_groups": sorted((optix.get("reported_native_db_phases_sec") or {}).keys())
             if isinstance(optix.get("reported_native_db_phases_sec"), dict)
             else [],
+            "db_native_phase_totals": optix.get("reported_native_db_phase_totals_sec"),
+            "db_review_observation": optix.get("db_review_observation"),
         }
         metrics.update(_contract_check(optix.get("cloud_claim_contract"), optix))
         return metrics
