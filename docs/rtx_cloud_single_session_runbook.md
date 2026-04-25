@@ -125,6 +125,11 @@ python3 scripts/goal761_rtx_cloud_run_all.py \
 
 ### Group F: Graph Gate
 
+This group intentionally uses the regenerated Goal759 manifest command. The
+current graph gate must run in summary analytic/chunked mode so it reaches
+OptiX before any CPU-reference validation:
+`--output-mode summary --validation-mode analytic_summary --chunk-copies 100`.
+
 ```bash
 python3 scripts/goal761_rtx_cloud_run_all.py \
   --include-deferred \
@@ -167,6 +172,12 @@ python3 scripts/goal887_prepared_decision_phase_profiler.py \
 ```
 
 ### Group H: Polygon Apps
+
+This group intentionally uses the regenerated Goal759 manifest commands. The
+current polygon/Jaccard gates must run in summary analytic/chunked mode so the
+20k-copy cloud run does not build full CPU references or full row payloads
+before the OptiX candidate-discovery path:
+`--output-mode summary --validation-mode analytic_summary --chunk-copies 100`.
 
 ```bash
 python3 scripts/goal761_rtx_cloud_run_all.py \
