@@ -93,7 +93,8 @@ def _expected_summary_record(scenario: str, copies: int) -> dict[str, object]:
 
 def _run_cpu_record(scenario: str, copies: int, include_rows: bool) -> dict[str, object]:
     start = time.perf_counter()
-    payload = graph_app.run_app("cpu_python_reference", scenario, copies=copies, output_mode="rows")
+    output_mode = "rows" if include_rows else "summary"
+    payload = graph_app.run_app("cpu_python_reference", scenario, copies=copies, output_mode=output_mode)
     return {
         "label": f"cpu_python_reference_{scenario}",
         "scenario": scenario,
@@ -170,7 +171,8 @@ def _run_optix_record(scenario: str, copies: int, include_rows: bool) -> dict[st
     else:
         kwargs["require_rt_core"] = True
     try:
-        payload = graph_app.run_app("optix", scenario, copies=copies, output_mode="rows", **kwargs)
+        output_mode = "rows" if include_rows else "summary"
+        payload = graph_app.run_app("optix", scenario, copies=copies, output_mode=output_mode, **kwargs)
         return {
             "label": label,
             "scenario": scenario,

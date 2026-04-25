@@ -52,6 +52,29 @@ class Goal633VisibilityRowsTest(unittest.TestCase):
             ),
         )
 
+    def test_visibility_pair_rows_preserves_explicit_candidate_edges(self) -> None:
+        observer_a = rt.Point(id=1, x=0.0, y=0.0)
+        observer_b = rt.Point(id=2, x=0.0, y=2.0)
+        target_a = rt.Point(id=10, x=10.0, y=0.0)
+        target_b = rt.Point(id=11, x=10.0, y=2.0)
+
+        rows = rt.visibility_pair_rows(
+            (
+                (observer_a, target_a),
+                (observer_b, target_b),
+            ),
+            blockers=(),
+            backend="cpu",
+        )
+
+        self.assertEqual(
+            rows,
+            (
+                {"observer_id": 1, "target_id": 10, "visible": 1},
+                {"observer_id": 2, "target_id": 11, "visible": 1},
+            ),
+        )
+
     def test_visibility_rows_3d_uses_finite_segment_not_infinite_ray(self) -> None:
         observers = (rt.Point3D(id=1, x=0.0, y=0.0, z=0.0),)
         targets = (rt.Point3D(id=2, x=10.0, y=0.0, z=0.0),)

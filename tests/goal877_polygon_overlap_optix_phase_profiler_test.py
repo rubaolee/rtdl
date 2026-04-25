@@ -60,6 +60,9 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertIsNone(payload["phases"]["cpu_reference_sec"])
         self.assertTrue(payload["parity_vs_cpu"])
         self.assertEqual(payload["optix_digest"]["summary"]["overlap_pair_count"], 4)
+        self.assertEqual(payload["candidate_diagnostics"]["expected_or_cpu_candidate_row_count"], 6)
+        self.assertEqual(payload["candidate_diagnostics"]["optix_candidate_row_count"], 4)
+        self.assertFalse(payload["candidate_diagnostics"]["candidate_count_matches_expected"])
 
     def test_jaccard_summary_analytic_chunks_without_cpu_reference(self) -> None:
         with mock.patch.object(goal877.jaccard_app, "_positive_candidate_pairs_optix", side_effect=_candidate_pairs):
@@ -76,6 +79,7 @@ class Goal877PolygonOverlapOptixPhaseProfilerTest(unittest.TestCase):
         self.assertTrue(payload["parity_vs_cpu"])
         self.assertEqual(payload["optix_digest"]["summary"]["intersection_area"], 10)
         self.assertAlmostEqual(payload["optix_digest"]["summary"]["jaccard_similarity"], 5 / 19)
+        self.assertEqual(payload["candidate_diagnostics"]["expected_or_cpu_candidate_row_count"], 6)
 
     def test_cli_writes_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

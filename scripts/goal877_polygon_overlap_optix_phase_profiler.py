@@ -72,7 +72,7 @@ def _expected_payload(app: str, copies: int) -> dict[str, Any]:
             "copies": copies,
             "output_mode": "summary",
             "row_count": 2 * copies,
-            "candidate_row_count": 2 * copies,
+            "candidate_row_count": 3 * copies,
             "summary": {
                 "overlap_pair_count": 2 * copies,
                 "total_intersection_area": 5 * copies,
@@ -85,7 +85,7 @@ def _expected_payload(app: str, copies: int) -> dict[str, Any]:
         "copies": copies,
         "output_mode": "summary",
         "row_count": 1,
-        "candidate_row_count": 2 * copies,
+        "candidate_row_count": 3 * copies,
         "summary": {
             "intersection_area": 5 * copies,
             "left_area": 13 * copies,
@@ -313,6 +313,21 @@ def run_profile(
         phases["cpu_exact_refinement_sec"] = None
 
     parity = optix_payload is not None and cpu_payload is not None and _canonical(optix_payload) == _canonical(cpu_payload)
+    candidate_diagnostics = {
+        "expected_or_cpu_candidate_row_count": (
+            cpu_payload.get("candidate_row_count") if isinstance(cpu_payload, dict) else None
+        ),
+        "optix_candidate_row_count": (
+            optix_payload.get("candidate_row_count") if isinstance(optix_payload, dict) else None
+        ),
+        "candidate_count_matches_expected": (
+            None
+            if not isinstance(cpu_payload, dict)
+            or not isinstance(optix_payload, dict)
+            or cpu_payload.get("candidate_row_count") is None
+            else cpu_payload.get("candidate_row_count") == optix_payload.get("candidate_row_count")
+        ),
+    }
     if error is not None:
         status = "needs_optix_runtime"
     elif mode == "dry-run" or validation_mode == "none" or parity:
@@ -339,6 +354,7 @@ def run_profile(
         "phases": phases,
         "cpu_digest": _canonical(cpu_payload) if cpu_payload is not None else None,
         "optix_digest": _canonical(optix_payload) if optix_payload is not None else None,
+        "candidate_diagnostics": candidate_diagnostics,
         "optix_metadata": (
             {
                 "rt_core_accelerated": bool(optix_payload["rt_core_accelerated"]),

@@ -14,6 +14,9 @@ from .reference import Point3D
 from .reference import Ray3D
 from .reference import Triangle
 from .reference import Triangle3D
+from .reference import _make_visibility_ray
+from .reference import _point_dimension
+from .reference import _triangle_dimension
 from .reference import visibility_ray_pairs
 from .reference import visibility_rows_cpu
 from .reference import visibility_rows_from_any_hit
@@ -89,3 +92,69 @@ def visibility_rows(
 
     any_hit_by_ray = {int(row["ray_id"]): int(row["any_hit"]) for row in any_hit_rows}
     return visibility_rows_from_any_hit(ray_pairs, any_hit_by_ray)
+
+
+def visibility_pair_rows(
+    observer_target_pairs: tuple[tuple[Point | Point3D, Point | Point3D], ...],
+    blockers: tuple[Triangle | Triangle3D, ...],
+    *,
+    backend: str = "cpu",
+    native_only: bool = False,
+) -> tuple[dict[str, int], ...]:
+    """Return visibility rows for explicit observer-target candidate pairs.
+
+    `visibility_rows(...)` intentionally evaluates the full observer x target
+    matrix. Graph workloads often already have candidate edges, so this helper
+    preserves those pair semantics while still dispatching through the same
+    bounded ray/triangle any-hit backend path.
+    """
+    if not observer_target_pairs:
+        return ()
+
+    point_dimension = _point_dimension(observer_target_pairs[0][0])
+    rays = []
+    ray_pairs = []
+    for ray_id, (observer, target) in enumerate(observer_target_pairs):
+        if _point_dimension(observer) != point_dimension or _point_dimension(target) != point_dimension:
+            raise ValueError("visibility_pair_rows requires all points to share one dimensionality")
+        rays.append(_make_visibility_ray(ray_id, observer, target))
+        ray_pairs.append((ray_id, int(observer.id), int(target.id)))
+    if blockers and any(_triangle_dimension(triangle) != point_dimension for triangle in blockers):
+        raise ValueError("visibility_pair_rows blocker triangles must match observer/target dimensionality")
+
+    normalized_backend = backend.lower().replace("-", "_")
+    if normalized_backend in {"cpu", "cpu_python_reference", "python"}:
+        from .reference import ray_triangle_any_hit_cpu
+
+        any_hit_rows = ray_triangle_any_hit_cpu(tuple(rays), blockers)
+    else:
+        kernel = _visibility_any_hit_3d_kernel if isinstance(rays[0], Ray3D) else _visibility_any_hit_2d_kernel
+        inputs = {"rays": tuple(rays), "triangles": blockers}
+
+        if normalized_backend == "embree":
+            from .embree_runtime import run_embree
+
+            any_hit_rows = run_embree(kernel, **inputs)
+        elif normalized_backend == "optix":
+            from .optix_runtime import run_optix
+
+            any_hit_rows = run_optix(kernel, **inputs)
+        elif normalized_backend == "vulkan":
+            from .vulkan_runtime import run_vulkan
+
+            any_hit_rows = run_vulkan(kernel, **inputs)
+        elif normalized_backend == "hiprt":
+            from .hiprt_runtime import run_hiprt
+
+            any_hit_rows = run_hiprt(kernel, **inputs)
+        elif normalized_backend in {"apple", "apple_rt", "metal"}:
+            from .apple_rt_runtime import run_apple_rt
+
+            any_hit_rows = run_apple_rt(kernel, native_only=native_only, **inputs)
+        else:
+            raise ValueError(
+                "visibility_pair_rows backend must be one of: cpu, embree, optix, vulkan, hiprt, apple_rt"
+            )
+
+    any_hit_by_ray = {int(row["ray_id"]): int(row["any_hit"]) for row in any_hit_rows}
+    return visibility_rows_from_any_hit(tuple(ray_pairs), any_hit_by_ray)

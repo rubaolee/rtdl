@@ -37,22 +37,22 @@ def make_visibility_edge_case(copies: int = 1) -> dict[str, tuple[object, ...]]:
         raise ValueError("copies must be positive")
     observers: list[rt.Point] = []
     targets: list[rt.Point] = []
+    candidate_edges: list[tuple[rt.Point, rt.Point]] = []
     blockers: list[rt.Triangle] = []
     for copy_index in range(copies):
         offset = float(copy_index * 20)
         id_offset = copy_index * 100
-        observers.extend(
-            (
-                rt.Point(id=id_offset + 1, x=0.0 + offset, y=0.0),
-                rt.Point(id=id_offset + 2, x=0.0 + offset, y=2.0),
-            )
+        copy_observers = (
+            rt.Point(id=id_offset + 1, x=0.0 + offset, y=0.0),
+            rt.Point(id=id_offset + 2, x=0.0 + offset, y=2.0),
         )
-        targets.extend(
-            (
-                rt.Point(id=id_offset + 10, x=10.0 + offset, y=0.0),
-                rt.Point(id=id_offset + 11, x=10.0 + offset, y=2.0),
-            )
+        copy_targets = (
+            rt.Point(id=id_offset + 10, x=10.0 + offset, y=0.0),
+            rt.Point(id=id_offset + 11, x=10.0 + offset, y=2.0),
         )
+        observers.extend(copy_observers)
+        targets.extend(copy_targets)
+        candidate_edges.extend((observer, target) for observer in copy_observers for target in copy_targets)
         blockers.append(
             rt.Triangle(
                 id=id_offset + 100,
@@ -64,15 +64,19 @@ def make_visibility_edge_case(copies: int = 1) -> dict[str, tuple[object, ...]]:
                 y2=0.0,
             )
         )
-    return {"observers": tuple(observers), "targets": tuple(targets), "blockers": tuple(blockers)}
+    return {
+        "observers": tuple(observers),
+        "targets": tuple(targets),
+        "candidate_edges": tuple(candidate_edges),
+        "blockers": tuple(blockers),
+    }
 
 
 def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[str, Any]:
     case = make_visibility_edge_case(copies)
     visibility_backend = "cpu" if backend == "cpu_python_reference" else backend
-    rows = rt.visibility_rows(
-        case["observers"],
-        case["targets"],
+    rows = rt.visibility_pair_rows(
+        case["candidate_edges"],
         case["blockers"],
         backend=visibility_backend,
     )
@@ -85,6 +89,7 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
         "output_mode": output_mode,
         "observer_count": len(case["observers"]),
         "target_count": len(case["targets"]),
+        "candidate_edge_count": len(case["candidate_edges"]),
         "blocker_count": len(case["blockers"]),
         "row_count": len(rows),
         "rows": rows if output_mode == "rows" else [],

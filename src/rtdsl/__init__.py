@@ -394,6 +394,7 @@ from .reference import Triangle3D
 from .reference import visibility_ray_pairs
 from .reference import visibility_rows_cpu
 from .reference import visibility_rows_from_any_hit
+from .visibility_runtime import visibility_pair_rows
 from .visibility_runtime import visibility_rows
 from .graph_reference import bfs_expand_cpu
 from .db_reference import conjunctive_scan_cpu
@@ -651,6 +652,7 @@ __all__ = [
     "Triangles3D",
     "validate_csr_graph",
     "visibility_rows_cpu",
+    "visibility_pair_rows",
     "visibility_rows",
     "visibility_ray_pairs",
     "visibility_rows_from_any_hit",
