@@ -29,15 +29,17 @@ class Goal835RtxBaselineCollectionPlanTest(unittest.TestCase):
         module = __import__("scripts.goal835_rtx_baseline_collection_plan", fromlist=["build_plan", "to_markdown"])
         payload = module.build_plan()
         self.assertEqual(payload["status"], "ok")
-        self.assertEqual(payload["active_count"], 5)
-        self.assertEqual(payload["deferred_count"], 3)
-        self.assertEqual(payload["row_count"], 8)
+        self.assertEqual(payload["active_count"], 8)
+        self.assertEqual(payload["deferred_count"], 9)
+        self.assertEqual(payload["row_count"], 17)
         self.assertIn("does not run benchmarks", payload["boundary"])
 
         markdown = module.to_markdown(payload)
         self.assertIn("database_analytics", markdown)
         self.assertIn("robot_collision_screening", markdown)
         self.assertIn("segment_polygon_hitcount", markdown)
+        self.assertIn("facility_knn_assignment", markdown)
+        self.assertIn("polygon_set_jaccard", markdown)
         self.assertIn("A public RTX speedup claim may not be made", markdown)
 
     def test_plan_rows_preserve_baseline_requirements(self) -> None:

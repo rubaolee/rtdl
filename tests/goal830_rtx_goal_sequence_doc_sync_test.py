@@ -31,7 +31,8 @@ class Goal830RtxGoalSequenceDocSyncTest(unittest.TestCase):
 
         self.assertIn("/Users/rl2025/rtdl_python_only/docs/rtx_cloud_single_session_runbook.md", text)
         self.assertIn("Goal824 local readiness first", text)
-        self.assertIn("one Goal769", text)
+        self.assertIn("run the OOM-safe groups", text)
+        self.assertIn("copy artifacts after every group", text)
 
     def test_two_ai_consensus_is_recorded_without_claiming_claude(self) -> None:
         text = CONSENSUS.read_text(encoding="utf-8")
