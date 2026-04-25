@@ -9,18 +9,18 @@ Package the existing local evidence for the two partial-ready spatial apps so th
 ## service_coverage_gaps
 
 - Performance class: `optix_traversal_prepared_summary`
-- Benchmark readiness: `needs_real_rtx_artifact`
-- Current maturity: `rt_core_partial_ready`
+- Benchmark readiness: `ready_for_rtx_claim_review`
+- Current maturity: `rt_core_ready`
 - Target maturity: `rt_core_ready`
 - Required OptiX mode: `gap_summary_prepared`
 - Claim scope: prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries
-- Promotion blocker: local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet
-- Promotion condition: real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion
+- Promotion blocker: Goal917 covers the bounded prepared gap-summary path only; row output, nearest-clinic output, and whole-app service-coverage optimization remain outside the claim
+- Promotion condition: real RTX optix-mode phase artifact has been reviewed for this bounded path; next step is claim-review packaging, not another per-app pod run
 
 Dry-run timings:
 
-- `input_build`: `1.0333023965358734e-05`
-- `cpu_reference_total`: `9.325006976723671e-05`
+- `input_build`: `1.537497155368328e-05`
+- `cpu_reference_total`: `0.00010408402886241674`
 
 Dry-run result keys:
 
@@ -43,8 +43,8 @@ Dry-run result keys:
 
 Dry-run timings:
 
-- `input_build`: `1.425005029886961e-05`
-- `cpu_reference_total`: `0.00016441696789115667`
+- `input_build`: `1.2458069249987602e-05`
+- `cpu_reference_total`: `0.00014458410441875458`
 
 Dry-run result keys:
 
@@ -54,5 +54,5 @@ Dry-run result keys:
 
 ## Boundary
 
-This packet proves local claim-path readiness and completed same-semantics baseline coverage only. It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim.
+This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed RTX artifact for its bounded gap-summary path; event hotspot remains held for same-scale baseline cleanup. The packet does not authorize a public RTX speedup claim.
 

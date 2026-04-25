@@ -6,19 +6,27 @@ from examples import rtdl_service_coverage_gaps as service_app
 
 
 class Goal819SpatialPreparedSummaryRtCoreGateTest(unittest.TestCase):
-    def test_spatial_apps_remain_partial_ready(self) -> None:
+    def test_spatial_apps_record_current_readiness(self) -> None:
         expected = {
-            "service_coverage_gaps": "gap_summary_prepared",
-            "event_hotspot_screening": "count_summary_prepared",
+            "service_coverage_gaps": (
+                "gap_summary_prepared",
+                "ready_for_rtx_claim_review",
+                "rt_core_ready",
+            ),
+            "event_hotspot_screening": (
+                "count_summary_prepared",
+                "needs_real_rtx_artifact",
+                "rt_core_partial_ready",
+            ),
         }
-        for app, mode in expected.items():
+        for app, (mode, readiness_status, maturity_status) in expected.items():
             with self.subTest(app=app):
                 self.assertEqual(
                     rt.optix_app_performance_support(app).performance_class,
                     "optix_traversal_prepared_summary",
                 )
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
-                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, readiness_status)
+                self.assertEqual(rt.rt_core_app_maturity(app).current_status, maturity_status)
                 self.assertIn(mode, rt.optix_app_performance_support(app).note)
 
     def test_require_rt_core_rejects_non_optix_backends(self) -> None:

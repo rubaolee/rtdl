@@ -180,20 +180,28 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("overflowed", segment["baseline_review_contract"]["required_phases"])
         self.assertIn("not default public app behavior", segment["non_claim"])
 
-    def test_deferred_spatial_entries_use_goal811_profiler(self):
+    def test_spatial_entries_use_goal811_profiler_with_current_readiness(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
             fromlist=["build_manifest"],
         ).build_manifest()
+        active = {entry["app"]: entry for entry in payload["entries"]}
         deferred = {entry["app"]: entry for entry in payload["deferred_entries"]}
-        for app in ("service_coverage_gaps", "event_hotspot_screening"):
-            with self.subTest(app=app):
-                self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", deferred[app]["command"])
-                self.assertIn("--mode", deferred[app]["command"])
-                self.assertIn("optix", deferred[app]["command"])
-                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_real_rtx_artifact")
-                self.assertIn("baseline_review_contract", deferred[app])
-                self.assertIn("prepared compact summary", deferred[app]["baseline_review_contract"]["claim_limit"])
+        service = active["service_coverage_gaps"]
+        self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", service["command"])
+        self.assertIn("--mode", service["command"])
+        self.assertIn("optix", service["command"])
+        self.assertEqual(service["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("baseline_review_contract", service)
+        self.assertIn("prepared compact summary", service["baseline_review_contract"]["claim_limit"])
+
+        hotspot = deferred["event_hotspot_screening"]
+        self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", hotspot["command"])
+        self.assertIn("--mode", hotspot["command"])
+        self.assertIn("optix", hotspot["command"])
+        self.assertEqual(hotspot["benchmark_readiness"], "needs_real_rtx_artifact")
+        self.assertIn("baseline_review_contract", hotspot)
+        self.assertIn("prepared compact summary", hotspot["baseline_review_contract"]["claim_limit"])
 
     def test_deferred_graph_entry_uses_goal889_gate(self):
         payload = __import__(

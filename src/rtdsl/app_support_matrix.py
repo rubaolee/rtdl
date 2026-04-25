@@ -465,11 +465,11 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "service_coverage_gaps": _readiness(
         "service_coverage_gaps",
-        NEEDS_REAL_RTX_ARTIFACT,
-        "Goal862",
-        "prepared gap-summary mode already has local dry-run and same-semantics baseline evidence; promotion now requires a real RTX optix-mode artifact reviewed against those local baselines",
-        "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
-        "bounded prepared gap-summary path only; no whole-app service-coverage speedup claim",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal917",
+        "prepared gap-summary mode has same-scale CPU/Embree baseline parity and a reviewed RTX phase artifact; public claims still require final claim-review packaging",
+        "Goal917 covers the bounded prepared gap-summary path only; row output, nearest-clinic output, and whole-app service-coverage optimization remain outside the claim",
+        "bounded prepared gap-summary path may enter claim review; no whole-app service-coverage speedup claim",
     ),
     "event_hotspot_screening": _readiness(
         "event_hotspot_screening",
@@ -626,10 +626,10 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     ),
     "service_coverage_gaps": _maturity(
         "service_coverage_gaps",
-        RT_CORE_PARTIAL_READY,
         RT_CORE_READY,
-        "Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
-        "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
+        RT_CORE_READY,
+        "Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim.",
+        "No new pod is needed for readiness; use the Goal917 artifact in claim-review packaging, and rerun only as part of a consolidated regression batch.",
     ),
     "event_hotspot_screening": _maturity(
         "event_hotspot_screening",

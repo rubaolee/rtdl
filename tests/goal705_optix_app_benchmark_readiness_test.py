@@ -18,7 +18,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
                 self.assertTrue(support.blocker.strip())
                 self.assertTrue(support.allowed_claim.strip())
 
-    def test_only_goal795_prepared_scalar_paths_enter_rtx_claim_review(self):
+    def test_only_reviewed_prepared_summary_paths_enter_rtx_claim_review(self):
         readiness = rt.optix_app_benchmark_readiness_matrix()
         ready = [
             app
@@ -28,6 +28,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         self.assertEqual(
             ready,
             [
+                "service_coverage_gaps",
                 "outlier_detection",
                 "dbscan_clustering",
                 "robot_collision_screening",
@@ -36,22 +37,29 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
 
     def test_goal795_prepared_scalar_candidates_are_bounded_ready(self):
         expected = {
+            "service_coverage_gaps": (
+                "bounded prepared gap-summary path",
+                "Goal917",
+            ),
             "robot_collision_screening": "prepared ray/triangle any-hit scalar pose-count sub-path",
             "outlier_detection": "prepared fixed-radius scalar threshold-count sub-path",
             "dbscan_clustering": "prepared fixed-radius core-threshold summary",
         }
-        for app, claim_phrase in expected.items():
+        for app, expected_value in expected.items():
             with self.subTest(app=app):
                 support = rt.optix_app_benchmark_readiness(app)
                 self.assertEqual(support.status, "ready_for_rtx_claim_review")
+                if isinstance(expected_value, tuple):
+                    claim_phrase, goal = expected_value
+                else:
+                    claim_phrase, goal = expected_value, "Goal795"
                 self.assertIn(claim_phrase, support.allowed_claim)
-                self.assertIn("Goal795", support.next_goal)
+                self.assertIn(goal, support.next_goal)
 
     def test_high_risk_or_non_optix_apps_are_not_benchmark_candidates(self):
         expected = {
             "database_analytics": "needs_interface_tuning",
             "graph_analytics": "needs_real_rtx_artifact",
-            "service_coverage_gaps": "needs_real_rtx_artifact",
             "event_hotspot_screening": "needs_real_rtx_artifact",
             "facility_knn_assignment": "needs_real_rtx_artifact",
             "road_hazard_screening": "needs_real_rtx_artifact",

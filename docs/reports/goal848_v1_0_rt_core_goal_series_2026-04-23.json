@@ -29,11 +29,11 @@
     },
     {
       "app": "service_coverage_gaps",
-      "benchmark_readiness": "needs_real_rtx_artifact",
-      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
-      "current_status": "rt_core_partial_ready",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "cloud_policy": "No new pod is needed for readiness; use the Goal917 artifact in claim-review packaging, and rerun only as part of a consolidated regression batch.",
+      "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "required_action": "Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
+      "required_action": "Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim.",
       "target_status": "rt_core_ready"
     },
     {
@@ -166,7 +166,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-24T19:37:38",
+  "generated_at": "2026-04-25T00:19:11",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
@@ -290,7 +290,7 @@
     "needs_redesign_or_new_surface": 0,
     "out_of_scope_for_nvidia_rt": 2,
     "public_app_count": 18,
-    "rt_core_partial_ready_now": 13,
-    "rt_core_ready_now": 3
+    "rt_core_partial_ready_now": 12,
+    "rt_core_ready_now": 4
   }
 }

@@ -3,8 +3,8 @@
     {
       "app": "service_coverage_gaps",
       "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries",
-      "cloud_policy": "Cloud only after local profiler/baseline packaging is complete, and then only as a bounded RTX artifact batch; do not restart paid pods per app.",
-      "current_maturity": "rt_core_partial_ready",
+      "cloud_policy": "No new pod is needed for readiness; use the Goal917 artifact in claim-review packaging, and rerun only as part of a consolidated regression batch.",
+      "current_maturity": "rt_core_ready",
       "local_dry_run_result": {
         "clinic_count": 3,
         "covered_household_count": 3,
@@ -15,16 +15,16 @@
         ]
       },
       "local_dry_run_timings_sec": {
-        "cpu_reference_total": 9.325006976723671e-05,
-        "input_build": 1.0333023965358734e-05
+        "cpu_reference_total": 0.00010408402886241674,
+        "input_build": 1.537497155368328e-05
       },
       "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
       "performance_class": "optix_traversal_prepared_summary",
-      "promotion_blocker": "local phase-contract and required baseline work are complete, but no real RTX phase artifact has been recorded for this app yet",
-      "promotion_condition": "real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion",
-      "readiness_status": "needs_real_rtx_artifact",
+      "promotion_blocker": "Goal917 covers the bounded prepared gap-summary path only; row output, nearest-clinic output, and whole-app service-coverage optimization remain outside the claim",
+      "promotion_condition": "real RTX optix-mode phase artifact has been reviewed for this bounded path; next step is claim-review packaging, not another per-app pod run",
+      "readiness_status": "ready_for_rtx_claim_review",
       "require_rt_core_mode": "gap_summary_prepared",
-      "required_action": "Keep the prepared OptiX gap-summary path bounded, then collect and review a real RTX phase artifact against the completed local baseline set before any claim.",
+      "required_action": "Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim.",
       "target_maturity": "rt_core_ready"
     },
     {
@@ -55,8 +55,8 @@
         ]
       },
       "local_dry_run_timings_sec": {
-        "cpu_reference_total": 0.00016441696789115667,
-        "input_build": 1.425005029886961e-05
+        "cpu_reference_total": 0.00014458410441875458,
+        "input_build": 1.2458069249987602e-05
       },
       "next_goal": "Goal862 focused RTX artifact packet -> future RTX run",
       "performance_class": "optix_traversal_prepared_summary",
@@ -68,9 +68,9 @@
       "target_maturity": "rt_core_ready"
     }
   ],
-  "boundary": "This packet proves local claim-path readiness and completed same-semantics baseline coverage only. It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim.",
+  "boundary": "This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed RTX artifact for its bounded gap-summary path; event hotspot remains held for same-scale baseline cleanup. The packet does not authorize a public RTX speedup claim.",
   "date": "2026-04-23",
-  "generated_at": "2026-04-23T21:50:39",
+  "generated_at": "2026-04-25T00:19:11",
   "goal": "Goal849 spatial prepared-summary promotion packet",
   "ready_for_local_promotion_packet": true,
   "ready_for_rtx_claim_review_now": false

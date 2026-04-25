@@ -38,6 +38,15 @@ def _scenario_packet(app: str) -> dict[str, object]:
     readiness = rt.optix_app_benchmark_readiness(app)
     maturity = rt.rt_core_app_maturity(app)
     performance = rt.optix_app_performance_support(app)
+    if readiness.status == "ready_for_rtx_claim_review":
+        promotion_condition = (
+            "real RTX optix-mode phase artifact has been reviewed for this bounded path; "
+            "next step is claim-review packaging, not another per-app pod run"
+        )
+    else:
+        promotion_condition = (
+            "real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion"
+        )
     return {
         "app": app,
         "performance_class": performance.performance_class,
@@ -51,9 +60,7 @@ def _scenario_packet(app: str) -> dict[str, object]:
         "local_dry_run_timings_sec": dry_run["scenario"]["timings_sec"],
         "local_dry_run_result": dry_run["scenario"]["result"],
         "promotion_blocker": readiness.blocker,
-        "promotion_condition": (
-            "real RTX optix-mode phase artifact must exist and be reviewed before readiness or maturity promotion"
-        ),
+        "promotion_condition": promotion_condition,
         "next_goal": SCENARIOS[app]["next_goal"],
     }
 
@@ -68,8 +75,9 @@ def build_packet() -> dict[str, object]:
         "ready_for_local_promotion_packet": True,
         "ready_for_rtx_claim_review_now": False,
         "boundary": (
-            "This packet proves local claim-path readiness and completed same-semantics baseline coverage only. "
-            "It does not promote either app to ready_for_rtx_claim_review and does not authorize a public RTX speedup claim."
+            "This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed "
+            "RTX artifact for its bounded gap-summary path; event hotspot remains held for same-scale baseline "
+            "cleanup. The packet does not authorize a public RTX speedup claim."
         ),
     }
 
