@@ -55,7 +55,9 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertFalse(payload["rt_core_accelerated"])
         self.assertEqual(payload["sections"]["bfs"]["summary"]["discovered_edge_count"], 4)
         self.assertEqual(payload["sections"]["triangle_count"]["summary"]["triangle_count"], 2)
-        self.assertEqual(payload["sections"]["visibility_edges"]["summary"]["visible_edge_count"], 7)
+        self.assertEqual(payload["sections"]["visibility_edges"]["row_count"], 8)
+        self.assertEqual(payload["sections"]["visibility_edges"]["summary"]["visible_edge_count"], 2)
+        self.assertEqual(payload["sections"]["visibility_edges"]["summary"]["blocked_edge_count"], 6)
 
     def test_visibility_edges_is_only_require_rt_core_graph_candidate(self) -> None:
         payload = rtdl_graph_analytics_app.run_app(
@@ -67,6 +69,30 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         self.assertEqual(payload["sections"]["visibility_edges"]["row_count"], 4)
         self.assertIn("visibility_edges is an OptiX", payload["honesty_boundary"])
         self.assertIn("native graph-ray mode remains gated", payload["honesty_boundary"])
+
+    def test_optix_visibility_edges_top_level_marks_rt_core_candidate(self) -> None:
+        from unittest import mock
+
+        fake_section = {
+            "app": "graph_visibility_edges",
+            "backend": "optix",
+            "copies": 1,
+            "output_mode": "summary",
+            "row_count": 4,
+            "rows": [],
+            "summary": {"visible_edge_count": 1, "blocked_edge_count": 3},
+            "rt_core_accelerated": True,
+        }
+        with mock.patch.object(rtdl_graph_analytics_app, "_run_visibility_edges", return_value=fake_section):
+            payload = rtdl_graph_analytics_app.run_app(
+                "optix",
+                "visibility_edges",
+                output_mode="summary",
+                require_rt_core=True,
+            )
+
+        self.assertTrue(payload["rt_core_accelerated"])
+        self.assertTrue(payload["ray_tracing_accelerated"])
 
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
         result = subprocess.run(

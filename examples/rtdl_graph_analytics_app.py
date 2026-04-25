@@ -179,7 +179,7 @@ def run_app(
             "but only visibility_edges is a current RT-core claim until cloud "
             "validation promotes the graph-ray path."
         ),
-        "rt_core_accelerated": False,
+        "rt_core_accelerated": backend == "optix" and scenario == "visibility_edges",
         "honesty_boundary": (
             "Unified app over bounded graph kernels. Embree BFS and triangle_count "
             "use CPU ray-tracing traversal for candidate generation. Only "
