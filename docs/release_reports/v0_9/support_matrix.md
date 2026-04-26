@@ -7,7 +7,7 @@ Status: `v0.9.1` released
 Public status note: this file is the historical `v0.9.0`/`v0.9.1` support
 matrix. Later Apple RT candidate work described below as `v0.9.2` was not
 tagged separately; it was absorbed into the released `v0.9.4` consolidation.
-For the current public release boundary, use `../v0_9_5/support_matrix.md`.
+For the current public release boundary, use `../v0_9_6/support_matrix.md`.
 
 ## Scope
 
