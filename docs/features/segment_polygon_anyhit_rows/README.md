@@ -58,10 +58,10 @@ python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mod
 ```
 
 That command uses the bounded native OptiX pair-row emitter. The bound matters:
-overflow fails rather than silently truncating rows. Goal873 added the strict RTX gate
-for promotion, so this is an explicit native traversal path but not a released
-speedup claim until a real RTX artifact proves CPU row-digest parity and zero
-overflow.
+overflow fails rather than silently truncating rows. Goal934 added the prepared
+bounded pair-row profiler, and Goal969 supplied the real RTX artifact with
+row-digest parity and zero overflow for the reviewed output capacity. This is
+an explicit native traversal path, not an unbounded row-volume speedup claim.
 
 Claim-sensitive boundary:
 
@@ -70,8 +70,8 @@ python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mod
 ```
 
 That command enforces the explicit native pair-row traversal path. It does not
-authorize a speedup claim; the cloud/review gate still has to validate the
-artifact before docs may promote performance.
+authorize a speedup claim; public wording must stay limited to the reviewed
+bounded pair-row traversal capacity.
 
 ## Best Practices
 
@@ -98,8 +98,8 @@ artifact before docs may promote performance.
 
 - row materialization can be heavier than aggregated counting if you only need counts
 - current geometry path is float-based
-- explicit OptiX native bounded pair-row output exists for rows mode, but it is
-  still behind the Goal873 strict RTX artifact gate for speedup promotion
-- released OptiX RT-core speedup claims are still blocked until the strict gate
-  has a real RTX artifact and independent review
+- explicit OptiX native bounded pair-row output exists for rows mode, and the
+  Goal969 artifact makes the prepared bounded path ready for claim review
+- broad or unbounded OptiX RT-core speedup claims remain blocked until a later
+  same-semantics performance review authorizes them
 - strongest evidence remains on the accepted Linux/PostGIS validation surface

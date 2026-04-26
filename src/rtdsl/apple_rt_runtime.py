@@ -255,6 +255,7 @@ def _apple_rt_support_notes(predicate_name: str) -> dict[str, object]:
 
 
 class _RtdlRay3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -269,6 +270,7 @@ class _RtdlRay3D(ctypes.Structure):
 
 
 class _RtdlTriangle3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -285,6 +287,7 @@ class _RtdlTriangle3D(ctypes.Structure):
 
 
 class _RtdlRay2D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -297,6 +300,7 @@ class _RtdlRay2D(ctypes.Structure):
 
 
 class _RtdlTriangle2D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -310,6 +314,7 @@ class _RtdlTriangle2D(ctypes.Structure):
 
 
 class _RtdlPoint2D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -319,6 +324,7 @@ class _RtdlPoint2D(ctypes.Structure):
 
 
 class _RtdlPoint3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),

@@ -28,4 +28,3 @@ required fixes in
 This consensus does not claim that RTDL now accelerates ranked KNN assignment,
 nearest-depot ordering, K=3 fallback assignment, or facility-location
 optimization on NVIDIA RT cores.
-

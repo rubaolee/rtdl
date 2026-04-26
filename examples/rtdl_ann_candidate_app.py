@@ -168,11 +168,7 @@ def evaluate_approximation(
 
 
 def _approximate_summary(rows: tuple[dict[str, object], ...]) -> dict[str, object]:
-    return {
-        "approximate_row_count": len(rows),
-        "query_count_with_candidate": len({int(row["query_id"]) for row in rows}),
-        "max_neighbor_rank": max((int(row["neighbor_rank"]) for row in rows), default=0),
-    }
+    return rt.summarize_knn_rows(rows)
 
 
 def candidate_threshold_oracle(
@@ -193,6 +189,31 @@ def candidate_threshold_oracle(
         "radius": radius,
         "query_count": len(query_points),
         "covered_query_count": len(query_points) - len(uncovered),
+        "within_candidate_radius": not uncovered,
+        "uncovered_query_ids": uncovered,
+    }
+
+
+def expected_tiled_candidate_threshold(*, copies: int, radius: float) -> dict[str, object]:
+    """Exact threshold summary for make_ann_case without cross-copy expansion."""
+    if copies < 1:
+        raise ValueError("copies must be at least 1")
+    base = make_ann_case(copies=1)
+    base_oracle = candidate_threshold_oracle(
+        base["query_points"],
+        base["candidate_points"],
+        radius=radius,
+    )
+    base_uncovered = tuple(int(query_id) for query_id in base_oracle["uncovered_query_ids"])
+    uncovered: list[int] = []
+    for copy_index in range(copies):
+        id_offset = 1000 * copy_index
+        uncovered.extend(query_id + id_offset for query_id in base_uncovered)
+    query_count = int(base_oracle["query_count"]) * copies
+    return {
+        "radius": radius,
+        "query_count": query_count,
+        "covered_query_count": query_count - len(uncovered),
         "within_candidate_radius": not uncovered,
         "uncovered_query_ids": uncovered,
     }
@@ -226,8 +247,18 @@ def _run_optix_candidate_threshold(
     radius: float,
 ) -> dict[str, object]:
     with rt.prepare_optix_fixed_radius_count_threshold_2d(case["candidate_points"], max_radius=radius) as prepared:
-        rows = tuple(prepared.run(case["query_points"], radius=radius, threshold=1))
-    return _candidate_threshold_from_count_rows(rows, query_points=case["query_points"], radius=radius)
+        covered_count = prepared.count_threshold_reached(case["query_points"], radius=radius, threshold=1)
+    within_candidate_radius = int(covered_count) == len(case["query_points"])
+    return {
+        "radius": radius,
+        "query_count": len(case["query_points"]),
+        "covered_query_count": int(covered_count),
+        "within_candidate_radius": within_candidate_radius,
+        "uncovered_query_ids": [] if within_candidate_radius else None,
+        "identity_parity_available": within_candidate_radius,
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+    }
 
 
 def run_app(
@@ -267,8 +298,13 @@ def run_app(
             "candidate_count": len(case["candidate_points"]),
             "candidate_threshold": coverage,
             "oracle_candidate_threshold": oracle,
-            "matches_oracle": coverage["within_candidate_radius"] == oracle["within_candidate_radius"]
-            and coverage["uncovered_query_ids"] == oracle["uncovered_query_ids"],
+            "matches_oracle": coverage["within_candidate_radius"] == oracle["within_candidate_radius"],
+            "oracle_decision_matches": coverage["within_candidate_radius"] == oracle["within_candidate_radius"],
+            "oracle_identity_matches": (
+                coverage["uncovered_query_ids"] == oracle["uncovered_query_ids"]
+                if coverage["identity_parity_available"]
+                else None
+            ),
             "rtdl_role": (
                 "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
                 "the bounded ANN candidate-coverage decision: every query has at "
@@ -296,6 +332,8 @@ def run_app(
         "search_count": len(case["search_points"]),
         "candidate_count": len(case["candidate_points"]),
         **_approximate_summary(approximate_rows),
+        "native_continuation_active": True,
+        "native_continuation_backend": "oracle_cpp",
         "rtdl_role": "RTDL emits k=1 nearest-neighbor rows for candidate-subset kNN reranking over a Python-selected candidate subset; Python evaluates approximation quality against exact search.",
         "optix_performance": _optix_performance(),
         "rt_core_accelerated": False,

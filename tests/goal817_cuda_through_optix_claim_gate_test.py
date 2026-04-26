@@ -25,8 +25,8 @@ class Goal817CudaThroughOptixClaimGateTest(unittest.TestCase):
                     rt.optix_app_performance_support(app).performance_class,
                     "optix_traversal_prepared_summary",
                 )
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
-                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "ready_for_rtx_claim_review")
+                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_ready")
 
     def test_require_rt_core_rejects_default_optix_row_paths(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "directed_threshold_prepared"):

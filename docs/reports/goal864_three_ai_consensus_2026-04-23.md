@@ -24,4 +24,3 @@ Evidence:
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal864_codex_review_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal864_claude_external_review_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal864_gemini_strong_review_2026-04-23.md`
-

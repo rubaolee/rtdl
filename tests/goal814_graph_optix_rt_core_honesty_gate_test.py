@@ -24,11 +24,11 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
         )
         self.assertEqual(
             rt.optix_app_benchmark_readiness("graph_analytics").status,
-            "needs_real_rtx_artifact",
+            "ready_for_rtx_claim_review",
         )
         self.assertEqual(
             rt.rt_core_app_maturity("graph_analytics").current_status,
-            "rt_core_partial_ready",
+            "rt_core_ready",
         )
 
     def test_graph_app_require_rt_core_fails_before_running_optix(self) -> None:
@@ -93,6 +93,62 @@ class Goal814GraphOptixRtCoreHonestyGateTest(unittest.TestCase):
 
         self.assertTrue(payload["rt_core_accelerated"])
         self.assertTrue(payload["ray_tracing_accelerated"])
+
+    def test_optix_visibility_summary_uses_prepared_anyhit_count_not_row_materialization(self) -> None:
+        from unittest import mock
+
+        class FakePreparedScene:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return None
+
+            def count(self, prepared_rays):
+                return 6
+
+        class FakePreparedRays:
+            def __init__(self, rays):
+                self.rays = rays
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return None
+
+        with (
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "prepare_optix_ray_triangle_any_hit_2d",
+                return_value=FakePreparedScene(),
+            ) as prepare_scene,
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "prepare_optix_rays_2d",
+                side_effect=lambda rays: FakePreparedRays(rays),
+            ) as prepare_rays,
+            mock.patch.object(
+                rtdl_graph_analytics_app.rt,
+                "visibility_pair_rows",
+                side_effect=AssertionError("summary mode should not materialize visibility rows"),
+            ),
+        ):
+            payload = rtdl_graph_analytics_app.run_app(
+                "optix",
+                "visibility_edges",
+                copies=2,
+                output_mode="summary",
+                require_rt_core=True,
+            )
+
+        section = payload["sections"]["visibility_edges"]
+        self.assertEqual(section["row_count"], 8)
+        self.assertEqual(section["summary"], {"visible_edge_count": 2, "blocked_edge_count": 6})
+        self.assertEqual(section["native_continuation_backend"], "optix_prepared_visibility_anyhit_count")
+        self.assertTrue(section["native_continuation_active"])
+        self.assertEqual(len(prepare_rays.call_args.args[0]), 8)
+        prepare_scene.assert_called_once()
 
     def test_cli_require_rt_core_exits_nonzero_without_optix_library(self) -> None:
         result = subprocess.run(

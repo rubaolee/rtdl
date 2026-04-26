@@ -26,12 +26,22 @@ class Goal803RtCoreAppMaturityContractTest(unittest.TestCase):
         self.assertEqual(
             ready,
             [
+                "database_analytics",
+                "graph_analytics",
                 "service_coverage_gaps",
                 "event_hotspot_screening",
                 "facility_knn_assignment",
+                "road_hazard_screening",
+                "segment_polygon_hitcount",
+                "segment_polygon_anyhit_rows",
+                "polygon_pair_overlap_area_rows",
+                "polygon_set_jaccard",
+                "hausdorff_distance",
+                "ann_candidate_search",
                 "outlier_detection",
                 "dbscan_clustering",
                 "robot_collision_screening",
+                "barnes_hut_force_app",
             ],
         )
         partial = {
@@ -39,8 +49,7 @@ class Goal803RtCoreAppMaturityContractTest(unittest.TestCase):
             for app, row in maturity.items()
             if row.current_status == "rt_core_partial_ready"
         }
-        self.assertIn("ann_candidate_search", partial)
-        self.assertIn("barnes_hut_force_app", partial)
+        self.assertEqual(partial, set())
 
     def test_every_general_app_targets_rt_core_or_is_engine_specific(self) -> None:
         for app, row in rt.rt_core_app_maturity_matrix().items():

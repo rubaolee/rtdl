@@ -17,7 +17,7 @@ This is a bounded synthetic benchmark, not yet an exact-source RayJoin-family GP
 
 ## Performance Results
 
-Workload: **Point-in-Polygon (PIP)**  
+Workload: **Point-in-Polygon (PIP)**
 Dataset: **US County Feature Layer** (Staged) + Synthetic Points
 
 | Metric | Scale: Smoke (10 features) | Scale: Med (250 features) |

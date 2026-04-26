@@ -9,7 +9,7 @@ Yes, Goal 259 is the correct first concrete v0.5 design goal. It is technically 
 
 ### Risks
 *   **Naming Confusion:** The design suggests keeping workload names stable (`knn_rows`, `fixed_radius_neighbors`) unless the contract changes materially. When the bounded-radius KNN semantics are eventually introduced (as required by the gap summary), distinguishing between the 3D version of the old `knn_rows` contract and the new paper-consistent contract could cause API confusion if not documented meticulously.
-*   **Coercion and Normalization Complexity:** `src/rtdsl/runtime.py` currently handles input coercion cleanly for 2D. Adding 3D points will require careful handling in `_normalize_records` and `_coerce_point` to ensure that 2D records aren't accidentally coerced into 3D (or vice versa) and that the CPU simulator cleanly routes to the correct reference functions without performance regression for 2D paths. 
+*   **Coercion and Normalization Complexity:** `src/rtdsl/runtime.py` currently handles input coercion cleanly for 2D. Adding 3D points will require careful handling in `_normalize_records` and `_coerce_point` to ensure that 2D records aren't accidentally coerced into 3D (or vice versa) and that the CPU simulator cleanly routes to the correct reference functions without performance regression for 2D paths.
 *   **Simulator Divergence:** `run_cpu` currently prevents 3D execution for rays and triangles, redirecting them to `run_cpu_python_reference`. The 3D point implementations must navigate this existing split carefully so they are testable within the oracle framework.
 
 ### Conclusion

@@ -67,13 +67,18 @@ def _scenario_packet(app: str) -> dict[str, object]:
 
 def build_packet() -> dict[str, object]:
     apps = [_scenario_packet(app) for app in SCENARIOS]
+    ready_now = all(
+        app["readiness_status"] == "ready_for_rtx_claim_review"
+        and app["current_maturity"] == "rt_core_ready"
+        for app in apps
+    )
     return {
         "goal": GOAL,
         "date": DATE,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "apps": apps,
         "ready_for_local_promotion_packet": True,
-        "ready_for_rtx_claim_review_now": False,
+        "ready_for_rtx_claim_review_now": ready_now,
         "boundary": (
             "This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed "
             "RTX artifact for its bounded gap-summary path; event hotspot now has a reviewed RTX artifact and "

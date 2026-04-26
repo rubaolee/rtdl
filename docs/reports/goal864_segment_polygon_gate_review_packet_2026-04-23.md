@@ -24,4 +24,3 @@
 ## Boundary
 
 This packet interprets a Goal807 gate artifact only. It does not promote segment/polygon to an active RTX claim path and does not authorize a public speedup claim.
-

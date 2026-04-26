@@ -158,4 +158,3 @@ nearest-hit design that made Goal597 exact can be applied to segment
 intersection. The likely benefit is lower AS-build overhead, not a guaranteed
 dense-case dispatch reduction. If implementation fails parity or does not
 improve the measured median, keep the current path and record a technical stop.
-

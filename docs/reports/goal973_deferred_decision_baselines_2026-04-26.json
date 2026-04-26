@@ -1,0 +1,31 @@
+{
+  "apps": [
+    "facility_knn_assignment"
+  ],
+  "artifact_count": 2,
+  "artifacts": [
+    {
+      "app": "facility_knn_assignment",
+      "baseline_name": "cpu_oracle_same_semantics",
+      "path_name": "coverage_threshold_prepared",
+      "source_backend": "cpu_oracle",
+      "status": "ok",
+      "summary_sha256": "1558ef6515f8b8a5289b0ceaf7ac2ffc7c3df4a20d0e147797adfde9c85fc4b4"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "baseline_name": "best_available_non_optix_backend_same_semantics",
+      "path_name": "coverage_threshold_prepared",
+      "source_backend": "embree",
+      "status": "ok",
+      "summary_sha256": "1558ef6515f8b8a5289b0ceaf7ac2ffc7c3df4a20d0e147797adfde9c85fc4b4"
+    }
+  ],
+  "body_count": 4096,
+  "boundary": "These are local same-semantics baseline artifacts for deferred decision rows. They do not authorize RTX speedup claims.",
+  "copies": 20000,
+  "date": "2026-04-26",
+  "goal": "Goal973 deferred decision baseline collector",
+  "repeats": 10,
+  "status": "ok"
+}

@@ -1,85 +1,62 @@
 # Goal862 Spatial RTX Collection Packet
 
-Date: 2026-04-23
+This packet requests real RTX collection only for the two spatial prepared-summary apps. It does not promote them automatically and does not authorize a public speedup claim.
 
-## Purpose
+## Summary
 
-Goal862 packages the next real NVIDIA step for the two spatial prepared-summary
-apps:
+- source Goal860 status: `ready_for_review`
+- rows packaged: `2`
 
-- `service_coverage_gaps`
-- `event_hotspot_screening`
-
-After Goal861, both apps are baseline-complete locally and blocked only on real
-RTX artifact collection. This goal turns that state into a replayable packet
-instead of leaving it as an informal note.
-
-## Changed Files
-
-- `/Users/rl2025/rtdl_python_only/scripts/goal862_spatial_rtx_collection_packet.py`
-- `/Users/rl2025/rtdl_python_only/tests/goal862_spatial_rtx_collection_packet_test.py`
-
-## What The Packet Contains
-
-For each app, the packet records:
-
-- current gate status from Goal860
-- required local baselines and their artifact paths
-- optional local SciPy baseline status
-- exact deferred RTX command from Goal759
-- exact expected RTX output artifact path
-- claim scope and non-claim wording
-- activation gate wording
-
-It also emits a focused one-shot runner example:
+## One-Shot Runner Example
 
 ```bash
-python3 scripts/goal769_rtx_pod_one_shot.py \
-  --only service_coverage_gaps \
-  --only event_hotspot_screening \
-  --include-deferred
+python3 scripts/goal769_rtx_pod_one_shot.py --only service_coverage_gaps --only event_hotspot_screening --include-deferred
 ```
 
-## Boundary
+## App Packets
 
-This packet does not:
+### event_hotspot_screening / prepared_count_summary
 
-- collect the RTX artifacts itself
-- promote either app automatically
-- authorize a public speedup claim
+- gate status: `ready_for_review`
+- claim scope: prepared OptiX fixed-radius count traversal for hotspot summaries
+- non-claim: not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim
+- claim limit: prepared compact summary only; not nearest-row or whole-app speedup
+- RTX output artifact: `docs/reports/goal811_event_hotspot_rtx.json`
 
-It only packages the exact next RTX collection request now that the local
-baseline side is complete.
+Required local baselines:
+- `cpu_oracle_summary`: `valid` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json`
+- `embree_summary_path`: `valid` at `/Users/rl2025/rtdl_python_only/docs/reports/goal919_event_hotspot_same_scale_embree_baseline_2026-04-25.json`
 
-## Verification
+Optional local baselines:
+- `scipy_baseline_when_available`: `missing` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json`
 
-```text
-PYTHONPATH=src:. python3 -m unittest \
-  tests.goal862_spatial_rtx_collection_packet_test \
-  tests.goal860_spatial_partial_ready_gate_test \
-  tests.goal859_spatial_summary_baseline_test
+RTX command:
+```bash
+python3 scripts/goal811_spatial_optix_summary_phase_profiler.py --scenario event_hotspot_screening --mode optix --copies 20000 --output-json docs/reports/goal811_event_hotspot_rtx.json
 ```
 
-Result:
+- reason deferred: active after artifact intake
+- activation gate: already active after artifact intake
 
-```text
-Ran 11 tests
-OK
+### service_coverage_gaps / prepared_gap_summary
+
+- gate status: `ready_for_review`
+- claim scope: prepared OptiX fixed-radius threshold traversal for coverage-gap summaries
+- non-claim: not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim
+- claim limit: prepared compact summary only; not nearest-row or whole-app speedup
+- RTX output artifact: `docs/reports/goal811_service_coverage_rtx.json`
+
+Required local baselines:
+- `cpu_oracle_summary`: `valid` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json`
+- `embree_summary_path`: `valid` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json`
+
+Optional local baselines:
+- `scipy_baseline_when_available`: `missing` at `/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json`
+
+RTX command:
+```bash
+python3 scripts/goal811_spatial_optix_summary_phase_profiler.py --scenario service_coverage_gaps --mode optix --copies 20000 --output-json docs/reports/goal811_service_coverage_rtx.json
 ```
 
-Additional local checks:
-
-```text
-python3 -m py_compile \
-  scripts/goal862_spatial_rtx_collection_packet.py \
-  tests/goal862_spatial_rtx_collection_packet_test.py
-
-git diff --check
-```
-
-Both passed.
-
-## Verdict
-
-Goal862 is complete locally. The next step for the spatial prepared-summary pair
-is now a precise RTX collection run, not more local baseline or gate work.
+- reason deferred: active after artifact intake
+- activation gate: already active after artifact intake

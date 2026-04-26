@@ -20,10 +20,10 @@ Read these in order for the current public story:
 9. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
 10. [Release-Facing Examples](release_facing_examples.md)
 11. [Application Catalog](application_catalog.md)
-12. [App Engine Support Matrix](app_engine_support_matrix.md)
-13. [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
-14. [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
-15. [v0.8 App Building And ITRE Model](tutorials/v0_8_app_building.md)
+12. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+13. [App Engine Support Matrix](app_engine_support_matrix.md)
+14. [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
+15. [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -74,6 +74,7 @@ audited release claims.
 - [Capability Boundaries](capability_boundaries.md)
 - [Backend Maturity](backend_maturity.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
+- [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 - [Application Catalog](application_catalog.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [RTDL Tutorials](tutorials/README.md)

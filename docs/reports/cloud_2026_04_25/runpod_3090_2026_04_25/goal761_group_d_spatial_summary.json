@@ -1,0 +1,178 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 3,
+  "failed_count": 0,
+  "git_head": "7f569829fbad00f9bfa58e758b0fc4ee0324b410",
+  "git_status_short": "M docs/reports/goal759_db_regional_dashboard_rtx.json\n M docs/reports/goal759_db_sales_risk_rtx.json\n M docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json\n M docs/reports/goal759_robot_pose_flags_phase_rtx.json\n?? docs/reports/goal761_group_a_robot_summary.json\n?? docs/reports/goal761_group_b_fixed_radius_summary.json\n?? docs/reports/goal761_group_c_database_summary.json\n?? docs/reports/goal763_rtx_cloud_bootstrap_check.json\n?? docs/reports/goal811_event_hotspot_rtx.json\n?? docs/reports/goal811_service_coverage_rtx.json\n?? docs/reports/goal887_facility_service_coverage_rtx.json",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sat Apr 25 05:50:05 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 3090        On  |   00000000:61:00.0 Off |                  N/A |\n| 30%   40C    P2            115W /  350W |     266MiB /  24576MiB |      7%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl_python_only",
+  "results": [
+    {
+      "app": "service_coverage_gaps",
+      "baseline_review_contract": {
+        "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+        "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_summary",
+          "embree_summary_path",
+          "scipy_baseline_when_available"
+        ],
+        "required_phases": [
+          "input_build",
+          "optix_prepare",
+          "optix_query",
+          "python_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
+      "manifest_section": "entries",
+      "non_claim": "not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim",
+      "path_name": "prepared_gap_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+          "--scenario",
+          "service_coverage_gaps",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-json",
+          "docs/reports/goal811_service_coverage_rtx.json"
+        ],
+        "elapsed_sec": 2.011214187834412,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T05:49:57+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal811_service_coverage_rtx.json\", \"scenario\": \"service_coverage_gaps\"}\n"
+      }
+    },
+    {
+      "app": "event_hotspot_screening",
+      "baseline_review_contract": {
+        "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+        "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_summary",
+          "embree_summary_path",
+          "scipy_baseline_when_available"
+        ],
+        "required_phases": [
+          "input_build",
+          "optix_prepare",
+          "optix_query",
+          "python_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot summaries",
+      "manifest_section": "entries",
+      "non_claim": "not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+      "path_name": "prepared_count_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+          "--scenario",
+          "event_hotspot_screening",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-json",
+          "docs/reports/goal811_event_hotspot_rtx.json"
+        ],
+        "elapsed_sec": 2.5362054468132555,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T05:49:59+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal811_event_hotspot_rtx.json\", \"scenario\": \"event_hotspot_screening\"}\n"
+      }
+    },
+    {
+      "app": "facility_knn_assignment",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+      "manifest_section": "entries",
+      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+      "path_name": "coverage_threshold_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "facility_service_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--radius",
+          "1.0",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal887_facility_service_coverage_rtx.json"
+        ],
+        "elapsed_sec": 2.089188056997955,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T05:50:02+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal887_facility_service_coverage_rtx.json\", \"scenario\": \"facility_service_coverage\"}\n"
+      }
+    }
+  ],
+  "source_commit": "7f569829fbad00f9bfa58e758b0fc4ee0324b410",
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-25T05:50:04+0000",
+  "unique_command_count": 3
+}

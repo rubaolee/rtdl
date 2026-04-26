@@ -29,31 +29,37 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
         self.assertEqual(payload["optix_performance"]["class"], "python_interface_dominated")
         self.assertIn("not SQL", payload["honesty_boundary"])
 
-    def test_segment_polygon_apps_expose_host_indexed_optix_classification(self) -> None:
+    def test_segment_polygon_apps_expose_current_optix_classification(self) -> None:
         cases = (
-            ("examples/rtdl_road_hazard_screening.py", ("--backend", "cpu_python_reference")),
-            ("examples/rtdl_segment_polygon_hitcount.py", ("--backend", "cpu_python_reference")),
-            ("examples/rtdl_segment_polygon_anyhit_rows.py", ("--backend", "cpu_python_reference")),
+            ("examples/rtdl_road_hazard_screening.py", ("--backend", "cpu_python_reference"), "optix_traversal_prepared_summary"),
+            ("examples/rtdl_segment_polygon_hitcount.py", ("--backend", "cpu_python_reference"), "optix_traversal_prepared_summary"),
+            ("examples/rtdl_segment_polygon_anyhit_rows.py", ("--backend", "cpu_python_reference"), "optix_traversal"),
         )
-        for script, extra_args in cases:
+        for script, extra_args, expected_class in cases:
             with self.subTest(script=script):
                 payload = run_json(script, *extra_args)
-                self.assertEqual(payload["optix_performance"]["class"], "host_indexed_fallback")
-                self.assertIn("RT-core performance", payload["boundary"])
+                self.assertEqual(payload["optix_performance"]["class"], expected_class)
+                self.assertTrue(
+                    "RT-core performance" in payload["boundary"]
+                    or "true traversal path" in payload["boundary"]
+                )
 
-    def test_graph_apps_expose_host_indexed_optix_classification(self) -> None:
+    def test_graph_apps_expose_current_optix_classification(self) -> None:
         cases = (
-            ("examples/rtdl_graph_analytics_app.py", ("--backend", "cpu_python_reference", "--output-mode", "summary")),
-            ("examples/rtdl_graph_bfs.py", ("--backend", "cpu_python_reference", "--output-mode", "summary")),
-            ("examples/rtdl_graph_triangle_count.py", ("--backend", "cpu_python_reference", "--output-mode", "summary")),
+            ("examples/rtdl_graph_analytics_app.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "optix_traversal"),
+            ("examples/rtdl_graph_bfs.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "host_indexed_fallback"),
+            ("examples/rtdl_graph_triangle_count.py", ("--backend", "cpu_python_reference", "--output-mode", "summary"), "host_indexed_fallback"),
         )
-        for script, extra_args in cases:
+        for script, extra_args, expected_class in cases:
             with self.subTest(script=script):
                 payload = run_json(script, *extra_args)
-                self.assertEqual(payload["optix_performance"]["class"], "host_indexed_fallback")
-                self.assertIn("not", payload["optix_performance"]["note"].lower())
+                self.assertEqual(payload["optix_performance"]["class"], expected_class)
+                if expected_class == "optix_traversal":
+                    self.assertIn("default remains", payload["optix_performance"]["note"].lower())
+                else:
+                    self.assertIn("not", payload["optix_performance"]["note"].lower())
 
-    def test_spatial_compute_apps_expose_cuda_through_optix_classification(self) -> None:
+    def test_spatial_compute_apps_expose_prepared_summary_classification(self) -> None:
         cases = (
             ("examples/rtdl_hausdorff_distance_app.py", ("--backend", "cpu_python_reference")),
             ("examples/rtdl_ann_candidate_app.py", ("--backend", "cpu_python_reference", "--output-mode", "rerank_summary")),
@@ -62,9 +68,9 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
         for script, extra_args in cases:
             with self.subTest(script=script):
                 payload = run_json(script, *extra_args)
-                self.assertEqual(payload["optix_performance"]["class"], "cuda_through_optix")
+                self.assertEqual(payload["optix_performance"]["class"], "optix_traversal_prepared_summary")
                 note = payload["optix_performance"]["note"].lower()
-                self.assertTrue("cuda" in note or "gpu compute" in note)
+                self.assertTrue("prepared" in note or "threshold" in note)
 
     def test_segment_polygon_anyhit_summary_modes_preserve_counts(self) -> None:
         rows_payload = run_json(

@@ -226,8 +226,32 @@ def _run_optix_directed_threshold(
     label: str,
 ) -> dict[str, object]:
     with rt.prepare_optix_fixed_radius_count_threshold_2d(target, max_radius=radius) as prepared:
-        rows = prepared.run(source, radius=radius, threshold=1)
-    return _directed_threshold_from_count_rows(rows, source=source, radius=radius, label=label)
+        covered_count = prepared.count_threshold_reached(source, radius=radius, threshold=1)
+    violating = [] if int(covered_count) == len(source) else None
+    return {
+        "label": label,
+        "radius": radius,
+        "source_count": len(source),
+        "covered_source_count": int(covered_count),
+        "within_threshold": int(covered_count) == len(source),
+        "violating_source_ids": violating,
+        "identity_parity_available": violating is not None,
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+    }
+
+
+def _native_continuation_backend(
+    backend: str,
+    *,
+    embree_result_mode: str,
+    optix_summary_mode: str,
+) -> str:
+    if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
+        return "optix_threshold_count"
+    if backend == "embree" and embree_result_mode == "directed_summary":
+        return "embree_directed_hausdorff"
+    return "none"
 
 
 def run_app(
@@ -251,6 +275,11 @@ def run_app(
     if hausdorff_threshold < 0:
         raise ValueError("hausdorff_threshold must be non-negative")
     _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
+    native_continuation_backend = _native_continuation_backend(
+        backend,
+        embree_result_mode=embree_result_mode,
+        optix_summary_mode=optix_summary_mode,
+    )
 
     if backend == "optix" and optix_summary_mode == "directed_threshold_prepared":
         directed_ab = _run_optix_directed_threshold(
@@ -284,6 +313,12 @@ def run_app(
             "oracle": oracle,
             "oracle_within_threshold": oracle_within_threshold,
             "matches_oracle": within_threshold == oracle_within_threshold,
+            "oracle_decision_matches": within_threshold == oracle_within_threshold,
+            "oracle_identity_matches": (
+                True
+                if directed_ab["identity_parity_available"] and directed_ba["identity_parity_available"]
+                else None
+            ),
             "rtdl_role": (
                 "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
                 "the Hausdorff decision subproblem: every source point has at least "
@@ -291,6 +326,8 @@ def run_app(
                 "decisions and validates against the deterministic oracle."
             ),
             "optix_performance": _optix_performance(),
+            "native_continuation_active": native_continuation_backend != "none",
+            "native_continuation_backend": native_continuation_backend,
             "rt_core_accelerated": True,
         }
 
@@ -351,6 +388,8 @@ def run_app(
         ),
         "rtdl_role": rtdl_role,
         "optix_performance": _optix_performance(),
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": False,
     }
 

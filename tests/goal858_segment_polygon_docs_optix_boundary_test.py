@@ -13,13 +13,14 @@ class Goal858SegmentPolygonDocsOptixBoundaryTest(unittest.TestCase):
             "docs/features/segment_polygon_hitcount/README.md": (
                 "--backend optix --optix-mode native",
                 "--require-rt-core",
-                "strict RTX validation",
+                "Goal933 prepared hit-count profiler",
                 "host-indexed fallback",
             ),
             "docs/features/segment_polygon_anyhit_rows/README.md": (
                 "--output-mode segment_counts --optix-mode native",
                 "--output-mode rows --optix-mode native",
-                "Goal873 added the strict RTX gate",
+                "Goal934 added the prepared",
+                "Goal969 supplied the real RTX artifact",
                 "bounded native OptiX pair-row emitter",
                 "--require-rt-core",
             ),
@@ -36,8 +37,8 @@ class Goal858SegmentPolygonDocsOptixBoundaryTest(unittest.TestCase):
             "--optix-mode auto",
             "--optix-mode host_indexed",
             "--optix-mode native",
-            "not released NVIDIA RT-core claims",
-            "Goal873 strict RTX gate",
+            "not broad NVIDIA RT-core\n  speedup claims",
+            "Goal969 supplies bounded claim-review evidence",
             "bounded native pair-row emitter",
         ):
             with self.subTest(phrase=phrase):

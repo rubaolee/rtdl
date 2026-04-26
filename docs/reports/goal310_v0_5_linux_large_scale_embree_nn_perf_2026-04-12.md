@@ -162,4 +162,3 @@ So the next correct move after Goal 310 is:
 
 - continue optimizing the Embree 3D `knn_rows` path on Linux
 - then extend the large-scale performance closure to Windows
-

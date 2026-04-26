@@ -22,4 +22,3 @@ Verification passed:
 - focused readiness/manifest/maturity/spatial tests: `40 OK`
 - `py_compile` passed
 - `git diff --check` passed
-

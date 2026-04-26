@@ -15,6 +15,9 @@ class _PreparedStub:
     def run(self, query_points, *, radius: float, threshold: int):
         return self.rows
 
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
+        return sum(1 for row in self.rows if int(row["neighbor_count"]) >= threshold)
+
     def close(self) -> None:
         self.closed = True
 
@@ -69,7 +72,9 @@ class Goal811SpatialOptixSummaryPhaseProfilerTest(unittest.TestCase):
         self.assertIn("optix_prepare", timings)
         self.assertIn("optix_query", timings)
         self.assertIn("python_postprocess", timings)
-        self.assertEqual(payload["scenario"]["result"]["uncovered_household_ids"], [4])
+        self.assertEqual(payload["scenario"]["result"]["uncovered_household_count"], 1)
+        self.assertEqual(payload["scenario"]["result"]["summary_mode"], "scalar_threshold_count")
+        self.assertIsNone(payload["scenario"]["result"]["uncovered_household_ids"])
         self.assertTrue(prepared.closed)
 
     def test_event_optix_mode_splits_prepare_query_and_postprocess(self) -> None:
@@ -98,6 +103,8 @@ class Goal811SpatialOptixSummaryPhaseProfilerTest(unittest.TestCase):
         self.assertIn("optix_query", timings)
         self.assertIn("python_postprocess", timings)
         self.assertEqual(payload["scenario"]["result"]["hotspot_count"], 4)
+        self.assertEqual(payload["scenario"]["result"]["summary_mode"], "scalar_threshold_count")
+        self.assertIsNone(payload["scenario"]["result"]["hotspots"])
         self.assertTrue(prepared.closed)
 
     def test_cli_writes_json(self) -> None:

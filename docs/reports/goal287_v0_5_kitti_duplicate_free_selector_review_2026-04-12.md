@@ -13,4 +13,3 @@ Saved review chain:
 Conclusion:
 
 Goal 287 is closed. RTDL now has a bounded duplicate-free KITTI pair selector for strict cuNSearch comparison workflows.
-

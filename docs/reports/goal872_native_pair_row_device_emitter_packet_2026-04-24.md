@@ -28,4 +28,3 @@ A Linux/RTX build must compile and run the new native bounded symbol, compare ro
 ## Boundary
 
 This goal implements the first native bounded device-emission path, but it does not promote the public rows app path. No RT-core readiness claim is authorized until a real OptiX artifact passes the strict gate.
-

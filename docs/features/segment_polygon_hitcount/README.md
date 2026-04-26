@@ -56,9 +56,10 @@ Claim-sensitive boundary:
 python examples/rtdl_segment_polygon_hitcount.py --backend optix --optix-mode native --require-rt-core
 ```
 
-That command currently fails intentionally. The native OptiX path is a public
-experimental surface, but it is still behind strict RTX validation and is not a
-released NVIDIA RT-core claim.
+The app-level native OptiX path is a compatibility surface. The bounded
+claim-review path for this workload is the Goal933 prepared hit-count profiler,
+validated in the Goal969 RTX A5000 batch for compact hit-count traversal only.
+That does not authorize a broad segment/polygon speedup claim.
 
 App-style run:
 
@@ -74,7 +75,8 @@ python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
   reviews can distinguish host-indexed fallback from the experimental native
   path
 - compare accepted larger rows against PostGIS on Linux
-- remember that the current speed win comes from candidate reduction, not a broad RT-core maturity claim
+- remember that the current RTX claim-review scope is compact hit-count
+  traversal only, not broad segment/polygon app speedup
 
 ## Try
 
@@ -92,6 +94,6 @@ python examples/rtdl_road_hazard_screening.py --backend cpu_python_reference
 
 - current semantics are hit-count semantics, not row materialization
 - current geometry path is float-based
-- released OptiX RT-core claims are still blocked; `--require-rt-core` rejects
-  this workload today even if `--optix-mode native` is selected
+- public RTX wording must stay bounded to the prepared compact hit-count
+  traversal path until a later review authorizes broader claims
 - large-row validation is strongest on Linux with PostGIS as the external checker

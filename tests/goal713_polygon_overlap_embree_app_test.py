@@ -17,6 +17,8 @@ def _canonical(value):
                 "backend",
                 "backend_mode",
                 "candidate_row_count",
+                "native_continuation_active",
+                "native_continuation_backend",
                 "rt_core_accelerated",
                 "rt_core_candidate_discovery_active",
             }

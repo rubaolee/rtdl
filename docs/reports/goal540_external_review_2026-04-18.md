@@ -1,6 +1,6 @@
 # Goal 540 External Review: HIPRT Probe Backend Bring-Up
 
-Date: 2026-04-18  
+Date: 2026-04-18
 Reviewer: Claude Sonnet 4.6 (external review pass)
 
 ## Verdict: ACCEPT

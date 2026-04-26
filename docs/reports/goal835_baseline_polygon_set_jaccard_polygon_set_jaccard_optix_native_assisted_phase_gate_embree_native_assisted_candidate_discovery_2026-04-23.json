@@ -1,0 +1,57 @@
+{
+  "app": "polygon_set_jaccard",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "embree_native_assisted_candidate_discovery",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+  "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact Jaccard continuation",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Local polygon-set Jaccard baseline; PostGIS remains unavailable locally."
+  ],
+  "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+  "phase_seconds": {
+    "cpu_exact_refinement_sec": 0.0,
+    "cpu_reference_sec": 0.0,
+    "input_build_sec": 0.0031984579982236028,
+    "native_exact_continuation_sec": 6.249174475669861e-07,
+    "optix_candidate_discovery_sec": 0.013213584083132446,
+    "parity_vs_cpu": 1.0,
+    "rt_core_candidate_discovery_active": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "cpu_reference_sec",
+    "optix_candidate_discovery_sec",
+    "cpu_exact_refinement_sec",
+    "native_exact_continuation_sec",
+    "parity_vs_cpu",
+    "rt_core_candidate_discovery_active"
+  ],
+  "source_backend": "embree",
+  "status": "ok",
+  "summary": {
+    "intersection_area": 1280,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 3328,
+    "right_area": 2816,
+    "union_area": 4864
+  },
+  "summary_sha256": "6e884cadc93825f0932b6aed3500d6b572a314a0920fa79db0dfa1a1975a4360",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "intersection_area": 1280,
+      "jaccard_similarity": 0.2631578947368421,
+      "left_area": 3328,
+      "right_area": 2816,
+      "union_area": 4864
+    }
+  }
+}

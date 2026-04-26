@@ -1,7 +1,7 @@
 # RTDL v0.4 External UX Review Report
 
-**Review Date**: 2026-04-11  
-**Target Check-out**: `/Users/rl2025/worktrees/rtdl_v0_4_release_prep`  
+**Review Date**: 2026-04-11
+**Target Check-out**: `/Users/rl2025/worktrees/rtdl_v0_4_release_prep`
 **Reviewer Identity**: External User (macOS/Linux/Windows perspective)
 
 ---

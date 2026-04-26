@@ -27,4 +27,3 @@
 ## Boundary
 
 This packet does not authorize graph_analytics for RT-core claims. It records that native OptiX graph-ray candidate generation is now packaged but remains RTX-gated before promotion.
-

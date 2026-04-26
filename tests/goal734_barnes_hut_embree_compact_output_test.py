@@ -1,6 +1,7 @@
 import unittest
 
 from examples import rtdl_barnes_hut_force_app as app
+import rtdsl as rt
 
 
 class Goal734BarnesHutEmbreeCompactOutputTest(unittest.TestCase):
@@ -19,6 +20,8 @@ class Goal734BarnesHutEmbreeCompactOutputTest(unittest.TestCase):
         self.assertEqual(payload["output_mode"], "candidate_summary")
         self.assertEqual(payload["body_count"], 64)
         self.assertGreater(payload["candidate_row_count"], 0)
+        self.assertTrue(payload["native_continuation_active"])
+        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp")
         self.assertNotIn("candidate_rows", payload)
         self.assertNotIn("force_rows", payload)
         self.assertNotIn("exact_force_rows", payload)
@@ -30,6 +33,21 @@ class Goal734BarnesHutEmbreeCompactOutputTest(unittest.TestCase):
         self.assertEqual(actual["candidate_row_count"], expected["candidate_row_count"])
         self.assertEqual(actual["body_count_with_candidates"], expected["body_count_with_candidates"])
         self.assertEqual(actual["node_count_seen"], expected["node_count_seen"])
+
+    def test_native_fixed_radius_summary_matches_python_shape(self) -> None:
+        rows = (
+            {"query_id": 1, "neighbor_id": 10, "distance": 0.1},
+            {"query_id": 1, "neighbor_id": 11, "distance": 0.2},
+            {"query_id": 2, "neighbor_id": 10, "distance": 0.3},
+        )
+        self.assertEqual(
+            rt.summarize_fixed_radius_rows(rows),
+            {
+                "candidate_row_count": 3,
+                "query_count_with_candidate": 2,
+                "neighbor_count_seen": 2,
+            },
+        )
 
     def test_force_summary_omits_exact_oracle_rows(self) -> None:
         payload = app.run_app("embree", body_count=128, output_mode="force_summary")

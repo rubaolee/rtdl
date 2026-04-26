@@ -1,0 +1,45 @@
+{
+  "boundary": "This report checks cloud artifacts and summarizes phase metrics. It does not authorize RTX speedup claims; claims require human/AI review of correctness, phase separation, hardware metadata, and comparison baselines.",
+  "dry_run": false,
+  "entry_count": 1,
+  "failure_count": 1,
+  "git_head": "7f569829fbad00f9bfa58e758b0fc4ee0324b410",
+  "nvidia_smi": "Sat Apr 25 05:51:18 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 3090        On  |   00000000:61:00.0 Off |                  N/A |\n| 30%   38C    P0            113W /  350W |       1MiB /  24576MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "rows": [
+    {
+      "analytic_reference_present": true,
+      "app": "graph_analytics",
+      "artifact_path": "/workspace/rtdl_python_only/docs/reports/goal889_graph_visibility_optix_gate_rtx.json",
+      "artifact_status": "ok",
+      "baseline_review_contract_claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+      "baseline_review_contract_missing_fields": [],
+      "baseline_review_contract_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+      "baseline_review_contract_status": "ok",
+      "chunk_copies": 100,
+      "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering plus native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+      "cloud_contract_claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering, plus explicit native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+      "cloud_contract_missing_phases": [
+        "cpu_python_reference_bfs",
+        "cpu_python_reference_triangle_count"
+      ],
+      "cloud_contract_non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+      "cloud_contract_status": "missing_required_phases",
+      "cpu_reference_sec": null,
+      "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+      "optix_native_parity": true,
+      "optix_native_status": "ok",
+      "output_mode": "summary",
+      "path_name": "graph_visibility_edges_gate",
+      "runner_returncode": 0,
+      "runner_status": "ok",
+      "strict_failure_count": 0,
+      "strict_pass": true,
+      "validation_mode": "analytic_summary",
+      "warm_query_median_sec": 1.4902305849827826
+    }
+  ],
+  "runner_status": "ok",
+  "status": "needs_attention",
+  "suite": "goal762_rtx_cloud_artifact_report",
+  "summary_path": "/workspace/rtdl_python_only/docs/reports/goal761_group_f_graph_summary.json"
+}

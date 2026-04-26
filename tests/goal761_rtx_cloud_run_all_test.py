@@ -66,9 +66,9 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
         }
         native = deferred["segment_polygon_hitcount_native_experimental"]
         self.assertEqual(native["env"], {})
-        self.assertIn("scripts/goal807_segment_polygon_optix_mode_gate.py", native["command"])
+        self.assertIn("scripts/goal933_prepared_segment_polygon_optix_profiler.py", native["command"])
         self.assertNotIn("segment_polygon_hitcount_native_experimental", active_path_names)
-        self.assertIn("historical Goal120 evidence", native["reason_deferred"])
+        self.assertIn("Goal933", native["reason_deferred"])
 
     def test_runner_can_include_deferred_entries_selectively(self) -> None:
         module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])

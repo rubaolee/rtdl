@@ -44,4 +44,3 @@ python3 scripts/goal839_robot_pose_count_baseline.py --backend cpu --pose-count 
 ```bash
 python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 1024 --iterations 3 --output-json docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json
 ```
-

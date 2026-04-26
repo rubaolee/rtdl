@@ -1,7 +1,7 @@
 # Goal 711 Embree App Coverage Gate — Claude Review
 
-Date: 2026-04-21  
-Reviewer: Claude (claude-sonnet-4-6)  
+Date: 2026-04-21
+Reviewer: Claude (claude-sonnet-4-6)
 Verdict: **ACCEPT**
 
 Re-reviewed: 2026-04-21 after exit-code fix.

@@ -106,6 +106,7 @@ _HIPRT_GOAL_BY_PREDICATE = {
 
 
 class _RtdlTriangle3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -134,6 +135,7 @@ class _RtdlTriangle(ctypes.Structure):
 
 
 class _RtdlRay2D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -146,6 +148,7 @@ class _RtdlRay2D(ctypes.Structure):
 
 
 class _RtdlRay3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),

@@ -30,4 +30,3 @@ This report checks cloud artifacts and summarizes phase metrics. It does not aut
 - Confirm all `artifact_status` cells are `ok` before interpreting timings.
 - Compare against explicit baselines separately; this report intentionally does not compute public speedup claims.
 - Keep DB, fixed-radius summary, and robot pose-flag claim scopes separate.
-

@@ -5,7 +5,7 @@
 
 ## 1. Executive Summary
 
-The current `cuda_through_optix` applications (Hausdorff, ANN, Outlier, DBSCAN, Barnes-Hut) rely on standard parallel CUDA compute algorithms (`knn_rows` and `fixed_radius_neighbors`). While fast, they do not utilize the dedicated Ray Tracing hardware (RT Cores) present in NVIDIA RTX GPUs. 
+The current `cuda_through_optix` applications (Hausdorff, ANN, Outlier, DBSCAN, Barnes-Hut) rely on standard parallel CUDA compute algorithms (`knn_rows` and `fixed_radius_neighbors`). While fast, they do not utilize the dedicated Ray Tracing hardware (RT Cores) present in NVIDIA RTX GPUs.
 
 To achieve "True RT-Core Acceleration," we must map these point-based distance algorithms to the formal primitives that RT Cores understand natively: **Axis-Aligned Bounding Box (AABB) intersection and Ray-Primitive intersection**.
 
@@ -30,15 +30,15 @@ For a given 2D dataset and a search radius $R$:
 
 ### 1. Outlier Detection (`rtdl_outlier_detection_app`)
 *   **Target Problem**: Find points with `< min_neighbors` within `radius`.
-*   **RT-Core Design**: Use the 2.5D Orthogonal Ray mapping with the sphere size set to the `radius`. 
+*   **RT-Core Design**: Use the 2.5D Orthogonal Ray mapping with the sphere size set to the `radius`.
 *   **Execution**: Launch one ray per query point. Instead of emitting payloads for each hit, the custom `any_hit` or `closest_hit` OptiX shader maintains a simple integer counter.
 *   **Native Output**: A flat array of `neighbor_count` per point. Python applies the `is_outlier = count < min_neighbors` threshold.
 *   **Result**: 100% RT-Core utilization; zero Python dict-row overhead.
 
 ### 2. Barnes-Hut Force Simulation (`rtdl_barnes_hut_force_app`)
-*   **Target Problem**: Apply gravitational force from Quadtree nodes. The "Opening Rule" states a node is approximated as a point mass if `size / distance < theta`. 
-*   **RT-Core Design (The "Opening Sphere")**: We flip the opening rule to a distance threshold: `distance > size / theta`. 
-    *   Initialize each Quadtree node as a 3D sphere with radius `R = size / theta`. 
+*   **Target Problem**: Apply gravitational force from Quadtree nodes. The "Opening Rule" states a node is approximated as a point mass if `size / distance < theta`.
+*   **RT-Core Design (The "Opening Sphere")**: We flip the opening rule to a distance threshold: `distance > size / theta`.
+    *   Initialize each Quadtree node as a 3D sphere with radius `R = size / theta`.
     *   Query bodies cast the standard 2.5D $(0,0,1)$ orthogonal ray.
 *   **Execution**: If the body's ray HITS the node's sphere, the node is "too close" and must be opened (traversed deeper). If the ray MISSES, the RT Core automatically rejects the AABB, meaning the node satisfies the approximation rule. OptiX payloads directly sum the `mass` and `center_of_mass` for all missed nodes.
 *   **Result**: The RT Core hardware natively resolves the Barnes-Hut opening logic.
@@ -53,7 +53,7 @@ For a given 2D dataset and a search radius $R$:
 ### 4. Hausdorff Distance (`rtdl_hausdorff_distance_app`)
 *   **Target Problem**: Maximum of the shortest distances (a global KNN problem).
 *   **RT-Core Design**: Since RT Cores don't do native KNN radius expansion easily, we reconstruct this as a **Binary Search Ray Query**.
-*   **Execution**: 
+*   **Execution**:
     1. Guess a Hausdorff distance $R$.
     2. Build the BVH with spheres of radius $R$.
     3. Launch orthogonal rays for all points. Use OptiX `any_hit` which is heavily optimized for binary queries.

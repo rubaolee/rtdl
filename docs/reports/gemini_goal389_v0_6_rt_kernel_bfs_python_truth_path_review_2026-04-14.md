@@ -6,7 +6,7 @@
 
 ## Summary
 
-Based on an audit of the target documents, the provided summary report, and the corresponding Python code additions in `src/rtdsl/` and `tests/`, the implementation successfully achieves the desired outcome of proving a single BFS step execution in the Python truth path. 
+Based on an audit of the target documents, the provided summary report, and the corresponding Python code additions in `src/rtdsl/` and `tests/`, the implementation successfully achieves the desired outcome of proving a single BFS step execution in the Python truth path.
 
 The implementation satisfies the core constraints and objectives of the goal as analyzed below:
 
@@ -19,7 +19,7 @@ The implementation is completely transparent about what it accomplishes. It succ
 ### 2. Bounded Scope
 The work is strictly bounded to exactly what is required for a single BFS expansion step.
 - The test suite explicitly tests for single-step frontier expansion (discovering the next immediate level and stopping).
-- It strictly enforces deduplication and visited-set filtering within the `bfs_discover` predicate execution. 
+- It strictly enforces deduplication and visited-set filtering within the `bfs_discover` predicate execution.
 - It rejects invalid inputs predictably without cascading failure paths.
 - It doesn't attempt to implement full BFS graph search loops; it focuses purely on the single-step frontier iteration which defines the core primitive for RT graph traversal.
 

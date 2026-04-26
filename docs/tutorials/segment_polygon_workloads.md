@@ -177,13 +177,19 @@ PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend o
 Important boundary:
 
 - these commands are useful for local compatibility and future promotion work
-- they are **not** released NVIDIA RT-core claims
-- hitcount/road-hazard still reject `--require-rt-core` today until strict
-  native-mode validation passes
+- they are compatibility/native-mode examples, not broad NVIDIA RT-core
+  speedup claims
+- road-hazard has a bounded claim-review path with
+  `--output-mode summary --optix-mode native --require-rt-core`; that path is
+  limited to prepared compact summary traversal, not full GIS/routing or
+  default-app speedup
+- segment/polygon hit-count has a bounded claim-review path through the
+  Goal933 prepared profiler, not a broad default-app claim
 - `segment_polygon_anyhit_rows --output-mode rows --optix-mode native` now uses
   the bounded native pair-row emitter. It is the explicit true-traversal rows
-  path, but speedup promotion still requires the Goal873 strict RTX gate,
-  row-digest parity, zero overflow, and independent review.
+  path, and Goal969 supplies bounded claim-review evidence through the Goal934
+  prepared profiler. Public wording must still stay limited to the reviewed
+  output capacity; unbounded row-volume speedup remains outside the claim.
 
 ---
 
@@ -217,14 +223,21 @@ The Embree mode is native-assisted: Embree performs polygon overlay/candidate
 discovery and the app keeps exact grid-cell overlap-area refinement in
 CPU/Python.
 
-This app has no OptiX/NVIDIA RT-core surface today. For claim-sensitive scripts,
-`--require-rt-core` fails intentionally instead of treating the Embree
-native-assisted path as a GPU RT-core result.
+The OptiX path is a NVIDIA claim-review candidate only for native-assisted
+candidate discovery. Exact overlap-area refinement remains CPU/Python, so this
+is not a fully native polygon-area or whole-app speedup claim. For
+claim-sensitive runs:
 
-The segment/polygon road-screening and direct segment/polygon apps also reject
-`--require-rt-core` today, including their current OptiX native-mode
-experiments. Those commands remain useful for compatibility work, but they are
-not released NVIDIA RT-core claims until strict RTX validation passes.
+```bash
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
+```
+
+The segment/polygon road-screening and direct segment/polygon lines now have
+bounded claim-review paths after Goal969, but the release boundary remains
+narrow: prepared compact road-hazard summary, prepared compact hit-count
+summary, and prepared bounded pair-row traversal only. Default app behavior,
+full GIS/routing, broad segment/polygon acceleration, and unbounded row-volume
+speedup remain outside the claim.
 
 Kernel shape:
 
@@ -265,9 +278,14 @@ is not framed as a generic polygon-similarity engine for every use case. Its
 Embree mode is native-assisted: Embree performs candidate discovery and
 CPU/Python computes exact set-area/Jaccard refinement.
 
-This app has no OptiX/NVIDIA RT-core surface today. For claim-sensitive scripts,
-`--require-rt-core` fails intentionally instead of treating the Embree
-native-assisted path as a GPU RT-core result.
+The OptiX path is a NVIDIA claim-review candidate only for native-assisted
+candidate discovery. Exact set-area/Jaccard refinement remains CPU/Python, so
+this is not a fully native Jaccard or whole-app speedup claim. For
+claim-sensitive runs:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core
+```
 
 ---
 

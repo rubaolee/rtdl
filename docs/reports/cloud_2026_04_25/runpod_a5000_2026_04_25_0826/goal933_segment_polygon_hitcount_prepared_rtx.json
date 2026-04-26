@@ -1,0 +1,68 @@
+{
+  "boundary": "This profiler only separates prepared OptiX setup from warm query execution. It does not promote road/segment apps or authorize speedup claims without real RTX artifact review.",
+  "cloud_claim_contract": {
+    "claim_scope": "prepared OptiX custom-AABB segment/polygon traversal with polygon BVH built once and reused across segment batches",
+    "non_claim": "not a public speedup claim until a real RTX artifact is compared with same-semantics CPU/Embree/PostGIS baselines and reviewed",
+    "required_phase_groups": [
+      "input_build_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ],
+    "scenario": "segment_polygon_hitcount_prepared"
+  },
+  "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+  "date": "2026-04-25",
+  "generated_at": "2026-04-25T08:39:41",
+  "goal": "Goal933 prepared segment/polygon OptiX profiler",
+  "host": {
+    "hostname": "a6589bc3c61f",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "iterations": 5,
+  "mode": "run",
+  "result": {
+    "actual_digest": {
+      "hit_sum": 2816,
+      "positive_count": 2560,
+      "row_count": 2560
+    },
+    "expected_digest": {
+      "hit_sum": 2816,
+      "positive_count": 2560,
+      "row_count": 2560
+    },
+    "matches_oracle": true,
+    "polygon_count": 512,
+    "segment_count": 2560
+  },
+  "scenario": "segment_polygon_hitcount_prepared",
+  "schema_version": "goal933_prepared_segment_polygon_optix_contract_v1",
+  "status": "pass",
+  "strict_failures": [],
+  "strict_pass": true,
+  "timings_sec": {
+    "input_build_sec": 0.03067366301547736,
+    "optix_close_sec": 3.2730051316320896e-05,
+    "optix_prepare_sec": 1.0544427030254155,
+    "optix_query_sec": {
+      "max_sec": 0.012830823077820241,
+      "median_sec": 0.006280295085161924,
+      "min_sec": 0.005857945070602
+    },
+    "python_postprocess_sec": {
+      "max_sec": 0.001177801052108407,
+      "median_sec": 0.0010631319601088762,
+      "min_sec": 0.0010589209850877523
+    },
+    "validation_sec": {
+      "max_sec": 0.02602115203626454,
+      "median_sec": 0.02602115203626454,
+      "min_sec": 0.02602115203626454
+    }
+  }
+}

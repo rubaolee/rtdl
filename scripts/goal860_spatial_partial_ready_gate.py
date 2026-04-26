@@ -25,6 +25,13 @@ RTX_ARTIFACTS = {
     ("service_coverage_gaps", "prepared_gap_summary"): ROOT / "docs" / "reports" / "goal811_service_coverage_rtx.json",
     ("event_hotspot_screening", "prepared_count_summary"): ROOT / "docs" / "reports" / "goal811_event_hotspot_rtx.json",
 }
+BASELINE_ARTIFACT_OVERRIDES = {
+    (
+        "event_hotspot_screening",
+        "prepared_count_summary",
+        "embree_summary_path",
+    ): ROOT / "docs" / "reports" / "goal919_event_hotspot_same_scale_embree_baseline_2026-04-25.json",
+}
 
 
 def _load_json(path: Path) -> dict[str, Any] | None:
@@ -93,7 +100,11 @@ def build_spatial_gate() -> dict[str, Any]:
         required_checks: list[dict[str, Any]] = []
         optional_checks: list[dict[str, Any]] = []
         for baseline in row["required_baselines"]:
-            check = validate_artifact(row, baseline, expected_artifact_path(row, baseline))
+            artifact_path = BASELINE_ARTIFACT_OVERRIDES.get(
+                (app, str(row["path_name"]), baseline),
+                expected_artifact_path(row, baseline),
+            )
+            check = validate_artifact(row, baseline, artifact_path)
             if baseline in OPTIONAL_BASELINES:
                 optional_checks.append(check)
             else:

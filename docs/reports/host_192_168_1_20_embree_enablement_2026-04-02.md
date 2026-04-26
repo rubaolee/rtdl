@@ -1,7 +1,7 @@
 # Host Enablement Report: 192.168.1.20 Embree Setup
 
-Date: 2026-04-02  
-Host: `192.168.1.20`  
+Date: 2026-04-02
+Host: `192.168.1.20`
 User: `lestat`
 
 ## Purpose

@@ -15,12 +15,12 @@ class Goal846ActiveRtxClaimGateTest(unittest.TestCase):
     def test_active_gate_filters_to_mandatory_active_baselines(self) -> None:
         module = __import__("scripts.goal846_active_rtx_claim_gate", fromlist=["build_active_claim_gate"])
         payload = module.build_active_claim_gate()
-        self.assertEqual(payload["row_count"], 5)
+        self.assertEqual(payload["row_count"], 8)
         self.assertEqual(payload["required_artifact_count"], 12)
         self.assertEqual(payload["valid_artifact_count"], 12)
         self.assertEqual(payload["missing_artifact_count"], 0)
         self.assertEqual(payload["invalid_artifact_count"], 0)
-        self.assertEqual(payload["skipped_optional_or_deferred_count"], 2)
+        self.assertEqual(payload["skipped_optional_or_deferred_count"], 10)
         self.assertEqual(payload["status"], "ok")
 
     def test_outlier_and_dbscan_skip_optional_reference_rows(self) -> None:

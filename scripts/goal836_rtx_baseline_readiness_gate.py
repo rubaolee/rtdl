@@ -96,8 +96,18 @@ def validate_artifact(row: dict[str, Any], baseline_name: str, path: Path) -> di
         errors.append("comparable_metric_scope does not match Goal835 plan")
 
     expected_scale = row.get("scale")
-    if expected_scale is not None and payload.get("benchmark_scale") != expected_scale:
-        errors.append("benchmark_scale does not match Goal835 plan")
+    actual_scale = payload.get("benchmark_scale")
+    if expected_scale is not None:
+        if not isinstance(actual_scale, dict):
+            errors.append("benchmark_scale does not match Goal835 plan")
+        else:
+            scale_mismatches = [
+                key
+                for key, expected_value in expected_scale.items()
+                if actual_scale.get(key) != expected_value
+            ]
+            if scale_mismatches:
+                errors.append("benchmark_scale does not match Goal835 plan")
 
     return {
         "baseline": baseline_name,

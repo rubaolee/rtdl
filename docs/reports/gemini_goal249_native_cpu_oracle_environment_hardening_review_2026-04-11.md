@@ -6,10 +6,10 @@
 ## Findings
 - **Goal Definition**: Goal 249 is clearly defined with a focus on improving the supportability and actionability of the native oracle runtime. The scope correctly identifies the critical path (`run_cpu` -> `run_oracle` -> native build).
 - **Status Alignment**: The saved report (`goal249_native_cpu_oracle_environment_hardening_2026-04-11.md`) accurately reflects the implementation found in the codebase.
-- **Implementation Quality**: 
+- **Implementation Quality**:
     - `src/rtdsl/oracle_runtime.py` now includes specific help text for macOS (`brew`), Linux (`libgeos-dev`), and Windows (`vcvars64.bat`).
     - The error wrapping in `_raise_oracle_build_failure` successfully preserves the original compiler command and output while adding RTDL-specific context.
-- **Verification**: 
+- **Verification**:
     - The report shows a comprehensive test run (`tests.test_core_quality` and `tests.goal40_native_oracle_test`) with 108 tests passing.
     - `OracleRuntimeDiagnosticsTest` in `tests/test_core_quality.py` uses mocking to verify that the diagnostic messages are correctly surfaced, ensuring the hardening works even on systems where the build toolchain is present.
 

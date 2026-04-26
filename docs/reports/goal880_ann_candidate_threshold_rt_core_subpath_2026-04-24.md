@@ -66,4 +66,3 @@ Other checks:
 
 - `py_compile`: OK for the app and new test.
 - public command audit: `valid=True`.
-

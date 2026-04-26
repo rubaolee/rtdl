@@ -1,6 +1,6 @@
 # Goal 120 OptiX Segment/Polygon Native Promotion
 
-Date: 2026-04-06  
+Date: 2026-04-06
 Status: accepted
 
 ## Summary

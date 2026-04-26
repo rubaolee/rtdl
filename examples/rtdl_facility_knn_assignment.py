@@ -178,8 +178,18 @@ def _run_optix_coverage_threshold(
     radius: float,
 ) -> dict[str, object]:
     with rt.prepare_optix_fixed_radius_count_threshold_2d(case["depots"], max_radius=radius) as prepared:
-        rows = tuple(prepared.run(case["customers"], radius=radius, threshold=1))
-    return _coverage_threshold_from_count_rows(rows, customers=case["customers"], radius=radius)
+        covered_count = prepared.count_threshold_reached(case["customers"], radius=radius, threshold=1)
+    all_customers_covered = int(covered_count) == len(case["customers"])
+    return {
+        "radius": radius,
+        "customer_count": len(case["customers"]),
+        "covered_customer_count": int(covered_count),
+        "all_customers_covered": all_customers_covered,
+        "uncovered_customer_ids": [] if all_customers_covered else None,
+        "identity_parity_available": all_customers_covered,
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+    }
 
 
 def run_case(
@@ -214,8 +224,15 @@ def run_case(
             "depot_count": len(case["depots"]),
             "coverage_threshold": coverage,
             "oracle_coverage_threshold": oracle,
-            "matches_oracle": coverage["all_customers_covered"] == oracle["all_customers_covered"]
-            and coverage["uncovered_customer_ids"] == oracle["uncovered_customer_ids"],
+            "matches_oracle": coverage["all_customers_covered"] == oracle["all_customers_covered"],
+            "oracle_decision_matches": coverage["all_customers_covered"] == oracle["all_customers_covered"],
+            "oracle_identity_matches": (
+                coverage["uncovered_customer_ids"] == oracle["uncovered_customer_ids"]
+                if coverage["identity_parity_available"]
+                else None
+            ),
+            "native_continuation_active": True,
+            "native_continuation_backend": "optix_threshold_count",
             "rt_core_accelerated": True,
             "rtdl_role": (
                 "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
@@ -267,6 +284,9 @@ def run_case(
         "primary_depot_by_customer": dict(sorted(primary_depot_by_customer.items())),
         "primary_depot_load": dict(sorted(primary_load.items())),
         "row_count": len(rows),
+        "native_continuation_active": False,
+        "native_continuation_backend": "none",
+        "rt_core_accelerated": False,
         "boundary": (
             "Rows mode emits K=3 nearest-depot fallback choices. Compact "
             "primary_assignments and summary modes use a K=1 RTDL KNN kernel "

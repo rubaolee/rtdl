@@ -305,6 +305,76 @@ extern "C" int rtdl_optix_run_segment_polygon_hitcount(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_segment_polygon_hitcount_2d(
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!polygons && polygon_count != 0)
+            throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
+        if (polygon_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("polygon count exceeds uint32 primitive limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_segment_polygon_hitcount_2d_optix(
+            polygons, polygon_count, vertices_xy, vertex_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_polygon_hitcount_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_segment_polygon_hitcount_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared),
+            segments, segment_count, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        uint32_t threshold,
+        size_t* count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        count_prepared_segment_polygon_hitcount_at_least_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared),
+            segments, segment_count, threshold, count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        uint32_t positive_threshold,
+        size_t* row_count_out,
+        uint64_t* hit_sum_out,
+        size_t* positive_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        aggregate_prepared_segment_polygon_hitcount_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared),
+            segments, segment_count, positive_threshold,
+            row_count_out, hit_sum_out, positive_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows(
         const RtdlSegment* segments, size_t segment_count,
         const RtdlPolygonRef* polygons, size_t polygon_count,
@@ -351,6 +421,47 @@ extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
             rows_out, output_capacity,
             emitted_count_out, overflowed_out);
     }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!polygons && polygon_count != 0)
+            throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
+        if (polygon_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("polygon count exceeds uint32 primitive limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_segment_polygon_anyhit_rows_2d_optix(
+            polygons, polygon_count, vertices_xy, vertex_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_segment_polygon_anyhit_rows_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonAnyhitRows2D*>(prepared),
+            segments, segment_count, rows_out, output_capacity,
+            emitted_count_out, overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedSegmentPolygonAnyhitRows2D*>(prepared);
 }
 
 extern "C" int rtdl_optix_run_point_nearest_segment(

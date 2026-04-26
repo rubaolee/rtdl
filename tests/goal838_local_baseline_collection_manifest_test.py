@@ -28,11 +28,11 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
     def test_manifest_classifies_all_goal835_required_baselines(self) -> None:
         module = __import__("scripts.goal838_local_baseline_collection_manifest", fromlist=["build_collection_manifest"])
         payload = module.build_collection_manifest()
-        self.assertEqual(payload["action_count"], 23)
+        self.assertEqual(payload["action_count"], 50)
         self.assertEqual(payload["status_counts"]["local_command_ready"], 8)
         self.assertEqual(payload["status_counts"]["linux_preferred_for_large_exact_oracle"], 2)
         self.assertEqual(payload["status_counts"]["linux_postgresql_required"], 2)
-        self.assertEqual(payload["status_counts"]["deferred_until_app_gate_active"], 9)
+        self.assertEqual(payload["status_counts"]["deferred_until_app_gate_active"], 28)
         self.assertIn("does not run heavy benchmarks", payload["boundary"])
 
     def test_ready_commands_preserve_manifest_scale_and_artifact_paths(self) -> None:
@@ -97,7 +97,7 @@ class Goal838LocalBaselineCollectionManifestTest(unittest.TestCase):
             )
             self.assertIn("Goal838 Local RTX Baseline Collection Manifest", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
-            self.assertEqual(payload["action_count"], 23)
+            self.assertEqual(payload["action_count"], 50)
             self.assertTrue(output_md.exists())
 
 

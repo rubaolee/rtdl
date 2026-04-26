@@ -28,12 +28,22 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         self.assertEqual(
             ready,
             [
+                "database_analytics",
+                "graph_analytics",
                 "service_coverage_gaps",
                 "event_hotspot_screening",
                 "facility_knn_assignment",
+                "road_hazard_screening",
+                "segment_polygon_hitcount",
+                "segment_polygon_anyhit_rows",
+                "polygon_pair_overlap_area_rows",
+                "polygon_set_jaccard",
+                "hausdorff_distance",
+                "ann_candidate_search",
                 "outlier_detection",
                 "dbscan_clustering",
                 "robot_collision_screening",
+                "barnes_hut_force_app",
             ],
         )
 
@@ -51,9 +61,28 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
                 "bounded prepared facility service-coverage decision sub-path",
                 "Goal887/Goal920",
             ),
+            "graph_analytics": (
+                "bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths",
+                "Goal889/Goal905/Goal929",
+            ),
+            "polygon_pair_overlap_area_rows": (
+                "native-assisted candidate-discovery path",
+                "Goal877/Goal929",
+            ),
+            "polygon_set_jaccard": (
+                "native-assisted candidate-discovery path",
+                "Goal877/Goal929",
+            ),
             "robot_collision_screening": "prepared ray/triangle any-hit scalar pose-count sub-path",
-            "outlier_detection": "prepared fixed-radius scalar threshold-count sub-path",
-            "dbscan_clustering": "prepared fixed-radius core-threshold summary",
+            "outlier_detection": ("prepared fixed-radius scalar threshold-count sub-path", "Goal795/Goal992"),
+            "dbscan_clustering": ("prepared fixed-radius scalar core-count sub-path", "Goal795/Goal992"),
+            "database_analytics": ("prepared DB compact-summary traversal/filter/grouping sub-path", "Goal921/Goal941"),
+            "road_hazard_screening": ("prepared native road-hazard summary traversal sub-path", "Goal933/Goal941"),
+            "segment_polygon_hitcount": ("prepared native segment/polygon hit-count traversal sub-path", "Goal933/Goal941"),
+            "segment_polygon_anyhit_rows": ("prepared bounded native pair-row traversal sub-path", "Goal934/Goal941"),
+            "hausdorff_distance": ("prepared Hausdorff <= radius decision sub-path", "Goal887/Goal941"),
+            "ann_candidate_search": ("prepared ANN candidate-coverage decision sub-path", "Goal887/Goal941"),
+            "barnes_hut_force_app": ("prepared Barnes-Hut node-coverage decision sub-path", "Goal887/Goal941"),
         }
         for app, expected_value in expected.items():
             with self.subTest(app=app):
@@ -66,18 +95,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
                 self.assertIn(claim_phrase, support.allowed_claim)
                 self.assertIn(goal, support.next_goal)
 
-    def test_high_risk_or_non_optix_apps_are_not_benchmark_candidates(self):
+    def test_non_nvidia_apps_are_not_benchmark_candidates(self):
         expected = {
-            "database_analytics": "needs_interface_tuning",
-            "graph_analytics": "needs_real_rtx_artifact",
-            "road_hazard_screening": "needs_real_rtx_artifact",
-            "segment_polygon_hitcount": "needs_real_rtx_artifact",
-            "segment_polygon_anyhit_rows": "needs_real_rtx_artifact",
-            "polygon_pair_overlap_area_rows": "needs_real_rtx_artifact",
-            "polygon_set_jaccard": "needs_real_rtx_artifact",
-            "hausdorff_distance": "needs_real_rtx_artifact",
-            "ann_candidate_search": "needs_real_rtx_artifact",
-            "barnes_hut_force_app": "needs_real_rtx_artifact",
             "apple_rt_demo": "exclude_from_rtx_app_benchmark",
             "hiprt_ray_triangle_hitcount": "exclude_from_rtx_app_benchmark",
         }
@@ -102,9 +121,9 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "service_coverage_gaps": "optix_traversal_prepared_summary",
             "event_hotspot_screening": "optix_traversal_prepared_summary",
             "facility_knn_assignment": "optix_traversal_prepared_summary",
-            "road_hazard_screening": "host_indexed_fallback",
-            "segment_polygon_hitcount": "host_indexed_fallback",
-            "segment_polygon_anyhit_rows": "host_indexed_fallback",
+            "road_hazard_screening": "optix_traversal_prepared_summary",
+            "segment_polygon_hitcount": "optix_traversal_prepared_summary",
+            "segment_polygon_anyhit_rows": "optix_traversal",
             "polygon_pair_overlap_area_rows": "python_interface_dominated",
             "polygon_set_jaccard": "python_interface_dominated",
             "hausdorff_distance": "optix_traversal_prepared_summary",
@@ -128,6 +147,8 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
             "service_coverage_gaps": "gap_summary_prepared mode uses OptiX traversal",
             "event_hotspot_screening": "count_summary_prepared mode uses OptiX traversal",
             "facility_knn_assignment": "coverage_threshold_prepared mode uses OptiX traversal",
+            "road_hazard_screening": "prepared road-hazard summary profiler uses native OptiX traversal",
+            "segment_polygon_hitcount": "prepared hit-count profiler uses native OptiX traversal",
             "hausdorff_distance": "directed_threshold_prepared mode uses OptiX traversal",
             "ann_candidate_search": "candidate_threshold_prepared mode uses OptiX traversal",
             "barnes_hut_force_app": "node_coverage_prepared mode uses OptiX traversal",

@@ -34,7 +34,7 @@
           "rev-parse",
           "HEAD"
         ],
-        "output_tail": "b798c51b03d3f9dd262c33ffb3e022b18b088249\n",
+        "output_tail": "7f569829fbad00f9bfa58e758b0fc4ee0324b410\n",
         "returncode": 0
       },
       "status_short": {
@@ -43,7 +43,7 @@
           "status",
           "--short"
         ],
-        "output_tail": " M docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json\n?? docs/reports/cloud_2026_04_25/goal811_event_hotspot_rtx.json\n?? docs/reports/cloud_2026_04_25/goal811_service_coverage_rtx.json\n?? docs/reports/cloud_2026_04_25/goal888_road_hazard_native_optix_gate_rtx.json\n?? docs/reports/gemini_embree_applications_review_2026-04-23.md\n?? docs/reports/gemini_rtdl_feature_analysis_report_2026-04-23.md\n?? docs/reports/gemini_rtdl_next_gen_cuda_partner_brainstorming_2026-04-23.md\n?? docs/reports/goal850_claude_review_2026-04-23.md\n",
+        "output_tail": "oal988_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal989_gemini_review_2026-04-26.md\n?? docs/reports/goal989_service_coverage_scalar_threshold_profiler_2026-04-26.md\n?? docs/reports/goal989_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal990_gemini_review_2026-04-26.md\n?? docs/reports/goal990_hausdorff_barnes_scalar_app_paths_2026-04-26.md\n?? docs/reports/goal990_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal991_gemini_review_2026-04-26.md\n?? docs/reports/goal991_public_scalar_prepared_decision_paths_2026-04-26.md\n?? docs/reports/goal991_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal992_gemini_review_2026-04-26.md\n?? docs/reports/goal992_outlier_dbscan_scalar_public_paths_2026-04-26.md\n?? docs/reports/goal992_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal993_gemini_review_2026-04-26.md\n?? docs/reports/goal993_group_b_fixed_radius_scalar_dry_run_2026-04-26.json\n?? docs/reports/goal993_rtx_manifest_scalar_command_sync_2026-04-26.md\n?? docs/reports/goal993_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal994_gemini_review_2026-04-26.md\n?? docs/reports/goal994_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal994_v1_rtx_status_generator_scalar_sync_2026-04-26.md\n?? docs/reports/goal995_gemini_review_2026-04-26.md\n?? docs/reports/goal995_public_rtx_fixed_radius_stale_wording_audit_2026-04-26.md\n?? docs/reports/goal995_two_ai_consensus_2026-04-26.md\n?? docs/reports/goal996_gemini_review_2026-04-26.md\n?? docs/reports/goal996_public_command_truth_refresh_after_scalar_modes_2026-04-26.md\n?? docs/reports/goal996_two_ai_consensus_2026-04-26.md\n?? docs/v1_0_rtx_app_status.md\n?? scripts/goal933_prepared_segment_polygon_optix_profiler.py\n?? scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py\n?? scripts/goal939_current_rtx_claim_review_package.py\n?? scripts/goal947_v1_rtx_app_status_page.py\n?? scripts/goal971_post_goal969_baseline_speedup_review_package.py\n?? scripts/goal973_deferred_decision_baselines.py\n?? scripts/goal974_remaining_local_baselines.py\n?? scripts/goal975_linux_postgis_remaining_baselines.py\n?? scripts/goal976_optional_scipy_baselines.py\n?? scripts/goal977_optix_only_artifact_intake.py\n?? scripts/goal978_rtx_speedup_claim_candidate_audit.py\n?? scripts/goal979_deferred_cpu_timing_repair.py\n?? scripts/goal980_graph_baseline_correctness_audit.py\n?? scripts/goal982_graph_same_scale_timing_repair.py\n?? tests/goal933_prepared_segment_polygon_optix_test.py\n?? tests/goal933_prepared_segment_polygon_profiler_test.py\n?? tests/goal934_prepared_segment_polygon_pair_rows_profiler_test.py\n?? tests/goal937_ready_rtx_claim_review_packet_test.py\n?? tests/goal938_public_rtx_wording_sync_test.py\n?? tests/goal939_current_rtx_claim_review_package_test.py\n?? tests/goal947_v1_rtx_app_status_page_test.py\n?? tests/goal948_polygon_native_continuation_test.py\n?? tests/goal949_graph_native_summary_continuation_test.py\n?? tests/goal952_density_native_continuation_test.py\n?? tests/goal953_robot_native_continuation_metadata_test.py\n?? tests/goal954_database_native_continuation_contract_test.py\n?? tests/goal955_spatial_prepared_native_continuation_test.py\n?? tests/goal956_segment_polygon_native_continuation_metadata_test.py\n?? tests/goal957_graph_hausdorff_native_continuation_metadata_test.py\n?? tests/goal958_public_app_native_continuation_schema_test.py\n?? tests/goal962_next_rtx_pod_execution_packet_test.py\n?? tests/goal967_consensus_external_ai_compliance_test.py\n?? tests/goal971_post_goal969_baseline_speedup_review_package_test.py\n?? tests/goal973_deferred_decision_baselines_test.py\n?? tests/goal974_remaining_local_baselines_test.py\n?? tests/goal975_linux_postgis_remaining_baselines_test.py\n?? tests/goal976_optional_scipy_baselines_test.py\n?? tests/goal977_optix_only_artifact_intake_test.py\n?? tests/goal978_rtx_speedup_claim_candidate_audit_test.py\n?? tests/goal979_deferred_cpu_timing_repair_test.py\n?? tests/goal980_graph_baseline_correctness_audit_test.py\n?? tests/goal982_graph_same_scale_timing_repair_test.py\n",
         "returncode": 0
       }
     },
@@ -59,14 +59,17 @@
       "valid": true
     },
     "public_command_audit": {
-      "command_count": 264,
+      "command_count": 296,
       "coverage_counts": {
         "goal410_harness_exact": 226,
         "goal410_harness_family": 17,
         "goal513_front_page_smoke_exact": 6,
         "goal593_public_example_smoke_exact": 4,
-        "goal821_require_rt_core_doc_gate_exact": 2,
+        "goal821_require_rt_core_doc_gate_exact": 9,
         "goal878_optix_doc_gate_exact": 8,
+        "goal878_optix_doc_gate_family": 6,
+        "goal942_claim_review_command_exact": 15,
+        "goal992_scalar_fixed_radius_command_exact": 4,
         "postgresql_validation_command": 1
       },
       "valid": true

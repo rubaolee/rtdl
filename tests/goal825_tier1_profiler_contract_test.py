@@ -26,9 +26,11 @@ class Goal825Tier1ProfilerContractTest(unittest.TestCase):
         module = __import__("scripts.goal757_optix_fixed_radius_prepared_perf", fromlist=["_cloud_claim_contract"])
         outlier = module._cloud_claim_contract("outlier_detection", "threshold_count")
         dbscan = module._cloud_claim_contract("dbscan_clustering", "threshold_count")
-        self.assertIn("prepared fixed-radius threshold", outlier["claim_scope"])
-        self.assertIn("not KNN", outlier["non_claim"])
-        self.assertIn("core-flag", dbscan["claim_scope"])
+        self.assertIn("prepared fixed-radius scalar threshold-count", outlier["claim_scope"])
+        self.assertIn("not per-point outlier labels", outlier["non_claim"])
+        self.assertIn("KNN", outlier["non_claim"])
+        self.assertIn("prepared fixed-radius scalar core-count", dbscan["claim_scope"])
+        self.assertIn("not per-point core flags", dbscan["non_claim"])
         self.assertIn("not full DBSCAN", dbscan["non_claim"])
 
     def test_robot_profiler_contract_names_compact_pose_scope(self) -> None:

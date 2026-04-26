@@ -1,6 +1,6 @@
 # Goal 116 Segment/Polygon Full Backend Audit
 
-Date: 2026-04-06  
+Date: 2026-04-06
 Status: accepted
 
 ## Summary

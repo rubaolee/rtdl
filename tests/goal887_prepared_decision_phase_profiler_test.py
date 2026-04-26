@@ -60,7 +60,10 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
         from scripts.goal759_rtx_cloud_benchmark_manifest import build_manifest
 
         manifest = build_manifest()
-        by_path = {entry["path_name"]: entry for entry in manifest["deferred_entries"]}
+        by_path = {
+            entry["path_name"]: entry
+            for entry in (manifest["entries"] + manifest["deferred_entries"])
+        }
         expected = {
             "directed_threshold_prepared": "hausdorff_threshold",
             "candidate_threshold_prepared": "ann_candidate_coverage",
@@ -74,7 +77,27 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
                 self.assertIn("--scenario", command)
                 self.assertIn(scenario, command)
                 self.assertIn("--output-json", command)
-                self.assertIn("--skip-validation", command)
+                if scenario == "facility_service_coverage":
+                    self.assertIn("--skip-validation", command)
+                else:
+                    self.assertNotIn("--skip-validation", command)
+
+    def test_ann_dry_run_uses_tiled_threshold_oracle(self) -> None:
+        from scripts import goal887_prepared_decision_phase_profiler as goal887
+
+        payload = goal887.run_profile(
+            scenario="ann_candidate_coverage",
+            mode="dry-run",
+            copies=5000,
+            body_count=32,
+            iterations=1,
+            radius=0.2,
+            skip_validation=False,
+        )
+        result = payload["scenario"]["result"]
+        self.assertTrue(result["within_candidate_radius"])
+        self.assertEqual(result["query_count"], 15000)
+        self.assertEqual(result["covered_query_count"], 15000)
 
 
 if __name__ == "__main__":

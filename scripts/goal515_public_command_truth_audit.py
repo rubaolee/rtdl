@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_DOCS = [
     Path("README.md"),
     Path("docs/README.md"),
+    Path("docs/v1_0_rtx_app_status.md"),
     Path("docs/release_facing_examples.md"),
     Path("examples/README.md"),
     *sorted(Path("docs/tutorials").glob("*.md")),
@@ -46,8 +47,25 @@ GOAL593_COMMANDS = [
 ]
 
 GOAL821_COMMANDS = [
+    "python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
     "python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
     "python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
+    "python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core",
+]
+
+GOAL942_COMMANDS = [
+    "python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
+    "python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core",
+    "python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared",
+    "python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded",
+    "python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
+    "python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core",
+    "python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core",
+]
+
+GOAL992_COMMANDS = [
+    "python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
+    "python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
 ]
 
 GOAL878_COMMANDS = [
@@ -117,7 +135,10 @@ def normalize_command(line: str) -> str | None:
     match = re.search(r"\bpython(?:3(?:\.\d+)?)?\b\s+(.+)$", line)
     if not match:
         return None
-    command = "python " + match.group(1).strip()
+    command_body = match.group(1).strip()
+    if "`" in command_body:
+        command_body = command_body.split("`", 1)[0].strip()
+    command = "python " + command_body
     return " ".join(command.split())
 
 
@@ -162,6 +183,12 @@ def build_coverage_maps() -> tuple[dict[str, str], dict[tuple[str, str], str]]:
     for command in GOAL821_COMMANDS:
         exact_keys.setdefault(command, "goal821_require_rt_core_doc_gate_exact")
         family_keys.setdefault(command_key(command), "goal821_require_rt_core_doc_gate_family")
+    for command in GOAL942_COMMANDS:
+        exact_keys.setdefault(command, "goal942_claim_review_command_exact")
+        family_keys.setdefault(command_key(command), "goal942_claim_review_command_family")
+    for command in GOAL992_COMMANDS:
+        exact_keys.setdefault(command, "goal992_scalar_fixed_radius_command_exact")
+        family_keys.setdefault(command_key(command), "goal992_scalar_fixed_radius_command_family")
     for command in GOAL878_COMMANDS:
         exact_keys.setdefault(command, "goal878_optix_doc_gate_exact")
         family_keys.setdefault(command_key(command), "goal878_optix_doc_gate_family")

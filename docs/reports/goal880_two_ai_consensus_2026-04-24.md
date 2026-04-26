@@ -29,4 +29,3 @@ required fixes in
 This consensus does not claim that RTDL now provides a full ANN index,
 high-dimensional vector search, HNSW/IVF/PQ behavior, FAISS replacement,
 nearest-neighbor ranking acceleration, or recall/latency optimization.
-

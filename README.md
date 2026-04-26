@@ -44,22 +44,39 @@ commands must also pass `--require-rt-core`; apps reject that flag unless the
 selected mode is a documented bounded OptiX traversal path with a narrow claim
 scope.
 
-Accepted claim-sensitive app modes today are partial and bounded:
+Current paths ready for RTX claim review are partial and bounded:
 
-- unified DB app: `--backend optix --output-mode compact_summary --require-rt-core`
+- database analytics: `--backend optix --output-mode compact_summary --require-rt-core`
+- graph analytics: `--backend optix --scenario visibility_edges --require-rt-core`
 - service coverage gaps: `--backend optix --optix-summary-mode gap_summary_prepared --require-rt-core`
 - event hotspot screening: `--backend optix --optix-summary-mode count_summary_prepared --require-rt-core`
-- outlier detection: `--backend optix --optix-summary-mode rt_count_threshold_prepared`
-- DBSCAN core flags: `--backend optix --optix-summary-mode rt_core_flags_prepared`
+- facility KNN assignment: `--backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core`
+- prepared road hazard summary: `--backend optix --output-mode summary --optix-mode native --require-rt-core`
+- segment/polygon hit count: prepared native hit-count traversal through the Goal933 profiler
+- segment/polygon pair rows: prepared bounded native pair-row traversal through the Goal934 profiler
+- polygon pair overlap: `--backend optix --require-rt-core`
+- polygon set Jaccard: `--backend optix --require-rt-core`
+- Hausdorff threshold decision: `--backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core`
+- ANN candidate coverage decision: `--backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core`
+- outlier detection: `--backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count`
+- DBSCAN core count: `--backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count`
 - robot collision screening: `--backend optix --optix-summary-mode prepared_count` or `prepared_pose_flags`
+- Barnes-Hut node coverage decision: `--backend optix --optix-summary-mode node_coverage_prepared --require-rt-core`
 
-Rejected under `--require-rt-core` today: graph apps, facility KNN, polygon
-overlap/Jaccard, segment/polygon apps, Hausdorff, ANN candidate search, and
-Barnes-Hut. Those apps may still run with OptiX for compatibility or
-CUDA-through-OptiX experimentation, but they must not be described as NVIDIA
-RT-core accelerated until a strict traversal design and RTX-class validation
-exist. See `docs/app_engine_support_matrix.md` and
-`docs/reports/goal818_rtx_app_claim_gate_summary_2026-04-23.md`.
+Those are claim-review candidates, not automatic public speedup claims. The
+allowed wording is limited to the named traversal/summary sub-path; whole-app
+speedup, Python post-processing, exact polygon area/Jaccard refinement, ranked
+KNN, full DBSCAN cluster expansion, and graph-system claims remain outside the
+claim unless a later review explicitly authorizes them.
+
+Still outside public RTX claim review today: SQL/DBMS behavior, default
+row-materializing DB output, full road-hazard/GIS routing, unbounded
+segment/polygon pair-row volume, Hausdorff exact distance, ANN ranking or index
+speedup, and Barnes-Hut force reduction/opening-rule acceleration. The support
+matrix is the authority for whether a bounded sub-path is ready for claim
+review. See `docs/app_engine_support_matrix.md` and
+`docs/v1_0_rtx_app_status.md`. The cloud artifact audit remains in
+`docs/reports/goal969_runpod_a5000_rtx_execution_report_2026-04-26.md`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -137,11 +154,13 @@ bounded DB-style analytical workloads.
       Vulkan timing for these three Stage-1 proximity apps, with no
       external-baseline speedup claim because SciPy was not installed in that
       validation checkout
-    - current `main` also has prepared OptiX fixed-radius summary modes for
-      these two apps: `rt_count_threshold_prepared` for outlier density
-      thresholds and `rt_core_flags_prepared` for DBSCAN core flags. These use
-      prepared OptiX traversal and avoid neighbor-row materialization for the
-      bounded summary, but they are not KNN, Hausdorff, ANN, Barnes-Hut, or
+    - current `main` also has prepared OptiX fixed-radius scalar modes for
+      these two apps: `--output-mode density_count` with
+      `rt_count_threshold_prepared` for outlier counts, and
+      `--output-mode core_count` with `rt_core_flags_prepared` for DBSCAN core
+      counts. These use prepared OptiX traversal and avoid neighbor-row and
+      per-point summary-row materialization for the bounded scalar summary,
+      but they are not KNN, Hausdorff, ANN, Barnes-Hut, per-point label, or
       full DBSCAN cluster-expansion claims and still require RTX-class
       performance validation
     - current `main` also has bounded Embree summary modes for selected app

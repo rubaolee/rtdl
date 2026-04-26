@@ -53,7 +53,7 @@ class Goal707AppRtCoreRedlineAuditTest(unittest.TestCase):
             self.assertEqual(matrix[app]["optix"].status, "direct_cli_compatibility_fallback")
             self.assertEqual(
                 rt.optix_app_performance_support(app).performance_class,
-                "host_indexed_fallback",
+                "optix_traversal_prepared_summary",
             )
         self.assertEqual(matrix["graph_analytics"]["optix"].status, "direct_cli_compatibility_fallback")
         self.assertEqual(
@@ -63,7 +63,7 @@ class Goal707AppRtCoreRedlineAuditTest(unittest.TestCase):
         self.assertEqual(matrix["segment_polygon_anyhit_rows"]["optix"].status, "direct_cli_native")
         self.assertEqual(
             rt.optix_app_performance_support("segment_polygon_anyhit_rows").performance_class,
-            "host_indexed_fallback",
+            "optix_traversal",
         )
 
 

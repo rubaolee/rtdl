@@ -1,69 +1,41 @@
 # Goal836 RTX Baseline Readiness Gate
 
-Status: implemented; current gate result is `needs_baselines`.
+Status: `ok`
 
-## Purpose
+This readiness gate only inspects local baseline evidence. It does not run benchmarks, start cloud resources, promote deferred apps, or authorize RTX speedup claims.
 
-Goal835 defined which same-semantics baselines are required before any public RTX speedup claim can be made for active or deferred NVIDIA RT-core app paths. Goal836 turns that plan into a machine-readable readiness gate.
+## Summary
 
-The gate is intentionally local-only. It does not run benchmarks, start cloud resources, promote deferred apps, or authorize RTX speedup claims.
-
-## Implementation
-
-- Added `/Users/rl2025/rtdl_python_only/scripts/goal836_rtx_baseline_readiness_gate.py`.
-- Added `/Users/rl2025/rtdl_python_only/tests/goal836_rtx_baseline_readiness_gate_test.py`.
-- Generated `/Users/rl2025/rtdl_python_only/docs/reports/goal836_rtx_baseline_readiness_gate_2026-04-23.json`.
-- Generated `/Users/rl2025/rtdl_python_only/docs/reports/goal836_rtx_baseline_readiness_gate_2026-04-23.generated.md`.
-
-## Artifact Schema
-
-For every required baseline listed by Goal835, the gate expects a JSON artifact at the deterministic `goal835_baseline_*_<baseline>_2026-04-23.json` path. A valid artifact must provide:
-
-- matching `app`, `path_name`, and `baseline_name`;
-- `status: "ok"`;
-- `correctness_parity: true`;
-- `phase_separated: true`;
-- `authorizes_public_speedup_claim: false`;
-- `repeated_runs` greater than or equal to the Goal835 minimum;
-- `required_phase_coverage` covering every required phase from Goal835;
-- matching `comparable_metric_scope`.
-- matching `benchmark_scale` when the Goal835 row defines a scale.
-
-## Current Result
-
-- rows checked: `8`
-- active rows: `5`
-- deferred rows: `3`
-- required baseline artifacts: `23`
-- valid artifacts: `0`
-- missing artifacts: `23`
+- rows checked: `17`
+- required baseline artifacts: `50`
+- valid artifacts: `50`
+- missing artifacts: `0`
 - invalid artifacts: `0`
 
-This is the expected result before baseline collection. It makes the release flow safer: an RTX cloud result cannot accidentally be treated as a complete speedup claim package unless the same-semantics baselines are present and schema-valid.
+## Row Readiness
 
-## Verification
+| Section | App | Path | Status | Missing | Invalid | Valid |
+|---|---|---|---|---:|---:|---:|
+| active | database_analytics | prepared_db_session_sales_risk | ok | 0 | 0 | 3 |
+| active | database_analytics | prepared_db_session_regional_dashboard | ok | 0 | 0 | 3 |
+| active | outlier_detection | prepared_fixed_radius_density_summary | ok | 0 | 0 | 3 |
+| active | dbscan_clustering | prepared_fixed_radius_core_flags | ok | 0 | 0 | 3 |
+| active | robot_collision_screening | prepared_pose_flags | ok | 0 | 0 | 2 |
+| active | service_coverage_gaps | prepared_gap_summary | ok | 0 | 0 | 3 |
+| active | event_hotspot_screening | prepared_count_summary | ok | 0 | 0 | 3 |
+| active | facility_knn_assignment | coverage_threshold_prepared | ok | 0 | 0 | 2 |
+| deferred | graph_analytics | graph_visibility_edges_gate | ok | 0 | 0 | 7 |
+| deferred | road_hazard_screening | road_hazard_native_summary_gate | ok | 0 | 0 | 3 |
+| deferred | segment_polygon_hitcount | segment_polygon_hitcount_native_experimental | ok | 0 | 0 | 3 |
+| deferred | hausdorff_distance | directed_threshold_prepared | ok | 0 | 0 | 2 |
+| deferred | ann_candidate_search | candidate_threshold_prepared | ok | 0 | 0 | 2 |
+| deferred | barnes_hut_force_app | node_coverage_prepared | ok | 0 | 0 | 2 |
+| deferred | segment_polygon_anyhit_rows | segment_polygon_anyhit_rows_prepared_bounded_gate | ok | 0 | 0 | 3 |
+| deferred | polygon_pair_overlap_area_rows | polygon_pair_overlap_optix_native_assisted_phase_gate | ok | 0 | 0 | 3 |
+| deferred | polygon_set_jaccard | polygon_set_jaccard_optix_native_assisted_phase_gate | ok | 0 | 0 | 3 |
 
-Command:
+## Missing Or Invalid Baselines
 
-```bash
-PYTHONPATH=src:. python3 -m unittest -v tests.goal836_rtx_baseline_readiness_gate_test
-```
+## Release Rule
 
-Result:
-
-```text
-Ran 4 tests in 0.203s
-OK
-```
-
-Command:
-
-```bash
-python3 scripts/goal836_rtx_baseline_readiness_gate.py --output-json docs/reports/goal836_rtx_baseline_readiness_gate_2026-04-23.json --output-md docs/reports/goal836_rtx_baseline_readiness_gate_2026-04-23.generated.md
-```
-
-Result: expected nonzero gate status with `Status: needs_baselines`, because baseline artifacts have not yet been collected.
-
-## Claim Boundary
-
-Goal836 does not say RTDL is faster than CPU, Embree, PostgreSQL, SciPy, PostGIS, Vulkan, HIPRT, or any other baseline. It says the exact opposite for now: the RTX claim package remains incomplete until baseline artifacts are collected and pass this gate.
+An RTX speedup claim package is incomplete while this gate reports `needs_baselines`.

@@ -27,4 +27,3 @@ matrix changes and returned `ACCEPT` with no blockers in
 Claude noted one non-blocking test-coverage gap: the mocked prepared traversal
 covered the pass case but not the violating-source branch. Codex added a direct
 unit test for `_directed_threshold_from_count_rows(...)` to cover that branch.
-

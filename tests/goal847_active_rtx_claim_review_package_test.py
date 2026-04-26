@@ -32,8 +32,20 @@ class Goal847ActiveRtxClaimReviewPackageTest(unittest.TestCase):
 
         outlier = rows[("outlier_detection", "prepared_fixed_radius_density_summary")]
         self.assertEqual(outlier["cloud_query_metric_name"], "native_threshold_query")
+        self.assertEqual(
+            outlier["claim_scope"],
+            "prepared fixed-radius scalar threshold-count traversal only",
+        )
+        self.assertIn("not per-point outlier labels", outlier["non_claim"])
         self.assertEqual(len(outlier["baseline_comparisons"]), 2)
         self.assertTrue(any(phase["phase"] == "pack_points_sec" for phase in outlier["top_nonquery_phases"]))
+
+        dbscan = rows[("dbscan_clustering", "prepared_fixed_radius_core_flags")]
+        self.assertEqual(
+            dbscan["claim_scope"],
+            "prepared fixed-radius scalar core-count traversal only",
+        )
+        self.assertIn("not per-point core flags", dbscan["non_claim"])
 
     def test_cli_writes_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

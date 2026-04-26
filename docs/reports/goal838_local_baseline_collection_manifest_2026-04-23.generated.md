@@ -87,4 +87,3 @@ python3 scripts/goal839_fixed_radius_baseline.py --app dbscan_clustering --backe
 ```bash
 python3 scripts/goal839_fixed_radius_baseline.py --app dbscan_clustering --backend embree --copies 20000 --iterations 10 --output-json docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json
 ```
-

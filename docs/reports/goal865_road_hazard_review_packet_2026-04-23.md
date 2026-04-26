@@ -84,4 +84,3 @@ Result:
 - `12` tests `OK`
 - `py_compile` OK
 - `git diff --check` OK
-

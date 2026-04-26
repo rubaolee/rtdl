@@ -15,12 +15,14 @@ These graph programs follow the same RTDL shape as the earlier workload lines:
 
 | Workload | Input data | Output data |
 | --- | --- | --- |
-| `bfs` | frontier vertices, visited set, graph CSR | newly discovered vertex rows |
-| `triangle_count` | seed edges and graph CSR | unique triangle rows |
+| `bfs` | frontier vertices, visited set, graph CSR | newly discovered vertex rows, or compact native C++ discovery summaries |
+| `triangle_count` | seed edges and graph CSR | unique triangle rows, or compact native C++ triangle summaries |
 
 The public examples are bounded kernel steps. Python still owns whole-algorithm
 orchestration such as multi-level BFS loops or full-graph accumulation, while
-RTDL owns the candidate discovery/refinement step.
+RTDL owns the candidate discovery/refinement step. In `--output-mode summary`,
+the emitted BFS and triangle rows are reduced by RTDL's native C++ oracle
+continuation instead of Python set/loop summary code.
 
 Command convention used below:
 
@@ -83,6 +85,8 @@ Important boundary:
 
 - this public example runs one bounded BFS expansion step
 - host-side multi-level BFS control still lives in Python
+- `--output-mode summary` uses native C++ continuation for discovery counts,
+  not a full native BFS engine
 
 ---
 
@@ -135,6 +139,8 @@ Important boundary:
 
 - this public example runs one bounded triangle probe step
 - whole-graph accumulation still lives in Python or a larger host workflow
+- `--output-mode summary` uses native C++ continuation for triangle/touched
+  vertex counts, not a full native triangle-analytics engine
 
 ---
 
@@ -183,12 +189,20 @@ PYTHONPATH=src:. python examples/rtdl_graph_bfs.py --backend optix --optix-graph
 PYTHONPATH=src:. python examples/rtdl_graph_triangle_count.py --backend optix --optix-graph-mode native
 ```
 
-These native commands still reject `--require-rt-core` intentionally until the
-combined Goal889/905 RTX cloud gate proves row-digest parity on real RTX
-hardware. Visibility rows are the only graph sub-path that can use
-`--require-rt-core` before that gate, and even then it is bounded to
-line-of-sight filtering, not shortest path, graph databases, distributed graph
-analytics, or whole-app graph-system speedup.
+After the Goal929/Goal930/Goal969 review chain, the unified graph app is ready
+for RTX claim review only under a bounded scope: visibility-edge filtering plus
+native graph-ray candidate generation. The component BFS and triangle-count
+example scripts still reject `--require-rt-core` intentionally; use the unified
+app for claim-sensitive graph runs:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core
+```
+
+The claim remains bounded to graph-edge visibility and candidate generation,
+plus native C++ summary continuation where `--output-mode summary` is selected;
+it is not a shortest-path, graph database, distributed graph analytics, or
+whole-app graph-system speedup claim.
 
 ---
 

@@ -1,0 +1,53 @@
+{
+  "app": "ann_candidate_search",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "best_available_non_optix_backend_same_semantics",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 3
+  },
+  "claim_limit": "bounded sub-path only",
+  "comparable_metric_scope": "same app/path semantics for ann_candidate_search:candidate_threshold_prepared",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Embree candidate-subset KNN rows are reduced to the same candidate-coverage threshold decision."
+  ],
+  "path_name": "candidate_threshold_prepared",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "input_build": 0.08085491601377726,
+    "materialization_or_copyback": 0.0,
+    "native_query": 60.61558924999554,
+    "postprocess": 0.03406274993903935
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build",
+    "backend_prepare",
+    "native_query",
+    "materialization_or_copyback",
+    "postprocess"
+  ],
+  "source_backend": "embree",
+  "status": "ok",
+  "summary": {
+    "covered_query_count": 60000,
+    "query_count": 60000,
+    "radius": 0.2,
+    "uncovered_query_ids": [],
+    "within_candidate_radius": true
+  },
+  "summary_sha256": "1a4c3815528e16f2110a8e8c1cadd38c788564bca4020b22cad8309782e5b8db",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "covered_query_count": 60000,
+      "query_count": 60000,
+      "radius": 0.2,
+      "uncovered_query_ids": [],
+      "within_candidate_radius": true
+    }
+  }
+}

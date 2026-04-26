@@ -13,7 +13,7 @@ The optimization implemented in Goal851 is technically sound, properly scoped, a
 - **Validation:** The new test case in `tests/goal851_optix_db_sales_grouped_summary_fastpath_test.py` uses a mocked dataset to empirically verify that the fast-path methods are prioritized and that row materialization is skipped in `compact_summary` mode.
 
 ### Boundary and Scope
-- The optimization is strictly gated by the `output_mode == "compact_summary"` check within the `PreparedSalesRiskSession`. 
+- The optimization is strictly gated by the `output_mode == "compact_summary"` check within the `PreparedSalesRiskSession`.
 - Standard `full` or `summary` modes remain unaffected, preserving full row materialization where required for `risky_order_ids` or detailed inspection.
 
 ### Integrity and Performance Claims

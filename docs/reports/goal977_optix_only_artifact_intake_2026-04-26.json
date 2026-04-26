@@ -1,0 +1,34 @@
+{
+  "artifact_count": 4,
+  "artifacts": [
+    {
+      "app": "graph_analytics",
+      "baseline": "optix_visibility_anyhit",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_optix_visibility_anyhit_2026-04-23.json",
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "baseline": "optix_native_graph_ray_bfs",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_optix_native_graph_ray_bfs_2026-04-23.json",
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "baseline": "optix_native_graph_ray_triangle_count",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_optix_native_graph_ray_triangle_count_2026-04-23.json",
+      "status": "ok"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "baseline": "optix_prepared_bounded_pair_rows",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_anyhit_rows_segment_polygon_anyhit_rows_prepared_bounded_gate_optix_prepared_bounded_pair_rows_2026-04-23.json",
+      "status": "ok"
+    }
+  ],
+  "boundary": "This intake converts existing RTX artifacts into Goal835 baseline artifacts. It does not run cloud and does not authorize public RTX speedup claims.",
+  "cloud_dir": "/Users/rl2025/rtdl_python_only/docs/reports/cloud_2026_04_26/runpod_a5000_0900",
+  "date": "2026-04-26",
+  "goal": "Goal977 OptiX-only artifact intake",
+  "status": "ok"
+}

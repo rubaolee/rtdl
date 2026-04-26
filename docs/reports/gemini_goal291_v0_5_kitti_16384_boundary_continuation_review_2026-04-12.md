@@ -4,7 +4,7 @@ Date: 2026-04-12
 
 ## Review Judgments
 
-1. **Honest Description of 16384 Continuation:** 
+1. **Honest Description of 16384 Continuation:**
    The `16384` continuation is described honestly. The report explicitly lists the conditions, metrics, and parameters (e.g., query start 0, search start 11) and acknowledges that PostGIS is parity-clean while cuNSearch is not. It appropriately caveats the findings as a bounded host-specific continuation rather than a broad condemnation of cuNSearch. Furthermore, it logs the performance overhead of the RTDL reference accurately.
 
 2. **Handling of Widened Search Window:**

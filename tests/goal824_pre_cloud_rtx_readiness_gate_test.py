@@ -43,7 +43,13 @@ class Goal824PreCloudRtxReadinessGateTest(unittest.TestCase):
 
     def test_gate_includes_dry_run_and_public_command_audit(self) -> None:
         payload = run_gate()
-        self.assertTrue(payload["checks"]["public_command_audit"]["valid"])
+        command_audit = payload["checks"]["public_command_audit"]
+        self.assertTrue(command_audit["valid"])
+        self.assertGreaterEqual(command_audit["command_count"], 296)
+        self.assertEqual(
+            command_audit["coverage_counts"]["goal992_scalar_fixed_radius_command_exact"],
+            4,
+        )
         self.assertEqual(payload["checks"]["active_runner_dry_run"]["status"], "ok")
         self.assertTrue(payload["checks"]["active_runner_dry_run"]["dry_run"])
         self.assertEqual(payload["checks"]["bootstrap_dry_run"]["status"], "ok")

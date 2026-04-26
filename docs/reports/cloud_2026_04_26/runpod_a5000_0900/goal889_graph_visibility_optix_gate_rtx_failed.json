@@ -1,0 +1,121 @@
+{
+  "boundary": "This gate validates bounded graph RT sub-paths only. Visibility uses ray/triangle any-hit and is chunked in summary mode to avoid the global observer-target cross-product. BFS and triangle-count use explicit native OptiX graph-ray mode for candidate generation, while higher-level graph state management remains app/Python-owned.",
+  "chunk_copies": 100,
+  "cloud_claim_contract": {
+    "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering, plus explicit native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+    "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+    "required_phase_groups": [
+      "analytic_expected_visibility_edges",
+      "analytic_expected_bfs",
+      "analytic_expected_triangle_count",
+      "optix_visibility_anyhit",
+      "optix_native_graph_ray_bfs",
+      "optix_native_graph_ray_triangle_count",
+      "strict_pass",
+      "strict_failures"
+    ]
+  },
+  "copies": 20000,
+  "date": "2026-04-24",
+  "generated_at": "2026-04-26T09:05:37",
+  "goal": "Goal889/905 graph OptiX native traversal gate",
+  "host": {
+    "hostname": "11e03eee29bc",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-59-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "output_mode": "summary",
+  "records": [
+    {
+      "chunk_copies": 100,
+      "chunk_count": 200,
+      "digest": {
+        "row_count": 80000,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "blocked_edge_count": 60000,
+          "visible_edge_count": 20000
+        }
+      },
+      "label": "optix_visibility_anyhit",
+      "optix_graph_mode": "not_applicable",
+      "parity_vs_analytic_expected": true,
+      "scenario": "visibility_edges",
+      "sec": 2.032181679038331,
+      "status": "ok"
+    },
+    {
+      "error": "RTDL native oracle build failed while preparing run_cpu(...). Install GEOS development headers and pkg-config so the native oracle can link successfully (for example `libgeos-dev` plus `pkg-config`). Compiler command: g++ -std=c++17 -O2 -shared -fPIC /workspace/rtdl_python_only/src/native/rtdl_oracle.cpp -lgeos_c -o /workspace/rtdl_python_only/build/librtdl_oracle.so Tool output: /usr/bin/ld: cannot find -lgeos_c: No such file or directory\ncollect2: error: ld returned 1 exit status",
+      "error_type": "RuntimeError",
+      "label": "optix_native_graph_ray_bfs",
+      "optix_graph_mode": "native",
+      "scenario": "bfs",
+      "sec": 5.6431625980185345,
+      "status": "unavailable_or_failed"
+    },
+    {
+      "error": "RTDL native oracle build failed while preparing run_cpu(...). Install GEOS development headers and pkg-config so the native oracle can link successfully (for example `libgeos-dev` plus `pkg-config`). Compiler command: g++ -std=c++17 -O2 -shared -fPIC /workspace/rtdl_python_only/src/native/rtdl_oracle.cpp -lgeos_c -o /workspace/rtdl_python_only/build/librtdl_oracle.so Tool output: /usr/bin/ld: cannot find -lgeos_c: No such file or directory\ncollect2: error: ld returned 1 exit status",
+      "error_type": "RuntimeError",
+      "label": "optix_native_graph_ray_triangle_count",
+      "optix_graph_mode": "native",
+      "scenario": "triangle_count",
+      "sec": 6.001807993976399,
+      "status": "unavailable_or_failed"
+    },
+    {
+      "digest": {
+        "row_count": 80000,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "blocked_edge_count": 60000,
+          "visible_edge_count": 20000
+        }
+      },
+      "label": "analytic_expected_visibility_edges",
+      "scenario": "visibility_edges",
+      "sec": 0.0,
+      "status": "ok",
+      "validation_mode": "analytic_summary"
+    },
+    {
+      "digest": {
+        "row_count": 40000,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "discovered_edge_count": 40000,
+          "discovered_vertex_count": 40000,
+          "max_level": 1
+        }
+      },
+      "label": "analytic_expected_bfs",
+      "scenario": "bfs",
+      "sec": 0.0,
+      "status": "ok",
+      "validation_mode": "analytic_summary"
+    },
+    {
+      "digest": {
+        "row_count": 20000,
+        "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "summary": {
+          "touched_vertex_count": 60000,
+          "triangle_count": 20000
+        }
+      },
+      "label": "analytic_expected_triangle_count",
+      "scenario": "triangle_count",
+      "sec": 0.0,
+      "status": "ok",
+      "validation_mode": "analytic_summary"
+    }
+  ],
+  "status": "fail",
+  "strict": true,
+  "strict_failures": [
+    "optix_native_graph_ray_bfs did not run",
+    "optix_native_graph_ray_triangle_count did not run"
+  ],
+  "strict_pass": false,
+  "validation_mode": "analytic_summary"
+}

@@ -2,6 +2,21 @@
   "boundary": "This package is for internal active OptiX claim review only. It compares same-semantics native-query phases for the active mandatory baseline set and highlights remaining non-query bottlenecks. It does not authorize a public RTX speedup claim.",
   "date": "2026-04-23",
   "goal": "Goal847 active RTX claim review package",
+  "missing_cloud_row_count": 3,
+  "missing_cloud_rows": [
+    {
+      "app": "service_coverage_gaps",
+      "path_name": "prepared_gap_summary"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "path_name": "prepared_count_summary"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "path_name": "coverage_threshold_prepared"
+    }
+  ],
   "repo": "/Users/rl2025/rtdl_python_only",
   "row_count": 5,
   "rows": [
@@ -43,7 +58,7 @@
       "cloud_runner_status": "ok",
       "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
       "path_name": "prepared_db_session_sales_risk",
-      "review_note": "DB review stays bounded to prepared compact-summary semantics. Warm-query comparison is meaningful, but one-shot totals still include substantial non-query work.",
+      "review_note": "DB review stays bounded to prepared compact-summary semantics. Warm-query comparison is meaningful, but one-shot totals still include substantial non-query work. Local Goals850/851 removed grouped row materialization on compact-summary paths; a fresh RTX rerun is still required before that reduction appears in this package.",
       "top_nonquery_phases": [
         {
           "phase": "one_shot_total_sec",
@@ -101,7 +116,7 @@
       "cloud_runner_status": "ok",
       "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
       "path_name": "prepared_db_session_regional_dashboard",
-      "review_note": "DB review stays bounded to prepared compact-summary semantics. Warm-query comparison is meaningful, but one-shot totals still include substantial non-query work.",
+      "review_note": "DB review stays bounded to prepared compact-summary semantics. Warm-query comparison is meaningful, but one-shot totals still include substantial non-query work. Local Goals850/851 removed grouped row materialization on compact-summary paths; a fresh RTX rerun is still required before that reduction appears in this package.",
       "top_nonquery_phases": [
         {
           "phase": "one_shot_total_sec",
@@ -143,12 +158,12 @@
           "summary_sha256": "0b6670a3bcd2155e5d7bfebf0985f3407f9372fa379f8fd1deecca112d90e10c"
         }
       ],
-      "claim_scope": "prepared fixed-radius threshold summary traversal only",
+      "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
       "cloud_artifact_status": "ok",
       "cloud_query_metric_name": "native_threshold_query",
       "cloud_query_sec": 0.18963325800723396,
       "cloud_runner_status": "ok",
-      "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "non_claim": "not per-point outlier labels, row-returning outputs, broad anomaly detection, or whole-app speedup",
       "path_name": "prepared_fixed_radius_density_summary",
       "review_note": "Fixed-radius review stays bounded to prepared scalar-summary semantics. Optional SciPy/reference baselines remain excluded from the active mandatory gate.",
       "top_nonquery_phases": [
@@ -192,12 +207,12 @@
           "summary_sha256": "b380c886c5d37fe2cf23e309faf3d83ee7110feb2f4fd92a2bb80243f2c1a3d3"
         }
       ],
-      "claim_scope": "prepared fixed-radius core-flag traversal only",
+      "claim_scope": "prepared fixed-radius scalar core-count traversal only",
       "cloud_artifact_status": "ok",
       "cloud_query_metric_name": "native_threshold_query",
       "cloud_query_sec": 0.1849270609964151,
       "cloud_runner_status": "ok",
-      "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "non_claim": "not per-point core flags, cluster expansion, full DBSCAN clustering, or whole-app speedup",
       "path_name": "prepared_fixed_radius_core_flags",
       "review_note": "Fixed-radius review stays bounded to prepared scalar-summary semantics. Optional SciPy/reference baselines remain excluded from the active mandatory gate.",
       "top_nonquery_phases": [

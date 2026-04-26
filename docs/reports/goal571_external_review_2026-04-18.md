@@ -1,7 +1,7 @@
 # Goal 571 External Review: RTXRMQ Paper Workload Inclusion
 
-**Reviewer:** Claude Sonnet 4.6  
-**Date:** 2026-04-18  
+**Reviewer:** Claude Sonnet 4.6
+**Date:** 2026-04-18
 **Verdict:** ACCEPT
 
 ---

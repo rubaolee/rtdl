@@ -1,7 +1,7 @@
 # Gemini Review-Gate Closure: RTDL v0.4.0 (2026-04-11)
 
 ## Summary
-The final technical release gate for RTDL `v0.4.0` is now **CLOSED**. 
+The final technical release gate for RTDL `v0.4.0` is now **CLOSED**.
 
 A comprehensive, multi-layered audit of the `codex/v0_4_main_publish` worktree has been completed. This audit sequence transitioned the repository from an internal research-preservation state to a professional, outsider-ready spatial query library.
 

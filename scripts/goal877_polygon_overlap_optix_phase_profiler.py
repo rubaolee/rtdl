@@ -35,6 +35,8 @@ def _canonical(value: Any) -> Any:
                 "candidate_row_count",
                 "rt_core_accelerated",
                 "rt_core_candidate_discovery_active",
+                "native_continuation_active",
+                "native_continuation_backend",
                 "optix_performance",
                 "boundary",
             }
@@ -51,7 +53,7 @@ def _pair_refine(case, candidate_pairs):
         pairs = candidate_pairs
     else:
         pairs = set(candidate_pairs)
-    rows = pair_app._exact_overlap_rows_for_candidates(case["left"], case["right"], pairs)
+    rows = pair_app._native_overlap_rows_for_candidates(case["left"], case["right"], pairs)
     return {
         "rows": rows,
         "summary": pair_app._summarize_rows(tuple(rows)),
@@ -61,7 +63,7 @@ def _pair_refine(case, candidate_pairs):
 
 def _jaccard_refine_from_pairs(case, candidate_pairs):
     pairs = set(candidate_pairs)
-    rows = jaccard_app._exact_jaccard_rows_for_candidates(case["left"], case["right"], pairs)
+    rows = jaccard_app._native_jaccard_rows_for_candidates(case["left"], case["right"], pairs)
     return rows, pairs
 
 
@@ -257,6 +259,7 @@ def run_profile(
                 candidate_pairs = None
                 phases["optix_candidate_discovery_sec"] = candidate_sec
                 phases["cpu_exact_refinement_sec"] = refinement_sec
+                phases["native_exact_continuation_sec"] = refinement_sec
             else:
                 case = (
                     pair_app.make_authored_polygon_pair_overlap_case(copies=copies)
@@ -285,6 +288,8 @@ def run_profile(
                     "rows": refined["rows"],
                     "rt_core_accelerated": False,
                     "rt_core_candidate_discovery_active": True,
+                    "native_continuation_active": True,
+                    "native_continuation_backend": "oracle_cpp",
                 }
             else:
                 refined = _jaccard_refine_from_pairs(case, candidate_pairs)
@@ -301,16 +306,21 @@ def run_profile(
                     "rows": rows,
                     "rt_core_accelerated": False,
                     "rt_core_candidate_discovery_active": True,
+                    "native_continuation_active": True,
+                    "native_continuation_backend": "oracle_cpp",
                 }
             if output_mode != "summary":
                 phases["cpu_exact_refinement_sec"] = time.perf_counter() - start
+                phases["native_exact_continuation_sec"] = phases["cpu_exact_refinement_sec"]
         except Exception as exc:  # noqa: BLE001 - optional backend profiler records absence.
             error = {"type": type(exc).__name__, "message": str(exc)}
             phases.setdefault("optix_candidate_discovery_sec", None)
             phases.setdefault("cpu_exact_refinement_sec", None)
+            phases.setdefault("native_exact_continuation_sec", phases["cpu_exact_refinement_sec"])
     else:
         phases["optix_candidate_discovery_sec"] = None
         phases["cpu_exact_refinement_sec"] = None
+        phases["native_exact_continuation_sec"] = None
 
     parity = optix_payload is not None and cpu_payload is not None and _canonical(optix_payload) == _canonical(cpu_payload)
     candidate_diagnostics = {
@@ -359,6 +369,8 @@ def run_profile(
             {
                 "rt_core_accelerated": bool(optix_payload["rt_core_accelerated"]),
                 "rt_core_candidate_discovery_active": bool(optix_payload["rt_core_candidate_discovery_active"]),
+                "native_continuation_active": bool(optix_payload.get("native_continuation_active", False)),
+                "native_continuation_backend": optix_payload.get("native_continuation_backend"),
                 "backend_mode": str(optix_payload["backend_mode"]),
             }
             if optix_payload is not None
@@ -368,8 +380,8 @@ def run_profile(
         "error": error,
         "status": status,
         "boundary": (
-            "This profiler separates OptiX LSI/PIP candidate discovery from CPU/Python exact "
-            "area/Jaccard refinement. It does not authorize full polygon-overlap RTX speedup claims."
+            "This profiler separates OptiX LSI/PIP candidate discovery from native C++ exact "
+            "area/Jaccard continuation. It does not authorize full polygon-overlap RTX speedup claims."
         ),
         "cloud_claim_contract": {
             "claim_scope": (
@@ -378,15 +390,16 @@ def run_profile(
                 else "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard"
             ),
             "non_claim": (
-                "not a fully native polygon-area kernel and not a full app RTX speedup claim"
+                "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim"
                 if app == "pair_overlap"
-                else "not a fully native Jaccard kernel and not a full app RTX speedup claim"
+                else "not a monolithic GPU Jaccard kernel and not a full app RTX speedup claim"
             ),
             "required_phase_groups": (
                 "input_build_sec",
                 "cpu_reference_sec",
                 "optix_candidate_discovery_sec",
                 "cpu_exact_refinement_sec",
+                "native_exact_continuation_sec",
                 "parity_vs_cpu",
                 "rt_core_candidate_discovery_active",
                 "validation_mode",

@@ -97,6 +97,17 @@ class Goal831SegmentPolygonNativeArtifactContractTest(unittest.TestCase):
                                     "path_name": "segment_polygon_hitcount_native_experimental",
                                     "claim_scope": "experimental native custom-AABB segment/polygon hit-count traversal",
                                     "non_claim": "not default public app behavior",
+                                    "baseline_review_contract": {
+                                        "status": "required_before_public_speedup_claim",
+                                        "minimum_repeated_runs": 5,
+                                        "requires_correctness_parity": True,
+                                        "requires_phase_separation": True,
+                                        "forbidden_comparison": "whole-app speedup",
+                                        "comparable_metric_scope": "native segment/polygon hit-count traversal",
+                                        "required_baselines": ["cpu_python_reference"],
+                                        "required_phases": ["optix_native"],
+                                        "claim_limit": "bounded native hit-count gate only",
+                                    },
                                     "result": {
                                         "status": "ok",
                                         "returncode": 0,

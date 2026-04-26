@@ -19,9 +19,9 @@ class Goal690OptixPerformanceClassificationTest(unittest.TestCase):
         perf = rt.optix_app_performance_matrix()
         expected = {
             "graph_analytics": "optix_traversal",
-            "road_hazard_screening": "host_indexed_fallback",
-            "segment_polygon_hitcount": "host_indexed_fallback",
-            "segment_polygon_anyhit_rows": "host_indexed_fallback",
+            "road_hazard_screening": "optix_traversal_prepared_summary",
+            "segment_polygon_hitcount": "optix_traversal_prepared_summary",
+            "segment_polygon_anyhit_rows": "optix_traversal",
             "facility_knn_assignment": "optix_traversal_prepared_summary",
             "hausdorff_distance": "optix_traversal_prepared_summary",
             "ann_candidate_search": "optix_traversal_prepared_summary",

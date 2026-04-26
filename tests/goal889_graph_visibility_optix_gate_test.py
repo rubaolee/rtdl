@@ -104,6 +104,30 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
         optix_records = [record for record in payload["records"] if str(record["label"]).startswith("optix_")]
         self.assertTrue(all(record["parity_vs_analytic_expected"] for record in optix_records))
 
+    def test_summary_default_visibility_uses_single_launch_not_chunks(self) -> None:
+        from scripts import goal889_graph_visibility_optix_gate as goal889
+
+        optix_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=2, output_mode="summary")
+        optix_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=2, output_mode="summary")
+        optix_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=2, output_mode="summary")
+        with mock.patch.object(
+            goal889.graph_app,
+            "run_app",
+            side_effect=[optix_visibility, optix_bfs, optix_triangle],
+        ) as mocked:
+            payload = goal889.run_gate(
+                copies=2,
+                output_mode="summary",
+                strict=True,
+                validation_mode="analytic_summary",
+            )
+        self.assertEqual(payload["status"], "pass")
+        self.assertEqual(mocked.call_count, 3)
+        visibility_record = next(record for record in payload["records"] if record["label"] == "optix_visibility_anyhit")
+        self.assertEqual(visibility_record["chunking"], "single_launch")
+        self.assertEqual(visibility_record["chunk_count"], 1)
+        self.assertEqual(visibility_record["chunk_copies"], 2)
+
     def test_cli_writes_non_strict_json(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
             output = Path(tmpdir) / "graph.json"

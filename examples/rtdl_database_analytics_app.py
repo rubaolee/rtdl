@@ -39,8 +39,27 @@ def _enforce_rt_core_requirement(backend: str, output_mode: str, require_rt_core
         )
 
 
-def _rt_core_accelerated(backend: str, output_mode: str) -> bool:
-    return backend == "optix" and output_mode == "compact_summary"
+def _rt_core_accelerated(backend: str, output_mode: str, native_continuation_backend: str) -> bool:
+    return (
+        backend == "optix"
+        and output_mode == "compact_summary"
+        and native_continuation_backend == "optix_db_compact_summary"
+    )
+
+
+def _native_db_continuation_backend(sections: dict[str, Any]) -> str:
+    if not sections:
+        return "none"
+    section_backends = [
+        str(section.get("native_continuation_backend", "none"))
+        for section in sections.values()
+    ]
+    if any(backend == "none" for backend in section_backends):
+        return "none"
+    backends = set(section_backends)
+    if len(backends) == 1:
+        return next(iter(backends))
+    return "mixed_db_compact_summary"
 
 
 def _regional_backend(backend: str) -> str:
@@ -111,6 +130,7 @@ class PreparedDatabaseAnalyticsSession:
             section_start = time.perf_counter()
             sections[name] = session.run(output_mode=output_mode)
             per_section_run_sec[name] = time.perf_counter() - section_start
+        native_continuation_backend = _native_db_continuation_backend(sections)
         return {
             "app": "database_analytics",
             "requested_backend": self.requested_backend,
@@ -134,8 +154,14 @@ class PreparedDatabaseAnalyticsSession:
                 "examples/rtdl_v0_7_db_app_demo.py",
                 "examples/rtdl_sales_risk_screening.py",
             ],
+            "native_continuation_active": native_continuation_backend != "none",
+            "native_continuation_backend": native_continuation_backend,
             "optix_performance": _optix_performance(),
-            "rt_core_accelerated": _rt_core_accelerated(self.requested_backend, output_mode),
+            "rt_core_accelerated": _rt_core_accelerated(
+                self.requested_backend,
+                output_mode,
+                native_continuation_backend,
+            ),
             "rt_core_claim_scope": (
                 "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim"
             ),
@@ -185,6 +211,7 @@ def run_app(
         sections["sales_risk"] = rtdl_sales_risk_screening.run_case(
             _sales_backend(backend), copies=copies, output_mode=output_mode
         )
+    native_continuation_backend = _native_db_continuation_backend(sections)
 
     return {
         "app": "database_analytics",
@@ -204,8 +231,10 @@ def run_app(
             "examples/rtdl_v0_7_db_app_demo.py",
             "examples/rtdl_sales_risk_screening.py",
         ],
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
         "optix_performance": _optix_performance(),
-        "rt_core_accelerated": _rt_core_accelerated(backend, output_mode),
+        "rt_core_accelerated": _rt_core_accelerated(backend, output_mode, native_continuation_backend),
         "rt_core_claim_scope": (
             "partial prepared compact-summary DB traversal only; not a broad DBMS or whole-app speedup claim"
         ),

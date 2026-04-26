@@ -122,14 +122,23 @@ def _run_service(*, mode: str, copies: int) -> dict[str, object]:
         )
     )
     try:
-        count_rows, query_sec = _time_call(
-            lambda: prepared.run(
+        covered_count, query_sec = _time_call(
+            lambda: prepared.count_threshold_reached(
                 case["households"],
                 radius=service_app.RADIUS,
                 threshold=1,
             )
         )
-        result, postprocess_sec = _time_call(lambda: _service_summary_from_count_rows(case, count_rows))
+        result, postprocess_sec = _time_call(
+            lambda: {
+                "household_count": len(case["households"]),
+                "clinic_count": len(case["clinics"]),
+                "covered_household_count": int(covered_count),
+                "uncovered_household_count": len(case["households"]) - int(covered_count),
+                "uncovered_household_ids": None,
+                "summary_mode": "scalar_threshold_count",
+            }
+        )
     finally:
         close = getattr(prepared, "close", None)
         if callable(close):
@@ -172,14 +181,22 @@ def _run_event(*, mode: str, copies: int) -> dict[str, object]:
         )
     )
     try:
-        count_rows, query_sec = _time_call(
-            lambda: prepared.run(
+        hotspot_count, query_sec = _time_call(
+            lambda: prepared.count_threshold_reached(
                 case["events"],
                 radius=event_app.RADIUS,
-                threshold=0,
+                threshold=event_app.HOTSPOT_THRESHOLD + 1,
             )
         )
-        result, postprocess_sec = _time_call(lambda: _event_summary_from_count_rows(case, count_rows))
+        result, postprocess_sec = _time_call(
+            lambda: {
+                "event_count": len(case["events"]),
+                "hotspot_count": int(hotspot_count),
+                "hotspots": None,
+                "summary_mode": "scalar_threshold_count",
+                "threshold_includes_self": event_app.HOTSPOT_THRESHOLD + 1,
+            }
+        )
     finally:
         close = getattr(prepared, "close", None)
         if callable(close):

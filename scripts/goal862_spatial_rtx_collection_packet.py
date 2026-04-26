@@ -25,17 +25,21 @@ def build_packet() -> dict[str, Any]:
     gate = build_spatial_gate()
     manifest = build_manifest()
     rows = {str(row["app"]): row for row in gate["rows"]}
-    deferred = [
+    manifest_rows = [
+        *manifest.get("entries", []),
+        *manifest.get("deferred_entries", []),
+    ]
+    matching_manifest_rows = [
         entry
-        for entry in manifest.get("deferred_entries", [])
+        for entry in manifest_rows
         if str(entry.get("app")) in SPATIAL_APPS
     ]
-    deferred_by_app = {str(entry["app"]): entry for entry in deferred}
+    manifest_by_app = {str(entry["app"]): entry for entry in matching_manifest_rows}
 
     packet_rows: list[dict[str, Any]] = []
     for app in sorted(SPATIAL_APPS):
         gate_row = rows[app]
-        manifest_entry = deferred_by_app[app]
+        manifest_entry = manifest_by_app[app]
         packet_rows.append(
             {
                 "app": app,
@@ -62,8 +66,8 @@ def build_packet() -> dict[str, Any]:
                 "rtx_command": list(manifest_entry["command"]),
                 "claim_scope": manifest_entry["claim_scope"],
                 "non_claim": manifest_entry["non_claim"],
-                "reason_deferred": manifest_entry["reason_deferred"],
-                "activation_gate": manifest_entry["activation_gate"],
+                "reason_deferred": manifest_entry.get("reason_deferred", "active after artifact intake"),
+                "activation_gate": manifest_entry.get("activation_gate", "already active after artifact intake"),
             }
         )
 
@@ -142,7 +146,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
                 "",
             ]
         )
-    return "\n".join(lines)
+    return "\n".join(lines).rstrip()
 
 
 def main(argv: list[str] | None = None) -> int:

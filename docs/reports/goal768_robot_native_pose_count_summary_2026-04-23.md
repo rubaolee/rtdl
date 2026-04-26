@@ -62,4 +62,3 @@ Both passed.
 ## Boundary
 
 This is local preparation for the next RTX pod batch. The Mac cannot validate the native OptiX symbol because it does not have the Linux RTX OptiX build/runtime environment. No new RTX speedup claim is authorized until the cloud host rebuilds `librtdl_optix.so`, reruns Goal 763, reruns Goal 761, and Goal 762 records the updated artifacts.
-

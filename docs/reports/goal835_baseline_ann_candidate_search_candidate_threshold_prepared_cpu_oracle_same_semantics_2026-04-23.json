@@ -1,0 +1,54 @@
+{
+  "app": "ann_candidate_search",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_oracle_same_semantics",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 3
+  },
+  "claim_limit": "bounded sub-path only",
+  "comparable_metric_scope": "same app/path semantics for ann_candidate_search:candidate_threshold_prepared",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "CPU oracle computes the same candidate-coverage threshold decision as the OptiX prepared path.",
+    "Goal979 repaired CPU oracle comparable timing; previous artifact used native_query=0.0."
+  ],
+  "path_name": "candidate_threshold_prepared",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "input_build": 0.08085491601377726,
+    "materialization_or_copyback": 0.0,
+    "native_query": 0.003666625008918345,
+    "postprocess": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build",
+    "backend_prepare",
+    "native_query",
+    "materialization_or_copyback",
+    "postprocess"
+  ],
+  "source_backend": "cpu_oracle",
+  "status": "ok",
+  "summary": {
+    "covered_query_count": 60000,
+    "query_count": 60000,
+    "radius": 0.2,
+    "uncovered_query_ids": [],
+    "within_candidate_radius": true
+  },
+  "summary_sha256": "1a4c3815528e16f2110a8e8c1cadd38c788564bca4020b22cad8309782e5b8db",
+  "validation": {
+    "goal979_timing_repair": {
+      "new_native_query": 0.003666625008918345,
+      "old_native_query": 0.0,
+      "repeats": 3,
+      "summary_matches_existing": true
+    },
+    "matches_reference": true,
+    "reference": "expected_tiled_candidate_threshold"
+  }
+}

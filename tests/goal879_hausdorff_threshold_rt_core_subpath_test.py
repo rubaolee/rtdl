@@ -18,14 +18,21 @@ class _FakePreparedThreshold:
         return None
 
     def run(self, query_points, *, radius: float, threshold: int):
-        return tuple(
-            {
-                "query_id": point.id,
-                "neighbor_count": 1,
-                "threshold_reached": 1,
-            }
-            for point in query_points
-        )
+        raise AssertionError("directed threshold app path should not materialize count rows")
+
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
+        self.query_count = len(query_points)
+        self.radius = radius
+        self.threshold = threshold
+        return len(query_points)
+
+
+class _PartialPreparedThreshold(_FakePreparedThreshold):
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
+        self.query_count = len(query_points)
+        self.radius = radius
+        self.threshold = threshold
+        return max(0, len(query_points) - 1)
 
 
 class Goal879HausdorffThresholdRtCoreSubpathTest(unittest.TestCase):
@@ -43,6 +50,29 @@ class Goal879HausdorffThresholdRtCoreSubpathTest(unittest.TestCase):
         self.assertTrue(payload["oracle_within_threshold"])
         self.assertTrue(payload["matches_oracle"])
         self.assertIsNone(payload["hausdorff_distance"])
+        self.assertEqual(payload["directed_a_to_b"]["summary_mode"], "scalar_threshold_count")
+        self.assertIsNone(payload["directed_a_to_b"]["row_count"])
+        self.assertTrue(payload["directed_a_to_b"]["identity_parity_available"])
+        self.assertTrue(payload["oracle_decision_matches"])
+        self.assertTrue(payload["oracle_identity_matches"])
+
+    def test_optix_threshold_failure_keeps_scalar_identity_boundary(self) -> None:
+        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=_PartialPreparedThreshold):
+            payload = app.run_app(
+                "optix",
+                copies=1,
+                optix_summary_mode="directed_threshold_prepared",
+                hausdorff_threshold=0.4,
+                require_rt_core=True,
+            )
+
+        self.assertFalse(payload["within_threshold"])
+        self.assertFalse(payload["matches_oracle"])
+        self.assertIsNone(payload["directed_a_to_b"]["violating_source_ids"])
+        self.assertFalse(payload["directed_a_to_b"]["identity_parity_available"])
+        self.assertIsNone(payload["directed_b_to_a"]["violating_source_ids"])
+        self.assertFalse(payload["directed_b_to_a"]["identity_parity_available"])
+        self.assertIsNone(payload["oracle_identity_matches"])
 
     def test_require_rt_core_rejects_default_knn_rows_mode(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "directed_threshold_prepared"):

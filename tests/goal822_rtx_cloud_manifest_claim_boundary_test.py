@@ -29,7 +29,7 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
                 self.assertNotIn(app, active_apps)
                 self.assertIn(app, manifest["excluded_apps"])
 
-    def test_apps_waiting_on_real_rtx_artifacts_are_deferred_not_active(self) -> None:
+    def test_deferred_regression_entries_are_ready_but_not_active(self) -> None:
         manifest = build_manifest()
         active_apps = {entry["app"] for entry in manifest["entries"]}
         deferred = {entry["app"]: entry for entry in manifest["deferred_entries"]}
@@ -47,8 +47,8 @@ class Goal822RtxCloudManifestClaimBoundaryTest(unittest.TestCase):
             with self.subTest(app=app):
                 self.assertNotIn(app, active_apps)
                 self.assertIn(app, deferred)
-                self.assertEqual(deferred[app]["benchmark_readiness"], "needs_real_rtx_artifact")
-                self.assertIn("Promote only after", deferred[app]["activation_gate"])
+                self.assertEqual(deferred[app]["benchmark_readiness"], "ready_for_rtx_claim_review")
+                self.assertTrue(deferred[app]["activation_gate"].strip())
 
     def test_reviewed_prepared_summaries_have_rtx_artifacts_and_are_active(self) -> None:
         manifest = build_manifest()

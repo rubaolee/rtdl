@@ -16,6 +16,9 @@ class _PreparedStub:
     def run(self, query_points, *, radius: float, threshold: int):
         return self.rows
 
+    def count_threshold_reached(self, query_points, *, radius: float, threshold: int):
+        return sum(1 for row in self.rows if int(row["neighbor_count"]) >= threshold)
+
     def close(self) -> None:
         pass
 

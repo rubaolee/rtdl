@@ -1,7 +1,7 @@
 # Claude: Goal 255 Front Page Final Review (2026-04-11)
 
-Reviewer: Claude Sonnet 4.6  
-Date: 2026-04-11  
+Reviewer: Claude Sonnet 4.6
+Date: 2026-04-11
 Inputs reviewed:
 - `README.md` (implemented rewrite)
 - `docs/reports/goal255_front_page_rewrite_2026-04-11.md`
@@ -22,7 +22,7 @@ non-blocking.
 
 ### Section order matches consensus
 
-All nine consensus-ordered sections are present in the correct sequence.  
+All nine consensus-ordered sections are present in the correct sequence.
 The inserted "What The Video Shows" section sits between "What RTDL Contains"
 and "Why RTDL Exists" — a natural position that explains the demo boundary in
 context without disrupting the flow.

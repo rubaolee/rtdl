@@ -1,6 +1,6 @@
 # Goal 173: 4K Render Program Explanation
 
-**Date:** 2026-04-08  
+**Date:** 2026-04-08
 **Subject:** Windows Embree 4K movie, how the program works
 
 ## Overview
@@ -21,42 +21,42 @@ and does the rest itself.
 
 ## Pipeline
 
-1. **Mesh construction (Python)**  
+1. **Mesh construction (Python)**
    `make_uv_sphere_mesh()` builds a UV-sphere triangle mesh in pure Python. The
    mesh stays fixed across frames; the visible change comes from the light path
    and the scene composition.
 
-2. **Camera ray generation (Python)**  
+2. **Camera ray generation (Python)**
    `make_camera_rays()` emits one `rt.Ray3D` per pixel using a pinhole camera
    model. At 4K, that is `8,294,400` rays per frame.
 
-3. **Primary hit query (RTDL / Embree)**  
+3. **Primary hit query (RTDL / Embree)**
    The frame renderer hands rays and triangles to the Embree backend through the
    RTDL runtime. BVH traversal returns per-ray hit counts. This is the core RTDL
    execution step for primary rays.
 
-4. **Intersection refinement (Python)**  
+4. **Intersection refinement (Python)**
    For each hit pixel, Python computes the exact sphere-ray intersection with
    `_ray_sphere_intersection()` to recover the hit point and surface normal.
    RTDL determines which rays hit; Python determines where the visible hit lies
    on the intended sphere surface.
 
-5. **Shadow query (RTDL / Embree)**  
+5. **Shadow query (RTDL / Embree)**
    Python builds shadow rays toward the orbiting light and sends them through
    the same backend path. Returned hit counts indicate whether a visible point
    is shadowed.
 
-6. **Shading (Python)**  
+6. **Shading (Python)**
    `_shade_orbit_hit()` and `_shade_pending_hits_numpy()` compute the surface
    look: Lambertian lighting, specular response, Fresnel rim, the blue body
    gradient, and the warm yellow sunlight contribution.
 
-7. **Frame composition (Python)**  
+7. **Frame composition (Python)**
    Python paints the background gradient, the ground shadow, the light halo, the
    sun disc overlay, and the moving ground highlight. Optional temporal blending
    can be applied after PPM frames are written.
 
-8. **Frame export and movie packaging (Python + external tool)**  
+8. **Frame export and movie packaging (Python + external tool)**
    `_write_ppm()` writes each frame as a PPM image. The accepted MP4 is then
    assembled from those frames during a later packaging step.
 
@@ -79,7 +79,7 @@ about `107.97 s`. Across the whole 4K run, RTDL query share is about
 `13.93%` of wall time, which is consistent with RTDL serving as the
 geometric-query engine while Python owns the heavier scene and media logic.
 
-**Why Embree on Windows:**  
+**Why Embree on Windows:**
 OptiX required an NVIDIA GPU stack not used on the Windows workstation for this
 path. Vulkan was not the accepted Windows movie path. The CPU Python reference
 backend is far too slow at 4K. Embree provided a correct, multi-core CPU BVH

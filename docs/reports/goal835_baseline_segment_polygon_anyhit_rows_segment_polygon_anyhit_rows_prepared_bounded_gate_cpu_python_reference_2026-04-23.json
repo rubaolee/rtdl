@@ -1,0 +1,63 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_python_reference",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+  "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Local CPU pair-row baseline only; OptiX bounded pair rows and PostGIS remain unavailable locally."
+  ],
+  "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+  "phase_seconds": {
+    "copied_count": 2816.0,
+    "cpu_reference_total_sec": 0.01434683392290026,
+    "emitted_count": 2816.0,
+    "input_build_sec": 0.0,
+    "optix_close_sec": 0.0,
+    "optix_prepare_sec": 0.0,
+    "optix_query_sec": 0.0,
+    "overflowed": 0.0,
+    "python_postprocess_sec": 0.0,
+    "status": 1.0,
+    "strict_failures": 0.0,
+    "strict_pass": 1.0,
+    "validation_sec": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "cpu_reference_total_sec",
+    "optix_prepare_sec",
+    "optix_query_sec",
+    "python_postprocess_sec",
+    "validation_sec",
+    "optix_close_sec",
+    "emitted_count",
+    "copied_count",
+    "overflowed",
+    "strict_pass",
+    "strict_failures",
+    "status"
+  ],
+  "source_backend": "cpu_python_reference",
+  "status": "ok",
+  "summary": {
+    "row_count": 2816,
+    "segment_count": 2816
+  },
+  "summary_sha256": "3a29a533721ed098637c20be6580131ed06f3d64e141246a50c73b871a4fe245",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "row_count": 2816,
+      "segment_count": 2816
+    }
+  }
+}

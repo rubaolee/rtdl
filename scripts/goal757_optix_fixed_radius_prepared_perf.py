@@ -22,11 +22,17 @@ SCHEMA_VERSION = "goal825_tier1_phase_contract_v1"
 
 def _cloud_claim_contract(app: str, result_mode: str) -> dict[str, Any]:
     if app == "outlier_detection":
-        claim_scope = "prepared fixed-radius threshold summary traversal only"
-        non_claim = "not KNN, Hausdorff, ANN, Barnes-Hut, anomaly-system, row-output, or whole-app RTX speedup"
+        claim_scope = "prepared fixed-radius scalar threshold-count traversal only"
+        non_claim = (
+            "not per-point outlier labels, KNN, Hausdorff, ANN, Barnes-Hut, "
+            "anomaly-system, row-output, or whole-app RTX speedup"
+        )
     elif app == "dbscan_clustering":
-        claim_scope = "prepared fixed-radius core-flag summary traversal only"
-        non_claim = "not full DBSCAN clustering, cluster expansion, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup"
+        claim_scope = "prepared fixed-radius scalar core-count traversal only"
+        non_claim = (
+            "not per-point core flags, not full DBSCAN clustering, cluster expansion, "
+            "KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup"
+        )
     else:
         claim_scope = "prepared fixed-radius summary traversal only"
         non_claim = "not a broad RTX app speedup claim"

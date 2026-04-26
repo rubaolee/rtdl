@@ -16,6 +16,6 @@ In this file, lines 29 and 74 still list `"benchmark_readiness": "needs_phase_co
 
 ## Missing Files to Refresh
 The following file is missing from the refresh and must be regenerated to complete this bounded change:
-- `docs/reports/goal759_rtx_cloud_benchmark_manifest_2026-04-22.json` 
+- `docs/reports/goal759_rtx_cloud_benchmark_manifest_2026-04-22.json`
 
 *(Can be fixed by running: `python3 scripts/goal759_rtx_cloud_benchmark_manifest.py --output-json docs/reports/goal759_rtx_cloud_benchmark_manifest_2026-04-22.json`)*

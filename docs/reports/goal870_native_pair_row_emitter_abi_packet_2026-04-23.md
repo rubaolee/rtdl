@@ -14,4 +14,3 @@
 ## Boundary
 
 This goal records the bounded ABI scaffold for the native pair-row emitter. Later goals may add implementation behind the helper, but the public rows path still uses the host-indexed helper until a promotion gate passes.
-

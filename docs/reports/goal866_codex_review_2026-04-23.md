@@ -23,4 +23,3 @@ Verification passed:
 - focused tests: `16 OK`
 - `py_compile` OK
 - `git diff --check` OK
-

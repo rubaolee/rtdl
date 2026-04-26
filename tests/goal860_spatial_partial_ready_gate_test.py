@@ -28,6 +28,18 @@ class Goal860SpatialPartialReadyGateTest(unittest.TestCase):
                 self.assertEqual(len(rows[app]["optional_checks"]), 1)
                 self.assertEqual(rows[app]["optional_checks"][0]["baseline"], "scipy_baseline_when_available")
 
+    def test_current_spatial_artifacts_are_ready_for_review(self) -> None:
+        module = __import__("scripts.goal860_spatial_partial_ready_gate", fromlist=["build_spatial_gate"])
+        payload = module.build_spatial_gate()
+        self.assertEqual(payload["status"], "ready_for_review")
+        self.assertEqual(payload["required_valid_artifact_count"], 4)
+        rows = {row["app"]: row for row in payload["rows"]}
+        for app in ("service_coverage_gaps", "event_hotspot_screening"):
+            with self.subTest(app=app):
+                self.assertEqual(rows[app]["row_status"], "ready_for_review")
+                self.assertTrue(all(item["status"] == "valid" for item in rows[app]["required_checks"]))
+                self.assertEqual(rows[app]["rtx_artifact"]["status"], "valid")
+
     def test_cli_writes_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "gate.json"

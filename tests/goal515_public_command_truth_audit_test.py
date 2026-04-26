@@ -13,6 +13,7 @@ class Goal515PublicCommandTruthAuditTest(unittest.TestCase):
         self.assertGreaterEqual(payload["command_count"], 80)
         self.assertIn("goal410_harness_exact", payload["coverage_counts"])
         self.assertIn("goal410_harness_family", payload["coverage_counts"])
+        self.assertIn("goal992_scalar_fixed_radius_command_exact", payload["coverage_counts"])
         self.assertIn("postgresql_validation_command", payload["coverage_counts"])
         self.assertIn("linux_gpu_backend_gated", payload["classification_counts"])
         self.assertIn("linux_postgresql_gated", payload["classification_counts"])
@@ -20,6 +21,14 @@ class Goal515PublicCommandTruthAuditTest(unittest.TestCase):
         commands = {record["normalized"] for record in payload["commands"]}
         self.assertIn(
             "python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle",
+            commands,
+        )
+        self.assertIn(
+            "python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
+            commands,
+        )
+        self.assertIn(
+            "python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
             commands,
         )
         feature_cookbook = [

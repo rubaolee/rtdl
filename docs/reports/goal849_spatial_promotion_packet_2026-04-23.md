@@ -19,8 +19,8 @@ Package the existing local evidence for the two partial-ready spatial apps so th
 
 Dry-run timings:
 
-- `input_build`: `9.625102393329144e-06`
-- `cpu_reference_total`: `8.450006134808064e-05`
+- `input_build`: `1.1167023330926895e-05`
+- `cpu_reference_total`: `9.962508920580149e-05`
 
 Dry-run result keys:
 
@@ -43,8 +43,8 @@ Dry-run result keys:
 
 Dry-run timings:
 
-- `input_build`: `8.958973921835423e-06`
-- `cpu_reference_total`: `0.00012258300557732582`
+- `input_build`: `2.379098441451788e-05`
+- `cpu_reference_total`: `0.0003025829792022705`
 
 Dry-run result keys:
 
@@ -55,4 +55,3 @@ Dry-run result keys:
 ## Boundary
 
 This packet tracks the two spatial prepared-summary apps. Service coverage now has a reviewed RTX artifact for its bounded gap-summary path; event hotspot now has a reviewed RTX artifact and same-scale Embree baseline parity for its bounded count-summary path. The packet does not authorize a public RTX speedup claim.
-

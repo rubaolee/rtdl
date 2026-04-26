@@ -77,7 +77,7 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal761_rtx_cloud_run_all.py", text)
         for group in (
             "Group A: Robot Flagship",
-            "Group B: Fixed-Radius Summaries",
+            "Group B: Fixed-Radius Scalar Counts",
             "Group C: Database Analytics",
             "Group D: Spatial Prepared Summaries",
             "Group E: Segment/Polygon And Road Gates",
@@ -87,6 +87,35 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         ):
             with self.subTest(group=group):
                 self.assertIn(group, text)
+
+        self.assertIn("density_count", text)
+        self.assertIn("core_count", text)
+        self.assertIn("It must not be interpreted as per-point", text)
+
+    def test_group_g_uses_validated_manifest_commands(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+        start = text.index("### Group G: Prepared Decision Apps")
+        end = text.index("### Group H: Polygon Apps", start)
+        group_g = text[start:end]
+
+        self.assertIn("--only directed_threshold_prepared", group_g)
+        self.assertIn("--only candidate_threshold_prepared", group_g)
+        self.assertIn("--only node_coverage_prepared", group_g)
+        self.assertIn("Do not add\n`--skip-validation`", group_g)
+        self.assertNotIn("--skip-validation \\", group_g)
+
+    def test_segment_polygon_group_uses_current_prepared_gates(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("--only road_hazard_native_summary_gate", text)
+        self.assertIn("--only segment_polygon_hitcount_native_experimental", text)
+        self.assertIn("--only segment_polygon_anyhit_rows_prepared_bounded_gate", text)
+        self.assertNotIn("--only segment_polygon_anyhit_rows_native_bounded_gate", text)
+        self.assertIn("goal933_prepared_segment_polygon_optix_profiler.py", text)
+        self.assertIn("goal934_prepared_segment_polygon_pair_rows_optix_profiler.py", text)
+        self.assertIn("emitted_count", text)
+        self.assertIn("copied_count", text)
+        self.assertIn("overflowed", text)
 
 
 if __name__ == "__main__":

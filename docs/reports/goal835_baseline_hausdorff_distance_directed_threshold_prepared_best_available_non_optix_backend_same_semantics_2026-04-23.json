@@ -1,0 +1,53 @@
+{
+  "app": "hausdorff_distance",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "best_available_non_optix_backend_same_semantics",
+  "benchmark_scale": {
+    "copies": 4096,
+    "iterations": 3
+  },
+  "claim_limit": "bounded sub-path only",
+  "comparable_metric_scope": "same app/path semantics for hausdorff_distance:directed_threshold_prepared",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Embree directed-Hausdorff summary is reduced to the same threshold decision."
+  ],
+  "path_name": "directed_threshold_prepared",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "input_build": 0.013471791055053473,
+    "materialization_or_copyback": 0.0,
+    "native_query": 2.5067337080836296,
+    "postprocess": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build",
+    "backend_prepare",
+    "native_query",
+    "materialization_or_copyback",
+    "postprocess"
+  ],
+  "source_backend": "embree",
+  "status": "ok",
+  "summary": {
+    "hausdorff_distance": 0.30000000000000004,
+    "point_count_a": 16384,
+    "point_count_b": 16384,
+    "radius": 0.4,
+    "within_threshold": true
+  },
+  "summary_sha256": "52f27529e1d3fed7a6bf26a4f8bf3ea77741e9b631bc3f0df5f5caf0ddf79ec4",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "hausdorff_distance": 0.30000000000000004,
+      "point_count_a": 16384,
+      "point_count_b": 16384,
+      "radius": 0.4,
+      "within_threshold": true
+    }
+  }
+}

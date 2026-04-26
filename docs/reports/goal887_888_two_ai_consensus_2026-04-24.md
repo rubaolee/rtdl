@@ -42,4 +42,3 @@ PYTHONPATH=src:. python3 -m unittest \
 ```
 
 Result: `40 tests OK`.
-

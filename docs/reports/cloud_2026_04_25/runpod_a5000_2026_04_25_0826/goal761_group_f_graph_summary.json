@@ -1,0 +1,83 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 1,
+  "failed_count": 0,
+  "git_head": "7f569829fbad00f9bfa58e758b0fc4ee0324b410",
+  "git_status_short": "ared_decision_summary.json\n?? docs/reports/goal761_group_h_polygon_summary.json\n?? docs/reports/goal763_rtx_cloud_bootstrap_check.json\n?? docs/reports/goal811_event_hotspot_rtx.json\n?? docs/reports/goal811_service_coverage_rtx.json\n?? docs/reports/goal850_claude_review_2026-04-23.md\n?? docs/reports/goal877_jaccard_phase_rtx.json\n?? docs/reports/goal877_pair_overlap_phase_rtx.json\n?? docs/reports/goal887_ann_candidate_coverage_rtx.json\n?? docs/reports/goal887_barnes_hut_node_coverage_rtx.json\n?? docs/reports/goal887_facility_service_coverage_rtx.json\n?? docs/reports/goal887_hausdorff_threshold_rtx.json\n?? docs/reports/goal889_graph_visibility_optix_gate_rtx.json\n?? docs/reports/goal929_claude_review_2026-04-25.md\n?? docs/reports/goal929_gemini_review_2026-04-25.md\n?? docs/reports/goal929_rtx_3090_cloud_group_results_2026-04-25.md\n?? docs/reports/goal929_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal930_claude_review_2026-04-25.md\n?? docs/reports/goal930_gemini_review_2026-04-25.md\n?? docs/reports/goal930_rtx_3090_app_intake_and_matrix_promotion_2026-04-25.md\n?? docs/reports/goal930_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal931_group_g_manual_artifact_intake_2026-04-25.md\n?? docs/reports/goal931_group_g_manual_artifact_report_2026-04-25.json\n?? docs/reports/goal931_group_g_manual_artifact_report_2026-04-25.md\n?? docs/reports/goal931_group_g_manual_artifact_summary_2026-04-25.json\n?? docs/reports/goal932_claude_review_2026-04-25.md\n?? docs/reports/goal932_gemini_review_2026-04-25.md\n?? docs/reports/goal932_group_g_validation_packaging_2026-04-25.md\n?? docs/reports/goal932_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal933_claude_review_2026-04-25.md\n?? docs/reports/goal933_gemini_review_2026-04-25.md\n?? docs/reports/goal933_prepared_segment_polygon_optix_local_work_2026-04-25.md\n?? docs/reports/goal933_road_hazard_prepared_summary_rtx.json\n?? docs/reports/goal933_segment_polygon_hitcount_prepared_rtx.json\n?? docs/reports/goal933_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal934_codex_peer_review_2026-04-25.md\n?? docs/reports/goal934_gemini_review_2026-04-25.md\n?? docs/reports/goal934_prepared_segment_polygon_pair_rows_optix_local_work_2026-04-25.md\n?? docs/reports/goal934_segment_polygon_anyhit_rows_prepared_bounded_rtx.json\n?? docs/reports/goal934_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal935_consolidated_rtx_runbook_sync_after_goal934_2026-04-25.md\n?? docs/reports/goal935_peer_review_2026-04-25.md\n?? docs/reports/goal935_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal936_next_rtx_pod_execution_packet_2026-04-25.md\n?? docs/reports/goal936_peer_review_2026-04-25.md\n?? docs/reports/goal936_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal937_peer_review_2026-04-25.md\n?? docs/reports/goal937_ready_rtx_claim_review_packet_2026-04-25.md\n?? docs/reports/goal937_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal938_peer_review_2026-04-25.md\n?? docs/reports/goal938_public_rtx_wording_sync_2026-04-25.md\n?? docs/reports/goal938_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal939_current_rtx_claim_review_package_2026-04-25.json\n?? docs/reports/goal939_current_rtx_claim_review_package_2026-04-25.md\n?? docs/reports/goal939_peer_review_2026-04-25.md\n?? docs/reports/goal939_two_ai_consensus_2026-04-25.md\n?? docs/reports/goal940_peer_review_2026-04-25.md\n?? docs/reports/goal940_pre_cloud_gate_and_runbook_resync_2026-04-25.md\n?? docs/reports/goal940_two_ai_consensus_2026-04-25.md\n?? scripts/goal933_prepared_segment_polygon_optix_profiler.py\n?? scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py\n?? scripts/goal939_current_rtx_claim_review_package.py\n?? tests/goal933_prepared_segment_polygon_optix_test.py\n?? tests/goal933_prepared_segment_polygon_profiler_test.py\n?? tests/goal934_prepared_segment_polygon_pair_rows_profiler_test.py\n?? tests/goal937_ready_rtx_claim_review_packet_test.py\n?? tests/goal938_public_rtx_wording_sync_test.py\n?? tests/goal939_current_rtx_claim_review_package_test.py",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sat Apr 25 08:40:32 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   22C    P8             25W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl_python_only",
+  "results": [
+    {
+      "app": "graph_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+        "comparable_metric_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference_visibility_edges",
+          "cpu_python_reference_bfs",
+          "cpu_python_reference_triangle_count",
+          "optix_visibility_anyhit",
+          "optix_native_graph_ray_bfs",
+          "optix_native_graph_ray_triangle_count",
+          "embree_graph_ray_bfs_and_triangle_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "row_digest",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering plus native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+      "path_name": "graph_visibility_edges_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal889_graph_visibility_optix_gate.py",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "100",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal889_graph_visibility_optix_gate_rtx.json"
+        ],
+        "elapsed_sec": 6.092099246918224,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-25T08:40:20+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal889_graph_visibility_optix_gate_rtx.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
+      }
+    }
+  ],
+  "source_commit": "7f569829fbad00f9bfa58e758b0fc4ee0324b410",
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-25T08:40:26+0000",
+  "unique_command_count": 1
+}

@@ -1,0 +1,62 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "postgis_when_available_for_same_pair_semantics",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+  "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Linux PostGIS baseline for strict segment/polygon pair-row semantics."
+  ],
+  "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+  "phase_seconds": {
+    "copied_count": 2816.0,
+    "cpu_reference_total_sec": 0.0,
+    "emitted_count": 2816.0,
+    "input_build_sec": 0.004790588980540633,
+    "optix_close_sec": 0.0,
+    "optix_prepare_sec": 0.0,
+    "optix_query_sec": 0.014249149011448026,
+    "overflowed": 0.0,
+    "python_postprocess_sec": 0.0,
+    "status": 1.0,
+    "strict_failures": 0.0,
+    "strict_pass": 1.0,
+    "validation_sec": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "cpu_reference_total_sec",
+    "optix_prepare_sec",
+    "optix_query_sec",
+    "python_postprocess_sec",
+    "validation_sec",
+    "optix_close_sec",
+    "emitted_count",
+    "copied_count",
+    "overflowed",
+    "strict_pass",
+    "strict_failures",
+    "status"
+  ],
+  "source_backend": "postgis",
+  "status": "ok",
+  "summary": {
+    "backend_row_count": 2816,
+    "backend_sha256": "0d89acb49f0ec87e19823b1651eff67337f66689eaeff7022089034aae1845be",
+    "row_count": 2816,
+    "sha256": "0d89acb49f0ec87e19823b1651eff67337f66689eaeff7022089034aae1845be"
+  },
+  "summary_sha256": "4c2008eab9f76ee630684adb846c8b515e283eedf64bd2f8ddb86a3aa5788768",
+  "validation": {
+    "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+    "stable_and_cpu_parity": true
+  }
+}

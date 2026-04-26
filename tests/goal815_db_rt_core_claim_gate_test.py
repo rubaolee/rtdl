@@ -11,18 +11,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal815DbRtCoreClaimGateTest(unittest.TestCase):
-    def test_db_metadata_remains_partial_not_ready(self) -> None:
+    def test_db_metadata_is_goal941_ready_for_bounded_compact_summary(self) -> None:
         self.assertEqual(
             rt.optix_app_performance_support("database_analytics").performance_class,
             "python_interface_dominated",
         )
         self.assertEqual(
             rt.optix_app_benchmark_readiness("database_analytics").status,
-            "needs_interface_tuning",
+            "ready_for_rtx_claim_review",
         )
         self.assertEqual(
             rt.rt_core_app_maturity("database_analytics").current_status,
-            "rt_core_partial_ready",
+            "rt_core_ready",
         )
 
     def test_require_rt_core_rejects_non_optix_backend(self) -> None:

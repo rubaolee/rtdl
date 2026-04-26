@@ -163,6 +163,8 @@ from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
+from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
+from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
 from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
@@ -171,6 +173,8 @@ from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
+from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
+from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
 from .optix_runtime import run_optix
 from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .reduction_runtime import reduce_rows
@@ -305,6 +309,12 @@ from .ir import RefineOp
 from .lowering import lower_to_execution_plan
 from .lowering import lower_to_rayjoin
 from .oracle_runtime import oracle_version
+from .oracle_runtime import refine_polygon_pair_overlap_area_rows_for_pairs
+from .oracle_runtime import refine_polygon_set_jaccard_for_pairs
+from .oracle_runtime import summarize_bfs_rows
+from .oracle_runtime import summarize_fixed_radius_rows
+from .oracle_runtime import summarize_knn_rows
+from .oracle_runtime import summarize_triangle_rows
 from .plan_schema import load_plan_schema
 from .plan_schema import schema_path
 from .plan_schema import validate_plan_dict
@@ -592,6 +602,12 @@ __all__ = [
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
+    "refine_polygon_pair_overlap_area_rows_for_pairs",
+    "refine_polygon_set_jaccard_for_pairs",
+    "summarize_bfs_rows",
+    "summarize_fixed_radius_rows",
+    "summarize_knn_rows",
+    "summarize_triangle_rows",
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
@@ -720,6 +736,8 @@ __all__ = [
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_count_threshold_2d",
+    "prepare_optix_segment_polygon_anyhit_rows_2d",
+    "prepare_optix_segment_polygon_hitcount_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
     "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",
@@ -728,6 +746,8 @@ __all__ = [
     "PreparedOptixFixedRadiusCountThreshold2D",
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
+    "PreparedOptixSegmentPolygonAnyHitRows2D",
+    "PreparedOptixSegmentPolygonHitcount2D",
     "run_optix",
     "segment_polygon_anyhit_rows_native_bounded_optix",
     "triangle_match_apple_rt",

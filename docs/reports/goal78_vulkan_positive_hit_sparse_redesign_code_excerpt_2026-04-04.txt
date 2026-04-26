@@ -175,4 +175,3 @@ static void run_pip_vulkan(
     *rows_out      = out;
     *row_count_out = out_count;
 }
-

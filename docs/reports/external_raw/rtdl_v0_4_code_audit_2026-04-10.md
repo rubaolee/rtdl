@@ -1,7 +1,7 @@
 # RTDL v0.4 Code Audit — 2026-04-10
 
-Examiner: Claude (claude-sonnet-4-6)  
-Repo clone: `/Users/rl2025/claude-work/rtdl_review_2026-04-10`  
+Examiner: Claude (claude-sonnet-4-6)
+Repo clone: `/Users/rl2025/claude-work/rtdl_review_2026-04-10`
 Date: 2026-04-10
 
 ---
@@ -113,7 +113,7 @@ if (right.distance < left.distance - kPointEps) return false;
 return left.neighbor_id < right.neighbor_id;
 ```
 
-This means two distances differing by less than 1e-12 are treated as a tie and broken by neighbor_id. The Python reference uses exact floating-point comparison (`candidates.sort(key=lambda item: (item[0], item[1]))`). 
+This means two distances differing by less than 1e-12 are treated as a tie and broken by neighbor_id. The Python reference uses exact floating-point comparison (`candidates.sort(key=lambda item: (item[0], item[1]))`).
 
 In practice, for 2D Euclidean distances computed from double-precision arithmetic this produces identical results. But theoretically, for distances that differ by less than 1e-12, the C oracle places them in neighbor_id order while Python sorts by exact distance value. This divergence is detectable only with contrived inputs and is unlikely to matter for real workloads. Noted for completeness.
 

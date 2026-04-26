@@ -1,0 +1,33 @@
+{
+  "boundary": "Goal979 repairs zero CPU oracle timing fields for deferred decision baselines. It does not collect cloud data, repair graph same-scale timing, or authorize public RTX speedup claims.",
+  "date": "2026-04-26",
+  "goal": "Goal979 deferred CPU timing repair",
+  "rows": [
+    {
+      "app": "hausdorff_distance",
+      "new_native_query": 2.245791256427765e-05,
+      "old_native_query": 0.0,
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_hausdorff_distance_directed_threshold_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+      "status": "ok",
+      "summary_matches_existing": true
+    },
+    {
+      "app": "ann_candidate_search",
+      "new_native_query": 0.003666625008918345,
+      "old_native_query": 0.0,
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_ann_candidate_search_candidate_threshold_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+      "status": "ok",
+      "summary_matches_existing": true
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "new_native_query": 0.0006991670234128833,
+      "old_native_query": 0.0,
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_barnes_hut_force_app_node_coverage_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+      "status": "ok",
+      "summary_matches_existing": true
+    }
+  ],
+  "status": "ok",
+  "write": true
+}

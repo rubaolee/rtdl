@@ -27,4 +27,3 @@ The local pre-cloud readiness gate is valid. Cloud should still wait until the
 next local batch is ready to run in one session. If no new local code changes
 are added before cloud, the pod can be started after this Goal884 package is
 committed and pushed.
-

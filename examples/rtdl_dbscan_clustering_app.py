@@ -260,6 +260,22 @@ def _run_optix_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]])
     return _core_flag_rows_from_count_rows(case["points"], count_rows)
 
 
+def _run_optix_prepared_core_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
+    with rt.prepare_optix_fixed_radius_count_threshold_2d(case["points"], max_radius=EPSILON) as prepared:
+        core_count = prepared.count_threshold_reached(
+            case["points"],
+            radius=EPSILON,
+            threshold=MIN_POINTS,
+        )
+    return {
+        "point_count": len(case["points"]),
+        "threshold_reached_count": int(core_count),
+        "core_count": int(core_count),
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+    }
+
+
 def _run_embree_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
     count_rows = rt.fixed_radius_count_threshold_2d_embree(
         case["points"],
@@ -278,6 +294,25 @@ def _run_embree_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]
             threshold=MIN_POINTS,
         )
     return _core_flag_rows_from_count_rows(case["points"], count_rows)
+
+
+def _native_continuation_backend(
+    backend: str,
+    *,
+    output_mode: str,
+    optix_summary_mode: str,
+    embree_summary_mode: str,
+) -> str:
+    if backend == "optix" and (
+        output_mode in {"core_flags", "core_count"}
+        or optix_summary_mode in {"rt_core_flags", "rt_core_flags_prepared"}
+    ):
+        return "optix_threshold_count"
+    if backend == "embree" and (
+        output_mode == "core_flags" or embree_summary_mode in {"rt_core_flags", "rt_core_flags_prepared"}
+    ):
+        return "embree_threshold_count"
+    return "none"
 
 
 def _cluster_sizes(cluster_rows: tuple[dict[str, object], ...]) -> dict[int, int]:
@@ -303,8 +338,45 @@ class PreparedDbscanCoreFlagSession:
     def run(self, *, output_mode: str = "core_flags") -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared DBSCAN core-flag session is closed")
-        if output_mode != "core_flags":
-            raise ValueError("prepared DBSCAN core-flag session currently supports output_mode='core_flags'")
+        if output_mode not in {"core_flags", "core_count"}:
+            raise ValueError("prepared DBSCAN core-flag session currently supports output_mode='core_flags' or 'core_count'")
+        if output_mode == "core_count":
+            core_count = self._prepared.count_threshold_reached(
+                self.case["points"],
+                radius=EPSILON,
+                threshold=MIN_POINTS,
+            )
+            oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=self.copies)
+            oracle_core_count = sum(1 for row in oracle_core_flag_rows if bool(row["is_core"]))
+            return {
+                "app": "dbscan_clustering",
+                "backend": self.backend,
+                "execution_mode": "prepared_session",
+                "output_mode": output_mode,
+                "optix_summary_mode": "rt_core_flags_prepared",
+                "embree_summary_mode": "not_applicable",
+                "epsilon": EPSILON,
+                "min_points": MIN_POINTS,
+                "k_max": K_MAX,
+                "copies": self.copies,
+                "point_count": len(self.case["points"]),
+                "threshold_reached_count": int(core_count),
+                "core_count": int(core_count),
+                "oracle_core_count": oracle_core_count,
+                "neighbor_row_count": 0,
+                "cluster_rows": (),
+                "cluster_sizes": {},
+                "core_flag_rows": (),
+                "native_continuation_active": True,
+                "native_continuation_backend": "optix_threshold_count",
+                "noise_point_ids": (),
+                "oracle_cluster_rows": (),
+                "oracle_core_flag_rows": (),
+                "matches_oracle": int(core_count) == oracle_core_count,
+                "summary_mode": "scalar_threshold_count",
+                "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits only scalar DBSCAN core counts; point identities and cluster expansion remain outside this scalar mode.",
+                "boundary": "Prepared OptiX core_count covers the RT-heavy fixed-radius core predicate count only. Use core_flags when per-point core labels are required; full DBSCAN cluster expansion remains Python-side.",
+            }
         count_rows = self._prepared.run(
             self.case["points"],
             radius=EPSILON,
@@ -330,11 +402,13 @@ class PreparedDbscanCoreFlagSession:
             "cluster_rows": (),
             "cluster_sizes": {},
             "core_flag_rows": core_flag_rows,
+            "native_continuation_active": True,
+            "native_continuation_backend": "optix_threshold_count",
             "noise_point_ids": (),
             "oracle_cluster_rows": (),
             "oracle_core_flag_rows": oracle_core_flag_rows,
             "matches_oracle": core_flags == oracle_core_flags,
-            "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits compact DBSCAN core flags; Python clustering expansion remains outside this prepared summary path.",
+            "rtdl_role": "Prepared OptiX reuses the fixed-radius count-threshold RT traversal scene and emits compact DBSCAN core flags without materializing neighbor rows; Python clustering expansion remains outside this prepared summary path.",
             "boundary": "Prepared OptiX core flags cover the RT-heavy fixed-radius density predicate only. Full DBSCAN cluster expansion remains Python-side and is not claimed as a backend primitive.",
         }
 
@@ -367,12 +441,29 @@ def run_app(
         raise ValueError("optix_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
     if embree_summary_mode not in {"rows", "rt_core_flags", "rt_core_flags_prepared"}:
         raise ValueError("embree_summary_mode must be 'rows', 'rt_core_flags', or 'rt_core_flags_prepared'")
-    if output_mode not in {"full", "core_flags"}:
-        raise ValueError("output_mode must be 'full' or 'core_flags'")
+    if output_mode not in {"full", "core_flags", "core_count"}:
+        raise ValueError("output_mode must be 'full', 'core_flags', or 'core_count'")
     case = make_dbscan_case(copies=copies)
     points = case["points"]
     core_flag_rows: tuple[dict[str, object], ...] = ()
-    if output_mode == "core_flags" and backend == "embree":
+    scalar_core_count: dict[str, int | str | None] | None = None
+    if output_mode == "core_count" and backend == "optix":
+        neighbor_rows = ()
+        cluster_rows = ()
+        scalar_core_count = _run_optix_prepared_core_count(case)
+    elif output_mode == "core_count":
+        neighbor_rows = ()
+        cluster_rows = ()
+        oracle_scalar_rows = expected_tiled_core_flag_rows(copies=copies)
+        oracle_core_count_for_scalar = sum(1 for row in oracle_scalar_rows if bool(row["is_core"]))
+        scalar_core_count = {
+            "point_count": len(points),
+            "threshold_reached_count": oracle_core_count_for_scalar,
+            "core_count": oracle_core_count_for_scalar,
+            "row_count": None,
+            "summary_mode": "scalar_threshold_count_oracle",
+        }
+    elif output_mode == "core_flags" and backend == "embree":
         neighbor_rows = ()
         cluster_rows = ()
         core_flag_rows = _run_embree_prepared_core_flag_summary(case)
@@ -403,18 +494,27 @@ def run_app(
     else:
         neighbor_rows = _run_rows(backend, case)
         cluster_rows = cluster_from_neighbor_rows(points, neighbor_rows)
-    if output_mode == "core_flags" or core_flag_rows:
+    if output_mode in {"core_flags", "core_count"} or core_flag_rows:
         oracle_rows = ()
         oracle_core_flag_rows = expected_tiled_core_flag_rows(copies=copies)
     else:
         oracle_rows = brute_force_dbscan(points)
         oracle_core_flag_rows = brute_force_core_flag_rows(points)
-    if core_flag_rows:
+    if scalar_core_count is not None:
+        oracle_core_count = sum(1 for row in oracle_core_flag_rows if bool(row["is_core"]))
+        matches_oracle = int(scalar_core_count["core_count"]) == oracle_core_count
+    elif core_flag_rows:
         core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in core_flag_rows]
         oracle_core_flags = [(int(row["point_id"]), bool(row["is_core"])) for row in oracle_core_flag_rows]
         matches_oracle = core_flags == oracle_core_flags
     else:
         matches_oracle = cluster_rows == oracle_rows
+    native_continuation_backend = _native_continuation_backend(
+        backend,
+        output_mode=output_mode,
+        optix_summary_mode=optix_summary_mode,
+        embree_summary_mode=embree_summary_mode,
+    )
 
     return {
         "app": "dbscan_clustering",
@@ -431,11 +531,19 @@ def run_app(
         "cluster_rows": cluster_rows,
         "cluster_sizes": _cluster_sizes(cluster_rows),
         "core_flag_rows": core_flag_rows,
+        "threshold_reached_count": (
+            int(scalar_core_count["threshold_reached_count"]) if scalar_core_count is not None else None
+        ),
+        "core_count": int(scalar_core_count["core_count"]) if scalar_core_count is not None else sum(1 for row in core_flag_rows if bool(row.get("is_core", False))),
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
         "noise_point_ids": [int(row["point_id"]) for row in cluster_rows if int(row["cluster_id"]) == NOISE_CLUSTER_ID],
         "oracle_cluster_rows": oracle_rows,
         "oracle_core_flag_rows": oracle_core_flag_rows,
+        "oracle_core_count": sum(1 for row in oracle_core_flag_rows if bool(row.get("is_core", False))),
+        "summary_mode": scalar_core_count["summary_mode"] if scalar_core_count is not None else None,
         "matches_oracle": matches_oracle,
-        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. output_mode=core_flags emits only thresholded core flags; Embree uses a prepared fixed-radius threshold traversal for this compact path.",
+        "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.",
         "boundary": "Bounded app-level DBSCAN demo only; RTDL does not yet expose clustering expansion or connected-component reduction as language primitives. Embree/OptiX rt_core_flags is a fixed-radius core predicate prototype, not KNN/Hausdorff/Barnes-Hut. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
     }
 
@@ -452,9 +560,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--copies", type=int, default=1, help="tile the authored clustering fixture")
     parser.add_argument(
         "--output-mode",
-        choices=("full", "core_flags"),
+        choices=("full", "core_flags", "core_count"),
         default="full",
-        help="full emits neighbor/cluster rows; core_flags emits compact DBSCAN core predicates for scalable app timing",
+        help="full emits neighbor/cluster rows; core_flags emits compact DBSCAN core predicates; core_count emits only scalar core counts",
     )
     parser.add_argument(
         "--optix-summary-mode",

@@ -1,7 +1,7 @@
 # Tutorial Update Review: RTDL v0.4
 
-**Date:** 2026-04-11  
-**Reviewer:** Gemini CLI  
+**Date:** 2026-04-11
+**Reviewer:** Gemini CLI
 **Scope:** 7 Tutorial Files in `docs/` and `docs/tutorials/`
 
 ---

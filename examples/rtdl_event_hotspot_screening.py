@@ -78,20 +78,19 @@ def _run_embree_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[di
     )
 
 
-def _run_optix_prepared_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
+def _run_optix_prepared_count_summary(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | None | str]:
     with rt.prepare_optix_fixed_radius_count_threshold_2d(case["events"], max_radius=RADIUS) as prepared:
-        count_rows = prepared.run(
+        hotspot_count = prepared.count_threshold_reached(
             case["events"],
             radius=RADIUS,
-            threshold=0,
+            threshold=HOTSPOT_THRESHOLD + 1,
         )
-    return tuple(
-        {
-            "query_id": int(row["query_id"]),
-            "neighbor_count": max(0, int(row["neighbor_count"]) - 1),
-        }
-        for row in count_rows
-    )
+    return {
+        "hotspot_count": int(hotspot_count),
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+        "hotspots": None,
+    }
 
 
 def _optix_performance() -> dict[str, str]:
@@ -108,6 +107,14 @@ def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_
         raise RuntimeError(
             "event_hotspot_screening RT-core claim path requires --optix-summary-mode count_summary_prepared"
         )
+
+
+def _native_continuation_backend(backend: str, embree_summary_mode: str, optix_summary_mode: str) -> str:
+    if backend == "embree" and embree_summary_mode == "count_summary":
+        return "embree_threshold_count"
+    if backend == "optix" and optix_summary_mode == "count_summary_prepared":
+        return "optix_threshold_count"
+    return "none"
 
 
 def run_case(
@@ -132,8 +139,10 @@ def run_case(
         neighbor_counts = {int(row["query_id"]): int(row["neighbor_count"]) for row in summary_rows}
     elif backend == "optix" and optix_summary_mode == "count_summary_prepared":
         rows = ()
-        summary_rows = _run_optix_prepared_count_summary(case)
-        neighbor_counts = {int(row["query_id"]): int(row["neighbor_count"]) for row in summary_rows}
+        optix_summary = _run_optix_prepared_count_summary(case)
+        summary_rows = ()
+        neighbor_counts = {}
+        scalar_hotspot_count = int(optix_summary["hotspot_count"])
     else:
         raw_rows = _run_rows(backend, case)
         rows = tuple(row for row in raw_rows if int(row["query_id"]) != int(row["neighbor_id"]))
@@ -142,12 +151,18 @@ def run_case(
         for row in rows:
             query_id = int(row["query_id"])
             neighbor_counts[query_id] = neighbor_counts.get(query_id, 0) + 1
-    hotspots = [
-        {"event_id": event_id, "neighbor_count": neighbor_count}
-        for event_id, neighbor_count in neighbor_counts.items()
-        if neighbor_count >= HOTSPOT_THRESHOLD
-    ]
-    hotspots.sort(key=lambda item: (-int(item["neighbor_count"]), int(item["event_id"])))
+    if backend == "optix" and optix_summary_mode == "count_summary_prepared":
+        hotspots = None
+        hotspot_count = scalar_hotspot_count
+    else:
+        hotspots = [
+            {"event_id": event_id, "neighbor_count": neighbor_count}
+            for event_id, neighbor_count in neighbor_counts.items()
+            if neighbor_count >= HOTSPOT_THRESHOLD
+        ]
+        hotspots.sort(key=lambda item: (-int(item["neighbor_count"]), int(item["event_id"])))
+        hotspot_count = len(hotspots)
+    native_continuation_backend = _native_continuation_backend(backend, embree_summary_mode, optix_summary_mode)
     return {
         "app": "event_hotspot_screening",
         "backend": backend,
@@ -159,11 +174,19 @@ def run_case(
         "summary_rows": summary_rows,
         "neighbor_count_by_event": dict(sorted(neighbor_counts.items())),
         "hotspots": hotspots,
+        "hotspot_count": hotspot_count,
         "hotspot_threshold": HOTSPOT_THRESHOLD,
         "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
         "optix_performance": _optix_performance(),
-        "rt_core_accelerated": backend == "optix" and optix_summary_mode == "count_summary_prepared",
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
+        "rt_core_accelerated": native_continuation_backend == "optix_threshold_count",
+        "summary_boundary": (
+            "count_summary_prepared reports only scalar hotspot count; use rows or Embree count_summary mode when hotspot event ids or per-event counts are required."
+            if backend == "optix" and optix_summary_mode == "count_summary_prepared"
+            else None
+        ),
     }
 
 

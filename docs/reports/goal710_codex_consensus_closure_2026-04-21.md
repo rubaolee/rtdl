@@ -51,4 +51,3 @@ Observed median speedup versus one thread:
 Goal710 closes the first Embree multicore point-query slice only. It does not
 complete ray-query, segment/polygon, graph, or DB parallelization, and it does
 not create any NVIDIA RT-core claim.
-

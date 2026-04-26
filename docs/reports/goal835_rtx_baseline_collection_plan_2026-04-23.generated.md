@@ -26,4 +26,3 @@ This plan is a local baseline checklist. It does not run benchmarks, start cloud
 ## Review Rule
 
 A public RTX speedup claim may not be made from a cloud artifact unless the matching row above has same-semantics baseline artifacts, correctness parity, and phase-separated timing.
-

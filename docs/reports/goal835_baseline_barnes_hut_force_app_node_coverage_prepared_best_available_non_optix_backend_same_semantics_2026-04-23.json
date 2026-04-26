@@ -1,0 +1,53 @@
+{
+  "app": "barnes_hut_force_app",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "best_available_non_optix_backend_same_semantics",
+  "benchmark_scale": {
+    "body_count": 4096,
+    "iterations": 3
+  },
+  "claim_limit": "bounded sub-path only",
+  "comparable_metric_scope": "same app/path semantics for barnes_hut_force_app:node_coverage_prepared",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Embree fixed-radius node candidate rows are reduced to the same node-coverage decision."
+  ],
+  "path_name": "node_coverage_prepared",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "input_build": 0.0028935830341652036,
+    "materialization_or_copyback": 0.0,
+    "native_query": 0.011310958885587752,
+    "postprocess": 0.0006466250633820891
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build",
+    "backend_prepare",
+    "native_query",
+    "materialization_or_copyback",
+    "postprocess"
+  ],
+  "source_backend": "embree",
+  "status": "ok",
+  "summary": {
+    "all_bodies_have_node_candidate": true,
+    "body_count": 4096,
+    "covered_body_count": 4096,
+    "radius": 10.0,
+    "uncovered_body_ids": []
+  },
+  "summary_sha256": "07e6dc220bc5d22790a70db1c6377df87713373a114f2dde7f0153d7465a963e",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "all_bodies_have_node_candidate": true,
+      "body_count": 4096,
+      "covered_body_count": 4096,
+      "radius": 10.0,
+      "uncovered_body_ids": []
+    }
+  }
+}

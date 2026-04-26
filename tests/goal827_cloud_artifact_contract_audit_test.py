@@ -29,7 +29,7 @@ class Goal827CloudArtifactContractAuditTest(unittest.TestCase):
                             {
                                 "app": "outlier_detection",
                                 "cloud_claim_contract": {
-                                    "claim_scope": "prepared fixed-radius threshold summary traversal only",
+                                    "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
                                     "non_claim": "not row-output",
                                     "required_phase_groups": [
                                         "prepared_optix_warm_query_sec",
@@ -58,7 +58,7 @@ class Goal827CloudArtifactContractAuditTest(unittest.TestCase):
                                 {
                                     "app": "outlier_detection",
                                     "path_name": "prepared_fixed_radius_density_summary",
-                                    "claim_scope": "prepared fixed-radius threshold summary traversal only",
+                                    "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
                                     "non_claim": "not a whole-app RTX speedup claim",
                                     "result": {
                                         "status": "ok",

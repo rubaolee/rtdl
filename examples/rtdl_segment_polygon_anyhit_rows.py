@@ -125,6 +125,14 @@ def _summarize_hitcount_rows(rows: tuple[dict[str, object], ...]) -> dict[str, o
     }
 
 
+def _native_continuation_backend(backend: str, output_mode: str, optix_mode: str) -> str:
+    if backend != "optix" or optix_mode != "native":
+        return "none"
+    if output_mode == "rows":
+        return "optix_native_bounded_pair_rows"
+    return "optix_native_hitcount_gated"
+
+
 def run_case(
     backend: str,
     dataset: str,
@@ -161,6 +169,7 @@ def run_case(
         summary = _summarize_hitcount_rows(rows)
         row_count = len(rows)
         summary_source = "segment_polygon_hitcount"
+    native_continuation_backend = _native_continuation_backend(backend, output_mode, optix_mode)
     payload: dict[str, object] = {
         "app": "segment_polygon_anyhit_rows",
         "backend": backend,
@@ -170,7 +179,9 @@ def run_case(
         "row_count": row_count,
         "summary_source": summary_source,
         "optix_performance": _optix_performance(),
-        "rt_core_accelerated": backend == "optix" and optix_mode == "native",
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
+        "rt_core_accelerated": native_continuation_backend == "optix_native_bounded_pair_rows",
         "native_output_capacity": output_capacity if backend == "optix" and optix_mode == "native" else None,
         "boundary": (
             "Rows mode emits segment/polygon pair rows. Compact segment_flags and "

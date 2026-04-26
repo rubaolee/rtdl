@@ -202,24 +202,26 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
         }
     if app in {"road_hazard_screening", "segment_polygon_hitcount"}:
         if app == "road_hazard_screening":
-            comparable = "strict road-hazard native OptiX summary result on the same copies/output-mode semantics"
-            claim_limit = "experimental native road-hazard summary gate only; not default public app behavior or full GIS/routing speedup"
+            comparable = "prepared road-hazard native OptiX summary result on the same copies and priority-threshold semantics"
+            claim_limit = "experimental prepared road-hazard summary gate only; not default public app behavior or full GIS/routing speedup"
         else:
-            comparable = "strict segment/polygon hit-count result on the same dataset and output count semantics"
-            claim_limit = "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup"
+            comparable = "prepared segment/polygon hit-count result on the same dataset and output count semantics"
+            claim_limit = "experimental prepared hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup"
         return {
             **common,
             "comparable_metric_scope": comparable,
             "required_baselines": [
                 "cpu_python_reference",
-                "optix_host_indexed",
+                "embree_same_semantics",
                 "postgis_when_available",
             ],
             "required_phases": [
-                "records",
-                "strict_pass",
-                "strict_failures",
-                "status",
+                "input_build_sec",
+                "optix_prepare_sec",
+                "optix_query_sec",
+                "python_postprocess_sec",
+                "validation_sec",
+                "optix_close_sec",
             ],
             "claim_limit": claim_limit,
         }
@@ -229,12 +231,17 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
             "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
             "required_baselines": [
                 "cpu_python_reference",
-                "optix_native_bounded_pair_rows",
+                "optix_prepared_bounded_pair_rows",
                 "postgis_when_available_for_same_pair_semantics",
             ],
             "required_phases": [
-                "records",
-                "row_digest",
+                "input_build_sec",
+                "cpu_reference_total_sec",
+                "optix_prepare_sec",
+                "optix_query_sec",
+                "python_postprocess_sec",
+                "validation_sec",
+                "optix_close_sec",
                 "emitted_count",
                 "copied_count",
                 "overflowed",
@@ -252,9 +259,9 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
         return {
             **common,
             "comparable_metric_scope": (
-                "native-assisted OptiX LSI/PIP candidate-discovery phase plus CPU exact area refinement"
+                "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact area continuation"
                 if is_pair
-                else "native-assisted OptiX LSI/PIP candidate-discovery phase plus CPU exact Jaccard refinement"
+                else "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact Jaccard continuation"
             ),
             "required_baselines": [
                 "cpu_python_reference",
@@ -266,11 +273,13 @@ def _baseline_review_contract(app: str, path_name: str) -> dict[str, Any]:
                 "cpu_reference_sec",
                 "optix_candidate_discovery_sec",
                 "cpu_exact_refinement_sec",
+                "native_exact_continuation_sec",
                 "parity_vs_cpu",
                 "rt_core_candidate_discovery_active",
             ],
             "claim_limit": (
-                "native-assisted candidate-discovery path only; exact area/Jaccard refinement remains CPU/Python"
+                "native-assisted candidate-discovery plus native exact continuation path only; "
+                "no full app RTX speedup claim without same-semantics review"
             ),
         }
     return {
@@ -379,8 +388,11 @@ def build_manifest() -> dict[str, Any]:
                     "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
                 ],
                 scale={"copies": 20000, "iterations": 10},
-                claim_scope="prepared fixed-radius threshold summary traversal only",
-                non_claim="not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+                claim_scope="prepared fixed-radius scalar threshold-count traversal only",
+                non_claim=(
+                    "not per-point outlier labels, row-output neighbors, KNN, Hausdorff, ANN, "
+                    "Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim"
+                ),
                 preconditions=[
                     "OptiX fixed-radius prepared symbols must be exported.",
                     "Interpret only the outlier section of the combined Goal757 profiler for this entry.",
@@ -404,8 +416,11 @@ def build_manifest() -> dict[str, Any]:
                     "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
                 ],
                 scale={"copies": 20000, "iterations": 10},
-                claim_scope="prepared fixed-radius core-flag traversal only",
-                non_claim="not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+                claim_scope="prepared fixed-radius scalar core-count traversal only",
+                non_claim=(
+                    "not per-point core flags, not a full DBSCAN clustering, KNN, Hausdorff, ANN, "
+                    "Barnes-Hut, or whole-app RTX speedup claim"
+                ),
                 preconditions=[
                     "OptiX fixed-radius prepared symbols must be exported.",
                     "Interpret only the DBSCAN section of the combined Goal757 profiler for this entry.",
@@ -528,12 +543,12 @@ def build_manifest() -> dict[str, Any]:
             ),
         ],
         "excluded_apps": {
-            "graph_analytics": "deferred graph gate must pass for visibility any-hit plus explicit native BFS/triangle graph-ray mode before any graph RT-core claim",
-            "road_hazard_screening": "current default OptiX app path is host-indexed fallback; deferred native gate must pass before any promotion",
-            "segment_polygon_hitcount": "current default OptiX app path is host-indexed fallback",
-            "segment_polygon_anyhit_rows": "current default OptiX app path is host-indexed fallback; native bounded pair-row path is deferred behind Goal873 strict RTX gate",
-            "polygon_pair_overlap_area_rows": "native-assisted OptiX candidate discovery exists, but exact area refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
-            "polygon_set_jaccard": "native-assisted OptiX candidate discovery exists, but exact Jaccard refinement is CPU/Python-owned and lacks phase-clean RTX artifact",
+            "graph_analytics": "Goal929 passed the bounded graph gate; keep in deferred_entries only for consolidated regression reruns, not because it lacks an RTX artifact",
+            "road_hazard_screening": "Goal929 proved native correctness, but native timing was slower than CPU; hold for native-kernel tuning before speedup claims",
+            "segment_polygon_hitcount": "Goal929 proved native correctness, but native timing was slower than host-indexed/CPU paths; hold for native-kernel tuning",
+            "segment_polygon_anyhit_rows": "Goal929 proved small bounded native pair-row correctness; hold for scalable row-output performance evidence",
+            "polygon_pair_overlap_area_rows": "Goal929 passed native-assisted OptiX candidate discovery; keep in deferred_entries only for consolidated regression reruns",
+            "polygon_set_jaccard": "Goal929 passed native-assisted OptiX candidate discovery at chunk-copies=20; larger chunks remain diagnostic failures",
             "apple_rt_demo": "Apple-specific, not an NVIDIA RTX cloud app",
             "hiprt_ray_triangle_hitcount": "HIPRT-specific, not an OptiX app benchmark",
         },
@@ -552,27 +567,28 @@ def build_manifest() -> dict[str, Any]:
                     "--validation-mode",
                     "analytic_summary",
                     "--chunk-copies",
-                    "100",
+                    "0",
                     "--strict",
                     "--output-json",
                     "docs/reports/goal889_graph_visibility_optix_gate_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
-                    "Goal889/905 packages bounded graph RT sub-paths: visibility maps "
-                    "candidate graph edges to RTDL visibility_pair_rows and OptiX any-hit "
-                    "traversal, while BFS and triangle-count use explicit native "
+                    "Goal929 passed this bounded graph gate on RTX 3090. Keep the command "
+                    "available for consolidated regression reruns: visibility maps "
+                    "candidate graph edges to a prepared OptiX any-hit count summary, "
+                    "while BFS and triangle-count use explicit native "
                     "OptiX graph-ray mode for candidate generation."
                 ),
                 activation_gate=(
-                    "Promote only after strict mode passes on RTX hardware for "
+                    "Regression artifact must pass strict mode on RTX hardware for "
                     "visibility, native BFS graph-ray, and native triangle graph-ray; "
                     "higher-level graph-system exclusions must remain explicit and "
                     "independent review must accept the artifact."
                 ),
                 claim_scope=(
-                    "OptiX ray/triangle any-hit traversal for graph visibility-edge "
-                    "filtering plus native OptiX graph-ray traversal candidate "
+                    "OptiX prepared ray/triangle any-hit count for graph visibility-edge "
+                    "summary filtering plus native OptiX graph-ray traversal candidate "
                     "generation for BFS and triangle-count"
                 ),
                 non_claim=(
@@ -587,25 +603,27 @@ def build_manifest() -> dict[str, Any]:
                 path_name="road_hazard_native_summary_gate",
                 command=[
                     python,
-                    "scripts/goal888_road_hazard_native_optix_gate.py",
+                    "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+                    "--scenario",
+                    "road_hazard_prepared_summary",
                     "--copies",
                     "20000",
-                    "--output-mode",
-                    "summary",
-                    "--strict",
+                    "--iterations",
+                    "5",
+                    "--mode",
+                    "run",
                     "--output-json",
-                    "docs/reports/goal888_road_hazard_native_optix_gate_rtx.json",
+                    "docs/reports/goal933_road_hazard_prepared_summary_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
-                    "Goal888 packages the road-hazard app around the explicit native "
-                    "segment/polygon OptiX mode and compact summary output. It remains "
-                    "deferred until strict RTX validation proves parity."
+                    "Goal929 proved strict native road-hazard parity on RTX 3090, but "
+                    "native timing was slower than CPU. Goal933 now measures a prepared "
+                    "polygon-BVH path so warm query time is separated from setup."
                 ),
                 activation_gate=(
-                    "Promote only after Goal888 strict mode passes on RTX hardware, "
-                    "the default host-indexed path remains clearly separated, and "
-                    "independent review accepts the artifact."
+                    "Re-enter claim review only after native-kernel tuning shows competitive "
+                    "timing while the default host-indexed path remains clearly separated."
                 ),
                 claim_scope="native OptiX segment/polygon traversal for compact road-hazard summaries",
                 non_claim="not default public road-hazard behavior and not a full GIS/routing speedup claim",
@@ -616,25 +634,29 @@ def build_manifest() -> dict[str, Any]:
                 path_name="segment_polygon_hitcount_native_experimental",
                 command=[
                     python,
-                    "scripts/goal807_segment_polygon_optix_mode_gate.py",
-                    "--dataset",
-                    "derived/br_county_subset_segment_polygon_tiled_x256",
-                    "--strict",
+                    "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+                    "--scenario",
+                    "segment_polygon_hitcount_prepared",
+                    "--copies",
+                    "256",
+                    "--iterations",
+                    "5",
+                    "--mode",
+                    "run",
                     "--output-json",
-                    "docs/reports/goal807_segment_polygon_optix_mode_gate_rtx.json",
+                    "docs/reports/goal933_segment_polygon_hitcount_prepared_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
                     "Native OptiX hit-count exists behind an explicit app mode, but "
-                    "historical Goal120 evidence showed no performance win and the "
-                    "default public app path remains host-indexed. Goal807 now provides "
-                    "the required focused native-vs-host-indexed gate, but the gate has "
-                    "not passed on RTX hardware yet."
+                    "Goal929 showed the native RTX path is slower than host-indexed and "
+                    "CPU at the tested scale. Goal933 now measures a prepared polygon-BVH "
+                    "path so warm query time is separated from setup."
                 ),
                 activation_gate=(
-                    "Promote only after Goal807 strict mode passes on RTX hardware, "
-                    "PostGIS parity is recorded where PostGIS is available, and the "
-                    "app readiness matrix is updated after independent review."
+                    "Re-enter claim review only after native-kernel tuning shows competitive "
+                    "timing, PostGIS parity is recorded where available, and independent "
+                    "review accepts the artifact."
                 ),
                 claim_scope="experimental native custom-AABB segment/polygon hit-count traversal",
                 non_claim="not default public app behavior and not a row-returning any-hit claim",
@@ -656,7 +678,6 @@ def build_manifest() -> dict[str, Any]:
                     "10",
                     "--radius",
                     "0.4",
-                    "--skip-validation",
                     "--output-json",
                     "docs/reports/goal887_hausdorff_threshold_rtx.json",
                 ],
@@ -689,7 +710,6 @@ def build_manifest() -> dict[str, Any]:
                     "10",
                     "--radius",
                     "0.2",
-                    "--skip-validation",
                     "--output-json",
                     "docs/reports/goal887_ann_candidate_coverage_rtx.json",
                 ],
@@ -722,7 +742,6 @@ def build_manifest() -> dict[str, Any]:
                     "10",
                     "--radius",
                     "10.0",
-                    "--skip-validation",
                     "--output-json",
                     "docs/reports/goal887_barnes_hut_node_coverage_rtx.json",
                 ],
@@ -741,27 +760,31 @@ def build_manifest() -> dict[str, Any]:
             _deferred_entry(
                 app="segment_polygon_anyhit_rows",
                 app_path="examples/rtdl_segment_polygon_anyhit_rows.py",
-                path_name="segment_polygon_anyhit_rows_native_bounded_gate",
+                path_name="segment_polygon_anyhit_rows_prepared_bounded_gate",
                 command=[
                     python,
-                    "scripts/goal873_native_pair_row_optix_gate.py",
-                    "--dataset",
-                    "authored_segment_polygon_minimal",
+                    "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+                    "--copies",
+                    "256",
+                    "--iterations",
+                    "5",
                     "--output-capacity",
-                    "1024",
-                    "--strict",
+                    "4096",
+                    "--mode",
+                    "run",
                     "--output-json",
-                    "docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json",
+                    "docs/reports/goal934_segment_polygon_anyhit_rows_prepared_bounded_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
-                    "Goal872 implements a native bounded device-side pair-row emitter, and Goal873 "
-                    "adds the strict gate. The public rows path remains host-indexed until a real "
-                    "RTX strict artifact proves CPU row-digest parity and no output overflow."
+                    "Goal929 proved CPU row-digest parity and zero overflow for a small bounded "
+                    "native pair-row gate. Goal934 now measures a prepared polygon-BVH pair-row "
+                    "path on a larger tiled dataset so warm query time is separated from setup."
                 ),
                 activation_gate=(
-                    "Promote only after Goal873 strict mode passes on RTX hardware, row digest "
-                    "matches CPU reference, overflow is zero, and independent review accepts the artifact."
+                    "Re-enter claim review only after larger RTX row-output evidence remains overflow-free, "
+                    "matches CPU reference, separates prepare/query/postprocess phases, and independent "
+                    "review accepts the artifact."
                 ),
                 claim_scope="experimental native bounded custom-AABB segment/polygon pair-row traversal",
                 non_claim="not default public app behavior and not an unbounded pair-row performance claim",
@@ -790,16 +813,16 @@ def build_manifest() -> dict[str, Any]:
                 ],
                 env={},
                 reason_deferred=(
-                    "Goal876 exposes OptiX native-assisted candidate discovery, and Goal877 "
-                    "adds phase separation. It remains deferred until a real RTX artifact proves "
-                    "candidate-discovery timing, CPU refinement timing, and parity."
+                    "Goal929 proved phase-separated RTX candidate-discovery timing, exact continuation "
+                    "timing, and parity for this native-assisted polygon overlap sub-path. Keep "
+                    "this command for consolidated regression reruns."
                 ),
                 activation_gate=(
-                    "Promote only after Goal877 optix mode passes on RTX hardware, phases are reviewed, "
-                    "and top-level claims stay limited to candidate discovery."
+                    "Regression artifacts must keep phases separated and top-level claims limited "
+                    "to candidate discovery."
                 ),
                 claim_scope="OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
-                non_claim="not a fully native polygon-area kernel and not a full app RTX speedup claim",
+                non_claim="not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
             ),
             _deferred_entry(
                 app="polygon_set_jaccard",
@@ -819,22 +842,22 @@ def build_manifest() -> dict[str, Any]:
                     "--validation-mode",
                     "analytic_summary",
                     "--chunk-copies",
-                    "100",
+                    "20",
                     "--output-json",
                     "docs/reports/goal877_jaccard_phase_rtx.json",
                 ],
                 env={},
                 reason_deferred=(
-                    "Goal876 exposes OptiX native-assisted candidate discovery, and Goal877 "
-                    "adds phase separation. It remains deferred until a real RTX artifact proves "
-                    "candidate-discovery timing, CPU refinement timing, and parity."
+                    "Goal929 proved phase-separated RTX candidate-discovery timing, exact continuation "
+                    "timing, and parity for this native-assisted Jaccard sub-path at chunk-copies=20. "
+                    "Keep this command for consolidated regression reruns."
                 ),
                 activation_gate=(
-                    "Promote only after Goal877 optix mode passes on RTX hardware, phases are reviewed, "
-                    "and top-level claims stay limited to candidate discovery."
+                    "Regression artifacts must keep chunk-copies=20 unless larger chunks are fixed, "
+                    "phases separated, and top-level claims limited to candidate discovery."
                 ),
                 claim_scope="OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
-                non_claim="not a fully native Jaccard kernel and not a full app RTX speedup claim",
+                non_claim="not a monolithic GPU Jaccard kernel and not a full app RTX speedup claim",
             ),
         ],
         "boundary": (

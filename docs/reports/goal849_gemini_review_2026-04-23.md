@@ -12,7 +12,7 @@ The spatial promotion packet for `service_coverage_gaps` and `event_hotspot_scre
 - **Explicit Constraints:** The boundary statement ("does not promote either app... does not authorize a public RTX speedup claim") is unambiguous and prevents premature marketing or release cycles.
 
 ### Readiness Status
-- **Partial-Ready Maintenance:** The packet correctly maintains the `rt_core_partial_ready` status. 
+- **Partial-Ready Maintenance:** The packet correctly maintains the `rt_core_partial_ready` status.
 - **The RTX Guard:** By making a "real RTX optix-mode phase artifact" an explicit promotion condition, the packet ensures that these apps cannot reach `rt_core_ready` until they have been measured on actual hardware. This is a critical guard against "simulated success."
 
 ## Conclusion

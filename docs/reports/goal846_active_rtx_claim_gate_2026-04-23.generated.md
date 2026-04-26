@@ -34,4 +34,3 @@ This gate is for active OptiX claim-review readiness only. It counts mandatory a
 ### dbscan_clustering / prepared_fixed_radius_core_flags
 
 - `scipy_or_reference_neighbor_baseline_when_used_in_app_report` excluded from this gate (collection status: `optional_dependency_or_reference_required`, artifact status: `missing`)
-

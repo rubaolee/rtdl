@@ -1,7 +1,7 @@
 # Goal880 External Review — ANN Candidate Threshold RT-Core Sub-Path
 
-Date: 2026-04-24  
-Reviewer: Claude (external review, read-only)  
+Date: 2026-04-24
+Reviewer: Claude (external review, read-only)
 Verdict: **ACCEPT**
 
 ---
@@ -40,9 +40,9 @@ The three matrix entries for `ann_candidate_search` are updated in lockstep:
 For `copies=1`, `candidate_radius=0.2`, the three candidate points are
 `(0.00, 0.00)`, `(5.00, 5.00)`, `(10.00, 0.00)` and the three queries are:
 
-- id=1: (0.05, 0.00) → dist to (0.00, 0.00) = 0.05 ≤ 0.2 ✓  
-- id=2: (5.18, 5.00) → dist to (5.00, 5.00) = 0.18 ≤ 0.2 ✓  
-- id=3: (10.10, 0.00) → dist to (10.00, 0.00) = 0.10 ≤ 0.2 ✓  
+- id=1: (0.05, 0.00) → dist to (0.00, 0.00) = 0.05 ≤ 0.2 ✓
+- id=2: (5.18, 5.00) → dist to (5.00, 5.00) = 0.18 ≤ 0.2 ✓
+- id=3: (10.10, 0.00) → dist to (10.00, 0.00) = 0.10 ≤ 0.2 ✓
 
 All queries are covered at the default radius. The test mock sets
 `threshold_reached=1` for every query, so `candidate_threshold["within_candidate_radius"]`
@@ -57,7 +57,7 @@ Providing only query_id=1 with threshold_reached=1 causes `by_query.get(2,{})` a
 
 ### `_enforce_rt_core_requirement` logic change
 
-Old: always raised `RuntimeError` when `backend=optix` and `require_rt_core=True`.  
+Old: always raised `RuntimeError` when `backend=optix` and `require_rt_core=True`.
 New: raises only when `optix_summary_mode != "candidate_threshold_prepared"`.
 
 This is the correct design: `--require-rt-core` is now a guard that enforces the

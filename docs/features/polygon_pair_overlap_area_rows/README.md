@@ -63,7 +63,7 @@ Use `python3` instead if that is what your shell exposes.
 - explain area as covered unit cells, not generic continuous polygon area
 - use this primitive when you need pairwise overlap rows before an aggregate like Jaccard
 - if you run it through `embree` or `optix`, describe those public surfaces as
-  native-assisted candidate discovery plus CPU exact area refinement
+  native-assisted candidate discovery plus native C++ exact area continuation
 
 ## Try
 
@@ -83,5 +83,5 @@ Use `python3` instead if that is what your shell exposes.
 - not full polygon overlay
 - current backend maturity is intentionally narrower than the segment/polygon line
 - Embree and OptiX app modes use native LSI/PIP positive candidate discovery,
-  then CPU/Python exact grid-cell area refinement
-- this is not a fully native polygon-area kernel or a public RTX speedup claim
+  then native C++ exact grid-cell area continuation
+- this is not a monolithic GPU polygon-area kernel or a public RTX speedup claim

@@ -1,0 +1,49 @@
+{
+  "app": "road_hazard_screening",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_python_reference",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "experimental prepared road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+  "comparable_metric_scope": "prepared road-hazard native OptiX summary result on the same copies and priority-threshold semantics",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Local road-hazard compact summary baseline; PostGIS remains a separate optional/unavailable baseline."
+  ],
+  "path_name": "road_hazard_native_summary_gate",
+  "phase_seconds": {
+    "input_build_sec": 0.0015175000298768282,
+    "optix_close_sec": 0.0,
+    "optix_prepare_sec": 0.0,
+    "optix_query_sec": 0.00969454098958522,
+    "python_postprocess_sec": 1.8749851733446121e-06,
+    "validation_sec": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "optix_prepare_sec",
+    "optix_query_sec",
+    "python_postprocess_sec",
+    "validation_sec",
+    "optix_close_sec"
+  ],
+  "source_backend": "cpu_python_reference",
+  "status": "ok",
+  "summary": {
+    "priority_segment_count": 256,
+    "row_count": 768
+  },
+  "summary_sha256": "794faae68b775b78806dcd71a3b3f84fafb7d42c3a223b9d47f522a9d8675aa8",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "priority_segment_count": 256,
+      "row_count": 768
+    }
+  }
+}

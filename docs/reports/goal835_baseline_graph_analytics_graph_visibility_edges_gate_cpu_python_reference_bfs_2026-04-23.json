@@ -1,0 +1,47 @@
+{
+  "app": "graph_analytics",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_python_reference_bfs",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+  "comparable_metric_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Local graph baseline; OptiX graph submode baselines remain cloud/OptiX-only."
+  ],
+  "path_name": "graph_visibility_edges_gate",
+  "phase_seconds": {
+    "records": 1.0,
+    "row_digest": 1.0,
+    "status": 1.0,
+    "strict_failures": 0.0,
+    "strict_pass": 1.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "records",
+    "row_digest",
+    "strict_pass",
+    "strict_failures",
+    "status"
+  ],
+  "source_backend": "cpu_python_reference",
+  "status": "ok",
+  "summary": {
+    "bfs": {
+      "discovered_edge_count": 512,
+      "discovered_vertex_count": 512,
+      "max_level": 1
+    }
+  },
+  "summary_sha256": "873083c857670500e6b3f4c5855eb17eff71ace13943837f664088cb880c69d3",
+  "validation": {
+    "matches_reference": true,
+    "validation_mode": "local_summary"
+  }
+}

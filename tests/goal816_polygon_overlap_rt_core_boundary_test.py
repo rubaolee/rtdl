@@ -24,13 +24,13 @@ class Goal816PolygonOverlapRtCoreBoundaryTest(unittest.TestCase):
             return ()
         raise AssertionError(f"unexpected kernel {kernel.__name__}")
 
-    def test_polygon_apps_are_optix_native_assisted_but_not_claim_ready(self) -> None:
+    def test_polygon_apps_are_optix_native_assisted_candidate_claim_ready(self) -> None:
         for app in ("polygon_pair_overlap_area_rows", "polygon_set_jaccard"):
             with self.subTest(app=app):
                 self.assertEqual(rt.app_engine_support(app, "optix").status, "direct_cli_native_assisted")
                 self.assertEqual(rt.optix_app_performance_support(app).performance_class, "python_interface_dominated")
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
-                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "ready_for_rtx_claim_review")
+                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_ready")
 
     def test_require_rt_core_is_optix_only(self) -> None:
         with self.assertRaisesRegex(ValueError, "only meaningful with --backend optix"):

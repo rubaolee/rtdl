@@ -94,4 +94,3 @@ PYTHONPATH=src:. python3 scripts/goal824_pre_cloud_rtx_readiness_gate.py \
 ```
 
 Result: `valid: true`.
-

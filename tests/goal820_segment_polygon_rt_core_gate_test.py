@@ -10,23 +10,26 @@ DATASET = "authored_segment_polygon_minimal"
 
 
 class Goal820SegmentPolygonRtCoreGateTest(unittest.TestCase):
-    def test_segment_polygon_apps_have_deferred_native_rtx_gates(self) -> None:
+    def test_segment_polygon_apps_have_goal941_prepared_rtx_gates(self) -> None:
         for app in ("road_hazard_screening", "segment_polygon_hitcount"):
             with self.subTest(app=app):
-                self.assertEqual(rt.optix_app_performance_support(app).performance_class, "host_indexed_fallback")
-                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "needs_real_rtx_artifact")
-                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_partial_ready")
+                self.assertEqual(
+                    rt.optix_app_performance_support(app).performance_class,
+                    "optix_traversal_prepared_summary",
+                )
+                self.assertEqual(rt.optix_app_benchmark_readiness(app).status, "ready_for_rtx_claim_review")
+                self.assertEqual(rt.rt_core_app_maturity(app).current_status, "rt_core_ready")
         self.assertEqual(
             rt.optix_app_performance_support("segment_polygon_anyhit_rows").performance_class,
-            "host_indexed_fallback",
+            "optix_traversal",
         )
         self.assertEqual(
             rt.optix_app_benchmark_readiness("segment_polygon_anyhit_rows").status,
-            "needs_real_rtx_artifact",
+            "ready_for_rtx_claim_review",
         )
         self.assertEqual(
             rt.rt_core_app_maturity("segment_polygon_anyhit_rows").current_status,
-            "rt_core_partial_ready",
+            "rt_core_ready",
         )
 
     def test_require_rt_core_rejects_optix_even_native_until_strict_gate_passes(self) -> None:

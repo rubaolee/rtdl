@@ -47,11 +47,11 @@ class Goal878SegmentPolygonNativePairRowsAppSurfaceTest(unittest.TestCase):
         self.assertEqual(rt.app_engine_support_matrix()["segment_polygon_anyhit_rows"]["optix"].status, "direct_cli_native")
         self.assertEqual(
             rt.optix_app_benchmark_readiness("segment_polygon_anyhit_rows").status,
-            "needs_real_rtx_artifact",
+            "ready_for_rtx_claim_review",
         )
         self.assertEqual(
             rt.rt_core_app_maturity("segment_polygon_anyhit_rows").current_status,
-            "rt_core_partial_ready",
+            "rt_core_ready",
         )
 
 

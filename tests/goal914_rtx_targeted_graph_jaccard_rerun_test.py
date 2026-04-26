@@ -14,7 +14,7 @@ class Goal914RtxTargetedGraphJaccardRerunTest(unittest.TestCase):
             payload = goal914.run_driver(
                 mode="dry-run",
                 copies=20000,
-                graph_chunk_copies=100,
+                graph_chunk_copies=0,
                 jaccard_chunk_copies=(100, 50, 20),
                 output_json=output_json,
             )
@@ -29,6 +29,7 @@ class Goal914RtxTargetedGraphJaccardRerunTest(unittest.TestCase):
         graph_command = payload["results"][0]["command"]
         self.assertIn("scripts/goal889_graph_visibility_optix_gate.py", graph_command)
         self.assertIn("--strict", graph_command)
+        self.assertEqual(graph_command[graph_command.index("--chunk-copies") + 1], "0")
         jaccard_command = payload["results"][1]["command"]
         self.assertIn("scripts/goal877_polygon_overlap_optix_phase_profiler.py", jaccard_command)
         self.assertIn("--chunk-copies", jaccard_command)

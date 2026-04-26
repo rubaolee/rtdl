@@ -242,26 +242,37 @@ def _exact_overlap_summary_for_candidates(
     }
 
 
+def _native_overlap_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+) -> tuple[dict[str, int], ...]:
+    return tuple(
+        dict(row)
+        for row in rt.refine_polygon_pair_overlap_area_rows_for_pairs(left, right, candidate_pairs)
+    )
+
+
 def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
     candidate_pairs = _positive_candidate_pairs_embree(left, right)
-    rows = _exact_overlap_rows_for_candidates(left, right, candidate_pairs)
+    rows = _native_overlap_rows_for_candidates(left, right, candidate_pairs)
     return rows, candidate_pairs
 
 
 def _run_embree_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
     candidate_pairs = _positive_candidate_pairs_embree(left, right)
-    return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_pairs
+    return _summarize_rows(_native_overlap_rows_for_candidates(left, right, candidate_pairs)), candidate_pairs
 
 
 def _run_optix_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
     candidate_pairs = _positive_candidate_pairs_optix(left, right)
-    rows = _exact_overlap_rows_for_candidates(left, right, candidate_pairs)
+    rows = _native_overlap_rows_for_candidates(left, right, candidate_pairs)
     return rows, candidate_pairs
 
 
 def _run_optix_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
     candidate_pairs = _positive_candidate_pairs_optix(left, right)
-    return _exact_overlap_summary_for_candidates(left, right, candidate_pairs), candidate_pairs
+    return _summarize_rows(_native_overlap_rows_for_candidates(left, right, candidate_pairs)), candidate_pairs
 
 
 def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
@@ -325,15 +336,17 @@ def run_case(
         "summary": summary,
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
+        "native_continuation_active": backend in {"embree", "optix"},
+        "native_continuation_backend": "oracle_cpp" if backend in {"embree", "optix"} else None,
         "optix_performance": {
             "class": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").performance_class,
             "note": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").note,
         },
         "boundary": (
-            "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
-            "grid-cell area refinement. OptiX mode uses native OptiX LSI/PIP positive candidate discovery "
-            "and the same CPU/Python exact refinement. These modes are native-assisted, not fully native "
-            "area-overlay kernels."
+            "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact "
+            "grid-cell area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery "
+            "and the same native C++ continuation. These modes are RT-candidate plus native-continuation "
+            "pipelines, not monolithic GPU area-overlay kernels."
         ),
     }
     if output_mode == "rows":

@@ -19,6 +19,20 @@ GOAL = "Goal847 active RTX claim review package"
 DATE = "2026-04-23"
 GOAL762_PATH = ROOT / "docs" / "reports" / "goal762_rtx_cloud_artifact_report_rtx3090_2026-04-23.json"
 
+FIXED_RADIUS_SCOPES = {
+    "outlier_detection": {
+        "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
+        "non_claim": (
+            "not per-point outlier labels, row-returning outputs, broad anomaly detection, "
+            "or whole-app speedup"
+        ),
+    },
+    "dbscan_clustering": {
+        "claim_scope": "prepared fixed-radius scalar core-count traversal only",
+        "non_claim": "not per-point core flags, cluster expansion, full DBSCAN clustering, or whole-app speedup",
+    },
+}
+
 
 def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -45,6 +59,22 @@ def _phase_metric_name(app: str) -> str:
 def _cloud_query_seconds(app: str, row: dict[str, Any]) -> float | None:
     value = row.get("warm_query_median_sec")
     return float(value) if isinstance(value, (int, float)) else None
+
+
+def _claim_scope(app: str, row: dict[str, Any]) -> str | None:
+    override = FIXED_RADIUS_SCOPES.get(app)
+    if override is not None:
+        return override["claim_scope"]
+    value = row.get("claim_scope")
+    return str(value) if value is not None else None
+
+
+def _non_claim(app: str, row: dict[str, Any]) -> str | None:
+    override = FIXED_RADIUS_SCOPES.get(app)
+    if override is not None:
+        return override["non_claim"]
+    value = row.get("non_claim")
+    return str(value) if value is not None else None
 
 
 def _top_nonquery_phases(app: str, row: dict[str, Any]) -> list[dict[str, float]]:
@@ -132,10 +162,14 @@ def build_review_package() -> dict[str, Any]:
     }
 
     package_rows: list[dict[str, Any]] = []
+    missing_cloud_rows: list[dict[str, str]] = []
     for gate_row in active_gate["rows"]:
         app = str(gate_row["app"])
         path_name = str(gate_row["path_name"])
-        cloud = cloud_rows[(app, path_name)]
+        cloud = cloud_rows.get((app, path_name))
+        if cloud is None:
+            missing_cloud_rows.append({"app": app, "path_name": path_name})
+            continue
         metric_name = _phase_metric_name(app)
         cloud_query_sec = _cloud_query_seconds(app, cloud)
         baselines: list[dict[str, Any]] = []
@@ -157,8 +191,8 @@ def build_review_package() -> dict[str, Any]:
             {
                 "app": app,
                 "path_name": path_name,
-                "claim_scope": cloud.get("claim_scope"),
-                "non_claim": cloud.get("non_claim"),
+                "claim_scope": _claim_scope(app, cloud),
+                "non_claim": _non_claim(app, cloud),
                 "cloud_query_metric_name": metric_name,
                 "cloud_query_sec": cloud_query_sec,
                 "cloud_artifact_status": cloud.get("artifact_status"),
@@ -176,6 +210,8 @@ def build_review_package() -> dict[str, Any]:
         "source_goal846_status": active_gate["status"],
         "source_goal762_status": goal762["status"],
         "row_count": len(package_rows),
+        "missing_cloud_row_count": len(missing_cloud_rows),
+        "missing_cloud_rows": missing_cloud_rows,
         "rows": package_rows,
         "boundary": (
             "This package is for internal active OptiX claim review only. It compares same-semantics native-query phases "

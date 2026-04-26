@@ -48,6 +48,12 @@ def _temporary_optix_segpoly_mode(optix_mode: str):
             os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = previous
 
 
+def _native_continuation_backend(backend: str, optix_mode: str) -> str:
+    if backend == "optix" and optix_mode == "native":
+        return "optix_native_hitcount_gated"
+    return "none"
+
+
 def run_case(
     backend: str,
     dataset: str,
@@ -72,6 +78,7 @@ def run_case(
         rows = rt.run_vulkan(segment_polygon_hitcount_reference, **case.inputs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
+    native_continuation_backend = _native_continuation_backend(backend, optix_mode)
     return {
         "app": "segment_polygon_hitcount",
         "backend": backend,
@@ -80,6 +87,8 @@ def run_case(
         "row_count": len(rows),
         "rows": rows,
         "optix_performance": _optix_performance(),
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": False,
         "boundary": "RT-core performance remains classified separately: OptiX mode 'native' explicitly requests the experimental native custom-AABB path, but current public performance class stays host_indexed_fallback until a focused correctness/performance gate passes.",
     }

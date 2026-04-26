@@ -1,0 +1,47 @@
+{
+  "app": "facility_knn_assignment",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_oracle_same_semantics",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 10
+  },
+  "claim_limit": "bounded sub-path only",
+  "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "CPU oracle computes the same coverage-threshold decision as the OptiX prepared path."
+  ],
+  "path_name": "coverage_threshold_prepared",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "input_build": 0.060559292091056705,
+    "materialization_or_copyback": 0.0,
+    "native_query": 0.07139500009361655,
+    "postprocess": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 10,
+  "required_phase_coverage": [
+    "input_build",
+    "backend_prepare",
+    "native_query",
+    "materialization_or_copyback",
+    "postprocess"
+  ],
+  "source_backend": "cpu_oracle",
+  "status": "ok",
+  "summary": {
+    "all_customers_covered": true,
+    "covered_customer_count": 80000,
+    "customer_count": 80000,
+    "radius": 1.0,
+    "uncovered_customer_ids": []
+  },
+  "summary_sha256": "1558ef6515f8b8a5289b0ceaf7ac2ffc7c3df4a20d0e147797adfde9c85fc4b4",
+  "validation": {
+    "matches_reference": true,
+    "reference": "deterministic facility coverage oracle"
+  }
+}

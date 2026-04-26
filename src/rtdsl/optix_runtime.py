@@ -796,6 +796,334 @@ def prepare_optix_fixed_radius_count_threshold_2d(
     return PreparedOptixFixedRadiusCountThreshold2D(search_points, max_radius=max_radius)
 
 
+class PreparedOptixSegmentPolygonHitcount2D:
+    """Prepared OptiX segment/polygon hit-count scene.
+
+    The polygon set and its custom-primitive BVH are prepared once.  Each
+    ``run`` call uploads only the probe segments, launches the native OptiX
+    traversal kernel, and returns one hit-count row per segment.
+    """
+
+    def __init__(self, polygons):
+        packed = polygons if isinstance(polygons, PackedPolygons) else pack_polygons(records=polygons)
+        self._packed_polygons = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if packed.polygon_count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_segment_polygon_hitcount_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_segment_polygon_hitcount_2d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.refs,
+            packed.polygon_count,
+            packed.vertices_xy,
+            packed.vertex_xy_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self, segments) -> tuple[dict[str, int], ...]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment/polygon hit-count handle is closed")
+        packed_segments = segments if isinstance(segments, PackedSegments) else pack_segments(records=segments)
+        if packed_segments.count == 0:
+            return ()
+        if self._packed_polygons.polygon_count == 0:
+            return tuple(
+                {"segment_id": int(packed_segments.records[index].id), "hit_count": 0}
+                for index in range(packed_segments.count)
+            )
+
+        lib = _load_optix_library()
+        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_segment_polygon_hitcount_2d")
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_segment_polygon_hitcount_2d; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_segments.records,
+            packed_segments.count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        view = OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlSegmentPolygonHitCountRow,
+            field_names=("segment_id", "hit_count"),
+        )
+        try:
+            return tuple(
+                {
+                    "segment_id": int(row["segment_id"]),
+                    "hit_count": int(row["hit_count"]),
+                }
+                for row in view.to_dict_rows()
+            )
+        finally:
+            view.close()
+
+    def count_at_least(self, segments, *, threshold: int) -> int:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment/polygon hit-count handle is closed")
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        if threshold > 0xFFFFFFFF:
+            raise ValueError("threshold exceeds uint32 range")
+        packed_segments = segments if isinstance(segments, PackedSegments) else pack_segments(records=segments)
+        if packed_segments.count == 0:
+            return 0
+        if self._packed_polygons.polygon_count == 0:
+            return packed_segments.count if threshold == 0 else 0
+
+        lib = _load_optix_library()
+        count_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d",
+        )
+        if count_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d; rebuild the OptiX backend from current main"
+            )
+        count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = count_symbol(
+            self._handle,
+            packed_segments.records,
+            packed_segments.count,
+            ctypes.c_uint32(threshold),
+            ctypes.byref(count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return int(count.value)
+
+    def aggregate(self, segments, *, positive_threshold: int = 1) -> dict[str, int]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment/polygon hit-count handle is closed")
+        if positive_threshold < 0:
+            raise ValueError("positive_threshold must be non-negative")
+        if positive_threshold > 0xFFFFFFFF:
+            raise ValueError("positive_threshold exceeds uint32 range")
+        packed_segments = segments if isinstance(segments, PackedSegments) else pack_segments(records=segments)
+        if packed_segments.count == 0:
+            return {"row_count": 0, "hit_sum": 0, "positive_count": 0}
+        if self._packed_polygons.polygon_count == 0:
+            return {
+                "row_count": packed_segments.count,
+                "hit_sum": 0,
+                "positive_count": packed_segments.count if positive_threshold == 0 else 0,
+            }
+
+        lib = _load_optix_library()
+        aggregate_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d",
+        )
+        if aggregate_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d; rebuild the OptiX backend from current main"
+            )
+        row_count = ctypes.c_size_t()
+        hit_sum = ctypes.c_uint64()
+        positive_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = aggregate_symbol(
+            self._handle,
+            packed_segments.records,
+            packed_segments.count,
+            ctypes.c_uint32(positive_threshold),
+            ctypes.byref(row_count),
+            ctypes.byref(hit_sum),
+            ctypes.byref(positive_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return {
+            "row_count": int(row_count.value),
+            "hit_sum": int(hit_sum.value),
+            "positive_count": int(positive_count.value),
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixSegmentPolygonHitcount2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_segment_polygon_hitcount_2d(polygons) -> PreparedOptixSegmentPolygonHitcount2D:
+    return PreparedOptixSegmentPolygonHitcount2D(polygons)
+
+
+class PreparedOptixSegmentPolygonAnyHitRows2D:
+    """Prepared OptiX segment/polygon pair-row scene with bounded output."""
+
+    def __init__(self, polygons):
+        packed = polygons if isinstance(polygons, PackedPolygons) else pack_polygons(records=polygons)
+        self._packed_polygons = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        if packed.polygon_count == 0:
+            return
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d; rebuild the OptiX backend from current main"
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.refs,
+            packed.polygon_count,
+            packed.vertices_xy,
+            packed.vertex_xy_count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run_with_metadata(self, segments, *, output_capacity: int) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment/polygon pair-row handle is closed")
+        if output_capacity <= 0:
+            raise ValueError("output_capacity must be positive")
+        packed_segments = segments if isinstance(segments, PackedSegments) else pack_segments(records=segments)
+        if packed_segments.count == 0 or self._packed_polygons.polygon_count == 0:
+            return {
+                "rows": (),
+                "emitted_count": 0,
+                "copied_count": 0,
+                "overflowed": False,
+            }
+
+        lib = _load_optix_library()
+        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d")
+        if run_symbol is None:
+            raise RuntimeError(
+                "loaded OptiX backend library does not export "
+                "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d; rebuild the OptiX backend from current main"
+            )
+        row_array = (_RtdlSegmentPolygonAnyHitRow * output_capacity)()
+        emitted_count = ctypes.c_size_t()
+        overflowed = ctypes.c_uint32()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_segments.records,
+            packed_segments.count,
+            row_array,
+            output_capacity,
+            ctypes.byref(emitted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        copied_count = min(int(emitted_count.value), int(output_capacity))
+        rows = tuple(
+            {
+                "segment_id": int(row_array[index].segment_id),
+                "polygon_id": int(row_array[index].polygon_id),
+            }
+            for index in range(copied_count)
+        )
+        return {
+            "rows": rows,
+            "emitted_count": int(emitted_count.value),
+            "copied_count": copied_count,
+            "overflowed": bool(overflowed.value),
+        }
+
+    def run(self, segments, *, output_capacity: int) -> tuple[dict[str, int], ...]:
+        result = self.run_with_metadata(segments, output_capacity=output_capacity)
+        if result["overflowed"]:
+            raise RuntimeError(
+                "prepared native OptiX segment/polygon pair-row output overflowed "
+                f"capacity {output_capacity}; emitted {result['emitted_count']}"
+            )
+        return result["rows"]
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixSegmentPolygonAnyHitRows2D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_segment_polygon_anyhit_rows_2d(polygons) -> PreparedOptixSegmentPolygonAnyHitRows2D:
+    return PreparedOptixSegmentPolygonAnyHitRows2D(polygons)
+
+
 def get_last_phase_timings() -> dict[str, float] | None:
     lib = _load_optix_library()
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_get_last_phase_timings")
@@ -2849,6 +3177,67 @@ def _register_argtypes(lib) -> None:
     ]
     lib.rtdl_optix_run_segment_polygon_hitcount.restype = ctypes.c_int
 
+    optional_prepare_segpoly_hitcount = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_segment_polygon_hitcount_2d",
+    )
+    if optional_prepare_segpoly_hitcount is not None:
+        optional_prepare_segpoly_hitcount.argtypes = [
+            ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_segpoly_hitcount.restype = ctypes.c_int
+    optional_run_prepared_segpoly_hitcount = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_segment_polygon_hitcount_2d",
+    )
+    if optional_run_prepared_segpoly_hitcount is not None:
+        optional_run_prepared_segpoly_hitcount.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_segpoly_hitcount.restype = ctypes.c_int
+    optional_count_prepared_segpoly_hitcount_at_least = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d",
+    )
+    if optional_count_prepared_segpoly_hitcount_at_least is not None:
+        optional_count_prepared_segpoly_hitcount_at_least.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_count_prepared_segpoly_hitcount_at_least.restype = ctypes.c_int
+    optional_aggregate_prepared_segpoly_hitcount = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d",
+    )
+    if optional_aggregate_prepared_segpoly_hitcount is not None:
+        optional_aggregate_prepared_segpoly_hitcount.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_aggregate_prepared_segpoly_hitcount.restype = ctypes.c_int
+    optional_destroy_prepared_segpoly_hitcount = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d",
+    )
+    if optional_destroy_prepared_segpoly_hitcount is not None:
+        optional_destroy_prepared_segpoly_hitcount.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_segpoly_hitcount.restype = None
+
     _require_backend_symbol(lib, "rtdl_optix_run_segment_polygon_anyhit_rows").argtypes = [
         ctypes.POINTER(_RtdlSegment),    ctypes.c_size_t,
         ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
@@ -2875,6 +3264,41 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p, ctypes.c_size_t,
         ]
         optional_segment_polygon_anyhit_rows_native_bounded.restype = ctypes.c_int
+
+    optional_prepare_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_segment_polygon_anyhit_rows_2d",
+    )
+    if optional_prepare_segment_polygon_anyhit_rows is not None:
+        optional_prepare_segment_polygon_anyhit_rows.argtypes = [
+            ctypes.POINTER(_RtdlPolygonRef), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_prepare_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    optional_run_prepared_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d",
+    )
+    if optional_run_prepared_segment_polygon_anyhit_rows is not None:
+        optional_run_prepared_segment_polygon_anyhit_rows.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlSegment), ctypes.c_size_t,
+            ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        optional_run_prepared_segment_polygon_anyhit_rows.restype = ctypes.c_int
+    optional_destroy_prepared_segment_polygon_anyhit_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d",
+    )
+    if optional_destroy_prepared_segment_polygon_anyhit_rows is not None:
+        optional_destroy_prepared_segment_polygon_anyhit_rows.argtypes = [ctypes.c_void_p]
+        optional_destroy_prepared_segment_polygon_anyhit_rows.restype = None
 
     _require_backend_symbol(lib, "rtdl_optix_run_point_nearest_segment").argtypes = [
         ctypes.POINTER(_RtdlPoint),   ctypes.c_size_t,

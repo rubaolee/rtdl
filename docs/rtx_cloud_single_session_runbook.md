@@ -30,7 +30,7 @@ Goal914 instead of the full group list:
 PYTHONPATH=src:. python3 scripts/goal914_rtx_targeted_graph_jaccard_rerun.py \
   --mode run \
   --copies 20000 \
-  --graph-chunk-copies 100 \
+  --graph-chunk-copies 0 \
   --jaccard-chunk-copies 100,50,20 \
   --output-json docs/reports/goal914_rtx_targeted_graph_jaccard_rerun_rtx.json
 ```
@@ -39,7 +39,10 @@ Goal914 intentionally runs the fixed graph gate once and then Jaccard
 production plus smaller diagnostic chunk sizes in the same pod session. It does
 not authorize RTX speedup claims. For the current post-Goal923 v1.0 batch,
 prefer the OOM-safe groups below because the DB Goal921 rerun and several
-deferred app gates still need consolidated evidence.
+deferred app gates still need consolidated evidence. After Goals933 and 934,
+the segment/polygon deferred entries use prepared polygon-BVH profilers rather
+than the older one-shot gates, so the next pod can separate setup from warm
+query timing.
 
 ## Recommended Pod Shape
 
@@ -106,10 +109,15 @@ python3 scripts/goal761_rtx_cloud_run_all.py \
   --output-json docs/reports/goal761_group_a_robot_summary.json
 ```
 
-### Group B: Fixed-Radius Summaries
+### Group B: Fixed-Radius Scalar Counts
 
 This command covers both outlier and DBSCAN because they intentionally share
-one output artifact.
+one output artifact. The manifest command must run
+`scripts/goal757_optix_fixed_radius_prepared_perf.py --result-mode
+threshold_count`, which maps to the public outlier `density_count` scalar path
+and DBSCAN `core_count` scalar path. It must not be interpreted as per-point
+outlier labels, per-point core flags, full DBSCAN clustering, or whole-app
+speedup.
 
 ```bash
 python3 scripts/goal761_rtx_cloud_run_all.py \
@@ -145,16 +153,28 @@ python3 scripts/goal761_rtx_cloud_run_all.py \
   --include-deferred \
   --only road_hazard_native_summary_gate \
   --only segment_polygon_hitcount_native_experimental \
-  --only segment_polygon_anyhit_rows_native_bounded_gate \
+  --only segment_polygon_anyhit_rows_prepared_bounded_gate \
   --output-json docs/reports/goal761_group_e_segment_polygon_summary.json
 ```
+
+Expected current manifest commands for this group:
+
+- `road_hazard_native_summary_gate` runs
+  `scripts/goal933_prepared_segment_polygon_optix_profiler.py` with
+  `--scenario road_hazard_prepared_summary`.
+- `segment_polygon_hitcount_native_experimental` runs
+  `scripts/goal933_prepared_segment_polygon_optix_profiler.py` with
+  `--scenario segment_polygon_hitcount_prepared`.
+- `segment_polygon_anyhit_rows_prepared_bounded_gate` runs
+  `scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py` with
+  bounded output metadata (`emitted_count`, `copied_count`, `overflowed`).
 
 ### Group F: Graph Gate
 
 This group intentionally uses the regenerated Goal759 manifest command. The
-current graph gate must run in summary analytic/chunked mode so it reaches
+current graph gate must run in summary analytic single-launch mode so it reaches
 OptiX before any CPU-reference validation:
-`--output-mode summary --validation-mode analytic_summary --chunk-copies 100`.
+`--output-mode summary --validation-mode analytic_summary --chunk-copies 0`.
 After Goal913, graph `visibility_edges` uses `rt.visibility_pair_rows(...)`,
 not Cartesian `rt.visibility_rows(...)`, so the intended row count is
 `4 * copies` rather than all copied observers crossed with all copied targets.
@@ -168,37 +188,24 @@ python3 scripts/goal761_rtx_cloud_run_all.py \
 
 ### Group G: Prepared Decision Apps
 
-Start with lower scale if the pod previously OOMed. Increase only after the
-small run succeeds.
+Use the manifest-sized validated commands first. Goal932 removed
+`--skip-validation` from the future Hausdorff/ANN/Barnes-Hut manifest entries,
+so a valid Group G artifact must carry real validation status instead of a
+manual skipped-validation placeholder.
 
 ```bash
-python3 scripts/goal887_prepared_decision_phase_profiler.py \
-  --scenario hausdorff_threshold \
-  --mode optix \
-  --copies 5000 \
-  --iterations 5 \
-  --radius 0.4 \
-  --skip-validation \
-  --output-json docs/reports/goal887_hausdorff_threshold_rtx_small.json
-
-python3 scripts/goal887_prepared_decision_phase_profiler.py \
-  --scenario ann_candidate_coverage \
-  --mode optix \
-  --copies 5000 \
-  --iterations 5 \
-  --radius 0.2 \
-  --skip-validation \
-  --output-json docs/reports/goal887_ann_candidate_coverage_rtx_small.json
-
-python3 scripts/goal887_prepared_decision_phase_profiler.py \
-  --scenario barnes_hut_node_coverage \
-  --mode optix \
-  --body-count 50000 \
-  --iterations 5 \
-  --radius 10.0 \
-  --skip-validation \
-  --output-json docs/reports/goal887_barnes_hut_node_coverage_rtx_small.json
+python3 scripts/goal761_rtx_cloud_run_all.py \
+  --include-deferred \
+  --only directed_threshold_prepared \
+  --only candidate_threshold_prepared \
+  --only node_coverage_prepared \
+  --output-json docs/reports/goal761_group_g_prepared_decision_summary.json
 ```
+
+If the pod OOMs, keep the same pod running and retry only the failed target at a
+smaller scale after copying back the failing summary and artifact. Do not add
+`--skip-validation`; reduce `--copies` or `--body-count` and keep validation
+enabled so the artifact can still be reviewed.
 
 ### Group H: Polygon Apps
 
@@ -297,13 +304,11 @@ copying earlier successful group artifacts:
 - `docs/reports/goal761_group_d_spatial_summary.json`
 - `docs/reports/goal761_group_e_segment_polygon_summary.json`
 - `docs/reports/goal761_group_f_graph_summary.json`
-- `docs/reports/goal887_hausdorff_threshold_rtx_small.json`
-- `docs/reports/goal887_ann_candidate_coverage_rtx_small.json`
-- `docs/reports/goal887_barnes_hut_node_coverage_rtx_small.json`
+- `docs/reports/goal761_group_g_prepared_decision_summary.json`
 - `docs/reports/goal761_group_h_polygon_summary.json`
 - all manifest `--output-json` artifacts, including `goal759_*`, `goal887_*`,
-  `goal888_*`, `goal889_*`, `goal873_*`, `goal877_*`, `goal811_*`, and
-  `goal807_*` outputs when present
+  `goal889_*`, `goal933_*`, `goal934_*`, `goal877_*`, `goal811_*`,
+  `goal807_*`, and historical `goal873_*` / `goal888_*` outputs when present
 
 After all copied group artifacts are local, run Goal762 locally or on the pod
 to build the aggregate artifact report. The aggregate report is useful, but it

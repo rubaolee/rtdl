@@ -1,7 +1,7 @@
 # Goal651 Claude Review — Apple RT 3D Any-Hit Native-Assisted Path
 
 Date: 2026-04-20 (re-reviewed post-cleanup patch: 2026-04-20)
-Reviewer: Claude Sonnet 4.6  
+Reviewer: Claude Sonnet 4.6
 Verdict: **ACCEPT**
 
 ---

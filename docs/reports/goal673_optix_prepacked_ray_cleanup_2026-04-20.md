@@ -112,4 +112,3 @@ This is a cleanup and memory-footprint improvement for the Goal 672 prepared+pre
 - not full row-output workloads
 - not all OptiX workloads
 - not other engines
-

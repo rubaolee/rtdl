@@ -103,6 +103,11 @@ struct RtdlPolygonSetJaccardRow {
   double jaccard_similarity;
 };
 
+struct RtdlPolygonPairCandidate {
+  uint32_t left_polygon_id;
+  uint32_t right_polygon_id;
+};
+
 struct RtdlPointNearestSegmentRow {
   uint32_t point_id;
   uint32_t segment_id;
@@ -115,11 +120,23 @@ struct RtdlFixedRadiusNeighborRow {
   double distance;
 };
 
+struct RtdlFixedRadiusSummaryRow {
+  uint32_t candidate_row_count;
+  uint32_t query_count_with_candidate;
+  uint32_t neighbor_count_seen;
+};
+
 struct RtdlKnnNeighborRow {
   uint32_t query_id;
   uint32_t neighbor_id;
   double distance;
   uint32_t neighbor_rank;
+};
+
+struct RtdlKnnSummaryRow {
+  uint32_t approximate_row_count;
+  uint32_t query_count_with_candidate;
+  uint32_t max_neighbor_rank;
 };
 
 struct RtdlFrontierVertex {
@@ -142,6 +159,17 @@ struct RtdlTriangleRow {
   uint32_t u;
   uint32_t v;
   uint32_t w;
+};
+
+struct RtdlBfsSummaryRow {
+  uint32_t discovered_edge_count;
+  uint32_t discovered_vertex_count;
+  uint32_t max_level;
+};
+
+struct RtdlTriangleSummaryRow {
+  uint32_t triangle_count;
+  uint32_t touched_vertex_count;
 };
 
 struct RtdlDbField {
@@ -269,6 +297,36 @@ int rtdl_oracle_run_polygon_set_jaccard(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    const RtdlPolygonPairCandidate* candidates,
+    size_t candidate_count,
+    RtdlPolygonPairOverlapAreaRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    const RtdlPolygonPairCandidate* candidates,
+    size_t candidate_count,
+    RtdlPolygonSetJaccardRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
 int rtdl_oracle_run_point_nearest_segment(
     const RtdlPoint* points,
     size_t point_count,
@@ -297,6 +355,13 @@ int rtdl_oracle_run_fixed_radius_neighbors_3d(
     double radius,
     uint32_t k_max,
     RtdlFixedRadiusNeighborRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_summarize_fixed_radius_rows(
+    const RtdlFixedRadiusNeighborRow* rows,
+    size_t row_count,
+    RtdlFixedRadiusSummaryRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
@@ -342,6 +407,13 @@ int rtdl_oracle_run_bounded_knn_rows_3d(
     size_t* row_count_out,
     char* error_out,
     size_t error_size);
+int rtdl_oracle_summarize_knn_rows(
+    const RtdlKnnNeighborRow* rows,
+    size_t row_count,
+    RtdlKnnSummaryRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
 int rtdl_oracle_run_bfs_expand(
     const uint32_t* row_offsets,
     size_t row_offset_count,
@@ -366,6 +438,20 @@ int rtdl_oracle_run_triangle_probe(
     uint32_t enforce_id_ascending,
     uint32_t unique,
     RtdlTriangleRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_summarize_bfs_rows(
+    const RtdlBfsExpandRow* rows,
+    size_t row_count,
+    RtdlBfsSummaryRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size);
+int rtdl_oracle_summarize_triangle_rows(
+    const RtdlTriangleRow* rows,
+    size_t row_count,
+    RtdlTriangleSummaryRow** rows_out,
     size_t* row_count_out,
     char* error_out,
     size_t error_size);

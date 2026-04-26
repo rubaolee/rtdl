@@ -4,7 +4,7 @@ Date: 2026-04-19
 
 ## Planning Verdict: ACCEPT
 
-I accept the proposed v0.9.2 Apple RT performance plan. The approach directly targets the most significant structural inefficiencies (repeated acceleration structure builds per dispatch) while maintaining a strict correctness gate and realistic non-goals. 
+I accept the proposed v0.9.2 Apple RT performance plan. The approach directly targets the most significant structural inefficiencies (repeated acceleration structure builds per dispatch) while maintaining a strict correctness gate and realistic non-goals.
 
 ## Concrete Risks & Recommendations
 

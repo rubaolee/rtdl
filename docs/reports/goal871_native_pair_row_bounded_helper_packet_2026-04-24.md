@@ -23,4 +23,3 @@
 ## Boundary
 
 This goal records the bounded rows helper and device-emission path. It still does not authorize readiness because the public rows path remains host-indexed until a real OptiX gate passes.
-

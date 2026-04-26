@@ -1,0 +1,84 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 1,
+  "failed_count": 0,
+  "git_head": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "git_status_short": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": false,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sun Apr 26 09:01:33 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   32C    P2             81W /  230W |       1MiB /  24564MiB |      3%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl_python_only",
+  "results": [
+    {
+      "app": "robot_collision_screening",
+      "baseline_review_contract": {
+        "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+        "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_pose_count",
+          "embree_anyhit_pose_count_or_equivalent_compact_summary"
+        ],
+        "required_phases": [
+          "pose_and_obstacle_generation",
+          "ray_pack",
+          "backend_scene_prepare",
+          "pose_index_prepare",
+          "native_anyhit_query",
+          "scalar_copyback",
+          "oracle_validation_separate"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "manifest_section": "entries",
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "path_name": "prepared_pose_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+          "--mode",
+          "optix",
+          "--pose-count",
+          "200000",
+          "--obstacle-count",
+          "1024",
+          "--iterations",
+          "10",
+          "--input-mode",
+          "packed_arrays",
+          "--result-mode",
+          "pose_count",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
+        ],
+        "elapsed_sec": 4.4606812270358205,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T09:01:28+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\n  \"boundary\": \"This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. optix mode can support future RTX claim review only on RTX-class hardware with exported prepared OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing. packed_arrays input mode avoids per-ray Python object construction but remains app-specific. pose_count result mode returns only a scalar colliding-pose count for clean native summary timing.\",\n  \"cloud_claim_contract\": {\n    \"claim_scope\": \"prepared OptiX ray/triangle any-hit compact pose summary\",\n    \"cloud_policy\": \"include in the single active RTX batch only after local pre-cloud readiness passes\",\n    \"non_claim\": \"not continuous collision detection, full robot planning, full kinematics, witness-row speedup, or mesh-engine replacement\",\n    \"required_phase_groups\": [\n      \"python_input_construction_sec\",\n      \"optix_prepare_scene_sec\",\n      \"optix_prepare_rays_sec\",\n      \"optix_prepare_pose_indices_sec\",\n      \"prepared_pose_flags_warm_query_sec\",\n      \"oracle_validate_sec\",\n      \"close_sec\",\n      \"total_sec\"\n    ],\n    \"result_mode\": \"pose_count\"\n  },\n  \"date\": \"2026-04-22\",\n  \"edge_ray_count\": 800000,\n  \"input_mode\": \"packed_arrays\",\n  \"iterations\": 10,\n  \"matches_oracle\": null,\n  \"mode\": \"optix\",\n  \"obstacle_count\": 1024,\n  \"obstacle_triangle_count\": 2048,\n  \"phases\": {\n    \"close_sec\": 0.00042325304821133614,\n    \"optix_prepare_pose_indices_sec\": 0.0007143579423427582,\n    \"optix_prepare_rays_sec\": 0.015315611963160336,\n    \"optix_prepare_scene_sec\": 1.3580509589519352,\n    \"oracle_validate_sec\": 0.0,\n    \"prepared_pose_flags_warm_query_sec\": {\n      \"max_sec\": 0.8700671290280297,\n      \"median_sec\": 0.00036708300467580557,\n      \"min_sec\": 0.00035028893034905195\n    },\n    \"python_input_construction_sec\": 0.3474372230703011,\n    \"total_sec\": 2.6697319069644436\n  },\n  \"pose_count\": 200000,\n  \"result\": {\n    \"colliding_pose_count\": 193750,\n    \"colliding_pose_ids_sample\": [],\n    \"oracle_colliding_pose_count\": null,\n    \"pose_collision_flags_sample\": []\n  },\n  \"result_mode\": \"pose_count\",\n  \"schema_version\": \"goal825_tier1_phase_contract_v1\",\n  \"suite\": \"Goal760 OptiX robot pose-flags phase profiler\",\n  \"validated\": false\n}\n"
+      }
+    }
+  ],
+  "source_commit": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-26T09:01:33+0000",
+  "unique_command_count": 1
+}

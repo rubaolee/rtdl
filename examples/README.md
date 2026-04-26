@@ -18,17 +18,17 @@ If you are new to RTDL, use these files first:
 | one recipe for every feature | `rtdl_feature_quickstart_cookbook.py` | each feature input becomes its expected output rows |
 | nearest-neighbor search | `rtdl_fixed_radius_neighbors.py` | points/queries become neighbor rows |
 | app-level Hausdorff distance | `rtdl_hausdorff_distance_app.py` | two point sets become directed nearest-neighbor rows and one distance |
-| app-level ANN candidate search | `rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become approximate nearest rows |
+| app-level ANN candidate search | `rtdl_ann_candidate_app.py` | queries plus a Python-selected candidate subset become approximate nearest rows and native C++ rerank summaries |
 | app-level outlier detection | `rtdl_outlier_detection_app.py` | points become fixed-radius neighbor rows, reduced density counts, and outlier labels |
 | app-level DBSCAN clustering | `rtdl_dbscan_clustering_app.py` | points become fixed-radius neighbor rows, reduced core counts, and density-cluster labels |
 | app-level robot collision screening | `rtdl_robot_collision_screening_app.py` | link edge rays become any-hit rows and reduced pose collision flags |
 | bounded any-hit ray queries | `rtdl_ray_triangle_any_hit.py` | rays and triangles become per-ray `any_hit` rows |
 | visibility / line-of-sight rows | `rtdl_visibility_rows.py` | observers, targets, and blockers become visibility rows |
 | emitted-row reductions | `rtdl_reduce_rows.py` | emitted rows become grouped app summary rows |
-| app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows |
-| graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices |
-| graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows |
-| unified graph app | `rtdl_graph_analytics_app.py` | graph inputs become BFS discovery rows and triangle rows |
+| app-level Barnes-Hut force approximation | `rtdl_barnes_hut_force_app.py` | bodies and quadtree nodes become force-candidate rows and native C++ candidate summaries |
+| graph traversal | `rtdl_graph_bfs.py` | frontier vertices become discovered vertices; summary mode uses native C++ continuation |
+| graph intersection | `rtdl_graph_triangle_count.py` | graph edges become triangle rows; summary mode uses native C++ continuation |
+| unified graph app | `rtdl_graph_analytics_app.py` | graph inputs become BFS discovery rows and triangle rows; summary mode uses native C++ continuation |
 | DB-style filtering | `rtdl_db_conjunctive_scan.py` | rows plus predicates become matching row IDs |
 | DB-style aggregation | `rtdl_db_grouped_count.py` / `rtdl_db_grouped_sum.py` | rows plus predicates become grouped aggregates |
 | unified database app | `rtdl_database_analytics_app.py` | order rows become regional dashboard rows and sales-risk summaries |
@@ -109,7 +109,9 @@ Current DB example boundary:
   - `vulkan`
 - `rtdl_database_analytics_app.py` is the single public DB app entry point:
   it unifies the regional dashboard and sales-risk scenarios over the v0.7
-  bounded DB workload surface
+  bounded DB workload surface. `--output-mode compact_summary` reports
+  `native_continuation_active` only when the compact DB run is
+  materialization-free
 - `rtdl_v0_7_db_app_demo.py`, `rtdl_v0_7_db_kernel_app_demo.py`, and
   `rtdl_sales_risk_screening.py` remain runnable compatibility helpers, but
   they are retired from the public start-here app list
@@ -123,10 +125,12 @@ Current v0.8 app example boundary:
   evidence against RTDL and mature nearest-neighbor baselines. The optional
   Embree `--embree-result-mode directed_summary` path computes the directed
   Hausdorff summary in the native Embree traversal path and avoids returning
-  all KNN rows when the app only needs distance/witness output. The optional
-  OptiX `--optix-summary-mode directed_threshold_prepared` path answers the
-  Hausdorff <= radius decision with prepared fixed-radius traversal; it is not
-  an exact-distance KNN speedup claim
+  all KNN rows when the app only needs distance/witness output; it reports
+  `native_continuation_active`. The optional OptiX
+  `--optix-summary-mode directed_threshold_prepared` path answers the
+  Hausdorff <= radius decision with prepared fixed-radius traversal and also
+  reports `native_continuation_active`; it is not an exact-distance KNN speedup
+  claim
 - `rtdl_ann_candidate_app.py` runs on `cpu_python_reference`, `cpu`, `embree`,
   `optix`, `vulkan`, and optional `scipy`; RTDL emits nearest-neighbor rows
   over a Python-selected approximate candidate set and Python evaluates recall.
@@ -145,34 +149,44 @@ Current v0.8 app example boundary:
   timing characterization for this
   app; it is not a claim against SciPy, scikit-learn, or production anomaly
   detection systems. The optional OptiX `--optix-summary-mode
-  rt_count_threshold_prepared` and Embree `--embree-summary-mode
-  rt_count_threshold_prepared` paths emit one native fixed-radius threshold
-  summary row per query and avoid neighbor-row materialization; Goal715 shows
-  this is correctness-useful but not yet a broad Embree performance win for the
-  sparse fixture
+  rt_count_threshold_prepared --output-mode density_count` path emits only
+  scalar threshold/outlier counts and avoids neighbor-row plus per-point
+  summary-row materialization; use `density_summary` when point IDs are
+  required. The Embree `--embree-summary-mode rt_count_threshold_prepared`
+  path still emits one native fixed-radius threshold summary row per query.
+  Goal715 shows this is correctness-useful but not yet a broad Embree
+  performance win for the sparse fixture
 - `rtdl_dbscan_clustering_app.py` runs on `cpu_python_reference`, `cpu`,
   `embree`, `optix`, `vulkan`, and optional `scipy`; RTDL emits fixed-radius
   neighbor rows and Python expands core, border, and noise labels. Goal524
   records bounded Linux CPU/oracle, Embree, OptiX, and Vulkan timing
   characterization for this app; it is not a claim against scikit-learn DBSCAN
   or production clustering systems. The optional OptiX `--optix-summary-mode
-  rt_core_flags_prepared` and Embree `--embree-summary-mode
-  rt_core_flags_prepared` paths emit native core flags only; full DBSCAN
+  rt_core_flags_prepared --output-mode core_count` path emits only scalar core
+  counts and avoids neighbor-row plus per-point core-flag materialization; use
+  `core_flags` when point IDs are required. The Embree
+  `--embree-summary-mode rt_core_flags_prepared` path still emits native core
+  flags. The full DBSCAN
   cluster expansion still needs neighbor connectivity and remains Python-owned
 - `rtdl_service_coverage_gaps.py` exposes optional Embree
   `--embree-summary-mode gap_summary` for covered/uncovered household
-  detection. This mode intentionally omits clinic ids, distances, and
-  `clinic_loads`; use row mode for full service-analysis output
+  detection. The Embree summary and OptiX `--optix-summary-mode
+  gap_summary_prepared` paths report `native_continuation_active`. These modes
+  intentionally omit clinic ids, distances, and `clinic_loads`; use row mode
+  for full service-analysis output
 - `rtdl_event_hotspot_screening.py` exposes optional Embree
   `--embree-summary-mode count_summary` for per-event neighbor counts and
-  hotspot flags without returning all neighbor-pair rows
+  hotspot flags without returning all neighbor-pair rows. The Embree summary
+  and OptiX `--optix-summary-mode count_summary_prepared` paths report
+  `native_continuation_active`
 - `rtdl_facility_knn_assignment.py` keeps full K=3 nearest-depot fallback
   choices in `--output-mode rows`. Its compact `primary_assignments` and
   `summary` modes run a K=1 RTDL KNN kernel when the app only needs primary
   depot assignments or depot-load summaries. The optional OptiX
   `--optix-summary-mode coverage_threshold_prepared` path answers whether
   every customer has at least one depot within a service radius using prepared
-  fixed-radius traversal; it is not a ranked-assignment speedup
+  fixed-radius traversal and reports `native_continuation_active`; it is not a
+  ranked-assignment speedup
 - `rtdl_robot_collision_screening_app.py` runs on `cpu_python_reference`,
   `cpu`, `embree`, and `optix`; the current app uses `ray_triangle_any_hit`
   plus `rt.reduce_rows(any)` for pose collision flags. `vulkan` is not exposed
@@ -184,7 +198,8 @@ Current v0.8 app example boundary:
   needs compact summaries instead of full per-edge witness rows. On OptiX,
   `--optix-summary-mode prepared_count` returns a native scalar hit-edge
   count, and `--optix-summary-mode prepared_pose_flags` returns native
-  pose-level collision flags without edge witnesses.
+  pose-level collision flags without edge witnesses; both prepared modes
+  report `native_continuation_active`.
   `--pose-count` and `--obstacle-count` generate deterministic scaled
   fixtures; Embree scaled `hit_count` is about 2x faster than the CPU Python
   reference on the measured macOS/Linux fixtures, but it still uses the native
@@ -193,9 +208,10 @@ Current v0.8 app example boundary:
   `embree`, `optix`, and `vulkan`; `--body-count` selects a deterministic
   scalable fixture and `--output-mode candidate_summary|force_summary|full`
   separates RTDL candidate-generation timing from Python opening-rule and
-  force-reduction timing. Goal734 shows Embree candidate summary is reasonable
-  at larger local/Linux scales, but the full force path is still Python
-  dominated and is not a fully native Barnes-Hut force engine. The optional
+  force-reduction timing. Compact candidate summaries use native C++
+  continuation after RTDL candidate rows are produced, but the full force path
+  is still Python dominated and is not a fully native Barnes-Hut force engine.
+  The optional
   OptiX `--optix-summary-mode node_coverage_prepared` path answers whether
   every body has at least one quadtree node candidate within the discovery
   radius using prepared fixed-radius traversal; it is not an opening-rule or
@@ -206,7 +222,7 @@ Current v0.8 app example boundary:
   segment/polygon pair rows when polygon ids are not needed. Explicit
   `--backend optix --output-mode rows --optix-mode native` uses the bounded
   native OptiX pair-row emitter; overflow fails instead of truncating rows, and
-  speedup claims still require Goal873 RTX artifact review
+  speedup claims still require strict same-semantics RTX artifact review
 - `rtdl_road_hazard_screening.py` keeps full per-road hit-count rows in
   `--output-mode rows`. Its compact `priority_segments` and `summary` modes
   omit full rows from the app JSON payload when only priority road ids or
@@ -215,11 +231,12 @@ Current v0.8 app example boundary:
   `--output-mode rows`. Its compact `summary` mode returns aggregate
   overlap-pair and area totals and omits full per-pair rows from the app JSON
   payload; Embree and OptiX use positive-only LSI/PIP candidate discovery,
-  while exact area refinement remains CPU/Python-owned
+  followed by native C++ exact grid-cell area continuation
 - `rtdl_polygon_set_jaccard.py` supports `--copies` for scalable Jaccard
   characterization. Embree and OptiX use positive-only LSI/PIP candidate
-  discovery and CPU/Python exact set-area refinement; this is native-assisted
-  candidate discovery, not a fully native Jaccard kernel
+  discovery and native C++ exact set-area continuation; this is native-assisted
+  candidate discovery plus native continuation, not a monolithic GPU Jaccard
+  kernel
 
 Current HIPRT boundary:
 

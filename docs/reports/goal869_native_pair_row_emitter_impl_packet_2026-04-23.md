@@ -37,4 +37,3 @@
 ## Boundary
 
 This packet is implementation-facing only. It does not authorize promotion of rows mode. Its purpose is to turn the current blocker into a concrete engineering plan tied to the existing native hit-count foundation.
-

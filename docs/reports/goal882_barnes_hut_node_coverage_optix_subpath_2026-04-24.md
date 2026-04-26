@@ -75,4 +75,3 @@ Other checks:
   readiness gate.
 - `git diff --check`: OK.
 - public command audit: `valid=True`.
-

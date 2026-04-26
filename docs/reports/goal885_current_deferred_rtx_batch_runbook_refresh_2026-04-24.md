@@ -78,4 +78,3 @@ after Goal885 is reviewed, committed, and pushed. The intended pod session is:
 2. Same-pod deferred exploration batch.
 3. Copy artifacts back.
 4. Stop or terminate the pod.
-

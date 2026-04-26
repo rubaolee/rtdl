@@ -1,0 +1,60 @@
+{
+  "active": {
+    "entry_count": 8,
+    "failed_count": 0,
+    "path_names": [
+      "prepared_db_session_sales_risk",
+      "prepared_db_session_regional_dashboard",
+      "prepared_fixed_radius_density_summary",
+      "prepared_fixed_radius_core_flags",
+      "prepared_pose_flags",
+      "prepared_gap_summary",
+      "prepared_count_summary",
+      "coverage_threshold_prepared"
+    ],
+    "status": "ok",
+    "unique_command_count": 7
+  },
+  "boundary": "Dry-run manifest audit only; does not start cloud, execute GPU workloads, or authorize public RTX speedup claims.",
+  "date": "2026-04-26",
+  "fixed_radius_claim_scopes": [
+    {
+      "app": "outlier_detection",
+      "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
+      "non_claim": "not per-point outlier labels, row-output neighbors, KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_density_summary"
+    },
+    {
+      "app": "dbscan_clustering",
+      "claim_scope": "prepared fixed-radius scalar core-count traversal only",
+      "non_claim": "not per-point core flags, not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_core_flags"
+    }
+  ],
+  "goal": "Goal1002 RTX runner dry-run after next-pod packet refresh",
+  "include_deferred": {
+    "entry_count": 17,
+    "failed_count": 0,
+    "path_names": [
+      "prepared_db_session_sales_risk",
+      "prepared_db_session_regional_dashboard",
+      "prepared_fixed_radius_density_summary",
+      "prepared_fixed_radius_core_flags",
+      "prepared_pose_flags",
+      "prepared_gap_summary",
+      "prepared_count_summary",
+      "coverage_threshold_prepared",
+      "graph_visibility_edges_gate",
+      "road_hazard_native_summary_gate",
+      "segment_polygon_hitcount_native_experimental",
+      "directed_threshold_prepared",
+      "candidate_threshold_prepared",
+      "node_coverage_prepared",
+      "segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "polygon_set_jaccard_optix_native_assisted_phase_gate"
+    ],
+    "status": "ok",
+    "unique_command_count": 16
+  }
+}

@@ -42,12 +42,7 @@ def make_case(copies: int = 1) -> dict[str, object]:
 
 
 def _summarize(rows) -> dict[str, object]:
-    row_list = list(rows)
-    vertices = {int(row[name]) for row in row_list for name in ("u", "v", "w")}
-    return {
-        "triangle_count": len(row_list),
-        "touched_vertex_count": len(vertices),
-    }
+    return rt.summarize_triangle_rows(rows)
 
 
 def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
@@ -110,6 +105,8 @@ def run_backend(
         "row_count": len(rows),
         "rows": rows if output_mode == "rows" else [],
         "summary": _summarize(rows),
+        "native_continuation_active": output_mode == "summary",
+        "native_continuation_backend": "oracle_cpp" if output_mode == "summary" else None,
         "ray_tracing_accelerated": backend == "embree",
         "ray_tracing_note": (
             "Embree uses ray traversal over graph-edge primitives to collect "

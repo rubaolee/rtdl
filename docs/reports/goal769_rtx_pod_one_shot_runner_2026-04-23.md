@@ -57,4 +57,3 @@ Both passed.
 ## Boundary
 
 This goal improves execution discipline and batching only. It does not itself produce new RTX performance evidence and does not authorize any public speedup claim. The next pod session should use this runner only after the local optimization batch is ready.
-

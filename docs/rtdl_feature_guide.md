@@ -83,10 +83,20 @@ not a broad Apple speedup claim.
 NVIDIA RT-core claim note: `--backend optix` is not enough for a public
 RT-core acceleration claim. Claim-sensitive app commands must use
 `--require-rt-core`, and apps reject that flag unless the selected mode is a
-documented bounded OptiX traversal path. Current accepted paths are partial
-compact/summary modes only; graph, facility KNN, polygon overlap/Jaccard,
-segment/polygon, Hausdorff, ANN, and Barnes-Hut remain non-claim or
-CUDA-through-OptiX paths today.
+documented bounded OptiX traversal path. Current claim-review candidates are
+the bounded sub-paths listed in
+`docs/reports/goal939_current_rtx_claim_review_package_2026-04-25.md`: prepared
+DB compact summaries, graph visibility/native graph-ray candidate generation,
+service coverage, event hotspot, facility coverage decisions, prepared
+road-hazard and segment/polygon traversal, polygon-pair/Jaccard candidate
+discovery, Hausdorff threshold decisions, ANN candidate coverage, outlier
+threshold counts, DBSCAN core flags, robot collision pose-count/pose-flag
+traversal, and Barnes-Hut node-coverage decisions. These are not whole-app
+speedup claims. SQL/DBMS behavior, row-materializing DB output, full
+GIS/routing behavior, unbounded pair-row output, exact Hausdorff distance, ANN
+ranking/index behavior, Barnes-Hut opening-rule/force reduction, and broad
+whole-app speedup remain outside the claim unless the support matrix and a
+later review explicitly authorize them.
 
 Current supported workload families:
 

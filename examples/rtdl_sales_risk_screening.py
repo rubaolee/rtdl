@@ -19,6 +19,14 @@ def _timed_call(fn):
     return value, time.perf_counter() - start
 
 
+def _native_db_continuation_backend(backend: str, output_mode: str, run_phases: dict[str, float]) -> str:
+    if output_mode != "compact_summary" or backend not in {"embree", "optix", "vulkan"}:
+        return "none"
+    if any("materialize" in phase for phase in run_phases):
+        return "none"
+    return f"{backend}_db_compact_summary"
+
+
 @rt.kernel(backend="rtdl", precision="float_approx")
 def risky_order_scan():
     predicates = rt.input("predicates", rt.PredicateSet, role="probe")
@@ -288,6 +296,7 @@ class PreparedSalesRiskSession:
         }
         if output_mode != "compact_summary":
             summary["risky_order_ids"] = risky_order_ids
+        native_continuation_backend = _native_db_continuation_backend(self.backend, output_mode, run_phases)
         return {
             "app": "sales_risk_screening",
             "backend": self.backend,
@@ -300,6 +309,8 @@ class PreparedSalesRiskSession:
             },
             "run_phases": run_phases,
             "native_db_phases": native_db_phases,
+            "native_continuation_active": native_continuation_backend != "none",
+            "native_continuation_backend": native_continuation_backend,
             "prepared_dataset": prepared_dataset,
             "summary": summary,
             "row_counts": {
@@ -345,6 +356,8 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
         "output_mode": output_mode,
         "execution_mode": "one_shot",
         "prepared_dataset": prepared_dataset,
+        "native_continuation_active": False,
+        "native_continuation_backend": "none",
         "summary": {
             "risky_order_count": len(risky_rows),
             "risky_order_ids": [int(row["row_id"]) for row in risky_rows],

@@ -1,6 +1,6 @@
 # Goal 118 Segment/Polygon Linux Large-Scale Performance
 
-Date: 2026-04-06  
+Date: 2026-04-06
 Status: accepted
 
 ## Summary

@@ -63,4 +63,3 @@ Reason:
 
 Goal708 is accepted. Next implementation goal is Goal709: Embree threading
 configuration and deterministic dispatch contract.
-

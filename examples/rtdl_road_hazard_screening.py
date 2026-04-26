@@ -94,6 +94,12 @@ def _temporary_optix_segpoly_mode(optix_mode: str):
             os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = previous
 
 
+def _native_continuation_backend(backend: str, optix_mode: str) -> str:
+    if backend == "optix" and optix_mode == "native":
+        return "optix_native_hitcount_gated"
+    return "none"
+
+
 def run_case(
     backend: str,
     *,
@@ -122,6 +128,7 @@ def run_case(
     else:
         raise ValueError(f"unsupported backend `{backend}`")
     hot_segments = [row["segment_id"] for row in rows if row["hit_count"] >= 2]
+    native_continuation_backend = _native_continuation_backend(backend, optix_mode)
     payload: dict[str, object] = {
         "app": "road_hazard_screening",
         "backend": backend,
@@ -132,6 +139,8 @@ def run_case(
         "priority_segments": hot_segments,
         "priority_segment_count": len(hot_segments),
         "optix_performance": _optix_performance(),
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": False,
         "boundary": (
             "Rows mode emits per-road hit-count rows. Compact priority_segments "

@@ -71,4 +71,3 @@ Codex agrees with Gemini on the strategic direction: RTDL should explore algorit
 - document the limits explicitly;
 - keep existing performance classifications until measured implementation evidence changes them;
 - require another review before promoting the prototype to a public speedup claim.
-

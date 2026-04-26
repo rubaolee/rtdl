@@ -175,4 +175,3 @@ ACCEPT this as the only safe first implementation candidate. The naive
 single-AS distance-advance approach is not exact enough for RTDL. The masked
 chunked approach is more complex, but it is the first candidate that has a
 credible exactness story under the MPS API.
-

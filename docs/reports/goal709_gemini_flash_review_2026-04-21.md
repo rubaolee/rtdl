@@ -36,4 +36,3 @@ Specific observations:
 The current implementation sets the stage for future parallelization without
 introducing premature complexity. The contract is clear, testable, and aligned
 with the Goal708 plan.
-

@@ -141,4 +141,3 @@ This result does not justify more blind micro-optimizations. The next serious ch
 Recommended next action:
 
 - Do profiling before implementing batching or Metal 3, because the current benchmark evidence still cannot say whether the remaining `~1.7x` gap is GPU traversal, MPS API overhead, command-buffer sync, or Python/ctypes materialization.
-

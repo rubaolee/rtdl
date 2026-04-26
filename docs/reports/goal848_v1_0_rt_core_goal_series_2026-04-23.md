@@ -5,8 +5,8 @@ Date: 2026-04-23
 ## Summary
 
 - Public apps: `18`
-- RT-core ready now: `6`
-- RT-core partial-ready now: `10`
+- RT-core ready now: `16`
+- RT-core partial-ready now: `0`
 - Need redesign or new surface: `0`
 - Out of NVIDIA RT scope: `2`
 
@@ -16,9 +16,18 @@ Priority buckets are execution buckets, not pure status buckets. An app can alre
 
 ### already_ready_keep_and_optimize
 
+- `graph_analytics`
 - `facility_knn_assignment`
+- `road_hazard_screening`
+- `segment_polygon_hitcount`
+- `segment_polygon_anyhit_rows`
+- `polygon_pair_overlap_area_rows`
+- `polygon_set_jaccard`
+- `hausdorff_distance`
+- `ann_candidate_search`
 - `outlier_detection`
 - `dbscan_clustering`
+- `barnes_hut_force_app`
 
 ### must_finish_first
 
@@ -29,18 +38,9 @@ Priority buckets are execution buckets, not pure status buckets. An app can alre
 
 ### second_wave
 
-- `graph_analytics`
-- `road_hazard_screening`
-- `segment_polygon_hitcount`
-- `segment_polygon_anyhit_rows`
 
 ### major_redesign_wave
 
-- `polygon_pair_overlap_area_rows`
-- `polygon_set_jaccard`
-- `hausdorff_distance`
-- `ann_candidate_search`
-- `barnes_hut_force_app`
 
 ### out_of_scope_for_nvidia_rt
 
@@ -146,4 +146,3 @@ Consensus: `2-AI before completion`
 ## Boundary
 
 This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.
-

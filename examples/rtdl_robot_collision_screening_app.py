@@ -355,6 +355,8 @@ def run_app(
             "prepared_summary": prepared_summary,
             "oracle_hit_edge_count": int(expected_hit_count),
             "matches_oracle": int(prepared_summary["hit_edge_count"]) == int(expected_hit_count),
+            "native_continuation_active": True,
+            "native_continuation_backend": "optix_prepared_any_hit_count",
             "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns a native scalar hit-edge count, avoiding per-ray Python dict row materialization for this summary path.",
             "boundary": "Prepared count mode returns only the total hit-edge count. Use optix_summary_mode='rows' when pose-level witnesses and edge rows are needed.",
         }
@@ -372,6 +374,8 @@ def run_app(
             "prepared_summary": prepared_summary,
             "oracle_colliding_pose_ids": oracle_summary["colliding_pose_ids"],
             "matches_oracle": tuple(prepared_summary["pose_collision_flags"]) == tuple(oracle_summary["pose_collision_flags"]),
+            "native_continuation_active": True,
+            "native_continuation_backend": "optix_prepared_pose_flags",
             "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.",
             "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
         }
@@ -387,6 +391,8 @@ def run_app(
         "pose_count": len(poses),
         "edge_ray_count": len(edge_rays),
         "obstacle_triangle_count": len(obstacle_triangles),
+        "native_continuation_active": False,
+        "native_continuation_backend": "none",
         "rtdl_role": "RTDL emits per-edge ray/triangle any-hit rows; rt.reduce_rows(any) converts edge rows into pose collision flags, and Python maps witnesses back to pose/link summaries.",
         "boundary": "Bounded 2D discrete-pose screening only; this is not continuous CCD, not full robot kinematics, and not a full mesh collision engine. Compact output modes reduce app-interface row volume but do not replace a native OptiX pose-level summary ABI.",
     }

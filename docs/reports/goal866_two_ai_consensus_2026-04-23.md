@@ -23,4 +23,3 @@ Evidence:
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal866_segment_polygon_anyhit_review_packet_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal866_codex_review_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal866_claude_external_review_2026-04-23.md`
-

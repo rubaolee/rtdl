@@ -89,7 +89,7 @@ No speed claims, no benchmark numbers, no classification upgrades appear anywher
 
 None blocking. One informational item:
 
-**I1 (informational) — `kRadiusPad` not documented in source:**  
+**I1 (informational) — `kRadiusPad` not documented in source:**
 `rtdl_optix_workloads.cpp:2976` uses `constexpr float kRadiusPad = 1.0e-4f` to widen AABBs without explaining in a comment that the exact intersection test uses the unpadded radius. This is a silent invariant. A one-line comment would prevent future confusion. Does not affect correctness.
 
 ---

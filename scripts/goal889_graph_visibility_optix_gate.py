@@ -105,8 +105,12 @@ def _run_cpu_record(scenario: str, copies: int, include_rows: bool) -> dict[str,
 
 
 def _run_optix_visibility_chunked_record(copies: int, chunk_copies: int, include_rows: bool) -> dict[str, object]:
-    if include_rows:
-        return _run_optix_record("visibility_edges", copies, include_rows)
+    if include_rows or chunk_copies == 0 or chunk_copies >= copies:
+        record = _run_optix_record("visibility_edges", copies, include_rows)
+        record["chunk_copies"] = copies
+        record["chunk_count"] = 1
+        record["chunking"] = "single_launch"
+        return record
     start = time.perf_counter()
     total_visible = 0
     total_blocked = 0
@@ -199,7 +203,7 @@ def run_gate(
     output_mode: str,
     strict: bool,
     validation_mode: str = "analytic_summary",
-    chunk_copies: int = 100,
+    chunk_copies: int = 0,
 ) -> dict[str, object]:
     if copies < 1:
         raise ValueError("copies must be at least 1")
@@ -209,8 +213,8 @@ def run_gate(
         raise ValueError("validation_mode must be analytic_summary, full_reference, or none")
     if output_mode == "rows" and validation_mode == "analytic_summary":
         raise ValueError("analytic_summary validation is only valid with summary output")
-    if chunk_copies < 1:
-        raise ValueError("chunk_copies must be at least 1")
+    if chunk_copies < 0:
+        raise ValueError("chunk_copies must be non-negative; use 0 for a single visibility launch")
 
     records: list[dict[str, object]] = []
     include_rows = output_mode == "rows"
@@ -252,6 +256,37 @@ def run_gate(
             if not record[parity_key]:
                 strict_failures.append(f"{record['label']} failed {validation_mode} parity")
 
+    if validation_mode == "full_reference":
+        required_phase_groups = (
+            "cpu_python_reference_visibility_edges",
+            "cpu_python_reference_bfs",
+            "cpu_python_reference_triangle_count",
+            "optix_visibility_anyhit",
+            "optix_native_graph_ray_bfs",
+            "optix_native_graph_ray_triangle_count",
+            "strict_pass",
+            "strict_failures",
+        )
+    elif validation_mode == "analytic_summary":
+        required_phase_groups = (
+            "analytic_expected_visibility_edges",
+            "analytic_expected_bfs",
+            "analytic_expected_triangle_count",
+            "optix_visibility_anyhit",
+            "optix_native_graph_ray_bfs",
+            "optix_native_graph_ray_triangle_count",
+            "strict_pass",
+            "strict_failures",
+        )
+    else:
+        required_phase_groups = (
+            "optix_visibility_anyhit",
+            "optix_native_graph_ray_bfs",
+            "optix_native_graph_ray_triangle_count",
+            "strict_pass",
+            "strict_failures",
+        )
+
     return {
         "goal": GOAL,
         "date": DATE,
@@ -280,24 +315,12 @@ def run_gate(
                 "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; "
                 "BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal"
             ),
-            "required_phase_groups": (
-                "cpu_python_reference_visibility_edges",
-                "cpu_python_reference_bfs",
-                "cpu_python_reference_triangle_count",
-                "analytic_expected_visibility_edges",
-                "analytic_expected_bfs",
-                "analytic_expected_triangle_count",
-                "optix_visibility_anyhit",
-                "optix_native_graph_ray_bfs",
-                "optix_native_graph_ray_triangle_count",
-                "strict_pass",
-                "strict_failures",
-            ),
+            "required_phase_groups": required_phase_groups,
         },
         "boundary": (
             "This gate validates bounded graph RT sub-paths only. Visibility uses "
-            "ray/triangle any-hit and is chunked in summary mode to avoid the "
-            "global observer-target cross-product. BFS and triangle-count use "
+            "ray/triangle any-hit and uses one launch by default; optional "
+            "chunking remains available for memory diagnostics. BFS and triangle-count use "
             "explicit native OptiX graph-ray mode for candidate generation, while "
             "higher-level graph state management remains app/Python-owned."
         ),
@@ -314,7 +337,12 @@ def main(argv: list[str] | None = None) -> int:
         default="analytic_summary",
         help="Use analytic fixture summaries by default so cloud timing reaches OptiX before CPU reference work.",
     )
-    parser.add_argument("--chunk-copies", type=int, default=100)
+    parser.add_argument(
+        "--chunk-copies",
+        type=int,
+        default=0,
+        help="Use 0 for one visibility launch; positive values run chunked diagnostics.",
+    )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)

@@ -335,6 +335,31 @@ int  rtdl_optix_run_segment_polygon_hitcount(
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_segment_polygon_hitcount_2d(
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_polygon_hitcount_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         uint32_t threshold,
+         size_t* count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         uint32_t positive_threshold,
+         size_t* row_count_out,
+         uint64_t* hit_sum_out,
+         size_t* positive_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d(void* prepared);
 int  rtdl_optix_run_segment_polygon_anyhit_rows(
          const RtdlSegment*   segments,  size_t segment_count,
          const RtdlPolygonRef* polygons, size_t polygon_count,
@@ -348,6 +373,18 @@ int  rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
          RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
          size_t* emitted_count_out, uint32_t* overflowed_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d(void* prepared);
 int  rtdl_optix_run_point_nearest_segment(
          const RtdlPoint*   points,   size_t point_count,
          const RtdlSegment* segments, size_t segment_count,

@@ -1,0 +1,48 @@
+{
+  "app": "polygon_pair_overlap_area_rows",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "postgis_when_available_for_same_unit_cell_contract",
+  "benchmark_scale": {
+    "copies": 1,
+    "iterations": 3
+  },
+  "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+  "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact area continuation",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Linux PostGIS baseline for the current authored unit-cell polygon-pair area contract."
+  ],
+  "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+  "phase_seconds": {
+    "cpu_exact_refinement_sec": 0.0,
+    "cpu_reference_sec": 0.0,
+    "input_build_sec": 2.1915999241173267e-05,
+    "native_exact_continuation_sec": 0.0,
+    "optix_candidate_discovery_sec": 0.00147143192589283,
+    "parity_vs_cpu": 1.0,
+    "rt_core_candidate_discovery_active": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "cpu_reference_sec",
+    "optix_candidate_discovery_sec",
+    "cpu_exact_refinement_sec",
+    "native_exact_continuation_sec",
+    "parity_vs_cpu",
+    "rt_core_candidate_discovery_active"
+  ],
+  "source_backend": "postgis",
+  "status": "ok",
+  "summary": {
+    "intersection_area_sum": 5,
+    "row_count": 2,
+    "union_area_sum": 19
+  },
+  "summary_sha256": "4fb0fd21c7ff693bdaf280a7d2135c9199aaa77f72c9d1663f8eae73d1844e63",
+  "validation": {
+    "stable_and_cpu_parity": true
+  }
+}

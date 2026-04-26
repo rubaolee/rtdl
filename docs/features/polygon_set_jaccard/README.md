@@ -63,8 +63,8 @@ python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset au
 - use PostGIS-backed Linux validation when you need external correctness evidence
 - use the primitive `polygon_pair_overlap_area_rows` when you need pairwise overlap detail, not only the final aggregate
 - if you discuss `embree` or `optix` for this line, say explicitly that they
-  use native-assisted candidate discovery plus CPU exact set-area/Jaccard
-  refinement
+  use native-assisted candidate discovery plus native C++ exact set-area/Jaccard
+  continuation
 
 ## Try
 
@@ -85,5 +85,5 @@ python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset au
 - current strongest validation story is Python/native CPU plus Linux/PostGIS
   checking
 - Embree and OptiX app modes use native LSI/PIP positive candidate discovery,
-  then CPU/Python exact grid-cell Jaccard refinement
-- this is not a fully native Jaccard kernel or a public RTX speedup claim
+  then native C++ exact grid-cell Jaccard continuation
+- this is not a monolithic GPU Jaccard kernel or a public RTX speedup claim

@@ -263,10 +263,11 @@ def _force_error_rows(
 
 
 def _candidate_summary(candidate_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    summary = rt.summarize_fixed_radius_rows(candidate_rows)
     return {
-        "candidate_row_count": len(candidate_rows),
-        "body_count_with_candidates": len({int(row["query_id"]) for row in candidate_rows}),
-        "node_count_seen": len({int(row["neighbor_id"]) for row in candidate_rows}),
+        "candidate_row_count": summary["candidate_row_count"],
+        "body_count_with_candidates": summary["query_count_with_candidate"],
+        "node_count_seen": summary["neighbor_count_seen"],
     }
 
 
@@ -319,8 +320,17 @@ def _run_optix_node_coverage(
     radius: float,
 ) -> dict[str, object]:
     with rt.prepare_optix_fixed_radius_count_threshold_2d(_node_points(nodes), max_radius=radius) as prepared:
-        rows = tuple(prepared.run(_body_points(bodies), radius=radius, threshold=1))
-    return _node_coverage_from_count_rows(rows, bodies=bodies, radius=radius)
+        covered_count = prepared.count_threshold_reached(_body_points(bodies), radius=radius, threshold=1)
+    return {
+        "radius": radius,
+        "body_count": len(bodies),
+        "covered_body_count": int(covered_count),
+        "all_bodies_have_node_candidate": int(covered_count) == len(bodies),
+        "uncovered_body_ids": [] if int(covered_count) == len(bodies) else None,
+        "identity_parity_available": int(covered_count) == len(bodies),
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+    }
 
 
 def _force_summary(force_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
@@ -353,6 +363,14 @@ def run_app(
     if backend == "optix" and optix_summary_mode == "node_coverage_prepared":
         coverage = _run_optix_node_coverage(bodies, nodes, radius=node_radius)
         oracle = node_coverage_oracle(bodies, nodes, radius=node_radius)
+        oracle_decision_matches = (
+            coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
+        )
+        oracle_identity_matches = (
+            coverage["uncovered_body_ids"] == oracle["uncovered_body_ids"]
+            if coverage["identity_parity_available"]
+            else None
+        )
         return {
             "app": "barnes_hut_force_app",
             "backend": backend,
@@ -365,9 +383,12 @@ def run_app(
             "node_coverage": coverage,
             "oracle_node_coverage": oracle,
             "matches_oracle": (
-                coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
-                and coverage["uncovered_body_ids"] == oracle["uncovered_body_ids"]
+                oracle_decision_matches
+                if oracle_identity_matches is None
+                else oracle_decision_matches and oracle_identity_matches
             ),
+            "oracle_decision_matches": oracle_decision_matches,
+            "oracle_identity_matches": oracle_identity_matches,
             "rtdl_role": (
                 "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer "
                 "the bounded Barnes-Hut node-coverage decision: every body has at "
@@ -394,7 +415,11 @@ def run_app(
         "node_radius": None,
         **candidate_summary,
         "output_mode": output_mode,
-        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "native_continuation_active": output_mode in {"candidate_summary", "force_summary"},
+        "native_continuation_backend": (
+            "oracle_cpp" if output_mode in {"candidate_summary", "force_summary"} else None
+        ),
+        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native C++ continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
         "optix_performance": _optix_performance(),
         "rt_core_accelerated": False,
         "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",

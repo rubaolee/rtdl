@@ -72,7 +72,7 @@ def _run_native_assisted(
         candidate_pairs = _positive_candidate_pairs_optix(left, right)
     else:
         raise ValueError("candidate_backend must be 'embree' or 'optix'")
-    return _exact_jaccard_rows_for_candidates(left, right, candidate_pairs), candidate_pairs
+    return _native_jaccard_rows_for_candidates(left, right, candidate_pairs), candidate_pairs
 
 
 def _exact_jaccard_rows_for_candidates(
@@ -101,6 +101,17 @@ def _exact_jaccard_rows_for_candidates(
         },
     )
     return rows
+
+
+def _native_jaccard_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+):
+    return tuple(
+        dict(row)
+        for row in rt.refine_polygon_set_jaccard_for_pairs(left, right, candidate_pairs)
+    )
 
 
 def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
@@ -157,15 +168,17 @@ def run_case(
         "rows": rows,
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
+        "native_continuation_active": backend in {"embree", "optix"},
+        "native_continuation_backend": "oracle_cpp" if backend in {"embree", "optix"} else None,
         "optix_performance": {
             "class": rt.optix_app_performance_support("polygon_set_jaccard").performance_class,
             "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
         },
         "boundary": (
-            "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
-            "grid-cell set-area refinement. OptiX mode uses native OptiX LSI/PIP positive candidate "
-            "discovery and the same CPU/Python exact refinement. These modes are native-assisted, not "
-            "fully native Jaccard kernels."
+            "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact "
+            "grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate "
+            "discovery and the same native C++ continuation. These modes are RT-candidate plus "
+            "native-continuation pipelines, not monolithic GPU Jaccard kernels."
         ),
     }
 

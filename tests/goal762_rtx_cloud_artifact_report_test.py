@@ -136,7 +136,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 "app": "outlier_detection",
                                 "schema_version": "goal825_tier1_phase_contract_v1",
                                 "cloud_claim_contract": {
-                                    "claim_scope": "prepared fixed-radius threshold summary traversal only",
+                                    "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
                                     "non_claim": "not row-output",
                                     "required_phase_groups": [
                                         "prepared_optix_warm_query_sec",
@@ -175,7 +175,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 {
                                     "app": "outlier_detection",
                                     "path_name": "prepared_fixed_radius_density_summary",
-                                    "claim_scope": "prepared fixed-radius threshold summary traversal only",
+                                    "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
                                     "non_claim": "not a whole-app RTX speedup claim",
                                     "baseline_review_contract": _baseline_contract(),
                                     "result": {
@@ -361,7 +361,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 {
                                     "app": "outlier_detection",
                                     "path_name": "prepared_fixed_radius_density_summary",
-                                    "claim_scope": "prepared fixed-radius threshold summary traversal only",
+                                    "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
                                     "non_claim": "not a whole-app RTX speedup claim",
                                     "baseline_review_contract": _baseline_contract(),
                                     "result": {
@@ -757,6 +757,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                                 "cpu_reference_sec",
                                 "optix_candidate_discovery_sec",
                                 "cpu_exact_refinement_sec",
+                                "native_exact_continuation_sec",
                                 "parity_vs_cpu",
                                 "rt_core_candidate_discovery_active",
                                 "validation_mode",
@@ -768,6 +769,7 @@ class Goal762RtxCloudArtifactReportTest(unittest.TestCase):
                             "cpu_reference_sec": 0.2,
                             "optix_candidate_discovery_sec": 0.3,
                             "cpu_exact_refinement_sec": 0.4,
+                            "native_exact_continuation_sec": 0.4,
                         },
                         "optix_metadata": {"rt_core_candidate_discovery_active": True},
                     }

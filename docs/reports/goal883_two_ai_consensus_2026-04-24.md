@@ -24,4 +24,3 @@ Goals879-882. Claude independently reviewed the plan diff and returned
 Claude recommended adding a residual Tier 3 row for facility ranked assignment
 so it is treated consistently with exact Hausdorff, ANN ranking, and
 Barnes-Hut force paths. Codex applied that recommendation before commit.
-

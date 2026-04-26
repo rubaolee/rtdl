@@ -75,8 +75,8 @@ def run_driver(
         raise ValueError("mode must be dry-run or run")
     if copies < 1:
         raise ValueError("copies must be positive")
-    if graph_chunk_copies < 1:
-        raise ValueError("graph_chunk_copies must be positive")
+    if graph_chunk_copies < 0:
+        raise ValueError("graph_chunk_copies must be non-negative; use 0 for a single visibility launch")
     if not jaccard_chunk_copies or any(chunk < 1 for chunk in jaccard_chunk_copies):
         raise ValueError("jaccard_chunk_copies must contain positive values")
 
@@ -148,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run only the post-Goal913 RTX graph/Jaccard gates.")
     parser.add_argument("--mode", choices=("dry-run", "run"), default="dry-run")
     parser.add_argument("--copies", type=int, default=20000)
-    parser.add_argument("--graph-chunk-copies", type=int, default=100)
+    parser.add_argument("--graph-chunk-copies", type=int, default=0)
     parser.add_argument(
         "--jaccard-chunk-copies",
         default="100,50,20",

@@ -149,7 +149,7 @@ def _profile_hausdorff(*, mode: str, copies: int, iterations: int, radius: float
                 "covered_b_to_a": int(count_ba),
                 "within_threshold": within,
                 "oracle_within_threshold": oracle_within,
-                "matches_oracle": True if skip_validation else within == oracle_within,
+                "matches_oracle": None if skip_validation else within == oracle_within,
             }
     finally:
         _, close_b_sec = _time_call(prepared_b.close)
@@ -175,7 +175,7 @@ def _profile_ann(*, mode: str, copies: int, iterations: int, radius: float, skip
     queries = case["query_points"]
     candidates = case["candidate_points"]
     if mode == "dry-run":
-        oracle, reference_sec = _time_call(lambda: ann_app.candidate_threshold_oracle(queries, candidates, radius=radius))
+        oracle, reference_sec = _time_call(lambda: ann_app.expected_tiled_candidate_threshold(copies=copies, radius=radius))
         return {
             "scenario": "ann_candidate_coverage",
             "mode": mode,
@@ -190,7 +190,7 @@ def _profile_ann(*, mode: str, copies: int, iterations: int, radius: float, skip
         radius=radius,
         iterations=iterations,
         skip_validation=skip_validation,
-        oracle_fn=lambda: ann_app.candidate_threshold_oracle(queries, candidates, radius=radius),
+        oracle_fn=lambda: ann_app.expected_tiled_candidate_threshold(copies=copies, radius=radius),
         oracle_result_key="within_candidate_radius",
     )
 
@@ -289,7 +289,7 @@ def _profile_single_threshold(
                 "threshold_reached_count": int(reached_count),
                 "all_queries_reached_threshold": all_covered,
                 "oracle_all_queries_reached_threshold": oracle_value,
-                "matches_oracle": True if skip_validation else all_covered == oracle_value,
+                "matches_oracle": None if skip_validation else all_covered == oracle_value,
             }
     finally:
         _, close_sec = _time_call(prepared.close)

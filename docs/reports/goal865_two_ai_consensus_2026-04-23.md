@@ -24,4 +24,3 @@ Evidence:
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal865_road_hazard_review_packet_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal865_codex_review_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal865_claude_external_review_2026-04-23.md`
-

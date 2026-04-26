@@ -20,4 +20,3 @@ packet, readiness artifact, runbook, and tests and returned `ACCEPT` in
 - If the pod remains healthy, run the same-pod deferred exploration batch.
 - Copy artifacts back, then stop or terminate the pod.
 - Do not restart the pod per app.
-

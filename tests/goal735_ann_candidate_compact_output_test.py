@@ -1,6 +1,7 @@
 import unittest
 
 from examples import rtdl_ann_candidate_app as app
+import rtdsl as rt
 
 
 class Goal735AnnCandidateCompactOutputTest(unittest.TestCase):
@@ -19,6 +20,8 @@ class Goal735AnnCandidateCompactOutputTest(unittest.TestCase):
         self.assertEqual(payload["output_mode"], "rerank_summary")
         self.assertEqual(payload["query_count"], 48)
         self.assertEqual(payload["approximate_row_count"], 48)
+        self.assertTrue(payload["native_continuation_active"])
+        self.assertEqual(payload["native_continuation_backend"], "oracle_cpp")
         self.assertNotIn("approximate_rows", payload)
         self.assertNotIn("exact_rows", payload)
         self.assertNotIn("comparison_rows", payload)
@@ -41,6 +44,21 @@ class Goal735AnnCandidateCompactOutputTest(unittest.TestCase):
         self.assertEqual(actual["approximate_row_count"], expected["approximate_row_count"])
         self.assertEqual(actual["query_count_with_candidate"], expected["query_count_with_candidate"])
         self.assertEqual(actual["max_neighbor_rank"], expected["max_neighbor_rank"])
+
+    def test_native_knn_summary_matches_python_shape(self) -> None:
+        rows = (
+            {"query_id": 1, "neighbor_id": 10, "distance": 0.1, "neighbor_rank": 1},
+            {"query_id": 1, "neighbor_id": 11, "distance": 0.2, "neighbor_rank": 2},
+            {"query_id": 2, "neighbor_id": 12, "distance": 0.3, "neighbor_rank": 1},
+        )
+        self.assertEqual(
+            rt.summarize_knn_rows(rows),
+            {
+                "approximate_row_count": 3,
+                "query_count_with_candidate": 2,
+                "max_neighbor_rank": 2,
+            },
+        )
 
     def test_rejects_invalid_output_mode(self) -> None:
         with self.assertRaisesRegex(ValueError, "output_mode"):

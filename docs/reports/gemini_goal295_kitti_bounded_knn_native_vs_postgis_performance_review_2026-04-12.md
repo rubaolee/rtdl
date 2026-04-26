@@ -14,6 +14,6 @@ Based on a review of the provided files for Goal 295, here is the assessment:
 
 ### 3. Appropriateness of the Claim's Boundaries
 **Yes, the claim is strictly and appropriately bounded.**
-- The report avoids generalized claims about RTDL being "faster than PostGIS" in all contexts. 
+- The report avoids generalized claims about RTDL being "faster than PostGIS" in all contexts.
 - It includes a dedicated "Boundary" section that explicitly disclaims generic 3D `knn_rows` support, accelerated 3D backend closure, or broader superiority beyond this specific workload.
 - The success criteria and conclusion strictly scope the victory to the "measured duplicate-free KITTI 3D bounded-KNN line" (specifically at `radius=1.0` and `k_max=4`), perfectly aligning with RTDL's focus on honest, targeted performance claims rather than marketing hyperbole.

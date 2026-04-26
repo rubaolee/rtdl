@@ -25,4 +25,3 @@ Evidence:
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal863_spatial_readiness_matrix_refresh_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal863_codex_review_2026-04-23.md`
 - `/Users/rl2025/rtdl_python_only/docs/reports/goal863_claude_external_review_2026-04-23.md`
-

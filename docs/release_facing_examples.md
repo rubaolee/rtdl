@@ -35,18 +35,39 @@ live workload/package story.
 `--backend optix` is a backend-selection flag, not an automatic NVIDIA RT-core
 performance claim. For claim-sensitive scripts, add `--require-rt-core`; the
 app fails fast unless the selected mode is one of the documented bounded
-RT-core claim paths. Current accepted partial modes include:
+RT-core paths.
+
+Current paths ready for RTX claim review are:
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core
 PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core
 PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core
+PYTHONPATH=src:. python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared
+PYTHONPATH=src:. python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count
+PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count
+PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count
+PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core
 ```
 
-Graph, facility KNN, polygon overlap/Jaccard, segment/polygon, Hausdorff, ANN,
-and Barnes-Hut examples intentionally reject `--require-rt-core` today. Their
-OptiX commands are compatibility or experimental paths until a strict RT-core
-traversal design and RTX-class validation exist.
+These commands are bounded sub-paths, not broad speedup claims. The current
+public wording must say exactly what is accelerated: prepared DB compact
+summaries, graph visibility or native graph-ray candidate generation, compact
+fixed-radius summaries, prepared segment/polygon traversal, native-assisted
+polygon candidate discovery, prepared nearest-neighbor decision modes, or
+ray/triangle pose-count traversal. Python post-processing, SQL/DBMS behavior,
+exact polygon area/Jaccard refinement, ranked KNN or ANN assignment, exact
+Hausdorff distance, Barnes-Hut force reduction/opening-rule evaluation, full
+DBSCAN expansion, graph-system behavior, and whole-app speedup remain outside
+the claim.
 
 If you want a guided learning order instead of a flat example list, start with:
 

@@ -75,13 +75,35 @@ def make_visibility_edge_case(copies: int = 1) -> dict[str, tuple[object, ...]]:
 def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[str, Any]:
     case = make_visibility_edge_case(copies)
     visibility_backend = "cpu" if backend == "cpu_python_reference" else backend
-    rows = rt.visibility_pair_rows(
-        case["candidate_edges"],
-        case["blockers"],
-        backend=visibility_backend,
-    )
-    visible_count = sum(1 for row in rows if int(row["visible"]) == 1)
-    blocked_count = len(rows) - visible_count
+    if backend == "optix" and output_mode == "summary":
+        rays = tuple(
+            rt.Ray2D(
+                id=ray_id,
+                ox=observer.x,
+                oy=observer.y,
+                dx=target.x - observer.x,
+                dy=target.y - observer.y,
+                tmax=1.0,
+            )
+            for ray_id, (observer, target) in enumerate(case["candidate_edges"])
+        )
+        with rt.prepare_optix_ray_triangle_any_hit_2d(case["blockers"]) as prepared_scene:
+            with rt.prepare_optix_rays_2d(rays) as prepared_rays:
+                blocked_count = int(prepared_scene.count(prepared_rays))
+        rows = ()
+        visible_count = len(case["candidate_edges"]) - blocked_count
+        native_continuation_active = True
+        native_continuation_backend = "optix_prepared_visibility_anyhit_count"
+    else:
+        rows = rt.visibility_pair_rows(
+            case["candidate_edges"],
+            case["blockers"],
+            backend=visibility_backend,
+        )
+        visible_count = sum(1 for row in rows if int(row["visible"]) == 1)
+        blocked_count = len(rows) - visible_count
+        native_continuation_active = backend == "optix"
+        native_continuation_backend = "optix_visibility_pair_rows" if backend == "optix" else "none"
     return {
         "app": "graph_visibility_edges",
         "backend": backend,
@@ -91,12 +113,14 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
         "target_count": len(case["targets"]),
         "candidate_edge_count": len(case["candidate_edges"]),
         "blocker_count": len(case["blockers"]),
-        "row_count": len(rows),
+        "row_count": len(case["candidate_edges"]),
         "rows": rows if output_mode == "rows" else [],
         "summary": {
             "visible_edge_count": visible_count,
             "blocked_edge_count": blocked_count,
         },
+        "native_continuation_active": native_continuation_active,
+        "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": backend == "optix",
         "boundary": (
             "Graph visibility_edges maps candidate graph edges to RTDL visibility "
@@ -144,6 +168,11 @@ def run_app(
         )
     if scenario in {"visibility_edges", "all"}:
         sections["visibility_edges"] = _run_visibility_edges(backend, copies=copies, output_mode=output_mode)
+    native_continuation_backends = tuple(
+        str(section.get("native_continuation_backend", "none"))
+        for section in sections.values()
+        if section.get("native_continuation_active")
+    )
 
     return {
         "app": "graph_analytics",
@@ -158,7 +187,8 @@ def run_app(
             "bounded RTDL graph kernels",
             "BFS discovery rows and triangle rows",
             "visibility edge rows for the RT-core sub-path",
-            "Python-owned graph analytics summary JSON",
+            "native C++ summary continuation for BFS and triangle_count summary mode",
+            "Python-owned unified app JSON assembly",
         ],
         "unifies": [
             "examples/rtdl_graph_bfs.py",
@@ -168,6 +198,12 @@ def run_app(
             "class": rt.optix_app_performance_support("graph_analytics").performance_class,
             "note": rt.optix_app_performance_support("graph_analytics").note,
         },
+        "native_continuation_active": bool(native_continuation_backends),
+        "native_continuation_backend": (
+            "+".join(native_continuation_backends)
+            if native_continuation_backends
+            else "none"
+        ),
         "ray_tracing_accelerated": backend == "embree" or (
             backend == "optix" and scenario == "visibility_edges"
         ),
@@ -176,8 +212,10 @@ def run_app(
             "graph-edge primitives for candidate generation, and visibility_edges "
             "uses ray/triangle any-hit. For OptiX, BFS and triangle_count have "
             "an explicit native graph-ray mode behind --optix-graph-mode native, "
-            "but only visibility_edges is a current RT-core claim until cloud "
-            "validation promotes the graph-ray path."
+            "visibility_edges summary mode uses prepared any-hit count to avoid "
+            "row materialization, and graph summary mode uses native C++ "
+            "continuation after rows are produced. Only visibility_edges is a "
+            "current RT-core claim until cloud validation promotes the graph-ray path."
         ),
         "rt_core_accelerated": backend == "optix" and scenario == "visibility_edges",
         "honesty_boundary": (
@@ -185,8 +223,9 @@ def run_app(
             "use CPU ray-tracing traversal for candidate generation. Only "
             "visibility_edges is an OptiX ray/triangle any-hit RT-core candidate; "
             "OptiX BFS and triangle_count remain host-indexed by default, and "
-            "native graph-ray mode remains gated. This is not a full graph database or "
-            "distributed graph analytics system."
+            "native graph-ray mode remains gated. BFS and triangle_count summary "
+            "mode uses native C++ continuation, but this is not a full graph "
+            "database or distributed graph analytics system."
         ),
     }
 

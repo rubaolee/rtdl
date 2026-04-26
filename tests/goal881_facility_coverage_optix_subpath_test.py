@@ -14,17 +14,21 @@ class _PreparedCoverageThreshold:
         return None
 
     def run(self, customers, *, radius: float, threshold: int):
+        raise AssertionError("Facility coverage RT-core subpath should use scalar count")
+
+    def count_threshold_reached(self, customers, *, radius: float, threshold: int):
         self.customer_count = len(customers)
         self.radius = radius
         self.threshold = threshold
-        return tuple(
-            {
-                "query_id": customer.id,
-                "neighbor_count": 1,
-                "threshold_reached": 1,
-            }
-            for customer in customers
-        )
+        return len(customers)
+
+
+class _PartialPreparedCoverageThreshold(_PreparedCoverageThreshold):
+    def count_threshold_reached(self, customers, *, radius: float, threshold: int):
+        self.customer_count = len(customers)
+        self.radius = radius
+        self.threshold = threshold
+        return max(0, len(customers) - 1)
 
 
 class Goal881FacilityCoverageOptixSubpathTest(unittest.TestCase):
@@ -44,9 +48,28 @@ class Goal881FacilityCoverageOptixSubpathTest(unittest.TestCase):
         self.assertEqual(prepared.threshold, 1)
         self.assertTrue(payload["rt_core_accelerated"])
         self.assertTrue(payload["coverage_threshold"]["all_customers_covered"])
+        self.assertEqual(payload["coverage_threshold"]["summary_mode"], "scalar_threshold_count")
+        self.assertIsNone(payload["coverage_threshold"]["row_count"])
+        self.assertTrue(payload["coverage_threshold"]["identity_parity_available"])
         self.assertTrue(payload["matches_oracle"])
         self.assertIn("facility-coverage decision", payload["rtdl_role"])
         self.assertIn("not nearest-depot ranking", payload["boundary"])
+
+    def test_optix_coverage_threshold_failure_keeps_scalar_identity_boundary(self) -> None:
+        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", return_value=_PartialPreparedCoverageThreshold()):
+            payload = app.run_case(
+                "optix",
+                optix_summary_mode="coverage_threshold_prepared",
+                service_radius=1.0,
+                require_rt_core=True,
+            )
+
+        self.assertFalse(payload["coverage_threshold"]["all_customers_covered"])
+        self.assertIsNone(payload["coverage_threshold"]["uncovered_customer_ids"])
+        self.assertFalse(payload["coverage_threshold"]["identity_parity_available"])
+        self.assertFalse(payload["matches_oracle"])
+        self.assertFalse(payload["oracle_decision_matches"])
+        self.assertIsNone(payload["oracle_identity_matches"])
 
     def test_optix_default_rows_mode_rejected(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "coverage_threshold_prepared"):

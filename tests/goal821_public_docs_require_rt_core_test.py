@@ -35,8 +35,8 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
             "--backend optix --output-mode compact_summary --require-rt-core",
             "--backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
             "--backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
-            "--backend optix --optix-summary-mode rt_count_threshold_prepared",
-            "--backend optix --optix-summary-mode rt_core_flags_prepared",
+            "--backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
+            "--backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
             "--backend optix --optix-summary-mode prepared_count",
             "prepared_pose_flags",
         ):
@@ -46,17 +46,17 @@ class Goal821PublicDocsRequireRtCoreTest(unittest.TestCase):
     def test_tutorials_record_rejected_app_families(self) -> None:
         checks = {
             "docs/tutorials/graph_workloads.md": (
-                "host-indexed CSR fallback",
+                "ready\nfor RTX claim review only under a bounded scope",
                 "--optix-graph-mode native",
-                "reject `--require-rt-core` intentionally",
+                "component BFS and triangle-count\nexample scripts still reject `--require-rt-core` intentionally",
             ),
             "docs/tutorials/nearest_neighbor_workloads.md": (
-                "not NVIDIA RT-core claims",
-                "reject these apps today",
+                "not NVIDIA RT-core\nclaims",
+                "may enter bounded claim review",
             ),
             "docs/tutorials/segment_polygon_workloads.md": (
-                "also reject\n`--require-rt-core` today",
-                "not released NVIDIA RT-core claims",
+                "native-assisted\ncandidate discovery",
+                "not a fully native Jaccard or whole-app speedup claim",
             ),
         }
         for relative, phrases in checks.items():

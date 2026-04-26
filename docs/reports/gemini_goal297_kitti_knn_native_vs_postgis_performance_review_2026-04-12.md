@@ -13,7 +13,7 @@ This goal successfully establishes a meaningful performance baseline for the new
 ### 1. Technical Coherence of the PostGIS Baseline
 The implementation of the 3D PostGIS KNN baseline in `src/rtdsl/external_baselines.py` is technically sound for its intended purpose as a correctness anchor.
 
-- **Query Structure**: The use of `CROSS JOIN LATERAL` combined with `ST_3DDistance` and `ROW_NUMBER()` accurately reflects the semantic requirements of a 3D KNN query. 
+- **Query Structure**: The use of `CROSS JOIN LATERAL` combined with `ST_3DDistance` and `ROW_NUMBER()` accurately reflects the semantic requirements of a 3D KNN query.
 - **Type Safety**: The use of `geometry(PointZ, 0)` and `gist_geometry_ops_nd` ensures that the comparison is performed on modern 3D types consistent with the rest of the v0.5 3D point line.
 - **Tie-Breaking**: The SQL correctly includes `ORDER BY ..., s.id` to ensure deterministic tie-breaking that matches the RTDL Python reference and native oracle.
 

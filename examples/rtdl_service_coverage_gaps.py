@@ -77,13 +77,20 @@ def _run_embree_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict
     )
 
 
-def _run_optix_prepared_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
+def _run_optix_prepared_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | None | str]:
     with rt.prepare_optix_fixed_radius_count_threshold_2d(case["clinics"], max_radius=RADIUS) as prepared:
-        return prepared.run(
+        covered_count = prepared.count_threshold_reached(
             case["households"],
             radius=RADIUS,
             threshold=1,
         )
+    return {
+        "covered_household_count": int(covered_count),
+        "uncovered_household_count": len(case["households"]) - int(covered_count),
+        "uncovered_household_ids": None,
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+    }
 
 
 def _optix_performance() -> dict[str, str]:
@@ -100,6 +107,14 @@ def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_
         raise RuntimeError(
             "service_coverage_gaps RT-core claim path requires --optix-summary-mode gap_summary_prepared"
         )
+
+
+def _native_continuation_backend(backend: str, embree_summary_mode: str, optix_summary_mode: str) -> str:
+    if backend == "embree" and embree_summary_mode == "gap_summary":
+        return "embree_threshold_count"
+    if backend == "optix" and optix_summary_mode == "gap_summary_prepared":
+        return "optix_threshold_count"
+    return "none"
 
 
 def run_case(
@@ -130,12 +145,11 @@ def run_case(
         }
     elif backend == "optix" and optix_summary_mode == "gap_summary_prepared":
         rows = ()
-        coverage_summary_rows = _run_optix_prepared_gap_summary(case)
-        covered_household_ids = {
-            int(row["query_id"])
-            for row in coverage_summary_rows
-            if int(row["threshold_reached"]) != 0
-        }
+        optix_summary = _run_optix_prepared_gap_summary(case)
+        coverage_summary_rows = ()
+        covered_household_ids = set()
+        scalar_covered_household_count = int(optix_summary["covered_household_count"])
+        scalar_uncovered_household_ids = None
     else:
         rows = _run_rows(backend, case)
         coverage_summary_rows = ()
@@ -147,7 +161,13 @@ def run_case(
             )
             clinic_loads[neighbor_id] = clinic_loads.get(neighbor_id, 0) + 1
         covered_household_ids = set(clinics_by_household)
-    uncovered_household_ids = [household_id for household_id in household_ids if household_id not in covered_household_ids]
+    if backend == "optix" and optix_summary_mode == "gap_summary_prepared":
+        uncovered_household_ids = scalar_uncovered_household_ids
+        covered_household_count = scalar_covered_household_count
+    else:
+        uncovered_household_ids = [household_id for household_id in household_ids if household_id not in covered_household_ids]
+        covered_household_count = len(covered_household_ids)
+    native_continuation_backend = _native_continuation_backend(backend, embree_summary_mode, optix_summary_mode)
     return {
         "app": "service_coverage_gaps",
         "backend": backend,
@@ -160,19 +180,20 @@ def run_case(
         "coverage_summary_rows": coverage_summary_rows,
         "nearby_clinics_by_household": clinics_by_household,
         "uncovered_household_ids": uncovered_household_ids,
-        "covered_household_count": len(covered_household_ids),
+        "covered_household_count": covered_household_count,
         "clinic_loads": dict(sorted(clinic_loads.items())),
         "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
         "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
         "optix_performance": _optix_performance(),
-        "rt_core_accelerated": backend == "optix" and optix_summary_mode == "gap_summary_prepared",
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
+        "rt_core_accelerated": native_continuation_backend == "optix_threshold_count",
         "summary_boundary": (
             "gap_summary reports covered/uncovered households only; use rows mode when clinic ids, "
             "distances, or clinic_loads are required."
-            if (
-                (backend == "embree" and embree_summary_mode == "gap_summary")
-                or (backend == "optix" and optix_summary_mode == "gap_summary_prepared")
-            )
+            if backend == "embree" and embree_summary_mode == "gap_summary"
+            else "gap_summary_prepared reports only scalar covered/uncovered counts; use rows mode when household ids, clinic ids, distances, or clinic loads are required."
+            if backend == "optix" and optix_summary_mode == "gap_summary_prepared"
             else None
         ),
     }

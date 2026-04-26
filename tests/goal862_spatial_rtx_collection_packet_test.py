@@ -24,7 +24,7 @@ class Goal862SpatialRtxCollectionPacketTest(unittest.TestCase):
         rows = {row["app"]: row for row in module.build_packet()["rows"]}
         for app in ("service_coverage_gaps", "event_hotspot_screening"):
             with self.subTest(app=app):
-                self.assertEqual(rows[app]["gate_status"], "needs_real_rtx_artifact")
+                self.assertEqual(rows[app]["gate_status"], "ready_for_review")
                 self.assertEqual(len(rows[app]["required_local_baselines"]), 2)
                 self.assertTrue(all(item["status"] == "valid" for item in rows[app]["required_local_baselines"]))
                 self.assertIn("goal811_", rows[app]["rtx_output_json"])

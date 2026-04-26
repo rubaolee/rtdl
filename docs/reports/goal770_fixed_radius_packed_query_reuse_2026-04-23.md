@@ -58,4 +58,3 @@ Both passed.
 ## Boundary
 
 This is an interface cleanup and phase-reporting improvement. It should reduce repeated Python packing overhead in the next cloud run, but it is not a new RTX speedup claim until the pod rebuilds and reruns the benchmark batch.
-

@@ -331,6 +331,32 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
         return metrics
     if app == "road_hazard_screening":
+        if artifact.get("schema_version") == "goal933_prepared_segment_polygon_optix_contract_v1":
+            timings = artifact.get("timings_sec")
+            result = artifact.get("result") if isinstance(artifact.get("result"), dict) else {}
+            if not isinstance(timings, dict):
+                return {"artifact_status": "unrecognized", "note": "no timings_sec object found"}
+            metrics = {
+                "artifact_status": "ok",
+                "schema_version": artifact.get("schema_version"),
+                "scenario": artifact.get("scenario"),
+                "mode": artifact.get("mode"),
+                "copies": artifact.get("copies"),
+                "strict_pass": artifact.get("strict_pass"),
+                "strict_failure_count": len(artifact.get("strict_failures", ()))
+                if isinstance(artifact.get("strict_failures"), list)
+                else None,
+                "input_build_sec": timings.get("input_build_sec"),
+                "prepare_sec": timings.get("optix_prepare_sec"),
+                "warm_query_median_sec": _median(timings.get("optix_query_sec")),
+                "postprocess_median_sec": _median(timings.get("python_postprocess_sec")),
+                "validation_median_sec": _median(timings.get("validation_sec")),
+                "close_sec": timings.get("optix_close_sec"),
+                "matches_oracle": result.get("matches_oracle"),
+                "priority_segment_count": result.get("priority_segment_count"),
+            }
+            metrics.update(_contract_check(artifact.get("cloud_claim_contract"), timings))
+            return metrics
         records = artifact.get("records")
         if not isinstance(records, list):
             return {"artifact_status": "unrecognized", "note": "no records array found"}
@@ -357,6 +383,31 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
         return metrics
     if app == "segment_polygon_hitcount":
+        if artifact.get("schema_version") == "goal933_prepared_segment_polygon_optix_contract_v1":
+            timings = artifact.get("timings_sec")
+            result = artifact.get("result") if isinstance(artifact.get("result"), dict) else {}
+            if not isinstance(timings, dict):
+                return {"artifact_status": "unrecognized", "note": "no timings_sec object found"}
+            metrics = {
+                "artifact_status": "ok",
+                "schema_version": artifact.get("schema_version"),
+                "scenario": artifact.get("scenario"),
+                "mode": artifact.get("mode"),
+                "dataset": artifact.get("dataset"),
+                "strict_pass": artifact.get("strict_pass"),
+                "strict_failure_count": len(artifact.get("strict_failures", ()))
+                if isinstance(artifact.get("strict_failures"), list)
+                else None,
+                "input_build_sec": timings.get("input_build_sec"),
+                "prepare_sec": timings.get("optix_prepare_sec"),
+                "warm_query_median_sec": _median(timings.get("optix_query_sec")),
+                "postprocess_median_sec": _median(timings.get("python_postprocess_sec")),
+                "validation_median_sec": _median(timings.get("validation_sec")),
+                "close_sec": timings.get("optix_close_sec"),
+                "matches_oracle": result.get("matches_oracle"),
+            }
+            metrics.update(_contract_check(artifact.get("cloud_claim_contract"), timings))
+            return metrics
         records = artifact.get("records")
         if not isinstance(records, list):
             return {"artifact_status": "unrecognized", "note": "no records array found"}
@@ -383,6 +434,51 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
         metrics.update(_contract_check(artifact.get("cloud_claim_contract"), artifact))
         return metrics
     if app == "segment_polygon_anyhit_rows":
+        if artifact.get("schema_version") == "goal934_prepared_segment_polygon_pair_rows_optix_contract_v1":
+            timings = artifact.get("timings_sec", {})
+            result = artifact.get("result", {})
+            metrics = {
+                "artifact_status": "ok",
+                "schema_version": artifact.get("schema_version"),
+                "strict_pass": artifact.get("strict_pass"),
+                "strict_failure_count": len(artifact.get("strict_failures", ()))
+                if isinstance(artifact.get("strict_failures"), list)
+                else None,
+                "output_capacity": artifact.get("output_capacity"),
+                "input_build_sec": timings.get("input_build_sec"),
+                "cpu_reference_sec": timings.get("cpu_reference_total_sec"),
+                "optix_prepare_sec": timings.get("optix_prepare_sec"),
+                "warm_query_median_sec": timings.get("optix_query_sec", {}).get("median_sec")
+                if isinstance(timings.get("optix_query_sec"), dict)
+                else timings.get("optix_query_sec"),
+                "python_postprocess_median_sec": timings.get("python_postprocess_sec", {}).get("median_sec")
+                if isinstance(timings.get("python_postprocess_sec"), dict)
+                else timings.get("python_postprocess_sec"),
+                "validation_median_sec": timings.get("validation_sec", {}).get("median_sec")
+                if isinstance(timings.get("validation_sec"), dict)
+                else timings.get("validation_sec"),
+                "optix_close_sec": timings.get("optix_close_sec"),
+                "matches_oracle": result.get("matches_oracle"),
+                "emitted_count": result.get("emitted_count"),
+                "copied_count": result.get("copied_count"),
+                "overflowed": result.get("overflowed"),
+            }
+            phase_source = {
+                "input_build_sec": timings.get("input_build_sec"),
+                "cpu_reference_total_sec": timings.get("cpu_reference_total_sec"),
+                "optix_prepare_sec": timings.get("optix_prepare_sec"),
+                "optix_query_sec": timings.get("optix_query_sec"),
+                "python_postprocess_sec": timings.get("python_postprocess_sec"),
+                "validation_sec": timings.get("validation_sec"),
+                "optix_close_sec": timings.get("optix_close_sec"),
+                "emitted_count": result.get("emitted_count"),
+                "copied_count": result.get("copied_count"),
+                "overflowed": result.get("overflowed"),
+                "strict_pass": artifact.get("strict_pass"),
+                "status": artifact.get("status"),
+            }
+            metrics.update(_contract_check(artifact.get("cloud_claim_contract"), phase_source))
+            return metrics
         records = artifact.get("records")
         if not isinstance(records, list):
             return {"artifact_status": "unrecognized", "note": "no records array found"}
@@ -440,6 +536,7 @@ def _extract_artifact_metrics(entry: dict[str, Any], artifact: dict[str, Any]) -
             "cpu_reference_sec": phases.get("cpu_reference_sec"),
             "optix_candidate_discovery_sec": phases.get("optix_candidate_discovery_sec"),
             "cpu_exact_refinement_sec": phases.get("cpu_exact_refinement_sec"),
+            "native_exact_continuation_sec": phases.get("native_exact_continuation_sec"),
             "parity_vs_cpu": artifact.get("parity_vs_cpu"),
             "rt_core_candidate_discovery_active": metrics["rt_core_candidate_discovery_active"],
             "validation_mode": artifact.get("validation_mode"),

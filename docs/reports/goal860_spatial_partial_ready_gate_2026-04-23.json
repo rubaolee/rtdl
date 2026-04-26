@@ -40,11 +40,12 @@
           "status": "valid"
         }
       ],
-      "row_status": "needs_real_rtx_artifact",
+      "row_status": "ready_for_review",
       "rtx_artifact": {
+        "mode": "optix",
         "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal811_service_coverage_rtx.json",
-        "reason": "real RTX phase artifact has not been collected yet",
-        "status": "missing"
+        "scenario": "service_coverage_gaps",
+        "status": "valid"
       }
     },
     {
@@ -74,18 +75,19 @@
           "baseline": "embree_summary_path",
           "covered_phase_count": 4,
           "errors": [],
-          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_embree_summary_path_2026-04-23.json",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal919_event_hotspot_same_scale_embree_baseline_2026-04-25.json",
           "repeated_runs": 3,
           "status": "valid"
         }
       ],
-      "row_status": "needs_real_rtx_artifact",
+      "row_status": "ready_for_review",
       "rtx_artifact": {
+        "mode": "optix",
         "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal811_event_hotspot_rtx.json",
-        "reason": "real RTX phase artifact has not been collected yet",
-        "status": "missing"
+        "scenario": "event_hotspot_screening",
+        "status": "valid"
       }
     }
   ],
-  "status": "needs_real_rtx_artifact"
+  "status": "ready_for_review"
 }

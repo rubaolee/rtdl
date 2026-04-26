@@ -71,4 +71,3 @@ No new RTX performance result is produced by this goal. No public RTX speedup cl
 - local optimization and packaging are ready;
 - cloud measurement is on hold due unavailable GPU capacity;
 - resume with the one-shot runner when a real RTX pod is available.
-

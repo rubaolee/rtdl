@@ -1,6 +1,6 @@
 # Goal 674 External Review — HIPRT Prepared 2D Any-Hit
 
-Reviewer: Claude Sonnet 4.6  
+Reviewer: Claude Sonnet 4.6
 Date: 2026-04-20
 
 ## Verdict: ACCEPT

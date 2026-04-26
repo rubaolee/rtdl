@@ -29,6 +29,14 @@ def _timed_call(fn):
     return value, time.perf_counter() - start
 
 
+def _native_db_continuation_backend(backend: str, output_mode: str, run_phases: dict[str, float]) -> str:
+    if output_mode != "compact_summary" or backend not in {"embree", "optix", "vulkan"}:
+        return "none"
+    if any("materialize" in phase for phase in run_phases):
+        return "none"
+    return f"{backend}_db_compact_summary"
+
+
 def make_orders(copies: int = 1) -> tuple[dict[str, object], ...]:
     """Small denormalized app table; a real app would load this from its own store."""
     if copies <= 0:
@@ -237,6 +245,7 @@ class PreparedRegionalDashboardSession:
             if self.backend != "cpu_reference" and output_mode == "compact_summary":
                 summary["promo_order_count"] = promo_order_count
         run_phases["python_summary_postprocess_sec"] = time.perf_counter() - summary_start
+        native_continuation_backend = _native_db_continuation_backend(self.backend, output_mode, run_phases)
 
         return {
             "app": "regional_order_dashboard",
@@ -253,6 +262,8 @@ class PreparedRegionalDashboardSession:
             },
             "run_phases": run_phases,
             "native_db_phases": native_db_phases,
+            "native_continuation_active": native_continuation_backend != "none",
+            "native_continuation_backend": native_continuation_backend,
             "data_flow": [
                 "app order rows",
                 "RTDL v0.7 bounded DB workload",
@@ -378,6 +389,8 @@ def run_app(backend: str, copies: int = 1, output_mode: str = "full") -> dict[st
             },
         },
         "prepared_dataset": prepared_summary,
+        "native_continuation_active": False,
+        "native_continuation_backend": "none",
         "results": results if output_mode == "full" else {},
         "summary": _summarize_results(results),
         "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",

@@ -1,0 +1,6 @@
+ACCEPT
+
+Findings:
+- **Outlier `density_count` and DBSCAN `core_count` scalar commands:** The `scripts/goal515_public_command_truth_audit.py` script now explicitly includes these commands in `GOAL992_COMMANDS` and associates them with the `goal992_scalar_fixed_radius_command_exact` coverage key. The `tests/goal515_public_command_truth_audit_test.py` validates the presence of this coverage key and the exact commands themselves.
+- **Markdown table command normalization:** The `normalize_command` function in `scripts/goal515_public_command_truth_audit.py` has been updated to correctly parse commands within Markdown tables by stopping at the first closing backtick, preventing trailing table cells from being included. This improvement is confirmed to not weaken coverage by the passing tests which specifically look for key commands.
+- **Generated artifacts validity:** The `audit()` function's output, which forms the basis for the generated JSON and Markdown reports, is validated by `tests/goal515_public_command_truth_audit_test.py`. The Goal996 report also confirms that the artifacts were regenerated and are valid.

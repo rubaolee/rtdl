@@ -26,4 +26,3 @@ After this Goal885 package is committed and pushed, local runbook/readiness
 work is sufficient to start a pod for the active batch plus the same-pod
 deferred exploration batch. If more local code changes are added before cloud,
 rerun the pre-cloud readiness gate first.
-

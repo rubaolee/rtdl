@@ -10,8 +10,8 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         payload = goal848.build_goal_series()
         summary = payload["summary"]
         self.assertEqual(summary["public_app_count"], 18)
-        self.assertEqual(summary["rt_core_ready_now"], 6)
-        self.assertEqual(summary["rt_core_partial_ready_now"], 10)
+        self.assertEqual(summary["rt_core_ready_now"], 16)
+        self.assertEqual(summary["rt_core_partial_ready_now"], 0)
         self.assertEqual(summary["needs_redesign_or_new_surface"], 0)
         self.assertEqual(summary["out_of_scope_for_nvidia_rt"], 2)
 
@@ -20,7 +20,20 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         buckets = payload["priority_buckets"]
         self.assertEqual(
             buckets["already_ready_keep_and_optimize"],
-            ["facility_knn_assignment", "outlier_detection", "dbscan_clustering"],
+            [
+                "graph_analytics",
+                "facility_knn_assignment",
+                "road_hazard_screening",
+                "segment_polygon_hitcount",
+                "segment_polygon_anyhit_rows",
+                "polygon_pair_overlap_area_rows",
+                "polygon_set_jaccard",
+                "hausdorff_distance",
+                "ann_candidate_search",
+                "outlier_detection",
+                "dbscan_clustering",
+                "barnes_hut_force_app",
+            ],
         )
         self.assertEqual(
             buckets["must_finish_first"],
@@ -33,12 +46,7 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         )
         self.assertEqual(
             buckets["second_wave"],
-            [
-                "graph_analytics",
-                "road_hazard_screening",
-                "segment_polygon_hitcount",
-                "segment_polygon_anyhit_rows",
-            ],
+            [],
         )
         self.assertEqual(
             buckets["out_of_scope_for_nvidia_rt"],
@@ -52,6 +60,14 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         self.assertEqual(items["Goal849"]["consensus_requirement"], "2-AI before completion")
         self.assertEqual(items["Goal852"]["consensus_requirement"], "3-AI because it changes strategic scope")
         self.assertEqual(items["Goal853"]["consensus_requirement"], "3-AI because it changes flagship app scope")
+
+    def test_fixed_radius_required_actions_use_scalar_count_terms(self) -> None:
+        rows = {row["app"]: row for row in goal848.build_goal_series()["apps"]}
+        self.assertIn("--output-mode density_count", rows["outlier_detection"]["required_action"])
+        self.assertIn("scalar threshold-count", rows["outlier_detection"]["required_action"])
+        self.assertIn("--output-mode core_count", rows["dbscan_clustering"]["required_action"])
+        self.assertIn("scalar core-count", rows["dbscan_clustering"]["required_action"])
+        self.assertNotIn("core-threshold", rows["dbscan_clustering"]["required_action"])
 
 
 if __name__ == "__main__":

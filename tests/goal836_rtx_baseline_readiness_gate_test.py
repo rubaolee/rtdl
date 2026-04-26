@@ -25,12 +25,13 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
         self.assertIn("Gemini 2.5 Flash: ACCEPT", ledger_text)
         self.assertIn("No Claude verdict is claimed", ledger_text)
 
-    def test_real_plan_currently_needs_baselines_without_running_cloud(self) -> None:
+    def test_real_plan_currently_has_complete_baseline_artifacts_without_authorizing_claims(self) -> None:
         module = __import__("scripts.goal836_rtx_baseline_readiness_gate", fromlist=["analyze_plan", "to_markdown"])
         payload = module.analyze_plan()
-        self.assertEqual(payload["status"], "needs_baselines")
+        self.assertEqual(payload["status"], "ok")
         self.assertGreater(payload["required_artifact_count"], 0)
-        self.assertGreater(payload["missing_artifact_count"], 0)
+        self.assertEqual(payload["missing_artifact_count"], 0)
+        self.assertEqual(payload["invalid_artifact_count"], 0)
         self.assertIn("does not run benchmarks", payload["boundary"])
         markdown = module.to_markdown(payload)
         self.assertIn("An RTX speedup claim package is incomplete", markdown)
@@ -140,7 +141,7 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
             self.assertTrue(any("missing required phase coverage" in error for error in errors))
             self.assertIn("benchmark_scale does not match Goal835 plan", errors)
 
-    def test_cli_writes_artifacts_and_exits_nonzero_when_baselines_missing(self) -> None:
+    def test_cli_writes_artifacts_and_exits_zero_when_baselines_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "readiness.json"
             output_md = Path(tmpdir) / "readiness.md"
@@ -159,9 +160,9 @@ class Goal836RtxBaselineReadinessGateTest(unittest.TestCase):
                 stderr=subprocess.PIPE,
                 check=False,
             )
-            self.assertEqual(completed.returncode, 1)
+            self.assertEqual(completed.returncode, 0)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
-            self.assertEqual(payload["status"], "needs_baselines")
+            self.assertEqual(payload["status"], "ok")
             self.assertTrue(output_md.exists())
 
 

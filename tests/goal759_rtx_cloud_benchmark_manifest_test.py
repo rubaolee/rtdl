@@ -88,14 +88,16 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         by_app = {entry["app"]: entry for entry in payload["entries"]}
 
         self.assertEqual(by_app["outlier_detection"]["optix_performance_class"], "optix_traversal_prepared_summary")
-        self.assertIn("prepared fixed-radius threshold summary", by_app["outlier_detection"]["claim_scope"])
+        self.assertIn("prepared fixed-radius scalar threshold-count", by_app["outlier_detection"]["claim_scope"])
+        self.assertIn("not per-point outlier labels", by_app["outlier_detection"]["non_claim"])
         self.assertIn("whole-app RTX speedup", by_app["outlier_detection"]["non_claim"])
         self.assertIn("--skip-validation", by_app["outlier_detection"]["command"])
         self.assertIn("--result-mode", by_app["outlier_detection"]["command"])
         self.assertIn("threshold_count", by_app["outlier_detection"]["command"])
 
         self.assertEqual(by_app["dbscan_clustering"]["optix_performance_class"], "optix_traversal_prepared_summary")
-        self.assertIn("prepared fixed-radius core-flag", by_app["dbscan_clustering"]["claim_scope"])
+        self.assertIn("prepared fixed-radius scalar core-count", by_app["dbscan_clustering"]["claim_scope"])
+        self.assertIn("not per-point core flags", by_app["dbscan_clustering"]["non_claim"])
         self.assertIn("not a full DBSCAN", by_app["dbscan_clustering"]["non_claim"])
         self.assertIn("--skip-validation", by_app["dbscan_clustering"]["command"])
         self.assertIn("--result-mode", by_app["dbscan_clustering"]["command"])
@@ -131,7 +133,7 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("prepared native pose-flag summary", robot["optix_performance_note"])
         self.assertNotIn("future ABI work", robot["optix_performance_note"])
 
-    def test_deferred_segment_polygon_entry_uses_goal807_gate(self):
+    def test_deferred_segment_polygon_entry_uses_goal933_prepared_profiler(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
             fromlist=["build_manifest"],
@@ -141,12 +143,15 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
             for entry in payload["deferred_entries"]
             if entry["app"] == "segment_polygon_hitcount"
         )
-        self.assertIn("scripts/goal807_segment_polygon_optix_mode_gate.py", segment["command"])
-        self.assertIn("--strict", segment["command"])
-        self.assertIn("Goal807 strict mode", segment["activation_gate"])
-        self.assertEqual(segment["benchmark_readiness"], "needs_real_rtx_artifact")
+        self.assertIn("scripts/goal933_prepared_segment_polygon_optix_profiler.py", segment["command"])
+        self.assertIn("--scenario", segment["command"])
+        self.assertIn("segment_polygon_hitcount_prepared", segment["command"])
+        self.assertIn("--mode", segment["command"])
+        self.assertIn("run", segment["command"])
+        self.assertIn("native-kernel tuning", segment["activation_gate"])
+        self.assertEqual(segment["benchmark_readiness"], "ready_for_rtx_claim_review")
 
-    def test_deferred_road_hazard_entry_uses_goal888_gate(self):
+    def test_deferred_road_hazard_entry_uses_goal933_prepared_profiler(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
             fromlist=["build_manifest"],
@@ -156,14 +161,15 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
             for entry in payload["deferred_entries"]
             if entry["app"] == "road_hazard_screening"
         )
-        self.assertIn("scripts/goal888_road_hazard_native_optix_gate.py", road["command"])
-        self.assertIn("--strict", road["command"])
-        self.assertIn("--output-mode", road["command"])
-        self.assertIn("summary", road["command"])
-        self.assertEqual(road["benchmark_readiness"], "needs_real_rtx_artifact")
-        self.assertIn("Goal888 strict mode", road["activation_gate"])
+        self.assertIn("scripts/goal933_prepared_segment_polygon_optix_profiler.py", road["command"])
+        self.assertIn("--scenario", road["command"])
+        self.assertIn("road_hazard_prepared_summary", road["command"])
+        self.assertIn("--mode", road["command"])
+        self.assertIn("run", road["command"])
+        self.assertEqual(road["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("native-kernel tuning", road["activation_gate"])
 
-    def test_deferred_segment_polygon_anyhit_rows_entry_uses_goal873_gate(self):
+    def test_deferred_segment_polygon_anyhit_rows_entry_uses_goal934_prepared_profiler(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
             fromlist=["build_manifest"],
@@ -173,10 +179,15 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
             for entry in payload["deferred_entries"]
             if entry["app"] == "segment_polygon_anyhit_rows"
         )
-        self.assertIn("scripts/goal873_native_pair_row_optix_gate.py", segment["command"])
-        self.assertIn("--strict", segment["command"])
+        self.assertIn("scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py", segment["command"])
+        self.assertIn("--copies", segment["command"])
+        self.assertIn("256", segment["command"])
+        self.assertIn("--mode", segment["command"])
+        self.assertIn("run", segment["command"])
         self.assertIn("--output-capacity", segment["command"])
-        self.assertIn("Goal873 strict mode", segment["activation_gate"])
+        self.assertEqual(segment["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("larger RTX row-output evidence", segment["activation_gate"])
+        self.assertIn("optix_query_sec", segment["baseline_review_contract"]["required_phases"])
         self.assertIn("overflowed", segment["baseline_review_contract"]["required_phases"])
         self.assertIn("not default public app behavior", segment["non_claim"])
 
@@ -220,7 +231,8 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("--validation-mode", graph["command"])
         self.assertIn("analytic_summary", graph["command"])
         self.assertIn("--chunk-copies", graph["command"])
-        self.assertEqual(graph["benchmark_readiness"], "needs_real_rtx_artifact")
+        self.assertEqual(graph["command"][graph["command"].index("--chunk-copies") + 1], "0")
+        self.assertEqual(graph["benchmark_readiness"], "ready_for_rtx_claim_review")
         self.assertIn("visibility-edge", graph["claim_scope"])
         self.assertIn("native OptiX graph-ray", graph["claim_scope"])
         self.assertIn("cpu_python_reference_bfs", graph["baseline_review_contract"]["required_baselines"])

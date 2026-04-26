@@ -30,4 +30,3 @@
 ## Boundary
 
 Do not promote segment_polygon_anyhit_rows rows mode into any RT-core-ready or active RTX claim set until the public OptiX row path stops using the host-indexed helper and the generated device path is no longer placeholder-only.
-

@@ -9,7 +9,7 @@ class Goal849SpatialPromotionPacketTest(unittest.TestCase):
     def test_packet_records_spatial_readiness(self) -> None:
         payload = goal849.build_packet()
         self.assertTrue(payload["ready_for_local_promotion_packet"])
-        self.assertFalse(payload["ready_for_rtx_claim_review_now"])
+        self.assertTrue(payload["ready_for_rtx_claim_review_now"])
         by_app = {item["app"]: item for item in payload["apps"]}
         self.assertEqual(by_app["service_coverage_gaps"]["readiness_status"], "ready_for_rtx_claim_review")
         self.assertEqual(by_app["event_hotspot_screening"]["readiness_status"], "ready_for_rtx_claim_review")

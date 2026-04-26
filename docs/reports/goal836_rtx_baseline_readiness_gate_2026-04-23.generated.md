@@ -67,4 +67,3 @@ This readiness gate only inspects local baseline evidence. It does not run bench
 ## Release Rule
 
 An RTX speedup claim package is incomplete while this gate reports `needs_baselines`.
-

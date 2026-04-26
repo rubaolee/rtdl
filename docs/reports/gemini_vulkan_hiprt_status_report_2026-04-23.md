@@ -31,7 +31,7 @@ The HIP RT backend cannot be built or tested on the current NVIDIA-provisioned n
     ```text
     HIPRT SDK header not found at /root/vendor/hiprt-official/hiprtSdk-2.2.0e68f54/hiprt/hiprt.h
     ```
-*   **Runtime Impact**: Because the library (`librtdl_hiprt.so`) cannot be built, the Python loader safely catches the missing library. All 59 HIP RT tests skip execution with the message `'HIPRT runtime is not available'`. 
+*   **Runtime Impact**: Because the library (`librtdl_hiprt.so`) cannot be built, the Python loader safely catches the missing library. All 59 HIP RT tests skip execution with the message `'HIPRT runtime is not available'`.
 *   **Context**: Given that this is an NVIDIA RTX 4090 node, the absence of the AMD HIP RT SDK is expected, but it confirms that cross-vendor comparative benchmarking cannot be performed in this specific session.
 
 ## Summary Conclusion
