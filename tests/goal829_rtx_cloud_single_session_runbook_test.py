@@ -25,6 +25,10 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         text = RUNBOOK.read_text(encoding="utf-8")
 
         self.assertIn("goal824_pre_cloud_rtx_readiness_gate.py", text)
+        self.assertIn("goal1025_pre_cloud_rtx_app_batch_readiness.py", text)
+        self.assertIn("goal1026_pre_cloud_runner_dry_run_audit.py", text)
+        self.assertIn("17 active+deferred manifest entries", text)
+        self.assertIn("16\nunique manifest commands", text)
         self.assertIn('"valid": true', text)
         self.assertIn("Do not start a pod for one app at a time.", text)
 

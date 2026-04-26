@@ -24,6 +24,7 @@ GOALS = {
     1023: "v0.9.6 history catch-up",
     1024: "final public-surface audit",
     1025: "pre-cloud RTX app batch readiness",
+    1026: "pre-cloud RTX runner dry-run audit",
 }
 
 REQUIRED_SUFFIXES = {

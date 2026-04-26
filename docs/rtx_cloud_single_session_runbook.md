@@ -11,6 +11,12 @@ Run this locally first:
 cd /Users/rl2025/rtdl_python_only
 PYTHONPATH=src:. python3 scripts/goal824_pre_cloud_rtx_readiness_gate.py \
   --output-json docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json
+PYTHONPATH=src:. python3 scripts/goal1025_pre_cloud_rtx_app_batch_readiness.py \
+  --output-json docs/reports/goal1025_pre_cloud_rtx_app_batch_readiness_2026-04-26.json \
+  --output-md docs/reports/goal1025_pre_cloud_rtx_app_batch_readiness_2026-04-26.md
+PYTHONPATH=src:. python3 scripts/goal1026_pre_cloud_runner_dry_run_audit.py \
+  --output-json docs/reports/goal1026_pre_cloud_runner_dry_run_audit_2026-04-26.json \
+  --output-md docs/reports/goal1026_pre_cloud_runner_dry_run_audit_2026-04-26.md
 ```
 
 Start a pod only if the result is:
@@ -22,6 +28,11 @@ Start a pod only if the result is:
 Do not start a pod for one app at a time. Once a pod is running, do not run the
 entire active+deferred manifest blindly. Run the OOM-safe groups below, copying
 artifacts back after each group.
+
+The current Goal1025/Goal1026 local gates expect 18 public apps, 16 NVIDIA RTX
+targets, 2 non-NVIDIA exclusions, 17 active+deferred manifest entries, and 16
+unique manifest commands. If those counts drift, refresh the manifest and the
+runbook before starting paid cloud time.
 
 If the only pending follow-up is the historical graph/Jaccard retry, use
 Goal914 instead of the full group list:
