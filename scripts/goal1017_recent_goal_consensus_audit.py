@@ -23,6 +23,7 @@ GOALS = {
     1022: "history release drift audit",
     1023: "v0.9.6 history catch-up",
     1024: "final public-surface audit",
+    1025: "pre-cloud RTX app batch readiness",
 }
 
 REQUIRED_SUFFIXES = {

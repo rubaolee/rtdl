@@ -19,8 +19,8 @@ class Goal1017RecentGoalConsensusAuditTest(unittest.TestCase):
         )
         payload = module.build_audit()
         self.assertTrue(payload["valid"])
-        self.assertEqual(payload["audited_goal_count"], 11)
-        self.assertEqual(payload["complete_goal_count"], 11)
+        self.assertEqual(payload["audited_goal_count"], 12)
+        self.assertEqual(payload["complete_goal_count"], 12)
         self.assertEqual(payload["incomplete_goal_count"], 0)
         for row in payload["rows"]:
             self.assertEqual(row["status"], "complete")
