@@ -15,7 +15,7 @@ Reviews:
 
 ## Consensus Verdict
 
-Status: `ACCEPT`.
+Status: `ACCEPT_SUPERSEDED_BY_GOAL1033`.
 
 Goal1032 is accepted. The correction is required and technically justified.
 
@@ -41,4 +41,4 @@ Both now state that SciPy is structurally exposed by the CLI but is an optional 
 
 ## Codex Decision
 
-Close Goal1032. Treat the corrected Goal1030 manifest and regenerated Goal1031 smoke report as the current source of truth for local baseline readiness.
+Goal1032 correctly identified the oracle-shortcut problem. Goal1033 then implemented a real SciPy threshold-count path and restored `outlier_detection` and `dbscan_clustering` to structural `baseline_ready` with local SciPy dependency gaps. Treat Goal1033 as the current source of truth for those two entries.

@@ -220,6 +220,25 @@ def _run_embree_prepared_density_summary(case: dict[str, tuple[rt.Point, ...]]) 
     return _density_rows_from_count_rows(case["points"], count_rows)
 
 
+def _run_scipy_density_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
+    count_rows = rt.run_scipy_fixed_radius_count_threshold(
+        case["points"],
+        case["points"],
+        radius=RADIUS,
+        threshold=MIN_NEIGHBORS_INCLUDING_SELF,
+        k_max=K_MAX,
+    )
+    threshold_reached_count = sum(1 for row in count_rows if int(row["threshold_reached"]) != 0)
+    point_count = len(case["points"])
+    return {
+        "point_count": point_count,
+        "threshold_reached_count": int(threshold_reached_count),
+        "outlier_count": point_count - int(threshold_reached_count),
+        "row_count": None,
+        "summary_mode": "scipy_ckdtree_threshold_count",
+    }
+
+
 def _native_continuation_backend(
     backend: str,
     *,
@@ -361,6 +380,10 @@ def run_app(
         neighbor_rows = ()
         density_rows = ()
         scalar_density_count = _run_optix_prepared_density_count(case)
+    elif output_mode == "density_count" and backend == "scipy":
+        neighbor_rows = ()
+        density_rows = ()
+        scalar_density_count = _run_scipy_density_count(case)
     elif output_mode == "density_count":
         neighbor_rows = ()
         density_rows = ()

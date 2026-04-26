@@ -31,6 +31,7 @@ GOALS = {
     1030: "local RTX baseline manifest",
     1031: "local baseline smoke runner",
     1032: "baseline manifest correction",
+    1033: "SciPy threshold-count baseline",
 }
 
 REQUIRED_SUFFIXES = {

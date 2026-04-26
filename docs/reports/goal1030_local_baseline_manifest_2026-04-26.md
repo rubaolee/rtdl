@@ -7,15 +7,15 @@ This is a local baseline command manifest. It does not execute benchmarks, does 
 ## Summary
 
 - entries: `17`
-- status_counts: `{'baseline_partial': 15, 'baseline_ready': 2}`
+- status_counts: `{'baseline_partial': 13, 'baseline_ready': 4}`
 
 ## Matrix
 
 | App | RTX Path | Local Status | Command Count | Reason |
 |---|---|---|---:|---|
 | `robot_collision_screening` | `prepared_pose_flags` | `baseline_partial` | 2 | CPU and Embree app paths exist, but exact prepared-pose semantics need phase extraction. |
-| `outlier_detection` | `prepared_fixed_radius_density_summary` | `baseline_partial` | 2 | CPU and Embree prepared threshold paths are local; compact scalar SciPy is not a real cKDTree baseline in this app mode and needs a dedicated extractor. |
-| `dbscan_clustering` | `prepared_fixed_radius_core_flags` | `baseline_partial` | 2 | CPU and Embree prepared core-count paths are local; compact scalar SciPy is not a real cKDTree baseline in this app mode and needs a dedicated extractor. |
+| `outlier_detection` | `prepared_fixed_radius_density_summary` | `baseline_ready` | 3 | CPU, Embree prepared threshold, and real SciPy cKDTree threshold-count paths are exposed; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed. |
+| `dbscan_clustering` | `prepared_fixed_radius_core_flags` | `baseline_ready` | 3 | CPU, Embree prepared core-count, and real SciPy cKDTree threshold-count paths are exposed; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed. |
 | `database_analytics:sales_risk` | `prepared_db_session_sales_risk` | `baseline_partial` | 2 | CPU and Embree compact summaries are local; PostgreSQL indexed baseline is Linux/PostgreSQL-gated. |
 | `database_analytics:regional_dashboard` | `prepared_db_session_regional_dashboard` | `baseline_partial` | 2 | CPU and Embree compact summaries are local; PostgreSQL indexed baseline is Linux/PostgreSQL-gated. |
 | `service_coverage_gaps` | `prepared_gap_summary` | `baseline_ready` | 3 | CPU, Embree summary, and SciPy paths are exposed by the app CLI; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed. |
@@ -53,6 +53,10 @@ PYTHONPATH=src:. python3 examples/rtdl_outlier_detection_app.py --backend cpu --
 PYTHONPATH=src:. python3 examples/rtdl_outlier_detection_app.py --backend embree --copies 20000 --output-mode density_count --embree-summary-mode rt_count_threshold_prepared
 ```
 
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_outlier_detection_app.py --backend scipy --copies 20000 --output-mode density_count
+```
+
 ### `dbscan_clustering`
 
 ```bash
@@ -61,6 +65,10 @@ PYTHONPATH=src:. python3 examples/rtdl_dbscan_clustering_app.py --backend cpu --
 
 ```bash
 PYTHONPATH=src:. python3 examples/rtdl_dbscan_clustering_app.py --backend embree --copies 20000 --output-mode core_count --embree-summary-mode rt_core_flags_prepared
+```
+
+```bash
+PYTHONPATH=src:. python3 examples/rtdl_dbscan_clustering_app.py --backend scipy --copies 20000 --output-mode core_count
 ```
 
 ### `database_analytics:sales_risk`

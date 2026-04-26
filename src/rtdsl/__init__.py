@@ -154,6 +154,7 @@ from .external_baselines import run_postgis_bounded_knn_rows_3d
 from .external_baselines import run_postgis_knn_rows
 from .external_baselines import run_postgis_knn_rows_3d
 from .external_baselines import run_scipy_fixed_radius_neighbors
+from .external_baselines import run_scipy_fixed_radius_count_threshold
 from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
 from .optix_runtime import optix_version
@@ -955,6 +956,7 @@ __all__ = [
     "run_postgresql_grouped_sum",
     "run_postgresql_triangle_probe",
     "run_scipy_fixed_radius_neighbors",
+    "run_scipy_fixed_radius_count_threshold",
     "run_scipy_knn_rows",
     "run_section_5_6",
     "ScalabilityConfig",

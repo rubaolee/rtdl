@@ -296,6 +296,24 @@ def _run_embree_prepared_core_flag_summary(case: dict[str, tuple[rt.Point, ...]]
     return _core_flag_rows_from_count_rows(case["points"], count_rows)
 
 
+def _run_scipy_core_count(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | str | None]:
+    count_rows = rt.run_scipy_fixed_radius_count_threshold(
+        case["points"],
+        case["points"],
+        radius=EPSILON,
+        threshold=MIN_POINTS,
+        k_max=K_MAX,
+    )
+    core_count = sum(1 for row in count_rows if int(row["threshold_reached"]) != 0)
+    return {
+        "point_count": len(case["points"]),
+        "threshold_reached_count": int(core_count),
+        "core_count": int(core_count),
+        "row_count": None,
+        "summary_mode": "scipy_ckdtree_threshold_count",
+    }
+
+
 def _native_continuation_backend(
     backend: str,
     *,
@@ -451,6 +469,10 @@ def run_app(
         neighbor_rows = ()
         cluster_rows = ()
         scalar_core_count = _run_optix_prepared_core_count(case)
+    elif output_mode == "core_count" and backend == "scipy":
+        neighbor_rows = ()
+        cluster_rows = ()
+        scalar_core_count = _run_scipy_core_count(case)
     elif output_mode == "core_count":
         neighbor_rows = ()
         cluster_rows = ()
