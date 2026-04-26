@@ -20,6 +20,7 @@ GOALS = {
     1016: "historical review supersession audit",
     1018: "Goal1007 repeat plan public wording sync",
     1020: "public docs RTX boundary refresh",
+    1022: "history release drift audit",
 }
 
 REQUIRED_SUFFIXES = {
@@ -68,7 +69,7 @@ def build_audit() -> dict[str, Any]:
         "rows": rows,
         "valid": not incomplete,
         "boundary": (
-            "This audit checks that recent bounded public-wording goals have saved Claude review, "
+            "This audit checks that recent bounded goals have saved Claude review, "
             "Gemini review, and two-AI consensus files. It does not authorize public speedup claims."
         ),
     }

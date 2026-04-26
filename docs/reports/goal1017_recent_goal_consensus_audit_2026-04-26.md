@@ -2,12 +2,12 @@
 
 Date: 2026-04-26
 
-This audit checks that recent bounded public-wording goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.
+This audit checks that recent bounded goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.
 
 ## Summary
 
-- audited goals: `8`
-- complete goals: `8`
+- audited goals: `9`
+- complete goals: `9`
 - incomplete goals: `0`
 - valid: `True`
 
@@ -23,8 +23,9 @@ This audit checks that recent bounded public-wording goals have saved Claude rev
 | 1016 | historical review supersession audit | `complete` | 1 | 1 | 1 |
 | 1018 | Goal1007 repeat plan public wording sync | `complete` | 1 | 1 | 1 |
 | 1020 | public docs RTX boundary refresh | `complete` | 1 | 1 | 1 |
+| 1022 | history release drift audit | `complete` | 1 | 1 | 1 |
 
 ## Boundary
 
-This audit checks that recent bounded public-wording goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.
+This audit checks that recent bounded goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.
 
