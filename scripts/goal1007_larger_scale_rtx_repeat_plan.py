@@ -3,11 +3,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+import rtdsl as rt
+
 DATE = "2026-04-26"
 GOAL = "Goal1007 larger-scale RTX repeat plan"
 SOURCE = ROOT / "docs" / "reports" / "goal1006_public_rtx_claim_wording_gate_2026-04-26.json"
@@ -171,21 +176,33 @@ def build_plan(source: Path = SOURCE) -> dict[str, Any]:
     target_keys = {(row["app"], row["path_name"]) for row in TARGETS}
     missing = sorted(f"{app}/{path}" for app, path in held - target_keys)
     extra = sorted(f"{app}/{path}" for app, path in target_keys - held)
-    executable = [row for row in TARGETS if "command" in row]
+    targets = []
+    for row in TARGETS:
+        public_wording = rt.rtx_public_wording_status(str(row["app"]))
+        targets.append(
+            {
+                **row,
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
+            }
+        )
+    executable = [row for row in targets if "command" in row]
     return {
         "goal": GOAL,
         "date": DATE,
         "source": str(source.relative_to(ROOT)),
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "held_candidate_count": len(held),
-        "target_count": len(TARGETS),
+        "target_count": len(targets),
         "executable_command_count": len(executable),
         "missing_held_candidates": missing,
         "extra_targets": extra,
-        "targets": TARGETS,
+        "targets": targets,
         "status": "ok" if not missing and not extra else "needs_attention",
         "boundary": (
             "Goal1007 prepares larger-scale RTX repeats for held Goal1006 candidates. "
-            "It does not start cloud resources and does not authorize speedup claims."
+            "It does not start cloud resources and does not authorize speedup claims. "
+            "Release-facing wording must still follow rtdsl.rtx_public_wording_matrix()."
         ),
     }
 
@@ -279,14 +296,24 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Targets",
         "",
-        "| App | Path | Command? | Reason | Risk note |",
-        "|---|---|---:|---|---|",
+        "| App | Path | Command? | Current public wording | Reason | Risk note |",
+        "|---|---|---:|---|---|---|",
     ]
     for target in payload["targets"]:
         lines.append(
             f"| `{target['app']}` | `{target['path_name']}` | "
-            f"`{'command' in target}` | {target['scale_reason']} | {target['risk_note']} |"
+            f"`{'command' in target}` | `{target['current_public_wording_status']}` | "
+            f"{target['scale_reason']} | {target['risk_note']} |"
         )
+    lines.extend(["", "## Current Public Wording Source-Of-Truth", ""])
+    lines.append("This repeat plan uses `rtdsl.rtx_public_wording_matrix()` as the current release-facing wording source.")
+    lines.append("")
+    for target in payload["targets"]:
+        if target["current_public_wording_status"] == "public_wording_blocked":
+            lines.append(
+                f"- `{target['app']} / {target['path_name']}` current status: "
+                f"`{target['current_public_wording_status']}` — {target['current_public_wording_boundary']}"
+            )
     if "existing_outputs" in payload:
         lines.extend(["", "## Existing Output Audit", "", "| App | Path | Exists | Size |", "|---|---|---:|---:|"])
         for row in payload["existing_outputs"]:

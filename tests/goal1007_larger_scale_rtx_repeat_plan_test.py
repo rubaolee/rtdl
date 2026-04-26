@@ -24,7 +24,9 @@ class Goal1007LargerScaleRtxRepeatPlanTest(unittest.TestCase):
         self.assertEqual(payload["executable_command_count"], 6)
         self.assertFalse(payload["missing_held_candidates"])
         self.assertFalse(payload["extra_targets"])
+        self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertIn("does not start cloud resources", payload["boundary"])
+        self.assertIn("rtdsl.rtx_public_wording_matrix()", payload["boundary"])
 
     def test_commands_target_larger_scales_and_bounded_outputs(self) -> None:
         module = __import__(
@@ -38,6 +40,18 @@ class Goal1007LargerScaleRtxRepeatPlanTest(unittest.TestCase):
         robot = targets[("robot_collision_screening", "prepared_pose_flags")]["command"]
         self.assertIn("8000000", robot)
         self.assertIn("pose_count", robot)
+        self.assertEqual(
+            targets[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_status"
+            ],
+            "public_wording_blocked",
+        )
+        self.assertIn(
+            "100 ms",
+            targets[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_boundary"
+            ],
+        )
 
         pair_rows = targets[("segment_polygon_anyhit_rows", "segment_polygon_anyhit_rows_prepared_bounded_gate")]["command"]
         self.assertIn("--output-capacity", pair_rows)
@@ -75,6 +89,10 @@ class Goal1007LargerScaleRtxRepeatPlanTest(unittest.TestCase):
             self.assertIn("already-running RTX pod", shell_text)
             self.assertIn("does not create cloud resources", shell_text)
             self.assertIn("goal1007_robot_pose_flags_large_rtx.json", shell_text)
+            self.assertIn(
+                "rtdsl.rtx_public_wording_matrix()",
+                output_md.read_text(encoding="utf-8"),
+            )
 
     def test_audit_existing_does_not_write_shell_without_explicit_output_sh(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

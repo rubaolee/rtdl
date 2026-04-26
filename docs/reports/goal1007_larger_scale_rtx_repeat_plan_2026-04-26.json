@@ -1,5 +1,6 @@
 {
-  "boundary": "Goal1007 prepares larger-scale RTX repeats for held Goal1006 candidates. It does not start cloud resources and does not authorize speedup claims.",
+  "boundary": "Goal1007 prepares larger-scale RTX repeats for held Goal1006 candidates. It does not start cloud resources and does not authorize speedup claims. Release-facing wording must still follow rtdsl.rtx_public_wording_matrix().",
+  "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
   "date": "2026-04-26",
   "executable_command_count": 6,
   "extra_targets": [],
@@ -31,6 +32,8 @@
         "--output-json",
         "docs/reports/goal1007_robot_pose_flags_large_rtx.json"
       ],
+      "current_public_wording_boundary": "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
+      "current_public_wording_status": "public_wording_blocked",
       "path_name": "prepared_pose_flags",
       "risk_note": "High memory run: 8M poses means 32M packed rays; intended for 24GB+ RTX pods and may need downscaling if VRAM pressure appears.",
       "scale_reason": "Increase ray count enough that warm pose-count query should exceed the 100 ms wording floor."
@@ -50,6 +53,8 @@
         "--output-json",
         "docs/reports/goal1007_outlier_dbscan_large_rtx.json"
       ],
+      "current_public_wording_boundary": "Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.",
+      "current_public_wording_status": "public_wording_reviewed",
       "path_name": "prepared_fixed_radius_density_summary",
       "risk_note": "Moderate memory run: 3.2M points; if pod memory is tight, reduce copies before changing semantics.",
       "scale_reason": "Raise tiled point count for scalar threshold-count traversal."
@@ -57,6 +62,8 @@
     {
       "app": "dbscan_clustering",
       "command_ref": "outlier_detection/prepared_fixed_radius_density_summary",
+      "current_public_wording_boundary": "Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.",
+      "current_public_wording_status": "public_wording_reviewed",
       "path_name": "prepared_fixed_radius_core_flags",
       "reused_output_json": "docs/reports/goal1007_outlier_dbscan_large_rtx.json",
       "risk_note": "No separate command; validate both app records from the shared fixed-radius JSON.",
@@ -81,6 +88,8 @@
         "--output-json",
         "docs/reports/goal1007_facility_service_coverage_large_rtx.json"
       ],
+      "current_public_wording_boundary": "Only the prepared service-coverage decision sub-path is covered; ranked KNN assignment, ranking, and uncovered-ID witness output are outside this wording.",
+      "current_public_wording_status": "public_wording_reviewed",
       "path_name": "coverage_threshold_prepared",
       "risk_note": "Moderate memory run: 3.2M build/query points; validation is skipped for cost control.",
       "scale_reason": "Raise facility service-coverage copies for a stable threshold query phase."
@@ -102,6 +111,8 @@
         "--output-json",
         "docs/reports/goal1007_segment_polygon_hitcount_large_rtx.json"
       ],
+      "current_public_wording_boundary": "Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.",
+      "current_public_wording_status": "public_wording_reviewed",
       "path_name": "segment_polygon_hitcount_native_experimental",
       "risk_note": "Output is scalar hitcount summary, so memory risk is mostly geometry/ray staging.",
       "scale_reason": "Raise segment/polygon copies for native hitcount traversal while keeping validation skipped for cost control."
@@ -123,6 +134,8 @@
         "--output-json",
         "docs/reports/goal1007_segment_polygon_anyhit_rows_large_rtx.json"
       ],
+      "current_public_wording_boundary": "Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.",
+      "current_public_wording_status": "public_wording_reviewed",
       "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
       "risk_note": "Bounded output capacity is raised to 131072; any overflow keeps this row out of public wording.",
       "scale_reason": "Raise bounded pair-row copies and capacity; output remains bounded and overflow must stay false."
@@ -146,6 +159,8 @@
         "--output-json",
         "docs/reports/goal1007_ann_candidate_coverage_large_rtx.json"
       ],
+      "current_public_wording_boundary": "Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.",
+      "current_public_wording_status": "public_wording_reviewed",
       "path_name": "candidate_threshold_prepared",
       "risk_note": "Moderate memory run: 2.4M query/candidate points; validation is skipped for cost control.",
       "scale_reason": "Raise ANN candidate copies for stable threshold-query timing."
