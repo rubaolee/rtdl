@@ -1,0 +1,833 @@
+{
+  "boundary": "Goal1005 classifies speedup-claim candidates from the final Goal1004 RTX A5000 v2 artifacts. It does not authorize public speedup claims; it only identifies rows that may deserve later 2-AI public-claim review or rows that should be rejected/kept internal under current evidence.",
+  "bundle_path": "docs/reports/cloud_2026_04_26/goal1003_rtx_a5000_artifacts_with_report_2026-04-26-v2.tgz",
+  "candidate_count": 8,
+  "date": "2026-04-26",
+  "goal": "Goal1005 post-A5000 speedup candidate audit",
+  "internal_only_count": 1,
+  "needs_timing_repair_count": 0,
+  "public_speedup_claim_authorized_count": 0,
+  "recommendation_counts": {
+    "candidate_for_separate_2ai_public_claim_review": 8,
+    "internal_only_margin_or_scale": 1,
+    "reject_current_public_speedup_claim": 8
+  },
+  "reject_count": 8,
+  "row_count": 17,
+  "rows": [
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "docs/reports/goal759_robot_pose_flags_phase_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "fastest_baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+      "fastest_baseline_sec": 0.5818509249947965,
+      "fastest_ratio_baseline_over_rtx": 1179.6438614428769,
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.000493242871016264,
+      "rtx_phase_key": "prepared_pose_flags_warm_query_sec.median_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_pose_count",
+          "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_cpu_oracle_pose_count_2026-04-23.json",
+          "phase_key": "native_anyhit_query",
+          "phase_sec": 594.6519250799902,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+          "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json",
+          "phase_key": "native_anyhit_query",
+          "phase_sec": 0.5818509249947965,
+          "source_backend": "embree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "outlier_detection",
+      "artifact_path": "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
+      "fastest_baseline": "cpu_scalar_threshold_count_oracle",
+      "fastest_baseline_sec": 0.02704395801993087,
+      "fastest_ratio_baseline_over_rtx": 4.640073749155,
+      "non_claim": "not per-point outlier labels, row-output neighbors, KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.005828346591442823,
+      "rtx_phase_key": "prepared_optix_warm_query_sec.median_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_scalar_threshold_count_oracle",
+          "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+          "phase_key": "native_threshold_query",
+          "phase_sec": 0.02704395801993087,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "embree_scalar_or_summary_path",
+          "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_embree_scalar_or_summary_path_2026-04-23.json",
+          "phase_key": "native_threshold_query",
+          "phase_sec": 0.2069616669905372,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+          "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+          "phase_key": "native_threshold_query",
+          "phase_sec": 0.5924256040016189,
+          "source_backend": "scipy_ckdtree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "dbscan_clustering",
+      "artifact_path": "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared fixed-radius scalar core-count traversal only",
+      "fastest_baseline": "cpu_scalar_threshold_count_oracle",
+      "fastest_baseline_sec": 0.024831687042023987,
+      "fastest_ratio_baseline_over_rtx": 6.620045949952434,
+      "non_claim": "not per-point core flags, not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.003750984091311693,
+      "rtx_phase_key": "prepared_optix_warm_query_sec.median_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_scalar_threshold_count_oracle",
+          "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_cpu_scalar_threshold_count_oracle_2026-04-23.json",
+          "phase_key": "native_threshold_query",
+          "phase_sec": 0.024831687042023987,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "embree_scalar_or_summary_path",
+          "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_embree_scalar_or_summary_path_2026-04-23.json",
+          "phase_key": "native_threshold_query",
+          "phase_sec": 0.21145089605124667,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+          "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+          "phase_key": "native_threshold_query",
+          "phase_sec": 0.649714270432014,
+          "source_backend": "scipy_ckdtree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal759_db_sales_risk_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "fastest_baseline": "embree_compact_summary",
+      "fastest_baseline_sec": 0.061593040940351784,
+      "fastest_ratio_baseline_over_rtx": 0.5958063985764075,
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.10337760904803872,
+      "rtx_phase_key": "prepared_session_warm_query_sec.median_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_compact_summary",
+          "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_cpu_oracle_compact_summary_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 1.9049472089391202,
+          "source_backend": "cpu"
+        },
+        {
+          "baseline": "embree_compact_summary",
+          "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_embree_compact_summary_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.061593040940351784,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "postgresql_same_semantics_on_linux_when_available",
+          "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_sales_risk_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.10380191204603761,
+          "source_backend": "postgresql"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "docs/reports/goal759_db_regional_dashboard_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "fastest_baseline": "embree_compact_summary",
+      "fastest_baseline_sec": 0.12720579199958593,
+      "fastest_ratio_baseline_over_rtx": 0.8835699125231937,
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.14396799867972732,
+      "rtx_phase_key": "prepared_session_warm_query_sec.median_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_compact_summary",
+          "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_cpu_oracle_compact_summary_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.5169126660330221,
+          "source_backend": "cpu"
+        },
+        {
+          "baseline": "embree_compact_summary",
+          "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_embree_compact_summary_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.12720579199958593,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "postgresql_same_semantics_on_linux_when_available",
+          "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_database_analytics_prepared_db_session_regional_dashboard_postgresql_same_semantics_on_linux_when_available_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.14785595203284174,
+          "source_backend": "postgresql"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    },
+    {
+      "app": "service_coverage_gaps",
+      "artifact_path": "docs/reports/goal811_service_coverage_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
+      "fastest_baseline": "embree_summary_path",
+      "fastest_baseline_sec": 0.22004816704429686,
+      "fastest_ratio_baseline_over_rtx": 1.611541484096285,
+      "non_claim": "not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim",
+      "path_name": "prepared_gap_summary",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.13654514588415623,
+      "rtx_phase_key": "scenario.timings_sec.optix_query",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json",
+          "phase_key": "optix_query",
+          "phase_sec": 742.9204237499507,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json",
+          "phase_key": "optix_query",
+          "phase_sec": 0.22004816704429686,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "scipy_baseline_when_available",
+          "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json",
+          "phase_key": "optix_query",
+          "phase_sec": 0.2524433954968117,
+          "source_backend": "scipy_ckdtree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_path": "docs/reports/goal811_event_hotspot_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot summaries",
+      "fastest_baseline": "embree_summary_path",
+      "fastest_baseline_sec": 0.2566157499095425,
+      "fastest_ratio_baseline_over_rtx": 1.010721747265428,
+      "non_claim": "not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+      "path_name": "prepared_count_summary",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is not slower than the fastest baseline, but the margin is below the 20% candidate threshold.",
+      "recommendation": "internal_only_margin_or_scale",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.2538935672491789,
+      "rtx_phase_key": "scenario.timings_sec.optix_query",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json",
+          "phase_key": "optix_query",
+          "phase_sec": 1782.6958221249515,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_embree_summary_path_2026-04-23.json",
+          "phase_key": "optix_query",
+          "phase_sec": 0.2566157499095425,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "scipy_baseline_when_available",
+          "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json",
+          "phase_key": "optix_query",
+          "phase_sec": 0.5238764795358293,
+          "source_backend": "scipy_ckdtree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    },
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "docs/reports/goal887_facility_service_coverage_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+      "fastest_baseline": "cpu_oracle_same_semantics",
+      "fastest_baseline_sec": 0.07139500009361655,
+      "fastest_ratio_baseline_over_rtx": 22.805075622705,
+      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+      "path_name": "coverage_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.0031306627206504345,
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_facility_knn_assignment_coverage_threshold_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.07139500009361655,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "best_available_non_optix_backend_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_facility_knn_assignment_coverage_threshold_prepared_best_available_non_optix_backend_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 56.29560008295812,
+          "source_backend": "embree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact_path": "docs/reports/goal933_road_hazard_prepared_summary_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "native OptiX segment/polygon traversal for compact road-hazard summaries",
+      "fastest_baseline": "embree_same_semantics",
+      "fastest_baseline_sec": 0.0035713749239221215,
+      "fastest_ratio_baseline_over_rtx": 0.02076263622165903,
+      "non_claim": "not default public road-hazard behavior and not a full GIS/routing speedup claim",
+      "path_name": "road_hazard_native_summary_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.17200970463454723,
+      "rtx_phase_key": "timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_python_reference",
+          "claim_limit": "experimental prepared road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_road_hazard_screening_road_hazard_native_summary_gate_cpu_python_reference_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.00969454098958522,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "embree_same_semantics",
+          "claim_limit": "experimental prepared road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_road_hazard_screening_road_hazard_native_summary_gate_embree_same_semantics_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.0035713749239221215,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "postgis_when_available",
+          "claim_limit": "experimental prepared road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_road_hazard_screening_road_hazard_native_summary_gate_postgis_when_available_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.011596227996051311,
+          "source_backend": "postgis"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "artifact_path": "docs/reports/goal933_segment_polygon_hitcount_prepared_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "experimental native custom-AABB segment/polygon hit-count traversal",
+      "fastest_baseline": "embree_same_semantics",
+      "fastest_baseline_sec": 0.006825749995186925,
+      "fastest_ratio_baseline_over_rtx": 1.7083082183287555,
+      "non_claim": "not default public app behavior and not a row-returning any-hit claim",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.003995619714260101,
+      "rtx_phase_key": "timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_python_reference",
+          "claim_limit": "experimental prepared hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_cpu_python_reference_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.014505499973893166,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "embree_same_semantics",
+          "claim_limit": "experimental prepared hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_embree_same_semantics_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.006825749995186925,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "postgis_when_available",
+          "claim_limit": "experimental prepared hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_hitcount_segment_polygon_hitcount_native_experimental_postgis_when_available_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.0501979379914701,
+          "source_backend": "postgis"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "artifact_path": "docs/reports/goal934_segment_polygon_anyhit_rows_prepared_bounded_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
+      "fastest_baseline": "postgis_when_available_for_same_pair_semantics",
+      "fastest_baseline_sec": 0.014249149011448026,
+      "fastest_ratio_baseline_over_rtx": 3.030857936092091,
+      "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
+      "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.004701358266174793,
+      "rtx_phase_key": "timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_python_reference",
+          "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_anyhit_rows_segment_polygon_anyhit_rows_prepared_bounded_gate_cpu_python_reference_2026-04-23.json",
+          "phase_key": "cpu_reference_total_sec",
+          "phase_sec": 0.01434683392290026,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "postgis_when_available_for_same_pair_semantics",
+          "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_segment_polygon_anyhit_rows_segment_polygon_anyhit_rows_prepared_bounded_gate_postgis_when_available_for_same_pair_semantics_2026-04-23.json",
+          "phase_key": "optix_query_sec",
+          "phase_sec": 0.014249149011448026,
+          "source_backend": "postgis"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "graph_analytics",
+      "artifact_path": "docs/reports/goal889_graph_visibility_optix_gate_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "OptiX prepared ray/triangle any-hit count for graph visibility-edge summary filtering plus native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+      "fastest_baseline": "embree_graph_ray_bfs_and_triangle_when_available",
+      "fastest_baseline_sec": 0.5672194170765579,
+      "fastest_ratio_baseline_over_rtx": 0.21949652185995747,
+      "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+      "path_name": "graph_visibility_edges_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 2.584184078499675,
+      "rtx_phase_key": "records.optix_visibility_anyhit.sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "embree_graph_ray_bfs_and_triangle_when_available",
+          "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_embree_graph_ray_bfs_and_triangle_when_available_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.5672194170765579,
+          "source_backend": "embree"
+        }
+      ],
+      "untimed_non_optix_baselines": [
+        {
+          "baseline": "cpu_python_reference_visibility_edges",
+          "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_cpu_python_reference_visibility_edges_2026-04-23.json",
+          "phase_key": null,
+          "phase_sec": null,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "cpu_python_reference_bfs",
+          "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_cpu_python_reference_bfs_2026-04-23.json",
+          "phase_key": null,
+          "phase_sec": null,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "cpu_python_reference_triangle_count",
+          "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_cpu_python_reference_triangle_count_2026-04-23.json",
+          "phase_key": null,
+          "phase_sec": null,
+          "source_backend": "cpu_python_reference"
+        }
+      ],
+      "warnings": [
+        "cpu_python_reference_visibility_edges lacks comparable timing",
+        "cpu_python_reference_bfs lacks comparable timing",
+        "cpu_python_reference_triangle_count lacks comparable timing"
+      ]
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact_path": "docs/reports/goal887_hausdorff_threshold_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+      "fastest_baseline": "cpu_oracle_same_semantics",
+      "fastest_baseline_sec": 2.245791256427765e-05,
+      "fastest_ratio_baseline_over_rtx": 0.016461978523105072,
+      "non_claim": "not an exact Hausdorff distance, KNN-row, or nearest-neighbor ranking speedup claim",
+      "path_name": "directed_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.0013642292469739914,
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_hausdorff_distance_directed_threshold_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 2.245791256427765e-05,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "best_available_non_optix_backend_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_hausdorff_distance_directed_threshold_prepared_best_available_non_optix_backend_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 2.5067337080836296,
+          "source_backend": "embree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "ann_candidate_search",
+      "artifact_path": "docs/reports/goal887_ann_candidate_coverage_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for ANN candidate-coverage decisions",
+      "fastest_baseline": "cpu_oracle_same_semantics",
+      "fastest_baseline_sec": 0.003666625008918345,
+      "fastest_ratio_baseline_over_rtx": 4.857461066060462,
+      "non_claim": "not a full ANN index, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ, or recall-optimizer claim",
+      "path_name": "candidate_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.",
+      "recommendation": "candidate_for_separate_2ai_public_claim_review",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.000754843931645155,
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_ann_candidate_search_candidate_threshold_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.003666625008918345,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "best_available_non_optix_backend_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_ann_candidate_search_candidate_threshold_prepared_best_available_non_optix_backend_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 60.61558924999554,
+          "source_backend": "embree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_path": "docs/reports/goal887_barnes_hut_node_coverage_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+      "fastest_baseline": "cpu_oracle_same_semantics",
+      "fastest_baseline_sec": 0.0006991670234128833,
+      "fastest_ratio_baseline_over_rtx": 0.1470587270252839,
+      "non_claim": "not a Barnes-Hut opening-rule, force-vector reduction, or N-body solver speedup claim",
+      "path_name": "node_coverage_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 0.004754338879138231,
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_oracle_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_barnes_hut_force_app_node_coverage_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.0006991670234128833,
+          "source_backend": "cpu_oracle"
+        },
+        {
+          "baseline": "best_available_non_optix_backend_same_semantics",
+          "claim_limit": "bounded sub-path only",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_barnes_hut_force_app_node_coverage_prepared_best_available_non_optix_backend_same_semantics_2026-04-23.json",
+          "phase_key": "native_query",
+          "phase_sec": 0.011310958885587752,
+          "source_backend": "embree"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": [
+        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
+      ]
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact_path": "docs/reports/goal877_pair_overlap_phase_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+      "fastest_baseline": "postgis_when_available_for_same_unit_cell_contract",
+      "fastest_baseline_sec": 0.00147143192589283,
+      "fastest_ratio_baseline_over_rtx": 0.00014636892033707908,
+      "non_claim": "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 10.052898678928614,
+      "rtx_phase_key": "phases.optix_candidate_discovery_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_python_reference",
+          "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_polygon_pair_overlap_area_rows_polygon_pair_overlap_optix_native_assisted_phase_gate_cpu_python_reference_2026-04-23.json",
+          "phase_key": "optix_candidate_discovery_sec",
+          "phase_sec": 0.019695583963766694,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "embree_native_assisted_candidate_discovery",
+          "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_polygon_pair_overlap_area_rows_polygon_pair_overlap_optix_native_assisted_phase_gate_embree_native_assisted_candidate_discovery_2026-04-23.json",
+          "phase_key": "optix_candidate_discovery_sec",
+          "phase_sec": 0.018554584006778896,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "postgis_when_available_for_same_unit_cell_contract",
+          "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_polygon_pair_overlap_area_rows_polygon_pair_overlap_optix_native_assisted_phase_gate_postgis_when_available_for_same_unit_cell_contract_2026-04-23.json",
+          "phase_key": "optix_candidate_discovery_sec",
+          "phase_sec": 0.00147143192589283,
+          "source_backend": "postgis"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact_path": "docs/reports/goal877_jaccard_phase_rtx.json",
+      "baseline_complete_for_speedup_review": true,
+      "baseline_status": "same_semantics_baselines_complete",
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+      "fastest_baseline": "embree_native_assisted_candidate_discovery",
+      "fastest_baseline_sec": 0.013213584083132446,
+      "fastest_ratio_baseline_over_rtx": 0.0031818524592431134,
+      "non_claim": "not a monolithic GPU Jaccard kernel and not a full app RTX speedup claim",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "recommendation": "reject_current_public_speedup_claim",
+      "rtx_artifact_status": "ok",
+      "rtx_native_or_query_phase_sec": 4.152795974165201,
+      "rtx_phase_key": "phases.optix_candidate_discovery_sec",
+      "timed_non_optix_baselines": [
+        {
+          "baseline": "cpu_python_reference",
+          "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_polygon_set_jaccard_polygon_set_jaccard_optix_native_assisted_phase_gate_cpu_python_reference_2026-04-23.json",
+          "phase_key": "optix_candidate_discovery_sec",
+          "phase_sec": 0.016140041989274323,
+          "source_backend": "cpu_python_reference"
+        },
+        {
+          "baseline": "embree_native_assisted_candidate_discovery",
+          "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_polygon_set_jaccard_polygon_set_jaccard_optix_native_assisted_phase_gate_embree_native_assisted_candidate_discovery_2026-04-23.json",
+          "phase_key": "optix_candidate_discovery_sec",
+          "phase_sec": 0.013213584083132446,
+          "source_backend": "embree"
+        },
+        {
+          "baseline": "postgis_when_available_for_same_unit_cell_contract",
+          "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+          "correctness_parity": true,
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_polygon_set_jaccard_polygon_set_jaccard_optix_native_assisted_phase_gate_postgis_when_available_for_same_unit_cell_contract_2026-04-23.json",
+          "phase_key": "optix_candidate_discovery_sec",
+          "phase_sec": 0.5811393370386213,
+          "source_backend": "postgis"
+        }
+      ],
+      "untimed_non_optix_baselines": [],
+      "warnings": []
+    }
+  ],
+  "source_commit": "914122ecd2f2c73f6a51ec2d5b04ca3d575d5681",
+  "source_is_final_a5000_v2": true,
+  "summary_path": "docs/reports/cloud_2026_04_26/goal1003_rtx_a5000_final_merged_summary_2026-04-26.json"
+}
