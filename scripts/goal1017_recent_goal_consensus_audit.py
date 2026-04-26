@@ -29,6 +29,7 @@ GOALS = {
     1028: "A5000 RTX cloud batch evidence",
     1029: "RTX baseline promotion plan",
     1030: "local RTX baseline manifest",
+    1031: "local baseline smoke runner",
 }
 
 REQUIRED_SUFFIXES = {
