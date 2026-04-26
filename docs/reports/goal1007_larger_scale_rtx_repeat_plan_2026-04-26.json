@@ -1,0 +1,154 @@
+{
+  "boundary": "Goal1007 prepares larger-scale RTX repeats for held Goal1006 candidates. It does not start cloud resources and does not authorize speedup claims.",
+  "date": "2026-04-26",
+  "executable_command_count": 6,
+  "extra_targets": [],
+  "goal": "Goal1007 larger-scale RTX repeat plan",
+  "held_candidate_count": 7,
+  "missing_held_candidates": [],
+  "source": "docs/reports/goal1006_public_rtx_claim_wording_gate_2026-04-26.json",
+  "status": "ok",
+  "target_count": 7,
+  "targets": [
+    {
+      "app": "robot_collision_screening",
+      "command": [
+        "python3",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
+        "optix",
+        "--pose-count",
+        "8000000",
+        "--obstacle-count",
+        "4096",
+        "--iterations",
+        "7",
+        "--input-mode",
+        "packed_arrays",
+        "--result-mode",
+        "pose_count",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1007_robot_pose_flags_large_rtx.json"
+      ],
+      "path_name": "prepared_pose_flags",
+      "risk_note": "High memory run: 8M poses means 32M packed rays; intended for 24GB+ RTX pods and may need downscaling if VRAM pressure appears.",
+      "scale_reason": "Increase ray count enough that warm pose-count query should exceed the 100 ms wording floor."
+    },
+    {
+      "app": "outlier_detection",
+      "command": [
+        "python3",
+        "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+        "--copies",
+        "400000",
+        "--iterations",
+        "7",
+        "--result-mode",
+        "threshold_count",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1007_outlier_dbscan_large_rtx.json"
+      ],
+      "path_name": "prepared_fixed_radius_density_summary",
+      "risk_note": "Moderate memory run: 3.2M points; if pod memory is tight, reduce copies before changing semantics.",
+      "scale_reason": "Raise tiled point count for scalar threshold-count traversal."
+    },
+    {
+      "app": "dbscan_clustering",
+      "command_ref": "outlier_detection/prepared_fixed_radius_density_summary",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "reused_output_json": "docs/reports/goal1007_outlier_dbscan_large_rtx.json",
+      "risk_note": "No separate command; validate both app records from the shared fixed-radius JSON.",
+      "scale_reason": "Same fixed-radius command emits both outlier and DBSCAN scalar summaries."
+    },
+    {
+      "app": "facility_knn_assignment",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "800000",
+        "--iterations",
+        "7",
+        "--radius",
+        "1.0",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1007_facility_service_coverage_large_rtx.json"
+      ],
+      "path_name": "coverage_threshold_prepared",
+      "risk_note": "Moderate memory run: 3.2M build/query points; validation is skipped for cost control.",
+      "scale_reason": "Raise facility service-coverage copies for a stable threshold query phase."
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "command": [
+        "python3",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--scenario",
+        "segment_polygon_hitcount_prepared",
+        "--copies",
+        "8192",
+        "--iterations",
+        "7",
+        "--mode",
+        "run",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1007_segment_polygon_hitcount_large_rtx.json"
+      ],
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "risk_note": "Output is scalar hitcount summary, so memory risk is mostly geometry/ray staging.",
+      "scale_reason": "Raise segment/polygon copies for native hitcount traversal while keeping validation skipped for cost control."
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "command": [
+        "python3",
+        "scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py",
+        "--copies",
+        "8192",
+        "--iterations",
+        "7",
+        "--output-capacity",
+        "131072",
+        "--mode",
+        "run",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1007_segment_polygon_anyhit_rows_large_rtx.json"
+      ],
+      "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "risk_note": "Bounded output capacity is raised to 131072; any overflow keeps this row out of public wording.",
+      "scale_reason": "Raise bounded pair-row copies and capacity; output remains bounded and overflow must stay false."
+    },
+    {
+      "app": "ann_candidate_search",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "ann_candidate_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "800000",
+        "--iterations",
+        "7",
+        "--radius",
+        "0.2",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1007_ann_candidate_coverage_large_rtx.json"
+      ],
+      "path_name": "candidate_threshold_prepared",
+      "risk_note": "Moderate memory run: 2.4M query/candidate points; validation is skipped for cost control.",
+      "scale_reason": "Raise ANN candidate copies for stable threshold-query timing."
+    }
+  ]
+}
