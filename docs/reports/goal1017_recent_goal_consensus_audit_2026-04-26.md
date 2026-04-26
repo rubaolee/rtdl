@@ -6,8 +6,8 @@ This audit checks that recent bounded goals have saved Claude review, Gemini rev
 
 ## Summary
 
-- audited goals: `18`
-- complete goals: `18`
+- audited goals: `19`
+- complete goals: `19`
 - incomplete goals: `0`
 - valid: `True`
 
@@ -33,6 +33,7 @@ This audit checks that recent bounded goals have saved Claude review, Gemini rev
 | 1029 | RTX baseline promotion plan | `complete` | 1 | 1 | 1 |
 | 1030 | local RTX baseline manifest | `complete` | 1 | 1 | 1 |
 | 1031 | local baseline smoke runner | `complete` | 1 | 1 | 1 |
+| 1032 | baseline manifest correction | `complete` | 1 | 1 | 1 |
 
 ## Boundary
 

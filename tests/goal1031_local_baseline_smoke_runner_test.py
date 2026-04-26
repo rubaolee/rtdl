@@ -47,7 +47,7 @@ class Goal1031LocalBaselineSmokeRunnerTest(unittest.TestCase):
         module = __import__("scripts.goal1031_local_baseline_smoke_runner", fromlist=["build_manifest"])
         manifest = module.build_manifest()
         ready = [entry for entry in manifest["entries"] if entry["local_status"] == "baseline_ready"]
-        self.assertEqual(len(ready), 4)
+        self.assertEqual(len(ready), 2)
 
     def test_build_report_selects_ready_entries_by_default(self) -> None:
         module = __import__("scripts.goal1031_local_baseline_smoke_runner", fromlist=["build_report", "run_entry"])
@@ -64,7 +64,7 @@ class Goal1031LocalBaselineSmokeRunnerTest(unittest.TestCase):
                 "commands": [],
             }
             default_payload = module.build_report(mode="smoke", timeout_sec=1.0)
-            self.assertEqual(default_payload["entry_count"], 4)
+            self.assertEqual(default_payload["entry_count"], 2)
             partial_payload = module.build_report(mode="smoke", timeout_sec=1.0, include_partial=True)
             self.assertEqual(partial_payload["entry_count"], 17)
         finally:

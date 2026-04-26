@@ -7,19 +7,19 @@ This is a local baseline command manifest. It does not execute benchmarks, does 
 ## Summary
 
 - entries: `17`
-- status_counts: `{'baseline_partial': 13, 'baseline_ready': 4}`
+- status_counts: `{'baseline_partial': 15, 'baseline_ready': 2}`
 
 ## Matrix
 
 | App | RTX Path | Local Status | Command Count | Reason |
 |---|---|---|---:|---|
 | `robot_collision_screening` | `prepared_pose_flags` | `baseline_partial` | 2 | CPU and Embree app paths exist, but exact prepared-pose semantics need phase extraction. |
-| `outlier_detection` | `prepared_fixed_radius_density_summary` | `baseline_ready` | 3 | CPU, Embree prepared threshold, and SciPy summary paths are exposed by the app CLI. |
-| `dbscan_clustering` | `prepared_fixed_radius_core_flags` | `baseline_ready` | 3 | CPU, Embree prepared core-flag, and SciPy compact paths are exposed by the app CLI. |
+| `outlier_detection` | `prepared_fixed_radius_density_summary` | `baseline_partial` | 2 | CPU and Embree prepared threshold paths are local; compact scalar SciPy is not a real cKDTree baseline in this app mode and needs a dedicated extractor. |
+| `dbscan_clustering` | `prepared_fixed_radius_core_flags` | `baseline_partial` | 2 | CPU and Embree prepared core-count paths are local; compact scalar SciPy is not a real cKDTree baseline in this app mode and needs a dedicated extractor. |
 | `database_analytics:sales_risk` | `prepared_db_session_sales_risk` | `baseline_partial` | 2 | CPU and Embree compact summaries are local; PostgreSQL indexed baseline is Linux/PostgreSQL-gated. |
 | `database_analytics:regional_dashboard` | `prepared_db_session_regional_dashboard` | `baseline_partial` | 2 | CPU and Embree compact summaries are local; PostgreSQL indexed baseline is Linux/PostgreSQL-gated. |
-| `service_coverage_gaps` | `prepared_gap_summary` | `baseline_ready` | 3 | CPU, Embree summary, and SciPy paths are exposed by the app CLI. |
-| `event_hotspot_screening` | `prepared_count_summary` | `baseline_ready` | 3 | CPU, Embree summary, and SciPy paths are exposed by the app CLI. |
+| `service_coverage_gaps` | `prepared_gap_summary` | `baseline_ready` | 3 | CPU, Embree summary, and SciPy paths are exposed by the app CLI; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed. |
+| `event_hotspot_screening` | `prepared_count_summary` | `baseline_ready` | 3 | CPU, Embree summary, and SciPy paths are exposed by the app CLI; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed. |
 | `facility_knn_assignment` | `coverage_threshold_prepared` | `baseline_partial` | 3 | CPU/Embree/SciPy app paths exist, but coverage-threshold phase parity needs a dedicated extractor. |
 | `road_hazard_screening` | `road_hazard_native_summary_gate` | `baseline_partial` | 2 | CPU and Embree compact summaries are local; PostGIS same-semantics baseline is Linux/PostGIS-gated. |
 | `segment_polygon_hitcount` | `segment_polygon_hitcount_native_experimental` | `baseline_partial` | 2 | CPU and Embree hit-count paths are local; PostGIS same-semantics baseline is Linux/PostGIS-gated. |
@@ -53,10 +53,6 @@ PYTHONPATH=src:. python3 examples/rtdl_outlier_detection_app.py --backend cpu --
 PYTHONPATH=src:. python3 examples/rtdl_outlier_detection_app.py --backend embree --copies 20000 --output-mode density_count --embree-summary-mode rt_count_threshold_prepared
 ```
 
-```bash
-PYTHONPATH=src:. python3 examples/rtdl_outlier_detection_app.py --backend scipy --copies 20000 --output-mode density_count
-```
-
 ### `dbscan_clustering`
 
 ```bash
@@ -65,10 +61,6 @@ PYTHONPATH=src:. python3 examples/rtdl_dbscan_clustering_app.py --backend cpu --
 
 ```bash
 PYTHONPATH=src:. python3 examples/rtdl_dbscan_clustering_app.py --backend embree --copies 20000 --output-mode core_count --embree-summary-mode rt_core_flags_prepared
-```
-
-```bash
-PYTHONPATH=src:. python3 examples/rtdl_dbscan_clustering_app.py --backend scipy --copies 20000 --output-mode core_count
 ```
 
 ### `database_analytics:sales_risk`

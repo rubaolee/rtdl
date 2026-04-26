@@ -30,6 +30,7 @@ GOALS = {
     1029: "RTX baseline promotion plan",
     1030: "local RTX baseline manifest",
     1031: "local baseline smoke runner",
+    1032: "baseline manifest correction",
 }
 
 REQUIRED_SUFFIXES = {

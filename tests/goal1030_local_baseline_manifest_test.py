@@ -37,8 +37,8 @@ class Goal1030LocalBaselineManifestTest(unittest.TestCase):
         }
         self.assertEqual(apps, expected)
         self.assertEqual(payload["entry_count"], len(expected))
-        self.assertEqual(payload["status_counts"]["baseline_ready"], 4)
-        self.assertEqual(payload["status_counts"]["baseline_partial"], 13)
+        self.assertEqual(payload["status_counts"]["baseline_ready"], 2)
+        self.assertEqual(payload["status_counts"]["baseline_partial"], 15)
         for entry in payload["entries"]:
             self.assertTrue(entry["commands"])
             for command in entry["commands"]:

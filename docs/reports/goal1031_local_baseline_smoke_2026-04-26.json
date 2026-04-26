@@ -1,219 +1,13 @@
 {
   "boundary": "Smoke mode intentionally scales --copies down and only checks local command health. It is not same-scale baseline evidence and does not authorize speedup claims.",
   "date": "2026-04-26",
-  "entry_count": 4,
+  "entry_count": 2,
   "failed_entry_count": 0,
   "goal": "Goal1031 local baseline smoke runner",
   "include_partial": false,
   "mode": "smoke",
   "optional_gap_entry_count": 2,
   "rows": [
-    {
-      "app": "outlier_detection",
-      "commands": [
-        {
-          "command": [
-            "python3",
-            "examples/rtdl_outlier_detection_app.py",
-            "--backend",
-            "cpu",
-            "--copies",
-            "50",
-            "--output-mode",
-            "density_count"
-          ],
-          "elapsed_sec": 0.2036576250102371,
-          "json_summary": {
-            "app": "outlier_detection",
-            "backend": "cpu",
-            "copies": 50,
-            "json_parse_status": "ok",
-            "matches_oracle": true,
-            "native_continuation_active": false,
-            "native_continuation_backend": "none",
-            "outlier_count": 100,
-            "output_mode": "density_count",
-            "point_count": 400,
-            "summary_mode": "scalar_threshold_count_oracle"
-          },
-          "returncode": 0,
-          "status": "ok",
-          "stderr_tail": "",
-          "stdout_tail": "\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4503\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4504\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4505\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4506\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4507\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4508\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4601\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4602\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4603\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4604\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4605\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4606\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4607\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4608\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4701\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4702\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4703\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4704\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4705\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4706\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4707\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4708\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4801\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4802\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4803\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4804\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4805\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4806\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4807\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4808\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4901\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4902\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4903\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4904\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4905\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4906\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4907\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4908\n    }\n  ],\n  \"oracle_outlier_count\": 100,\n  \"outlier_count\": 100,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 400,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 300\n}\n"
-        },
-        {
-          "command": [
-            "python3",
-            "examples/rtdl_outlier_detection_app.py",
-            "--backend",
-            "embree",
-            "--copies",
-            "50",
-            "--output-mode",
-            "density_count",
-            "--embree-summary-mode",
-            "rt_count_threshold_prepared"
-          ],
-          "elapsed_sec": 0.13887391693424433,
-          "json_summary": {
-            "app": "outlier_detection",
-            "backend": "embree",
-            "copies": 50,
-            "json_parse_status": "ok",
-            "matches_oracle": true,
-            "native_continuation_active": true,
-            "native_continuation_backend": "embree_threshold_count",
-            "outlier_count": 100,
-            "output_mode": "density_count",
-            "point_count": 400,
-            "summary_mode": "scalar_threshold_count_oracle"
-          },
-          "returncode": 0,
-          "status": "ok",
-          "stderr_tail": "",
-          "stdout_tail": "\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4503\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4504\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4505\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4506\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4507\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4508\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4601\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4602\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4603\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4604\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4605\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4606\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4607\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4608\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4701\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4702\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4703\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4704\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4705\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4706\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4707\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4708\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4801\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4802\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4803\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4804\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4805\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4806\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4807\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4808\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4901\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4902\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4903\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4904\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4905\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4906\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4907\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4908\n    }\n  ],\n  \"oracle_outlier_count\": 100,\n  \"outlier_count\": 100,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 400,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 300\n}\n"
-        },
-        {
-          "command": [
-            "python3",
-            "examples/rtdl_outlier_detection_app.py",
-            "--backend",
-            "scipy",
-            "--copies",
-            "50",
-            "--output-mode",
-            "density_count"
-          ],
-          "elapsed_sec": 0.12887137499637902,
-          "json_summary": {
-            "app": "outlier_detection",
-            "backend": "scipy",
-            "copies": 50,
-            "json_parse_status": "ok",
-            "matches_oracle": true,
-            "native_continuation_active": false,
-            "native_continuation_backend": "none",
-            "outlier_count": 100,
-            "output_mode": "density_count",
-            "point_count": 400,
-            "summary_mode": "scalar_threshold_count_oracle"
-          },
-          "returncode": 0,
-          "status": "ok",
-          "stderr_tail": "",
-          "stdout_tail": "\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4503\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4504\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4505\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4506\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4507\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4508\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4601\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4602\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4603\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4604\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4605\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4606\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4607\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4608\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4701\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4702\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4703\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4704\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4705\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4706\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4707\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4708\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4801\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4802\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4803\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4804\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4805\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4806\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4807\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4808\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4901\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4902\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4903\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4904\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4905\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 4906\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4907\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 4908\n    }\n  ],\n  \"oracle_outlier_count\": 100,\n  \"outlier_count\": 100,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 400,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 300\n}\n"
-        }
-      ],
-      "failed_command_count": 0,
-      "local_status": "baseline_ready",
-      "mode": "smoke",
-      "optional_dependency_unavailable_count": 0,
-      "rtx_path": "prepared_fixed_radius_density_summary",
-      "status": "ok"
-    },
-    {
-      "app": "dbscan_clustering",
-      "commands": [
-        {
-          "command": [
-            "python3",
-            "examples/rtdl_dbscan_clustering_app.py",
-            "--backend",
-            "cpu",
-            "--copies",
-            "50",
-            "--output-mode",
-            "core_count"
-          ],
-          "elapsed_sec": 0.11804233293514699,
-          "json_summary": {
-            "app": "dbscan_clustering",
-            "backend": "cpu",
-            "copies": 50,
-            "core_count": 350,
-            "json_parse_status": "ok",
-            "matches_oracle": true,
-            "native_continuation_active": false,
-            "native_continuation_backend": "none",
-            "output_mode": "core_count",
-            "point_count": 400,
-            "summary_mode": "scalar_threshold_count_oracle"
-          },
-          "returncode": 0,
-          "status": "ok",
-          "stderr_tail": "",
-          "stdout_tail": ",\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4408\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4501\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4502\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4503\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4504\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4505\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4506\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4507\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4508\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4601\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4602\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4603\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4604\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4605\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4606\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4607\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4608\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4701\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4702\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4703\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4704\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4705\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4706\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4707\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4708\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4801\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4802\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4803\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4804\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4805\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4806\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4807\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4808\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4901\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4902\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4903\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4904\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4905\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4906\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4907\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4908\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"point_count\": 400,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 350\n}\n"
-        },
-        {
-          "command": [
-            "python3",
-            "examples/rtdl_dbscan_clustering_app.py",
-            "--backend",
-            "embree",
-            "--copies",
-            "50",
-            "--output-mode",
-            "core_count",
-            "--embree-summary-mode",
-            "rt_core_flags_prepared"
-          ],
-          "elapsed_sec": 0.11550354200880975,
-          "json_summary": {
-            "app": "dbscan_clustering",
-            "backend": "embree",
-            "copies": 50,
-            "core_count": 350,
-            "json_parse_status": "ok",
-            "matches_oracle": true,
-            "native_continuation_active": true,
-            "native_continuation_backend": "embree_threshold_count",
-            "output_mode": "core_count",
-            "point_count": 400,
-            "summary_mode": "scalar_threshold_count_oracle"
-          },
-          "returncode": 0,
-          "status": "ok",
-          "stderr_tail": "",
-          "stdout_tail": ",\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4408\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4501\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4502\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4503\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4504\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4505\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4506\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4507\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4508\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4601\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4602\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4603\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4604\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4605\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4606\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4607\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4608\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4701\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4702\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4703\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4704\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4705\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4706\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4707\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4708\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4801\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4802\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4803\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4804\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4805\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4806\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4807\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4808\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4901\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4902\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4903\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4904\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4905\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4906\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4907\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4908\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"point_count\": 400,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 350\n}\n"
-        },
-        {
-          "command": [
-            "python3",
-            "examples/rtdl_dbscan_clustering_app.py",
-            "--backend",
-            "scipy",
-            "--copies",
-            "50",
-            "--output-mode",
-            "core_count"
-          ],
-          "elapsed_sec": 0.10755283292382956,
-          "json_summary": {
-            "app": "dbscan_clustering",
-            "backend": "scipy",
-            "copies": 50,
-            "core_count": 350,
-            "json_parse_status": "ok",
-            "matches_oracle": true,
-            "native_continuation_active": false,
-            "native_continuation_backend": "none",
-            "output_mode": "core_count",
-            "point_count": 400,
-            "summary_mode": "scalar_threshold_count_oracle"
-          },
-          "returncode": 0,
-          "status": "ok",
-          "stderr_tail": "",
-          "stdout_tail": ",\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4408\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4501\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4502\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4503\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4504\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4505\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4506\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4507\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4508\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4601\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4602\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4603\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4604\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4605\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4606\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4607\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4608\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4701\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4702\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4703\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4704\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4705\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4706\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4707\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4708\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4801\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4802\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4803\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4804\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4805\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4806\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4807\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4808\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4901\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4902\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4903\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4904\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4905\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4906\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 4907\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 4908\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"point_count\": 400,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 350\n}\n"
-        }
-      ],
-      "failed_command_count": 0,
-      "local_status": "baseline_ready",
-      "mode": "smoke",
-      "optional_dependency_unavailable_count": 0,
-      "rtx_path": "prepared_fixed_radius_core_flags",
-      "status": "ok"
-    },
     {
       "app": "service_coverage_gaps",
       "commands": [
@@ -226,7 +20,7 @@
             "--copies",
             "50"
           ],
-          "elapsed_sec": 0.1280301669612527,
+          "elapsed_sec": 0.2485564579255879,
           "json_summary": {
             "app": "service_coverage_gaps",
             "backend": "cpu",
@@ -254,7 +48,7 @@
             "--embree-summary-mode",
             "gap_summary"
           ],
-          "elapsed_sec": 0.14972066599875689,
+          "elapsed_sec": 0.1190067920833826,
           "json_summary": {
             "app": "service_coverage_gaps",
             "backend": "embree",
@@ -280,7 +74,7 @@
             "--copies",
             "50"
           ],
-          "elapsed_sec": 0.12414287507999688,
+          "elapsed_sec": 0.1077929170569405,
           "json_summary": {
             "json_parse_status": "not_json"
           },
@@ -309,7 +103,7 @@
             "--copies",
             "50"
           ],
-          "elapsed_sec": 0.12822566693648696,
+          "elapsed_sec": 0.1144295409321785,
           "json_summary": {
             "app": "event_hotspot_screening",
             "backend": "cpu",
@@ -336,7 +130,7 @@
             "--embree-summary-mode",
             "count_summary"
           ],
-          "elapsed_sec": 0.1263876659795642,
+          "elapsed_sec": 0.11542212509084493,
           "json_summary": {
             "app": "event_hotspot_screening",
             "backend": "embree",
@@ -361,7 +155,7 @@
             "--copies",
             "50"
           ],
-          "elapsed_sec": 0.11238720803521574,
+          "elapsed_sec": 0.10392279201187193,
           "json_summary": {
             "json_parse_status": "not_json"
           },

@@ -2,7 +2,7 @@
 
 Date: 2026-04-26
 
-Scope: Local baseline smoke runner for the four `baseline_ready` Goal1030 entries.
+Scope: Local baseline smoke runner for the current `baseline_ready` Goal1030 entries.
 
 Primary artifacts:
 
@@ -34,12 +34,12 @@ Both reviewers agree that the runner:
 
 ## Smoke Run Result
 
-The final smoke run status is `ok_with_optional_dependency_gaps`:
+After Goal1032 correction, the final smoke run status is `ok_with_optional_dependency_gaps` over the two remaining `baseline_ready` entries:
 
-- `outlier_detection`: CPU, Embree, and SciPy commands passed.
-- `dbscan_clustering`: CPU, Embree, and SciPy commands passed.
 - `service_coverage_gaps`: CPU and Embree passed; SciPy is unavailable locally.
 - `event_hotspot_screening`: CPU and Embree passed; SciPy is unavailable locally.
+
+`outlier_detection` and `dbscan_clustering` were moved back to `baseline_partial` because their compact scalar `--backend scipy` commands did not exercise a real SciPy cKDTree baseline.
 
 ## Applied Follow-Ups
 
@@ -52,4 +52,4 @@ The remaining non-blocking issue is that default output paths are date-stamped f
 
 ## Codex Decision
 
-Close Goal1031. Next work should either install SciPy locally or mark SciPy baselines as Linux/optional-environment tasks, then begin same-scale baseline extraction for the highest-value `baseline_ready` app paths.
+Close Goal1031 as corrected by Goal1032. Next work should either install SciPy locally or mark SciPy baselines as Linux/optional-environment tasks, then add dedicated SciPy/phase extractors for the high-value `baseline_partial` app paths.
