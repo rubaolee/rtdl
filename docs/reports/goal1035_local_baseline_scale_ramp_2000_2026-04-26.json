@@ -1,0 +1,402 @@
+{
+  "boundary": "This scale-ramp runner collects incremental local same-command health and timing evidence. It does not authorize speedup claims, and same-scale public comparisons still require review.",
+  "copies_list": [
+    2000
+  ],
+  "date": "2026-04-26",
+  "goal": "Goal1035 local baseline scale ramp",
+  "row_count": 12,
+  "rows": [
+    {
+      "app": "outlier_detection",
+      "backend": "cpu",
+      "command": [
+        "python3",
+        "examples/rtdl_outlier_detection_app.py",
+        "--backend",
+        "cpu",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "density_count"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 15.258467333042063,
+      "json_summary": {
+        "app": "outlier_detection",
+        "backend": "cpu",
+        "copies": 2000,
+        "json_parse_status": "ok",
+        "matches_oracle": true,
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "outlier_count": 4000,
+        "output_mode": "density_count",
+        "point_count": 16000,
+        "summary_mode": "scalar_threshold_count_oracle"
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_fixed_radius_density_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "  },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199504\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199505\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199506\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199507\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199508\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199601\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199602\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199603\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199604\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199605\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199606\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199607\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199608\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199701\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199702\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199703\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199704\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199705\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199706\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199707\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199708\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199801\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199802\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199803\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199804\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199805\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199806\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199807\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199808\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199901\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199902\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199903\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199904\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199905\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199906\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199907\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199908\n    }\n  ],\n  \"oracle_outlier_count\": 4000,\n  \"outlier_count\": 4000,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 16000,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 12000\n}\n"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "embree",
+      "command": [
+        "python3",
+        "examples/rtdl_outlier_detection_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "density_count",
+        "--embree-summary-mode",
+        "rt_count_threshold_prepared"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 15.267537166946568,
+      "json_summary": {
+        "app": "outlier_detection",
+        "backend": "embree",
+        "copies": 2000,
+        "json_parse_status": "ok",
+        "matches_oracle": true,
+        "native_continuation_active": true,
+        "native_continuation_backend": "embree_threshold_count",
+        "outlier_count": 4000,
+        "output_mode": "density_count",
+        "point_count": 16000,
+        "summary_mode": "scalar_threshold_count_oracle"
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_fixed_radius_density_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "  },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199504\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199505\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199506\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199507\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199508\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199601\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199602\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199603\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199604\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199605\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199606\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199607\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199608\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199701\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199702\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199703\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199704\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199705\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199706\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199707\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199708\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199801\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199802\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199803\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199804\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199805\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199806\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199807\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199808\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199901\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199902\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199903\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199904\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199905\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199906\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199907\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199908\n    }\n  ],\n  \"oracle_outlier_count\": 4000,\n  \"outlier_count\": 4000,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 16000,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 12000\n}\n"
+    },
+    {
+      "app": "outlier_detection",
+      "backend": "scipy",
+      "command": [
+        "python3",
+        "examples/rtdl_outlier_detection_app.py",
+        "--backend",
+        "scipy",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "density_count"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 16.22828337503597,
+      "json_summary": {
+        "app": "outlier_detection",
+        "backend": "scipy",
+        "copies": 2000,
+        "json_parse_status": "ok",
+        "matches_oracle": true,
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "outlier_count": 4000,
+        "output_mode": "density_count",
+        "point_count": 16000,
+        "summary_mode": "scipy_ckdtree_threshold_count"
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_fixed_radius_density_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "  },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199504\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199505\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199506\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199507\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199508\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199601\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199602\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199603\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199604\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199605\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199606\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199607\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199608\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199701\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199702\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199703\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199704\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199705\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199706\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199707\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199708\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199801\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199802\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199803\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199804\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199805\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199806\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199807\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199808\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199901\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199902\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199903\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199904\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199905\n    },\n    {\n      \"is_outlier\": false,\n      \"neighbor_count\": 3,\n      \"point_id\": 199906\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199907\n    },\n    {\n      \"is_outlier\": true,\n      \"neighbor_count\": 1,\n      \"point_id\": 199908\n    }\n  ],\n  \"oracle_outlier_count\": 4000,\n  \"outlier_count\": 4000,\n  \"outlier_point_ids\": null,\n  \"output_mode\": \"density_count\",\n  \"point_count\": 16000,\n  \"radius\": 0.35,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scipy_ckdtree_threshold_count\",\n  \"threshold_reached_count\": 12000\n}\n"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "cpu",
+      "command": [
+        "python3",
+        "examples/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "cpu",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "core_count"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.1722292909398675,
+      "json_summary": {
+        "app": "dbscan_clustering",
+        "backend": "cpu",
+        "copies": 2000,
+        "core_count": 14000,
+        "json_parse_status": "ok",
+        "matches_oracle": true,
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "output_mode": "core_count",
+        "point_count": 16000,
+        "summary_mode": "scalar_threshold_count_oracle"
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_fixed_radius_core_flags",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "  },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199501\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199502\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199503\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199504\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199505\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199506\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199507\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199508\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199601\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199602\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199603\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199604\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199605\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199606\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199607\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199608\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199701\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199702\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199703\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199704\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199705\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199706\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199707\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199708\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199801\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199802\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199803\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199804\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199805\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199806\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199807\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199808\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199901\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199902\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199903\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199904\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199905\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199906\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199907\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199908\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"point_count\": 16000,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 14000\n}\n"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "embree",
+      "command": [
+        "python3",
+        "examples/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "core_count",
+        "--embree-summary-mode",
+        "rt_core_flags_prepared"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.13628166599664837,
+      "json_summary": {
+        "app": "dbscan_clustering",
+        "backend": "embree",
+        "copies": 2000,
+        "core_count": 14000,
+        "json_parse_status": "ok",
+        "matches_oracle": true,
+        "native_continuation_active": true,
+        "native_continuation_backend": "embree_threshold_count",
+        "output_mode": "core_count",
+        "point_count": 16000,
+        "summary_mode": "scalar_threshold_count_oracle"
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_fixed_radius_core_flags",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "  },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199501\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199502\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199503\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199504\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199505\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199506\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199507\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199508\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199601\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199602\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199603\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199604\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199605\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199606\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199607\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199608\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199701\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199702\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199703\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199704\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199705\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199706\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199707\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199708\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199801\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199802\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199803\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199804\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199805\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199806\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199807\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199808\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199901\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199902\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199903\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199904\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199905\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199906\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199907\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199908\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"point_count\": 16000,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scalar_threshold_count_oracle\",\n  \"threshold_reached_count\": 14000\n}\n"
+    },
+    {
+      "app": "dbscan_clustering",
+      "backend": "scipy",
+      "command": [
+        "python3",
+        "examples/rtdl_dbscan_clustering_app.py",
+        "--backend",
+        "scipy",
+        "--copies",
+        "2000",
+        "--output-mode",
+        "core_count"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.4824474999913946,
+      "json_summary": {
+        "app": "dbscan_clustering",
+        "backend": "scipy",
+        "copies": 2000,
+        "core_count": 14000,
+        "json_parse_status": "ok",
+        "matches_oracle": true,
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "output_mode": "core_count",
+        "point_count": 16000,
+        "summary_mode": "scipy_ckdtree_threshold_count"
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_fixed_radius_core_flags",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "  },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199501\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199502\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199503\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199504\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199505\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199506\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199507\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199508\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199601\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199602\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199603\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199604\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199605\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199606\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199607\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199608\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199701\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199702\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199703\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199704\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199705\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199706\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199707\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199708\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199801\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199802\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199803\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199804\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199805\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199806\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199807\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199808\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199901\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199902\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199903\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199904\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199905\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199906\n    },\n    {\n      \"is_core\": true,\n      \"neighbor_count\": 3,\n      \"point_id\": 199907\n    },\n    {\n      \"is_core\": false,\n      \"neighbor_count\": 1,\n      \"point_id\": 199908\n    }\n  ],\n  \"output_mode\": \"core_count\",\n  \"point_count\": 16000,\n  \"rtdl_role\": \"Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) identifies core candidates for Python cluster expansion. The compact core-flag paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.\",\n  \"summary_mode\": \"scipy_ckdtree_threshold_count\",\n  \"threshold_reached_count\": 14000\n}\n"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "backend": "cpu",
+      "command": [
+        "python3",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "cpu",
+        "--copies",
+        "2000"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.19764862500596792,
+      "json_summary": {
+        "app": "service_coverage_gaps",
+        "backend": "cpu",
+        "copies": 2000,
+        "covered_household_count": 6000,
+        "household_count": 8000,
+        "json_parse_status": "ok",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "rt_core_accelerated": false
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_gap_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "   166704,\n    166804,\n    166904,\n    167004,\n    167104,\n    167204,\n    167304,\n    167404,\n    167504,\n    167604,\n    167704,\n    167804,\n    167904,\n    168004,\n    168104,\n    168204,\n    168304,\n    168404,\n    168504,\n    168604,\n    168704,\n    168804,\n    168904,\n    169004,\n    169104,\n    169204,\n    169304,\n    169404,\n    169504,\n    169604,\n    169704,\n    169804,\n    169904,\n    170004,\n    170104,\n    170204,\n    170304,\n    170404,\n    170504,\n    170604,\n    170704,\n    170804,\n    170904,\n    171004,\n    171104,\n    171204,\n    171304,\n    171404,\n    171504,\n    171604,\n    171704,\n    171804,\n    171904,\n    172004,\n    172104,\n    172204,\n    172304,\n    172404,\n    172504,\n    172604,\n    172704,\n    172804,\n    172904,\n    173004,\n    173104,\n    173204,\n    173304,\n    173404,\n    173504,\n    173604,\n    173704,\n    173804,\n    173904,\n    174004,\n    174104,\n    174204,\n    174304,\n    174404,\n    174504,\n    174604,\n    174704,\n    174804,\n    174904,\n    175004,\n    175104,\n    175204,\n    175304,\n    175404,\n    175504,\n    175604,\n    175704,\n    175804,\n    175904,\n    176004,\n    176104,\n    176204,\n    176304,\n    176404,\n    176504,\n    176604,\n    176704,\n    176804,\n    176904,\n    177004,\n    177104,\n    177204,\n    177304,\n    177404,\n    177504,\n    177604,\n    177704,\n    177804,\n    177904,\n    178004,\n    178104,\n    178204,\n    178304,\n    178404,\n    178504,\n    178604,\n    178704,\n    178804,\n    178904,\n    179004,\n    179104,\n    179204,\n    179304,\n    179404,\n    179504,\n    179604,\n    179704,\n    179804,\n    179904,\n    180004,\n    180104,\n    180204,\n    180304,\n    180404,\n    180504,\n    180604,\n    180704,\n    180804,\n    180904,\n    181004,\n    181104,\n    181204,\n    181304,\n    181404,\n    181504,\n    181604,\n    181704,\n    181804,\n    181904,\n    182004,\n    182104,\n    182204,\n    182304,\n    182404,\n    182504,\n    182604,\n    182704,\n    182804,\n    182904,\n    183004,\n    183104,\n    183204,\n    183304,\n    183404,\n    183504,\n    183604,\n    183704,\n    183804,\n    183904,\n    184004,\n    184104,\n    184204,\n    184304,\n    184404,\n    184504,\n    184604,\n    184704,\n    184804,\n    184904,\n    185004,\n    185104,\n    185204,\n    185304,\n    185404,\n    185504,\n    185604,\n    185704,\n    185804,\n    185904,\n    186004,\n    186104,\n    186204,\n    186304,\n    186404,\n    186504,\n    186604,\n    186704,\n    186804,\n    186904,\n    187004,\n    187104,\n    187204,\n    187304,\n    187404,\n    187504,\n    187604,\n    187704,\n    187804,\n    187904,\n    188004,\n    188104,\n    188204,\n    188304,\n    188404,\n    188504,\n    188604,\n    188704,\n    188804,\n    188904,\n    189004,\n    189104,\n    189204,\n    189304,\n    189404,\n    189504,\n    189604,\n    189704,\n    189804,\n    189904,\n    190004,\n    190104,\n    190204,\n    190304,\n    190404,\n    190504,\n    190604,\n    190704,\n    190804,\n    190904,\n    191004,\n    191104,\n    191204,\n    191304,\n    191404,\n    191504,\n    191604,\n    191704,\n    191804,\n    191904,\n    192004,\n    192104,\n    192204,\n    192304,\n    192404,\n    192504,\n    192604,\n    192704,\n    192804,\n    192904,\n    193004,\n    193104,\n    193204,\n    193304,\n    193404,\n    193504,\n    193604,\n    193704,\n    193804,\n    193904,\n    194004,\n    194104,\n    194204,\n    194304,\n    194404,\n    194504,\n    194604,\n    194704,\n    194804,\n    194904,\n    195004,\n    195104,\n    195204,\n    195304,\n    195404,\n    195504,\n    195604,\n    195704,\n    195804,\n    195904,\n    196004,\n    196104,\n    196204,\n    196304,\n    196404,\n    196504,\n    196604,\n    196704,\n    196804,\n    196904,\n    197004,\n    197104,\n    197204,\n    197304,\n    197404,\n    197504,\n    197604,\n    197704,\n    197804,\n    197904,\n    198004,\n    198104,\n    198204,\n    198304,\n    198404,\n    198504,\n    198604,\n    198704,\n    198804,\n    198904,\n    199004,\n    199104,\n    199204,\n    199304,\n    199404,\n    199504,\n    199604,\n    199704,\n    199804,\n    199904\n  ]\n}\n"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "backend": "embree",
+      "command": [
+        "python3",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "2000",
+        "--embree-summary-mode",
+        "gap_summary"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.163575749960728,
+      "json_summary": {
+        "app": "service_coverage_gaps",
+        "backend": "embree",
+        "copies": 2000,
+        "covered_household_count": 6000,
+        "household_count": 8000,
+        "json_parse_status": "ok",
+        "native_continuation_active": true,
+        "native_continuation_backend": "embree_threshold_count",
+        "rt_core_accelerated": false
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_gap_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "   166704,\n    166804,\n    166904,\n    167004,\n    167104,\n    167204,\n    167304,\n    167404,\n    167504,\n    167604,\n    167704,\n    167804,\n    167904,\n    168004,\n    168104,\n    168204,\n    168304,\n    168404,\n    168504,\n    168604,\n    168704,\n    168804,\n    168904,\n    169004,\n    169104,\n    169204,\n    169304,\n    169404,\n    169504,\n    169604,\n    169704,\n    169804,\n    169904,\n    170004,\n    170104,\n    170204,\n    170304,\n    170404,\n    170504,\n    170604,\n    170704,\n    170804,\n    170904,\n    171004,\n    171104,\n    171204,\n    171304,\n    171404,\n    171504,\n    171604,\n    171704,\n    171804,\n    171904,\n    172004,\n    172104,\n    172204,\n    172304,\n    172404,\n    172504,\n    172604,\n    172704,\n    172804,\n    172904,\n    173004,\n    173104,\n    173204,\n    173304,\n    173404,\n    173504,\n    173604,\n    173704,\n    173804,\n    173904,\n    174004,\n    174104,\n    174204,\n    174304,\n    174404,\n    174504,\n    174604,\n    174704,\n    174804,\n    174904,\n    175004,\n    175104,\n    175204,\n    175304,\n    175404,\n    175504,\n    175604,\n    175704,\n    175804,\n    175904,\n    176004,\n    176104,\n    176204,\n    176304,\n    176404,\n    176504,\n    176604,\n    176704,\n    176804,\n    176904,\n    177004,\n    177104,\n    177204,\n    177304,\n    177404,\n    177504,\n    177604,\n    177704,\n    177804,\n    177904,\n    178004,\n    178104,\n    178204,\n    178304,\n    178404,\n    178504,\n    178604,\n    178704,\n    178804,\n    178904,\n    179004,\n    179104,\n    179204,\n    179304,\n    179404,\n    179504,\n    179604,\n    179704,\n    179804,\n    179904,\n    180004,\n    180104,\n    180204,\n    180304,\n    180404,\n    180504,\n    180604,\n    180704,\n    180804,\n    180904,\n    181004,\n    181104,\n    181204,\n    181304,\n    181404,\n    181504,\n    181604,\n    181704,\n    181804,\n    181904,\n    182004,\n    182104,\n    182204,\n    182304,\n    182404,\n    182504,\n    182604,\n    182704,\n    182804,\n    182904,\n    183004,\n    183104,\n    183204,\n    183304,\n    183404,\n    183504,\n    183604,\n    183704,\n    183804,\n    183904,\n    184004,\n    184104,\n    184204,\n    184304,\n    184404,\n    184504,\n    184604,\n    184704,\n    184804,\n    184904,\n    185004,\n    185104,\n    185204,\n    185304,\n    185404,\n    185504,\n    185604,\n    185704,\n    185804,\n    185904,\n    186004,\n    186104,\n    186204,\n    186304,\n    186404,\n    186504,\n    186604,\n    186704,\n    186804,\n    186904,\n    187004,\n    187104,\n    187204,\n    187304,\n    187404,\n    187504,\n    187604,\n    187704,\n    187804,\n    187904,\n    188004,\n    188104,\n    188204,\n    188304,\n    188404,\n    188504,\n    188604,\n    188704,\n    188804,\n    188904,\n    189004,\n    189104,\n    189204,\n    189304,\n    189404,\n    189504,\n    189604,\n    189704,\n    189804,\n    189904,\n    190004,\n    190104,\n    190204,\n    190304,\n    190404,\n    190504,\n    190604,\n    190704,\n    190804,\n    190904,\n    191004,\n    191104,\n    191204,\n    191304,\n    191404,\n    191504,\n    191604,\n    191704,\n    191804,\n    191904,\n    192004,\n    192104,\n    192204,\n    192304,\n    192404,\n    192504,\n    192604,\n    192704,\n    192804,\n    192904,\n    193004,\n    193104,\n    193204,\n    193304,\n    193404,\n    193504,\n    193604,\n    193704,\n    193804,\n    193904,\n    194004,\n    194104,\n    194204,\n    194304,\n    194404,\n    194504,\n    194604,\n    194704,\n    194804,\n    194904,\n    195004,\n    195104,\n    195204,\n    195304,\n    195404,\n    195504,\n    195604,\n    195704,\n    195804,\n    195904,\n    196004,\n    196104,\n    196204,\n    196304,\n    196404,\n    196504,\n    196604,\n    196704,\n    196804,\n    196904,\n    197004,\n    197104,\n    197204,\n    197304,\n    197404,\n    197504,\n    197604,\n    197704,\n    197804,\n    197904,\n    198004,\n    198104,\n    198204,\n    198304,\n    198404,\n    198504,\n    198604,\n    198704,\n    198804,\n    198904,\n    199004,\n    199104,\n    199204,\n    199304,\n    199404,\n    199504,\n    199604,\n    199704,\n    199804,\n    199904\n  ]\n}\n"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "backend": "scipy",
+      "command": [
+        "python3",
+        "examples/rtdl_service_coverage_gaps.py",
+        "--backend",
+        "scipy",
+        "--copies",
+        "2000"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.33960075001232326,
+      "json_summary": {
+        "app": "service_coverage_gaps",
+        "backend": "scipy",
+        "copies": 2000,
+        "covered_household_count": 6000,
+        "household_count": 8000,
+        "json_parse_status": "ok",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "rt_core_accelerated": false
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_gap_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "   166704,\n    166804,\n    166904,\n    167004,\n    167104,\n    167204,\n    167304,\n    167404,\n    167504,\n    167604,\n    167704,\n    167804,\n    167904,\n    168004,\n    168104,\n    168204,\n    168304,\n    168404,\n    168504,\n    168604,\n    168704,\n    168804,\n    168904,\n    169004,\n    169104,\n    169204,\n    169304,\n    169404,\n    169504,\n    169604,\n    169704,\n    169804,\n    169904,\n    170004,\n    170104,\n    170204,\n    170304,\n    170404,\n    170504,\n    170604,\n    170704,\n    170804,\n    170904,\n    171004,\n    171104,\n    171204,\n    171304,\n    171404,\n    171504,\n    171604,\n    171704,\n    171804,\n    171904,\n    172004,\n    172104,\n    172204,\n    172304,\n    172404,\n    172504,\n    172604,\n    172704,\n    172804,\n    172904,\n    173004,\n    173104,\n    173204,\n    173304,\n    173404,\n    173504,\n    173604,\n    173704,\n    173804,\n    173904,\n    174004,\n    174104,\n    174204,\n    174304,\n    174404,\n    174504,\n    174604,\n    174704,\n    174804,\n    174904,\n    175004,\n    175104,\n    175204,\n    175304,\n    175404,\n    175504,\n    175604,\n    175704,\n    175804,\n    175904,\n    176004,\n    176104,\n    176204,\n    176304,\n    176404,\n    176504,\n    176604,\n    176704,\n    176804,\n    176904,\n    177004,\n    177104,\n    177204,\n    177304,\n    177404,\n    177504,\n    177604,\n    177704,\n    177804,\n    177904,\n    178004,\n    178104,\n    178204,\n    178304,\n    178404,\n    178504,\n    178604,\n    178704,\n    178804,\n    178904,\n    179004,\n    179104,\n    179204,\n    179304,\n    179404,\n    179504,\n    179604,\n    179704,\n    179804,\n    179904,\n    180004,\n    180104,\n    180204,\n    180304,\n    180404,\n    180504,\n    180604,\n    180704,\n    180804,\n    180904,\n    181004,\n    181104,\n    181204,\n    181304,\n    181404,\n    181504,\n    181604,\n    181704,\n    181804,\n    181904,\n    182004,\n    182104,\n    182204,\n    182304,\n    182404,\n    182504,\n    182604,\n    182704,\n    182804,\n    182904,\n    183004,\n    183104,\n    183204,\n    183304,\n    183404,\n    183504,\n    183604,\n    183704,\n    183804,\n    183904,\n    184004,\n    184104,\n    184204,\n    184304,\n    184404,\n    184504,\n    184604,\n    184704,\n    184804,\n    184904,\n    185004,\n    185104,\n    185204,\n    185304,\n    185404,\n    185504,\n    185604,\n    185704,\n    185804,\n    185904,\n    186004,\n    186104,\n    186204,\n    186304,\n    186404,\n    186504,\n    186604,\n    186704,\n    186804,\n    186904,\n    187004,\n    187104,\n    187204,\n    187304,\n    187404,\n    187504,\n    187604,\n    187704,\n    187804,\n    187904,\n    188004,\n    188104,\n    188204,\n    188304,\n    188404,\n    188504,\n    188604,\n    188704,\n    188804,\n    188904,\n    189004,\n    189104,\n    189204,\n    189304,\n    189404,\n    189504,\n    189604,\n    189704,\n    189804,\n    189904,\n    190004,\n    190104,\n    190204,\n    190304,\n    190404,\n    190504,\n    190604,\n    190704,\n    190804,\n    190904,\n    191004,\n    191104,\n    191204,\n    191304,\n    191404,\n    191504,\n    191604,\n    191704,\n    191804,\n    191904,\n    192004,\n    192104,\n    192204,\n    192304,\n    192404,\n    192504,\n    192604,\n    192704,\n    192804,\n    192904,\n    193004,\n    193104,\n    193204,\n    193304,\n    193404,\n    193504,\n    193604,\n    193704,\n    193804,\n    193904,\n    194004,\n    194104,\n    194204,\n    194304,\n    194404,\n    194504,\n    194604,\n    194704,\n    194804,\n    194904,\n    195004,\n    195104,\n    195204,\n    195304,\n    195404,\n    195504,\n    195604,\n    195704,\n    195804,\n    195904,\n    196004,\n    196104,\n    196204,\n    196304,\n    196404,\n    196504,\n    196604,\n    196704,\n    196804,\n    196904,\n    197004,\n    197104,\n    197204,\n    197304,\n    197404,\n    197504,\n    197604,\n    197704,\n    197804,\n    197904,\n    198004,\n    198104,\n    198204,\n    198304,\n    198404,\n    198504,\n    198604,\n    198704,\n    198804,\n    198904,\n    199004,\n    199104,\n    199204,\n    199304,\n    199404,\n    199504,\n    199604,\n    199704,\n    199804,\n    199904\n  ]\n}\n"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "backend": "cpu",
+      "command": [
+        "python3",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "cpu",
+        "--copies",
+        "2000"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.2833936250535771,
+      "json_summary": {
+        "app": "event_hotspot_screening",
+        "backend": "cpu",
+        "copies": 2000,
+        "event_count": 12000,
+        "json_parse_status": "ok",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "rt_core_accelerated": false
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_count_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199701,\n      \"query_id\": 199704\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199706\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199706\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199706\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199706,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199804,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199804,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199706,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199804,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199706,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199804\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199804\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199804\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199806\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199806\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199806\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199806,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199904,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199904,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199806,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199904,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199806,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199904\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199904\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199904\n    }\n  ],\n  \"rt_core_accelerated\": false,\n  \"summary_boundary\": null,\n  \"summary_rows\": []\n}\n"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "backend": "embree",
+      "command": [
+        "python3",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "embree",
+        "--copies",
+        "2000",
+        "--embree-summary-mode",
+        "count_summary"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.16496704204473644,
+      "json_summary": {
+        "app": "event_hotspot_screening",
+        "backend": "embree",
+        "copies": 2000,
+        "event_count": 12000,
+        "json_parse_status": "ok",
+        "native_continuation_active": true,
+        "native_continuation_backend": "embree_threshold_count",
+        "rt_core_accelerated": false
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_count_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "    \"query_id\": 198905\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 198906\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199001\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199002\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199003\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199004\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199005\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199006\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199101\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199102\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199103\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199104\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199105\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199106\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199201\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199202\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199203\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199204\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199205\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199206\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199301\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199302\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199303\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199304\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199305\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199306\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199401\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199402\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199403\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199404\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199405\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199406\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199501\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199502\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199503\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199504\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199505\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199506\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199601\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199602\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199603\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199604\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199605\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199606\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199701\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199702\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199703\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199704\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199705\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199706\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199801\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199802\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199803\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199804\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199805\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199806\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199901\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199902\n    },\n    {\n      \"neighbor_count\": 4,\n      \"query_id\": 199903\n    },\n    {\n      \"neighbor_count\": 3,\n      \"query_id\": 199904\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199905\n    },\n    {\n      \"neighbor_count\": 0,\n      \"query_id\": 199906\n    }\n  ]\n}\n"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "backend": "scipy",
+      "command": [
+        "python3",
+        "examples/rtdl_event_hotspot_screening.py",
+        "--backend",
+        "scipy",
+        "--copies",
+        "2000"
+      ],
+      "copies": 2000,
+      "elapsed_sec": 0.39664095803163946,
+      "json_summary": {
+        "app": "event_hotspot_screening",
+        "backend": "scipy",
+        "copies": 2000,
+        "event_count": 12000,
+        "json_parse_status": "ok",
+        "native_continuation_active": false,
+        "native_continuation_backend": "none",
+        "rt_core_accelerated": false
+      },
+      "returncode": 0,
+      "rtx_path": "prepared_count_summary",
+      "status": "ok",
+      "stderr_tail": "",
+      "stdout_tail": "    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199701,\n      \"query_id\": 199704\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199706\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199706\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199706\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199706,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199804,\n      \"query_id\": 199801\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199804,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199706,\n      \"query_id\": 199802\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199804,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199706,\n      \"query_id\": 199803\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199802,\n      \"query_id\": 199804\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199803,\n      \"query_id\": 199804\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199801,\n      \"query_id\": 199804\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199806\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199806\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199806\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.3999999999996362,\n      \"neighbor_id\": 199806,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199904,\n      \"query_id\": 199901\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199904,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.22360679775062975,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.6082762530301808,\n      \"neighbor_id\": 199806,\n      \"query_id\": 199902\n    },\n    {\n      \"distance\": 0.3162277660163778,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.36055512754579355,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199904,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.7280109889270024,\n      \"neighbor_id\": 199806,\n      \"query_id\": 199903\n    },\n    {\n      \"distance\": 0.20615528127982422,\n      \"neighbor_id\": 199902,\n      \"query_id\": 199904\n    },\n    {\n      \"distance\": 0.36400549446412583,\n      \"neighbor_id\": 199903,\n      \"query_id\": 199904\n    },\n    {\n      \"distance\": 0.42720018726553594,\n      \"neighbor_id\": 199901,\n      \"query_id\": 199904\n    }\n  ],\n  \"rt_core_accelerated\": false,\n  \"summary_boundary\": null,\n  \"summary_rows\": []\n}\n"
+    }
+  ],
+  "status": "ok",
+  "timeout_sec": 180.0
+}
