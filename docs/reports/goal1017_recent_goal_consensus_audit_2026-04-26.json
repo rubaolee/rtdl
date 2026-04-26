@@ -1,0 +1,118 @@
+{
+  "audited_goal_count": 6,
+  "boundary": "This audit checks that recent bounded public-wording goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.",
+  "complete_goal_count": 6,
+  "date": "2026-04-26",
+  "goal": "Goal1017 recent goal consensus audit",
+  "incomplete_goal_count": 0,
+  "required_review_trail": [
+    "claude_review",
+    "gemini_review",
+    "two_ai_consensus"
+  ],
+  "rows": [
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1011_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1011_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1011_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1011,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "RTX public wording matrix"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1012_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1012_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1012_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1012,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "status generator public wording sync"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1013_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1013_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1013_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1013,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "claim packet public wording sync"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1014_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1014_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1014_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1014,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "public wording pipeline source sync"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1015_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1015_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1015_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1015,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "upstream speedup evidence public wording sync"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1016_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1016_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1016_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1016,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "historical review supersession audit"
+    }
+  ],
+  "valid": true
+}
