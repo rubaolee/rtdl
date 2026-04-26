@@ -3,11 +3,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+import rtdsl as rt
+
 DATE = "2026-04-26"
 GOAL = "Goal1008 large-repeat RTX artifact intake"
 SOURCE = ROOT / "docs" / "reports" / "goal1006_public_rtx_claim_wording_gate_2026-04-26.json"
@@ -182,6 +187,7 @@ def build_intake(source: Path = SOURCE, artifact_root: Path = ARTIFACT_ROOT) -> 
     for target in TARGET_ARTIFACTS:
         key = (target["app"], target["path_name"])
         source_row = source_by_key[key]
+        public_wording = rt.rtx_public_wording_status(str(target["app"]))
         artifact = _best_artifact(target, artifact_root)
         phase = artifact["chosen"]["rtx_phase_sec"]
         floor_cleared = isinstance(phase, float) and phase >= MIN_PHASE_SEC_FOR_PUBLIC_REVIEW
@@ -190,6 +196,8 @@ def build_intake(source: Path = SOURCE, artifact_root: Path = ARTIFACT_ROOT) -> 
                 "app": target["app"],
                 "path_name": target["path_name"],
                 "goal1006_status": source_row["public_wording_status"],
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
                 "goal1006_ratio": source_row.get("fastest_ratio_baseline_over_rtx"),
                 "goal1006_fastest_baseline": source_row.get("fastest_baseline"),
                 "chosen_artifact": artifact["chosen"]["artifact_file"],
@@ -221,6 +229,7 @@ def build_intake(source: Path = SOURCE, artifact_root: Path = ARTIFACT_ROOT) -> 
         "goal": GOAL,
         "date": DATE,
         "source": str(source.relative_to(ROOT)),
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "artifact_root": str(artifact_root.relative_to(ROOT)),
         "row_count": len(rows),
         "status_counts": counts,
@@ -275,6 +284,15 @@ def to_markdown(payload: dict[str, Any]) -> str:
             f"{_fmt(row['rtx_phase_sec'])} | {_fmt(row['goal1006_ratio'])} | "
             f"`{row['large_repeat_status']}` |"
         )
+    lines.extend(["", "## Current Public Wording Source-Of-Truth", ""])
+    lines.append("Release-facing wording must follow `rtdsl.rtx_public_wording_matrix()`, not this intake gate alone.")
+    lines.append("")
+    for row in payload["rows"]:
+        if row["current_public_wording_status"] == "public_wording_blocked":
+            lines.append(
+                f"- `{row['app']} / {row['path_name']}` current status: "
+                f"`{row['current_public_wording_status']}` — {row['current_public_wording_boundary']}"
+            )
     lines.extend(
         [
             "",

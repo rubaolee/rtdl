@@ -39,6 +39,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### robot_collision_screening / prepared_pose_flags
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_blocked`
+- current public wording boundary: The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -46,6 +48,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### outlier_detection / prepared_fixed_radius_density_summary
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -53,6 +57,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### dbscan_clustering / prepared_fixed_radius_core_flags
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -60,30 +66,40 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### database_analytics / prepared_db_session_sales_risk
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 
 ### database_analytics / prepared_db_session_regional_dashboard
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 
 ### service_coverage_gaps / prepared_gap_summary
 
 - recommendation: `internal_only_margin_or_scale`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only the prepared gap-summary query/native sub-path is covered; row output, nearest-clinic output, and service-coverage optimization are outside this wording.
 - reason: RTX is not slower than the fastest baseline, but the margin is below the 20% candidate threshold.
 - public speedup authorized: `False`
 
 ### event_hotspot_screening / prepared_count_summary
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 
 ### facility_knn_assignment / coverage_threshold_prepared
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only the prepared service-coverage decision sub-path is covered; ranked KNN assignment, ranking, and uncovered-ID witness output are outside this wording.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -91,12 +107,16 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### road_hazard_screening / road_hazard_native_summary_gate
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 
 ### segment_polygon_hitcount / segment_polygon_hitcount_native_experimental
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -104,6 +124,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -111,6 +133,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### graph_analytics / graph_visibility_edges_gate
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 - warning: cpu_python_reference_visibility_edges lacks comparable timing
@@ -120,6 +144,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### hausdorff_distance / directed_threshold_prepared
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -127,6 +153,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### ann_candidate_search / candidate_threshold_prepared
 
 - recommendation: `candidate_for_separate_2ai_public_claim_review`
+- current public wording status: `public_wording_reviewed`
+- current public wording boundary: Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.
 - reason: RTX query/native phase is at least 20% faster than every timed non-OptiX same-semantics baseline; separate 2-AI review is still required.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -134,6 +162,8 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### barnes_hut_force_app / node_coverage_prepared
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 - warning: RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.
@@ -141,11 +171,16 @@ Goal978 classifies RTX speedup-claim candidates after Goal836 reached 50/50 base
 ### polygon_pair_overlap_area_rows / polygon_pair_overlap_optix_native_assisted_phase_gate
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
 
 ### polygon_set_jaccard / polygon_set_jaccard_optix_native_assisted_phase_gate
 
 - recommendation: `reject_current_public_speedup_claim`
+- current public wording status: `public_wording_not_reviewed`
+- current public wording boundary: Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.
 - reason: RTX is slower than the fastest non-OptiX same-semantics baseline in current evidence.
 - public speedup authorized: `False`
+

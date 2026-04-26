@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from scripts.goal971_post_goal969_baseline_speedup_review_package import build_package
+import rtdsl as rt
 
 
 GOAL = "Goal978 RTX speedup claim candidate audit"
@@ -177,6 +178,7 @@ def build_audit() -> dict[str, Any]:
     for row in source["rows"]:
         baselines = _baseline_rows(row)
         decision = _classify(row, baselines)
+        public_wording = rt.rtx_public_wording_status(str(row["app"]))
         rows.append(
             {
                 "app": row["app"],
@@ -186,6 +188,8 @@ def build_audit() -> dict[str, Any]:
                 "rtx_native_or_query_phase_sec": row.get("rtx_native_or_query_phase_sec"),
                 "baseline_status": row.get("baseline_status"),
                 "public_speedup_claim_authorized": False,
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
                 "recommendation": decision["recommendation"],
                 "reason": decision["reason"],
                 "fastest_baseline": decision["fastest_baseline"],
@@ -210,6 +214,7 @@ def build_audit() -> dict[str, Any]:
         "date": DATE,
         "repo": str(ROOT),
         "source_package": "docs/reports/goal971_post_goal969_baseline_speedup_review_package_2026-04-26.json",
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "row_count": len(rows),
         "recommendation_counts": counts,
         "public_speedup_claim_authorized_count": 0,
@@ -267,6 +272,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
         lines.append(f"### {row['app']} / {row['path_name']}")
         lines.append("")
         lines.append(f"- recommendation: `{row['recommendation']}`")
+        lines.append(f"- current public wording status: `{row['current_public_wording_status']}`")
+        lines.append(f"- current public wording boundary: {row['current_public_wording_boundary']}")
         lines.append(f"- reason: {row['reason']}")
         lines.append(f"- public speedup authorized: `{row['public_speedup_claim_authorized']}`")
         if row["warnings"]:

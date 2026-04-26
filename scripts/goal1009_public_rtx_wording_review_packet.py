@@ -3,11 +3,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+import rtdsl as rt
+
 DATE = "2026-04-26"
 GOAL = "Goal1009 public RTX sub-path wording review packet"
 GOAL1006 = ROOT / "docs" / "reports" / "goal1006_public_rtx_claim_wording_gate_2026-04-26.json"
@@ -49,11 +54,14 @@ def build_packet(goal1006_path: Path = GOAL1006, goal1008_path: Path = GOAL1008)
     for source in goal1006["rows"]:
         if source["public_wording_status"] != "public_review_ready_query_phase_claim":
             continue
+        public_wording = rt.rtx_public_wording_status(str(source["app"]))
         rows.append(
             {
                 "source_goal": "goal1006",
                 "app": source["app"],
                 "path_name": source["path_name"],
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
                 "rtx_phase_key": source["rtx_phase_key"],
                 "rtx_phase_sec": source["rtx_native_or_query_phase_sec"],
                 "ratio": source["fastest_ratio_baseline_over_rtx"],
@@ -66,11 +74,14 @@ def build_packet(goal1006_path: Path = GOAL1006, goal1008_path: Path = GOAL1008)
     for source in goal1008["rows"]:
         if source["large_repeat_status"] != "timing_floor_cleared_for_separate_2ai_public_wording_review":
             continue
+        public_wording = rt.rtx_public_wording_status(str(source["app"]))
         rows.append(
             {
                 "source_goal": "goal1008",
                 "app": source["app"],
                 "path_name": source["path_name"],
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
                 "rtx_phase_key": source["rtx_phase_key"],
                 "rtx_phase_sec": source["rtx_phase_sec"],
                 "ratio": source["goal1006_ratio"],
@@ -84,10 +95,13 @@ def build_packet(goal1006_path: Path = GOAL1006, goal1008_path: Path = GOAL1008)
     blocked = []
     for source in goal1008["rows"]:
         if source["large_repeat_status"] == "still_below_public_review_timing_floor":
+            public_wording = rt.rtx_public_wording_status(str(source["app"]))
             blocked.append(
                 {
                     "app": source["app"],
                     "path_name": source["path_name"],
+                    "current_public_wording_status": public_wording.status,
+                    "current_public_wording_boundary": public_wording.boundary,
                     "reason": "Still below the 100 ms public-review timing floor after larger RTX repeats.",
                     "rtx_phase_sec": source["rtx_phase_sec"],
                     "chosen_artifact": source["chosen_artifact"],
@@ -104,6 +118,7 @@ def build_packet(goal1006_path: Path = GOAL1006, goal1008_path: Path = GOAL1008)
             str(goal1006_path.relative_to(ROOT)),
             str(goal1008_path.relative_to(ROOT)),
         ],
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "candidate_count": len(rows),
         "blocked_count": len(blocked),
         "public_speedup_claim_authorized_count": 0,
@@ -155,7 +170,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
     for row in payload["blocked_rows"]:
         lines.append(
             f"- `{row['app']} / {row['path_name']}` remains blocked: {row['reason']} "
-            f"median RTX phase `{_fmt_sec(row['rtx_phase_sec'])}` s."
+            f"median RTX phase `{_fmt_sec(row['rtx_phase_sec'])}` s. "
+            f"Current public wording status: `{row['current_public_wording_status']}`."
         )
     lines.extend(
         [

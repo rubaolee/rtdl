@@ -21,6 +21,7 @@ class Goal1006PublicRtxClaimWordingGateTest(unittest.TestCase):
         self.assertEqual(payload["row_count"], 17)
         self.assertEqual(payload["public_review_ready_count"], 1)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
+        self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertIn("does not authorize public speedup claims", payload["boundary"])
 
     def test_only_service_coverage_is_public_review_ready_now(self) -> None:
@@ -43,6 +44,10 @@ class Goal1006PublicRtxClaimWordingGateTest(unittest.TestCase):
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["public_wording_status"],
             "candidate_but_needs_larger_scale_repeat",
+        )
+        self.assertEqual(
+            rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_status"],
+            "public_wording_blocked",
         )
         self.assertEqual(
             rows[("event_hotspot_screening", "prepared_count_summary")]["public_wording_status"],
@@ -71,6 +76,7 @@ class Goal1006PublicRtxClaimWordingGateTest(unittest.TestCase):
             self.assertIn("Goal1006 Public RTX Claim Wording Gate", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["public_review_ready_count"], 1)
+            self.assertIn("rtdsl.rtx_public_wording_matrix()", output_md.read_text(encoding="utf-8"))
             self.assertTrue(output_md.exists())
 
 

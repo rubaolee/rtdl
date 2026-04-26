@@ -20,6 +20,7 @@ class Goal978RtxSpeedupClaimCandidateAuditTest(unittest.TestCase):
         payload = module.build_audit()
         self.assertEqual(payload["row_count"], 17)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
+        self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertGreater(payload["candidate_count"], 0)
         self.assertIn("does not authorize public speedup claims", payload["boundary"])
         for row in payload["rows"]:
@@ -38,6 +39,14 @@ class Goal978RtxSpeedupClaimCandidateAuditTest(unittest.TestCase):
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["recommendation"],
             "candidate_for_separate_2ai_public_claim_review",
+        )
+        self.assertEqual(
+            rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_status"],
+            "public_wording_blocked",
+        )
+        self.assertIn(
+            "100 ms",
+            rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_boundary"],
         )
         self.assertEqual(
             rows[("database_analytics", "prepared_db_session_sales_risk")]["recommendation"],
@@ -94,6 +103,7 @@ class Goal978RtxSpeedupClaimCandidateAuditTest(unittest.TestCase):
             self.assertIn("Goal978 RTX Speedup Claim Candidate Audit", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["row_count"], 17)
+            self.assertIn("current public wording status", output_md.read_text(encoding="utf-8"))
             self.assertTrue(output_md.exists())
 
 

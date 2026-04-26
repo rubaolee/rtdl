@@ -54,7 +54,7 @@ On the recorded RTX A5000 artifact set, the prepared RTDL `ann_candidate_search 
 
 ## Blocked Rows
 
-- `robot_collision_screening / prepared_pose_flags` remains blocked: Still below the 100 ms public-review timing floor after larger RTX repeats. median RTX phase `0.014177` s.
+- `robot_collision_screening / prepared_pose_flags` remains blocked: Still below the 100 ms public-review timing floor after larger RTX repeats. median RTX phase `0.014177` s. Current public wording status: `public_wording_blocked`.
 
 ## Reviewer Questions
 

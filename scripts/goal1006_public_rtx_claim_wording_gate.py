@@ -3,11 +3,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+import rtdsl as rt
+
 SOURCE = ROOT / "docs" / "reports" / "goal1005_post_a5000_speedup_candidate_audit_2026-04-26.json"
 DATE = "2026-04-26"
 GOAL = "Goal1006 public RTX claim wording gate"
@@ -72,6 +77,7 @@ def build_gate(source_path: Path = SOURCE) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     for row in source["rows"]:
         decision = _classify(row)
+        public_wording = rt.rtx_public_wording_status(str(row["app"]))
         rows.append(
             {
                 "app": row["app"],
@@ -84,6 +90,8 @@ def build_gate(source_path: Path = SOURCE) -> dict[str, Any]:
                 "fastest_baseline": row.get("fastest_baseline"),
                 "fastest_baseline_sec": row.get("fastest_baseline_sec"),
                 "fastest_ratio_baseline_over_rtx": row.get("fastest_ratio_baseline_over_rtx"),
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
                 "public_speedup_claim_authorized": False,
                 **decision,
             }
@@ -96,6 +104,7 @@ def build_gate(source_path: Path = SOURCE) -> dict[str, Any]:
         "goal": GOAL,
         "date": DATE,
         "source": str(source_path.relative_to(ROOT)),
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "row_count": len(rows),
         "status_counts": counts,
         "public_review_ready_count": counts.get("public_review_ready_query_phase_claim", 0),
@@ -147,6 +156,15 @@ def to_markdown(payload: dict[str, Any]) -> str:
             f"{_fmt(row['fastest_ratio_baseline_over_rtx'])} | "
             f"`{row['public_wording_status']}` |"
         )
+    lines.extend(["", "## Current Public Wording Source-Of-Truth", ""])
+    lines.append("This historical wording gate is superseded for release-facing wording by `rtdsl.rtx_public_wording_matrix()`.")
+    lines.append("")
+    for row in payload["rows"]:
+        if row["current_public_wording_status"] == "public_wording_blocked":
+            lines.append(
+                f"- `{row['app']} / {row['path_name']}` current status: "
+                f"`{row['current_public_wording_status']}` — {row['current_public_wording_boundary']}"
+            )
     lines.extend(["", "## Allowed Public Wording Candidates", ""])
     for row in payload["rows"]:
         if row["public_wording_status"] != "public_review_ready_query_phase_claim":

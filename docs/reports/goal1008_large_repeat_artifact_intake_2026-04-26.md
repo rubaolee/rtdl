@@ -25,6 +25,12 @@ Goal1008 is an artifact-intake gate for Goal1007 RTX A5000 larger repeats. It ca
 | `segment_polygon_anyhit_rows` | `segment_polygon_anyhit_rows_prepared_bounded_gate` | `goal1007_segment_polygon_anyhit_rows_large_rtx.json` | 0.192639 | 3.030858 | `timing_floor_cleared_for_separate_2ai_public_wording_review` |
 | `ann_candidate_search` | `candidate_threshold_prepared` | `goal1007_ann_candidate_coverage_x4_large_rtx.json` | 0.105215 | 4.857461 | `timing_floor_cleared_for_separate_2ai_public_wording_review` |
 
+## Current Public Wording Source-Of-Truth
+
+Release-facing wording must follow `rtdsl.rtx_public_wording_matrix()`, not this intake gate alone.
+
+- `robot_collision_screening / prepared_pose_flags` current status: `public_wording_blocked` — The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.
+
 ## Boundary
 
 - A cleared timing floor means the row is eligible for separate 2-AI public-wording review.

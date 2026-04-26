@@ -21,6 +21,7 @@ class Goal1008LargeRepeatArtifactIntakeTest(unittest.TestCase):
         self.assertEqual(payload["row_count"], 7)
         self.assertEqual(payload["timing_floor_cleared_count"], 6)
         self.assertEqual(payload["still_held_count"], 1)
+        self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
         self.assertIn("does not authorize any public speedup claim", payload["boundary"])
 
@@ -36,6 +37,10 @@ class Goal1008LargeRepeatArtifactIntakeTest(unittest.TestCase):
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["large_repeat_status"],
             "still_below_public_review_timing_floor",
+        )
+        self.assertEqual(
+            rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_status"],
+            "public_wording_blocked",
         )
         self.assertLess(rows[("robot_collision_screening", "prepared_pose_flags")]["rtx_phase_sec"], 0.10)
         self.assertEqual(

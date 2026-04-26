@@ -35,6 +35,12 @@ Goal1006 is a wording gate. It does not authorize public speedup claims. It only
 | `polygon_pair_overlap_area_rows` | `polygon_pair_overlap_optix_native_assisted_phase_gate` | 10.052899 | 0.000146 | `not_public_speedup_candidate` |
 | `polygon_set_jaccard` | `polygon_set_jaccard_optix_native_assisted_phase_gate` | 4.152796 | 0.003182 | `not_public_speedup_candidate` |
 
+## Current Public Wording Source-Of-Truth
+
+This historical wording gate is superseded for release-facing wording by `rtdsl.rtx_public_wording_matrix()`.
+
+- `robot_collision_screening / prepared_pose_flags` current status: `public_wording_blocked` — The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.
+
 ## Allowed Public Wording Candidates
 
 ### service_coverage_gaps / prepared_gap_summary
@@ -46,3 +52,4 @@ On the recorded RTX A5000 run, the bounded `service_coverage_gaps / prepared_gap
 - No row is authorized for front-page wording by this gate alone.
 - Rows under 100 ms are intentionally held for larger-scale repeat evidence.
 - Whole-app speedups remain disallowed unless a future audit measures whole-app same-semantics timing.
+
