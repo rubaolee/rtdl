@@ -26,6 +26,7 @@ GOALS = {
     1025: "pre-cloud RTX app batch readiness",
     1026: "pre-cloud RTX runner dry-run audit",
     1027: "public release hygiene v0.9.6 repair",
+    1028: "A5000 RTX cloud batch evidence",
 }
 
 REQUIRED_SUFFIXES = {
