@@ -23,6 +23,7 @@ from scripts.goal978_rtx_speedup_claim_candidate_audit import (
     _load_json,
     _positive_number,
 )
+import rtdsl as rt
 
 
 GOAL = "Goal1005 post-A5000 speedup candidate audit"
@@ -215,6 +216,7 @@ def build_audit(summary_path: Path = SUMMARY, bundle_path: Path = BUNDLE) -> dic
             str(source_row.get("result", {}).get("status")),
             baselines,
         )
+        public_wording = rt.rtx_public_wording_status(app)
         rows.append(
             {
                 "app": app,
@@ -228,6 +230,8 @@ def build_audit(summary_path: Path = SUMMARY, bundle_path: Path = BUNDLE) -> dic
                 "baseline_status": baseline_row.get("baseline_status"),
                 "baseline_complete_for_speedup_review": baseline_row.get("baseline_complete_for_speedup_review"),
                 "public_speedup_claim_authorized": False,
+                "current_public_wording_status": public_wording.status,
+                "current_public_wording_boundary": public_wording.boundary,
                 "recommendation": decision["recommendation"],
                 "reason": decision["reason"],
                 "fastest_baseline": decision["fastest_baseline"],
@@ -256,6 +260,7 @@ def build_audit(summary_path: Path = SUMMARY, bundle_path: Path = BUNDLE) -> dic
         and "NVIDIA RTX A5000" in str(summary.get("nvidia_smi", "")),
         "row_count": len(rows),
         "recommendation_counts": counts,
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "candidate_count": counts.get(RTX_CANDIDATE, 0),
         "internal_only_count": counts.get(INTERNAL_ONLY, 0),
         "reject_count": counts.get(REJECT, 0),
@@ -298,8 +303,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         "## App/Path Decisions",
         "",
-        "| App | Path | RTX phase key | RTX phase (s) | Fastest non-OptiX baseline | Ratio | Recommendation |",
-        "|---|---|---|---:|---|---:|---|",
+        "| App | Path | RTX phase key | RTX phase (s) | Fastest non-OptiX baseline | Ratio | Recommendation | Current public wording |",
+        "|---|---|---|---:|---|---:|---|---|",
     ]
     for row in payload["rows"]:
         baseline = row["fastest_baseline"] or ""
@@ -308,9 +313,22 @@ def to_markdown(payload: dict[str, Any]) -> str:
         lines.append(
             f"| `{row['app']}` | `{row['path_name']}` | `{row['rtx_phase_key']}` | "
             f"{_fmt(row['rtx_native_or_query_phase_sec'])} | {baseline_text} | "
-            f"{_fmt(row['fastest_ratio_baseline_over_rtx'])} | `{row['recommendation']}` |"
+            f"{_fmt(row['fastest_ratio_baseline_over_rtx'])} | `{row['recommendation']}` | "
+            f"`{row['current_public_wording_status']}` |"
         )
-    lines.extend(["", "## Boundary", "", payload["boundary"], ""])
+    lines.extend(
+        [
+            "",
+            "## Current Public Wording Source-Of-Truth",
+            "",
+            "Release-facing wording must follow `rtdsl.rtx_public_wording_matrix()` rather than this candidate audit alone.",
+            "",
+            "## Boundary",
+            "",
+            payload["boundary"],
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 

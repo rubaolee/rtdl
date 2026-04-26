@@ -23,6 +23,7 @@ class Goal971PostGoal969BaselineSpeedupReviewPackageTest(unittest.TestCase):
         self.assertEqual(payload["rtx_artifact_ready_count"], 17)
         self.assertEqual(payload["bad_rtx_artifact_count"], 0)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
+        self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertIn("does not authorize public speedup wording", payload["boundary"])
 
     def test_baseline_classification_is_conservative(self) -> None:
@@ -79,6 +80,18 @@ class Goal971PostGoal969BaselineSpeedupReviewPackageTest(unittest.TestCase):
                 "public_speedup_claim_authorized"
             ]
         )
+        self.assertEqual(
+            rows[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_status"
+            ],
+            "public_wording_blocked",
+        )
+        self.assertIn(
+            "100 ms",
+            rows[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_boundary"
+            ],
+        )
 
     def test_fixed_radius_claim_scope_uses_current_scalar_public_terms(self) -> None:
         module = __import__(
@@ -125,6 +138,10 @@ class Goal971PostGoal969BaselineSpeedupReviewPackageTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["row_count"], 17)
             self.assertTrue(output_md.exists())
+            self.assertIn(
+                "rtdsl.rtx_public_wording_matrix()",
+                output_md.read_text(encoding="utf-8"),
+            )
 
 
 if __name__ == "__main__":

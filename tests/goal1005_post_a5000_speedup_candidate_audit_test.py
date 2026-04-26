@@ -25,6 +25,7 @@ class Goal1005PostA5000SpeedupCandidateAuditTest(unittest.TestCase):
         self.assertEqual(payload["internal_only_count"], 1)
         self.assertEqual(payload["reject_count"], 8)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
+        self.assertEqual(payload["current_public_wording_source"], "rtdsl.rtx_public_wording_matrix()")
         self.assertIn("does not authorize public speedup claims", payload["boundary"])
         for row in payload["rows"]:
             self.assertFalse(row["public_speedup_claim_authorized"])
@@ -71,6 +72,18 @@ class Goal1005PostA5000SpeedupCandidateAuditTest(unittest.TestCase):
             rows[("facility_knn_assignment", "coverage_threshold_prepared")]["recommendation"],
             "candidate_for_separate_2ai_public_claim_review",
         )
+        self.assertEqual(
+            rows[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_status"
+            ],
+            "public_wording_blocked",
+        )
+        self.assertIn(
+            "100 ms",
+            rows[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_boundary"
+            ],
+        )
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -95,6 +108,10 @@ class Goal1005PostA5000SpeedupCandidateAuditTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["row_count"], 17)
             self.assertTrue(output_md.exists())
+            self.assertIn(
+                "rtdsl.rtx_public_wording_matrix()",
+                output_md.read_text(encoding="utf-8"),
+            )
 
 
 if __name__ == "__main__":

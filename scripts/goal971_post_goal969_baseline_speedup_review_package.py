@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.goal836_rtx_baseline_readiness_gate import analyze_plan
 from scripts.goal846_active_rtx_claim_gate import build_active_claim_gate
+import rtdsl as rt
 
 
 GOAL = "Goal971 post-Goal969 baseline/speedup review package"
@@ -167,6 +168,7 @@ def build_package() -> dict[str, Any]:
         )
         for row in report.get("rows", ()):
             baseline = _baseline_summary(row, readiness_by_key, active_by_key)
+            public_wording = rt.rtx_public_wording_status(str(row.get("app")))
             rows.append(
                 {
                     "app": row.get("app"),
@@ -177,6 +179,8 @@ def build_package() -> dict[str, Any]:
                     "claim_scope": _claim_scope(row),
                     "non_claim": _non_claim(row),
                     "rtx_native_or_query_phase_sec": _rtx_phase_seconds(row),
+                    "current_public_wording_status": public_wording.status,
+                    "current_public_wording_boundary": public_wording.boundary,
                     **baseline,
                 }
             )
@@ -198,6 +202,7 @@ def build_package() -> dict[str, Any]:
         "source_artifact_reports": GROUP_REPORTS,
         "source_baseline_gate": "scripts.goal836_rtx_baseline_readiness_gate.analyze_plan()",
         "source_active_gate": "scripts.goal846_active_rtx_claim_gate.build_active_claim_gate()",
+        "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
         "group_count": len(group_statuses),
         "row_count": len(rows),
         "rtx_artifact_ready_count": len(rows) - len(bad_rtx),
@@ -247,13 +252,14 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         "## App/Path Status",
         "",
-        "| App | Path | RTX phase (s) | RTX artifact | Baseline status | Valid / Required | Public speedup authorized? |",
-        "| --- | --- | ---: | --- | --- | ---: | --- |",
+        "| App | Path | RTX phase (s) | RTX artifact | Baseline status | Current public wording | Valid / Required | Public speedup authorized? |",
+        "| --- | --- | ---: | --- | --- | --- | ---: | --- |",
     ]
     for row in payload["rows"]:
         lines.append(
             f"| `{row['app']}` | `{row['path_name']}` | {_fmt_sec(row['rtx_native_or_query_phase_sec'])} | "
             f"`{row['rtx_artifact_status']}` | `{row['baseline_status']}` | "
+            f"`{row['current_public_wording_status']}` | "
             f"{row['valid_baseline_count']} / {row['required_baseline_count']} | "
             f"`{row['public_speedup_claim_authorized']}` |"
         )
@@ -267,6 +273,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
             "- `active_gate_complete_but_full_baseline_review_limited` means an older active gate has enough blocking evidence for internal review, but optional or unsupported baselines are not fully complete.",
             "- `rtx_artifact_ready_baseline_pending` means the RT sub-path ran on A5000, but same-semantics baseline evidence must be collected before speedup comparison.",
             "- No row in this package authorizes a whole-app speedup claim.",
+            "- Release-facing wording must follow `rtdsl.rtx_public_wording_matrix()` rather than this baseline package alone.",
             "",
             "## Missing Or Invalid Baseline Detail",
             "",
