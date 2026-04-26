@@ -76,6 +76,15 @@ class RtCoreAppMaturity:
     cloud_policy: str
 
 
+@dataclass(frozen=True)
+class RtxPublicWordingStatus:
+    app: str
+    status: str
+    reviewed_wording: str
+    evidence: str
+    boundary: str
+
+
 READY_FOR_RTX_CLAIM_REVIEW = "ready_for_rtx_claim_review"
 NEEDS_PHASE_CONTRACT = "needs_phase_contract"
 NEEDS_REAL_RTX_ARTIFACT = "needs_real_rtx_artifact"
@@ -106,6 +115,18 @@ RT_CORE_APP_MATURITY_STATUSES = (
     NEEDS_RT_CORE_REDESIGN,
     NEEDS_OPTIX_APP_SURFACE,
     NOT_NVIDIA_RT_CORE_TARGET,
+)
+
+PUBLIC_WORDING_REVIEWED = "public_wording_reviewed"
+PUBLIC_WORDING_BLOCKED = "public_wording_blocked"
+PUBLIC_WORDING_NOT_REVIEWED = "public_wording_not_reviewed"
+NOT_NVIDIA_PUBLIC_WORDING_TARGET = "not_nvidia_public_wording_target"
+
+RTX_PUBLIC_WORDING_STATUSES = (
+    PUBLIC_WORDING_REVIEWED,
+    PUBLIC_WORDING_BLOCKED,
+    PUBLIC_WORDING_NOT_REVIEWED,
+    NOT_NVIDIA_PUBLIC_WORDING_TARGET,
 )
 
 
@@ -602,6 +623,22 @@ def _maturity(
     )
 
 
+def _public_wording(
+    app: str,
+    status: str,
+    reviewed_wording: str,
+    evidence: str,
+    boundary: str,
+) -> RtxPublicWordingStatus:
+    return RtxPublicWordingStatus(
+        app=app,
+        status=status,
+        reviewed_wording=reviewed_wording,
+        evidence=evidence,
+        boundary=boundary,
+    )
+
+
 _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     "database_analytics": _maturity(
         "database_analytics",
@@ -713,7 +750,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
-        "Include in the next batched cloud run with prepared packed input and scalar pose-count mode.",
+        "Goal1008 keeps public speedup wording blocked; no new pod is needed unless redesign/reprofiling is planned.",
     ),
     "barnes_hut_force_app": _maturity(
         "barnes_hut_force_app",
@@ -728,6 +765,139 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         NOT_NVIDIA_RT_CORE_TARGET,
         "Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity.",
         "Never include in NVIDIA OptiX cloud batches.",
+    ),
+}
+
+_NO_GOAL1009_REVIEW = (
+    "No Goal1009 public speedup wording has been reviewed for this app path yet."
+)
+
+_RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
+    "database_analytics": _public_wording(
+        "database_analytics",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal921/Goal941",
+        "Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "graph_analytics": _public_wording(
+        "graph_analytics",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal889/Goal905/Goal929",
+        "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "apple_rt_demo": _public_wording(
+        "apple_rt_demo",
+        NOT_NVIDIA_PUBLIC_WORDING_TARGET,
+        "Apple RT demo is outside NVIDIA RTX public wording.",
+        "none",
+        "Do not include Apple-specific evidence in NVIDIA RTX speedup wording.",
+    ),
+    "service_coverage_gaps": _public_wording(
+        "service_coverage_gaps",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared service-coverage gap-summary RTX query/native sub-path measured 0.136545 s and 1.61x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared gap-summary query/native sub-path is covered; row output, nearest-clinic output, and service-coverage optimization are outside this wording.",
+    ),
+    "event_hotspot_screening": _public_wording(
+        "event_hotspot_screening",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal917/Goal919",
+        "Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "facility_knn_assignment": _public_wording(
+        "facility_knn_assignment",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared facility coverage-threshold RTX query/native sub-path measured 0.157368 s and 22.81x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared service-coverage decision sub-path is covered; ranked KNN assignment, ranking, and uncovered-ID witness output are outside this wording.",
+    ),
+    "road_hazard_screening": _public_wording(
+        "road_hazard_screening",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal933/Goal941",
+        "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "segment_polygon_hitcount": _public_wording(
+        "segment_polygon_hitcount",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared native segment/polygon hit-count RTX query/native sub-path measured 0.146860 s and 1.71x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.",
+    ),
+    "segment_polygon_anyhit_rows": _public_wording(
+        "segment_polygon_anyhit_rows",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared bounded native segment/polygon pair-row RTX query/native sub-path measured 0.192639 s and 3.03x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.",
+    ),
+    "polygon_pair_overlap_area_rows": _public_wording(
+        "polygon_pair_overlap_area_rows",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal877/Goal929",
+        "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "polygon_set_jaccard": _public_wording(
+        "polygon_set_jaccard",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal877/Goal929",
+        "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "hausdorff_distance": _public_wording(
+        "hausdorff_distance",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal887/Goal941",
+        "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "ann_candidate_search": _public_wording(
+        "ann_candidate_search",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared ANN candidate-coverage RTX query/native sub-path measured 0.105215 s and 4.86x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.",
+    ),
+    "outlier_detection": _public_wording(
+        "outlier_detection",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared fixed-radius density-summary RTX query/native sub-path measured 0.122348 s and 4.64x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.",
+    ),
+    "dbscan_clustering": _public_wording(
+        "dbscan_clustering",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared fixed-radius DBSCAN core-count RTX query/native sub-path measured 0.122921 s and 6.62x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.",
+    ),
+    "robot_collision_screening": _public_wording(
+        "robot_collision_screening",
+        PUBLIC_WORDING_BLOCKED,
+        "No public RTX speedup wording is authorized for robot_collision_screening yet.",
+        "Goal1008",
+        "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
+    ),
+    "barnes_hut_force_app": _public_wording(
+        "barnes_hut_force_app",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal887/Goal941",
+        "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "hiprt_ray_triangle_hitcount": _public_wording(
+        "hiprt_ray_triangle_hitcount",
+        NOT_NVIDIA_PUBLIC_WORDING_TARGET,
+        "HIPRT hit-count demo is outside NVIDIA RTX public wording.",
+        "none",
+        "Do not include HIPRT-specific evidence in NVIDIA RTX speedup wording.",
     ),
 }
 
@@ -778,3 +948,14 @@ def rt_core_app_maturity(app: str) -> RtCoreAppMaturity:
 
 def rt_core_app_maturity_matrix() -> dict[str, RtCoreAppMaturity]:
     return dict(_RT_CORE_APP_MATURITY_MATRIX)
+
+
+def rtx_public_wording_status(app: str) -> RtxPublicWordingStatus:
+    try:
+        return _RTX_PUBLIC_WORDING_MATRIX[app]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL app: app={app!r}") from exc
+
+
+def rtx_public_wording_matrix() -> dict[str, RtxPublicWordingStatus]:
+    return dict(_RTX_PUBLIC_WORDING_MATRIX)

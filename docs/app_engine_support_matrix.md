@@ -168,6 +168,26 @@ not enough for broad whole-app speedup claims. Future pods should be used only
 for consolidated regression or targeted native-kernel tuning validation after
 local analyzer/intake work is complete.
 
+## NVIDIA RTX Public Wording Status
+
+The machine-readable source of truth is `rtdsl.rtx_public_wording_matrix()`.
+This table is deliberately separate from readiness and maturity. An app can
+have a real RT-core path and still be blocked from public speedup wording when
+the reviewed evidence is too short, too broad, or not yet packaged for public
+claims.
+
+| Status | Meaning |
+| --- | --- |
+| `public_wording_reviewed` | Exact bounded sub-path speedup wording passed Goal1009 review and may be used with its stated boundary. |
+| `public_wording_blocked` | Real RT-core work exists, but public speedup wording is blocked by the current evidence gate. |
+| `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
+| `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
+
+Current Goal1009 reviewed public wording rows: `7`.
+`robot_collision_screening` remains `public_wording_blocked`: the prepared
+ray/triangle any-hit scalar pose-count path is a real RT-core path, but Goal1008
+larger RTX repeats stayed below the 100 ms public-review timing floor.
+
 ## RT-Core App Maturity Contract
 
 Status: v1.0 direction contract.

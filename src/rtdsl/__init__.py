@@ -95,6 +95,7 @@ from .app_support_matrix import (
     OPTIX_APP_PERFORMANCE_CLASSES,
     OPTIX_APP_BENCHMARK_READINESS_STATUSES,
     RT_CORE_APP_MATURITY_STATUSES,
+    RTX_PUBLIC_WORDING_STATUSES,
     app_engine_support_matrix,
     optix_app_benchmark_readiness,
     optix_app_benchmark_readiness_matrix,
@@ -102,6 +103,8 @@ from .app_support_matrix import (
     optix_app_performance_support,
     rt_core_app_maturity,
     rt_core_app_maturity_matrix,
+    rtx_public_wording_matrix,
+    rtx_public_wording_status,
 )
 from .app_support_matrix import APP_ENGINES
 from .app_support_matrix import APP_SUPPORT_STATUSES
@@ -915,7 +918,10 @@ __all__ = [
     "rt_core_app_maturity",
     "rt_core_app_maturity_matrix",
     "RT_CORE_APP_MATURITY_STATUSES",
+    "RTX_PUBLIC_WORDING_STATUSES",
     "public_apps",
+    "rtx_public_wording_matrix",
+    "rtx_public_wording_status",
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_adaptive",

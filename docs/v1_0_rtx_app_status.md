@@ -77,3 +77,4 @@ RTDL includes a bounded NVIDIA OptiX/RTX-backed subpath for `<app>`: `<allowed c
 - `engine_support`: `rtdsl.app_engine_support_matrix()`
 - `readiness`: `rtdsl.optix_app_benchmark_readiness_matrix()`
 - `maturity`: `rtdsl.rt_core_app_maturity_matrix()`
+- `public_wording`: `rtdsl.rtx_public_wording_matrix()`

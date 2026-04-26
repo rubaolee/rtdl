@@ -46,6 +46,9 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("below the 100 ms", v1)
         self.assertIn("blocked_for_public_speedup_wording", matrix)
         self.assertIn("Goal1008 keeps public speedup wording blocked", matrix)
+        self.assertIn("rtdsl.rtx_public_wording_matrix()", v1)
+        self.assertIn("rtdsl.rtx_public_wording_matrix()", matrix)
+        self.assertIn("public_wording_blocked", matrix)
 
 
 if __name__ == "__main__":
