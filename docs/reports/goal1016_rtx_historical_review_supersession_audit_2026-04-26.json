@@ -1,0 +1,57 @@
+{
+  "boundary": "This audit does not rewrite historical external review text. It records that older review files are historical and that release-facing wording is superseded by Goal1014/Goal1015 and rtdsl.rtx_public_wording_matrix().",
+  "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
+  "date": "2026-04-26",
+  "goal": "Goal1016 RTX historical review supersession audit",
+  "historical_review_count": 3,
+  "historical_review_requires_supersession_count": 3,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "carries_current_public_wording_block": false,
+      "current_public_wording_status": "public_wording_blocked",
+      "mentions_robot_candidate": true,
+      "path": "docs/reports/goal978_claude_review_2026-04-26.md",
+      "requires_supersession_context": true,
+      "superseded_by": [
+        "docs/reports/goal1014_public_wording_pipeline_source_sync_2026-04-26.md",
+        "docs/reports/goal1015_upstream_speedup_evidence_public_wording_sync_2026-04-26.md",
+        "docs/reports/goal1014_two_ai_consensus_2026-04-26.md",
+        "docs/reports/goal1015_two_ai_consensus_2026-04-26.md"
+      ]
+    },
+    {
+      "carries_current_public_wording_block": false,
+      "current_public_wording_status": "public_wording_blocked",
+      "mentions_robot_candidate": true,
+      "path": "docs/reports/goal979_claude_review_2026-04-26.md",
+      "requires_supersession_context": true,
+      "superseded_by": [
+        "docs/reports/goal1014_public_wording_pipeline_source_sync_2026-04-26.md",
+        "docs/reports/goal1015_upstream_speedup_evidence_public_wording_sync_2026-04-26.md",
+        "docs/reports/goal1014_two_ai_consensus_2026-04-26.md",
+        "docs/reports/goal1015_two_ai_consensus_2026-04-26.md"
+      ]
+    },
+    {
+      "carries_current_public_wording_block": false,
+      "current_public_wording_status": "public_wording_blocked",
+      "mentions_robot_candidate": true,
+      "path": "docs/reports/goal983_claude_review_2026-04-26.md",
+      "requires_supersession_context": true,
+      "superseded_by": [
+        "docs/reports/goal1014_public_wording_pipeline_source_sync_2026-04-26.md",
+        "docs/reports/goal1015_upstream_speedup_evidence_public_wording_sync_2026-04-26.md",
+        "docs/reports/goal1014_two_ai_consensus_2026-04-26.md",
+        "docs/reports/goal1015_two_ai_consensus_2026-04-26.md"
+      ]
+    }
+  ],
+  "superseding_public_wording_files": [
+    "docs/reports/goal1014_public_wording_pipeline_source_sync_2026-04-26.md",
+    "docs/reports/goal1015_upstream_speedup_evidence_public_wording_sync_2026-04-26.md",
+    "docs/reports/goal1014_two_ai_consensus_2026-04-26.md",
+    "docs/reports/goal1015_two_ai_consensus_2026-04-26.md"
+  ],
+  "superseding_public_wording_ok": true
+}
