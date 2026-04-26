@@ -1,7 +1,7 @@
 {
-  "audited_goal_count": 6,
+  "audited_goal_count": 7,
   "boundary": "This audit checks that recent bounded public-wording goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.",
-  "complete_goal_count": 6,
+  "complete_goal_count": 7,
   "date": "2026-04-26",
   "goal": "Goal1017 recent goal consensus audit",
   "incomplete_goal_count": 0,
@@ -112,6 +112,23 @@
       "missing_requirements": [],
       "status": "complete",
       "title": "historical review supersession audit"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1018_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1018_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1018_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1018,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "Goal1007 repeat plan public wording sync"
     }
   ],
   "valid": true

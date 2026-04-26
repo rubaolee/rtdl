@@ -18,6 +18,7 @@ GOALS = {
     1014: "public wording pipeline source sync",
     1015: "upstream speedup evidence public wording sync",
     1016: "historical review supersession audit",
+    1018: "Goal1007 repeat plan public wording sync",
 }
 
 REQUIRED_SUFFIXES = {
