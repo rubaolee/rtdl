@@ -28,6 +28,7 @@ GOALS = {
     1027: "public release hygiene v0.9.6 repair",
     1028: "A5000 RTX cloud batch evidence",
     1029: "RTX baseline promotion plan",
+    1030: "local RTX baseline manifest",
 }
 
 REQUIRED_SUFFIXES = {

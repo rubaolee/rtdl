@@ -1,0 +1,592 @@
+{
+  "boundary": "This is a local baseline command manifest. It does not execute benchmarks, does not authorize speedup claims, and does not replace same-semantics review.",
+  "date": "2026-04-26",
+  "entries": [
+    {
+      "app": "robot_collision_screening",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_robot_collision_screening_app.py",
+          "--backend",
+          "cpu",
+          "--output-mode",
+          "pose_flags",
+          "--pose-count",
+          "200000",
+          "--obstacle-count",
+          "1024"
+        ],
+        [
+          "python3",
+          "examples/rtdl_robot_collision_screening_app.py",
+          "--backend",
+          "embree",
+          "--output-mode",
+          "pose_flags",
+          "--pose-count",
+          "200000",
+          "--obstacle-count",
+          "1024"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree app paths exist, but exact prepared-pose semantics need phase extraction.",
+      "rtx_path": "prepared_pose_flags"
+    },
+    {
+      "app": "outlier_detection",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_outlier_detection_app.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "density_count"
+        ],
+        [
+          "python3",
+          "examples/rtdl_outlier_detection_app.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "density_count",
+          "--embree-summary-mode",
+          "rt_count_threshold_prepared"
+        ],
+        [
+          "python3",
+          "examples/rtdl_outlier_detection_app.py",
+          "--backend",
+          "scipy",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "density_count"
+        ]
+      ],
+      "local_status": "baseline_ready",
+      "reason": "CPU, Embree prepared threshold, and SciPy summary paths are exposed by the app CLI.",
+      "rtx_path": "prepared_fixed_radius_density_summary"
+    },
+    {
+      "app": "dbscan_clustering",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_dbscan_clustering_app.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "core_count"
+        ],
+        [
+          "python3",
+          "examples/rtdl_dbscan_clustering_app.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "core_count",
+          "--embree-summary-mode",
+          "rt_core_flags_prepared"
+        ],
+        [
+          "python3",
+          "examples/rtdl_dbscan_clustering_app.py",
+          "--backend",
+          "scipy",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "core_count"
+        ]
+      ],
+      "local_status": "baseline_ready",
+      "reason": "CPU, Embree prepared core-flag, and SciPy compact paths are exposed by the app CLI.",
+      "rtx_path": "prepared_fixed_radius_core_flags"
+    },
+    {
+      "app": "database_analytics:sales_risk",
+      "commands": [
+        [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "cpu",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict"
+        ],
+        [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree compact summaries are local; PostgreSQL indexed baseline is Linux/PostgreSQL-gated.",
+      "rtx_path": "prepared_db_session_sales_risk"
+    },
+    {
+      "app": "database_analytics:regional_dashboard",
+      "commands": [
+        [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "cpu",
+          "--scenario",
+          "regional_dashboard",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict"
+        ],
+        [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "regional_dashboard",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree compact summaries are local; PostgreSQL indexed baseline is Linux/PostgreSQL-gated.",
+      "rtx_path": "prepared_db_session_regional_dashboard"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_service_coverage_gaps.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000"
+        ],
+        [
+          "python3",
+          "examples/rtdl_service_coverage_gaps.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--embree-summary-mode",
+          "gap_summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_service_coverage_gaps.py",
+          "--backend",
+          "scipy",
+          "--copies",
+          "20000"
+        ]
+      ],
+      "local_status": "baseline_ready",
+      "reason": "CPU, Embree summary, and SciPy paths are exposed by the app CLI.",
+      "rtx_path": "prepared_gap_summary"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_event_hotspot_screening.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000"
+        ],
+        [
+          "python3",
+          "examples/rtdl_event_hotspot_screening.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--embree-summary-mode",
+          "count_summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_event_hotspot_screening.py",
+          "--backend",
+          "scipy",
+          "--copies",
+          "20000"
+        ]
+      ],
+      "local_status": "baseline_ready",
+      "reason": "CPU, Embree summary, and SciPy paths are exposed by the app CLI.",
+      "rtx_path": "prepared_count_summary"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_facility_knn_assignment.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_facility_knn_assignment.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_facility_knn_assignment.py",
+          "--backend",
+          "scipy",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU/Embree/SciPy app paths exist, but coverage-threshold phase parity needs a dedicated extractor.",
+      "rtx_path": "coverage_threshold_prepared"
+    },
+    {
+      "app": "road_hazard_screening",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_road_hazard_screening.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_road_hazard_screening.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree compact summaries are local; PostGIS same-semantics baseline is Linux/PostGIS-gated.",
+      "rtx_path": "road_hazard_native_summary_gate"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_segment_polygon_hitcount.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "256"
+        ],
+        [
+          "python3",
+          "examples/rtdl_segment_polygon_hitcount.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "256"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree hit-count paths are local; PostGIS same-semantics baseline is Linux/PostGIS-gated.",
+      "rtx_path": "segment_polygon_hitcount_native_experimental"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_segment_polygon_anyhit_rows.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "256",
+          "--output-mode",
+          "rows",
+          "--output-capacity",
+          "4096"
+        ],
+        [
+          "python3",
+          "examples/rtdl_segment_polygon_anyhit_rows.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "256",
+          "--output-mode",
+          "rows",
+          "--output-capacity",
+          "4096"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree compact outputs are local; bounded pair-row capacity and PostGIS parity need Linux review.",
+      "rtx_path": "segment_polygon_anyhit_rows_prepared_bounded_gate"
+    },
+    {
+      "app": "graph_analytics",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_graph_analytics_app.py",
+          "--backend",
+          "cpu",
+          "--scenario",
+          "visibility_edges",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_graph_analytics_app.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "visibility_edges",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_graph_analytics_app.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "bfs",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_graph_analytics_app.py",
+          "--backend",
+          "embree",
+          "--scenario",
+          "triangle_count",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree graph paths are local when GEOS/native oracle dependencies are present; visibility/BFS/triangle claims must stay separated.",
+      "rtx_path": "graph_visibility_edges_gate"
+    },
+    {
+      "app": "hausdorff_distance",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_hausdorff_distance_app.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--embree-result-mode",
+          "directed_summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_hausdorff_distance_app.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--embree-result-mode",
+          "directed_summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree exact summaries exist, but threshold-decision parity needs dedicated extraction.",
+      "rtx_path": "directed_threshold_prepared"
+    },
+    {
+      "app": "ann_candidate_search",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_ann_candidate_app.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "quality_summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_ann_candidate_app.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "quality_summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_ann_candidate_app.py",
+          "--backend",
+          "scipy",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "quality_summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU/Embree/SciPy app summaries exist, but candidate-threshold parity needs dedicated extraction.",
+      "rtx_path": "candidate_threshold_prepared"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_barnes_hut_force_app.py",
+          "--backend",
+          "cpu",
+          "--body-count",
+          "200000",
+          "--output-mode",
+          "candidate_summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_barnes_hut_force_app.py",
+          "--backend",
+          "embree",
+          "--body-count",
+          "200000",
+          "--output-mode",
+          "candidate_summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU/Embree candidate summaries exist, but node-coverage threshold parity needs dedicated extraction.",
+      "rtx_path": "node_coverage_prepared"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_polygon_pair_overlap_area_rows.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ],
+        [
+          "python3",
+          "examples/rtdl_polygon_pair_overlap_area_rows.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree summary paths are local; PostGIS same-semantics unit-cell baseline is Linux/PostGIS-gated.",
+      "rtx_path": "polygon_pair_overlap_optix_native_assisted_phase_gate"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "commands": [
+        [
+          "python3",
+          "examples/rtdl_polygon_set_jaccard.py",
+          "--backend",
+          "cpu",
+          "--copies",
+          "20000"
+        ],
+        [
+          "python3",
+          "examples/rtdl_polygon_set_jaccard.py",
+          "--backend",
+          "embree",
+          "--copies",
+          "20000"
+        ]
+      ],
+      "local_status": "baseline_partial",
+      "reason": "CPU and Embree paths are local; PostGIS same-semantics unit-cell baseline is Linux/PostGIS-gated.",
+      "rtx_path": "polygon_set_jaccard_optix_native_assisted_phase_gate"
+    }
+  ],
+  "entry_count": 17,
+  "goal": "Goal1030 local RTX baseline manifest",
+  "status_counts": {
+    "baseline_partial": 13,
+    "baseline_ready": 4
+  }
+}
