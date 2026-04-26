@@ -1,7 +1,7 @@
 # RTDL Complete History Map
 
-Date: 2026-04-20
-Status: generated history map with Goal629 gap-audit addendum, Goal648 public-release hygiene refresh, Goals650-656 current-main catch-up, and Goals658-679 cross-engine prepared visibility/count optimization catch-up
+Date: 2026-04-26
+Status: generated history map with Goal629 gap-audit addendum, Goal648 public-release hygiene refresh, Goals650-656 current-main catch-up, Goals658-679 cross-engine prepared visibility/count optimization catch-up, and Goal1023 v0.9.6 history catch-up after Goal1022 drift detection
 
 This page answers the question a new visitor will ask: "Where is the full RTDL
 history?"
@@ -21,7 +21,7 @@ ad hoc reviews, and git history. See `GOAL_66_493_COVERAGE_AUDIT.md` and
 
 ## What Is Recorded
 
-- Structured revision rounds: `110`
+- Structured revision rounds: `111`
 - Archived files in `history/history.db`: `1143`
 - External report snapshots: `193`
 - Project snapshots: `950`
@@ -62,11 +62,13 @@ Use these layers together:
 - `v0.9.1`
 - `v0.9.4`
 - `v0.9.5`
+- `v0.9.6`
 
 ## Current Top Revision Rounds
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.9.6` | 2026-04-26 | `accepted` | Goal1023 v0.9.6 history catch-up after drift audit | `accepted` | `2026-04-26-goal1023-v0_9_6-history-catchup` |
 | `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals658-679 cross-engine prepared visibility/count optimization and release gates | `accepted` | `2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization` |
 | `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals650-656 current-main any-hit, documentation, and test catch-up | `accepted` | `2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup` |
 | `v0.9.5` | 2026-04-19 | `accepted` | Goal647 fresh checkout post-release verification | `accepted` | `docs/reports/goal647_fresh_checkout_post_release_verification_2026-04-19.md` |
@@ -112,6 +114,8 @@ Use these layers together:
 
 ## Boundaries
 
+- Goal1023 appends the missing `v0.9.6` / Goal684 public-history entry detected
+  by Goal1022. Historical records are not rewritten to look current.
 - This page does not claim that every chat message or terminal line is
   preserved.
 - It does claim that the repo-visible evidence is now discoverable through a

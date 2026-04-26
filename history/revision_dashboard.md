@@ -4,7 +4,7 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 ## Summary
 
-- Revision rounds: 110
+- Revision rounds: 111
 - Archived files: 1143
 - External reports: 193
 - Project snapshots: 950
@@ -13,6 +13,7 @@ Manager-facing summary of RTDL review and revision rounds. This Markdown file is
 
 | Version | Date | Status | Round | Gemini Review | Codex Revision | Final Result | Commit | Archive |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| v0.9.6 | 2026-04-26 | accepted | Goal1023 v0.9.6 Goal680-Goal684 history catch-up after drift audit | docs/reports/goal1023_gemini_review_2026-04-26.md | docs/reports/goal1023_v0_9_6_history_catchup_2026-04-26.md | accepted | `f576208` | `2026-04-26-goal1023-v0_9_6-history-catchup` |
 | v0.9.5-current-main | 2026-04-20 | accepted | Goals650-656 current-main any-hit, documentation, and test catch-up | docs/reports/goal656_gemini_flash_review_2026-04-20.md | docs/reports/goal656_post_doc_refresh_full_local_test_2026-04-20.md | accepted | `8d96924` | `2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup` |
 | v0.9.5-current-main | 2026-04-20 | accepted | Goals658-679 cross-engine prepared visibility/count optimization and release gates | docs/reports/goal678_679_external_review_gemini_flash_2026-04-20.md | docs/reports/goal678_679_consensus_2026-04-20.md | accepted | `f5f2338-plus-uncommitted-goal658-679-worktree` | `2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization` |
 | v0.9.5 | 2026-04-20 | accepted | Goal648 public release hygiene check | docs/reports/goal648_gemini_flash_review_2026-04-20.md | docs/reports/goal648_public_release_hygiene_check_2026-04-20.md | accepted | `c894a0b` | `2026-04-20-goal648-public-release-hygiene-check` |

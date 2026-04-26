@@ -65,6 +65,7 @@ def build_audit() -> dict[str, Any]:
         current_public_release
         and not all(history_presence.values())
     )
+    history_status = "drift_detected" if history_drift_detected else "drift_resolved"
     refresh_current = (
         "/Users/rl2025/rtdl_python_only" in refresh
         and "v0.9.6" in refresh
@@ -90,17 +91,20 @@ def build_audit() -> dict[str, Any]:
         "complete_history_mentions_goal684": "Goal684" in complete_history,
         "dashboard_mentions_goal684": "Goal684" in dashboard,
         "history_drift_detected": history_drift_detected,
+        "history_status": history_status,
         "refresh_context_current": refresh_current,
         "full_suite_evidence": full_suite_evidence,
         "recommended_next_action": (
             "Append or regenerate a post-v0.9.6 history catch-up round so "
             "history/COMPLETE_HISTORY.md and history/revision_dashboard.md match "
             "the released v0.9.6 public docs. Do not rewrite old records."
+            if history_drift_detected
+            else "Goal1023 has resolved the v0.9.6 public-history drift; keep future release history catch-ups append-only."
         ),
         "valid": (
             current_public_release == "v0.9.6"
             and release_report_claims_history_catchup
-            and history_drift_detected
+            and all(history_presence.values())
             and refresh_current
         ),
         "boundary": (
@@ -124,6 +128,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         f"- valid audit: `{payload['valid']}`",
         f"- current public release detected: `{payload['current_public_release']}`",
+        f"- history status: `{payload['history_status']}`",
         f"- history drift detected: `{payload['history_drift_detected']}`",
         f"- refresh context current: `{payload['refresh_context_current']}`",
         f"- release report claims history catch-up: `{payload['release_report_claims_history_catchup']}`",

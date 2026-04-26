@@ -1,8 +1,8 @@
 {
   "boundary": "This is an audit and refresh-context check. It records the full local test result and detects history/public-release drift; it does not tag, release, or authorize public speedup claims.",
-  "complete_history_mentions_goal684": false,
+  "complete_history_mentions_goal684": true,
   "current_public_release": "v0.9.6",
-  "dashboard_mentions_goal684": false,
+  "dashboard_mentions_goal684": true,
   "date": "2026-04-26",
   "full_suite_evidence": {
     "command": "PYTHONPATH=src:. python3 -m unittest discover -s tests -p '*_test.py' -v",
@@ -17,11 +17,12 @@
     "history/COMPLETE_HISTORY.md",
     "history/revision_dashboard.md"
   ],
-  "history_drift_detected": true,
+  "history_drift_detected": false,
   "history_presence_for_current_public_release": {
-    "history/COMPLETE_HISTORY.md": false,
-    "history/revision_dashboard.md": false
+    "history/COMPLETE_HISTORY.md": true,
+    "history/revision_dashboard.md": true
   },
+  "history_status": "drift_resolved",
   "public_release_docs": [
     "README.md",
     "docs/README.md",
@@ -32,7 +33,7 @@
   "public_release_versions": [
     "v0.9.6"
   ],
-  "recommended_next_action": "Append or regenerate a post-v0.9.6 history catch-up round so history/COMPLETE_HISTORY.md and history/revision_dashboard.md match the released v0.9.6 public docs. Do not rewrite old records.",
+  "recommended_next_action": "Goal1023 has resolved the v0.9.6 public-history drift; keep future release history catch-ups append-only.",
   "refresh_context_current": true,
   "release_report_claims_history_catchup": true,
   "valid": true

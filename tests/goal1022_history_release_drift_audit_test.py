@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
-    def test_audit_detects_v096_history_drift_and_records_full_suite(self) -> None:
+    def test_audit_records_current_v096_history_status_and_full_suite(self) -> None:
         module = __import__(
             "scripts.goal1022_history_release_drift_audit",
             fromlist=["build_audit"],
@@ -20,10 +20,11 @@ class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
         payload = module.build_audit()
         self.assertTrue(payload["valid"], payload)
         self.assertEqual(payload["current_public_release"], "v0.9.6")
-        self.assertTrue(payload["history_drift_detected"])
+        self.assertFalse(payload["history_drift_detected"])
+        self.assertEqual(payload["history_status"], "drift_resolved")
         self.assertTrue(payload["release_report_claims_history_catchup"])
-        self.assertFalse(payload["complete_history_mentions_goal684"])
-        self.assertFalse(payload["dashboard_mentions_goal684"])
+        self.assertTrue(payload["complete_history_mentions_goal684"])
+        self.assertTrue(payload["dashboard_mentions_goal684"])
         self.assertTrue(payload["refresh_context_current"])
         self.assertEqual(payload["full_suite_evidence"]["result"], "OK")
         self.assertEqual(payload["full_suite_evidence"]["tests"], 1969)
@@ -52,7 +53,7 @@ class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
-            self.assertIn("history drift detected: `True`", markdown)
+            self.assertIn("history status: `drift_resolved`", markdown)
             self.assertIn("1969", markdown)
             self.assertIn("does not tag, release, or authorize public speedup claims", markdown)
 

@@ -1,0 +1,11 @@
+slug: 2026-04-26-goal1023-v0_9_6-history-catchup
+title: Goal1023 v0.9.6 Goal680-Goal684 history catch-up after drift audit
+version: v0.9.6
+status: accepted
+started_on: 2026-04-26
+closed_on: 2026-04-26
+source_commit: f576208
+gemini_review: docs/reports/goal1023_gemini_review_2026-04-26.md
+codex_revision: docs/reports/goal1023_v0_9_6_history_catchup_2026-04-26.md
+final_result: accepted
+summary: Registered the released v0.9.6 Goal680-684 release-gate and history-catch-up evidence in public history indexes after Goal1022 detected that public release docs were ahead of history/COMPLETE_HISTORY.md and history/revision_dashboard.md.

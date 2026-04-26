@@ -8,11 +8,12 @@ This is an audit and refresh-context check. It records the full local test resul
 
 - valid audit: `True`
 - current public release detected: `v0.9.6`
-- history drift detected: `True`
+- history status: `drift_resolved`
+- history drift detected: `False`
 - refresh context current: `True`
 - release report claims history catch-up: `True`
-- complete history mentions Goal684: `False`
-- revision dashboard mentions Goal684: `False`
+- complete history mentions Goal684: `True`
+- revision dashboard mentions Goal684: `True`
 
 ## Full Local Test Evidence
 
@@ -26,12 +27,12 @@ This is an audit and refresh-context check. It records the full local test resul
 
 | History doc | Mentions current public release |
 |---|---:|
-| `history/COMPLETE_HISTORY.md` | `False` |
-| `history/revision_dashboard.md` | `False` |
+| `history/COMPLETE_HISTORY.md` | `True` |
+| `history/revision_dashboard.md` | `True` |
 
 ## Recommended Next Action
 
-Append or regenerate a post-v0.9.6 history catch-up round so history/COMPLETE_HISTORY.md and history/revision_dashboard.md match the released v0.9.6 public docs. Do not rewrite old records.
+Goal1023 has resolved the v0.9.6 public-history drift; keep future release history catch-ups append-only.
 
 ## Boundary
 

@@ -21,6 +21,7 @@ GOALS = {
     1018: "Goal1007 repeat plan public wording sync",
     1020: "public docs RTX boundary refresh",
     1022: "history release drift audit",
+    1023: "v0.9.6 history catch-up",
 }
 
 REQUIRED_SUFFIXES = {

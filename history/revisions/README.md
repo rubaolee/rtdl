@@ -48,7 +48,18 @@ one visible structured round for every historical goal, that should be a
 separate generated backfill goal because it will add many files and must not
 rewrite already accepted reports.
 
-## Latest Current-Main Catch-Up
+## Latest Release-History Catch-Up
+
+The latest structured release-history catch-up round is Goal1023:
+
+- `2026-04-26-goal1023-v0_9_6-history-catchup`
+
+It records that the released `v0.9.6` Goal680-Goal684 release-gate and public-doc
+conversion evidence is now visible from the public history index after Goal1022
+detected the drift. It is a history-index repair, not a new release and not a
+public RTX speedup claim.
+
+## Previous Current-Main Catch-Up
 
 The latest structured current-main catch-up round is Goals658-679:
 
