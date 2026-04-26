@@ -16,6 +16,7 @@ Decision:
 - The wording preserves sub-path scope and does not introduce whole-app, default-mode, Python-postprocess, or broad RT-core acceleration claims.
 - `robot_collision_screening / prepared_pose_flags` remains excluded from public RTX speedup wording.
 - The public doc links to the Goal1008 large-repeat artifact intake and Goal1009 wording packet.
+- Follow-up secondary public-doc synchronization was reviewed by both Claude and Gemini with `ACCEPT`: `docs/v1_0_rtx_app_status.md` and `docs/app_engine_support_matrix.md` now carry the same robot public-wording block and seven-row wording boundary.
 
 Verification:
 

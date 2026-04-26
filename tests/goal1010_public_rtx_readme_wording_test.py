@@ -6,6 +6,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
+V1_STATUS = ROOT / "docs" / "v1_0_rtx_app_status.md"
+APP_MATRIX = ROOT / "docs" / "app_engine_support_matrix.md"
 
 
 class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
@@ -34,6 +36,16 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         text = README.read_text(encoding="utf-8")
         self.assertIn("docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md", text)
         self.assertIn("docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md", text)
+
+    def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
+        v1 = V1_STATUS.read_text(encoding="utf-8")
+        matrix = APP_MATRIX.read_text(encoding="utf-8")
+        self.assertIn("reviewed public RTX sub-path wording rows: `7`", v1)
+        self.assertIn("robot_collision_screening / prepared_pose_flags", v1)
+        self.assertIn("blocked_for_public_speedup_wording", v1)
+        self.assertIn("below the 100 ms", v1)
+        self.assertIn("blocked_for_public_speedup_wording", matrix)
+        self.assertIn("Goal1008 keeps public speedup wording blocked", matrix)
 
 
 if __name__ == "__main__":

@@ -9,9 +9,32 @@ This page is the public v1.0 RTX app status index. It lists bounded NVIDIA OptiX
 - public app rows: `18`
 - NVIDIA-target rows ready for claim review: `16`
 - non-NVIDIA target rows: `2`
-- public speedup claim authorized: `False`
+- reviewed public RTX sub-path wording rows: `7`
+- broad or whole-app public speedup claim authorized: `False`
 
 Use this page as the release-facing source of truth for app-level RTX claim review. For engine-by-engine details, see `docs/app_engine_support_matrix.md`.
+
+## Goal1009 Reviewed Public RTX Sub-Path Wording
+
+The following rows have passed the Goal1009 wording review for bounded prepared
+RTX A5000 query/native sub-path wording. These are not whole-app, default-mode,
+Python-postprocess, or broad RT-core acceleration claims:
+
+| App/path | RTX phase (s) | Ratio | Scope |
+| --- | ---: | ---: | --- |
+| `service_coverage_gaps / prepared_gap_summary` | `0.136545` | `1.61x` | prepared gap-summary query/native sub-path only |
+| `outlier_detection / prepared_fixed_radius_density_summary` | `0.122348` | `4.64x` | prepared fixed-radius scalar threshold-count sub-path only |
+| `dbscan_clustering / prepared_fixed_radius_core_flags` | `0.122921` | `6.62x` | prepared fixed-radius scalar core-count sub-path only |
+| `facility_knn_assignment / coverage_threshold_prepared` | `0.157368` | `22.81x` | prepared service-coverage decision sub-path only |
+| `segment_polygon_hitcount / segment_polygon_hitcount_native_experimental` | `0.146860` | `1.71x` | prepared native segment/polygon hit-count traversal only |
+| `segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate` | `0.192639` | `3.03x` | prepared bounded native pair-row traversal only |
+| `ann_candidate_search / candidate_threshold_prepared` | `0.105215` | `4.86x` | prepared ANN candidate-coverage decision sub-path only |
+
+`robot_collision_screening / prepared_pose_flags` remains excluded from public
+RTX speedup wording because its larger RTX repeats stayed below the 100 ms
+public-review timing floor. Other `ready_for_rtx_claim_review` rows remain
+engineering-ready or claim-review-ready, but do not yet have Goal1009 public
+speedup wording.
 
 ## Status Table
 
@@ -32,7 +55,7 @@ Use this page as the release-facing source of truth for app-level RTX claim revi
 | `examples/rtdl_ann_candidate_app.py` | `rt_core_ready` / `ready_for_rtx_claim_review` | prepared fixed-radius ANN candidate-coverage decision | native C++ rerank summaries follow candidate KNN rows; OptiX prepared threshold path covers candidate-coverage decision only | `PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core` | Goal887/Goal941 | full ANN indexing, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ behavior, recall optimization, and whole-app speedup remain outside the claim | no readiness pod needed; rerun only in a consolidated regression/tuning batch |
 | `examples/rtdl_outlier_detection_app.py` | `rt_core_ready` / `ready_for_rtx_claim_review` | prepared fixed-radius scalar threshold-count traversal | native continuation only for OptiX density_count scalar path or Embree/OptiX per-point threshold summary paths | `PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count` | Goal795/Goal992 | RTX 4090 evidence covers the prepared scalar threshold-count sub-path only; full anomaly-detection app, per-point outlier labels, and row-returning paths remain outside the claim | no readiness pod needed; rerun only in a consolidated regression/tuning batch |
 | `examples/rtdl_dbscan_clustering_app.py` | `rt_core_ready` / `ready_for_rtx_claim_review` | prepared fixed-radius scalar core-count traversal | native continuation only for OptiX core_count scalar path or Embree/OptiX per-point core-flag summary paths, not full cluster expansion | `PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count` | Goal795/Goal992 | RTX 4090 evidence covers the prepared scalar core-count sub-path only; per-point core flags and Python cluster expansion remain outside the native scalar path | no readiness pod needed; rerun only in a consolidated regression/tuning batch |
-| `examples/rtdl_robot_collision_screening_app.py` | `rt_core_ready` / `ready_for_rtx_claim_review` | prepared ray/triangle any-hit scalar pose-count traversal | native continuation only for prepared OptiX count or pose-flag summaries | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` | Goal795 | RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim | no readiness pod needed; rerun only in a consolidated regression/tuning batch |
+| `examples/rtdl_robot_collision_screening_app.py` | `rt_core_ready` / `blocked_for_public_speedup_wording` | prepared ray/triangle any-hit scalar pose-count traversal | native continuation only for prepared OptiX count or pose-flag summaries | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` | Goal795/Goal1008 | RT-core path exists, but Goal1008 larger RTX repeats kept the median query phase below the 100 ms public-review timing floor; full robot kinematics and witness-row output remain outside the claim | no readiness pod needed; redesign/reprofile only if robot public speedup wording is important |
 | `examples/rtdl_barnes_hut_force_app.py` | `rt_core_ready` / `ready_for_rtx_claim_review` | prepared fixed-radius Barnes-Hut node-coverage decision | native C++ candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only | `PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core` | Goal887/Goal941 | Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim | no readiness pod needed; rerun only in a consolidated regression/tuning batch |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `not_nvidia_rt_core_target` / `exclude_from_rtx_app_benchmark` | HIPRT-specific hit-count validation, outside NVIDIA RTX table | outside NVIDIA RTX app table | `not a NVIDIA RTX target` | none | public app CLI does not expose OptiX | never include in NVIDIA RTX cloud batch |
 
