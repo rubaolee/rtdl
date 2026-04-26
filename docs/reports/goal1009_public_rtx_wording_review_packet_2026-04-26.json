@@ -1,0 +1,113 @@
+{
+  "blocked_count": 1,
+  "blocked_rows": [
+    {
+      "app": "robot_collision_screening",
+      "chosen_artifact": "goal1007_robot_pose_flags_dense_obstacles_large_rtx.json",
+      "path_name": "prepared_pose_flags",
+      "reason": "Still below the 100 ms public-review timing floor after larger RTX repeats.",
+      "rtx_phase_sec": 0.014176679775118828
+    }
+  ],
+  "boundary": "Goal1009 packages candidate wording for external review. It does not edit public docs and does not authorize public speedup claims. The candidate wording is limited to prepared RTX A5000 query/native sub-paths with same-semantics non-OptiX baselines.",
+  "candidate_count": 7,
+  "date": "2026-04-26",
+  "goal": "Goal1009 public RTX sub-path wording review packet",
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "service_coverage_gaps",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `service_coverage_gaps / prepared_gap_summary` query/native sub-path had median RTX phase 0.136545 s and was 1.61x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "fastest_baseline": "embree_summary_path",
+      "path_name": "prepared_gap_summary",
+      "public_speedup_claim_authorized": false,
+      "ratio": 1.611541484096285,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "scenario.timings_sec.optix_query",
+      "rtx_phase_sec": 0.13654514588415623,
+      "source_goal": "goal1006"
+    },
+    {
+      "app": "outlier_detection",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `outlier_detection / prepared_fixed_radius_density_summary` query/native sub-path had median RTX phase 0.122348 s and was 4.64x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "chosen_artifact": "goal1007_outlier_dbscan_x35_large_rtx.json",
+      "fastest_baseline": "cpu_scalar_threshold_count_oracle",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "public_speedup_claim_authorized": false,
+      "ratio": 4.640073749155,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "results[outlier_detection].prepared_optix_warm_query_sec.median_sec",
+      "rtx_phase_sec": 0.12234754022210836,
+      "source_goal": "goal1008"
+    },
+    {
+      "app": "dbscan_clustering",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `dbscan_clustering / prepared_fixed_radius_core_flags` query/native sub-path had median RTX phase 0.122921 s and was 6.62x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "chosen_artifact": "goal1007_outlier_dbscan_x35_large_rtx.json",
+      "fastest_baseline": "cpu_scalar_threshold_count_oracle",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "public_speedup_claim_authorized": false,
+      "ratio": 6.620045949952434,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "results[dbscan_clustering].prepared_optix_warm_query_sec.median_sec",
+      "rtx_phase_sec": 0.12292127497494221,
+      "source_goal": "goal1008"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `facility_knn_assignment / coverage_threshold_prepared` query/native sub-path had median RTX phase 0.157368 s and was 22.81x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "chosen_artifact": "goal1007_facility_service_coverage_x4_large_rtx.json",
+      "fastest_baseline": "cpu_oracle_same_semantics",
+      "path_name": "coverage_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "ratio": 22.805075622705,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.15736764296889305,
+      "source_goal": "goal1008"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `segment_polygon_hitcount / segment_polygon_hitcount_native_experimental` query/native sub-path had median RTX phase 0.146860 s and was 1.71x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "chosen_artifact": "goal1007_segment_polygon_hitcount_large_rtx.json",
+      "fastest_baseline": "embree_same_semantics",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "public_speedup_claim_authorized": false,
+      "ratio": 1.7083082183287555,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.14685961324721575,
+      "source_goal": "goal1008"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate` query/native sub-path had median RTX phase 0.192639 s and was 3.03x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "chosen_artifact": "goal1007_segment_polygon_anyhit_rows_large_rtx.json",
+      "fastest_baseline": "postgis_when_available_for_same_pair_semantics",
+      "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "public_speedup_claim_authorized": false,
+      "ratio": 3.030857936092091,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.192639397457242,
+      "source_goal": "goal1008"
+    },
+    {
+      "app": "ann_candidate_search",
+      "candidate_public_wording": "On the recorded RTX A5000 artifact set, the prepared RTDL `ann_candidate_search / candidate_threshold_prepared` query/native sub-path had median RTX phase 0.105215 s and was 4.86x faster than the fastest same-semantics non-OptiX baseline for that measured sub-path. This is not a whole-app speedup claim, not a default-mode claim, and not a claim about Python-side postprocessing or unrelated app stages.",
+      "chosen_artifact": "goal1007_ann_candidate_coverage_x4_large_rtx.json",
+      "fastest_baseline": "cpu_oracle_same_semantics",
+      "path_name": "candidate_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "ratio": 4.857461066060462,
+      "review_status": "candidate_for_2ai_public_wording_review",
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.1052151545882225,
+      "source_goal": "goal1008"
+    }
+  ],
+  "sources": [
+    "docs/reports/goal1006_public_rtx_claim_wording_gate_2026-04-26.json",
+    "docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.json"
+  ]
+}

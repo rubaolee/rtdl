@@ -69,6 +69,38 @@ speedup, Python post-processing, exact polygon area/Jaccard refinement, ranked
 KNN, full DBSCAN cluster expansion, and graph-system claims remain outside the
 claim unless a later review explicitly authorizes them.
 
+The following RTX A5000 artifact-backed wording has passed the Goal1009
+sub-path wording review. Each line is limited to the prepared query/native
+sub-path shown here; it is not a whole-app, default-mode, Python-postprocess, or
+broad RT-core acceleration claim:
+
+- `service_coverage_gaps / prepared_gap_summary`: median RTX phase `0.136545`
+  s, `1.61x` faster than the fastest same-semantics non-OptiX baseline for the
+  measured sub-path
+- `outlier_detection / prepared_fixed_radius_density_summary`: median RTX phase
+  `0.122348` s, `4.64x` faster than the fastest same-semantics non-OptiX
+  baseline for the measured sub-path
+- `dbscan_clustering / prepared_fixed_radius_core_flags`: median RTX phase
+  `0.122921` s, `6.62x` faster than the fastest same-semantics non-OptiX
+  baseline for the measured sub-path
+- `facility_knn_assignment / coverage_threshold_prepared`: median RTX phase
+  `0.157368` s, `22.81x` faster than the fastest same-semantics non-OptiX
+  baseline for the measured sub-path
+- `segment_polygon_hitcount / segment_polygon_hitcount_native_experimental`:
+  median RTX phase `0.146860` s, `1.71x` faster than the fastest
+  same-semantics non-OptiX baseline for the measured sub-path
+- `segment_polygon_anyhit_rows /
+  segment_polygon_anyhit_rows_prepared_bounded_gate`: median RTX phase
+  `0.192639` s, `3.03x` faster than the fastest same-semantics non-OptiX
+  baseline for the measured sub-path
+- `ann_candidate_search / candidate_threshold_prepared`: median RTX phase
+  `0.105215` s, `4.86x` faster than the fastest same-semantics non-OptiX
+  baseline for the measured sub-path
+
+`robot_collision_screening / prepared_pose_flags` remains excluded from public
+RTX speedup wording because its larger RTX repeats stayed below the 100 ms
+public-review timing floor.
+
 Still outside public RTX claim review today: SQL/DBMS behavior, default
 row-materializing DB output, full road-hazard/GIS routing, unbounded
 segment/polygon pair-row volume, Hausdorff exact distance, ANN ranking or index
@@ -76,7 +108,10 @@ speedup, and Barnes-Hut force reduction/opening-rule acceleration. The support
 matrix is the authority for whether a bounded sub-path is ready for claim
 review. See `docs/app_engine_support_matrix.md` and
 `docs/v1_0_rtx_app_status.md`. The cloud artifact audit remains in
-`docs/reports/goal969_runpod_a5000_rtx_execution_report_2026-04-26.md`.
+`docs/reports/goal969_runpod_a5000_rtx_execution_report_2026-04-26.md`; the
+newer large-repeat and wording-review trail is in
+`docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md` and
+`docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
