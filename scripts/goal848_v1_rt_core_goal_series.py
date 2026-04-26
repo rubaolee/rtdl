@@ -62,6 +62,7 @@ def build_goal_series() -> dict[str, object]:
     maturity = rt.rt_core_app_maturity_matrix()
     readiness = rt.optix_app_benchmark_readiness_matrix()
     performance = rt.optix_app_performance_matrix()
+    public_wording = rt.rtx_public_wording_matrix()
     buckets = _bucketed_apps()
 
     goal_series = [
@@ -165,6 +166,8 @@ def build_goal_series() -> dict[str, object]:
                 "target_status": maturity[app].target_status,
                 "performance_class": performance[app].performance_class,
                 "benchmark_readiness": readiness[app].status,
+                "public_wording_status": public_wording[app].status,
+                "public_wording_boundary": public_wording[app].boundary,
                 "required_action": maturity[app].required_action,
                 "cloud_policy": maturity[app].cloud_policy,
             }
@@ -190,12 +193,19 @@ def build_goal_series() -> dict[str, object]:
             "out_of_scope_for_nvidia_rt": sum(
                 1 for row in app_rows if row["current_status"] == NOT_NVIDIA_RT_CORE_TARGET
             ),
+            "reviewed_public_wording": sum(
+                1 for row in app_rows if row["public_wording_status"] == "public_wording_reviewed"
+            ),
+            "blocked_public_wording": sum(
+                1 for row in app_rows if row["public_wording_status"] == "public_wording_blocked"
+            ),
         },
         "bucketing_note": (
             "Priority buckets are execution buckets, not pure status buckets. "
             "An app can already be rt_core_ready and still appear in must_finish_first "
             "when it is a flagship path with required optimization or claim-packaging work; "
-            "robot_collision_screening is the current example."
+            "robot_collision_screening is the current example. Public speedup wording is "
+            "tracked separately by rtdsl.rtx_public_wording_matrix()."
         ),
         "priority_buckets": buckets,
         "goal_series": goal_series,
@@ -220,6 +230,8 @@ def render_markdown(payload: dict[str, object]) -> str:
         f"- RT-core partial-ready now: `{payload['summary']['rt_core_partial_ready_now']}`",
         f"- Need redesign or new surface: `{payload['summary']['needs_redesign_or_new_surface']}`",
         f"- Out of NVIDIA RT scope: `{payload['summary']['out_of_scope_for_nvidia_rt']}`",
+        f"- Reviewed public wording rows: `{payload['summary']['reviewed_public_wording']}`",
+        f"- Blocked public wording rows: `{payload['summary']['blocked_public_wording']}`",
         "",
         payload["bucketing_note"],
         "",

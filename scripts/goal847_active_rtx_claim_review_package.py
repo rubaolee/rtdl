@@ -12,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
+import rtdsl as rt
+
 from scripts.goal846_active_rtx_claim_gate import build_active_claim_gate
 
 
@@ -166,6 +168,7 @@ def build_review_package() -> dict[str, Any]:
     for gate_row in active_gate["rows"]:
         app = str(gate_row["app"])
         path_name = str(gate_row["path_name"])
+        public_wording = rt.rtx_public_wording_status(app)
         cloud = cloud_rows.get((app, path_name))
         if cloud is None:
             missing_cloud_rows.append({"app": app, "path_name": path_name})
@@ -197,6 +200,9 @@ def build_review_package() -> dict[str, Any]:
                 "cloud_query_sec": cloud_query_sec,
                 "cloud_artifact_status": cloud.get("artifact_status"),
                 "cloud_runner_status": cloud.get("runner_status"),
+                "public_wording_status": public_wording.status,
+                "public_wording": public_wording.reviewed_wording,
+                "public_wording_boundary": public_wording.boundary,
                 "top_nonquery_phases": _top_nonquery_phases(app, cloud),
                 "baseline_comparisons": baselines,
                 "review_note": _row_note(app),
@@ -210,6 +216,12 @@ def build_review_package() -> dict[str, Any]:
         "source_goal846_status": active_gate["status"],
         "source_goal762_status": goal762["status"],
         "row_count": len(package_rows),
+        "reviewed_public_wording_count": sum(
+            1 for row in package_rows if row["public_wording_status"] == "public_wording_reviewed"
+        ),
+        "blocked_public_wording_count": sum(
+            1 for row in package_rows if row["public_wording_status"] == "public_wording_blocked"
+        ),
         "missing_cloud_row_count": len(missing_cloud_rows),
         "missing_cloud_rows": missing_cloud_rows,
         "rows": package_rows,
@@ -229,13 +241,15 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "## Summary",
         "",
         f"- active rows: `{payload['row_count']}`",
+        f"- reviewed public wording rows in active set: `{payload['reviewed_public_wording_count']}`",
+        f"- blocked public wording rows in active set: `{payload['blocked_public_wording_count']}`",
         f"- Goal846 status: `{payload['source_goal846_status']}`",
         f"- Goal762 status: `{payload['source_goal762_status']}`",
         "",
         "## Comparable Native-Phase Table",
         "",
-        "| App | Path | Cloud query metric | Cloud query (s) | Fastest baseline | Fastest ratio (baseline/cloud) | Non-claim |",
-        "|---|---|---|---:|---|---:|---|",
+        "| App | Path | Public wording status | Cloud query metric | Cloud query (s) | Fastest baseline | Fastest ratio (baseline/cloud) | Non-claim |",
+        "|---|---|---|---|---:|---|---:|---|",
     ]
     for row in payload["rows"]:
         best = max(
@@ -246,16 +260,21 @@ def to_markdown(payload: dict[str, Any]) -> str:
             key=lambda item: float(item["baseline_over_cloud_ratio"]),
             default=None,
         )
+        best_name = "" if best is None else str(best["baseline_name"])
+        best_ratio = "" if best is None else f"{float(best['baseline_over_cloud_ratio']):.3f}"
         lines.append(
-            f"| {row['app']} | {row['path_name']} | {row['cloud_query_metric_name']} | "
+            f"| {row['app']} | {row['path_name']} | {row['public_wording_status']} | "
+            f"{row['cloud_query_metric_name']} | "
             f"{row['cloud_query_sec']:.6f} | "
-            f"{'' if best is None else best['baseline_name']} | "
-            f"{'' if best is None else f'{best['baseline_over_cloud_ratio']:.3f}'} | "
+            f"{best_name} | "
+            f"{best_ratio} | "
             f"{row['non_claim']} |"
         )
     for row in payload["rows"]:
         lines.extend(["", f"## {row['app']} / {row['path_name']}", ""])
         lines.append(f"- claim scope: `{row['claim_scope']}`")
+        lines.append(f"- public wording status: `{row['public_wording_status']}`")
+        lines.append(f"- public wording boundary: {row['public_wording_boundary']}")
         lines.append(f"- cloud comparable phase: `{row['cloud_query_metric_name']}` = `{row['cloud_query_sec']:.6f}s`")
         lines.append(f"- review note: {row['review_note']}")
         lines.append("")

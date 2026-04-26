@@ -9,8 +9,10 @@ Date: 2026-04-23
 - RT-core partial-ready now: `0`
 - Need redesign or new surface: `0`
 - Out of NVIDIA RT scope: `2`
+- Reviewed public wording rows: `7`
+- Blocked public wording rows: `1`
 
-Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.
+Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example. Public speedup wording is tracked separately by rtdsl.rtx_public_wording_matrix().
 
 ## Priority Buckets
 
@@ -146,3 +148,4 @@ Consensus: `2-AI before completion`
 ## Boundary
 
 This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.
+

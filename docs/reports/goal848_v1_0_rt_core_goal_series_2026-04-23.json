@@ -6,6 +6,8 @@
       "cloud_policy": "Goal941 supplies the RTX compact-summary artifacts; no new pod is needed for readiness, but same-semantics baseline review is still required before any public speedup wording.",
       "current_status": "rt_core_ready",
       "performance_class": "python_interface_dominated",
+      "public_wording_boundary": "Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Keep compact_summary prepared DB outputs as the only RT-core claim path; row materialization, SQL-engine behavior, and whole-dashboard claims remain outside the RT-core claim.",
       "target_status": "rt_core_ready"
     },
@@ -15,6 +17,8 @@
       "cloud_policy": "Goal929 provides the RTX graph gate artifact; no new pod is needed for readiness, but public graph claims require final claim-review packaging and same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
+      "public_wording_boundary": "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Keep visibility_edges any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim.",
       "target_status": "rt_core_ready"
     },
@@ -24,6 +28,8 @@
       "cloud_policy": "Never include in NVIDIA cloud batches.",
       "current_status": "not_nvidia_rt_core_target",
       "performance_class": "not_optix_applicable",
+      "public_wording_boundary": "Do not include Apple-specific evidence in NVIDIA RTX speedup wording.",
+      "public_wording_status": "not_nvidia_public_wording_target",
       "required_action": "Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables.",
       "target_status": "not_nvidia_rt_core_target"
     },
@@ -33,6 +39,8 @@
       "cloud_policy": "No new pod is needed for readiness; use the Goal917 artifact in claim-review packaging, and rerun only as part of a consolidated regression batch.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Only the prepared gap-summary query/native sub-path is covered; row output, nearest-clinic output, and service-coverage optimization are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim.",
       "target_status": "rt_core_ready"
     },
@@ -42,6 +50,8 @@
       "cloud_policy": "No new pod is needed for readiness; use the Goal917 RTX artifact and Goal919 same-scale baseline in claim-review packaging, and rerun only as part of a consolidated regression batch.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim.",
       "target_status": "rt_core_ready"
     },
@@ -51,6 +61,8 @@
       "cloud_policy": "No new pod is needed for readiness; use the Goal887 RTX artifact and Goal920 same-scale CPU oracle baseline in claim-review packaging, and rerun only as part of a consolidated regression batch.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Only the prepared service-coverage decision sub-path is covered; ranked KNN assignment, ranking, and uncovered-ID witness output are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
       "target_status": "rt_core_ready"
     },
@@ -60,6 +72,8 @@
       "cloud_policy": "Goal941 supplies the prepared RTX artifact; no new pod is needed for readiness, but baseline/speedup review must stay bounded to the prepared summary gate.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Keep the prepared native road-hazard compact-summary gate separate from default app behavior and full GIS/routing claims.",
       "target_status": "rt_core_ready"
     },
@@ -69,6 +83,8 @@
       "cloud_policy": "Goal941 supplies the prepared RTX artifact; no new pod is needed for readiness, but public wording must stay limited to compact hit-count traversal.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep the prepared native hit-count gate separate from pair-row output and broader segment/polygon app claims.",
       "target_status": "rt_core_ready"
     },
@@ -78,6 +94,8 @@
       "cloud_policy": "Goal941 supplies the prepared RTX artifact with zero overflow; no new pod is needed for readiness, but output-capacity and bounded-row wording must remain explicit.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
+      "public_wording_boundary": "Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep the prepared bounded pair-row gate separate from unbounded row-volume performance and default app behavior.",
       "target_status": "rt_core_ready"
     },
@@ -87,6 +105,8 @@
       "cloud_policy": "Goal929 provides the RTX phase artifact; no new pod is needed for readiness, but no full polygon-area speedup claim is allowed.",
       "current_status": "rt_core_ready",
       "performance_class": "python_interface_dominated",
+      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact area refinement; claim only the candidate-discovery sub-path.",
       "target_status": "rt_core_ready"
     },
@@ -96,6 +116,8 @@
       "cloud_policy": "Goal929 provides the RTX phase artifact at chunk-copies=20; no new pod is needed for readiness, but larger chunks remain held and no full Jaccard speedup claim is allowed.",
       "current_status": "rt_core_ready",
       "performance_class": "python_interface_dominated",
+      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact set-area/Jaccard refinement; claim only the reviewed chunked candidate-discovery sub-path.",
       "target_status": "rt_core_ready"
     },
@@ -105,6 +127,8 @@
       "cloud_policy": "Goal941 supplies the RTX threshold-decision artifact; no new pod is needed for readiness, but exact Hausdorff speedup wording remains forbidden.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Use directed_threshold_prepared as the only RT-core Hausdorff claim path; exact-distance KNN rows remain outside the claim.",
       "target_status": "rt_core_ready"
     },
@@ -114,6 +138,8 @@
       "cloud_policy": "Goal941 supplies the RTX candidate-coverage artifact; no new pod is needed for readiness, but full ANN/ranking speedup wording remains forbidden.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim.",
       "target_status": "rt_core_ready"
     },
@@ -123,6 +149,8 @@
       "cloud_policy": "No new pod is needed for readiness; rerun only in a consolidated regression/tuning batch with the prepared scalar profiler.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep --output-mode density_count with prepared scalar threshold-count as the RT-core claim path and prevent default rows or per-point labels from being presented as the claim.",
       "target_status": "rt_core_ready"
     },
@@ -132,15 +160,19 @@
       "cloud_policy": "No new pod is needed for readiness; rerun only in a consolidated regression/tuning batch with the prepared scalar profiler.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep --output-mode core_count with prepared scalar core-count as the RT-core claim path and split per-point core flags plus Python cluster expansion from native timing.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "robot_collision_screening",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Include in the next batched cloud run with prepared packed input and scalar pose-count mode.",
+      "cloud_policy": "Goal1008 keeps public speedup wording blocked; no new pod is needed unless redesign/reprofiling is planned.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
+      "public_wording_boundary": "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
+      "public_wording_status": "public_wording_blocked",
       "required_action": "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
       "target_status": "rt_core_ready"
     },
@@ -150,6 +182,8 @@
       "cloud_policy": "Goal941 supplies the RTX node-coverage artifact; no new pod is needed for readiness, but force-vector/opening-rule speedup wording remains forbidden.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_boundary": "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_status": "public_wording_not_reviewed",
       "required_action": "Use node_coverage_prepared as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim.",
       "target_status": "rt_core_ready"
     },
@@ -159,14 +193,16 @@
       "cloud_policy": "Never include in NVIDIA OptiX cloud batches.",
       "current_status": "not_nvidia_rt_core_target",
       "performance_class": "not_optix_exposed",
+      "public_wording_boundary": "Do not include HIPRT-specific evidence in NVIDIA RTX speedup wording.",
+      "public_wording_status": "not_nvidia_public_wording_target",
       "required_action": "Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity.",
       "target_status": "not_nvidia_rt_core_target"
     }
   ],
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
-  "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example.",
+  "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example. Public speedup wording is tracked separately by rtdsl.rtx_public_wording_matrix().",
   "date": "2026-04-23",
-  "generated_at": "2026-04-26T09:48:52",
+  "generated_at": "2026-04-26T14:04:43",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
@@ -285,9 +321,11 @@
     "second_wave": []
   },
   "summary": {
+    "blocked_public_wording": 1,
     "needs_redesign_or_new_surface": 0,
     "out_of_scope_for_nvidia_rt": 2,
     "public_app_count": 18,
+    "reviewed_public_wording": 7,
     "rt_core_partial_ready_now": 0,
     "rt_core_ready_now": 16
   }

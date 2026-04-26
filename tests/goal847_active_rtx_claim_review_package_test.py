@@ -18,6 +18,8 @@ class Goal847ActiveRtxClaimReviewPackageTest(unittest.TestCase):
         self.assertEqual(payload["source_goal846_status"], "ok")
         self.assertEqual(payload["source_goal762_status"], "ok")
         self.assertEqual(payload["row_count"], 5)
+        self.assertEqual(payload["reviewed_public_wording_count"], 2)
+        self.assertEqual(payload["blocked_public_wording_count"], 1)
 
     def test_package_contains_robot_and_fixed_radius_phase_comparisons(self) -> None:
         module = __import__("scripts.goal847_active_rtx_claim_review_package", fromlist=["build_review_package"])
@@ -27,6 +29,8 @@ class Goal847ActiveRtxClaimReviewPackageTest(unittest.TestCase):
         }
         robot = rows[("robot_collision_screening", "prepared_pose_flags")]
         self.assertEqual(robot["cloud_query_metric_name"], "native_anyhit_query")
+        self.assertEqual(robot["public_wording_status"], "public_wording_blocked")
+        self.assertIn("100 ms", robot["public_wording_boundary"])
         self.assertEqual(len(robot["baseline_comparisons"]), 2)
         self.assertTrue(any(item["source_backend"] == "embree" for item in robot["baseline_comparisons"]))
 
@@ -36,6 +40,7 @@ class Goal847ActiveRtxClaimReviewPackageTest(unittest.TestCase):
             outlier["claim_scope"],
             "prepared fixed-radius scalar threshold-count traversal only",
         )
+        self.assertEqual(outlier["public_wording_status"], "public_wording_reviewed")
         self.assertIn("not per-point outlier labels", outlier["non_claim"])
         self.assertEqual(len(outlier["baseline_comparisons"]), 2)
         self.assertTrue(any(phase["phase"] == "pack_points_sec" for phase in outlier["top_nonquery_phases"]))
@@ -69,6 +74,8 @@ class Goal847ActiveRtxClaimReviewPackageTest(unittest.TestCase):
             self.assertIn("Goal847 Active RTX Claim Review Package", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["row_count"], 5)
+            self.assertEqual(payload["blocked_public_wording_count"], 1)
+            self.assertIn("public_wording_blocked", output_md.read_text(encoding="utf-8"))
             self.assertTrue(output_md.exists())
 
 

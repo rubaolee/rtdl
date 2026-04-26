@@ -40,11 +40,16 @@ def _row(app: str) -> dict[str, Any]:
     readiness = rt.optix_app_benchmark_readiness(app)
     maturity = rt.rt_core_app_maturity(app)
     performance = rt.optix_app_performance_matrix()[app]
+    public_wording = rt.rtx_public_wording_status(app)
     return {
         "app": app,
         "readiness_status": readiness.status,
         "rt_core_status": maturity.current_status,
         "performance_class": performance.performance_class,
+        "public_wording_status": public_wording.status,
+        "public_wording": public_wording.reviewed_wording,
+        "public_wording_evidence": public_wording.evidence,
+        "public_wording_boundary": public_wording.boundary,
         "native_continuation_required": True,
         "next_goal_or_evidence": readiness.next_goal,
         "allowed_claim": readiness.allowed_claim,
@@ -57,6 +62,13 @@ def _row(app: str) -> dict[str, Any]:
 
 def build_package() -> dict[str, Any]:
     rows = [_row(app) for app in rt.public_apps() if _is_ready(app)]
+    public_wording_rows = rt.rtx_public_wording_matrix()
+    reviewed_public_wording = [
+        app for app, row in public_wording_rows.items() if row.status == "public_wording_reviewed"
+    ]
+    blocked_public_wording = [
+        app for app, row in public_wording_rows.items() if row.status == "public_wording_blocked"
+    ]
     held_rows = [
         {
             "app": app,
@@ -75,11 +87,16 @@ def build_package() -> dict[str, Any]:
         "source_of_truth": {
             "readiness": "rtdsl.optix_app_benchmark_readiness_matrix()",
             "maturity": "rtdsl.rt_core_app_maturity_matrix()",
+            "public_wording": "rtdsl.rtx_public_wording_matrix()",
             "packet": "docs/reports/goal937_ready_rtx_claim_review_packet_2026-04-25.md",
         },
         "ready_count": len(rows),
+        "reviewed_public_wording_count": len(reviewed_public_wording),
+        "blocked_public_wording_count": len(blocked_public_wording),
         "held_count": len(held_rows),
         "ready_apps": [row["app"] for row in rows],
+        "reviewed_public_wording_apps": reviewed_public_wording,
+        "blocked_public_wording_apps": blocked_public_wording,
         "native_continuation_summary": NATIVE_CONTINUATION_SUMMARY,
         "rows": rows,
         "held_rows": held_rows,
@@ -112,17 +129,19 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "## Summary",
         "",
         f"- ready claim-review rows: `{payload['ready_count']}`",
+        f"- reviewed public wording rows: `{payload['reviewed_public_wording_count']}`",
+        f"- blocked public wording rows: `{payload['blocked_public_wording_count']}`",
         f"- held or out-of-target rows: `{payload['held_count']}`",
-        "- source of truth: `rtdsl.optix_app_benchmark_readiness_matrix()` plus `rtdsl.rt_core_app_maturity_matrix()`",
+        "- source of truth: `rtdsl.optix_app_benchmark_readiness_matrix()` plus `rtdsl.rt_core_app_maturity_matrix()` plus `rtdsl.rtx_public_wording_matrix()`",
         "",
             "## Ready Rows",
             "",
-        "| App | Performance class | Native-continuation required | Evidence/goals | Allowed claim | Non-claim boundary |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| App | Performance class | Public wording status | Native-continuation required | Evidence/goals | Allowed claim | Non-claim boundary |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in payload["rows"]:
         lines.append(
-            f"| `{row['app']}` | `{row['performance_class']}` | `{row['native_continuation_required']}` | {row['next_goal_or_evidence']} | "
+            f"| `{row['app']}` | `{row['performance_class']}` | `{row['public_wording_status']}` | `{row['native_continuation_required']}` | {row['next_goal_or_evidence']} | "
             f"{row['allowed_claim']} | {row['non_claim_or_blocker']} |"
         )
     lines.extend(
@@ -144,6 +163,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
             "## Public Wording Pattern",
             "",
             payload["native_continuation_summary"],
+            "",
+            "Only rows with `public_wording_reviewed` may use a reviewed public speedup wording. Rows with `public_wording_blocked` or `public_wording_not_reviewed` remain technical claim-review rows only.",
             "",
             payload["public_wording_pattern"],
             "",
