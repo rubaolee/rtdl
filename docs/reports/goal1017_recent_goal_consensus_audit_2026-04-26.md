@@ -6,8 +6,8 @@ This audit checks that recent bounded public-wording goals have saved Claude rev
 
 ## Summary
 
-- audited goals: `7`
-- complete goals: `7`
+- audited goals: `8`
+- complete goals: `8`
 - incomplete goals: `0`
 - valid: `True`
 
@@ -22,6 +22,7 @@ This audit checks that recent bounded public-wording goals have saved Claude rev
 | 1015 | upstream speedup evidence public wording sync | `complete` | 1 | 1 | 1 |
 | 1016 | historical review supersession audit | `complete` | 1 | 1 | 1 |
 | 1018 | Goal1007 repeat plan public wording sync | `complete` | 1 | 1 | 1 |
+| 1020 | public docs RTX boundary refresh | `complete` | 1 | 1 | 1 |
 
 ## Boundary
 
