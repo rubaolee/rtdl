@@ -55,6 +55,13 @@ define the exact scope. Still outside public NVIDIA RT-core claims: SQL/DBMS
 behavior, row-materializing DB output, full GIS/routing behavior, unbounded
 segment/polygon pair-row output, exact Hausdorff distance, ANN index/ranking,
 Barnes-Hut opening-rule/force reduction, and broad whole-app speedup.
+The machine-readable public wording source is
+`rtdsl.rtx_public_wording_matrix()` via the
+[App Engine Support Matrix](app_engine_support_matrix.md) and
+[v1.0 RTX App Status](v1_0_rtx_app_status.md). In particular,
+`robot_collision_screening / prepared_pose_flags` is a real bounded RT-core
+path but remains blocked for public RTX speedup wording until the 100 ms
+evidence gate is cleared and reviewed.
 
 The original RTDL root spatial workloads are still first-class:
 [LSI](features/lsi/README.md) turns segment sets into segment-intersection

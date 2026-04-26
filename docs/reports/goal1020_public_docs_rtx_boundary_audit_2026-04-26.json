@@ -1,0 +1,62 @@
+{
+  "boundary": "This audit checks release-facing docs for RTX claim-boundary wording. It does not authorize public speedup claims.",
+  "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
+  "date": "2026-04-26",
+  "doc_count": 7,
+  "failing_doc_count": 0,
+  "goal": "Goal1020 public docs RTX boundary audit",
+  "passing_doc_count": 7,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "README.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "docs/app_engine_support_matrix.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "docs/application_catalog.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "docs/release_facing_examples.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "docs/rtdl_feature_guide.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "missing_phrases": [],
+      "path": "docs/quick_tutorial.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    }
+  ],
+  "valid": true
+}

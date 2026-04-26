@@ -85,7 +85,8 @@ RT-core acceleration claim. Claim-sensitive app commands must use
 `--require-rt-core`, and apps reject that flag unless the selected mode is a
 documented bounded OptiX traversal path. Current claim-review candidates are
 the bounded sub-paths listed in
-`docs/reports/goal939_current_rtx_claim_review_package_2026-04-25.md`: prepared
+[v1.0 RTX App Status](v1_0_rtx_app_status.md), with release-facing public
+wording governed by `rtdsl.rtx_public_wording_matrix()`: prepared
 DB compact summaries, graph visibility/native graph-ray candidate generation,
 service coverage, event hotspot, facility coverage decisions, prepared
 road-hazard and segment/polygon traversal, polygon-pair/Jaccard candidate
@@ -97,6 +98,9 @@ GIS/routing behavior, unbounded pair-row output, exact Hausdorff distance, ANN
 ranking/index behavior, Barnes-Hut opening-rule/force reduction, and broad
 whole-app speedup remain outside the claim unless the support matrix and a
 later review explicitly authorize them.
+`robot_collision_screening / prepared_pose_flags` is currently
+`public_wording_blocked`: it is a real bounded RT-core path, but larger RTX
+repeats stayed below the 100 ms public-review timing floor.
 
 Current supported workload families:
 

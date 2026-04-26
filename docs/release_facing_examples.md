@@ -69,6 +69,11 @@ Hausdorff distance, Barnes-Hut force reduction/opening-rule evaluation, full
 DBSCAN expansion, graph-system behavior, and whole-app speedup remain outside
 the claim.
 
+`robot_collision_screening / prepared_pose_flags` remains excluded from public
+RTX speedup wording because its larger RTX repeats stayed below the 100 ms
+public-review timing floor. Treat it as a real bounded RT-core path whose
+public wording is currently blocked, not as an authorized speedup claim.
+
 If you want a guided learning order instead of a flat example list, start with:
 
 - [RTDL Tutorials](tutorials/README.md)
