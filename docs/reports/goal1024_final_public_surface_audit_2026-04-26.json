@@ -1,0 +1,153 @@
+{
+  "boundary": "This final public-surface audit checks that release-facing docs, history indexes, app matrix wording, and RTX claim boundaries are aligned after Goal1023. It does not tag, release, or authorize public RTX speedup claims.",
+  "date": "2026-04-26",
+  "failing_phrase_doc_count": 0,
+  "file_count": 13,
+  "file_rows": [
+    {
+      "exists": true,
+      "path": "README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/current_main_support_matrix.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/application_catalog.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/app_engine_support_matrix.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_facing_examples.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/rtdl_feature_guide.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/v1_0_rtx_app_status.md"
+    },
+    {
+      "exists": true,
+      "path": "history/COMPLETE_HISTORY.md"
+    },
+    {
+      "exists": true,
+      "path": "history/revision_dashboard.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1020_public_docs_rtx_boundary_audit_2026-04-26.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1022_history_release_drift_audit_2026-04-26.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1023_two_ai_consensus_2026-04-26.md"
+    }
+  ],
+  "goal": "Goal1024 final public surface audit after history repair",
+  "missing_file_count": 0,
+  "phrase_doc_count": 10,
+  "phrase_rows": [
+    {
+      "missing_phrases": [],
+      "path": "README.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/README.md",
+      "required_phrase_count": 3,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/current_main_support_matrix.md",
+      "required_phrase_count": 2,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/application_catalog.md",
+      "required_phrase_count": 3,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/app_engine_support_matrix.md",
+      "required_phrase_count": 3,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/release_facing_examples.md",
+      "required_phrase_count": 3,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/rtdl_feature_guide.md",
+      "required_phrase_count": 3,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "required_phrase_count": 3,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "history/COMPLETE_HISTORY.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "missing_phrases": [],
+      "path": "history/revision_dashboard.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    }
+  ],
+  "public_speedup_claim_authorized_count": 0,
+  "recorded_checks": [
+    {
+      "command": "PYTHONPATH=src:. python3 -m unittest discover -s tests -p '*_test.py' -v",
+      "name": "full_unittest_discovery",
+      "result": "OK",
+      "skipped": 196,
+      "tests": 1969
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal497_public_entry_smoke_check.py --json-out /tmp/goal497_next.json",
+      "name": "public_entry_smoke",
+      "result": "valid true"
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 -m unittest tests.goal515_public_command_truth_audit_test tests.goal512_public_doc_smoke_audit_test tests.goal687_app_engine_support_matrix_test tests.goal938_public_rtx_wording_sync_test tests.goal1011_rtx_public_wording_matrix_test tests.goal1020_public_docs_rtx_boundary_audit_test -v",
+      "name": "focused_public_surface_suite",
+      "result": "OK",
+      "tests": 20
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 -m unittest tests.goal1017_recent_goal_consensus_audit_test tests.goal1022_history_release_drift_audit_test tests.goal1023_v0_9_6_history_catchup_test -v",
+      "name": "history_repair_suite",
+      "result": "OK",
+      "tests": 7
+    }
+  ],
+  "valid": true
+}

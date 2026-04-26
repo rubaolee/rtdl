@@ -6,8 +6,8 @@ This audit checks that recent bounded goals have saved Claude review, Gemini rev
 
 ## Summary
 
-- audited goals: `10`
-- complete goals: `10`
+- audited goals: `11`
+- complete goals: `11`
 - incomplete goals: `0`
 - valid: `True`
 
@@ -25,6 +25,7 @@ This audit checks that recent bounded goals have saved Claude review, Gemini rev
 | 1020 | public docs RTX boundary refresh | `complete` | 1 | 1 | 1 |
 | 1022 | history release drift audit | `complete` | 1 | 1 | 1 |
 | 1023 | v0.9.6 history catch-up | `complete` | 1 | 1 | 1 |
+| 1024 | final public-surface audit | `complete` | 1 | 1 | 1 |
 
 ## Boundary
 
