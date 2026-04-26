@@ -15,7 +15,7 @@ import rtdsl as rt
 
 
 GOAL = "Goal947 v1.0 RTX app status page"
-DATE = "2026-04-25"
+DATE = "2026-04-26"
 
 APP_PATHS = {
     "database_analytics": "examples/rtdl_database_analytics_app.py",
@@ -106,12 +106,61 @@ NEXT_CLOUD_ACTION = {
     "exclude_from_rtx_app_benchmark": "never include in NVIDIA RTX cloud batch",
 }
 
+GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS = {
+    "service_coverage_gaps": {
+        "app_path": "service_coverage_gaps / prepared_gap_summary",
+        "rtx_phase_sec": "0.136545",
+        "ratio": "1.61x",
+        "scope": "prepared gap-summary query/native sub-path only",
+    },
+    "outlier_detection": {
+        "app_path": "outlier_detection / prepared_fixed_radius_density_summary",
+        "rtx_phase_sec": "0.122348",
+        "ratio": "4.64x",
+        "scope": "prepared fixed-radius scalar threshold-count sub-path only",
+    },
+    "dbscan_clustering": {
+        "app_path": "dbscan_clustering / prepared_fixed_radius_core_flags",
+        "rtx_phase_sec": "0.122921",
+        "ratio": "6.62x",
+        "scope": "prepared fixed-radius scalar core-count sub-path only",
+    },
+    "facility_knn_assignment": {
+        "app_path": "facility_knn_assignment / coverage_threshold_prepared",
+        "rtx_phase_sec": "0.157368",
+        "ratio": "22.81x",
+        "scope": "prepared service-coverage decision sub-path only",
+    },
+    "segment_polygon_hitcount": {
+        "app_path": "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
+        "rtx_phase_sec": "0.146860",
+        "ratio": "1.71x",
+        "scope": "prepared native segment/polygon hit-count traversal only",
+    },
+    "segment_polygon_anyhit_rows": {
+        "app_path": "segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate",
+        "rtx_phase_sec": "0.192639",
+        "ratio": "3.03x",
+        "scope": "prepared bounded native pair-row traversal only",
+    },
+    "ann_candidate_search": {
+        "app_path": "ann_candidate_search / candidate_threshold_prepared",
+        "rtx_phase_sec": "0.105215",
+        "ratio": "4.86x",
+        "scope": "prepared ANN candidate-coverage decision sub-path only",
+    },
+}
+
 
 def _row(app: str) -> dict[str, Any]:
     readiness = rt.optix_app_benchmark_readiness(app)
     maturity = rt.rt_core_app_maturity(app)
     performance = rt.optix_app_performance_support(app)
+    public_wording = rt.rtx_public_wording_status(app)
     app_matrix = rt.app_engine_support_matrix()[app]
+    cloud_action = NEXT_CLOUD_ACTION.get(readiness.status, maturity.cloud_policy)
+    if public_wording.status == "public_wording_blocked":
+        cloud_action = maturity.cloud_policy
     return {
         "app": app,
         "app_path": APP_PATHS[app],
@@ -121,10 +170,14 @@ def _row(app: str) -> dict[str, Any]:
         "readiness_status": readiness.status,
         "rt_core_status": maturity.current_status,
         "performance_class": performance.performance_class,
+        "public_wording_status": public_wording.status,
+        "public_wording": public_wording.reviewed_wording,
+        "public_wording_evidence": public_wording.evidence,
+        "public_wording_boundary": public_wording.boundary,
         "evidence_or_goal": readiness.next_goal,
         "allowed_claim": readiness.allowed_claim,
         "non_claim_boundary": readiness.blocker,
-        "cloud_action": NEXT_CLOUD_ACTION.get(readiness.status, maturity.cloud_policy),
+        "cloud_action": cloud_action,
         "engine_support": {engine: support.status for engine, support in app_matrix.items()},
     }
 
@@ -133,6 +186,13 @@ def build_status_page() -> dict[str, Any]:
     rows = [_row(app) for app in rt.public_apps()]
     ready_rows = [row for row in rows if row["readiness_status"] == "ready_for_rtx_claim_review"]
     non_target_rows = [row for row in rows if row["rt_core_status"] == "not_nvidia_rt_core_target"]
+    public_wording_rows = rt.rtx_public_wording_matrix()
+    reviewed_wording_rows = [
+        app for app, row in public_wording_rows.items() if row.status == "public_wording_reviewed"
+    ]
+    blocked_wording_rows = [
+        app for app, row in public_wording_rows.items() if row.status == "public_wording_blocked"
+    ]
     return {
         "goal": GOAL,
         "date": DATE,
@@ -141,13 +201,22 @@ def build_status_page() -> dict[str, Any]:
             "engine_support": "rtdsl.app_engine_support_matrix()",
             "readiness": "rtdsl.optix_app_benchmark_readiness_matrix()",
             "maturity": "rtdsl.rt_core_app_maturity_matrix()",
+            "public_wording": "rtdsl.rtx_public_wording_matrix()",
         },
         "summary": {
             "public_app_count": len(rows),
             "ready_for_rtx_claim_review": len(ready_rows),
             "not_nvidia_rt_core_target": len(non_target_rows),
+            "reviewed_public_wording": len(reviewed_wording_rows),
+            "blocked_public_wording": len(blocked_wording_rows),
             "public_speedup_claim_authorized": False,
+            "broad_or_whole_app_public_speedup_claim_authorized": False,
         },
+        "reviewed_public_wording_rows": [
+            GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS[app]
+            for app in GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS
+            if app in reviewed_wording_rows
+        ],
         "rows": rows,
         "boundary": (
             "This page is the public v1.0 RTX app status index. It lists bounded "
@@ -175,27 +244,70 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- public app rows: `{summary['public_app_count']}`",
         f"- NVIDIA-target rows ready for claim review: `{summary['ready_for_rtx_claim_review']}`",
         f"- non-NVIDIA target rows: `{summary['not_nvidia_rt_core_target']}`",
-        f"- public speedup claim authorized: `{summary['public_speedup_claim_authorized']}`",
+        f"- reviewed public RTX sub-path wording rows: `{summary['reviewed_public_wording']}`",
+        f"- broad or whole-app public speedup claim authorized: `{summary['broad_or_whole_app_public_speedup_claim_authorized']}`",
         "",
         "Use this page as the release-facing source of truth for app-level RTX claim review. For engine-by-engine details, see `docs/app_engine_support_matrix.md`.",
         "",
-        "## Status Table",
+        "## Goal1009 Reviewed Public RTX Sub-Path Wording",
         "",
-        "| App | Status | RT-core subpath | Native-continuation contract | Claim command | Evidence | What is not claimed | Cloud action |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "The following rows have passed the Goal1009 wording review for bounded prepared",
+        "RTX A5000 query/native sub-path wording. These are not whole-app, default-mode,",
+        "Python-postprocess, or broad RT-core acceleration claims:",
+        "",
+        "| App/path | RTX phase (s) | Ratio | Scope |",
+        "| --- | ---: | ---: | --- |",
     ]
-    for row in payload["rows"]:
+    for row in payload["reviewed_public_wording_rows"]:
         lines.append(
             "| "
             + " | ".join(
                 [
                     f"`{_md_escape(row['app_path'])}`",
-                    f"`{_md_escape(row['rt_core_status'])}` / `{_md_escape(row['readiness_status'])}`",
+                    f"`{_md_escape(row['rtx_phase_sec'])}`",
+                    f"`{_md_escape(row['ratio'])}`",
+                    _md_escape(row["scope"]),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "`robot_collision_screening / prepared_pose_flags` remains excluded from public",
+            "RTX speedup wording because its larger RTX repeats stayed below the 100 ms",
+            "public-review timing floor. Other `ready_for_rtx_claim_review` rows remain",
+            "engineering-ready or claim-review-ready, but do not yet have Goal1009 public",
+            "speedup wording.",
+            "",
+        "## Status Table",
+        "",
+        "| App | Status | RT-core subpath | Native-continuation contract | Claim command | Evidence | What is not claimed | Cloud action |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for row in payload["rows"]:
+        readiness_status = row["readiness_status"]
+        evidence_or_goal = row["evidence_or_goal"]
+        non_claim_boundary = row["non_claim_boundary"]
+        if row["public_wording_status"] == "public_wording_blocked":
+            readiness_status = "blocked_for_public_speedup_wording"
+            evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"
+            non_claim_boundary = (
+                f"{row['public_wording_boundary']} "
+                f"{row['non_claim_boundary']}"
+            )
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    f"`{_md_escape(row['app_path'])}`",
+                    f"`{_md_escape(row['rt_core_status'])}` / `{_md_escape(readiness_status)}`",
                     _md_escape(row["rt_core_subpath"]),
                     _md_escape(row["native_continuation_contract"]),
                     f"`{_md_escape(row['claim_command'])}`",
-                    _md_escape(row["evidence_or_goal"]),
-                    _md_escape(row["non_claim_boundary"]),
+                    _md_escape(evidence_or_goal),
+                    _md_escape(non_claim_boundary),
                     _md_escape(row["cloud_action"]),
                 ]
             )

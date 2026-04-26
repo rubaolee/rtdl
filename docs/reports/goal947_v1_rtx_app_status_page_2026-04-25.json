@@ -1,7 +1,51 @@
 {
   "boundary": "This page is the public v1.0 RTX app status index. It lists bounded NVIDIA OptiX/RTX claim-review candidates and non-claim boundaries. It is not release authorization and not a public speedup claim.",
-  "date": "2026-04-25",
+  "date": "2026-04-26",
   "goal": "Goal947 v1.0 RTX app status page",
+  "reviewed_public_wording_rows": [
+    {
+      "app_path": "service_coverage_gaps / prepared_gap_summary",
+      "ratio": "1.61x",
+      "rtx_phase_sec": "0.136545",
+      "scope": "prepared gap-summary query/native sub-path only"
+    },
+    {
+      "app_path": "outlier_detection / prepared_fixed_radius_density_summary",
+      "ratio": "4.64x",
+      "rtx_phase_sec": "0.122348",
+      "scope": "prepared fixed-radius scalar threshold-count sub-path only"
+    },
+    {
+      "app_path": "dbscan_clustering / prepared_fixed_radius_core_flags",
+      "ratio": "6.62x",
+      "rtx_phase_sec": "0.122921",
+      "scope": "prepared fixed-radius scalar core-count sub-path only"
+    },
+    {
+      "app_path": "facility_knn_assignment / coverage_threshold_prepared",
+      "ratio": "22.81x",
+      "rtx_phase_sec": "0.157368",
+      "scope": "prepared service-coverage decision sub-path only"
+    },
+    {
+      "app_path": "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
+      "ratio": "1.71x",
+      "rtx_phase_sec": "0.146860",
+      "scope": "prepared native segment/polygon hit-count traversal only"
+    },
+    {
+      "app_path": "segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "ratio": "3.03x",
+      "rtx_phase_sec": "0.192639",
+      "scope": "prepared bounded native pair-row traversal only"
+    },
+    {
+      "app_path": "ann_candidate_search / candidate_threshold_prepared",
+      "ratio": "4.86x",
+      "rtx_phase_sec": "0.105215",
+      "scope": "prepared ANN candidate-coverage decision sub-path only"
+    }
+  ],
   "rows": [
     {
       "allowed_claim": "prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim",
@@ -21,6 +65,10 @@
       "native_continuation_contract": "native continuation only for materialization-free compact DB summaries",
       "non_claim_boundary": "DB claims must stay limited to compact-summary prepared sub-paths; no SQL engine, DBMS, full dashboard, row-materializing, or broad whole-app speedup claim is allowed",
       "performance_class": "python_interface_dominated",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal921/Goal941",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared DB compact-summary traversal/filter/grouping"
@@ -43,6 +91,10 @@
       "native_continuation_contract": "top-level metadata aggregates selected native graph sections; visibility_edges uses optix_visibility_pair_rows on OptiX",
       "non_claim_boundary": "Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim",
       "performance_class": "optix_traversal",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal889/Goal905/Goal929",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "bounded visibility any-hit plus native graph-ray BFS/triangle candidate generation"
@@ -65,6 +117,10 @@
       "native_continuation_contract": "outside NVIDIA RTX app table",
       "non_claim_boundary": "OptiX is not an applicable app entry point",
       "performance_class": "not_optix_applicable",
+      "public_wording": "Apple RT demo is outside NVIDIA RTX public wording.",
+      "public_wording_boundary": "Do not include Apple-specific evidence in NVIDIA RTX speedup wording.",
+      "public_wording_evidence": "none",
+      "public_wording_status": "not_nvidia_public_wording_target",
       "readiness_status": "exclude_from_rtx_app_benchmark",
       "rt_core_status": "not_nvidia_rt_core_target",
       "rt_core_subpath": "Apple Metal/MPS RT demo, outside NVIDIA RTX table"
@@ -87,6 +143,10 @@
       "native_continuation_contract": "native continuation only for Embree gap_summary or OptiX gap_summary_prepared threshold-count paths",
       "non_claim_boundary": "Goal917 covers the bounded prepared gap-summary path only; row output, nearest-clinic output, and whole-app service-coverage optimization remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "RTDL's prepared service-coverage gap-summary RTX query/native sub-path measured 0.136545 s and 1.61x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only the prepared gap-summary query/native sub-path is covered; row output, nearest-clinic output, and service-coverage optimization are outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius gap-summary traversal"
@@ -109,6 +169,10 @@
       "native_continuation_contract": "native continuation only for Embree count_summary or OptiX count_summary_prepared threshold-count paths",
       "non_claim_boundary": "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal917/Goal919",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius count-summary traversal"
@@ -131,6 +195,10 @@
       "native_continuation_contract": "native continuation only for OptiX coverage_threshold_prepared service-coverage decisions",
       "non_claim_boundary": "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "RTDL's prepared facility coverage-threshold RTX query/native sub-path measured 0.157368 s and 22.81x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only the prepared service-coverage decision sub-path is covered; ranked KNN assignment, ranking, and uncovered-ID witness output are outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius service-coverage decision"
@@ -153,6 +221,10 @@
       "native_continuation_contract": "app native OptiX hit-count mode is metadata-gated; accepted claim surface remains prepared road-hazard summary traversal",
       "non_claim_boundary": "claim is limited to the prepared compact road-hazard summary gate; default public app behavior, full GIS/routing, and broad road-hazard speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal933/Goal941",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared native segment/polygon road-hazard summary traversal"
@@ -175,6 +247,10 @@
       "native_continuation_contract": "app native OptiX hit-count mode is metadata-gated; accepted claim surface remains prepared hit-count traversal",
       "non_claim_boundary": "claim is limited to prepared compact hit-count traversal; pair-row output, road-hazard whole-app behavior, and broad speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "RTDL's prepared native segment/polygon hit-count RTX query/native sub-path measured 0.146860 s and 1.71x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared native segment/polygon hit-count traversal"
@@ -197,6 +273,10 @@
       "native_continuation_contract": "native continuation is RT-core accelerated only for explicit bounded OptiX native rows mode",
       "non_claim_boundary": "claim is limited to bounded prepared pair-row traversal at the reviewed output capacity; unbounded row-volume performance and default public app behavior remain outside the claim",
       "performance_class": "optix_traversal",
+      "public_wording": "RTDL's prepared bounded native segment/polygon pair-row RTX query/native sub-path measured 0.192639 s and 3.03x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared bounded native pair-row traversal"
@@ -219,6 +299,10 @@
       "native_continuation_contract": "native C++ exact area continuation follows RT-assisted LSI/PIP candidate discovery",
       "non_claim_boundary": "exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review",
       "performance_class": "python_interface_dominated",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal877/Goal929",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "native-assisted LSI/PIP candidate discovery"
@@ -241,6 +325,10 @@
       "native_continuation_contract": "native C++ exact set-area continuation follows RT-assisted LSI/PIP candidate discovery",
       "non_claim_boundary": "exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused",
       "performance_class": "python_interface_dominated",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal877/Goal929",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "native-assisted LSI/PIP candidate discovery"
@@ -263,6 +351,10 @@
       "native_continuation_contract": "native continuation only for Embree directed_summary or OptiX directed_threshold_prepared decision paths",
       "non_claim_boundary": "exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal887/Goal941",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius Hausdorff threshold decision"
@@ -285,6 +377,10 @@
       "native_continuation_contract": "native C++ rerank summaries follow candidate KNN rows; OptiX prepared threshold path covers candidate-coverage decision only",
       "non_claim_boundary": "full ANN indexing, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ behavior, recall optimization, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "RTDL's prepared ANN candidate-coverage RTX query/native sub-path measured 0.105215 s and 4.86x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius ANN candidate-coverage decision"
@@ -307,6 +403,10 @@
       "native_continuation_contract": "native continuation only for OptiX density_count scalar path or Embree/OptiX per-point threshold summary paths",
       "non_claim_boundary": "RTX 4090 evidence covers the prepared scalar threshold-count sub-path only; full anomaly-detection app, per-point outlier labels, and row-returning paths remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "RTDL's prepared fixed-radius density-summary RTX query/native sub-path measured 0.122348 s and 4.64x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius scalar threshold-count traversal"
@@ -329,6 +429,10 @@
       "native_continuation_contract": "native continuation only for OptiX core_count scalar path or Embree/OptiX per-point core-flag summary paths, not full cluster expansion",
       "non_claim_boundary": "RTX 4090 evidence covers the prepared scalar core-count sub-path only; per-point core flags and Python cluster expansion remain outside the native scalar path",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "RTDL's prepared fixed-radius DBSCAN core-count RTX query/native sub-path measured 0.122921 s and 6.62x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.",
+      "public_wording_evidence": "Goal1008/Goal1009",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius scalar core-count traversal"
@@ -338,7 +442,7 @@
       "app": "robot_collision_screening",
       "app_path": "examples/rtdl_robot_collision_screening_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count",
-      "cloud_action": "no readiness pod needed; rerun only in a consolidated regression/tuning batch",
+      "cloud_action": "Goal1008 keeps public speedup wording blocked; no new pod is needed unless redesign/reprofiling is planned.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -351,6 +455,10 @@
       "native_continuation_contract": "native continuation only for prepared OptiX count or pose-flag summaries",
       "non_claim_boundary": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
       "performance_class": "optix_traversal",
+      "public_wording": "No public RTX speedup wording is authorized for robot_collision_screening yet.",
+      "public_wording_boundary": "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
+      "public_wording_evidence": "Goal1008",
+      "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared ray/triangle any-hit scalar pose-count traversal"
@@ -373,6 +481,10 @@
       "native_continuation_contract": "native C++ candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only",
       "non_claim_boundary": "Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
+      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
+      "public_wording_boundary": "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "public_wording_evidence": "Goal887/Goal941",
+      "public_wording_status": "public_wording_not_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius Barnes-Hut node-coverage decision"
@@ -395,6 +507,10 @@
       "native_continuation_contract": "outside NVIDIA RTX app table",
       "non_claim_boundary": "public app CLI does not expose OptiX",
       "performance_class": "not_optix_exposed",
+      "public_wording": "HIPRT hit-count demo is outside NVIDIA RTX public wording.",
+      "public_wording_boundary": "Do not include HIPRT-specific evidence in NVIDIA RTX speedup wording.",
+      "public_wording_evidence": "none",
+      "public_wording_status": "not_nvidia_public_wording_target",
       "readiness_status": "exclude_from_rtx_app_benchmark",
       "rt_core_status": "not_nvidia_rt_core_target",
       "rt_core_subpath": "HIPRT-specific hit-count validation, outside NVIDIA RTX table"
@@ -404,12 +520,16 @@
     "apps": "rtdsl.public_apps()",
     "engine_support": "rtdsl.app_engine_support_matrix()",
     "maturity": "rtdsl.rt_core_app_maturity_matrix()",
+    "public_wording": "rtdsl.rtx_public_wording_matrix()",
     "readiness": "rtdsl.optix_app_benchmark_readiness_matrix()"
   },
   "summary": {
+    "blocked_public_wording": 1,
+    "broad_or_whole_app_public_speedup_claim_authorized": false,
     "not_nvidia_rt_core_target": 2,
     "public_app_count": 18,
     "public_speedup_claim_authorized": false,
-    "ready_for_rtx_claim_review": 16
+    "ready_for_rtx_claim_review": 16,
+    "reviewed_public_wording": 7
   }
 }
