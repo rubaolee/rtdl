@@ -1,0 +1,142 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 2,
+  "failed_count": 0,
+  "git_head": "a8ba20f4aa173b9d057acf56998b60abd09eaa68",
+  "git_status_short": "M docs/reports/goal759_db_regional_dashboard_rtx.json\n M docs/reports/goal759_db_sales_risk_rtx.json\n M docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json\n M docs/reports/goal759_robot_pose_flags_phase_rtx.json\n M docs/reports/goal763_rtx_cloud_bootstrap_check.json\n M docs/reports/goal811_event_hotspot_rtx.json\n M docs/reports/goal811_service_coverage_rtx.json\n M docs/reports/goal877_jaccard_phase_rtx.json\n M docs/reports/goal877_pair_overlap_phase_rtx.json\n M docs/reports/goal887_ann_candidate_coverage_rtx.json\n M docs/reports/goal887_barnes_hut_node_coverage_rtx.json\n M docs/reports/goal887_facility_service_coverage_rtx.json\n M docs/reports/goal887_hausdorff_threshold_rtx.json\n M docs/reports/goal889_graph_visibility_optix_gate_rtx.json\n M docs/reports/goal933_road_hazard_prepared_summary_rtx.json\n M docs/reports/goal933_segment_polygon_hitcount_prepared_rtx.json\n M docs/reports/goal934_segment_polygon_anyhit_rows_prepared_bounded_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x4_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.md\n?? docs/reports/goal1007_outlier_dbscan_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x35_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x3_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_dense_obstacles_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_anyhit_rows_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_hitcount_large_rtx.json\n?? docs/reports/goal1008_extra_current_pod_full_gate/",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sun Apr 26 16:58:51 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   27C    P5             58W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl",
+  "results": [
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact area continuation",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "native_exact_continuation_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+          "--app",
+          "pair_overlap",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "100",
+          "--output-json",
+          "docs/reports/goal877_pair_overlap_phase_rtx.json"
+        ],
+        "elapsed_sec": 8.675382668152452,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:58:30+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal877_pair_overlap_phase_rtx.json\", \"status\": \"pass\"}\n"
+      }
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact Jaccard continuation",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "native_exact_continuation_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a monolithic GPU Jaccard kernel and not a full app RTX speedup claim",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+          "--app",
+          "jaccard",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "20",
+          "--output-json",
+          "docs/reports/goal877_jaccard_phase_rtx.json"
+        ],
+        "elapsed_sec": 10.346903116442263,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:58:39+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal877_jaccard_phase_rtx.json\", \"status\": \"pass\"}\n"
+      }
+    }
+  ],
+  "source_commit": "a8ba20f4aa173b9d057acf56998b60abd09eaa68",
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-26T16:58:49+0000",
+  "unique_command_count": 2
+}

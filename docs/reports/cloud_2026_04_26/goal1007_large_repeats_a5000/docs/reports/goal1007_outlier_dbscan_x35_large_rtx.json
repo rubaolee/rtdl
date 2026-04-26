@@ -1,0 +1,149 @@
+{
+  "boundary": "GTX 1070 evidence validates OptiX prepared-scene behavior only. RTX RT-core speedup claims require RTX-class hardware.",
+  "cloud_claim_contract": {
+    "dbscan_clustering": {
+      "claim_scope": "prepared fixed-radius scalar core-count traversal only",
+      "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+      "non_claim": "not per-point core flags, not full DBSCAN clustering, cluster expansion, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup",
+      "required_phase_groups": [
+        "prepared_optix_pack_points_sec",
+        "prepared_optix_prepare_sec",
+        "prepared_optix_warm_query_sec",
+        "prepared_optix_postprocess_sec",
+        "prepared_optix_validation_sec",
+        "prepared_optix_close_sec"
+      ],
+      "result_mode": "threshold_count"
+    },
+    "outlier_detection": {
+      "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
+      "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+      "non_claim": "not per-point outlier labels, KNN, Hausdorff, ANN, Barnes-Hut, anomaly-system, row-output, or whole-app RTX speedup",
+      "required_phase_groups": [
+        "prepared_optix_pack_points_sec",
+        "prepared_optix_prepare_sec",
+        "prepared_optix_warm_query_sec",
+        "prepared_optix_postprocess_sec",
+        "prepared_optix_validation_sec",
+        "prepared_optix_close_sec"
+      ],
+      "result_mode": "threshold_count"
+    }
+  },
+  "copies": 1400000,
+  "iterations": 7,
+  "result_mode": "threshold_count",
+  "results": [
+    {
+      "app": "outlier_detection",
+      "cloud_claim_contract": {
+        "claim_scope": "prepared fixed-radius scalar threshold-count traversal only",
+        "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+        "non_claim": "not per-point outlier labels, KNN, Hausdorff, ANN, Barnes-Hut, anomaly-system, row-output, or whole-app RTX speedup",
+        "required_phase_groups": [
+          "prepared_optix_pack_points_sec",
+          "prepared_optix_prepare_sec",
+          "prepared_optix_warm_query_sec",
+          "prepared_optix_postprocess_sec",
+          "prepared_optix_validation_sec",
+          "prepared_optix_close_sec"
+        ],
+        "result_mode": "threshold_count"
+      },
+      "copies": 1400000,
+      "one_shot_total_sec": null,
+      "phase_contract": {
+        "native_warm_query": "prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back",
+        "postprocess": "none in scalar-summary mode",
+        "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
+      },
+      "point_count": 11200000,
+      "prepared_optix_close_sec": 0.01564456708729267,
+      "prepared_optix_pack_points_sec": 22.63457373343408,
+      "prepared_optix_postprocess_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_prepare_sec": 1.7632647920399904,
+      "prepared_optix_validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_warm_query_sec": {
+        "max_sec": 0.1269141249358654,
+        "median_sec": 0.12234754022210836,
+        "min_sec": 0.12108103465288877
+      },
+      "prepared_output": {
+        "matches_oracle": true,
+        "oracle_outlier_count": null,
+        "outlier_count": 2800000,
+        "point_count": 11200000,
+        "threshold_reached_count": 8400000
+      },
+      "result_mode": "threshold_count",
+      "schema_version": "goal825_tier1_phase_contract_v1",
+      "speedup_one_shot_over_warm_query_median": null,
+      "validation_mode": "skipped"
+    },
+    {
+      "app": "dbscan_clustering",
+      "cloud_claim_contract": {
+        "claim_scope": "prepared fixed-radius scalar core-count traversal only",
+        "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+        "non_claim": "not per-point core flags, not full DBSCAN clustering, cluster expansion, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup",
+        "required_phase_groups": [
+          "prepared_optix_pack_points_sec",
+          "prepared_optix_prepare_sec",
+          "prepared_optix_warm_query_sec",
+          "prepared_optix_postprocess_sec",
+          "prepared_optix_validation_sec",
+          "prepared_optix_close_sec"
+        ],
+        "result_mode": "threshold_count"
+      },
+      "copies": 1400000,
+      "one_shot_total_sec": null,
+      "phase_contract": {
+        "native_warm_query": "prepared_obj.count_threshold_reached only: OptiX traversal, threshold counting, and scalar count copy-back",
+        "postprocess": "none in scalar-summary mode; full DBSCAN cluster expansion remains outside this profiler",
+        "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
+      },
+      "point_count": 11200000,
+      "prepared_optix_close_sec": 0.01638490241020918,
+      "prepared_optix_pack_points_sec": 20.151091483421624,
+      "prepared_optix_postprocess_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_prepare_sec": 0.33003327529877424,
+      "prepared_optix_validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      },
+      "prepared_optix_warm_query_sec": {
+        "max_sec": 0.1277914885431528,
+        "median_sec": 0.12292127497494221,
+        "min_sec": 0.12060972861945629
+      },
+      "prepared_output": {
+        "core_count": 9799998,
+        "matches_oracle": true,
+        "oracle_core_count": null,
+        "point_count": 11200000,
+        "threshold_reached_count": 9799998
+      },
+      "result_mode": "threshold_count",
+      "schema_version": "goal825_tier1_phase_contract_v1",
+      "speedup_one_shot_over_warm_query_median": null,
+      "validation_mode": "skipped"
+    }
+  ],
+  "schema_version": "goal825_tier1_phase_contract_v1",
+  "skip_validation": true,
+  "suite": "goal757_optix_fixed_radius_prepared_perf"
+}

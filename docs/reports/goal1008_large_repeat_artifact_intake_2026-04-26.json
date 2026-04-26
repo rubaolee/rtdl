@@ -1,0 +1,219 @@
+{
+  "artifact_root": "docs/reports/cloud_2026_04_26/goal1007_large_repeats_a5000/docs/reports",
+  "boundary": "Goal1008 is an artifact-intake gate for Goal1007 RTX A5000 larger repeats. It can clear the 100 ms timing-floor concern for separate public-wording review, but it does not authorize any public speedup claim.",
+  "date": "2026-04-26",
+  "goal": "Goal1008 large-repeat RTX artifact intake",
+  "min_phase_sec_for_public_review": 0.1,
+  "public_speedup_claim_authorized_count": 0,
+  "row_count": 7,
+  "rows": [
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_robot_pose_flags_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "phases.prepared_pose_flags_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.012383738532662392
+        },
+        {
+          "artifact_file": "goal1007_robot_pose_flags_dense_obstacles_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "phases.prepared_pose_flags_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.014176679775118828
+        }
+      ],
+      "app": "robot_collision_screening",
+      "chosen_artifact": "goal1007_robot_pose_flags_dense_obstacles_large_rtx.json",
+      "goal1006_fastest_baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+      "goal1006_ratio": 1179.6438614428769,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "still_below_public_review_timing_floor",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is still below 100 ms, so this row remains held.",
+      "rtx_phase_key": "phases.prepared_pose_flags_warm_query_sec.median_sec",
+      "rtx_phase_sec": 0.014176679775118828
+    },
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_outlier_dbscan_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "results[outlier_detection].prepared_optix_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.03498795721679926
+        },
+        {
+          "artifact_file": "goal1007_outlier_dbscan_x3_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "results[outlier_detection].prepared_optix_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.0999960619956255
+        },
+        {
+          "artifact_file": "goal1007_outlier_dbscan_x35_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "results[outlier_detection].prepared_optix_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.12234754022210836
+        }
+      ],
+      "app": "outlier_detection",
+      "chosen_artifact": "goal1007_outlier_dbscan_x35_large_rtx.json",
+      "goal1006_fastest_baseline": "cpu_scalar_threshold_count_oracle",
+      "goal1006_ratio": 4.640073749155,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "timing_floor_cleared_for_separate_2ai_public_wording_review",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is at least 100 ms. This repairs the Goal1006 short-phase concern only; public wording still needs separate 2-AI review and must remain query-phase scoped.",
+      "rtx_phase_key": "results[outlier_detection].prepared_optix_warm_query_sec.median_sec",
+      "rtx_phase_sec": 0.12234754022210836
+    },
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_outlier_dbscan_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "results[dbscan_clustering].prepared_optix_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.032061781734228134
+        },
+        {
+          "artifact_file": "goal1007_outlier_dbscan_x3_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "results[dbscan_clustering].prepared_optix_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.0984413418918848
+        },
+        {
+          "artifact_file": "goal1007_outlier_dbscan_x35_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "results[dbscan_clustering].prepared_optix_warm_query_sec.median_sec",
+          "rtx_phase_sec": 0.12292127497494221
+        }
+      ],
+      "app": "dbscan_clustering",
+      "chosen_artifact": "goal1007_outlier_dbscan_x35_large_rtx.json",
+      "goal1006_fastest_baseline": "cpu_scalar_threshold_count_oracle",
+      "goal1006_ratio": 6.620045949952434,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "timing_floor_cleared_for_separate_2ai_public_wording_review",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is at least 100 ms. This repairs the Goal1006 short-phase concern only; public wording still needs separate 2-AI review and must remain query-phase scoped.",
+      "rtx_phase_key": "results[dbscan_clustering].prepared_optix_warm_query_sec.median_sec",
+      "rtx_phase_sec": 0.12292127497494221
+    },
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_facility_service_coverage_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.033212979324162006
+        },
+        {
+          "artifact_file": "goal1007_facility_service_coverage_x3_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.10115630738437176
+        },
+        {
+          "artifact_file": "goal1007_facility_service_coverage_x4_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.15736764296889305
+        }
+      ],
+      "app": "facility_knn_assignment",
+      "chosen_artifact": "goal1007_facility_service_coverage_x4_large_rtx.json",
+      "goal1006_fastest_baseline": "cpu_oracle_same_semantics",
+      "goal1006_ratio": 22.805075622705,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "timing_floor_cleared_for_separate_2ai_public_wording_review",
+      "path_name": "coverage_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is at least 100 ms. This repairs the Goal1006 short-phase concern only; public wording still needs separate 2-AI review and must remain query-phase scoped.",
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.15736764296889305
+    },
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_segment_polygon_hitcount_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.14685961324721575
+        }
+      ],
+      "app": "segment_polygon_hitcount",
+      "chosen_artifact": "goal1007_segment_polygon_hitcount_large_rtx.json",
+      "goal1006_fastest_baseline": "embree_same_semantics",
+      "goal1006_ratio": 1.7083082183287555,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "timing_floor_cleared_for_separate_2ai_public_wording_review",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is at least 100 ms. This repairs the Goal1006 short-phase concern only; public wording still needs separate 2-AI review and must remain query-phase scoped.",
+      "rtx_phase_key": "timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.14685961324721575
+    },
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_segment_polygon_anyhit_rows_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.192639397457242
+        }
+      ],
+      "app": "segment_polygon_anyhit_rows",
+      "chosen_artifact": "goal1007_segment_polygon_anyhit_rows_large_rtx.json",
+      "goal1006_fastest_baseline": "postgis_when_available_for_same_pair_semantics",
+      "goal1006_ratio": 3.030857936092091,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "timing_floor_cleared_for_separate_2ai_public_wording_review",
+      "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is at least 100 ms. This repairs the Goal1006 short-phase concern only; public wording still needs separate 2-AI review and must remain query-phase scoped.",
+      "rtx_phase_key": "timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.192639397457242
+    },
+    {
+      "all_artifact_phases": [
+        {
+          "artifact_file": "goal1007_ann_candidate_coverage_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.02806788869202137
+        },
+        {
+          "artifact_file": "goal1007_ann_candidate_coverage_x3_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.0882335240021348
+        },
+        {
+          "artifact_file": "goal1007_ann_candidate_coverage_x4_large_rtx.json",
+          "exists": true,
+          "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+          "rtx_phase_sec": 0.1052151545882225
+        }
+      ],
+      "app": "ann_candidate_search",
+      "chosen_artifact": "goal1007_ann_candidate_coverage_x4_large_rtx.json",
+      "goal1006_fastest_baseline": "cpu_oracle_same_semantics",
+      "goal1006_ratio": 4.857461066060462,
+      "goal1006_status": "candidate_but_needs_larger_scale_repeat",
+      "large_repeat_status": "timing_floor_cleared_for_separate_2ai_public_wording_review",
+      "path_name": "candidate_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "Large-repeat RTX median query phase is at least 100 ms. This repairs the Goal1006 short-phase concern only; public wording still needs separate 2-AI review and must remain query-phase scoped.",
+      "rtx_phase_key": "scenario.timings_sec.optix_query_sec.median_sec",
+      "rtx_phase_sec": 0.1052151545882225
+    }
+  ],
+  "source": "docs/reports/goal1006_public_rtx_claim_wording_gate_2026-04-26.json",
+  "status_counts": {
+    "still_below_public_review_timing_floor": 1,
+    "timing_floor_cleared_for_separate_2ai_public_wording_review": 6
+  },
+  "still_held_count": 1,
+  "timing_floor_cleared_count": 6
+}

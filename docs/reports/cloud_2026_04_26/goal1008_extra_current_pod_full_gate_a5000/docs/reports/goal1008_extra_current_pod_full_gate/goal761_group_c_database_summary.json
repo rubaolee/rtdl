@@ -1,0 +1,136 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 2,
+  "failed_count": 0,
+  "git_head": "a8ba20f4aa173b9d057acf56998b60abd09eaa68",
+  "git_status_short": "M docs/reports/goal759_db_regional_dashboard_rtx.json\n M docs/reports/goal759_db_sales_risk_rtx.json\n M docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json\n M docs/reports/goal759_robot_pose_flags_phase_rtx.json\n M docs/reports/goal763_rtx_cloud_bootstrap_check.json\n?? docs/reports/goal1007_ann_candidate_coverage_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x4_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.md\n?? docs/reports/goal1007_outlier_dbscan_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x35_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x3_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_dense_obstacles_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_anyhit_rows_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_hitcount_large_rtx.json\n?? docs/reports/goal1008_extra_current_pod_full_gate/",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": false,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sun Apr 26 16:57:35 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   29C    P0            114W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl",
+  "results": [
+    {
+      "app": "database_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_compact_summary",
+          "embree_compact_summary",
+          "postgresql_same_semantics_on_linux_when_available"
+        ],
+        "required_phases": [
+          "input_pack_or_table_build",
+          "backend_prepare",
+          "native_query",
+          "copyback_or_materialization",
+          "python_summary_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "manifest_section": "entries",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_sales_risk_rtx.json"
+        ],
+        "elapsed_sec": 5.12206073012203,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:57:22+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": " 40000\n              },\n              \"risky_revenue_by_region\": {\n                \"central\": 5200000,\n                \"east\": 6200000,\n                \"west\": 8600000\n              }\n            }\n          }\n        }\n      },\n      \"prepared_session_prepare_total_sec\": 0.834871806204319,\n      \"prepared_session_warm_query_sec\": {\n        \"max_sec\": 0.09339733421802521,\n        \"median_sec\": 0.08226587111130357,\n        \"min_sec\": 0.08140980172902346\n      },\n      \"reported_native_db_phase_totals_sec\": {\n        \"bitset_copyback_sec\": 4.1494999999999995e-05,\n        \"counter_status\": \"exported\",\n        \"emitted_count\": 80006,\n        \"exact_filter_sec\": 0.014075391000000001,\n        \"operation_count\": 3,\n        \"output_pack_sec\": 0.004662565,\n        \"raw_candidate_count\": 240000,\n        \"sections\": {\n          \"sales_risk\": {\n            \"bitset_copyback_sec\": 4.1494999999999995e-05,\n            \"emitted_count\": 80006,\n            \"exact_filter_sec\": 0.014075391000000001,\n            \"operation_count\": 3,\n            \"output_pack_sec\": 0.004662565,\n            \"raw_candidate_count\": 240000,\n            \"traversal_sec\": 0.062916959\n          }\n        },\n        \"traversal_sec\": 0.062916959\n      },\n      \"reported_native_db_phases_sec\": {\n        \"sales_risk\": {\n          \"conjunctive_scan_count\": {\n            \"bitset_copyback\": 1.3992e-05,\n            \"emitted_count\": 80000,\n            \"exact_filter\": 0.00478394,\n            \"output_pack\": 6.1e-08,\n            \"raw_candidate_count\": 80000,\n            \"traversal\": 0.020973023\n          },\n          \"grouped_count_summary\": {\n            \"bitset_copyback\": 1.328e-05,\n            \"emitted_count\": 3,\n            \"exact_filter\": 0.004864131,\n            \"output_pack\": 0.002744599,\n            \"raw_candidate_count\": 80000,\n            \"traversal\": 0.020970953\n          },\n          \"grouped_sum_summary\": {\n            \"bitset_copyback\": 1.4223e-05,\n            \"emitted_count\": 3,\n            \"exact_filter\": 0.00442732,\n            \"output_pack\": 0.001917905,\n            \"raw_candidate_count\": 80000,\n            \"traversal\": 0.020972983\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"sales_risk\": {\n          \"input_construction_sec\": 0.052673596888780594,\n          \"prepare_sec\": 0.7821323992684484\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 0.8348376853391528,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"sales_risk\": {\n          \"grouped_count\": \"group_summary\",\n          \"grouped_sum\": \"group_summary\",\n          \"scan\": \"count_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 8.879229426383972e-06,\n        \"all_sections_query_sec\": 0.08199412748217583,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"sales_risk\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 8.879229426383972e-06,\n            \"query_sec\": 0.08199412748217583,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"sales_risk\": {\n          \"python_summary_postprocess_sec\": 8.879229426383972e-06,\n          \"query_conjunctive_scan_count_sec\": 0.025859219953417778,\n          \"query_grouped_count_summary_sec\": 0.02869562990963459,\n          \"query_grouped_sum_summary_sec\": 0.02743927761912346\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"sales_risk\": 0.082061936147511\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 26.971734978979633,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"sales_risk\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+      }
+    },
+    {
+      "app": "database_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_compact_summary",
+          "embree_compact_summary",
+          "postgresql_same_semantics_on_linux_when_available"
+        ],
+        "required_phases": [
+          "input_pack_or_table_build",
+          "backend_prepare",
+          "native_query",
+          "copyback_or_materialization",
+          "python_summary_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "manifest_section": "entries",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "regional_dashboard",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_regional_dashboard_rtx.json"
+        ],
+        "elapsed_sec": 6.077923179604113,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:57:27+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "          \"east\": 3600000,\n                \"west\": 4800000\n              }\n            }\n          }\n        }\n      },\n      \"prepared_session_prepare_total_sec\": 1.0622697938233614,\n      \"prepared_session_warm_query_sec\": {\n        \"max_sec\": 0.1171434111893177,\n        \"median_sec\": 0.11507569160312414,\n        \"min_sec\": 0.11104468442499638\n      },\n      \"reported_native_db_phase_totals_sec\": {\n        \"bitset_copyback_sec\": 6.0808000000000005e-05,\n        \"counter_status\": \"exported\",\n        \"emitted_count\": 80005,\n        \"exact_filter_sec\": 0.014303271,\n        \"operation_count\": 3,\n        \"output_pack_sec\": 0.005775964,\n        \"raw_candidate_count\": 280000,\n        \"sections\": {\n          \"regional_dashboard\": {\n            \"bitset_copyback_sec\": 6.0808000000000005e-05,\n            \"emitted_count\": 80005,\n            \"exact_filter_sec\": 0.014303271,\n            \"operation_count\": 3,\n            \"output_pack_sec\": 0.005775964,\n            \"raw_candidate_count\": 280000,\n            \"traversal_sec\": 0.090407403\n          }\n        },\n        \"traversal_sec\": 0.090407403\n      },\n      \"reported_native_db_phases_sec\": {\n        \"regional_dashboard\": {\n          \"conjunctive_scan_count\": {\n            \"bitset_copyback\": 1.8499e-05,\n            \"emitted_count\": 80000,\n            \"exact_filter\": 0.00528699,\n            \"output_pack\": 6e-08,\n            \"raw_candidate_count\": 80000,\n            \"traversal\": 0.028296488\n          },\n          \"grouped_count_summary\": {\n            \"bitset_copyback\": 2.0804e-05,\n            \"emitted_count\": 3,\n            \"exact_filter\": 0.005039022,\n            \"output_pack\": 0.003654864,\n            \"raw_candidate_count\": 100000,\n            \"traversal\": 0.031054093\n          },\n          \"grouped_sum_summary\": {\n            \"bitset_copyback\": 2.1505e-05,\n            \"emitted_count\": 2,\n            \"exact_filter\": 0.003977259,\n            \"output_pack\": 0.00212104,\n            \"raw_candidate_count\": 100000,\n            \"traversal\": 0.031056822\n          }\n        }\n      },\n      \"reported_prepare_phases_sec\": {\n        \"regional_dashboard\": {\n          \"backend_selection_sec\": 8.419156074523926e-06,\n          \"prepare_sec\": 1.0008208137005568,\n          \"table_construction_sec\": 0.0613882876932621\n        },\n        \"unified_session\": {\n          \"prepare_session_sec\": 1.0622377460822463,\n          \"scenario_count\": 1\n        }\n      },\n      \"reported_run_phase_modes\": {\n        \"regional_dashboard\": {\n          \"grouped_count\": \"group_summary\",\n          \"grouped_sum\": \"group_summary\",\n          \"scan\": \"count_summary\"\n        }\n      },\n      \"reported_run_phase_totals_sec\": {\n        \"all_sections_python_summary_postprocess_sec\": 2.2063031792640686e-06,\n        \"all_sections_query_sec\": 0.11092567816376686,\n        \"compact_summary_operation_count\": 3,\n        \"row_materializing_operation_count\": 0,\n        \"sections\": {\n          \"regional_dashboard\": {\n            \"compact_summary_operation_count\": 3,\n            \"python_summary_postprocess_sec\": 2.2063031792640686e-06,\n            \"query_sec\": 0.11092567816376686,\n            \"row_materializing_operation_count\": 0\n          }\n        }\n      },\n      \"reported_run_phases_sec\": {\n        \"regional_dashboard\": {\n          \"python_summary_postprocess_sec\": 2.2063031792640686e-06,\n          \"query_conjunctive_scan_count_sec\": 0.033713825047016144,\n          \"query_grouped_count_summary_sec\": 0.039896740578114986,\n          \"query_grouped_sum_summary_sec\": 0.03731511253863573\n        },\n        \"unified_session\": {\n          \"per_section_run_sec\": {\n            \"regional_dashboard\": 0.11102119274437428\n          }\n        }\n      },\n      \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n      \"speedup_one_shot_over_warm_query_median\": 23.402371576932612,\n      \"status\": \"ok\"\n    }\n  ],\n  \"scenario\": \"regional_dashboard\",\n  \"schema_version\": \"goal921_db_phase_review_contract_v2\",\n  \"suite\": \"goal756_db_prepared_session_perf\"\n}\n"
+      }
+    }
+  ],
+  "source_commit": "a8ba20f4aa173b9d057acf56998b60abd09eaa68",
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-26T16:57:33+0000",
+  "unique_command_count": 2
+}

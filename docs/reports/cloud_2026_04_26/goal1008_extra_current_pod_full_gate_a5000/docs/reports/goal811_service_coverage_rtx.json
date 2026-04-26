@@ -1,0 +1,44 @@
+{
+  "boundary": "This profiler separates input construction, OptiX preparation, prepared query, and Python postprocess for compact spatial summaries. It does not authorize an RTX speedup claim without a real RTX run and review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap compact summaries",
+    "cloud_policy": "do not start a paid pod for this app alone; include only in the single consolidated RTX batch after local readiness passes",
+    "non_claim": "not nearest-clinic row output, not a full service coverage optimizer, and not a whole-app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build",
+      "optix_prepare",
+      "optix_query",
+      "python_postprocess"
+    ]
+  },
+  "copies": 20000,
+  "date": "2026-04-23",
+  "generated_at": "2026-04-26T16:57:39",
+  "goal": "Goal811 spatial OptiX prepared-summary phase profiler",
+  "host": {
+    "hostname": "9ce18d69636c",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "scenario": {
+    "mode": "optix",
+    "result": {
+      "clinic_count": 60000,
+      "covered_household_count": 60000,
+      "household_count": 80000,
+      "summary_mode": "scalar_threshold_count",
+      "uncovered_household_count": 20000,
+      "uncovered_household_ids": null
+    },
+    "scenario": "service_coverage_gaps",
+    "timings_sec": {
+      "input_build": 0.2328377729281783,
+      "optix_prepare": 1.3576329294592142,
+      "optix_query": 0.13541882019490004,
+      "python_postprocess": 6.708316504955292e-06
+    }
+  },
+  "schema_version": "goal826_tier2_phase_contract_v1"
+}
