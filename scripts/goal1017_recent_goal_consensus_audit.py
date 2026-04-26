@@ -32,6 +32,7 @@ GOALS = {
     1031: "local baseline smoke runner",
     1032: "baseline manifest correction",
     1033: "SciPy threshold-count baseline",
+    1034: "SciPy-enabled local baseline smoke",
 }
 
 REQUIRED_SUFFIXES = {

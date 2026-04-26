@@ -6,8 +6,8 @@ This audit checks that recent bounded goals have saved Claude review, Gemini rev
 
 ## Summary
 
-- audited goals: `20`
-- complete goals: `20`
+- audited goals: `21`
+- complete goals: `21`
 - incomplete goals: `0`
 - valid: `True`
 
@@ -35,6 +35,7 @@ This audit checks that recent bounded goals have saved Claude review, Gemini rev
 | 1031 | local baseline smoke runner | `complete` | 1 | 1 | 1 |
 | 1032 | baseline manifest correction | `complete` | 1 | 1 | 1 |
 | 1033 | SciPy threshold-count baseline | `complete` | 1 | 1 | 1 |
+| 1034 | SciPy-enabled local baseline smoke | `complete` | 1 | 1 | 1 |
 
 ## Boundary
 
