@@ -428,7 +428,7 @@ def run_app(
         density_rows = density_rows_from_neighbor_rows(case["points"], neighbor_rows)
     oracle_rows = (
         expected_tiled_density_rows(copies=copies)
-        if output_mode == "density_summary"
+        if output_mode in {"density_summary", "density_count"}
         else brute_force_outlier_rows(case["points"])
     )
     outlier_ids = [int(row["point_id"]) for row in density_rows if bool(row["is_outlier"])]

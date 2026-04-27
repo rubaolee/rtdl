@@ -1,7 +1,7 @@
 {
-  "audited_goal_count": 22,
+  "audited_goal_count": 23,
   "boundary": "This audit checks that recent bounded goals have saved Claude review, Gemini review, and two-AI consensus files. It does not authorize public speedup claims.",
-  "complete_goal_count": 22,
+  "complete_goal_count": 23,
   "date": "2026-04-26",
   "goal": "Goal1017 recent goal consensus audit",
   "incomplete_goal_count": 0,
@@ -384,6 +384,23 @@
       "missing_requirements": [],
       "status": "complete",
       "title": "local baseline scale-ramp runner"
+    },
+    {
+      "files": {
+        "claude_review": [
+          "docs/reports/goal1036_claude_review_2026-04-26.md"
+        ],
+        "gemini_review": [
+          "docs/reports/goal1036_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1036_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1036,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "outlier density-count oracle fix"
     }
   ],
   "valid": true

@@ -34,6 +34,7 @@ GOALS = {
     1033: "SciPy threshold-count baseline",
     1034: "SciPy-enabled local baseline smoke",
     1035: "local baseline scale-ramp runner",
+    1036: "outlier density-count oracle fix",
 }
 
 REQUIRED_SUFFIXES = {
