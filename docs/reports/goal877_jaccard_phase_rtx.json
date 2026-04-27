@@ -39,10 +39,10 @@
   },
   "date": "2026-04-24",
   "error": null,
-  "generated_at": "2026-04-26T21:14:45",
+  "generated_at": "2026-04-27T05:22:11",
   "goal": "Goal877 polygon overlap OptiX phase profiler",
   "host": {
-    "hostname": "3999708af092",
+    "hostname": "8b8db62e9958",
     "machine": "x86_64",
     "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
@@ -71,11 +71,11 @@
   "output_mode": "summary",
   "parity_vs_cpu": true,
   "phases": {
-    "cpu_exact_refinement_sec": 5.4033360024914145,
+    "cpu_exact_refinement_sec": 6.003689197357744,
     "cpu_reference_sec": null,
     "input_build_sec": 0.0,
-    "native_exact_continuation_sec": 5.4033360024914145,
-    "optix_candidate_discovery_sec": 3.512443620711565
+    "native_exact_continuation_sec": 6.003689197357744,
+    "optix_candidate_discovery_sec": 3.9872747571207583
   },
   "status": "pass",
   "validation_mode": "analytic_summary"

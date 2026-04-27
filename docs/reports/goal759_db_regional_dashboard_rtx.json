@@ -101,28 +101,28 @@
             "native_continuation_backend": "optix_db_compact_summary",
             "native_db_phases": {
               "conjunctive_scan_count": {
-                "bitset_copyback": 2.7096e-05,
+                "bitset_copyback": 2.3627e-05,
                 "emitted_count": 80000,
-                "exact_filter": 0.006723678,
-                "output_pack": 3.067e-06,
+                "exact_filter": 0.005872839,
+                "output_pack": 2.888e-06,
                 "raw_candidate_count": 80000,
-                "traversal": 0.033130437
+                "traversal": 0.033139847
               },
               "grouped_count_summary": {
-                "bitset_copyback": 1.647e-05,
+                "bitset_copyback": 2.2044e-05,
                 "emitted_count": 3,
-                "exact_filter": 0.00620871,
-                "output_pack": 0.004539878,
+                "exact_filter": 0.006245445,
+                "output_pack": 0.006188618,
                 "raw_candidate_count": 100000,
-                "traversal": 0.035889292
+                "traversal": 0.035884144
               },
               "grouped_sum_summary": {
-                "bitset_copyback": 1.7488e-05,
+                "bitset_copyback": 6.8257e-05,
                 "emitted_count": 2,
-                "exact_filter": 0.004609079,
-                "output_pack": 0.002696627,
+                "exact_filter": 0.011204093,
+                "output_pack": 0.002876844,
                 "raw_candidate_count": 100000,
-                "traversal": 0.035717074
+                "traversal": 0.035738117
               }
             },
             "output_mode": "compact_summary",
@@ -199,15 +199,15 @@
             },
             "requested_backend": "optix",
             "run_phases": {
-              "python_summary_postprocess_sec": 1.208670437335968e-05,
-              "query_conjunctive_scan_count_sec": 0.7329066386446357,
-              "query_grouped_count_summary_sec": 0.04703056160360575,
-              "query_grouped_sum_summary_sec": 0.043282316997647285
+              "python_summary_postprocess_sec": 1.3736076653003693e-05,
+              "query_conjunctive_scan_count_sec": 0.9575128727592528,
+              "query_grouped_count_summary_sec": 0.048701983876526356,
+              "query_grouped_sum_summary_sec": 0.05035064881667495
             },
             "session": {
-              "backend_selection_sec": 5.819834768772125e-06,
-              "prepare_sec": 1.384243263863027,
-              "table_construction_sec": 0.10915217828005552
+              "backend_selection_sec": 4.476867616176605e-06,
+              "prepare_sec": 1.4668756602331996,
+              "table_construction_sec": 0.11516001308336854
             },
             "summary": {
               "open_order_count_by_region": {
@@ -224,7 +224,7 @@
           }
         }
       },
-      "one_shot_total_sec": 2.3435671338811517,
+      "one_shot_total_sec": 2.6717424471862614,
       "output_mode": "compact_summary",
       "phase_contract": {
         "db_review_observation": "machine-readable local readiness observation for DB compact-summary RTX review; not a public speedup claim",
@@ -238,7 +238,7 @@
         "reported_run_phase_totals": "summed query/postprocess phase time plus explicit row-materializing versus compact-summary operation counts",
         "reported_run_phases": "scenario-provided per-operation query timers embedded in app JSON; grouped compact-summary fast paths use query_*_summary_sec while row paths use query_*_and_materialize_sec"
       },
-      "prepared_session_close_sec": 0.005424349568784237,
+      "prepared_session_close_sec": 0.0004232032224535942,
       "prepared_session_output": {
         "app": "database_analytics",
         "copies": 20000,
@@ -259,9 +259,9 @@
         "output_mode": "compact_summary",
         "prepared_session": {
           "per_section_run_sec": {
-            "regional_dashboard": 0.1238881777971983
+            "regional_dashboard": 0.11271180678158998
           },
-          "prepare_session_sec": 1.0889797359704971,
+          "prepare_session_sec": 1.0466818176209927,
           "scenario_count": 1
         },
         "requested_backend": "optix",
@@ -302,28 +302,28 @@
             "native_continuation_backend": "optix_db_compact_summary",
             "native_db_phases": {
               "conjunctive_scan_count": {
-                "bitset_copyback": 2.0648e-05,
+                "bitset_copyback": 1.9002e-05,
                 "emitted_count": 80000,
-                "exact_filter": 0.006729169,
-                "output_pack": 1.72e-07,
+                "exact_filter": 0.00508982,
+                "output_pack": 5.2e-08,
                 "raw_candidate_count": 80000,
-                "traversal": 0.02886628
+                "traversal": 0.028516479
               },
               "grouped_count_summary": {
-                "bitset_copyback": 3.1837e-05,
+                "bitset_copyback": 2.0127e-05,
                 "emitted_count": 3,
-                "exact_filter": 0.006860792,
-                "output_pack": 0.007342707,
+                "exact_filter": 0.005541386,
+                "output_pack": 0.004155856,
                 "raw_candidate_count": 100000,
-                "traversal": 0.031659357
+                "traversal": 0.031289904
               },
               "grouped_sum_summary": {
-                "bitset_copyback": 2.1434e-05,
+                "bitset_copyback": 1.9138e-05,
                 "emitted_count": 2,
-                "exact_filter": 0.006040604,
-                "output_pack": 0.00386431,
+                "exact_filter": 0.004332849,
+                "output_pack": 0.00196567,
                 "raw_candidate_count": 100000,
-                "traversal": 0.031672142
+                "traversal": 0.031301872
               }
             },
             "output_mode": "compact_summary",
@@ -400,15 +400,15 @@
             },
             "requested_backend": "optix",
             "run_phases": {
-              "python_summary_postprocess_sec": 3.125518560409546e-06,
-              "query_conjunctive_scan_count_sec": 0.03580422792583704,
-              "query_grouped_count_summary_sec": 0.04610923118889332,
-              "query_grouped_sum_summary_sec": 0.04183037206530571
+              "python_summary_postprocess_sec": 2.008862793445587e-06,
+              "query_conjunctive_scan_count_sec": 0.03373689204454422,
+              "query_grouped_count_summary_sec": 0.04113814560696483,
+              "query_grouped_sum_summary_sec": 0.03775266883894801
             },
             "session": {
-              "backend_selection_sec": 1.0234303772449493e-05,
-              "prepare_sec": 1.0258749453350902,
-              "table_construction_sec": 0.0630575604736805
+              "backend_selection_sec": 8.427072316408157e-06,
+              "prepare_sec": 0.9848432019352913,
+              "table_construction_sec": 0.06181175820529461
             },
             "summary": {
               "open_order_count_by_region": {
@@ -425,69 +425,69 @@
           }
         }
       },
-      "prepared_session_prepare_total_sec": 1.089031768962741,
+      "prepared_session_prepare_total_sec": 1.0467138709500432,
       "prepared_session_warm_query_sec": {
-        "max_sec": 0.12705295532941818,
-        "median_sec": 0.11854809476062655,
-        "min_sec": 0.11742423195391893
+        "max_sec": 0.11494777398183942,
+        "median_sec": 0.1117211920209229,
+        "min_sec": 0.11062544211745262
       },
       "reported_native_db_phase_totals_sec": {
-        "bitset_copyback_sec": 7.3919e-05,
+        "bitset_copyback_sec": 5.8266999999999996e-05,
         "counter_status": "exported",
         "emitted_count": 80005,
-        "exact_filter_sec": 0.019630565000000003,
+        "exact_filter_sec": 0.014964055,
         "operation_count": 3,
-        "output_pack_sec": 0.011207189,
+        "output_pack_sec": 0.006121578000000001,
         "raw_candidate_count": 280000,
         "sections": {
           "regional_dashboard": {
-            "bitset_copyback_sec": 7.3919e-05,
+            "bitset_copyback_sec": 5.8266999999999996e-05,
             "emitted_count": 80005,
-            "exact_filter_sec": 0.019630565000000003,
+            "exact_filter_sec": 0.014964055,
             "operation_count": 3,
-            "output_pack_sec": 0.011207189,
+            "output_pack_sec": 0.006121578000000001,
             "raw_candidate_count": 280000,
-            "traversal_sec": 0.09219777900000001
+            "traversal_sec": 0.091108255
           }
         },
-        "traversal_sec": 0.09219777900000001
+        "traversal_sec": 0.091108255
       },
       "reported_native_db_phases_sec": {
         "regional_dashboard": {
           "conjunctive_scan_count": {
-            "bitset_copyback": 2.0648e-05,
+            "bitset_copyback": 1.9002e-05,
             "emitted_count": 80000,
-            "exact_filter": 0.006729169,
-            "output_pack": 1.72e-07,
+            "exact_filter": 0.00508982,
+            "output_pack": 5.2e-08,
             "raw_candidate_count": 80000,
-            "traversal": 0.02886628
+            "traversal": 0.028516479
           },
           "grouped_count_summary": {
-            "bitset_copyback": 3.1837e-05,
+            "bitset_copyback": 2.0127e-05,
             "emitted_count": 3,
-            "exact_filter": 0.006860792,
-            "output_pack": 0.007342707,
+            "exact_filter": 0.005541386,
+            "output_pack": 0.004155856,
             "raw_candidate_count": 100000,
-            "traversal": 0.031659357
+            "traversal": 0.031289904
           },
           "grouped_sum_summary": {
-            "bitset_copyback": 2.1434e-05,
+            "bitset_copyback": 1.9138e-05,
             "emitted_count": 2,
-            "exact_filter": 0.006040604,
-            "output_pack": 0.00386431,
+            "exact_filter": 0.004332849,
+            "output_pack": 0.00196567,
             "raw_candidate_count": 100000,
-            "traversal": 0.031672142
+            "traversal": 0.031301872
           }
         }
       },
       "reported_prepare_phases_sec": {
         "regional_dashboard": {
-          "backend_selection_sec": 1.0234303772449493e-05,
-          "prepare_sec": 1.0258749453350902,
-          "table_construction_sec": 0.0630575604736805
+          "backend_selection_sec": 8.427072316408157e-06,
+          "prepare_sec": 0.9848432019352913,
+          "table_construction_sec": 0.06181175820529461
         },
         "unified_session": {
-          "prepare_session_sec": 1.0889797359704971,
+          "prepare_session_sec": 1.0466818176209927,
           "scenario_count": 1
         }
       },
@@ -499,34 +499,34 @@
         }
       },
       "reported_run_phase_totals_sec": {
-        "all_sections_python_summary_postprocess_sec": 3.125518560409546e-06,
-        "all_sections_query_sec": 0.12374383118003607,
+        "all_sections_python_summary_postprocess_sec": 2.008862793445587e-06,
+        "all_sections_query_sec": 0.11262770649045706,
         "compact_summary_operation_count": 3,
         "row_materializing_operation_count": 0,
         "sections": {
           "regional_dashboard": {
             "compact_summary_operation_count": 3,
-            "python_summary_postprocess_sec": 3.125518560409546e-06,
-            "query_sec": 0.12374383118003607,
+            "python_summary_postprocess_sec": 2.008862793445587e-06,
+            "query_sec": 0.11262770649045706,
             "row_materializing_operation_count": 0
           }
         }
       },
       "reported_run_phases_sec": {
         "regional_dashboard": {
-          "python_summary_postprocess_sec": 3.125518560409546e-06,
-          "query_conjunctive_scan_count_sec": 0.03580422792583704,
-          "query_grouped_count_summary_sec": 0.04610923118889332,
-          "query_grouped_sum_summary_sec": 0.04183037206530571
+          "python_summary_postprocess_sec": 2.008862793445587e-06,
+          "query_conjunctive_scan_count_sec": 0.03373689204454422,
+          "query_grouped_count_summary_sec": 0.04113814560696483,
+          "query_grouped_sum_summary_sec": 0.03775266883894801
         },
         "unified_session": {
           "per_section_run_sec": {
-            "regional_dashboard": 0.1238881777971983
+            "regional_dashboard": 0.11271180678158998
           }
         }
       },
       "schema_version": "goal921_db_phase_review_contract_v2",
-      "speedup_one_shot_over_warm_query_median": 19.768914368580152,
+      "speedup_one_shot_over_warm_query_median": 23.91437469344136,
       "status": "ok"
     }
   ],

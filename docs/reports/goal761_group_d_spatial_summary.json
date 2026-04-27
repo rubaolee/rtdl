@@ -13,7 +13,7 @@
   ],
   "include_deferred": true,
   "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
-  "nvidia_smi": "Sun Apr 26 21:12:22 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D6:00.0 Off |                  Off |\n| 30%   40C    P0             72W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "nvidia_smi": "Mon Apr 27 05:13:23 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:57:00.0 Off |                  Off |\n| 30%   25C    P2             33W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
   "python_version": "Python 3.11.10",
   "repo": "/workspace/rtdl_python_only",
   "results": [
@@ -56,11 +56,11 @@
           "--output-json",
           "docs/reports/goal811_service_coverage_rtx.json"
         ],
-        "elapsed_sec": 2.7307815244421363,
+        "elapsed_sec": 3.8857303569093347,
         "env_overrides": {},
         "execution_mode": "executed",
         "returncode": 0,
-        "started_at": "2026-04-26T21:12:14+0000",
+        "started_at": "2026-04-27T05:13:13+0000",
         "status": "ok",
         "stderr_tail": "",
         "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal811_service_coverage_rtx.json\", \"scenario\": \"service_coverage_gaps\"}\n"
@@ -105,11 +105,11 @@
           "--output-json",
           "docs/reports/goal811_event_hotspot_rtx.json"
         ],
-        "elapsed_sec": 2.5156890135258436,
+        "elapsed_sec": 3.102793325204402,
         "env_overrides": {},
         "execution_mode": "executed",
         "returncode": 0,
-        "started_at": "2026-04-26T21:12:16+0000",
+        "started_at": "2026-04-27T05:13:16+0000",
         "status": "ok",
         "stderr_tail": "",
         "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal811_event_hotspot_rtx.json\", \"scenario\": \"event_hotspot_screening\"}\n"
@@ -159,20 +159,20 @@
           "--output-json",
           "docs/reports/goal887_facility_service_coverage_rtx.json"
         ],
-        "elapsed_sec": 2.593843082897365,
+        "elapsed_sec": 3.7194719980470836,
         "env_overrides": {},
         "execution_mode": "executed",
         "returncode": 0,
-        "started_at": "2026-04-26T21:12:19+0000",
+        "started_at": "2026-04-27T05:13:20+0000",
         "status": "ok",
         "stderr_tail": "",
         "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal887_facility_service_coverage_rtx.json\", \"scenario\": \"facility_service_coverage\"}\n"
       }
     }
   ],
-  "source_commit": "b70fe3f263fa2be1a7eb6a61fdbba075537644b1",
+  "source_commit": "0c79b64d1b71383080f2e8572612488796d1c16c",
   "status": "ok",
   "suite": "goal761_rtx_cloud_run_all",
-  "timestamp": "2026-04-26T21:12:21+0000",
+  "timestamp": "2026-04-27T05:13:23+0000",
   "unique_command_count": 3
 }

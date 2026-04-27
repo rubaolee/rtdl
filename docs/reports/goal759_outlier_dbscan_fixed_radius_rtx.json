@@ -58,27 +58,27 @@
         "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
       },
       "point_count": 160000,
-      "prepared_optix_close_sec": 0.0005133943632245064,
-      "prepared_optix_pack_points_sec": 0.27460550563409925,
+      "prepared_optix_close_sec": 0.004753030836582184,
+      "prepared_optix_pack_points_sec": 0.2982319197617471,
       "prepared_optix_postprocess_sec": {
         "max_sec": 0.0,
         "median_sec": 0.0,
         "min_sec": 0.0
       },
-      "prepared_optix_prepare_sec": 1.1587201659567654,
+      "prepared_optix_prepare_sec": 1.3216465669684112,
       "prepared_optix_validation_sec": {
-        "max_sec": 0.0,
-        "median_sec": 0.0,
-        "min_sec": 0.0
+        "max_sec": 0.05279872985556722,
+        "median_sec": 0.050414660945534706,
+        "min_sec": 0.04896582802757621
       },
       "prepared_optix_warm_query_sec": {
-        "max_sec": 0.001193394884467125,
-        "median_sec": 0.0008955022785812616,
-        "min_sec": 0.0008830144070088863
+        "max_sec": 0.006569498218595982,
+        "median_sec": 0.0015963688492774963,
+        "min_sec": 0.0015396908856928349
       },
       "prepared_output": {
         "matches_oracle": true,
-        "oracle_outlier_count": null,
+        "oracle_outlier_count": 40000,
         "outlier_count": 40000,
         "point_count": 160000,
         "threshold_reached_count": 120000
@@ -86,7 +86,7 @@
       "result_mode": "threshold_count",
       "schema_version": "goal825_tier1_phase_contract_v1",
       "speedup_one_shot_over_warm_query_median": null,
-      "validation_mode": "skipped"
+      "validation_mode": "per_iteration_expected_fixture"
     },
     {
       "app": "dbscan_clustering",
@@ -112,38 +112,38 @@
         "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
       },
       "point_count": 160000,
-      "prepared_optix_close_sec": 0.0005140160210430622,
-      "prepared_optix_pack_points_sec": 0.2971877162344754,
+      "prepared_optix_close_sec": 0.0006467248313128948,
+      "prepared_optix_pack_points_sec": 0.27818562695756555,
       "prepared_optix_postprocess_sec": {
         "max_sec": 0.0,
         "median_sec": 0.0,
         "min_sec": 0.0
       },
-      "prepared_optix_prepare_sec": 0.004433921072632074,
+      "prepared_optix_prepare_sec": 0.014719814993441105,
       "prepared_optix_validation_sec": {
-        "max_sec": 0.0,
-        "median_sec": 0.0,
-        "min_sec": 0.0
+        "max_sec": 0.05181614309549332,
+        "median_sec": 0.050155435455963016,
+        "min_sec": 0.04835122497752309
       },
       "prepared_optix_warm_query_sec": {
-        "max_sec": 0.0010238639079034328,
-        "median_sec": 0.0008257539011538029,
-        "min_sec": 0.0008208290673792362
+        "max_sec": 0.006371376104652882,
+        "median_sec": 0.0015415202360600233,
+        "min_sec": 0.0015114801935851574
       },
       "prepared_output": {
         "core_count": 140000,
         "matches_oracle": true,
-        "oracle_core_count": null,
+        "oracle_core_count": 140000,
         "point_count": 160000,
         "threshold_reached_count": 140000
       },
       "result_mode": "threshold_count",
       "schema_version": "goal825_tier1_phase_contract_v1",
       "speedup_one_shot_over_warm_query_median": null,
-      "validation_mode": "skipped"
+      "validation_mode": "per_iteration_expected_fixture"
     }
   ],
   "schema_version": "goal825_tier1_phase_contract_v1",
-  "skip_validation": true,
+  "skip_validation": false,
   "suite": "goal757_optix_fixed_radius_prepared_perf"
 }

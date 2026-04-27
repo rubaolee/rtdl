@@ -13,7 +13,7 @@
   ],
   "include_deferred": true,
   "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
-  "nvidia_smi": "Sun Apr 26 21:14:45 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D6:00.0 Off |                  Off |\n| 30%   44C    P2             88W /  230W |       1MiB /  24564MiB |      5%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "nvidia_smi": "Mon Apr 27 05:22:11 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:57:00.0 Off |                  Off |\n| 30%   28C    P2             83W /  230W |       1MiB /  24564MiB |      5%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
   "python_version": "Python 3.11.10",
   "repo": "/workspace/rtdl_python_only",
   "results": [
@@ -65,11 +65,11 @@
           "--output-json",
           "docs/reports/goal877_pair_overlap_phase_rtx.json"
         ],
-        "elapsed_sec": 9.133383973501623,
+        "elapsed_sec": 9.56479048077017,
         "env_overrides": {},
         "execution_mode": "executed",
         "returncode": 0,
-        "started_at": "2026-04-26T21:14:26+0000",
+        "started_at": "2026-04-27T05:21:50+0000",
         "status": "ok",
         "stderr_tail": "",
         "stdout_tail": "{\"output_json\": \"docs/reports/goal877_pair_overlap_phase_rtx.json\", \"status\": \"pass\"}\n"
@@ -123,20 +123,20 @@
           "--output-json",
           "docs/reports/goal877_jaccard_phase_rtx.json"
         ],
-        "elapsed_sec": 10.022946927696466,
+        "elapsed_sec": 11.224096581805497,
         "env_overrides": {},
         "execution_mode": "executed",
         "returncode": 0,
-        "started_at": "2026-04-26T21:14:35+0000",
+        "started_at": "2026-04-27T05:22:00+0000",
         "status": "ok",
         "stderr_tail": "",
         "stdout_tail": "{\"output_json\": \"docs/reports/goal877_jaccard_phase_rtx.json\", \"status\": \"pass\"}\n"
       }
     }
   ],
-  "source_commit": "b70fe3f263fa2be1a7eb6a61fdbba075537644b1",
+  "source_commit": "0c79b64d1b71383080f2e8572612488796d1c16c",
   "status": "ok",
   "suite": "goal761_rtx_cloud_run_all",
-  "timestamp": "2026-04-26T21:14:45+0000",
+  "timestamp": "2026-04-27T05:22:11+0000",
   "unique_command_count": 2
 }

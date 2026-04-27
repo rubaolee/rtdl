@@ -16,10 +16,10 @@
     ]
   },
   "date": "2026-04-24",
-  "generated_at": "2026-04-26T21:12:21",
+  "generated_at": "2026-04-27T05:13:23",
   "goal": "Goal887 prepared decision OptiX phase profiler",
   "host": {
-    "hostname": "3999708af092",
+    "hostname": "8b8db62e9958",
     "machine": "x86_64",
     "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
@@ -45,19 +45,19 @@
     },
     "scenario": "facility_service_coverage",
     "timings_sec": {
-      "input_build_sec": 0.22762782126665115,
-      "optix_close_sec": 0.0002650246024131775,
-      "optix_prepare_sec": 1.279375808313489,
+      "input_build_sec": 0.22817889880388975,
+      "optix_close_sec": 0.00027721794322133064,
+      "optix_prepare_sec": 1.6076406300999224,
       "optix_query_sec": {
-        "max_sec": 0.0008721016347408295,
-        "median_sec": 0.0005993121303617954,
-        "min_sec": 0.0005828458815813065
+        "max_sec": 0.0008939821273088455,
+        "median_sec": 0.000651415204629302,
+        "min_sec": 0.0006410898640751839
       },
-      "point_pack_sec": 0.2603954095393419,
+      "point_pack_sec": 0.2654685080051422,
       "python_postprocess_sec": {
-        "max_sec": 3.1813979148864746e-06,
-        "median_sec": 1.0281801223754883e-06,
-        "min_sec": 8.344650268554688e-07
+        "max_sec": 3.4491531550884247e-06,
+        "median_sec": 1.0936055332422256e-06,
+        "min_sec": 7.9302117228508e-07
       },
       "validation_sec": {
         "max_sec": 0.0,

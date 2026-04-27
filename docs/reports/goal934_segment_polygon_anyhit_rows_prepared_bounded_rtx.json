@@ -18,10 +18,10 @@
   },
   "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
   "date": "2026-04-25",
-  "generated_at": "2026-04-26T21:12:40",
+  "generated_at": "2026-04-27T05:14:01",
   "goal": "Goal934 prepared segment/polygon pair-row OptiX profiler",
   "host": {
-    "hostname": "3999708af092",
+    "hostname": "8b8db62e9958",
     "machine": "x86_64",
     "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
@@ -57,24 +57,24 @@
   "strict_failures": [],
   "strict_pass": true,
   "timings_sec": {
-    "cpu_reference_total_sec": 0.03647652827203274,
-    "input_build_sec": 0.032482974231243134,
-    "optix_close_sec": 2.7660280466079712e-05,
-    "optix_prepare_sec": 1.2813129220157862,
+    "cpu_reference_total_sec": 0.05380622670054436,
+    "input_build_sec": 0.11408361373469234,
+    "optix_close_sec": 2.7297064661979675e-05,
+    "optix_prepare_sec": 1.8206946128048003,
     "optix_query_sec": {
-      "max_sec": 0.011343678459525108,
-      "median_sec": 0.004759632050991058,
-      "min_sec": 0.004384875297546387
+      "max_sec": 0.011390248779207468,
+      "median_sec": 0.004678796976804733,
+      "min_sec": 0.004351204261183739
     },
     "python_postprocess_sec": {
-      "max_sec": 0.0018738918006420135,
-      "median_sec": 0.0017894934862852097,
-      "min_sec": 0.00177720095962286
+      "max_sec": 0.0018391013145446777,
+      "median_sec": 0.0018159099854528904,
+      "min_sec": 0.0017796470783650875
     },
     "validation_sec": {
-      "max_sec": 1.0328367352485657e-06,
-      "median_sec": 1.0328367352485657e-06,
-      "min_sec": 1.0328367352485657e-06
+      "max_sec": 1.1599622666835785e-06,
+      "median_sec": 1.1599622666835785e-06,
+      "min_sec": 1.1599622666835785e-06
     }
   }
 }

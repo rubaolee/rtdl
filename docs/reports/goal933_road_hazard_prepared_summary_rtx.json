@@ -15,10 +15,10 @@
   },
   "copies": 20000,
   "date": "2026-04-25",
-  "generated_at": "2026-04-26T21:12:36",
+  "generated_at": "2026-04-27T05:13:54",
   "goal": "Goal933 prepared segment/polygon OptiX profiler",
   "host": {
-    "hostname": "3999708af092",
+    "hostname": "8b8db62e9958",
     "machine": "x86_64",
     "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
@@ -44,23 +44,23 @@
   "strict_failures": [],
   "strict_pass": true,
   "timings_sec": {
-    "input_build_sec": 0.3723930660635233,
-    "optix_close_sec": 0.0006216466426849365,
-    "optix_prepare_sec": 1.946493667550385,
+    "input_build_sec": 0.37422610679641366,
+    "optix_close_sec": 0.0006595789454877377,
+    "optix_prepare_sec": 1.8519900836981833,
     "optix_query_sec": {
-      "max_sec": 0.15437052864581347,
-      "median_sec": 0.13490119017660618,
-      "min_sec": 0.11977673508226871
+      "max_sec": 0.1413868092931807,
+      "median_sec": 0.12417701631784439,
+      "min_sec": 0.12110168999060988
     },
     "python_postprocess_sec": {
-      "max_sec": 1.062639057636261e-06,
-      "median_sec": 5.541369318962097e-07,
-      "min_sec": 3.5297125577926636e-07
+      "max_sec": 1.2367963790893555e-06,
+      "median_sec": 4.889443516731262e-07,
+      "min_sec": 4.00003045797348e-07
     },
     "validation_sec": {
-      "max_sec": 1.825084025040269,
-      "median_sec": 1.825084025040269,
-      "min_sec": 1.825084025040269
+      "max_sec": 1.7851723600178957,
+      "median_sec": 1.7851723600178957,
+      "min_sec": 1.7851723600178957
     }
   }
 }

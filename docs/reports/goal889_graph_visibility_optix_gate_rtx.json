@@ -17,10 +17,10 @@
   },
   "copies": 20000,
   "date": "2026-04-24",
-  "generated_at": "2026-04-26T21:13:56",
+  "generated_at": "2026-04-27T05:20:50",
   "goal": "Goal889/905 graph OptiX native traversal gate",
   "host": {
-    "hostname": "3999708af092",
+    "hostname": "8b8db62e9958",
     "machine": "x86_64",
     "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
@@ -43,7 +43,7 @@
       "optix_graph_mode": "not_applicable",
       "parity_vs_analytic_expected": true,
       "scenario": "visibility_edges",
-      "sec": 1.8701796140521765,
+      "sec": 2.8515559462830424,
       "status": "ok"
     },
     {
@@ -60,7 +60,7 @@
       "optix_graph_mode": "native",
       "parity_vs_analytic_expected": true,
       "scenario": "bfs",
-      "sec": 6.630045131780207,
+      "sec": 8.122631050646305,
       "status": "ok"
     },
     {
@@ -76,7 +76,7 @@
       "optix_graph_mode": "native",
       "parity_vs_analytic_expected": true,
       "scenario": "triangle_count",
-      "sec": 1.2993572056293488,
+      "sec": 1.5316050918772817,
       "status": "ok"
     },
     {

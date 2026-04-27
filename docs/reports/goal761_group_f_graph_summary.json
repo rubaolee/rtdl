@@ -13,7 +13,7 @@
   ],
   "include_deferred": true,
   "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
-  "nvidia_smi": "Sun Apr 26 21:13:56 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D6:00.0 Off |                  Off |\n| 30%   41C    P2             86W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "nvidia_smi": "Mon Apr 27 05:20:50 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:57:00.0 Off |                  Off |\n| 30%   27C    P2             82W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
   "python_version": "Python 3.11.10",
   "repo": "/workspace/rtdl_python_only",
   "results": [
@@ -64,20 +64,20 @@
           "--output-json",
           "docs/reports/goal889_graph_visibility_optix_gate_rtx.json"
         ],
-        "elapsed_sec": 11.00958560872823,
+        "elapsed_sec": 14.463226017076522,
         "env_overrides": {},
         "execution_mode": "executed",
         "returncode": 0,
-        "started_at": "2026-04-26T21:13:45+0000",
+        "started_at": "2026-04-27T05:20:35+0000",
         "status": "ok",
         "stderr_tail": "",
         "stdout_tail": "{\"output_json\": \"docs/reports/goal889_graph_visibility_optix_gate_rtx.json\", \"status\": \"pass\", \"strict_pass\": true}\n"
       }
     }
   ],
-  "source_commit": "b70fe3f263fa2be1a7eb6a61fdbba075537644b1",
+  "source_commit": "0c79b64d1b71383080f2e8572612488796d1c16c",
   "status": "ok",
   "suite": "goal761_rtx_cloud_run_all",
-  "timestamp": "2026-04-26T21:13:56+0000",
+  "timestamp": "2026-04-27T05:20:50+0000",
   "unique_command_count": 1
 }
