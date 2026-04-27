@@ -91,7 +91,7 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("prepared fixed-radius scalar threshold-count", by_app["outlier_detection"]["claim_scope"])
         self.assertIn("not per-point outlier labels", by_app["outlier_detection"]["non_claim"])
         self.assertIn("whole-app RTX speedup", by_app["outlier_detection"]["non_claim"])
-        self.assertIn("--skip-validation", by_app["outlier_detection"]["command"])
+        self.assertNotIn("--skip-validation", by_app["outlier_detection"]["command"])
         self.assertIn("--result-mode", by_app["outlier_detection"]["command"])
         self.assertIn("threshold_count", by_app["outlier_detection"]["command"])
 
@@ -99,7 +99,7 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("prepared fixed-radius scalar core-count", by_app["dbscan_clustering"]["claim_scope"])
         self.assertIn("not per-point core flags", by_app["dbscan_clustering"]["non_claim"])
         self.assertIn("not a full DBSCAN", by_app["dbscan_clustering"]["non_claim"])
-        self.assertIn("--skip-validation", by_app["dbscan_clustering"]["command"])
+        self.assertNotIn("--skip-validation", by_app["dbscan_clustering"]["command"])
         self.assertIn("--result-mode", by_app["dbscan_clustering"]["command"])
         self.assertIn("threshold_count", by_app["dbscan_clustering"]["command"])
 

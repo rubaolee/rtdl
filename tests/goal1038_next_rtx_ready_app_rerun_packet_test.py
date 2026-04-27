@@ -42,6 +42,11 @@ class Goal1038NextRtxReadyAppRerunPacketTest(unittest.TestCase):
         self.assertIn("phase separation", text)
         self.assertIn("repeated runs", text)
 
+    def test_packet_injects_source_commit_for_rsync_pods(self) -> None:
+        text = PACKET.read_text(encoding="utf-8")
+        self.assertIn("RTDL_SOURCE_COMMIT", text)
+        self.assertIn(".rtdl_source_commit", text)
+
 
 if __name__ == "__main__":
     unittest.main()

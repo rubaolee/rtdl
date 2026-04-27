@@ -45,6 +45,7 @@ export RTDL_NVCC=/usr/local/cuda-12.4/bin/nvcc
 export RTDL_OPTIX_PTX_COMPILER=nvcc
 export OPTIX_PREFIX=/workspace/vendor/optix-dev-9.0.0
 export RTDL_OPTIX_LIB=/workspace/rtdl_python_only/build/librtdl_optix.so
+export RTDL_SOURCE_COMMIT="$(cat /workspace/rtdl_python_only/.rtdl_source_commit 2>/dev/null || git rev-parse HEAD)"
 
 PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
   --output-json docs/reports/goal1038_bootstrap_check.json
@@ -57,6 +58,7 @@ Stop immediately if bootstrap status is not `ok`.
 Run fixed-radius scalar apps:
 
 ```bash
+RTDL_SOURCE_COMMIT="${RTDL_SOURCE_COMMIT}" \
 PYTHONPATH=src:. python3 scripts/goal761_rtx_cloud_run_all.py \
   --only prepared_fixed_radius_density_summary \
   --only prepared_fixed_radius_core_flags \
@@ -66,6 +68,7 @@ PYTHONPATH=src:. python3 scripts/goal761_rtx_cloud_run_all.py \
 Run mature prepared spatial summaries:
 
 ```bash
+RTDL_SOURCE_COMMIT="${RTDL_SOURCE_COMMIT}" \
 PYTHONPATH=src:. python3 scripts/goal761_rtx_cloud_run_all.py \
   --include-deferred \
   --only prepared_gap_summary \

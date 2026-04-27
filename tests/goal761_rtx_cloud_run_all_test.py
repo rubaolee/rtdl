@@ -109,6 +109,18 @@ class Goal761RtxCloudRunAllTest(unittest.TestCase):
         self.assertIn("source_commit", payload)
         self.assertTrue(payload["source_commit"])
 
+    def test_runner_accepts_explicit_source_commit_env_fallback(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["_source_commit"])
+        original = module.os.environ.get("RTDL_SOURCE_COMMIT")
+        try:
+            module.os.environ["RTDL_SOURCE_COMMIT"] = "explicit-source-commit-for-rsync-pod"
+            self.assertEqual(module._source_commit(), "explicit-source-commit-for-rsync-pod")
+        finally:
+            if original is None:
+                module.os.environ.pop("RTDL_SOURCE_COMMIT", None)
+            else:
+                module.os.environ["RTDL_SOURCE_COMMIT"] = original
+
 
 if __name__ == "__main__":
     unittest.main()

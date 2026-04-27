@@ -71,6 +71,9 @@ def _probe(command: list[str]) -> str:
 
 
 def _source_commit() -> str:
+    env_commit = os.environ.get("RTDL_SOURCE_COMMIT", "").strip()
+    if env_commit:
+        return env_commit
     git_head = _probe(["git", "rev-parse", "HEAD"])
     if not git_head.startswith("fatal:") and "\n" not in git_head:
         return git_head
