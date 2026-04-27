@@ -26,6 +26,10 @@ class Goal1026PreCloudRunnerDryRunAuditTest(unittest.TestCase):
         self.assertEqual(payload["result_status_counts"]["dry_run"], 17)
         self.assertEqual(payload["failed_count"], 0)
         self.assertEqual(payload["command_result_reuse_paths"], ["prepared_fixed_radius_core_flags"])
+        self.assertTrue(payload["source_commit"])
+        self.assertIn("Goal1043", payload["cloud_policy"])
+        self.assertIn("RTDL_SOURCE_COMMIT", payload["cloud_policy"])
+        self.assertIn("validation-enabled Group B", payload["cloud_policy"])
         self.assertIn("does not authorize RTX speedup claims", payload["manifest_boundary"])
         self.assertIn("RTX-class NVIDIA hardware with RT cores", " ".join(payload["global_preconditions"]))
 
@@ -53,6 +57,8 @@ class Goal1026PreCloudRunnerDryRunAuditTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("does not start cloud", markdown)
+            self.assertIn("source commit:", markdown)
+            self.assertIn("Goal1043", markdown)
             self.assertIn("single-session runbook", markdown)
 
 

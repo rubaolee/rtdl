@@ -17,7 +17,7 @@ import rtdsl as rt
 from scripts.goal759_rtx_cloud_benchmark_manifest import build_manifest
 
 
-DATE = "2026-04-26"
+DATE = "2026-04-27"
 GOAL = "Goal1025 pre-cloud RTX app batch readiness"
 
 
@@ -139,9 +139,9 @@ def build_audit() -> dict[str, Any]:
         "manifest_blocks_speedup_claims": manifest_blocks_speedup_claims,
         "app_rows": app_rows,
         "cloud_policy": (
-            "Do not start a paid pod for one app. The next pod should run the manifest "
-            "as one consolidated active+deferred regression/tuning batch after local "
-            "checks are clean."
+            "Do not start a paid pod for one app. After Goal1043, the next pod should "
+            "run one repaired consolidated active+deferred regression/tuning batch "
+            "with source-commit traceability and validation-enabled Group B commands."
         ),
         "valid": valid,
         "boundary": (
@@ -199,8 +199,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit pre-cloud RTX app batch readiness.")
-    parser.add_argument("--output-json", default="docs/reports/goal1025_pre_cloud_rtx_app_batch_readiness_2026-04-26.json")
-    parser.add_argument("--output-md", default="docs/reports/goal1025_pre_cloud_rtx_app_batch_readiness_2026-04-26.md")
+    parser.add_argument("--output-json", default="docs/reports/goal1046_pre_cloud_rtx_app_batch_readiness_2026-04-27.json")
+    parser.add_argument("--output-md", default="docs/reports/goal1046_pre_cloud_rtx_app_batch_readiness_2026-04-27.md")
     args = parser.parse_args()
 
     payload = build_audit()

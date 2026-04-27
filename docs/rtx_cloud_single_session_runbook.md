@@ -17,11 +17,11 @@ cd /Users/rl2025/rtdl_python_only
 PYTHONPATH=src:. python3 scripts/goal824_pre_cloud_rtx_readiness_gate.py \
   --output-json docs/reports/goal824_pre_cloud_rtx_readiness_gate_2026-04-23.json
 PYTHONPATH=src:. python3 scripts/goal1025_pre_cloud_rtx_app_batch_readiness.py \
-  --output-json docs/reports/goal1025_pre_cloud_rtx_app_batch_readiness_2026-04-26.json \
-  --output-md docs/reports/goal1025_pre_cloud_rtx_app_batch_readiness_2026-04-26.md
+  --output-json docs/reports/goal1046_pre_cloud_rtx_app_batch_readiness_2026-04-27.json \
+  --output-md docs/reports/goal1046_pre_cloud_rtx_app_batch_readiness_2026-04-27.md
 PYTHONPATH=src:. python3 scripts/goal1026_pre_cloud_runner_dry_run_audit.py \
-  --output-json docs/reports/goal1026_pre_cloud_runner_dry_run_audit_2026-04-26.json \
-  --output-md docs/reports/goal1026_pre_cloud_runner_dry_run_audit_2026-04-26.md
+  --output-json docs/reports/goal1046_pre_cloud_runner_dry_run_audit_2026-04-27.json \
+  --output-md docs/reports/goal1046_pre_cloud_runner_dry_run_audit_2026-04-27.md
 ```
 
 Start a pod only if the result is:

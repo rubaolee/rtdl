@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.goal761_rtx_cloud_run_all import run_all
 
 
-DATE = "2026-04-26"
+DATE = "2026-04-27"
 GOAL = "Goal1026 pre-cloud RTX runner dry-run audit"
 
 
@@ -40,6 +40,7 @@ def build_audit() -> dict[str, Any]:
         dry_run["status"] == "ok"
         and dry_run["dry_run"] is True
         and dry_run["include_deferred"] is True
+        and bool(str(dry_run["source_commit"]).strip())
         and dry_run["entry_count"] == 17
         and dry_run["unique_command_count"] == 16
         and section_counts["entries"] == 8
@@ -74,8 +75,9 @@ def build_audit() -> dict[str, Any]:
         "manifest_boundary": dry_run["manifest_boundary"],
         "global_preconditions": dry_run["global_preconditions"],
         "cloud_policy": (
-            "The next pod session should run OOM-safe small groups from the "
-            "single-session runbook, not isolated per-app pod restarts."
+            "After Goal1043, the next pod session should run OOM-safe small groups "
+            "from the single-session runbook with RTDL_SOURCE_COMMIT traceability "
+            "and validation-enabled Group B commands, not isolated per-app pod restarts."
         ),
         "boundary": (
             "This is a local dry-run audit only. It does not start cloud, run "
@@ -103,6 +105,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- execution mode counts: `{payload['execution_mode_counts']}`",
         f"- failed count: `{payload['failed_count']}`",
         f"- reused command paths: `{payload['command_result_reuse_paths']}`",
+        f"- source commit: `{payload['source_commit']}`",
         "",
         "## Apps Covered",
         "",
@@ -129,11 +132,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Audit the pre-cloud RTX runner dry run.")
     parser.add_argument(
         "--output-json",
-        default="docs/reports/goal1026_pre_cloud_runner_dry_run_audit_2026-04-26.json",
+        default="docs/reports/goal1046_pre_cloud_runner_dry_run_audit_2026-04-27.json",
     )
     parser.add_argument(
         "--output-md",
-        default="docs/reports/goal1026_pre_cloud_runner_dry_run_audit_2026-04-26.md",
+        default="docs/reports/goal1046_pre_cloud_runner_dry_run_audit_2026-04-27.md",
     )
     args = parser.parse_args()
 
