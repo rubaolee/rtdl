@@ -30,7 +30,7 @@ ENTRIES: list[dict[str, Any]] = [
         "app": "outlier_detection",
         "rtx_path": "prepared_fixed_radius_density_summary",
         "local_status": "baseline_ready",
-        "reason": "CPU, Embree prepared threshold, and real SciPy cKDTree threshold-count paths are exposed; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed.",
+        "reason": "CPU, Embree prepared threshold, and real SciPy cKDTree threshold-count paths are exposed; SciPy remains an optional dependency and is available locally through the project venv used by Goal1034+.",
         "commands": [
             _cmd("examples/rtdl_outlier_detection_app.py", "--backend", "cpu", "--copies", "20000", "--output-mode", "density_count"),
             _cmd("examples/rtdl_outlier_detection_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "density_count", "--embree-summary-mode", "rt_count_threshold_prepared"),
@@ -41,7 +41,7 @@ ENTRIES: list[dict[str, Any]] = [
         "app": "dbscan_clustering",
         "rtx_path": "prepared_fixed_radius_core_flags",
         "local_status": "baseline_ready",
-        "reason": "CPU, Embree prepared core-count, and real SciPy cKDTree threshold-count paths are exposed; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed.",
+        "reason": "CPU, Embree prepared core-count, and real SciPy cKDTree threshold-count paths are exposed; SciPy remains an optional dependency and is available locally through the project venv used by Goal1034+.",
         "commands": [
             _cmd("examples/rtdl_dbscan_clustering_app.py", "--backend", "cpu", "--copies", "20000", "--output-mode", "core_count"),
             _cmd("examples/rtdl_dbscan_clustering_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "core_count", "--embree-summary-mode", "rt_core_flags_prepared"),
@@ -72,7 +72,7 @@ ENTRIES: list[dict[str, Any]] = [
         "app": "service_coverage_gaps",
         "rtx_path": "prepared_gap_summary",
         "local_status": "baseline_ready",
-        "reason": "CPU, Embree summary, and SciPy paths are exposed by the app CLI; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed.",
+        "reason": "CPU, Embree summary, and SciPy paths are exposed by the app CLI; SciPy remains an optional dependency and is available locally through the project venv used by Goal1034+.",
         "commands": [
             _cmd("examples/rtdl_service_coverage_gaps.py", "--backend", "cpu", "--copies", "20000"),
             _cmd("examples/rtdl_service_coverage_gaps.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "gap_summary"),
@@ -83,7 +83,7 @@ ENTRIES: list[dict[str, Any]] = [
         "app": "event_hotspot_screening",
         "rtx_path": "prepared_count_summary",
         "local_status": "baseline_ready",
-        "reason": "CPU, Embree summary, and SciPy paths are exposed by the app CLI; this Mac currently lacks SciPy, so SciPy is an optional local dependency gap until installed.",
+        "reason": "CPU, Embree summary, and SciPy paths are exposed by the app CLI; SciPy remains an optional dependency and is available locally through the project venv used by Goal1034+.",
         "commands": [
             _cmd("examples/rtdl_event_hotspot_screening.py", "--backend", "cpu", "--copies", "20000"),
             _cmd("examples/rtdl_event_hotspot_screening.py", "--backend", "embree", "--copies", "20000", "--embree-summary-mode", "count_summary"),
