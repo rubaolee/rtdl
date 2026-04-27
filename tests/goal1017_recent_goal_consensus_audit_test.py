@@ -19,14 +19,13 @@ class Goal1017RecentGoalConsensusAuditTest(unittest.TestCase):
         )
         payload = module.build_audit()
         self.assertTrue(payload["valid"])
-        self.assertEqual(payload["audited_goal_count"], 25)
-        self.assertEqual(payload["complete_goal_count"], 25)
+        self.assertEqual(payload["audited_goal_count"], 29)
+        self.assertEqual(payload["complete_goal_count"], 29)
         self.assertEqual(payload["incomplete_goal_count"], 0)
         for row in payload["rows"]:
             self.assertEqual(row["status"], "complete")
             self.assertEqual(row["missing_requirements"], [])
-            self.assertGreaterEqual(len(row["files"]["claude_review"]), 1)
-            self.assertGreaterEqual(len(row["files"]["gemini_review"]), 1)
+            self.assertGreaterEqual(len(row["files"]["external_review"]), 1)
             self.assertGreaterEqual(len(row["files"]["two_ai_consensus"]), 1)
 
     def test_cli_writes_json_and_markdown(self) -> None:
@@ -53,6 +52,7 @@ class Goal1017RecentGoalConsensusAuditTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("complete goals", markdown)
+            self.assertIn("External reviews", markdown)
             self.assertIn("does not authorize public speedup claims", markdown)
 
 

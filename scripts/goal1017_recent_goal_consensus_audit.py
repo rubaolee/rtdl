@@ -8,7 +8,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATE = "2026-04-26"
+DATE = "2026-04-27"
 GOAL = "Goal1017 recent goal consensus audit"
 
 GOALS = {
@@ -37,20 +37,21 @@ GOALS = {
     1036: "outlier density-count oracle fix",
     1037: "local baseline manifest SciPy wording sync",
     1038: "next RTX ready-app rerun packet",
+    1043: "claim-grade pod readiness repairs",
+    1044: "public RTX cloud policy sync",
+    1045: "RTX single-session runbook Goal1043 sync",
+    1046: "pre-cloud gate Goal1043 policy sync",
 }
 
-REQUIRED_SUFFIXES = {
-    "claude_review": "claude",
-    "gemini_review": "gemini",
-    "two_ai_consensus": "consensus",
-}
+EXTERNAL_REVIEW_TOKENS = ("claude", "gemini")
+CONSENSUS_TOKENS = ("two_ai_consensus", "consensus")
 
 
 def _matching_files(goal: int, token: str) -> list[str]:
     reports = ROOT / "docs" / "reports"
     return sorted(
         str(path.relative_to(ROOT))
-        for path in reports.glob(f"goal{goal}*{token}*2026-04-26.md")
+        for path in reports.glob(f"goal{goal}*{token}*2026-04-*.md")
     )
 
 
@@ -59,11 +60,22 @@ def build_audit() -> dict[str, Any]:
     for goal, title in GOALS.items():
         files_by_requirement: dict[str, list[str]] = {}
         missing: list[str] = []
-        for requirement, token in REQUIRED_SUFFIXES.items():
-            matches = _matching_files(goal, token)
-            files_by_requirement[requirement] = matches
-            if not matches:
-                missing.append(requirement)
+        external_review_files = [
+            match
+            for token in EXTERNAL_REVIEW_TOKENS
+            for match in _matching_files(goal, token)
+        ]
+        consensus_files = [
+            match
+            for token in CONSENSUS_TOKENS
+            for match in _matching_files(goal, token)
+        ]
+        files_by_requirement["external_review"] = sorted(set(external_review_files))
+        files_by_requirement["two_ai_consensus"] = sorted(set(consensus_files))
+        if not files_by_requirement["external_review"]:
+            missing.append("external_review")
+        if not files_by_requirement["two_ai_consensus"]:
+            missing.append("two_ai_consensus")
         rows.append(
             {
                 "goal": goal,
@@ -81,12 +93,12 @@ def build_audit() -> dict[str, Any]:
         "audited_goal_count": len(rows),
         "complete_goal_count": len(rows) - len(incomplete),
         "incomplete_goal_count": len(incomplete),
-        "required_review_trail": sorted(REQUIRED_SUFFIXES),
+        "required_review_trail": ["external_review", "two_ai_consensus"],
         "rows": rows,
         "valid": not incomplete,
         "boundary": (
-            "This audit checks that recent bounded goals have saved Claude review, "
-            "Gemini review, and two-AI consensus files. It does not authorize public speedup claims."
+            "This audit checks that recent bounded goals have saved external-style "
+            "AI review files and two-AI consensus files. It does not authorize public speedup claims."
         ),
     }
 
@@ -108,15 +120,14 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Rows",
         "",
-        "| Goal | Title | Status | Claude | Gemini | Consensus |",
-        "|---:|---|---|---:|---:|---:|",
+        "| Goal | Title | Status | External reviews | Consensus |",
+        "|---:|---|---|---:|---:|",
     ]
     for row in payload["rows"]:
         files = row["files"]
         lines.append(
             f"| {row['goal']} | {row['title']} | `{row['status']}` | "
-            f"{len(files['claude_review'])} | {len(files['gemini_review'])} | "
-            f"{len(files['two_ai_consensus'])} |"
+            f"{len(files['external_review'])} | {len(files['two_ai_consensus'])} |"
         )
     lines.extend(["", "## Boundary", "", payload["boundary"], ""])
     return "\n".join(lines)
@@ -124,8 +135,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit recent bounded goals for saved two-AI review trails.")
-    parser.add_argument("--output-json", default="docs/reports/goal1017_recent_goal_consensus_audit_2026-04-26.json")
-    parser.add_argument("--output-md", default="docs/reports/goal1017_recent_goal_consensus_audit_2026-04-26.md")
+    parser.add_argument("--output-json", default="docs/reports/goal1047_recent_goal_consensus_audit_2026-04-27.json")
+    parser.add_argument("--output-md", default="docs/reports/goal1047_recent_goal_consensus_audit_2026-04-27.md")
     args = parser.parse_args()
 
     payload = build_audit()
