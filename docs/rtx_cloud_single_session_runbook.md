@@ -3,6 +3,11 @@
 This runbook is for paid NVIDIA RTX pod time. It exists to avoid repeated
 restart/stop cycles while RTDL is validating NVIDIA RT-core app evidence.
 
+After Goal1043, every claim-grade pod batch must preserve source traceability
+even when the repo is staged with `rsync` instead of `git clone`. The runner
+accepts `RTDL_SOURCE_COMMIT` first, then falls back to git, then to
+`.rtdl_source_commit`.
+
 ## Before Starting A Pod
 
 Run this locally first:
@@ -107,10 +112,13 @@ export NVCC=/usr/local/cuda-12.4/bin/nvcc
 export RTDL_NVCC=/usr/local/cuda-12.4/bin/nvcc
 export RTDL_OPTIX_PTX_COMPILER=nvcc
 export RTDL_OPTIX_LIB=/workspace/rtdl_python_only/build/librtdl_optix.so
+export RTDL_SOURCE_COMMIT="$(cat /workspace/rtdl_python_only/.rtdl_source_commit 2>/dev/null || git rev-parse HEAD)"
 ```
 
 Use `RTDL_OPTIX_PTX_COMPILER=nvcc` on pods where NVRTC tries to include
 incomplete host libc headers such as missing `gnu/stubs-32.h`.
+Do not continue if `RTDL_SOURCE_COMMIT` is empty; artifacts without a source
+commit are engineering diagnostics only, not claim-grade evidence.
 
 ### Group A: Robot Flagship
 
@@ -128,7 +136,8 @@ one output artifact. The manifest command must run
 threshold_count`, which maps to the public outlier `density_count` scalar path
 and DBSCAN `core_count` scalar path. It must not be interpreted as per-point
 outlier labels, per-point core flags, full DBSCAN clustering, or whole-app
-speedup.
+speedup. After Goal1043, Group B must run with validation enabled; do not add
+`--skip-validation` to the fixed-radius commands.
 
 ```bash
 python3 scripts/goal761_rtx_cloud_run_all.py \
@@ -299,6 +308,8 @@ Every non-dry-run artifact must include:
 - `cloud_claim_contract`
 - `required_phase_groups`
 - all required phase keys for that app
+- the `source_commit` captured from `RTDL_SOURCE_COMMIT`, git, or
+  `.rtdl_source_commit`
 
 If any result is `failed` or `needs_attention`, preserve the generated reports
 and stop interpreting performance numbers as claim evidence.

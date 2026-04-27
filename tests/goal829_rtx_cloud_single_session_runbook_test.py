@@ -42,6 +42,9 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("Do not patch `OPTIX_ABI_VERSION` manually", text)
         self.assertIn("RTDL_OPTIX_PTX_COMPILER=nvcc", text)
         self.assertIn("gnu/stubs-32.h", text)
+        self.assertIn("RTDL_SOURCE_COMMIT", text)
+        self.assertIn(".rtdl_source_commit", text)
+        self.assertIn("artifacts without a source", text)
         self.assertIn("cloud_claim_contract", text)
         self.assertIn("required_phase_groups", text)
         self.assertIn("needs_attention", text)
@@ -95,6 +98,7 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("density_count", text)
         self.assertIn("core_count", text)
         self.assertIn("It must not be interpreted as per-point", text)
+        self.assertIn("Group B must run with validation enabled", text)
 
     def test_group_g_uses_validated_manifest_commands(self) -> None:
         text = RUNBOOK.read_text(encoding="utf-8")
