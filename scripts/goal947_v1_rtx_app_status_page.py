@@ -15,7 +15,7 @@ import rtdsl as rt
 
 
 GOAL = "Goal947 v1.0 RTX app status page"
-DATE = "2026-04-26"
+DATE = "2026-04-27"
 
 APP_PATHS = {
     "database_analytics": "examples/rtdl_database_analytics_app.py",
@@ -102,7 +102,7 @@ NATIVE_CONTINUATION_CONTRACTS = {
 }
 
 NEXT_CLOUD_ACTION = {
-    "ready_for_rtx_claim_review": "no readiness pod needed; rerun only in a consolidated regression/tuning batch",
+    "ready_for_rtx_claim_review": "claim-grade consolidated RTX rerun pending after Goal1043; use one batched pod session with source-commit traceability and validation enabled before any expanded public speedup wording",
     "exclude_from_rtx_app_benchmark": "never include in NVIDIA RTX cloud batch",
 }
 
@@ -246,8 +246,10 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- non-NVIDIA target rows: `{summary['not_nvidia_rt_core_target']}`",
         f"- reviewed public RTX sub-path wording rows: `{summary['reviewed_public_wording']}`",
         f"- broad or whole-app public speedup claim authorized: `{summary['broad_or_whole_app_public_speedup_claim_authorized']}`",
+        f"- claim-grade consolidated RTX rerun pending after Goal1043: `True`",
         "",
         "Use this page as the release-facing source of truth for app-level RTX claim review. For engine-by-engine details, see `docs/app_engine_support_matrix.md`.",
+        "Goal1043 repaired the next pod runner so source commits are traceable on rsync-staged pods and fixed-radius Group B validation is enabled; do not expand public speedup wording until that repaired consolidated rerun is collected and reviewed.",
         "",
         "## Goal1009 Reviewed Public RTX Sub-Path Wording",
         "",
