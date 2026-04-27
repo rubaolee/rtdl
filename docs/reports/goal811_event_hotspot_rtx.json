@@ -14,10 +14,10 @@
   },
   "copies": 20000,
   "date": "2026-04-23",
-  "generated_at": "2026-04-26T21:12:19",
+  "generated_at": "2026-04-27T03:44:40",
   "goal": "Goal811 spatial OptiX prepared-summary phase profiler",
   "host": {
-    "hostname": "3999708af092",
+    "hostname": "6c873573b45b",
     "machine": "x86_64",
     "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
     "python": "3.11.10"
@@ -33,10 +33,10 @@
     },
     "scenario": "event_hotspot_screening",
     "timings_sec": {
-      "input_build": 0.15969937201589346,
-      "optix_prepare": 1.3183147124946117,
-      "optix_query": 0.22693717945367098,
-      "python_postprocess": 6.540678441524506e-06
+      "input_build": 0.16845293762162328,
+      "optix_prepare": 1.3830042202025652,
+      "optix_query": 0.21376997511833906,
+      "python_postprocess": 8.098781108856201e-06
     }
   },
   "schema_version": "goal826_tier2_phase_contract_v1"

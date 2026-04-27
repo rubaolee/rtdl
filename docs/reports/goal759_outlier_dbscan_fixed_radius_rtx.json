@@ -58,23 +58,23 @@
         "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
       },
       "point_count": 160000,
-      "prepared_optix_close_sec": 0.0005112085491418839,
-      "prepared_optix_pack_points_sec": 0.27896937169134617,
+      "prepared_optix_close_sec": 0.0005133943632245064,
+      "prepared_optix_pack_points_sec": 0.27460550563409925,
       "prepared_optix_postprocess_sec": {
         "max_sec": 0.0,
         "median_sec": 0.0,
         "min_sec": 0.0
       },
-      "prepared_optix_prepare_sec": 1.2883090376853943,
+      "prepared_optix_prepare_sec": 1.1587201659567654,
       "prepared_optix_validation_sec": {
         "max_sec": 0.0,
         "median_sec": 0.0,
         "min_sec": 0.0
       },
       "prepared_optix_warm_query_sec": {
-        "max_sec": 0.0013754796236753464,
-        "median_sec": 0.0008539739064872265,
-        "min_sec": 0.0008419780060648918
+        "max_sec": 0.001193394884467125,
+        "median_sec": 0.0008955022785812616,
+        "min_sec": 0.0008830144070088863
       },
       "prepared_output": {
         "matches_oracle": true,
@@ -112,23 +112,23 @@
         "validation": "oracle construction/comparison timing; omitted when skip_validation=true"
       },
       "point_count": 160000,
-      "prepared_optix_close_sec": 0.0005176514387130737,
-      "prepared_optix_pack_points_sec": 0.2593558905646205,
+      "prepared_optix_close_sec": 0.0005140160210430622,
+      "prepared_optix_pack_points_sec": 0.2971877162344754,
       "prepared_optix_postprocess_sec": {
         "max_sec": 0.0,
         "median_sec": 0.0,
         "min_sec": 0.0
       },
-      "prepared_optix_prepare_sec": 0.004438708536326885,
+      "prepared_optix_prepare_sec": 0.004433921072632074,
       "prepared_optix_validation_sec": {
         "max_sec": 0.0,
         "median_sec": 0.0,
         "min_sec": 0.0
       },
       "prepared_optix_warm_query_sec": {
-        "max_sec": 0.001372803933918476,
-        "median_sec": 0.0008541704155504704,
-        "min_sec": 0.000833866186439991
+        "max_sec": 0.0010238639079034328,
+        "median_sec": 0.0008257539011538029,
+        "min_sec": 0.0008208290673792362
       },
       "prepared_output": {
         "core_count": 140000,
