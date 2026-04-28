@@ -503,7 +503,7 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "facility_knn_assignment": _readiness(
         "facility_knn_assignment",
         READY_FOR_RTX_CLAIM_REVIEW,
-        "Goal887/Goal920",
+        "Goal887/Goal920/Goal1058",
         "coverage_threshold_prepared decision mode has an RTX phase artifact and same-scale CPU oracle parity for the bounded service-coverage decision",
         "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
         "bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim",
@@ -583,7 +583,7 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "robot_collision_screening": _readiness(
         "robot_collision_screening",
         READY_FOR_RTX_CLAIM_REVIEW,
-        "Goal795",
+        "Goal795/Goal1058",
         "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
         "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
         "prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim",
@@ -646,16 +646,16 @@ _GOAL1048_VALIDATED_BOUNDARY_POLICY = (
     "and public wording still requires same-semantics baseline review."
 )
 
-_GOAL1048_FACILITY_DIAGNOSTIC_POLICY = (
-    "Goal1048 RTX A5000 run completed but facility coverage remains "
-    "diagnostic-only because skip-validation was used; rerun with validation "
-    "before claim-grade wording."
+_GOAL1058_FACILITY_VALIDATED_POLICY = (
+    "Goal1058 RTX A5000 diagnostic rerun validated facility coverage with "
+    "oracle parity. Public speedup wording remains blocked until a separate "
+    "baseline/timing wording review authorizes a bounded sub-path claim."
 )
 
-_GOAL1048_ROBOT_DIAGNOSTIC_POLICY = (
-    "Goal1048 RTX A5000 run completed but robot remains diagnostic-only "
-    "because skip-validation was used; public speedup wording remains blocked "
-    "until validation and timing-floor evidence are reviewed."
+_GOAL1058_ROBOT_VALIDATED_POLICY = (
+    "Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with "
+    "oracle parity. Public speedup wording remains blocked because the "
+    "claim-review path still needs timing-floor/baseline review."
 )
 
 
@@ -700,7 +700,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
-        _GOAL1048_FACILITY_DIAGNOSTIC_POLICY,
+        _GOAL1058_FACILITY_VALIDATED_POLICY,
     ),
     "road_hazard_screening": _maturity(
         "road_hazard_screening",
@@ -770,7 +770,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
-        _GOAL1048_ROBOT_DIAGNOSTIC_POLICY,
+        _GOAL1058_ROBOT_VALIDATED_POLICY,
     ),
     "barnes_hut_force_app": _maturity(
         "barnes_hut_force_app",
@@ -831,9 +831,9 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     "facility_knn_assignment": _public_wording(
         "facility_knn_assignment",
         PUBLIC_WORDING_BLOCKED,
-        "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1048.",
-        "Goal1048",
-        "The prepared service-coverage decision sub-path is a real RT-core path, but the Goal1048 RTX A5000 facility run used skip-validation and remains diagnostic-only.",
+        "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1058.",
+        "Goal1058",
+        "The prepared service-coverage decision sub-path is a real RT-core path and Goal1058 validated oracle parity, but no bounded public speedup wording is authorized until a separate timing/baseline review accepts it.",
     ),
     "road_hazard_screening": _public_wording(
         "road_hazard_screening",
@@ -902,8 +902,8 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
         "robot_collision_screening",
         PUBLIC_WORDING_BLOCKED,
         "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-        "Goal1008",
-        "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
+        "Goal1058",
+        "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until timing-floor and baseline evidence are reviewed.",
     ),
     "barnes_hut_force_app": _public_wording(
         "barnes_hut_force_app",

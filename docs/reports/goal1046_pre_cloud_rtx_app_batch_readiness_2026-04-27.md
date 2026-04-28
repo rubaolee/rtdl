@@ -19,7 +19,7 @@ This pre-cloud audit checks readiness coverage only. It does not run cloud, tag,
 
 ## Cloud Policy
 
-Do not start a paid pod for one app. Goal1048 completed the consolidated RTX A5000 evidence run; future pods should only rerun changed or diagnostic-only paths with validation enabled, then feed same-semantics baseline review before public speedup wording.
+Do not start a paid pod for one app. Goal1048 completed the consolidated RTX A5000 evidence run and Goal1058 validated the facility and robot diagnostic reruns with oracle parity; future pods should only rerun changed paths after local artifact-intake work is ready, then feed same-semantics baseline review before public speedup wording.
 
 ## App Rows
 

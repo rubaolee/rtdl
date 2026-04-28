@@ -46,7 +46,7 @@
       "app": "database_analytics",
       "app_path": "examples/rtdl_database_analytics_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -72,7 +72,7 @@
       "app": "graph_analytics",
       "app_path": "examples/rtdl_graph_analytics_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -124,7 +124,7 @@
       "app": "service_coverage_gaps",
       "app_path": "examples/rtdl_service_coverage_gaps.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -150,7 +150,7 @@
       "app": "event_hotspot_screening",
       "app_path": "examples/rtdl_event_hotspot_screening.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -176,7 +176,7 @@
       "app": "facility_knn_assignment",
       "app_path": "examples/rtdl_facility_knn_assignment.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed but facility coverage remains diagnostic-only because skip-validation was used; rerun with validation before claim-grade wording.",
+      "cloud_action": "Goal1058 RTX A5000 diagnostic rerun validated facility coverage with oracle parity. Public speedup wording remains blocked until a separate baseline/timing wording review authorizes a bounded sub-path claim.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -185,13 +185,13 @@
         "optix": "direct_cli_native",
         "vulkan": "not_exposed_by_app_cli"
       },
-      "evidence_or_goal": "Goal887/Goal920",
+      "evidence_or_goal": "Goal887/Goal920/Goal1058",
       "native_continuation_contract": "native continuation only for OptiX coverage_threshold_prepared service-coverage decisions",
       "non_claim_boundary": "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1048.",
-      "public_wording_boundary": "The prepared service-coverage decision sub-path is a real RT-core path, but the Goal1048 RTX A5000 facility run used skip-validation and remains diagnostic-only.",
-      "public_wording_evidence": "Goal1048",
+      "public_wording": "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1058.",
+      "public_wording_boundary": "The prepared service-coverage decision sub-path is a real RT-core path and Goal1058 validated oracle parity, but no bounded public speedup wording is authorized until a separate timing/baseline review accepts it.",
+      "public_wording_evidence": "Goal1058",
       "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
@@ -202,7 +202,7 @@
       "app": "road_hazard_screening",
       "app_path": "examples/rtdl_road_hazard_screening.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -228,7 +228,7 @@
       "app": "segment_polygon_hitcount",
       "app_path": "examples/rtdl_segment_polygon_hitcount.py",
       "claim_command": "PYTHONPATH=src:. python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -254,7 +254,7 @@
       "app": "segment_polygon_anyhit_rows",
       "app_path": "examples/rtdl_segment_polygon_anyhit_rows.py",
       "claim_command": "PYTHONPATH=src:. python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -280,7 +280,7 @@
       "app": "polygon_pair_overlap_area_rows",
       "app_path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -306,7 +306,7 @@
       "app": "polygon_set_jaccard",
       "app_path": "examples/rtdl_polygon_set_jaccard.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -332,7 +332,7 @@
       "app": "hausdorff_distance",
       "app_path": "examples/rtdl_hausdorff_distance_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -358,7 +358,7 @@
       "app": "ann_candidate_search",
       "app_path": "examples/rtdl_ann_candidate_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -384,7 +384,7 @@
       "app": "outlier_detection",
       "app_path": "examples/rtdl_outlier_detection_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -410,7 +410,7 @@
       "app": "dbscan_clustering",
       "app_path": "examples/rtdl_dbscan_clustering_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -436,7 +436,7 @@
       "app": "robot_collision_screening",
       "app_path": "examples/rtdl_robot_collision_screening_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count",
-      "cloud_action": "Goal1048 RTX A5000 run completed but robot remains diagnostic-only because skip-validation was used; public speedup wording remains blocked until validation and timing-floor evidence are reviewed.",
+      "cloud_action": "Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with oracle parity. Public speedup wording remains blocked because the claim-review path still needs timing-floor/baseline review.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -445,13 +445,13 @@
         "optix": "direct_cli_native",
         "vulkan": "not_exposed_by_app_cli"
       },
-      "evidence_or_goal": "Goal795",
+      "evidence_or_goal": "Goal795/Goal1058",
       "native_continuation_contract": "native continuation only for prepared OptiX count or pose-flag summaries",
       "non_claim_boundary": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
       "performance_class": "optix_traversal",
       "public_wording": "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-      "public_wording_boundary": "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
-      "public_wording_evidence": "Goal1008",
+      "public_wording_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until timing-floor and baseline evidence are reviewed.",
+      "public_wording_evidence": "Goal1058",
       "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
@@ -462,7 +462,7 @@
       "app": "barnes_hut_force_app",
       "app_path": "examples/rtdl_barnes_hut_force_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core",
-      "cloud_action": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",

@@ -22,8 +22,8 @@ Do not start paid cloud per app. Use one batched pod only after local manifest, 
 
 | App | Why | Command |
 | --- | --- | --- |
-| `facility_knn_assignment` | `Goal1048 RTX A5000 run completed but facility coverage remains diagnostic-only because skip-validation was used; rerun with validation before claim-grade wording.` | `PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` |
-| `robot_collision_screening` | `Goal1048 RTX A5000 run completed but robot remains diagnostic-only because skip-validation was used; public speedup wording remains blocked until validation and timing-floor evidence are reviewed.` | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` |
+| `facility_knn_assignment` | `Goal1058 RTX A5000 diagnostic rerun validated facility coverage with oracle parity. Public speedup wording remains blocked until a separate baseline/timing wording review authorizes a bounded sub-path claim.` | `PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` |
+| `robot_collision_screening` | `Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with oracle parity. Public speedup wording remains blocked because the claim-review path still needs timing-floor/baseline review.` | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` |
 
 ## Same-Semantics Review Needed
 

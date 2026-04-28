@@ -17,19 +17,19 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
             row
             for row in payload["rows"]
             if row["readiness_status"] == "ready_for_rtx_claim_review"
-            and row["public_wording_status"] != "public_wording_blocked"
         ]
         self.assertTrue(ready_rows)
         for row in ready_rows:
             with self.subTest(app=row["app"]):
-                self.assertIn("Goal1048", row["cloud_action"])
                 if row["app"] in {
                     "facility_knn_assignment",
                     "robot_collision_screening",
                 }:
-                    self.assertIn("diagnostic-only", row["cloud_action"])
+                    self.assertIn("Goal1058", row["cloud_action"])
+                    self.assertIn("oracle parity", row["cloud_action"])
                 else:
-                    self.assertIn("claim-grade", row["cloud_action"])
+                    self.assertIn("Goal1048", row["cloud_action"])
+                    self.assertIn("bounded sub-path", row["cloud_action"])
                 self.assertNotIn("no readiness pod needed", row["cloud_action"].lower())
 
     def test_public_docs_do_not_use_stale_no_readiness_pod_policy(self) -> None:
@@ -40,8 +40,9 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
             text = (ROOT / relpath).read_text(encoding="utf-8")
             with self.subTest(relpath=relpath):
                 self.assertIn("Goal1048", text)
+                self.assertIn("Goal1058", text)
                 self.assertIn("0c79b64d1b71383080f2e8572612488796d1c16c", text)
-                self.assertIn("diagnostic-only", text)
+                self.assertIn("oracle parity", text)
                 self.assertNotIn("no readiness pod needed", text.lower())
 
     def test_maturity_policy_keeps_batched_cloud_rule(self) -> None:
@@ -51,8 +52,8 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
             with self.subTest(app=app):
                 self.assertNotIn("restart per app", row.cloud_policy.lower())
                 if app in {"facility_knn_assignment", "robot_collision_screening"}:
-                    self.assertIn("Goal1048", row.cloud_policy)
-                    self.assertIn("diagnostic-only", row.cloud_policy)
+                    self.assertIn("Goal1058", row.cloud_policy)
+                    self.assertIn("oracle parity", row.cloud_policy)
                 else:
                     self.assertIn("Goal1048", row.cloud_policy)
                     self.assertIn("claim-grade", row.cloud_policy)

@@ -147,7 +147,7 @@ materialization, validation, and post-processing.
 | `examples/rtdl_apple_rt_demo_app.py` | `exclude_from_rtx_app_benchmark` | none | Apple RT demo claim only, not NVIDIA OptiX |
 | `examples/rtdl_service_coverage_gaps.py` | `ready_for_rtx_claim_review` | Goal917 | bounded prepared gap-summary path may enter claim review; no whole-app service-coverage speedup claim |
 | `examples/rtdl_event_hotspot_screening.py` | `ready_for_rtx_claim_review` | Goal917/Goal919 | bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim |
-| `examples/rtdl_facility_knn_assignment.py` | `ready_for_rtx_claim_review` | Goal887/Goal920/Goal1048 | bounded prepared facility service-coverage decision sub-path exists, but the Goal1048 RTX run used skip-validation; rerun with validation before claim-grade public wording |
+| `examples/rtdl_facility_knn_assignment.py` | `ready_for_rtx_claim_review` | Goal887/Goal920/Goal1058 | bounded prepared facility service-coverage decision sub-path has Goal1058 oracle parity, but no separate timing/baseline wording review has authorized public speedup wording |
 | `examples/rtdl_road_hazard_screening.py` | `ready_for_rtx_claim_review` | Goal933/Goal969 | prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim |
 | `examples/rtdl_segment_polygon_hitcount.py` | `ready_for_rtx_claim_review` | Goal933/Goal969 | prepared native segment/polygon hit-count traversal sub-path may enter claim review; no broad segment/polygon app speedup claim |
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `ready_for_rtx_claim_review` | Goal934/Goal969 | prepared bounded native pair-row traversal sub-path may enter claim review; no unbounded pair-row or broad app speedup claim |
@@ -161,13 +161,14 @@ materialization, validation, and post-processing.
 | `examples/rtdl_barnes_hut_force_app.py` | `ready_for_rtx_claim_review` | Goal887/Goal969/Goal990 | prepared scalar Barnes-Hut node-coverage decision sub-path may enter claim review; no uncovered-ID witness, force-vector, or opening-rule speedup claim |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `exclude_from_rtx_app_benchmark` | none | HIPRT validation only, not NVIDIA OptiX |
 
-Cloud benchmark policy after Goal1048: The consolidated RTX rerun is complete
-on an RTX A5000 from commit 0c79b64d1b71383080f2e8572612488796d1c16c.
-Only validated/strict bounded paths may be described as claim-grade; Group A
-robot and Group D facility coverage remain diagnostic-only (skip-validation used),
-and most Groups D-H are bounded prepared sub-path or native-assisted phase
-evidence, not whole-app speedup. Future pods should only be run after local
-analyzer/intake work is complete for new functionality.
+Cloud benchmark policy after Goal1048/Goal1058: The consolidated RTX rerun is
+complete on an RTX A5000 from commit 0c79b64d1b71383080f2e8572612488796d1c16c,
+and Goal1058 added a tracked-only archive rerun from commit
+21fa036881bf9a0c806f69c15727d87b482ccfcf. Facility and robot diagnostic rows
+now have oracle-parity artifacts, but no new public speedup wording is
+authorized. Most Groups D-H are bounded prepared sub-path or native-assisted
+phase evidence, not whole-app speedup. Future pods should only be run after
+local analyzer/intake work is complete for new functionality.
 
 ## NVIDIA RTX Public Wording Status
 
@@ -184,13 +185,15 @@ claims.
 | `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
 | `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
 
-Current reviewed public wording rows after Goal1048 supersession: `6`.
+Current reviewed public wording rows after Goal1058 intake: `6`.
 `robot_collision_screening` remains `public_wording_blocked`: the prepared
-ray/triangle any-hit scalar pose-count path is a real RT-core path, but Goal1008
-larger RTX repeats stayed below the 100 ms public-review timing floor.
+ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058
+validated oracle parity, but public speedup wording remains blocked until
+timing-floor and baseline evidence are reviewed.
 `facility_knn_assignment` is also `public_wording_blocked`: the prepared
-coverage-threshold path is a real RT-core path, but the Goal1048 RTX A5000 run
-used skip-validation and is diagnostic-only until rerun with validation.
+coverage-threshold path is a real RT-core path and Goal1058 validated oracle
+parity, but no separate timing/baseline wording review has authorized public
+speedup wording.
 
 ## RT-Core App Maturity Contract
 
@@ -229,7 +232,7 @@ down.
 | `apple_rt_demo` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables. | Never include in NVIDIA cloud batches. |
 | `service_coverage_gaps` | `rt_core_ready` | `rt_core_ready` | Keep the prepared OptiX gap-summary path as the RT-core scalar count claim path, and prevent household-id, row output, or nearest-clinic output from being presented as the claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `event_hotspot_screening` | `rt_core_ready` | `rt_core_ready` | Keep the prepared OptiX count-summary path as the RT-core scalar hotspot-count claim path, and prevent hotspot IDs, neighbor-row output, or whole-app hotspot analytics from being presented as the claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
-| `facility_knn_assignment` | `rt_core_ready` | `rt_core_ready` | Keep `coverage_threshold_prepared` as the traversal-backed scalar service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment/uncovered-ID witnesses remain outside the RT-core claim until a native ranking or witness design exists. | Goal1048 RTX A5000 run completed but remains diagnostic-only because skip-validation was used |
+| `facility_knn_assignment` | `rt_core_ready` | `rt_core_ready` | Keep `coverage_threshold_prepared` as the traversal-backed scalar service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment/uncovered-ID witnesses remain outside the RT-core claim until a native ranking or witness design exists. | Goal1058 RTX A5000 diagnostic rerun validated facility coverage with oracle parity. Public speedup wording remains blocked until a separate baseline/timing wording review authorizes a bounded sub-path claim. |
 | `road_hazard_screening` | `rt_core_ready` | `rt_core_ready` | Keep the prepared native road-hazard compact-summary gate separate from default app behavior and full GIS/routing claims. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `segment_polygon_hitcount` | `rt_core_ready` | `rt_core_ready` | Keep the prepared native hit-count gate separate from pair-row output and broader segment/polygon app claims. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `segment_polygon_anyhit_rows` | `rt_core_ready` | `rt_core_ready` | Keep the prepared bounded pair-row gate separate from unbounded row-volume performance and default app behavior. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
@@ -239,6 +242,6 @@ down.
 | `ann_candidate_search` | `rt_core_ready` | `rt_core_ready` | Use `candidate_threshold_prepared` as the only RT-core ANN claim path. Native C++ rerank-summary continuation is allowed as an app postprocess improvement, but KNN ranking, candidate construction, quality policy, uncovered-query witnesses, and full ANN indexing remain outside the RT-core claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `outlier_detection` | `rt_core_ready` | `rt_core_ready` | Keep `--output-mode density_count --optix-summary-mode rt_count_threshold_prepared` as the scalar RT-core claim path and prevent default rows or per-point labels from being presented as the claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `dbscan_clustering` | `rt_core_ready` | `rt_core_ready` | Keep `--output-mode core_count --optix-summary-mode rt_core_flags_prepared` as the scalar RT-core claim path and split per-point core flags plus Python cluster expansion from native timing. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
-| `robot_collision_screening` | `rt_core_ready` | `rt_core_ready` | Keep prepared ray/triangle any-hit scalar pose-count as a real RT-core path, but do not use it for public speedup wording until a phase-clean repeat clears the 100 ms timing floor. | Goal1048 RTX A5000 run completed but remains diagnostic-only because skip-validation was used. Public speedup wording blocked. |
+| `robot_collision_screening` | `rt_core_ready` | `rt_core_ready` | Keep prepared ray/triangle any-hit scalar pose-count as a real RT-core path, but do not use it for public speedup wording until timing-floor and baseline evidence are reviewed. | Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with oracle parity. Public speedup wording remains blocked because the claim-review path still needs timing-floor/baseline review. |
 | `barnes_hut_force_app` | `rt_core_ready` | `rt_core_ready` | Use `node_coverage_prepared` as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but uncovered-ID witnesses, opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `hiprt_ray_triangle_hitcount` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity. | Never include in NVIDIA OptiX cloud batches. |

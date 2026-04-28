@@ -102,7 +102,7 @@ NATIVE_CONTINUATION_CONTRACTS = {
 }
 
 NEXT_CLOUD_ACTION = {
-    "ready_for_rtx_claim_review": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup.",
+    "ready_for_rtx_claim_review": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
     "exclude_from_rtx_app_benchmark": "never include in NVIDIA RTX cloud batch",
 }
 
@@ -246,10 +246,10 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- non-NVIDIA target rows: `{summary['not_nvidia_rt_core_target']}`",
         f"- reviewed public RTX sub-path wording rows: `{summary['reviewed_public_wording']}`",
         f"- broad or whole-app public speedup claim authorized: `{summary['broad_or_whole_app_public_speedup_claim_authorized']}`",
-        f"- claim-grade consolidated RTX rerun completed (Goal1048): `True`",
+        f"- post-Goal1048 validated RTX artifact intake completed (Goal1058): `True`",
         "",
         "Use this page as the release-facing source of truth for app-level RTX claim review. For engine-by-engine details, see `docs/app_engine_support_matrix.md`.",
-        "Goal1048 completed the consolidated RTX rerun on an RTX A5000 from commit `0c79b64d1b71383080f2e8572612488796d1c16c`. Only validated/strict bounded paths may be described as claim-grade; Group A robot and Group D facility coverage remain diagnostic-only (skip-validation used), and most D-H groups are bounded prepared sub-path or native-assisted phase evidence, not whole-app speedup.",
+        "Goal1048 completed the consolidated RTX rerun on an RTX A5000 from commit `0c79b64d1b71383080f2e8572612488796d1c16c`. Goal1058 added a tracked-only archive rerun from commit `21fa036881bf9a0c806f69c15727d87b482ccfcf` and validated the facility and robot diagnostic rows with oracle parity. Only validated/strict bounded paths may be described as claim-review evidence, and most rows remain bounded prepared sub-path or native-assisted phase evidence, not whole-app speedup.",
         "",
         "## Goal1009 Reviewed Public RTX Sub-Path Wording",
         "",
@@ -279,8 +279,9 @@ def to_markdown(payload: dict[str, Any]) -> str:
             "`robot_collision_screening / prepared_pose_flags` remains excluded from public",
             "RTX speedup wording because its larger RTX repeats stayed below the 100 ms",
             "public-review timing floor. `facility_knn_assignment / coverage_threshold_prepared`",
-            "is also excluded from public wording after Goal1048 because the RTX A5000",
-            "facility run used skip-validation. Other `ready_for_rtx_claim_review` rows",
+            "is also excluded from public speedup wording after Goal1058: the validation",
+            "rerun proved oracle parity, but no separate timing/baseline wording review has",
+            "authorized a public speedup claim. Other `ready_for_rtx_claim_review` rows",
             "remain engineering-ready or claim-review-ready, but do not yet have Goal1009",
             "public speedup wording.",
             "",

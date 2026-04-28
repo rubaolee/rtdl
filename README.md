@@ -96,11 +96,14 @@ broad RT-core acceleration claim:
 
 `robot_collision_screening / prepared_pose_flags` remains excluded from public
 RTX speedup wording because its larger RTX repeats stayed below the 100 ms
-public-review timing floor.
+public-review timing floor. The later Goal1058 RTX A5000 diagnostic rerun
+validated pose-flag oracle parity, but it did not authorize public speedup
+wording.
 
-`facility_knn_assignment / coverage_threshold_prepared` is also diagnostic-only
-after Goal1048 because the RTX A5000 facility run used skip-validation. Rerun
-with validation before claim-grade public wording.
+`facility_knn_assignment / coverage_threshold_prepared` is also excluded from
+public RTX speedup wording after Goal1058. The new RTX A5000 diagnostic rerun
+validated oracle parity, but no separate timing/baseline wording review has
+authorized a bounded public speedup claim.
 
 Still outside public RTX claim review today: SQL/DBMS behavior, default
 row-materializing DB output, full road-hazard/GIS routing, unbounded
@@ -111,8 +114,9 @@ review. See `docs/app_engine_support_matrix.md` and
 `docs/v1_0_rtx_app_status.md`. The cloud artifact audit remains in
 `docs/reports/goal969_runpod_a5000_rtx_execution_report_2026-04-26.md`; the
 newer large-repeat and wording-review trail is in
-`docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md` and
-`docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md`.
+`docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md`,
+`docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md`, and
+`docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute

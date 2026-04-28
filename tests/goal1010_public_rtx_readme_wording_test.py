@@ -23,8 +23,8 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("segment_polygon_anyhit_rows_prepared_bounded_gate", text)
         self.assertIn("ann_candidate_search / candidate_threshold_prepared", text)
         self.assertIn("facility_knn_assignment / coverage_threshold_prepared", text)
-        self.assertIn("diagnostic-only", text)
-        self.assertIn("after Goal1048", text)
+        self.assertIn("after Goal1058", text)
+        self.assertIn("validated oracle parity", text)
 
     def test_robot_remains_excluded_from_public_speedup_wording(self) -> None:
         text = README.read_text(encoding="utf-8")
@@ -33,11 +33,13 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("RTX speedup wording", text)
         self.assertIn("below the 100 ms", text)
         self.assertIn("public-review timing floor", text)
+        self.assertIn("validated pose-flag oracle parity", text)
 
     def test_artifact_trail_points_to_goal1008_and_goal1009(self) -> None:
         text = README.read_text(encoding="utf-8")
         self.assertIn("docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md", text)
         self.assertIn("docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md", text)
+        self.assertIn("docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md", text)
 
     def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
         v1 = V1_STATUS.read_text(encoding="utf-8")
@@ -46,10 +48,12 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("robot_collision_screening / prepared_pose_flags", v1)
         self.assertIn("blocked_for_public_speedup_wording", v1)
         self.assertIn("facility_knn_assignment / coverage_threshold_prepared", v1)
-        self.assertIn("diagnostic-only", v1)
+        self.assertIn("Goal1058", v1)
+        self.assertIn("validated the facility and robot diagnostic rows with oracle parity", v1)
         self.assertIn("below the 100 ms", v1)
         self.assertIn("blocked_for_public_speedup_wording", matrix)
         self.assertIn("Goal1008 keeps public speedup wording blocked", matrix)
+        self.assertIn("Goal1058 validated oracle", matrix)
         self.assertIn("rtdsl.rtx_public_wording_matrix()", v1)
         self.assertIn("rtdsl.rtx_public_wording_matrix()", matrix)
         self.assertIn("public_wording_blocked", matrix)

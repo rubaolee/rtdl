@@ -53,17 +53,18 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
         self.assertEqual(readiness.status, "ready_for_rtx_claim_review")
         self.assertEqual(maturity.current_status, "rt_core_ready")
         self.assertEqual(wording.status, "public_wording_blocked")
-        self.assertEqual(wording.evidence, "Goal1008")
+        self.assertEqual(wording.evidence, "Goal1058")
         self.assertIn("real RT-core path", wording.boundary)
-        self.assertIn("100 ms", wording.boundary)
+        self.assertIn("oracle parity", wording.boundary)
+        self.assertIn("timing-floor", wording.boundary)
 
-    def test_facility_is_blocked_after_goal1048_skip_validation(self) -> None:
+    def test_facility_is_blocked_after_goal1058_until_speedup_review(self) -> None:
         wording = rt.rtx_public_wording_status("facility_knn_assignment")
 
         self.assertEqual(wording.status, "public_wording_blocked")
-        self.assertEqual(wording.evidence, "Goal1048")
-        self.assertIn("skip-validation", wording.boundary)
-        self.assertIn("diagnostic-only", wording.boundary)
+        self.assertEqual(wording.evidence, "Goal1058")
+        self.assertIn("oracle parity", wording.boundary)
+        self.assertIn("separate timing/baseline review", wording.boundary)
 
     def test_non_nvidia_apps_are_excluded_from_public_rtx_wording(self) -> None:
         for app in ("apple_rt_demo", "hiprt_ray_triangle_hitcount"):
