@@ -1,0 +1,152 @@
+{
+  "artifact_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch",
+  "blocked_count": 0,
+  "boundary": "This intake checks copied Goal1052 cloud artifacts only. It does not run cloud, authorize release, or authorize public RTX speedup wording.",
+  "date": "2026-04-28",
+  "diagnostic_validated_count": 0,
+  "expected_artifact_count": 11,
+  "goal": "Goal1056 post-Goal1048 artifact intake",
+  "manifest_goal": "Goal1052 post-Goal1048 cloud batch manifest",
+  "missing_artifact_count": 11,
+  "overall_status": "needs_cloud_artifacts",
+  "present_artifact_count": 0,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/coverage_threshold_prepared.json",
+      "artifact_status": "missing",
+      "batch": "diagnostic_validation_rerun",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/coverage_threshold_prepared.json",
+      "path_name": "coverage_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json",
+      "artifact_status": "missing",
+      "batch": "diagnostic_validation_rerun",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_sales_risk.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_sales_risk.json",
+      "path_name": "prepared_db_session_sales_risk",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_regional_dashboard.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_regional_dashboard.json",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "graph_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/graph_visibility_edges_gate.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/graph_visibility_edges_gate.json",
+      "path_name": "graph_visibility_edges_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/prepared_count_summary.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_count_summary.json",
+      "path_name": "prepared_count_summary",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json",
+      "path_name": "road_hazard_native_summary_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json",
+      "path_name": "directed_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch/node_coverage_prepared.json",
+      "artifact_status": "missing",
+      "batch": "same_semantics_review_candidate",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/node_coverage_prepared.json",
+      "path_name": "node_coverage_prepared",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected output JSON has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact"
+    }
+  ],
+  "status_counts": {
+    "needs_cloud_artifact": 11
+  },
+  "valid": true
+}
