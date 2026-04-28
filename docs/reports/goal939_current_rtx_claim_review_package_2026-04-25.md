@@ -7,8 +7,8 @@ This package is a current claim-review index. It does not run benchmarks, does n
 ## Summary
 
 - ready claim-review rows: `16`
-- reviewed public wording rows: `7`
-- blocked public wording rows: `1`
+- reviewed public wording rows: `6`
+- blocked public wording rows: `2`
 - held or out-of-target rows: `2`
 - source of truth: `rtdsl.optix_app_benchmark_readiness_matrix()` plus `rtdsl.rt_core_app_maturity_matrix()` plus `rtdsl.rtx_public_wording_matrix()`
 
@@ -20,7 +20,7 @@ This package is a current claim-review index. It does not run benchmarks, does n
 | `graph_analytics` | `optix_traversal` | `public_wording_not_reviewed` | `True` | Goal889/Goal905/Goal929 | bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths may enter claim review; no whole-app graph speedup claim | Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim |
 | `service_coverage_gaps` | `optix_traversal_prepared_summary` | `public_wording_reviewed` | `True` | Goal917 | bounded prepared gap-summary path may enter claim review; no whole-app service-coverage speedup claim | Goal917 covers the bounded prepared gap-summary path only; row output, nearest-clinic output, and whole-app service-coverage optimization remain outside the claim |
 | `event_hotspot_screening` | `optix_traversal_prepared_summary` | `public_wording_not_reviewed` | `True` | Goal917/Goal919 | bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim | Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim |
-| `facility_knn_assignment` | `optix_traversal_prepared_summary` | `public_wording_reviewed` | `True` | Goal887/Goal920 | bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim | ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed |
+| `facility_knn_assignment` | `optix_traversal_prepared_summary` | `public_wording_blocked` | `True` | Goal887/Goal920 | bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim | ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed |
 | `road_hazard_screening` | `optix_traversal_prepared_summary` | `public_wording_not_reviewed` | `True` | Goal933/Goal941 | prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim | claim is limited to the prepared compact road-hazard summary gate; default public app behavior, full GIS/routing, and broad road-hazard speedup remain outside the claim |
 | `segment_polygon_hitcount` | `optix_traversal_prepared_summary` | `public_wording_reviewed` | `True` | Goal933/Goal941 | prepared native segment/polygon hit-count traversal sub-path may enter claim review; no broad segment/polygon app speedup claim | claim is limited to prepared compact hit-count traversal; pair-row output, road-hazard whole-app behavior, and broad speedup remain outside the claim |
 | `segment_polygon_anyhit_rows` | `optix_traversal` | `public_wording_reviewed` | `True` | Goal934/Goal941 | prepared bounded native pair-row traversal sub-path may enter claim review; no unbounded pair-row or broad app speedup claim | claim is limited to bounded prepared pair-row traversal at the reviewed output capacity; unbounded row-volume performance and default public app behavior remain outside the claim |

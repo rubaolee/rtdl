@@ -167,7 +167,7 @@ class Goal705OptixAppBenchmarkReadinessTest(unittest.TestCase):
         for phrase in (
             "OptiX RTX Benchmark Readiness",
             "rtdsl.optix_app_benchmark_readiness_matrix()",
-            "do not rent or keep a paid RTX instance",
+            "Cloud benchmark policy after Goal1048",
             "needs_phase_contract",
             "needs_real_rtx_artifact",
             "needs_interface_tuning",

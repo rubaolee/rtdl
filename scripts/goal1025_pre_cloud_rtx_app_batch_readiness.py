@@ -108,9 +108,12 @@ def build_audit() -> dict[str, Any]:
         and readiness_counts["exclude_from_rtx_app_benchmark"] == 2
         and maturity_counts["rt_core_ready"] == 16
         and maturity_counts["not_nvidia_rt_core_target"] == 2
-        and public_wording_counts["public_wording_reviewed"] == 7
-        and public_wording_counts["public_wording_blocked"] == 1
-        and public_wording_blocked == ["robot_collision_screening"]
+        and public_wording_counts["public_wording_reviewed"] == 6
+        and public_wording_counts["public_wording_blocked"] == 2
+        and public_wording_blocked == [
+            "facility_knn_assignment",
+            "robot_collision_screening",
+        ]
         and not missing_nvidia_targets
         and not unexpected_non_nvidia_targets
         and has_rtx_hardware_precondition
@@ -139,9 +142,10 @@ def build_audit() -> dict[str, Any]:
         "manifest_blocks_speedup_claims": manifest_blocks_speedup_claims,
         "app_rows": app_rows,
         "cloud_policy": (
-            "Do not start a paid pod for one app. After Goal1043, the next pod should "
-            "run one repaired consolidated active+deferred regression/tuning batch "
-            "with source-commit traceability and validation-enabled Group B commands."
+            "Do not start a paid pod for one app. Goal1048 completed the consolidated "
+            "RTX A5000 evidence run; future pods should only rerun changed or "
+            "diagnostic-only paths with validation enabled, then feed same-semantics "
+            "baseline review before public speedup wording."
         ),
         "valid": valid,
         "boundary": (

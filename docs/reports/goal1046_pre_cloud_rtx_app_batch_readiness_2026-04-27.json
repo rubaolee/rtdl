@@ -82,7 +82,7 @@
       "path_names": [
         "coverage_threshold_prepared"
       ],
-      "public_wording": "public_wording_reviewed",
+      "public_wording": "public_wording_blocked",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -239,7 +239,7 @@
     }
   ],
   "boundary": "This pre-cloud audit checks readiness coverage only. It does not run cloud, tag, release, or authorize public RTX speedup claims.",
-  "cloud_policy": "Do not start a paid pod for one app. After Goal1043, the next pod should run one repaired consolidated active+deferred regression/tuning batch with source-commit traceability and validation-enabled Group B commands.",
+  "cloud_policy": "Do not start a paid pod for one app. Goal1048 completed the consolidated RTX A5000 evidence run; future pods should only rerun changed or diagnostic-only paths with validation enabled, then feed same-semantics baseline review before public speedup wording.",
   "date": "2026-04-27",
   "deferred_apps": [
     "ann_candidate_search",
@@ -301,18 +301,18 @@
   "missing_nvidia_targets": [],
   "public_app_count": 18,
   "public_wording_blocked_apps": [
+    "facility_knn_assignment",
     "robot_collision_screening"
   ],
   "public_wording_counts": {
     "not_nvidia_public_wording_target": 2,
-    "public_wording_blocked": 1,
+    "public_wording_blocked": 2,
     "public_wording_not_reviewed": 8,
-    "public_wording_reviewed": 7
+    "public_wording_reviewed": 6
   },
   "public_wording_reviewed_apps": [
     "ann_candidate_search",
     "dbscan_clustering",
-    "facility_knn_assignment",
     "outlier_detection",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",

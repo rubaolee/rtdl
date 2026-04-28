@@ -83,9 +83,6 @@ broad RT-core acceleration claim:
 - `dbscan_clustering / prepared_fixed_radius_core_flags`: median RTX phase
   `0.122921` s, `6.62x` faster than the fastest same-semantics non-OptiX
   baseline for the measured sub-path
-- `facility_knn_assignment / coverage_threshold_prepared`: median RTX phase
-  `0.157368` s, `22.81x` faster than the fastest same-semantics non-OptiX
-  baseline for the measured sub-path
 - `segment_polygon_hitcount / segment_polygon_hitcount_native_experimental`:
   median RTX phase `0.146860` s, `1.71x` faster than the fastest
   same-semantics non-OptiX baseline for the measured sub-path
@@ -100,6 +97,10 @@ broad RT-core acceleration claim:
 `robot_collision_screening / prepared_pose_flags` remains excluded from public
 RTX speedup wording because its larger RTX repeats stayed below the 100 ms
 public-review timing floor.
+
+`facility_knn_assignment / coverage_threshold_prepared` is also diagnostic-only
+after Goal1048 because the RTX A5000 facility run used skip-validation. Rerun
+with validation before claim-grade public wording.
 
 Still outside public RTX claim review today: SQL/DBMS behavior, default
 row-materializing DB output, full road-hazard/GIS routing, unbounded

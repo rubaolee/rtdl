@@ -20,8 +20,8 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
         self.assertEqual(payload["summary"]["public_app_count"], len(rt.public_apps()))
         self.assertEqual(payload["summary"]["ready_for_rtx_claim_review"], 16)
         self.assertEqual(payload["summary"]["not_nvidia_rt_core_target"], 2)
-        self.assertEqual(payload["summary"]["reviewed_public_wording"], 7)
-        self.assertEqual(payload["summary"]["blocked_public_wording"], 1)
+        self.assertEqual(payload["summary"]["reviewed_public_wording"], 6)
+        self.assertEqual(payload["summary"]["blocked_public_wording"], 2)
         self.assertFalse(payload["summary"]["public_speedup_claim_authorized"])
         self.assertFalse(payload["summary"]["broad_or_whole_app_public_speedup_claim_authorized"])
         self.assertEqual(
@@ -90,10 +90,11 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertEqual(payload["summary"]["ready_for_rtx_claim_review"], 16)
-            self.assertEqual(payload["summary"]["reviewed_public_wording"], 7)
+            self.assertEqual(payload["summary"]["reviewed_public_wording"], 6)
             self.assertIn("v1.0 RTX App Status", markdown)
             self.assertIn("Goal1009 Reviewed Public RTX Sub-Path Wording", markdown)
             self.assertIn("blocked_for_public_speedup_wording", markdown)
+            self.assertIn("facility_knn_assignment / coverage_threshold_prepared", markdown)
             self.assertIn("rtdsl.rtx_public_wording_matrix()", markdown)
 
     def test_checked_in_json_artifacts_include_public_wording_layer(self) -> None:
@@ -107,11 +108,15 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
                     payload["source_of_truth"]["public_wording"],
                     "rtdsl.rtx_public_wording_matrix()",
                 )
-                self.assertEqual(payload["summary"]["reviewed_public_wording"], 7)
+                self.assertEqual(payload["summary"]["reviewed_public_wording"], 6)
                 robot = next(
                     row for row in payload["rows"] if row["app"] == "robot_collision_screening"
                 )
                 self.assertEqual(robot["public_wording_status"], "public_wording_blocked")
+                facility = next(
+                    row for row in payload["rows"] if row["app"] == "facility_knn_assignment"
+                )
+                self.assertEqual(facility["public_wording_status"], "public_wording_blocked")
 
 
 if __name__ == "__main__":

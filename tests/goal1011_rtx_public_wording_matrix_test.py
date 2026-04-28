@@ -9,7 +9,6 @@ REVIEWED_APPS = {
     "service_coverage_gaps",
     "outlier_detection",
     "dbscan_clustering",
-    "facility_knn_assignment",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
     "ann_candidate_search",
@@ -32,7 +31,7 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
             if row.status == "public_wording_reviewed"
         }
         self.assertEqual(reviewed, REVIEWED_APPS)
-        self.assertEqual(len(reviewed), 7)
+        self.assertEqual(len(reviewed), 6)
 
     def test_reviewed_rows_are_bounded_to_named_subpaths(self) -> None:
         matrix = rt.rtx_public_wording_matrix()
@@ -57,6 +56,14 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
         self.assertEqual(wording.evidence, "Goal1008")
         self.assertIn("real RT-core path", wording.boundary)
         self.assertIn("100 ms", wording.boundary)
+
+    def test_facility_is_blocked_after_goal1048_skip_validation(self) -> None:
+        wording = rt.rtx_public_wording_status("facility_knn_assignment")
+
+        self.assertEqual(wording.status, "public_wording_blocked")
+        self.assertEqual(wording.evidence, "Goal1048")
+        self.assertIn("skip-validation", wording.boundary)
+        self.assertIn("diagnostic-only", wording.boundary)
 
     def test_non_nvidia_apps_are_excluded_from_public_rtx_wording(self) -> None:
         for app in ("apple_rt_demo", "hiprt_ray_triangle_hitcount"):

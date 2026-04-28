@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
-    def test_status_page_records_goal1043_rerun_policy(self) -> None:
+    def test_status_page_records_goal1048_rerun_policy(self) -> None:
         payload = goal947.build_status_page()
         ready_rows = [
             row
@@ -22,9 +22,14 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
         self.assertTrue(ready_rows)
         for row in ready_rows:
             with self.subTest(app=row["app"]):
-                self.assertIn("Goal1043", row["cloud_action"])
-                self.assertIn("source-commit traceability", row["cloud_action"])
-                self.assertIn("validation enabled", row["cloud_action"])
+                self.assertIn("Goal1048", row["cloud_action"])
+                if row["app"] in {
+                    "facility_knn_assignment",
+                    "robot_collision_screening",
+                }:
+                    self.assertIn("diagnostic-only", row["cloud_action"])
+                else:
+                    self.assertIn("claim-grade", row["cloud_action"])
                 self.assertNotIn("no readiness pod needed", row["cloud_action"].lower())
 
     def test_public_docs_do_not_use_stale_no_readiness_pod_policy(self) -> None:
@@ -34,8 +39,9 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
         ):
             text = (ROOT / relpath).read_text(encoding="utf-8")
             with self.subTest(relpath=relpath):
-                self.assertIn("Goal1043", text)
-                self.assertIn("source-commit", text)
+                self.assertIn("Goal1048", text)
+                self.assertIn("0c79b64d1b71383080f2e8572612488796d1c16c", text)
+                self.assertIn("diagnostic-only", text)
                 self.assertNotIn("no readiness pod needed", text.lower())
 
     def test_maturity_policy_keeps_batched_cloud_rule(self) -> None:
@@ -44,11 +50,12 @@ class Goal1044PublicRtxCloudPolicySyncTest(unittest.TestCase):
                 continue
             with self.subTest(app=app):
                 self.assertNotIn("restart per app", row.cloud_policy.lower())
-                if app == "robot_collision_screening":
-                    self.assertIn("public speedup wording blocked", row.cloud_policy)
+                if app in {"facility_knn_assignment", "robot_collision_screening"}:
+                    self.assertIn("Goal1048", row.cloud_policy)
+                    self.assertIn("diagnostic-only", row.cloud_policy)
                 else:
-                    self.assertIn("Goal1043", row.cloud_policy)
-                    self.assertIn("consolidated RTX pod rerun", row.cloud_policy)
+                    self.assertIn("Goal1048", row.cloud_policy)
+                    self.assertIn("claim-grade", row.cloud_policy)
 
 
 if __name__ == "__main__":

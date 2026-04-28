@@ -147,7 +147,7 @@ materialization, validation, and post-processing.
 | `examples/rtdl_apple_rt_demo_app.py` | `exclude_from_rtx_app_benchmark` | none | Apple RT demo claim only, not NVIDIA OptiX |
 | `examples/rtdl_service_coverage_gaps.py` | `ready_for_rtx_claim_review` | Goal917 | bounded prepared gap-summary path may enter claim review; no whole-app service-coverage speedup claim |
 | `examples/rtdl_event_hotspot_screening.py` | `ready_for_rtx_claim_review` | Goal917/Goal919 | bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim |
-| `examples/rtdl_facility_knn_assignment.py` | `ready_for_rtx_claim_review` | Goal887/Goal920 | bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim |
+| `examples/rtdl_facility_knn_assignment.py` | `ready_for_rtx_claim_review` | Goal887/Goal920/Goal1048 | bounded prepared facility service-coverage decision sub-path exists, but the Goal1048 RTX run used skip-validation; rerun with validation before claim-grade public wording |
 | `examples/rtdl_road_hazard_screening.py` | `ready_for_rtx_claim_review` | Goal933/Goal969 | prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim |
 | `examples/rtdl_segment_polygon_hitcount.py` | `ready_for_rtx_claim_review` | Goal933/Goal969 | prepared native segment/polygon hit-count traversal sub-path may enter claim review; no broad segment/polygon app speedup claim |
 | `examples/rtdl_segment_polygon_anyhit_rows.py` | `ready_for_rtx_claim_review` | Goal934/Goal969 | prepared bounded native pair-row traversal sub-path may enter claim review; no unbounded pair-row or broad app speedup claim |
@@ -184,10 +184,13 @@ claims.
 | `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
 | `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
 
-Current Goal1009 reviewed public wording rows: `7`.
+Current reviewed public wording rows after Goal1048 supersession: `6`.
 `robot_collision_screening` remains `public_wording_blocked`: the prepared
 ray/triangle any-hit scalar pose-count path is a real RT-core path, but Goal1008
 larger RTX repeats stayed below the 100 ms public-review timing floor.
+`facility_knn_assignment` is also `public_wording_blocked`: the prepared
+coverage-threshold path is a real RT-core path, but the Goal1048 RTX A5000 run
+used skip-validation and is diagnostic-only until rerun with validation.
 
 ## RT-Core App Maturity Contract
 

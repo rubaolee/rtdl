@@ -9,8 +9,8 @@ Date: 2026-04-23
 - RT-core partial-ready now: `0`
 - Need redesign or new surface: `0`
 - Out of NVIDIA RT scope: `2`
-- Reviewed public wording rows: `7`
-- Blocked public wording rows: `1`
+- Reviewed public wording rows: `6`
+- Blocked public wording rows: `2`
 
 Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example. Public speedup wording is tracked separately by rtdsl.rtx_public_wording_matrix().
 

@@ -639,20 +639,40 @@ def _public_wording(
     )
 
 
+_GOAL1048_VALIDATED_BOUNDARY_POLICY = (
+    "Goal1048 RTX A5000 run completed from commit "
+    "0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for "
+    "validated or strict bounded sub-path evidence, not whole-app speedup, "
+    "and public wording still requires same-semantics baseline review."
+)
+
+_GOAL1048_FACILITY_DIAGNOSTIC_POLICY = (
+    "Goal1048 RTX A5000 run completed but facility coverage remains "
+    "diagnostic-only because skip-validation was used; rerun with validation "
+    "before claim-grade wording."
+)
+
+_GOAL1048_ROBOT_DIAGNOSTIC_POLICY = (
+    "Goal1048 RTX A5000 run completed but robot remains diagnostic-only "
+    "because skip-validation was used; public speedup wording remains blocked "
+    "until validation and timing-floor evidence are reviewed."
+)
+
+
 _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
     "database_analytics": _maturity(
         "database_analytics",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep compact_summary prepared DB outputs as the only RT-core claim path; row materialization, SQL-engine behavior, and whole-dashboard claims remain outside the RT-core claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "graph_analytics": _maturity(
         "graph_analytics",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep visibility_edges any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "apple_rt_demo": _maturity(
         "apple_rt_demo",
@@ -666,98 +686,98 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "event_hotspot_screening": _maturity(
         "event_hotspot_screening",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "facility_knn_assignment": _maturity(
         "facility_knn_assignment",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_FACILITY_DIAGNOSTIC_POLICY,
     ),
     "road_hazard_screening": _maturity(
         "road_hazard_screening",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep the prepared native road-hazard compact-summary gate separate from default app behavior and full GIS/routing claims.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "segment_polygon_hitcount": _maturity(
         "segment_polygon_hitcount",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep the prepared native hit-count gate separate from pair-row output and broader segment/polygon app claims.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "segment_polygon_anyhit_rows": _maturity(
         "segment_polygon_anyhit_rows",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep the prepared bounded pair-row gate separate from unbounded row-volume performance and default app behavior.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "polygon_pair_overlap_area_rows": _maturity(
         "polygon_pair_overlap_area_rows",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact area refinement; claim only the candidate-discovery sub-path.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "polygon_set_jaccard": _maturity(
         "polygon_set_jaccard",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact set-area/Jaccard refinement; claim only the reviewed chunked candidate-discovery sub-path.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "hausdorff_distance": _maturity(
         "hausdorff_distance",
         RT_CORE_READY,
         RT_CORE_READY,
         "Use directed_threshold_prepared as the only RT-core Hausdorff claim path; exact-distance KNN rows remain outside the claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "ann_candidate_search": _maturity(
         "ann_candidate_search",
         RT_CORE_READY,
         RT_CORE_READY,
         "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "outlier_detection": _maturity(
         "outlier_detection",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep --output-mode density_count with prepared scalar threshold-count as the RT-core claim path and prevent default rows or per-point labels from being presented as the claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "dbscan_clustering": _maturity(
         "dbscan_clustering",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep --output-mode core_count with prepared scalar core-count as the RT-core claim path and split per-point core flags plus Python cluster expansion from native timing.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "robot_collision_screening": _maturity(
         "robot_collision_screening",
         RT_CORE_READY,
         RT_CORE_READY,
         "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
-        "Goal1008 keeps public speedup wording blocked; include robot only in a repaired consolidated RTX rerun if the run is explicitly collecting phase-clean timing-floor evidence.",
+        _GOAL1048_ROBOT_DIAGNOSTIC_POLICY,
     ),
     "barnes_hut_force_app": _maturity(
         "barnes_hut_force_app",
         RT_CORE_READY,
         RT_CORE_READY,
         "Use node_coverage_prepared as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim.",
-        "After Goal1043, use one repaired consolidated RTX pod rerun for claim-grade comparison; do not start paid pods per app, and do not expand public speedup wording until source-commit traceability, validation-on evidence, and same-semantics baseline review are present.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "hiprt_ray_triangle_hitcount": _maturity(
         "hiprt_ray_triangle_hitcount",
@@ -810,10 +830,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "facility_knn_assignment": _public_wording(
         "facility_knn_assignment",
-        PUBLIC_WORDING_REVIEWED,
-        "RTDL's prepared facility coverage-threshold RTX query/native sub-path measured 0.157368 s and 22.81x versus the reviewed same-semantics baseline.",
-        "Goal1008/Goal1009",
-        "Only the prepared service-coverage decision sub-path is covered; ranked KNN assignment, ranking, and uncovered-ID witness output are outside this wording.",
+        PUBLIC_WORDING_BLOCKED,
+        "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1048.",
+        "Goal1048",
+        "The prepared service-coverage decision sub-path is a real RT-core path, but the Goal1048 RTX A5000 facility run used skip-validation and remains diagnostic-only.",
     ),
     "road_hazard_screening": _public_wording(
         "road_hazard_screening",

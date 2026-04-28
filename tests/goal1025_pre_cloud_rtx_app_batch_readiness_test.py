@@ -26,8 +26,11 @@ class Goal1025PreCloudRtxAppBatchReadinessTest(unittest.TestCase):
         self.assertEqual(payload["maturity_counts"]["not_nvidia_rt_core_target"], 2)
         self.assertEqual(payload["missing_nvidia_targets"], [])
         self.assertEqual(payload["unexpected_non_nvidia_targets"], [])
-        self.assertEqual(payload["public_wording_blocked_apps"], ["robot_collision_screening"])
-        self.assertEqual(len(payload["public_wording_reviewed_apps"]), 7)
+        self.assertEqual(
+            payload["public_wording_blocked_apps"],
+            ["facility_knn_assignment", "robot_collision_screening"],
+        )
+        self.assertEqual(len(payload["public_wording_reviewed_apps"]), 6)
         self.assertTrue(payload["has_rtx_hardware_precondition"])
         self.assertTrue(payload["manifest_blocks_speedup_claims"])
 
@@ -38,9 +41,9 @@ class Goal1025PreCloudRtxAppBatchReadinessTest(unittest.TestCase):
         )
         payload = module.build_audit()
         self.assertIn("Do not start a paid pod for one app", payload["cloud_policy"])
-        self.assertIn("Goal1043", payload["cloud_policy"])
-        self.assertIn("source-commit traceability", payload["cloud_policy"])
-        self.assertIn("validation-enabled Group B", payload["cloud_policy"])
+        self.assertIn("Goal1048", payload["cloud_policy"])
+        self.assertIn("diagnostic-only", payload["cloud_policy"])
+        self.assertIn("same-semantics baseline review", payload["cloud_policy"])
         self.assertIn("does not run cloud", payload["boundary"])
         self.assertIn("not GTX 1070", " ".join(payload["manifest_global_preconditions"]))
         self.assertIn("does not authorize RTX speedup claims", payload["manifest_boundary"])
@@ -75,7 +78,8 @@ class Goal1025PreCloudRtxAppBatchReadinessTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("robot_collision_screening", markdown)
-            self.assertIn("Goal1043", markdown)
+            self.assertIn("Goal1048", markdown)
+            self.assertIn("facility_knn_assignment", markdown)
             self.assertIn("does not run cloud", markdown)
 
 

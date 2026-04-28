@@ -12,14 +12,14 @@ This pre-cloud audit checks readiness coverage only. It does not run cloud, tag,
 - deferred manifest entries: `9`
 - missing NVIDIA targets: `0`
 - unexpected non-NVIDIA manifest targets: `0`
-- public wording reviewed apps: `7`
-- public wording blocked apps: `['robot_collision_screening']`
+- public wording reviewed apps: `6`
+- public wording blocked apps: `['facility_knn_assignment', 'robot_collision_screening']`
 - RTX hardware precondition present: `True`
 - manifest blocks speedup claims: `True`
 
 ## Cloud Policy
 
-Do not start a paid pod for one app. After Goal1043, the next pod should run one repaired consolidated active+deferred regression/tuning batch with source-commit traceability and validation-enabled Group B commands.
+Do not start a paid pod for one app. Goal1048 completed the consolidated RTX A5000 evidence run; future pods should only rerun changed or diagnostic-only paths with validation enabled, then feed same-semantics baseline review before public speedup wording.
 
 ## App Rows
 
@@ -30,7 +30,7 @@ Do not start a paid pod for one app. After Goal1043, the next pod should run one
 | `apple_rt_demo` | `exclude_from_rtx_app_benchmark` | `not_nvidia_rt_core_target` | `not_nvidia_public_wording_target` | `` | 0 |
 | `service_coverage_gaps` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |
 | `event_hotspot_screening` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `active` | 1 |
-| `facility_knn_assignment` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `active` | 1 |
+| `facility_knn_assignment` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_blocked` | `active` | 1 |
 | `road_hazard_screening` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_not_reviewed` | `deferred` | 1 |
 | `segment_polygon_hitcount` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
 | `segment_polygon_anyhit_rows` | `ready_for_rtx_claim_review` | `rt_core_ready` | `public_wording_reviewed` | `deferred` | 1 |
