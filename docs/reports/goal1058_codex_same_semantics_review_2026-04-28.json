@@ -1,0 +1,514 @@
+{
+  "boundary": "This review checks artifact semantics/status evidence only. It does not authorize release or public RTX speedup wording.",
+  "date": "2026-04-28",
+  "goal": "Goal1058 Codex same-semantics artifact review",
+  "overall_verdict": "accept_for_same_semantics_review_record",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "artifact": "coverage_threshold_prepared.json",
+      "checks": [
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": true,
+          "name": "oracle_parity",
+          "ok": true
+        },
+        {
+          "detail": {
+            "all_queries_reached_threshold": true,
+            "build_count": 80000,
+            "matches_oracle": true,
+            "oracle_all_queries_reached_threshold": true,
+            "query_count": 80000,
+            "radius": 1.0,
+            "threshold_reached_count": 80000
+          },
+          "name": "threshold_semantics",
+          "ok": true
+        }
+      ],
+      "path": "coverage_threshold_prepared",
+      "timing": {
+        "optix_prepare_sec": 0.8160488642752171,
+        "optix_query_median_sec": 0.001210847869515419
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact": "prepared_pose_flags.json",
+      "checks": [
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": true,
+          "name": "validated",
+          "ok": true
+        },
+        {
+          "detail": true,
+          "name": "oracle_parity",
+          "ok": true
+        },
+        {
+          "detail": {
+            "input_mode": "python_objects",
+            "result_mode": "pose_flags"
+          },
+          "name": "validation_capable_modes",
+          "ok": true
+        }
+      ],
+      "path": "prepared_pose_flags",
+      "timing": {
+        "oracle_validate_sec": 30.66269164532423,
+        "warm_query_median_sec": 0.002990156412124634
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "database_analytics",
+      "artifact": "prepared_db_session_sales_risk.json",
+      "checks": [
+        {
+          "detail": "ok",
+          "name": "result_ok",
+          "ok": true
+        },
+        {
+          "detail": "exported",
+          "name": "native_counters_exported",
+          "ok": true
+        },
+        {
+          "detail": {
+            "all_sections_python_summary_postprocess_sec": 9.402632713317871e-06,
+            "all_sections_query_sec": 0.09979160130023956,
+            "compact_summary_operation_count": 3,
+            "row_materializing_operation_count": 0,
+            "sections": {
+              "sales_risk": {
+                "compact_summary_operation_count": 3,
+                "python_summary_postprocess_sec": 9.402632713317871e-06,
+                "query_sec": 0.09979160130023956,
+                "row_materializing_operation_count": 0
+              }
+            }
+          },
+          "name": "compact_summary_no_row_materialization",
+          "ok": true
+        },
+        {
+          "detail": {
+            "bitset_copyback_sec": 7.4716e-05,
+            "counter_status": "exported",
+            "emitted_count": 80006,
+            "exact_filter_sec": 0.013425095000000001,
+            "operation_count": 3,
+            "output_pack_sec": 0.003152429,
+            "raw_candidate_count": 240000,
+            "sections": {
+              "sales_risk": {
+                "bitset_copyback_sec": 7.4716e-05,
+                "emitted_count": 80006,
+                "exact_filter_sec": 0.013425095000000001,
+                "operation_count": 3,
+                "output_pack_sec": 0.003152429,
+                "raw_candidate_count": 240000,
+                "traversal_sec": 0.082689893
+              }
+            },
+            "traversal_sec": 0.082689893
+          },
+          "name": "has_native_traversal",
+          "ok": true
+        }
+      ],
+      "path": "prepared_db_session_sales_risk",
+      "timing": {
+        "native_traversal_sec": 0.082689893,
+        "one_shot_total_sec": 1.661828726530075,
+        "warm_query_median_sec": 0.10172516293823719
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "database_analytics",
+      "artifact": "prepared_db_session_regional_dashboard.json",
+      "checks": [
+        {
+          "detail": "ok",
+          "name": "result_ok",
+          "ok": true
+        },
+        {
+          "detail": "exported",
+          "name": "native_counters_exported",
+          "ok": true
+        },
+        {
+          "detail": {
+            "all_sections_python_summary_postprocess_sec": 1.6801059246063232e-06,
+            "all_sections_query_sec": 0.1369621753692627,
+            "compact_summary_operation_count": 3,
+            "row_materializing_operation_count": 0,
+            "sections": {
+              "regional_dashboard": {
+                "compact_summary_operation_count": 3,
+                "python_summary_postprocess_sec": 1.6801059246063232e-06,
+                "query_sec": 0.1369621753692627,
+                "row_materializing_operation_count": 0
+              }
+            }
+          },
+          "name": "compact_summary_no_row_materialization",
+          "ok": true
+        },
+        {
+          "detail": {
+            "bitset_copyback_sec": 6.8553e-05,
+            "counter_status": "exported",
+            "emitted_count": 80005,
+            "exact_filter_sec": 0.014618316999999999,
+            "operation_count": 3,
+            "output_pack_sec": 0.0028612129999999996,
+            "raw_candidate_count": 280000,
+            "sections": {
+              "regional_dashboard": {
+                "bitset_copyback_sec": 6.8553e-05,
+                "emitted_count": 80005,
+                "exact_filter_sec": 0.014618316999999999,
+                "operation_count": 3,
+                "output_pack_sec": 0.0028612129999999996,
+                "raw_candidate_count": 280000,
+                "traversal_sec": 0.11903298300000001
+              }
+            },
+            "traversal_sec": 0.11903298300000001
+          },
+          "name": "has_native_traversal",
+          "ok": true
+        }
+      ],
+      "path": "prepared_db_session_regional_dashboard",
+      "timing": {
+        "native_traversal_sec": 0.11903298300000001,
+        "one_shot_total_sec": 1.5421064272522926,
+        "warm_query_median_sec": 0.138423103839159
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "graph_analytics",
+      "artifact": "graph_visibility_edges_gate.json",
+      "checks": [
+        {
+          "detail": {
+            "status": "pass",
+            "strict_pass": true
+          },
+          "name": "status_pass",
+          "ok": true
+        },
+        {
+          "detail": {
+            "chunk_copies": 20000,
+            "chunk_count": 1,
+            "chunking": "single_launch",
+            "digest": {
+              "row_count": 80000,
+              "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "summary": {
+                "blocked_edge_count": 60000,
+                "visible_edge_count": 20000
+              }
+            },
+            "label": "optix_visibility_anyhit",
+            "optix_graph_mode": "not_applicable",
+            "parity_vs_analytic_expected": true,
+            "scenario": "visibility_edges",
+            "sec": 1.316054504364729,
+            "status": "ok"
+          },
+          "name": "visibility_parity",
+          "ok": true
+        },
+        {
+          "detail": {
+            "digest": {
+              "row_count": 40000,
+              "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "summary": {
+                "discovered_edge_count": 40000,
+                "discovered_vertex_count": 40000,
+                "max_level": 1
+              }
+            },
+            "label": "optix_native_graph_ray_bfs",
+            "optix_graph_mode": "native",
+            "parity_vs_analytic_expected": true,
+            "scenario": "bfs",
+            "sec": 5.119492277503014,
+            "status": "ok"
+          },
+          "name": "native_bfs_parity",
+          "ok": true
+        },
+        {
+          "detail": {
+            "digest": {
+              "row_count": 20000,
+              "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "summary": {
+                "touched_vertex_count": 60000,
+                "triangle_count": 20000
+              }
+            },
+            "label": "optix_native_graph_ray_triangle_count",
+            "optix_graph_mode": "native",
+            "parity_vs_analytic_expected": true,
+            "scenario": "triangle_count",
+            "sec": 0.8812341652810574,
+            "status": "ok"
+          },
+          "name": "native_triangle_count_parity",
+          "ok": true
+        }
+      ],
+      "path": "graph_visibility_edges_gate",
+      "timing": {
+        "bfs_sec": 5.119492277503014,
+        "triangle_count_sec": 0.8812341652810574,
+        "visibility_sec": 1.316054504364729
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "artifact": "prepared_count_summary.json",
+      "checks": [
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": "scalar_threshold_count",
+          "name": "summary_mode",
+          "ok": true
+        },
+        {
+          "detail": {
+            "input_build": 0.13882676139473915,
+            "optix_prepare": 0.8324177153408527,
+            "optix_query": 0.16599858924746513,
+            "python_postprocess": 5.148351192474365e-06
+          },
+          "name": "has_optix_query_time",
+          "ok": true
+        }
+      ],
+      "path": "prepared_count_summary",
+      "timing": {
+        "optix_prepare_sec": 0.8324177153408527,
+        "optix_query_sec": 0.16599858924746513
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact": "road_hazard_native_summary_gate.json",
+      "checks": [
+        {
+          "detail": {
+            "status": "pass",
+            "strict_pass": true
+          },
+          "name": "status_pass",
+          "ok": true
+        },
+        {
+          "detail": "run",
+          "name": "mode_run",
+          "ok": true
+        },
+        {
+          "detail": "road_hazard_prepared_summary",
+          "name": "scenario_match",
+          "ok": true
+        }
+      ],
+      "path": "road_hazard_native_summary_gate",
+      "timing": {
+        "schema_version": "goal933_prepared_segment_polygon_optix_contract_v1"
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact": "polygon_pair_overlap_optix_native_assisted_phase_gate.json",
+      "checks": [
+        {
+          "detail": "pass",
+          "name": "status_pass",
+          "ok": true
+        },
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": {
+            "cpu_exact_refinement_sec": 1.770491186529398,
+            "cpu_reference_sec": null,
+            "input_build_sec": 0.0,
+            "native_exact_continuation_sec": 1.770491186529398,
+            "optix_candidate_discovery_sec": 2.4074726663529873
+          },
+          "name": "has_optix_candidate_discovery",
+          "ok": true
+        },
+        {
+          "detail": {
+            "cpu_exact_refinement_sec": 1.770491186529398,
+            "cpu_reference_sec": null,
+            "input_build_sec": 0.0,
+            "native_exact_continuation_sec": 1.770491186529398,
+            "optix_candidate_discovery_sec": 2.4074726663529873
+          },
+          "name": "has_native_exact_continuation",
+          "ok": true
+        }
+      ],
+      "path": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "timing": {
+        "native_exact_continuation_sec": 1.770491186529398,
+        "optix_candidate_discovery_sec": 2.4074726663529873
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact": "polygon_set_jaccard_optix_native_assisted_phase_gate.json",
+      "checks": [
+        {
+          "detail": "pass",
+          "name": "status_pass",
+          "ok": true
+        },
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": {
+            "cpu_exact_refinement_sec": 3.1769563630223274,
+            "cpu_reference_sec": null,
+            "input_build_sec": 0.0,
+            "native_exact_continuation_sec": 3.1769563630223274,
+            "optix_candidate_discovery_sec": 2.613548282533884
+          },
+          "name": "has_optix_candidate_discovery",
+          "ok": true
+        },
+        {
+          "detail": {
+            "cpu_exact_refinement_sec": 3.1769563630223274,
+            "cpu_reference_sec": null,
+            "input_build_sec": 0.0,
+            "native_exact_continuation_sec": 3.1769563630223274,
+            "optix_candidate_discovery_sec": 2.613548282533884
+          },
+          "name": "has_native_exact_continuation",
+          "ok": true
+        }
+      ],
+      "path": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "timing": {
+        "native_exact_continuation_sec": 3.1769563630223274,
+        "optix_candidate_discovery_sec": 2.613548282533884
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact": "directed_threshold_prepared.json",
+      "checks": [
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": true,
+          "name": "oracle_parity",
+          "ok": true
+        },
+        {
+          "detail": {
+            "max_sec": 0.009531263262033463,
+            "median_sec": 0.00391755998134613,
+            "min_sec": 0.00118216872215271
+          },
+          "name": "has_optix_query",
+          "ok": true
+        }
+      ],
+      "path": "directed_threshold_prepared",
+      "timing": {
+        "optix_prepare_sec": 0.7481647431850433,
+        "optix_query_median_sec": 0.00391755998134613
+      },
+      "verdict": "accept"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact": "node_coverage_prepared.json",
+      "checks": [
+        {
+          "detail": "optix",
+          "name": "optix_mode",
+          "ok": true
+        },
+        {
+          "detail": true,
+          "name": "oracle_parity",
+          "ok": true
+        },
+        {
+          "detail": {
+            "max_sec": 0.0069226548075675964,
+            "median_sec": 0.001781713217496872,
+            "min_sec": 0.0017535090446472168
+          },
+          "name": "has_optix_query",
+          "ok": true
+        }
+      ],
+      "path": "node_coverage_prepared",
+      "timing": {
+        "optix_prepare_sec": 0.9298685789108276,
+        "optix_query_median_sec": 0.001781713217496872
+      },
+      "verdict": "accept"
+    }
+  ],
+  "source_artifact_dir": "docs/reports/goal1052_post_goal1048_cloud_batch",
+  "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
+  "summary": {
+    "accept_count": 11,
+    "block_count": 0,
+    "public_speedup_claims_authorized": 0,
+    "row_count": 11
+  }
+}
