@@ -1,0 +1,65 @@
+{
+  "boundary": "Goal1067 is a local scale-contract audit. It does not run OptiX, does not run cloud, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-28",
+  "goal": "Goal1067 scale-contract repair audit",
+  "rows": [
+    {
+      "app": "hausdorff_distance",
+      "cpu_reference_total_sec": 0.00010495807509869337,
+      "decision": "blocked_scale_contract_not_repaired",
+      "input_artifact": "docs/reports/goal1067_hausdorff_scale_contract_dry_run_2026-04-28.json",
+      "input_build_sec": 0.06322879204526544,
+      "next_local_action": "Do not pod-rerun this as a public speedup candidate. Either keep it as an RTX capability/parity path or design a separate non-analytic threshold-decision benchmark contract with bounded validation.",
+      "path_name": "directed_threshold_prepared",
+      "pod_policy": "no_pod_until_benchmark_contract_changes",
+      "reason": "The authored Hausdorff fixture uses an analytic tiled oracle, so raising copies to 20,000 creates 80k logical points per side but does not create a meaningful same-semantics CPU speed baseline.",
+      "tested_scale": {
+        "copies": 20000,
+        "point_count_a": 80000,
+        "point_count_b": 80000,
+        "radius": 0.4
+      }
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "decision": "pod_candidate_after_review",
+      "input_artifacts": [
+        "docs/reports/goal1067_barnes_hut_scale_contract_dry_run_2026-04-28.json",
+        "docs/reports/goal1067_barnes_hut_scale_contract_1m_dry_run_2026-04-28.json"
+      ],
+      "next_local_action": "Add Barnes-Hut 1M node-coverage to the next one-pod batch only after review; keep public wording blocked until real RTX timing, baseline comparison, and 2-AI review exist.",
+      "path_name": "node_coverage_prepared",
+      "pod_policy": "eligible_for_next_pod_after_review",
+      "reason": "The 1M-body local dry-run keeps the same node-coverage decision, separates input build from CPU reference, and produces a non-trivial same-semantics CPU reference above the 100 ms scale target.",
+      "recommended_cloud_scale": {
+        "body_count": 1000000,
+        "mode": "optix",
+        "radius": 10.0,
+        "skip_validation": true,
+        "validation_reference": "Use the saved dry-run semantic validation and run one smaller validated RTX pass before large timing repeats."
+      },
+      "tested_scales": [
+        {
+          "body_count": 200000,
+          "covered_body_count": 200000,
+          "cpu_reference_total_sec": 0.03507370804436505,
+          "input_build_sec": 0.2622124160407111,
+          "radius": 10.0
+        },
+        {
+          "body_count": 1000000,
+          "covered_body_count": 1000000,
+          "cpu_reference_total_sec": 0.17062895908020437,
+          "input_build_sec": 1.3587775829946622,
+          "radius": 10.0
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "blocked_rows": 1,
+    "pod_candidate_after_review_rows": 1,
+    "scale_contract_rows": 2
+  },
+  "valid": true
+}
