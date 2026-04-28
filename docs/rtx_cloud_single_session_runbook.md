@@ -48,9 +48,11 @@ artifacts locally before starting paid cloud time:
 ```bash
 PYTHONPATH=src:. python3 scripts/goal1052_post_goal1048_cloud_batch_manifest.py
 PYTHONPATH=src:. python3 scripts/goal1053_post_goal1048_cloud_batch_runner.py
+PYTHONPATH=src:. python3 scripts/goal1056_post_goal1048_artifact_intake.py
 PYTHONPATH=src:. python3 -m unittest \
   tests.goal1052_post_goal1048_cloud_batch_manifest_test \
-  tests.goal1053_post_goal1048_cloud_batch_runner_test
+  tests.goal1053_post_goal1048_cloud_batch_runner_test \
+  tests.goal1056_post_goal1048_artifact_intake_test
 ```
 
 The generated Goal1052 manifest must report:
@@ -161,6 +163,19 @@ scp -r -P <port> -i ~/.ssh/id_ed25519 \
   root@<host>:/workspace/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch \
   /Users/rl2025/rtdl_python_only/docs/reports/
 ```
+
+Then run the Goal1056 local intake before interpreting the copied artifacts:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+PYTHONPATH=src:. python3 scripts/goal1056_post_goal1048_artifact_intake.py
+```
+
+The expected pre-pod status is `needs_cloud_artifacts`. After copyback, any
+`blocked` status is a hard stop for public wording review. A
+`ready_for_same_semantics_review` status means only that the artifact directory
+is complete and the two diagnostic rows passed validation/parity checks; it
+still does not authorize release or public RTX speedup wording.
 
 ## OOM-Safe Small Batches
 

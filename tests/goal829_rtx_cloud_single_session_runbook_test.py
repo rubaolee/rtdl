@@ -29,6 +29,7 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal1026_pre_cloud_runner_dry_run_audit.py", text)
         self.assertIn("goal1052_post_goal1048_cloud_batch_manifest.py", text)
         self.assertIn("goal1053_post_goal1048_cloud_batch_runner.py", text)
+        self.assertIn("goal1056_post_goal1048_artifact_intake.py", text)
         self.assertIn("17 active+deferred manifest entries", text)
         self.assertIn("16\nunique manifest commands", text)
         self.assertIn('"valid": true', text)
@@ -46,6 +47,9 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("9 same-semantics review candidate commands", text)
         self.assertIn("Do not edit the generated runner on the pod to add `--skip-validation`", text)
         self.assertIn("Copy back the entire Goal1052 report directory", text)
+        self.assertIn("Then run the Goal1056 local intake before interpreting the copied artifacts", text)
+        self.assertIn("ready_for_same_semantics_review", text)
+        self.assertIn("still does not authorize release or public RTX speedup wording", text)
 
     def test_runbook_uses_bootstrap_and_artifact_audit(self) -> None:
         text = RUNBOOK.read_text(encoding="utf-8")
