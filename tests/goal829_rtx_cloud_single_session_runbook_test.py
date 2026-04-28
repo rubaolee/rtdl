@@ -27,10 +27,25 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal824_pre_cloud_rtx_readiness_gate.py", text)
         self.assertIn("goal1025_pre_cloud_rtx_app_batch_readiness.py", text)
         self.assertIn("goal1026_pre_cloud_runner_dry_run_audit.py", text)
+        self.assertIn("goal1052_post_goal1048_cloud_batch_manifest.py", text)
+        self.assertIn("goal1053_post_goal1048_cloud_batch_runner.py", text)
         self.assertIn("17 active+deferred manifest entries", text)
         self.assertIn("16\nunique manifest commands", text)
         self.assertIn('"valid": true', text)
         self.assertIn("Do not start a pod for one app at a time.", text)
+
+    def test_runbook_prefers_goal1053_for_current_post_goal1048_batch(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("Current Post-Goal1048 Runner", text)
+        self.assertIn("prefer the generated Goal1053 runner", text)
+        self.assertIn("bash scripts/goal1053_post_goal1048_cloud_batch_runner.sh", text)
+        self.assertIn("goal1052_post_goal1048_cloud_batch", text)
+        self.assertIn("validation-enabled `facility_knn_assignment", text)
+        self.assertIn("validation-enabled `robot_collision_screening", text)
+        self.assertIn("9 same-semantics review candidate commands", text)
+        self.assertIn("Do not edit the generated runner on the pod to add `--skip-validation`", text)
+        self.assertIn("Copy back the entire Goal1052 report directory", text)
 
     def test_runbook_uses_bootstrap_and_artifact_audit(self) -> None:
         text = RUNBOOK.read_text(encoding="utf-8")

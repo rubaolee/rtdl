@@ -4,8 +4,11 @@ This runbook is for paid NVIDIA RTX pod time. It exists to avoid repeated
 restart/stop cycles while RTDL is validating NVIDIA RT-core app evidence.
 
 After Goal1043, every claim-grade pod batch must preserve source traceability
-even when the repo is staged with `rsync` instead of `git clone`. The runner
-accepts `RTDL_SOURCE_COMMIT` first, then falls back to git, then to
+even when the repo is staged with `rsync` instead of `git clone`. After
+Goal1048, the current follow-up batch is the Goal1052/Goal1053 path: rerun the
+facility and robot diagnostic-only rows with validation enabled, then collect
+same-semantics review artifacts for the not-reviewed rows. The runner accepts
+`RTDL_SOURCE_COMMIT` first, then falls back to git, then to
 `.rtdl_source_commit`.
 
 ## Before Starting A Pod
@@ -38,6 +41,27 @@ The current Goal1025/Goal1026 local gates expect 18 public apps, 16 NVIDIA RTX
 targets, 2 non-NVIDIA exclusions, 17 active+deferred manifest entries, and 16
 unique manifest commands. If those counts drift, refresh the manifest and the
 runbook before starting paid cloud time.
+
+For the current post-Goal1048 follow-up, also regenerate the Goal1052/Goal1053
+artifacts locally before starting paid cloud time:
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal1052_post_goal1048_cloud_batch_manifest.py
+PYTHONPATH=src:. python3 scripts/goal1053_post_goal1048_cloud_batch_runner.py
+PYTHONPATH=src:. python3 -m unittest \
+  tests.goal1052_post_goal1048_cloud_batch_manifest_test \
+  tests.goal1053_post_goal1048_cloud_batch_runner_test
+```
+
+The generated Goal1052 manifest must report:
+
+```text
+"valid": true
+```
+
+The generated Goal1053 runner must contain no `--skip-validation` in the
+`facility_knn_assignment` or `robot_collision_screening` diagnostic rerun
+commands.
 
 If the only pending follow-up is the historical graph/Jaccard retry, use
 Goal914 instead of the full group list:
@@ -97,10 +121,51 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
 
 Do not continue if bootstrap status is not `ok`.
 
+## Current Post-Goal1048 Runner
+
+For the next current v1.0 RTX pod session, prefer the generated Goal1053 runner
+over the older Goal759/Goal761 grouped path. The older OOM-safe group list below
+is retained for historical fallback and targeted debugging, but it is not the
+primary post-Goal1048 procedure.
+
+From the pod checkout root:
+
+```bash
+cd /workspace/rtdl_python_only
+export PYTHONPATH=src:.
+export OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0
+export CUDA_PREFIX=/usr/local/cuda-12.4
+export NVCC=/usr/local/cuda-12.4/bin/nvcc
+export RTDL_NVCC=/usr/local/cuda-12.4/bin/nvcc
+export RTDL_OPTIX_PTX_COMPILER=nvcc
+export RTDL_OPTIX_LIB=/workspace/rtdl_python_only/build/librtdl_optix.so
+export RTDL_SOURCE_COMMIT="$(cat /workspace/rtdl_python_only/.rtdl_source_commit 2>/dev/null || git rev-parse HEAD)"
+
+bash scripts/goal1053_post_goal1048_cloud_batch_runner.sh
+```
+
+Goal1053 runs bootstrap first and then executes the Goal1052 batch:
+
+- validation-enabled `facility_knn_assignment / coverage_threshold_prepared`
+- validation-enabled `robot_collision_screening / prepared_pose_flags`
+- 9 same-semantics review candidate commands
+
+Do not edit the generated runner on the pod to add `--skip-validation`. If a
+diagnostic row cannot finish with validation enabled, copy back the failing
+artifact and stop interpreting that row as claim-grade evidence.
+
+Copy back the entire Goal1052 report directory before stopping the pod:
+
+```bash
+scp -r -P <port> -i ~/.ssh/id_ed25519 \
+  root@<host>:/workspace/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch \
+  /Users/rl2025/rtdl_python_only/docs/reports/
+```
+
 ## OOM-Safe Small Batches
 
-Run one group at a time. This prevents a single high-memory workload from
-hanging SSH or losing all progress.
+Historical fallback: Run one group at a time. This prevents a single
+high-memory workload from hanging SSH or losing all progress.
 
 Set common environment first:
 
