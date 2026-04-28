@@ -5,10 +5,12 @@ restart/stop cycles while RTDL is validating NVIDIA RT-core app evidence.
 
 After Goal1043, every claim-grade pod batch must preserve source traceability
 even when the repo is staged with `rsync` instead of `git clone`. After
-Goal1048, the current follow-up batch is the Goal1052/Goal1053 path: rerun the
-facility and robot diagnostic-only rows with validation enabled, then collect
-same-semantics review artifacts for the not-reviewed rows. The runner accepts
-`RTDL_SOURCE_COMMIT` first, then falls back to git, then to
+Goal1063, the current follow-up batch is the Goal1062 path only: rerun the two
+remaining blocked public wording rows (`facility_knn_assignment` and
+`robot_collision_screening`) with separate correctness-validation and large
+timing-repeat commands. Do not spend paid pod time rerunning the rejected
+not-reviewed rows until their local code or scale contracts change. The runner
+accepts `RTDL_SOURCE_COMMIT` first, then falls back to git, then to
 `.rtdl_source_commit`.
 
 ## Before Starting A Pod
@@ -42,28 +44,28 @@ targets, 2 non-NVIDIA exclusions, 17 active+deferred manifest entries, and 16
 unique manifest commands. If those counts drift, refresh the manifest and the
 runbook before starting paid cloud time.
 
-For the current post-Goal1048 follow-up, also regenerate the Goal1052/Goal1053
-artifacts locally before starting paid cloud time:
+For the current post-Goal1063 follow-up, also regenerate the Goal1062 and
+Goal1063 artifacts locally before starting paid cloud time:
 
 ```bash
-PYTHONPATH=src:. python3 scripts/goal1052_post_goal1048_cloud_batch_manifest.py
-PYTHONPATH=src:. python3 scripts/goal1053_post_goal1048_cloud_batch_runner.py
-PYTHONPATH=src:. python3 scripts/goal1056_post_goal1048_artifact_intake.py
+PYTHONPATH=src:. python3 scripts/goal1062_blocked_rtx_wording_rerun_manifest.py
+PYTHONPATH=src:. python3 scripts/goal1063_pre_pod_local_completion_audit.py
 PYTHONPATH=src:. python3 -m unittest \
-  tests.goal1052_post_goal1048_cloud_batch_manifest_test \
-  tests.goal1053_post_goal1048_cloud_batch_runner_test \
-  tests.goal1056_post_goal1048_artifact_intake_test
+  tests.goal1062_blocked_rtx_wording_rerun_manifest_test \
+  tests.goal1063_pre_pod_local_completion_audit_test
 ```
 
-The generated Goal1052 manifest must report:
+The generated Goal1062 manifest and Goal1063 audit must report:
 
 ```text
 "valid": true
 ```
 
-The generated Goal1053 runner must contain no `--skip-validation` in the
-`facility_knn_assignment` or `robot_collision_screening` diagnostic rerun
-commands.
+The generated Goal1062 runner must contain no `--skip-validation` in the
+`facility_knn_assignment` or `robot_collision_screening` correctness-validation
+commands. Its large timing rows intentionally use `--skip-validation`; those
+rows are timing-only and cannot authorize public wording without later
+artifact-intake and 2+ AI review.
 
 If the only pending follow-up is the historical graph/Jaccard retry, use
 Goal914 instead of the full group list:
@@ -123,12 +125,13 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
 
 Do not continue if bootstrap status is not `ok`.
 
-## Current Post-Goal1048 Runner
+## Current Post-Goal1063 Runner
 
-For the next current v1.0 RTX pod session, prefer the generated Goal1053 runner
-over the older Goal759/Goal761 grouped path. The older OOM-safe group list below
-is retained for historical fallback and targeted debugging, but it is not the
-primary post-Goal1048 procedure.
+For the next current v1.0 RTX pod session, prefer the generated Goal1062 runner
+over the older Goal1053 or Goal759/Goal761 grouped paths. Goal1063 determined
+that only the remaining blocked facility/robot wording rows are pod-ready now.
+The older broad batch lists below are retained for historical fallback and
+targeted debugging, but they are not the primary post-Goal1063 procedure.
 
 From the pod checkout root:
 
@@ -143,39 +146,42 @@ export RTDL_OPTIX_PTX_COMPILER=nvcc
 export RTDL_OPTIX_LIB=/workspace/rtdl_python_only/build/librtdl_optix.so
 export RTDL_SOURCE_COMMIT="$(cat /workspace/rtdl_python_only/.rtdl_source_commit 2>/dev/null || git rev-parse HEAD)"
 
-bash scripts/goal1053_post_goal1048_cloud_batch_runner.sh
+bash scripts/goal1062_blocked_rtx_wording_rerun_runner.sh
 ```
 
-Goal1053 runs bootstrap first and then executes the Goal1052 batch:
+Goal1062 executes exactly four rows:
 
-- validation-enabled `facility_knn_assignment / coverage_threshold_prepared`
-- validation-enabled `robot_collision_screening / prepared_pose_flags`
-- 9 same-semantics review candidate commands
+- correctness-validation `facility_knn_assignment / coverage_threshold_prepared`
+- large timing-repeat `facility_knn_assignment / coverage_threshold_prepared`
+- correctness-validation `robot_collision_screening / prepared_pose_flags`
+- large timing-repeat `robot_collision_screening / prepared_pose_flags`
 
-Do not edit the generated runner on the pod to add `--skip-validation`. If a
-diagnostic row cannot finish with validation enabled, copy back the failing
-artifact and stop interpreting that row as claim-grade evidence.
+Do not edit the generated runner on the pod to add `--skip-validation` to the
+two correctness-validation rows. If a validation row cannot finish, copy back
+the failing artifact and stop interpreting that row as claim-grade evidence.
+The two large timing rows already use `--skip-validation`; they are timing-only
+evidence and require separate validation rows plus later review.
 
-Copy back the entire Goal1052 report directory before stopping the pod:
+Copy back the entire Goal1062 report directory before stopping the pod:
 
 ```bash
 scp -r -P <port> -i ~/.ssh/id_ed25519 \
-  root@<host>:/workspace/rtdl_python_only/docs/reports/goal1052_post_goal1048_cloud_batch \
+  root@<host>:/workspace/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun \
   /Users/rl2025/rtdl_python_only/docs/reports/
 ```
 
-Then run the Goal1056 local intake before interpreting the copied artifacts:
+Then write or run a Goal1062 artifact-intake step before interpreting the
+copied artifacts. Until that intake and 2+ AI review exist, copied artifacts
+are engineering evidence only:
 
 ```bash
 cd /Users/rl2025/rtdl_python_only
-PYTHONPATH=src:. python3 scripts/goal1056_post_goal1048_artifact_intake.py
+PYTHONPATH=src:. python3 scripts/goal1063_pre_pod_local_completion_audit.py
 ```
 
-The expected pre-pod status is `needs_cloud_artifacts`. After copyback, any
-`blocked` status is a hard stop for public wording review. A
-`ready_for_same_semantics_review` status means only that the artifact directory
-is complete and the two diagnostic rows passed validation/parity checks; it
-still does not authorize release or public RTX speedup wording.
+Goal1063 says the broader rejected not-reviewed rows remain local-only until
+code or scale changes. Do not use the Goal1053 11-command batch to collect
+those rows again unless a later local audit supersedes Goal1063.
 
 ## OOM-Safe Small Batches
 
