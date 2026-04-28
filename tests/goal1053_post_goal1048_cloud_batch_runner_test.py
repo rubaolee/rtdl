@@ -49,6 +49,19 @@ class Goal1053PostGoal1048CloudBatchRunnerTest(unittest.TestCase):
         for command in diagnostic:
             self.assertNotIn("--skip-validation", command["command"])
 
+    def test_robot_command_matches_validation_capable_manifest_mode(self) -> None:
+        module = __import__(
+            "scripts.goal1053_post_goal1048_cloud_batch_runner",
+            fromlist=["build_runner"],
+        )
+        payload = module.build_runner()
+        robot = payload["commands"][1]["command"]
+        self.assertIn("scripts/goal760_optix_robot_pose_flags_phase_profiler.py", robot)
+        self.assertEqual(robot[robot.index("--input-mode") + 1], "python_objects")
+        self.assertEqual(robot[robot.index("--result-mode") + 1], "pose_flags")
+        self.assertEqual(robot[robot.index("--pose-count") + 1], "4096")
+        self.assertEqual(robot[robot.index("--obstacle-count") + 1], "256")
+
     def test_cli_writes_json_and_shell(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "goal1053.json"

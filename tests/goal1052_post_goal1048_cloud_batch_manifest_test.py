@@ -42,6 +42,27 @@ class Goal1052PostGoal1048CloudBatchManifestTest(unittest.TestCase):
             self.assertTrue(row["force_validation_enabled"])
             self.assertFalse(row["contains_skip_validation"])
 
+    def test_robot_diagnostic_uses_profiler_validation_capable_mode(self) -> None:
+        module = __import__(
+            "scripts.goal1052_post_goal1048_cloud_batch_manifest",
+            fromlist=["build_manifest"],
+        )
+        payload = module.build_manifest()
+        robot = next(
+            row
+            for row in payload["diagnostic_validation_reruns"]
+            if row["app"] == "robot_collision_screening"
+        )
+        command = robot["command"]
+        self.assertIn("scripts/goal760_optix_robot_pose_flags_phase_profiler.py", command)
+        self.assertIn("--input-mode", command)
+        self.assertEqual(command[command.index("--input-mode") + 1], "python_objects")
+        self.assertIn("--result-mode", command)
+        self.assertEqual(command[command.index("--result-mode") + 1], "pose_flags")
+        self.assertEqual(command[command.index("--pose-count") + 1], "4096")
+        self.assertEqual(command[command.index("--obstacle-count") + 1], "256")
+        self.assertEqual(command[command.index("--iterations") + 1], "3")
+
     def test_outputs_are_goal1052_scoped_and_unique(self) -> None:
         module = __import__(
             "scripts.goal1052_post_goal1048_cloud_batch_manifest",

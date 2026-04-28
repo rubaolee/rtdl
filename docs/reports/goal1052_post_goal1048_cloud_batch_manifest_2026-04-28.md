@@ -19,7 +19,7 @@ Do not start or stop a cloud pod per app. Run this as one batched session, copy 
 | Path | App | Command |
 | --- | --- | --- |
 | `coverage_threshold_prepared` | `facility_knn_assignment` | `python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario facility_service_coverage --mode optix --copies 20000 --iterations 10 --radius 1.0 --output-json docs/reports/goal1052_post_goal1048_cloud_batch/coverage_threshold_prepared.json` |
-| `prepared_pose_flags` | `robot_collision_screening` | `python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --pose-count 200000 --obstacle-count 1024 --iterations 10 --input-mode packed_arrays --result-mode pose_count --output-json docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json` |
+| `prepared_pose_flags` | `robot_collision_screening` | `python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --pose-count 4096 --obstacle-count 256 --iterations 3 --input-mode python_objects --result-mode pose_flags --output-json docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json` |
 
 ## Same-Semantics Review Candidates
 

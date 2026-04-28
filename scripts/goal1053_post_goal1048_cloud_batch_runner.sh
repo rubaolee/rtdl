@@ -42,7 +42,7 @@ python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario facility_
 echo "Completed facility_knn_assignment:coverage_threshold_prepared; copy back docs/reports/goal1052_post_goal1048_cloud_batch/coverage_threshold_prepared.json"
 
 echo "Running 2/11: robot_collision_screening:prepared_pose_flags"
-python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --pose-count 200000 --obstacle-count 1024 --iterations 10 --input-mode packed_arrays --result-mode pose_count --output-json docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json
+python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --pose-count 4096 --obstacle-count 256 --iterations 3 --input-mode python_objects --result-mode pose_flags --output-json docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json
 echo "Completed robot_collision_screening:prepared_pose_flags; copy back docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json"
 
 echo "Running 3/11: database_analytics:prepared_db_session_sales_risk"

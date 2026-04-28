@@ -50,6 +50,16 @@ def _prepare_row(entry: dict[str, Any], *, batch: str, force_validation: bool) -
     command = list(row["command"])
     if force_validation:
         command = _strip_skip_validation(command)
+        if row["app"] == "robot_collision_screening":
+            command = _make_robot_validation_command(command)
+            row["scale"] = {"pose_count": 4096, "obstacle_count": 256, "iterations": 3}
+            row["preconditions"] = [
+                "OptiX ray/triangle any-hit prepared symbols must be exported.",
+                "Use the phase profiler rather than raw app CLI timing for final claim review.",
+                "This diagnostic rerun must not include --skip-validation.",
+                "Use python_objects input mode because packed_arrays currently rejects oracle validation.",
+                "Use pose_flags result mode because pose_count currently rejects oracle validation.",
+            ]
     command = _rewrite_output(command, row["path_name"])
     row["command"] = command
     row["batch"] = batch
@@ -61,6 +71,35 @@ def _prepare_row(entry: dict[str, Any], *, batch: str, force_validation: bool) -
         else None
     )
     return row
+
+
+def _replace_arg(command: list[str], option: str, value: str) -> list[str]:
+    rewritten = list(command)
+    if option not in rewritten:
+        rewritten.extend([option, value])
+        return rewritten
+    idx = rewritten.index(option)
+    if idx + 1 >= len(rewritten):
+        rewritten.append(value)
+    else:
+        rewritten[idx + 1] = value
+    return rewritten
+
+
+def _make_robot_validation_command(command: list[str]) -> list[str]:
+    """Use the profiler's validation-capable robot mode for diagnostic reruns.
+
+    The large packed-array pose-count path is the clean performance path, but
+    the profiler intentionally rejects oracle validation for that compact mode.
+    Goal1052 diagnostic reruns are for correctness/parity evidence after
+    Goal1048, so the generated pod command must use Python-object pose flags.
+    """
+    rewritten = _replace_arg(command, "--pose-count", "4096")
+    rewritten = _replace_arg(rewritten, "--obstacle-count", "256")
+    rewritten = _replace_arg(rewritten, "--iterations", "3")
+    rewritten = _replace_arg(rewritten, "--input-mode", "python_objects")
+    rewritten = _replace_arg(rewritten, "--result-mode", "pose_flags")
+    return rewritten
 
 
 def build_manifest() -> dict[str, Any]:
