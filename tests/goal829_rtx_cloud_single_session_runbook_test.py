@@ -29,26 +29,31 @@ class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
         self.assertIn("goal1026_pre_cloud_runner_dry_run_audit.py", text)
         self.assertIn("goal1062_blocked_rtx_wording_rerun_manifest.py", text)
         self.assertIn("goal1063_pre_pod_local_completion_audit.py", text)
+        self.assertIn("goal1067_scale_contract_repair_audit.py", text)
+        self.assertIn("goal1068_next_rtx_pod_efficiency_batch.py", text)
         self.assertIn("17 active+deferred manifest entries", text)
         self.assertIn("16\nunique manifest commands", text)
         self.assertIn('"valid": true', text)
         self.assertIn("Do not start a pod for one app at a time.", text)
 
-    def test_runbook_prefers_goal1062_for_current_post_goal1063_batch(self) -> None:
+    def test_runbook_prefers_goal1068_for_current_post_goal1068_batch(self) -> None:
         text = RUNBOOK.read_text(encoding="utf-8")
 
-        self.assertIn("Current Post-Goal1063 Runner", text)
-        self.assertIn("prefer the generated Goal1062 runner", text)
-        self.assertIn("bash scripts/goal1062_blocked_rtx_wording_rerun_runner.sh", text)
-        self.assertIn("goal1062_blocked_rtx_wording_rerun", text)
+        self.assertIn("Current Post-Goal1068 Runner", text)
+        self.assertIn("prefer the generated Goal1068 runner", text)
+        self.assertIn("bash scripts/goal1068_next_rtx_pod_efficiency_batch_runner.sh", text)
+        self.assertIn("goal1068_next_rtx_pod_efficiency_batch", text)
         self.assertIn("correctness-validation `facility_knn_assignment", text)
         self.assertIn("large timing-repeat `facility_knn_assignment", text)
         self.assertIn("correctness-validation `robot_collision_screening", text)
         self.assertIn("large timing-repeat `robot_collision_screening", text)
+        self.assertIn("correctness-validation `barnes_hut_force_app", text)
+        self.assertIn("large timing-repeat `barnes_hut_force_app", text)
         self.assertIn("Do not edit the generated runner on the pod to add `--skip-validation` to the", text)
-        self.assertIn("Copy back the entire Goal1062 report directory", text)
+        self.assertIn("Copy back the entire Goal1068 report directory", text)
         self.assertIn("Goal1063 says the broader rejected not-reviewed rows remain local-only", text)
-        self.assertIn("code or scale changes", text)
+        self.assertIn("Goal1067 superseded only the Barnes-Hut scale-contract", text)
+        self.assertIn("Hausdorff remains blocked", text)
 
     def test_runbook_uses_bootstrap_and_artifact_audit(self) -> None:
         text = RUNBOOK.read_text(encoding="utf-8")
