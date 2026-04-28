@@ -1,0 +1,70 @@
+{
+  "artifact_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun",
+  "blocked_count": 0,
+  "boundary": "This intake checks copied Goal1062 artifacts only. It does not run cloud, change public wording, authorize release, or authorize public RTX speedup claims.",
+  "date": "2026-04-28",
+  "expected_artifact_count": 4,
+  "goal": "Goal1065 Goal1062 artifact intake",
+  "manifest_goal": "Goal1062 blocked RTX wording rerun manifest",
+  "missing_artifact_count": 4,
+  "overall_status": "needs_cloud_artifacts",
+  "present_artifact_count": 0,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_validation.json",
+      "artifact_status": "missing",
+      "expected_output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_validation.json",
+      "path_name": "coverage_threshold_prepared",
+      "phase": "correctness_validation",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected Goal1062 artifact has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact",
+      "rtx_phase_sec": null
+    },
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_large_timing.json",
+      "artifact_status": "missing",
+      "expected_output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_large_timing.json",
+      "path_name": "coverage_threshold_prepared",
+      "phase": "large_timing_repeat",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected Goal1062 artifact has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact",
+      "rtx_phase_sec": null
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_validation.json",
+      "artifact_status": "missing",
+      "expected_output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_validation.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "correctness_validation",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected Goal1062 artifact has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact",
+      "rtx_phase_sec": null
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_large_timing.json",
+      "artifact_status": "missing",
+      "expected_output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_large_timing.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "large_timing_repeat",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected Goal1062 artifact has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact",
+      "rtx_phase_sec": null
+    }
+  ],
+  "status_counts": {
+    "needs_cloud_artifact": 4
+  },
+  "timing_below_floor_count": 0,
+  "timing_floor_passed_count": 0,
+  "valid": true,
+  "validation_passed_count": 0
+}
