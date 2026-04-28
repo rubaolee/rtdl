@@ -23,9 +23,9 @@ class Goal1051PostGoal1048FollowupPlanTest(unittest.TestCase):
             [row["app"] for row in payload["diagnostic_reruns"]],
             ["facility_knn_assignment", "robot_collision_screening"],
         )
-        self.assertEqual(len(payload["reviewed_keep_as_is"]), 6)
+        self.assertEqual(len(payload["reviewed_keep_as_is"]), 7)
         self.assertEqual(len(payload["blocked_public_wording"]), 2)
-        self.assertEqual(len(payload["same_semantics_review_needed"]), 8)
+        self.assertEqual(len(payload["same_semantics_review_needed"]), 7)
         self.assertIn("Do not start paid cloud per app", payload["policy"])
         self.assertIn("does not run cloud", payload["boundary"])
 

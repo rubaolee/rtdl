@@ -77,6 +77,9 @@ broad RT-core acceleration claim:
 - `service_coverage_gaps / prepared_gap_summary`: median RTX phase `0.136545`
   s, `1.61x` faster than the fastest same-semantics non-OptiX baseline for the
   measured sub-path
+- `event_hotspot_screening / prepared_count_summary`: RTX query phase
+  `0.165999` s, `1.55x` faster than the fastest same-semantics non-OptiX
+  baseline for the prepared count-summary query phase
 - `outlier_detection / prepared_fixed_radius_density_summary`: median RTX phase
   `0.122348` s, `4.64x` faster than the fastest same-semantics non-OptiX
   baseline for the measured sub-path

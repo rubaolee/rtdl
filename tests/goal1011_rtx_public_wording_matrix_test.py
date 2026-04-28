@@ -7,6 +7,7 @@ import rtdsl as rt
 
 REVIEWED_APPS = {
     "service_coverage_gaps",
+    "event_hotspot_screening",
     "outlier_detection",
     "dbscan_clustering",
     "segment_polygon_hitcount",
@@ -31,13 +32,16 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
             if row.status == "public_wording_reviewed"
         }
         self.assertEqual(reviewed, REVIEWED_APPS)
-        self.assertEqual(len(reviewed), 6)
+        self.assertEqual(len(reviewed), 7)
 
     def test_reviewed_rows_are_bounded_to_named_subpaths(self) -> None:
         matrix = rt.rtx_public_wording_matrix()
         for app in REVIEWED_APPS:
             row = matrix[app]
-            self.assertIn("Goal1008/Goal1009", row.evidence)
+            if app == "event_hotspot_screening":
+                self.assertEqual(row.evidence, "Goal1061")
+            else:
+                self.assertIn("Goal1008/Goal1009", row.evidence)
             self.assertIn("sub-path", row.reviewed_wording)
             self.assertIn("same-semantics baseline", row.reviewed_wording)
             self.assertNotIn("whole app", row.reviewed_wording.lower())

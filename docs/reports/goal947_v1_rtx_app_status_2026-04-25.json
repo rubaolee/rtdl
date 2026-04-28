@@ -10,6 +10,12 @@
       "scope": "prepared gap-summary query/native sub-path only"
     },
     {
+      "app_path": "event_hotspot_screening / prepared_count_summary",
+      "ratio": "1.55x",
+      "rtx_phase_sec": "0.165999",
+      "scope": "prepared count-summary query phase only"
+    },
+    {
       "app_path": "outlier_detection / prepared_fixed_radius_density_summary",
       "ratio": "4.64x",
       "rtx_phase_sec": "0.122348",
@@ -163,10 +169,10 @@
       "native_continuation_contract": "native continuation only for Embree count_summary or OptiX count_summary_prepared threshold-count paths",
       "non_claim_boundary": "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal917/Goal919",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording": "RTDL's prepared event-hotspot count-summary RTX query sub-path measured 0.165999 s and 1.55x versus the reviewed same-semantics baseline.",
+      "public_wording_boundary": "Only the prepared count-summary query phase is covered; whole-app hotspot screening, neighbor-row output, Python-side postprocessing, validation, and unrelated app stages are outside this wording.",
+      "public_wording_evidence": "Goal1061",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius count-summary traversal"
@@ -450,7 +456,7 @@
       "non_claim_boundary": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
       "performance_class": "optix_traversal",
       "public_wording": "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-      "public_wording_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until timing-floor and baseline evidence are reviewed.",
+      "public_wording_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until 100 ms timing-floor and baseline evidence are reviewed.",
       "public_wording_evidence": "Goal1058",
       "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
@@ -524,6 +530,6 @@
     "public_app_count": 18,
     "public_speedup_claim_authorized": false,
     "ready_for_rtx_claim_review": 16,
-    "reviewed_public_wording": 6
+    "reviewed_public_wording": 7
   }
 }

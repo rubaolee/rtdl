@@ -72,6 +72,16 @@
       "rt_core_status": "rt_core_ready"
     },
     {
+      "allowed_claim": "bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim",
+      "app": "event_hotspot_screening",
+      "claim_command": "PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
+      "cloud_policy": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
+      "non_claim": "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
       "allowed_claim": "prepared native segment/polygon hit-count traversal sub-path may enter claim review; no broad segment/polygon app speedup claim",
       "app": "segment_polygon_hitcount",
       "claim_command": "PYTHONPATH=src:. python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared",
@@ -139,16 +149,6 @@
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
       "cloud_policy": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
       "non_claim": "Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim",
-      "public_wording": "public_wording_not_reviewed",
-      "readiness": "ready_for_rtx_claim_review",
-      "rt_core_status": "rt_core_ready"
-    },
-    {
-      "allowed_claim": "bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim",
-      "app": "event_hotspot_screening",
-      "claim_command": "PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
-      "cloud_policy": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
-      "non_claim": "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
       "public_wording": "public_wording_not_reviewed",
       "readiness": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready"

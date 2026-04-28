@@ -185,11 +185,14 @@ claims.
 | `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
 | `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
 
-Current reviewed public wording rows after Goal1058 intake: `6`.
+Current reviewed public wording rows after Goal1061: `7`. Goal1061 promoted
+only `event_hotspot_screening / prepared_count_summary` after same-semantics
+baseline review: the RTX query phase measured `0.165999` s and `1.55x` versus
+the reviewed baseline for the prepared count-summary query phase only.
 `robot_collision_screening` remains `public_wording_blocked`: the prepared
 ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058
 validated oracle parity, but public speedup wording remains blocked until
-timing-floor and baseline evidence are reviewed.
+100 ms timing-floor and baseline evidence are reviewed.
 `facility_knn_assignment` is also `public_wording_blocked`: the prepared
 coverage-threshold path is a real RT-core path and Goal1058 validated oracle
 parity, but no separate timing/baseline wording review has authorized public

@@ -113,6 +113,12 @@ GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS = {
         "ratio": "1.61x",
         "scope": "prepared gap-summary query/native sub-path only",
     },
+    "event_hotspot_screening": {
+        "app_path": "event_hotspot_screening / prepared_count_summary",
+        "rtx_phase_sec": "0.165999",
+        "ratio": "1.55x",
+        "scope": "prepared count-summary query phase only",
+    },
     "outlier_detection": {
         "app_path": "outlier_detection / prepared_fixed_radius_density_summary",
         "rtx_phase_sec": "0.122348",

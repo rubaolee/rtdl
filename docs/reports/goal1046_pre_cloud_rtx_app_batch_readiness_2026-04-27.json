@@ -69,7 +69,7 @@
       "path_names": [
         "prepared_count_summary"
       ],
-      "public_wording": "public_wording_not_reviewed",
+      "public_wording": "public_wording_reviewed",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -307,12 +307,13 @@
   "public_wording_counts": {
     "not_nvidia_public_wording_target": 2,
     "public_wording_blocked": 2,
-    "public_wording_not_reviewed": 8,
-    "public_wording_reviewed": 6
+    "public_wording_not_reviewed": 7,
+    "public_wording_reviewed": 7
   },
   "public_wording_reviewed_apps": [
     "ann_candidate_search",
     "dbscan_clustering",
+    "event_hotspot_screening",
     "outlier_detection",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",

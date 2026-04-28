@@ -823,10 +823,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "event_hotspot_screening": _public_wording(
         "event_hotspot_screening",
-        PUBLIC_WORDING_NOT_REVIEWED,
-        _NO_GOAL1009_REVIEW,
-        "Goal917/Goal919",
-        "Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared event-hotspot count-summary RTX query sub-path measured 0.165999 s and 1.55x versus the reviewed same-semantics baseline.",
+        "Goal1061",
+        "Only the prepared count-summary query phase is covered; whole-app hotspot screening, neighbor-row output, Python-side postprocessing, validation, and unrelated app stages are outside this wording.",
     ),
     "facility_knn_assignment": _public_wording(
         "facility_knn_assignment",
@@ -903,7 +903,7 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
         PUBLIC_WORDING_BLOCKED,
         "No public RTX speedup wording is authorized for robot_collision_screening yet.",
         "Goal1058",
-        "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until timing-floor and baseline evidence are reviewed.",
+        "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until 100 ms timing-floor and baseline evidence are reviewed.",
     ),
     "barnes_hut_force_app": _public_wording(
         "barnes_hut_force_app",

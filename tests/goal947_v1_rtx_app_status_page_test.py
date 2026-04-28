@@ -20,7 +20,7 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
         self.assertEqual(payload["summary"]["public_app_count"], len(rt.public_apps()))
         self.assertEqual(payload["summary"]["ready_for_rtx_claim_review"], 16)
         self.assertEqual(payload["summary"]["not_nvidia_rt_core_target"], 2)
-        self.assertEqual(payload["summary"]["reviewed_public_wording"], 6)
+        self.assertEqual(payload["summary"]["reviewed_public_wording"], 7)
         self.assertEqual(payload["summary"]["blocked_public_wording"], 2)
         self.assertFalse(payload["summary"]["public_speedup_claim_authorized"])
         self.assertFalse(payload["summary"]["broad_or_whole_app_public_speedup_claim_authorized"])
@@ -90,7 +90,7 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertEqual(payload["summary"]["ready_for_rtx_claim_review"], 16)
-            self.assertEqual(payload["summary"]["reviewed_public_wording"], 6)
+            self.assertEqual(payload["summary"]["reviewed_public_wording"], 7)
             self.assertIn("v1.0 RTX App Status", markdown)
             self.assertIn("Goal1009 Reviewed Public RTX Sub-Path Wording", markdown)
             self.assertIn("blocked_for_public_speedup_wording", markdown)
@@ -108,7 +108,7 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
                     payload["source_of_truth"]["public_wording"],
                     "rtdsl.rtx_public_wording_matrix()",
                 )
-                self.assertEqual(payload["summary"]["reviewed_public_wording"], 6)
+                self.assertEqual(payload["summary"]["reviewed_public_wording"], 7)
                 robot = next(
                     row for row in payload["rows"] if row["app"] == "robot_collision_screening"
                 )

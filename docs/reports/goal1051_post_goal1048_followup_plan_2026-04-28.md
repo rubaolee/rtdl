@@ -31,7 +31,6 @@ Do not start paid cloud per app. Use one batched pod only after local manifest, 
 | --- | --- | --- |
 | `database_analytics` | prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim | DB claims must stay limited to compact-summary prepared sub-paths; no SQL engine, DBMS, full dashboard, row-materializing, or broad whole-app speedup claim is allowed |
 | `graph_analytics` | bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths may enter claim review; no whole-app graph speedup claim | Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim |
-| `event_hotspot_screening` | bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim | Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim |
 | `road_hazard_screening` | prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim | claim is limited to the prepared compact road-hazard summary gate; default public app behavior, full GIS/routing, and broad road-hazard speedup remain outside the claim |
 | `polygon_pair_overlap_area_rows` | native-assisted candidate-discovery path only; no full polygon-area speedup claim | exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review |
 | `polygon_set_jaccard` | native-assisted candidate-discovery path only; no full Jaccard speedup claim | exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused |
@@ -41,6 +40,7 @@ Do not start paid cloud per app. Use one batched pod only after local manifest, 
 ## Reviewed Rows To Preserve
 
 - `service_coverage_gaps`
+- `event_hotspot_screening`
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
 - `ann_candidate_search`

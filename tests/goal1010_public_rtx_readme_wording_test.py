@@ -17,6 +17,7 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("not a whole-app, default-mode, Python-postprocess", text)
         self.assertIn("broad RT-core acceleration claim", text)
         self.assertIn("service_coverage_gaps / prepared_gap_summary", text)
+        self.assertIn("event_hotspot_screening / prepared_count_summary", text)
         self.assertIn("outlier_detection / prepared_fixed_radius_density_summary", text)
         self.assertIn("dbscan_clustering / prepared_fixed_radius_core_flags", text)
         self.assertIn("segment_polygon_hitcount / segment_polygon_hitcount_native_experimental", text)
@@ -44,7 +45,7 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
     def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
         v1 = V1_STATUS.read_text(encoding="utf-8")
         matrix = APP_MATRIX.read_text(encoding="utf-8")
-        self.assertIn("reviewed public RTX sub-path wording rows: `6`", v1)
+        self.assertIn("reviewed public RTX sub-path wording rows: `7`", v1)
         self.assertIn("robot_collision_screening / prepared_pose_flags", v1)
         self.assertIn("blocked_for_public_speedup_wording", v1)
         self.assertIn("facility_knn_assignment / coverage_threshold_prepared", v1)

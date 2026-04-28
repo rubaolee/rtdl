@@ -50,18 +50,18 @@
       "cloud_policy": "Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and public wording still requires same-semantics baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording_boundary": "Prepared count-summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording_boundary": "Only the prepared count-summary query phase is covered; whole-app hotspot screening, neighbor-row output, Python-side postprocessing, validation, and unrelated app stages are outside this wording.",
+      "public_wording_status": "public_wording_reviewed",
       "required_action": "Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim.",
       "target_status": "rt_core_ready"
     },
     {
       "app": "facility_knn_assignment",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048 RTX A5000 run completed but facility coverage remains diagnostic-only because skip-validation was used; rerun with validation before claim-grade wording.",
+      "cloud_policy": "Goal1058 RTX A5000 diagnostic rerun validated facility coverage with oracle parity. Public speedup wording remains blocked until a separate baseline/timing wording review authorizes a bounded sub-path claim.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording_boundary": "The prepared service-coverage decision sub-path is a real RT-core path, but the Goal1048 RTX A5000 facility run used skip-validation and remains diagnostic-only.",
+      "public_wording_boundary": "The prepared service-coverage decision sub-path is a real RT-core path and Goal1058 validated oracle parity, but no bounded public speedup wording is authorized until a separate timing/baseline review accepts it.",
       "public_wording_status": "public_wording_blocked",
       "required_action": "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
       "target_status": "rt_core_ready"
@@ -168,10 +168,10 @@
     {
       "app": "robot_collision_screening",
       "benchmark_readiness": "ready_for_rtx_claim_review",
-      "cloud_policy": "Goal1048 RTX A5000 run completed but robot remains diagnostic-only because skip-validation was used; public speedup wording remains blocked until validation and timing-floor evidence are reviewed.",
+      "cloud_policy": "Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with oracle parity. Public speedup wording remains blocked because the claim-review path still needs timing-floor/baseline review.",
       "current_status": "rt_core_ready",
       "performance_class": "optix_traversal",
-      "public_wording_boundary": "The prepared ray/triangle any-hit scalar pose-count path is a real RT-core path, but larger RTX repeats stayed below the 100 ms public-review timing floor.",
+      "public_wording_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until 100 ms timing-floor and baseline evidence are reviewed.",
       "public_wording_status": "public_wording_blocked",
       "required_action": "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
       "target_status": "rt_core_ready"
@@ -202,7 +202,7 @@
   "boundary": "This plan defines the v1.0 NVIDIA RT-core migration order. It is a planning artifact, not a release authorization and not a public speedup claim.",
   "bucketing_note": "Priority buckets are execution buckets, not pure status buckets. An app can already be rt_core_ready and still appear in must_finish_first when it is a flagship path with required optimization or claim-packaging work; robot_collision_screening is the current example. Public speedup wording is tracked separately by rtdsl.rtx_public_wording_matrix().",
   "date": "2026-04-23",
-  "generated_at": "2026-04-28T14:44:47",
+  "generated_at": "2026-04-28T17:42:44",
   "goal": "Goal848 v1.0 RT-core goal series",
   "goal_series": [
     {
@@ -325,7 +325,7 @@
     "needs_redesign_or_new_surface": 0,
     "out_of_scope_for_nvidia_rt": 2,
     "public_app_count": 18,
-    "reviewed_public_wording": 6,
+    "reviewed_public_wording": 7,
     "rt_core_partial_ready_now": 0,
     "rt_core_ready_now": 16
   }
