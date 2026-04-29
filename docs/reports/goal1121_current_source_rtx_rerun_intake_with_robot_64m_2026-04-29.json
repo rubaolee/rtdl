@@ -3,7 +3,7 @@
   "date": "2026-04-29",
   "goal": "Goal1118 current-source RTX rerun intake",
   "input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet",
-  "packet": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet_2026-04-29.json",
+  "packet": "docs/reports/goal1121_current_source_rtx_rerun_packet_with_robot_64m_2026-04-29.json",
   "rows": [
     {
       "app": "facility_knn_assignment",
@@ -34,17 +34,15 @@
     {
       "app": "robot_collision_screening",
       "exists": true,
-      "findings": [
-        "median_query_below_timing_floor"
-      ],
+      "findings": [],
       "matches_oracle": null,
-      "median_query_sec": 0.013836648315191269,
+      "median_query_sec": 0.17869762983173132,
       "mode": "optix",
-      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_8m_timing.json",
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1121.json",
       "path_name": "prepared_pose_flags",
       "phase": "large_timing_repeat",
       "source_commit": "2ba7ae0",
-      "valid": false
+      "valid": true
     },
     {
       "app": "barnes_hut_force_app",
@@ -82,7 +80,7 @@
     "source_commits": [
       "2ba7ae0"
     ],
-    "valid_row_count": 4
+    "valid_row_count": 5
   },
-  "valid": false
+  "valid": true
 }

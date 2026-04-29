@@ -2,7 +2,7 @@
 
 Date: 2026-04-29
 
-Valid: `false`
+Valid: `true`
 
 Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.
 
@@ -11,7 +11,7 @@ Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cl
 | Metric | Value |
 | --- | ---: |
 | `row_count` | `5` |
-| `valid_row_count` | `4` |
+| `valid_row_count` | `5` |
 | `missing_row_count` | `0` |
 | `source_commits` | `['2ba7ae0']` |
 | `same_source_commit` | `True` |
@@ -24,7 +24,7 @@ Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cl
 | --- | --- | --- | --- | --- | ---: | --- |
 | `facility_knn_assignment` | `same_scale_validation_and_timing` | `True` | `True` | `2ba7ae0` | `0.103119` |  |
 | `robot_collision_screening` | `correctness_validation` | `True` | `True` | `2ba7ae0` | `0.006214` |  |
-| `robot_collision_screening` | `large_timing_repeat` | `True` | `False` | `2ba7ae0` | `0.013837` | median_query_below_timing_floor |
+| `robot_collision_screening` | `large_timing_repeat` | `True` | `True` | `2ba7ae0` | `0.178698` |  |
 | `barnes_hut_force_app` | `correctness_validation` | `True` | `True` | `2ba7ae0` | `0.008320` |  |
 | `barnes_hut_force_app` | `large_timing_repeat` | `True` | `True` | `2ba7ae0` | `0.240634` |  |
 

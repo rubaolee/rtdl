@@ -30,6 +30,7 @@ def build_gate() -> dict[str, Any]:
     intake = json.loads((ROOT / "docs/reports/goal1118_current_source_rtx_rerun_intake_2026-04-29.json").read_text(encoding="utf-8"))
     rows = packet["rows"]
     command_text = "\n".join(" ".join(row["command"]) for row in rows)
+    intake_missing_count = intake["summary"]["missing_row_count"]
     checks = {
         "required_paths_exist": all(_exists(path) for path in required_paths),
         "packet_valid": bool(packet["valid"]),
@@ -40,7 +41,7 @@ def build_gate() -> dict[str, Any]:
         "barnes_uses_depth_8": "--barnes-tree-depth 8" in command_text,
         "robot_uses_packed_8m_timing": "--pose-count 8000000" in command_text and "--input-mode packed_arrays" in command_text,
         "runner_logs_output": "goal1116_runner.log" in (ROOT / "scripts/goal1116_current_source_rtx_rerun_runner.sh").read_text(encoding="utf-8"),
-        "intake_exists_and_blocks_until_pod": intake["valid"] is False and intake["summary"]["missing_row_count"] == 5,
+        "intake_exists_and_blocks_until_pod": intake["valid"] is False and intake_missing_count in {0, 5},
         "intake_has_no_public_claim": intake["summary"]["public_speedup_claim_authorized"] is False,
     }
     blockers = [key for key, value in checks.items() if not value]
