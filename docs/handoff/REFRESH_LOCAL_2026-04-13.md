@@ -41,6 +41,22 @@ repository review work. Read it regularly after context compaction.
 
 - `v0.9.6` is released.
 - Current post-release RTX app work is not a new release authorization.
+- Current local pre-cloud RTX app-prep goals after Goal1125:
+  - Goal1128: DB Embree compact-summary wrappers.
+  - Goal1129: graph phase split diagnostics.
+  - Goal1130: road-hazard native OptiX summary count path.
+  - Goal1131: polygon overlap/Jaccard phase contracts and Jaccard summary mode.
+  - Goal1132: Hausdorff app-level phase contract.
+  - Goal1133: post-local-prep audit.
+  - Goal1134: Goal887/G1132 Hausdorff phase-schema reconciliation.
+- These goals are local readiness/audit/schema work only. They do not promote
+  public RTX wording and do not authorize release.
+- Next paid RTX work should be one consolidated changed-path pod batch, not
+  start/stop per app. Do not use local prep as public speedup evidence without
+  real RTX artifacts, same-semantics baselines, and 2-AI review.
+- Hausdorff remains blocked for public RTX speedup wording because the current
+  large-scale dry-run uses an analytic tiled oracle; use it as capability/phase
+  evidence unless a non-analytic speed-baseline contract is designed.
 - `robot_collision_screening / prepared_pose_flags` is a real bounded
   RT-core path. Goal1126 accepted normalized per-pose public wording only:
   it is not a same-total-work wall-time claim, not a whole-app robot-planning
