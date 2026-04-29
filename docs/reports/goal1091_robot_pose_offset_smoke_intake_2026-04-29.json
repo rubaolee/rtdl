@@ -1,0 +1,43 @@
+{
+  "boundary": "Goal1091 is a small local Embree smoke intake for pose-id offsets. It does not run the heavy 36M baseline, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "checks": {
+    "claim_authorized_false": true,
+    "correctness_parity": true,
+    "pose_count_recorded": true,
+    "pose_id_start_recorded": true,
+    "sample_uses_offset_range": true,
+    "source_backend_embree": true,
+    "status_ok": true
+  },
+  "date": "2026-04-29",
+  "goal": "Goal1091 robot pose-offset Embree smoke intake",
+  "phase_seconds": {
+    "backend_scene_prepare": 0.055316500016488135,
+    "native_anyhit_query": 0.007376749999821186,
+    "oracle_validation_separate": 3.311197375995107,
+    "pose_and_obstacle_generation": 0.00855720799881965,
+    "pose_index_prepare": 0.0,
+    "ray_pack": 0.0008646670030429959,
+    "scalar_copyback": 0.0
+  },
+  "public_speedup_claim_authorized": false,
+  "source_artifact": "docs/reports/goal1091_robot_embree_pose_offset_smoke_2026-04-29.json",
+  "status": "ok",
+  "summary": {
+    "colliding_pose_count": 819,
+    "colliding_pose_ids_sample": [
+      200001,
+      200018,
+      200019,
+      200020,
+      200021,
+      200022,
+      200023,
+      200024,
+      200025,
+      200026
+    ],
+    "pose_count": 1000
+  },
+  "valid": true
+}
