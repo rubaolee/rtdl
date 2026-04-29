@@ -178,6 +178,25 @@ timing-only evidence and require separate validation rows plus later review.
 Barnes-Hut is intentionally absent from the Goal1072 runner and remains blocked
 for benchmark-contract redesign.
 
+After Goal1075/Goal1076, Barnes-Hut has a separate rich-contract pod candidate.
+Do not merge it into the facility/robot Goal1072 batch. If pod time remains
+after Goal1072 artifacts are copied back, run it as a separate small batch:
+
+```bash
+bash scripts/goal1076_barnes_hut_rich_rtx_pod_candidate_runner.sh
+```
+
+Goal1076 executes exactly two rows:
+
+- correctness-validation `barnes_hut_force_app / node_coverage_prepared_rich`
+  at 1,024 bodies, tree depth 6, radius 0.1, hit threshold 4
+- large timing-repeat `barnes_hut_force_app / node_coverage_prepared_rich`
+  at 1,000,000 bodies, tree depth 8, radius 0.1, hit threshold 4
+
+The Goal1076 timing row is timing-only and uses `--skip-validation`; it requires
+the separate validation row and later artifact intake/review before any public
+wording can change.
+
 Copy back the entire Goal1072 report directory before stopping the pod:
 
 ```bash
