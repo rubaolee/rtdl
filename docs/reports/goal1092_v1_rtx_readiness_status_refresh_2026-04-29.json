@@ -1,0 +1,50 @@
+{
+  "boundary": "Goal1092 refreshes readiness status only. It does not run cloud, does not run the heavy robot baseline, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1092 v1 RTX readiness status refresh",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "latest_evidence": [
+        "docs/reports/goal1083_facility_recentered_2_5m_cpu_oracle.json",
+        "docs/reports/goal1084_facility_recentered_rtx_pod_packet_2026-04-29.json"
+      ],
+      "next_action": "Run Goal1084 on the next RTX pod without --skip-validation, then write artifact intake and 2+ AI review.",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "public_speedup_claim_authorized": false,
+      "status": "ready_for_next_rtx_pod_validation"
+    },
+    {
+      "app": "robot_collision_screening",
+      "latest_evidence": [
+        "docs/reports/goal1090_robot_embree_local_runbook_2026-04-29.json",
+        "docs/reports/goal1091_robot_embree_pose_offset_smoke_2026-04-29.json",
+        "docs/reports/goal1091_robot_pose_offset_smoke_intake_2026-04-29.json"
+      ],
+      "next_action": "Use Goal1090 to run the Goal1085 resumable 180-chunk Embree baseline on Linux/Windows, then run Goal1086 intake and 2+ AI review.",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "status": "ready_for_non_cloud_chunked_embree_baseline_execution"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "latest_evidence": [
+        "docs/reports/goal1079_barnes_hut_rich_scale_up_probe/barnes_hut_rich_node_coverage_20m_timing.json",
+        "docs/reports/goal1079_two_ai_consensus_2026-04-29.md"
+      ],
+      "next_action": "Define and review a 20M validation/intake contract before spending more cloud time or changing public wording.",
+      "path_name": "node_coverage_prepared_rich",
+      "public_speedup_claim_authorized": false,
+      "status": "blocked_pending_contract_supersession"
+    }
+  ],
+  "summary": {
+    "barnes_hut_blocked": true,
+    "facility_ready_for_pod": true,
+    "public_speedup_claim_authorized_count": 0,
+    "robot_ready_for_non_cloud_baseline": true,
+    "row_count": 3
+  },
+  "supersedes": "docs/reports/goal1088_v1_rtx_readiness_status_audit_2026-04-29.json",
+  "valid": true
+}
