@@ -20,3 +20,13 @@ Focused 16-test gate passed
 py_compile passed
 scoped git diff --check clean
 ```
+
+Follow-up review after validation-scale remediation:
+
+```text
+ACCEPT. No blockers found.
+
+Goal1086 now recognizes validation_chunk_<index>.json separately from full-scale legacy chunk_<index>.json. Split mode no longer requires a 200k validated chunk: it accepts at least one status: ok / correctness_parity: true Embree validation chunk at smaller scale, plus all 180 full-scale timing_chunk_<index>.json artifacts with correct pose count, obstacle count, pose-id offsets, status: timing_only, and skipped validation.
+
+Focused intake tests pass, including the smaller validation chunk case. Public claim boundary remains intact with public_speedup_claim_authorized: false and no public RTX speedup authorization.
+```

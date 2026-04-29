@@ -110,7 +110,13 @@ class Goal1086RobotChunkedEmbreeBaselineIntakeTest(unittest.TestCase):
     def test_split_validation_and_timing_chunks_can_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             directory = Path(tmpdir)
-            _write_chunk(directory / "chunk_0.json", pose_id_start=1, query_sec=999.0)
+            _write_chunk(
+                directory / "validation_chunk_0.json",
+                pose_count=1000,
+                obstacle_count=128,
+                pose_id_start=1,
+                query_sec=999.0,
+            )
             for index in range(180):
                 _write_timing_chunk(
                     directory / f"timing_chunk_{index}.json",
@@ -123,6 +129,7 @@ class Goal1086RobotChunkedEmbreeBaselineIntakeTest(unittest.TestCase):
         self.assertEqual(intake["status"], "complete")
         self.assertEqual(intake["contract_mode"], "split_validation_and_timing")
         self.assertEqual(intake["observed"]["ok_chunk_count"], 1)
+        self.assertEqual(intake["observed"]["scale_ok_chunk_count"], 0)
         self.assertEqual(intake["observed"]["timing_ok_chunk_count"], 180)
         self.assertEqual(intake["observed"]["timing_total_pose_count"], 36_000_000)
         self.assertEqual(intake["phase_seconds"]["native_anyhit_sum_sec"], 45.0)

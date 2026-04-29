@@ -19,10 +19,12 @@ Consensus conclusion: the split runner/intake contract is ready for Linux execut
 ## Contract
 
 - Validated chunks: `chunk_<index>.json`
+- Split validation chunks: `validation_chunk_<index>.json`
 - Timing-only chunks: `timing_chunk_<index>.json`
 - Timing-only runner mode: `RTDL_GOAL1085_TIMING_ONLY=1`
 - Timing-only artifacts must use `status: timing_only` and `correctness_parity: null`
 - Intake accepts either legacy all-validated chunks or split validation/timing chunks
+- Split mode allows smaller validation chunks; it does not require one full 200k-pose CPU-oracle validation chunk
 
 ## Boundary
 

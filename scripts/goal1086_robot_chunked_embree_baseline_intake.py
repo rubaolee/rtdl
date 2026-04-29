@@ -26,6 +26,8 @@ def _chunk_index(path: Path) -> int:
     stem = path.stem
     if stem.startswith("timing_chunk_"):
         return int(stem.removeprefix("timing_chunk_"))
+    if stem.startswith("validation_chunk_"):
+        return int(stem.removeprefix("validation_chunk_"))
     if not stem.startswith("chunk_"):
         raise ValueError(f"unexpected chunk filename {path.name}")
     return int(stem.removeprefix("chunk_"))
@@ -33,7 +35,14 @@ def _chunk_index(path: Path) -> int:
 
 def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]:
     directory = ROOT / input_dir
-    validation_paths = sorted(directory.glob("chunk_*.json"), key=_chunk_index) if directory.exists() else []
+    validation_paths = (
+        sorted(
+            [*directory.glob("chunk_*.json"), *directory.glob("validation_chunk_*.json")],
+            key=_chunk_index,
+        )
+        if directory.exists()
+        else []
+    )
     timing_paths = sorted(directory.glob("timing_chunk_*.json"), key=_chunk_index) if directory.exists() else []
     chunks = [_load(path) for path in validation_paths]
     timing_chunks = [_load(path) for path in timing_paths]
@@ -50,10 +59,11 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
         and chunk.get("correctness_parity") is True
         and chunk.get("source_backend") == "embree"
     ]
-    scale_ok_chunks = [
+    legacy_scale_ok_chunks = [
         chunk
         for path, chunk in zip(validation_paths, chunks, strict=True)
-        if chunk.get("benchmark_scale", {}).get("pose_count") == EXPECTED_CHUNK_POSES
+        if path.stem.startswith("chunk_")
+        and chunk.get("benchmark_scale", {}).get("pose_count") == EXPECTED_CHUNK_POSES
         and chunk.get("benchmark_scale", {}).get("obstacle_count") == EXPECTED_OBSTACLES
         and chunk.get("benchmark_scale", {}).get("pose_id_start")
         == _chunk_index(path) * EXPECTED_CHUNK_POSES + 1
@@ -92,12 +102,11 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
         and not missing_indices
         and not unexpected_indices
         and len(ok_chunks) == EXPECTED_CHUNKS
-        and len(scale_ok_chunks) == EXPECTED_CHUNKS
+        and len(legacy_scale_ok_chunks) == EXPECTED_CHUNKS
         and total_pose_count == EXPECTED_TOTAL_POSES
     )
     split_complete = (
         len(ok_chunks) >= 1
-        and len(scale_ok_chunks) >= 1
         and len(timing_chunks) == EXPECTED_CHUNKS
         and not timing_missing_indices
         and not unexpected_indices
@@ -122,7 +131,7 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
         "observed": {
             "chunk_count": len(chunks),
             "ok_chunk_count": len(ok_chunks),
-            "scale_ok_chunk_count": len(scale_ok_chunks),
+            "scale_ok_chunk_count": len(legacy_scale_ok_chunks),
             "total_pose_count": total_pose_count,
             "missing_indices": missing_indices,
             "timing_chunk_count": len(timing_chunks),

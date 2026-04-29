@@ -27,6 +27,7 @@ Intake behavior:
 
 - Legacy mode remains accepted: all 180 `chunk_<index>.json` artifacts with `correctness_parity: true`.
 - Split mode is accepted when at least one validation chunk is present and all 180 `timing_chunk_<index>.json` artifacts are present, scale-correct, and marked `status: timing_only`.
+- Validation chunks may be smaller `validation_chunk_<index>.json` artifacts; they prove the Embree path/oracle parity separately from the full-scale timing chunks.
 - Timing phase sums use timing chunks when present.
 - No public speedup claim is authorized in either mode.
 
@@ -51,7 +52,7 @@ OK
 
 Run the split contract on Linux:
 
-1. Generate or keep at least one validation chunk.
+1. Generate or keep at least one validation chunk, preferably as `validation_chunk_<index>.json`.
 2. Run all 180 timing chunks with `RTDL_GOAL1085_TIMING_ONLY=1`.
 3. Run Goal1086 intake.
 4. Seek 2+ AI review before using the Robot baseline in any comparison.
