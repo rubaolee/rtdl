@@ -2,7 +2,7 @@
 
 Date: 2026-04-29
 
-Status: `missing_or_invalid_chunks`
+Status: `complete`
 
 Valid intake report: `true`
 
@@ -10,22 +10,22 @@ Goal1086 is an intake/aggregation tool for robot Embree chunk artifacts. It does
 
 ## Observed
 
-- Chunk count: `0` / `180`
-- OK chunks: `0`
+- Chunk count: `1` / `180`
+- OK chunks: `1`
 - Scale-OK chunks: `0`
-- Total poses represented: `0`
-- Missing indices: `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]` ...
-- Timing chunk count: `0` / `180`
-- Timing OK chunks: `0`
-- Timing total poses represented: `0`
-- Timing missing indices: `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]` ...
+- Total poses represented: `1000`
+- Missing indices: `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]` ...
+- Timing chunk count: `180` / `180`
+- Timing OK chunks: `180`
+- Timing total poses represented: `36000000`
+- Timing missing indices: `[]`
 
 ## Aggregated Phases
 
-- Native any-hit sum: `0` seconds
-- Native any-hit median chunk: `0.0` seconds
-- Backend scene-prepare sum: `0` seconds
-- Backend scene-prepare median chunk: `0.0` seconds
+- Native any-hit sum: `92.24968472972978` seconds
+- Native any-hit median chunk: `0.5073218619800173` seconds
+- Backend scene-prepare sum: `269.61262179224286` seconds
+- Backend scene-prepare median chunk: `1.4870285960496403` seconds
 
 ## Interpretation
 

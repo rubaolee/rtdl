@@ -90,6 +90,34 @@ class Goal839LocalBaselineCollectorsTest(unittest.TestCase):
         self.assertEqual(artifact["benchmark_scale"]["pose_id_start"], 200001)
         self.assertEqual(artifact["summary"]["colliding_pose_ids_sample"][0], 200002)
 
+    def test_robot_summary_accepts_positional_native_ray_ids_with_pose_offset(self) -> None:
+        baseline = __import__(
+            "scripts.goal839_robot_pose_count_baseline",
+            fromlist=["_summary_from_rows"],
+        )
+        robot_app = __import__(
+            "examples.rtdl_robot_collision_screening_app",
+            fromlist=["make_scaled_case"],
+        )
+        case = robot_app.make_scaled_case(
+            pose_count=8,
+            obstacle_count=4,
+            pose_id_start=200001,
+        )
+        rows = (
+            {"ray_id": 4, "any_hit": 1},
+            {"ray_id": 5, "any_hit": 0},
+        )
+
+        summary = baseline._summary_from_rows(
+            rows,
+            case["poses"],
+            case["edge_rays"],
+            case["ray_metadata"],
+        )
+
+        self.assertEqual(summary["colliding_pose_ids_sample"], [200002])
+
     def test_robot_embree_timing_only_can_skip_cpu_oracle_validation(self) -> None:
         module = __import__("scripts.goal839_robot_pose_count_baseline", fromlist=["build_artifact"])
         artifact = module.build_artifact(

@@ -44,8 +44,35 @@ def _stats(samples: list[float]) -> dict[str, float]:
     }
 
 
-def _summary_from_rows(rows: tuple[dict[str, object], ...], poses: tuple[dict[str, object], ...], ray_metadata: dict[int, dict[str, int]]) -> dict[str, Any]:
-    summary = robot_app._summarize_collisions(rows, poses, ray_metadata)
+def _normalize_rows_for_metadata(
+    rows: tuple[dict[str, object], ...],
+    edge_rays: tuple[rt.Ray2D, ...],
+    ray_metadata: dict[int, dict[str, int]],
+) -> tuple[dict[str, object], ...]:
+    normalized_rows: list[dict[str, object]] = []
+    for row in rows:
+        row_ray_id = int(row["ray_id"])
+        if row_ray_id in ray_metadata:
+            normalized_rows.append(row)
+            continue
+        if 0 <= row_ray_id < len(edge_rays):
+            ray = edge_rays[row_ray_id]
+            normalized = dict(row)
+            normalized["ray_id"] = int(ray.id)
+            normalized_rows.append(normalized)
+            continue
+        raise KeyError(row_ray_id)
+    return tuple(normalized_rows)
+
+
+def _summary_from_rows(
+    rows: tuple[dict[str, object], ...],
+    poses: tuple[dict[str, object], ...],
+    edge_rays: tuple[rt.Ray2D, ...],
+    ray_metadata: dict[int, dict[str, int]],
+) -> dict[str, Any]:
+    normalized_rows = _normalize_rows_for_metadata(rows, edge_rays, ray_metadata)
+    summary = robot_app._summarize_collisions(normalized_rows, poses, ray_metadata)
     return {
         "pose_count": len(poses),
         "colliding_pose_count": len(summary["colliding_pose_ids"]),
@@ -148,6 +175,7 @@ def _cpu_oracle_artifact(
             pose_count=pose_count,
             obstacle_count=obstacle_count,
             pose_id_start=pose_id_start,
+            compact_ray_ids=True,
         )
     )
     pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
@@ -225,6 +253,7 @@ def _embree_artifact(
             pose_count=pose_count,
             obstacle_count=obstacle_count,
             pose_id_start=pose_id_start,
+            compact_ray_ids=True,
         )
     )
     pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
@@ -256,7 +285,7 @@ def _embree_artifact(
         for _ in range(iterations):
             last_rows, query_sec = _time_call(prepared_kernel.run)
             last_summary, post_sec = _time_call(
-                lambda: _summary_from_rows(tuple(last_rows), case["poses"], case["ray_metadata"])
+                lambda: _summary_from_rows(tuple(last_rows), case["poses"], case["edge_rays"], case["ray_metadata"])
             )
             query_samples.append(query_sec)
             postprocess_samples.append(post_sec)

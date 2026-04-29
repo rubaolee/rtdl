@@ -59,6 +59,19 @@ class Goal736RobotCollisionEmbreeScaledTest(unittest.TestCase):
         self.assertEqual(pose_ids, [200001, 200002, 200003])
         self.assertEqual(case["edge_rays"][0].id // 1000, 200001)
 
+    def test_scaled_case_can_use_compact_ray_ids_for_native_chunks(self) -> None:
+        case = app.make_scaled_case(
+            pose_count=3,
+            obstacle_count=4,
+            pose_id_start=200001,
+            compact_ray_ids=True,
+        )
+        ray_ids = [int(ray.id) for ray in case["edge_rays"][:5]]
+
+        self.assertEqual(ray_ids, [0, 1, 2, 3, 4])
+        self.assertEqual(case["ray_metadata"][0]["pose_id"], 200001)
+        self.assertEqual(case["ray_metadata"][4]["pose_id"], 200002)
+
 
 if __name__ == "__main__":
     unittest.main()

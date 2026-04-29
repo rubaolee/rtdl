@@ -94,7 +94,7 @@ def make_demo_case() -> dict[str, object]:
     }
 
 
-def make_scaled_case(*, pose_count: int, obstacle_count: int, pose_id_start: int = 1) -> dict[str, object]:
+def make_scaled_case(*, pose_count: int, obstacle_count: int, pose_id_start: int = 1, compact_ray_ids: bool = False) -> dict[str, object]:
     if pose_count < 1:
         raise ValueError("pose_count must be positive")
     if obstacle_count < 1:
@@ -139,14 +139,35 @@ def make_scaled_case(*, pose_count: int, obstacle_count: int, pose_id_start: int
             )
         )
 
-    ray_metadata = {
-        ray.id: {
-            "pose_id": ray.id // 1000,
-            "link_id": (ray.id % 1000) // 10,
-            "edge_id": ray.id % 10,
+    if compact_ray_ids:
+        compact_edge_rays: list[rt.Ray2D] = []
+        ray_metadata = {}
+        for index, ray in enumerate(edge_rays):
+            compact_edge_rays.append(
+                rt.Ray2D(
+                    id=index,
+                    ox=ray.ox,
+                    oy=ray.oy,
+                    dx=ray.dx,
+                    dy=ray.dy,
+                    tmax=ray.tmax,
+                )
+            )
+            ray_metadata[index] = {
+                "pose_id": ray.id // 1000,
+                "link_id": (ray.id % 1000) // 10,
+                "edge_id": ray.id % 10,
+            }
+        edge_rays = compact_edge_rays
+    else:
+        ray_metadata = {
+            ray.id: {
+                "pose_id": ray.id // 1000,
+                "link_id": (ray.id % 1000) // 10,
+                "edge_id": ray.id % 10,
+            }
+            for ray in edge_rays
         }
-        for ray in edge_rays
-    }
     return {
         "edge_rays": tuple(edge_rays),
         "obstacle_triangles": tuple(obstacle_triangles),

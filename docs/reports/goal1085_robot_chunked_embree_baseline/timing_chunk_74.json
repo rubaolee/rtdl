@@ -1,0 +1,66 @@
+{
+  "app": "robot_collision_screening",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+  "benchmark_scale": {
+    "iterations": 3,
+    "obstacle_count": 4096,
+    "pose_count": 200000,
+    "pose_id_start": 14800001
+  },
+  "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+  "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+  "correctness_parity": null,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Embree baseline uses prepared RTDL kernel binding and compact pose-count postprocess.",
+    "This is an equivalent compact summary baseline, not a native scalar ABI.",
+    "CPU oracle validation skipped for timing-only artifact."
+  ],
+  "path_name": "prepared_pose_flags",
+  "phase_seconds": {
+    "backend_scene_prepare": 1.5017356739845127,
+    "native_anyhit_query": 0.5065360190346837,
+    "oracle_validation_separate": 0.0,
+    "pose_and_obstacle_generation": 3.7898850509664044,
+    "pose_index_prepare": 0.0,
+    "ray_pack": 0.22418602393008769,
+    "scalar_copyback": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "pose_and_obstacle_generation",
+    "ray_pack",
+    "backend_scene_prepare",
+    "pose_index_prepare",
+    "native_anyhit_query",
+    "scalar_copyback",
+    "oracle_validation_separate"
+  ],
+  "source_backend": "embree",
+  "status": "timing_only",
+  "summary": {
+    "colliding_pose_count": 196875,
+    "colliding_pose_ids_sample": [
+      14800002,
+      14800003,
+      14800004,
+      14800005,
+      14800006,
+      14800007,
+      14800008,
+      14800009,
+      14800010,
+      14800011
+    ],
+    "pose_count": 200000
+  },
+  "summary_sha256": "15ce90e9397d376155f9288323ea4f5286989680ee6b5b44c4538bf7d0fef49a",
+  "validation": {
+    "matches_reference": null,
+    "method": "skipped timing-only chunk; use separate validation chunks before claim review",
+    "skipped": true,
+    "worker_count": 8
+  }
+}
