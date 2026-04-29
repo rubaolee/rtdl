@@ -1,9 +1,9 @@
 {
-  "app": "barnes_hut_force_app",
+  "app": "facility_knn_assignment",
   "backend": "embree",
   "boundary": "Goal1101 collects same-current-contract non-OptiX baseline artifacts for later review. It does not authorize public RTX speedup claims; claim review still requires artifact intake and 2+ AI consensus.",
   "date": "2026-04-29",
-  "generated_at": "2026-04-29T08:15:02",
+  "generated_at": "2026-04-29T08:04:14",
   "goal": "Goal1101 current-contract non-OptiX baseline profiler",
   "host": {
     "hostname": "lx1",
@@ -13,51 +13,50 @@
   },
   "parameters": {
     "backend": "embree",
-    "barnes_tree_depth": 8,
-    "body_count": 4096,
-    "copies": 1,
-    "hit_threshold": 4,
+    "barnes_tree_depth": 1,
+    "body_count": 1000,
+    "copies": 2500000,
+    "hit_threshold": 1,
     "iterations": 3,
-    "radius": 0.1,
-    "scenario": "barnes_hut_node_coverage",
+    "radius": 1.0,
+    "scenario": "facility_service_coverage_recentered",
     "skip_validation": false
   },
-  "path_name": "node_coverage_prepared_rich",
+  "path_name": "coverage_threshold_prepared_recentered",
   "public_speedup_claim_authorized": false,
   "scenario": {
     "mode": "embree",
     "result": {
       "all_queries_reached_threshold": true,
-      "barnes_tree_depth": 8,
-      "build_count": 65536,
-      "hit_threshold": 4,
+      "build_count": 4,
+      "coordinate_mapping": "copy_local_recentered_queries_canonical_depots",
+      "hit_threshold": 1,
       "matches_oracle": true,
-      "node_count": 65536,
       "oracle_all_queries_reached_threshold": true,
-      "query_count": 4096,
-      "radius": 0.1,
-      "threshold_reached_count": 4096
+      "query_count": 10000000,
+      "radius": 1.0,
+      "threshold_reached_count": 10000000
     },
-    "scenario": "barnes_hut_node_coverage",
+    "scenario": "facility_service_coverage_recentered",
     "timings_sec": {
-      "backend_close_sec": 6.569502875208855e-05,
-      "backend_prepare_sec": 0.17572803399525583,
-      "input_build_sec": 0.17322281992528588,
+      "backend_close_sec": 5.0334958359599113e-05,
+      "backend_prepare_sec": 0.03370445594191551,
+      "input_build_sec": 43.135753145907074,
       "native_query_sec": {
-        "max_sec": 0.02884387003723532,
-        "median_sec": 0.010342210996896029,
-        "min_sec": 0.008801012067124248
+        "max_sec": 30.153282276936807,
+        "median_sec": 29.806780943996273,
+        "min_sec": 28.34227910602931
       },
       "point_pack_sec": 0.0,
       "python_postprocess_sec": {
-        "max_sec": 1.6440171748399734e-06,
-        "median_sec": 1.5650875866413116e-06,
-        "min_sec": 1.1479714885354042e-06
+        "max_sec": 2.593034878373146e-06,
+        "median_sec": 2.509099431335926e-06,
+        "min_sec": 1.8739374354481697e-06
       },
       "validation_sec": {
-        "max_sec": 31.288423820980825,
-        "median_sec": 31.284009681083262,
-        "min_sec": 31.268449082039297
+        "max_sec": 9.032838213955984,
+        "median_sec": 9.03212451399304,
+        "min_sec": 9.02363701700233
       }
     }
   },

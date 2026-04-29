@@ -17,8 +17,8 @@ Goal1102 intakes current-contract non-OptiX baseline artifacts only. It does not
 | Metric | Value |
 | --- | ---: |
 | `row_count` | `4` |
-| `ok_count` | `1` |
-| `missing_count` | `3` |
+| `ok_count` | `3` |
+| `missing_count` | `1` |
 | `blocked_count` | `0` |
 | `public_speedup_claim_authorized_count` | `0` |
 
@@ -26,9 +26,9 @@ Goal1102 intakes current-contract non-OptiX baseline artifacts only. It does not
 
 | Name | Status | Native query median (s) | Issues |
 | --- | --- | ---: | --- |
-| `facility_cpu_oracle` | `missing` |  | artifact missing |
-| `facility_embree` | `missing` |  | artifact missing |
-| `barnes_hut_validation_embree` | `ok` | 0.004866 |  |
+| `facility_cpu_oracle` | `ok` | 8.996513 |  |
+| `facility_embree` | `ok` | 29.806781 |  |
+| `barnes_hut_validation_embree` | `ok` | 0.010342 |  |
 | `barnes_hut_timing_embree` | `missing` |  | artifact missing |
 
 ## Boundary
