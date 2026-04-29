@@ -55,7 +55,17 @@ class Goal1101CurrentContractNonOptixBaselineProfilerTest(unittest.TestCase):
             "scripts.goal1101_current_contract_non_optix_baseline_profiler",
             fromlist=["run_profile"],
         )
-        expected_head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        if completed.returncode != 0:
+            self.skipTest("git metadata unavailable in archive-style checkout")
+        expected_head = completed.stdout.strip()
 
         payload = module.run_profile(
             scenario="facility_service_coverage_recentered",
