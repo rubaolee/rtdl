@@ -196,15 +196,6 @@ scp -r -P <port> -i ~/.ssh/id_ed25519 \
   /Users/rl2025/rtdl_python_only/docs/reports/
 ```
 
-Then write/run a Goal1084 artifact-intake step before interpreting the copied
-artifacts. Until that intake and 2+ AI review exist, copied artifacts are
-engineering evidence only:
-
-```bash
-cd /Users/rl2025/rtdl_python_only
-# pending after the pod run: scripts/goal1085_goal1084_artifact_intake.py
-```
-
 For Goal1093, copy back the whole Barnes-Hut report directory as well:
 
 ```bash
@@ -213,9 +204,17 @@ scp -r -P <port> -i ~/.ssh/id_ed25519 \
   /Users/rl2025/rtdl_python_only/docs/reports/
 ```
 
-Then write/run a Goal1093 artifact-intake step before interpreting the copied
-artifacts. Until that intake and 2+ AI review exist, copied artifacts are
-engineering evidence only.
+Then run the current combined intake before interpreting the copied artifacts:
+
+```bash
+cd /Users/rl2025/rtdl_python_only
+PYTHONPATH=src:. python3 scripts/goal1096_current_rtx_pod_artifact_intake.py
+PYTHONPATH=src:. python3 -m unittest tests.goal1096_current_rtx_pod_artifact_intake_test
+```
+
+Until Goal1096 intake and 2+ AI review pass on copied artifacts, the copied
+files are engineering evidence only. Goal1096 does not authorize public wording,
+release, or public RTX speedup claims.
 
 Goal1063 says the broader rejected not-reviewed rows remain local-only until
 code or scale changes. Goal1071 superseded the Goal1068 facility/robot timing
