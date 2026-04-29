@@ -59,6 +59,10 @@ def _cloud_claim_contract(scenario: str) -> dict[str, object]:
             "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
             "not ranked nearest-depot assignment, KNN fallback assignment, or facility-location optimization",
         ),
+        "facility_service_coverage_recentered": (
+            "prepared OptiX fixed-radius threshold traversal for recentered facility service-coverage decisions",
+            "not ranked nearest-depot assignment, KNN fallback assignment, facility-location optimization, or global-coordinate identity matching",
+        ),
         "barnes_hut_node_coverage": (
             "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
             "not Barnes-Hut opening-rule evaluation, force-vector reduction, or a full N-body solver",
@@ -222,6 +226,63 @@ def _profile_facility(*, mode: str, copies: int, iterations: int, radius: float,
     )
 
 
+def _facility_copy_offset(point: rt.Point) -> float:
+    return float((int(point.id) // 100) * 6)
+
+
+def _recenter_facility_points(points: tuple[rt.Point, ...]) -> tuple[rt.Point, ...]:
+    return tuple(
+        rt.Point(
+            id=point.id,
+            x=float(point.x) - _facility_copy_offset(point),
+            y=point.y,
+        )
+        for point in points
+    )
+
+
+def _canonical_facility_depots() -> tuple[rt.Point, ...]:
+    return facility_app.make_facility_knn_case(copies=1)["depots"]
+
+
+def _profile_facility_recentered(
+    *,
+    mode: str,
+    copies: int,
+    iterations: int,
+    radius: float,
+    skip_validation: bool,
+) -> dict[str, Any]:
+    case, input_sec = _time_call(lambda: facility_app.make_facility_knn_case(copies=copies))
+    customers, recenter_customers_sec = _time_call(lambda: _recenter_facility_points(case["customers"]))
+    depots, canonical_depot_sec = _time_call(_canonical_facility_depots)
+    input_sec += recenter_customers_sec + canonical_depot_sec
+    if mode == "dry-run":
+        oracle, reference_sec = _time_call(lambda: facility_app.facility_coverage_oracle(customers, depots, radius=radius))
+        return {
+            "scenario": "facility_service_coverage_recentered",
+            "mode": mode,
+            "coordinate_mapping": "copy_local_recentered_queries_canonical_depots",
+            "timings_sec": {"input_build_sec": input_sec, "cpu_reference_total_sec": reference_sec},
+            "result": {**oracle, "coordinate_mapping": "copy_local_recentered_queries_canonical_depots"},
+        }
+    payload = _profile_single_threshold(
+        scenario="facility_service_coverage_recentered",
+        input_sec=input_sec,
+        build_points=depots,
+        query_points=customers,
+        radius=radius,
+        iterations=iterations,
+        skip_validation=skip_validation,
+        hit_threshold=1,
+        oracle_fn=lambda: facility_app.facility_coverage_oracle(customers, depots, radius=radius),
+        oracle_result_key="all_customers_covered",
+        extra_result_fields={"coordinate_mapping": "copy_local_recentered_queries_canonical_depots"},
+    )
+    payload["coordinate_mapping"] = "copy_local_recentered_queries_canonical_depots"
+    return payload
+
+
 def _profile_barnes(
     *,
     mode: str,
@@ -379,6 +440,14 @@ def run_profile(
             radius=facility_app.DEFAULT_SERVICE_RADIUS if radius is None else radius,
             skip_validation=skip_validation,
         )
+    elif scenario == "facility_service_coverage_recentered":
+        scenario_payload = _profile_facility_recentered(
+            mode=mode,
+            copies=copies,
+            iterations=iterations,
+            radius=facility_app.DEFAULT_SERVICE_RADIUS if radius is None else radius,
+            skip_validation=skip_validation,
+        )
     elif scenario == "barnes_hut_node_coverage":
         scenario_payload = _profile_barnes(
             mode=mode,
@@ -427,6 +496,7 @@ def main(argv: list[str] | None = None) -> int:
             "hausdorff_threshold",
             "ann_candidate_coverage",
             "facility_service_coverage",
+            "facility_service_coverage_recentered",
             "barnes_hut_node_coverage",
         ),
         required=True,

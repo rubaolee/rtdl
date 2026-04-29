@@ -16,6 +16,7 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
             "hausdorff_threshold",
             "ann_candidate_coverage",
             "facility_service_coverage",
+            "facility_service_coverage_recentered",
             "barnes_hut_node_coverage",
         )
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
@@ -98,6 +99,35 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
         self.assertTrue(result["within_candidate_radius"])
         self.assertEqual(result["query_count"], 15000)
         self.assertEqual(result["covered_query_count"], 15000)
+
+    def test_facility_recentered_keeps_large_copy_coordinates_local(self) -> None:
+        from examples import rtdl_facility_knn_assignment as facility_app
+        from scripts import goal887_prepared_decision_phase_profiler as goal887
+
+        case = facility_app.make_facility_knn_case(copies=1000)
+        recentered = goal887._recenter_facility_points(case["customers"])
+
+        self.assertGreater(max(point.x for point in case["customers"]), 5000.0)
+        self.assertLess(max(point.x for point in recentered), 4.0)
+
+    def test_facility_recentered_dry_run_records_mapping(self) -> None:
+        from scripts import goal887_prepared_decision_phase_profiler as goal887
+
+        payload = goal887.run_profile(
+            scenario="facility_service_coverage_recentered",
+            mode="dry-run",
+            copies=1000,
+            body_count=32,
+            iterations=1,
+            radius=1.0,
+            skip_validation=False,
+        )
+        result = payload["scenario"]["result"]
+        self.assertEqual(payload["scenario"]["scenario"], "facility_service_coverage_recentered")
+        self.assertEqual(payload["scenario"]["coordinate_mapping"], "copy_local_recentered_queries_canonical_depots")
+        self.assertEqual(result["coordinate_mapping"], "copy_local_recentered_queries_canonical_depots")
+        self.assertTrue(result["all_customers_covered"])
+        self.assertEqual(result["customer_count"], 4000)
 
     def test_barnes_hut_rich_contract_uses_depth_and_hit_threshold(self) -> None:
         from scripts import goal887_prepared_decision_phase_profiler as goal887
