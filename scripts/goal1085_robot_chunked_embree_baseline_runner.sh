@@ -22,6 +22,6 @@ for chunk_index in $(seq "${RTDL_GOAL1085_START_CHUNK}" "${RTDL_GOAL1085_END_CHU
     continue
   fi
   echo "Running robot Embree baseline chunk ${chunk_index}"
-  PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 4096 --iterations 3 --worker-count 8 --output-json docs/reports/goal1085_robot_chunked_embree_baseline/chunk_${chunk_index}.json
+  PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 4096 --iterations 3 --worker-count 8 --pose-id-start $(( chunk_index * 200000 + 1 )) --output-json docs/reports/goal1085_robot_chunked_embree_baseline/chunk_${chunk_index}.json
 done
 echo "Goal1085 complete. Review docs/reports/goal1085_robot_chunked_embree_baseline/chunk_*.json before any comparison."

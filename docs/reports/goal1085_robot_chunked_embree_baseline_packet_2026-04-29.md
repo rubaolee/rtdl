@@ -17,12 +17,12 @@ Goal1085 prepares a non-cloud robot Embree baseline runner only. It does not run
 
 ## Interpretation
 
-Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and 2+ AI review decide whether the comparison boundary is acceptable. The generated runner is resumable through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING.
+Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and 2+ AI review decide whether the comparison boundary is acceptable. The generated runner is resumable through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING. Each chunk uses pose-id offsets so chunk i represents pose ids i*200000+1 through (i+1)*200000.
 
 ## Command Template
 
 ```bash
-PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 4096 --iterations 3 --worker-count 8 --output-json docs/reports/goal1085_robot_chunked_embree_baseline/chunk_${chunk_index}.json
+PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 4096 --iterations 3 --worker-count 8 --pose-id-start $(( chunk_index * 200000 + 1 )) --output-json docs/reports/goal1085_robot_chunked_embree_baseline/chunk_${chunk_index}.json
 ```
 
 ## Boundary

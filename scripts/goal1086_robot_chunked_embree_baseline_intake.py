@@ -46,9 +46,11 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
     ]
     scale_ok_chunks = [
         chunk
-        for chunk in chunks
+        for path, chunk in zip(paths, chunks, strict=True)
         if chunk.get("benchmark_scale", {}).get("pose_count") == EXPECTED_CHUNK_POSES
         and chunk.get("benchmark_scale", {}).get("obstacle_count") == EXPECTED_OBSTACLES
+        and chunk.get("benchmark_scale", {}).get("pose_id_start")
+        == _chunk_index(path) * EXPECTED_CHUNK_POSES + 1
     ]
     native_query_samples = [
         float(chunk["phase_seconds"]["native_anyhit_query"])

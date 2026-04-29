@@ -41,6 +41,7 @@ def build_packet() -> dict[str, Any]:
             "PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py "
             "--backend embree --pose-count {chunk_pose_count} --obstacle-count {obstacle_count} "
             "--iterations {iterations} --worker-count {worker_count} "
+            "--pose-id-start $(( chunk_index * {chunk_pose_count} + 1 )) "
             "--output-json {report_dir}/chunk_${{chunk_index}}.json"
         ).format(
             chunk_pose_count=CHUNK_POSE_COUNT,
@@ -55,7 +56,8 @@ def build_packet() -> dict[str, Any]:
             "as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a "
             "same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and "
             "2+ AI review decide whether the comparison boundary is acceptable. The generated runner is resumable "
-            "through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING."
+            "through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING. Each "
+            "chunk uses pose-id offsets so chunk i represents pose ids i*200000+1 through (i+1)*200000."
         ),
         "valid": (
             TOTAL_POSE_COUNT % CHUNK_POSE_COUNT == 0

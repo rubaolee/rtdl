@@ -12,7 +12,14 @@ from scripts.goal1086_robot_chunked_embree_baseline_intake import to_markdown
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _write_chunk(path: Path, *, pose_count: int = 200_000, obstacle_count: int = 4096, query_sec: float = 0.5) -> None:
+def _write_chunk(
+    path: Path,
+    *,
+    pose_count: int = 200_000,
+    obstacle_count: int = 4096,
+    pose_id_start: int = 1,
+    query_sec: float = 0.5,
+) -> None:
     path.write_text(
         json.dumps(
             {
@@ -22,6 +29,7 @@ def _write_chunk(path: Path, *, pose_count: int = 200_000, obstacle_count: int =
                 "benchmark_scale": {
                     "pose_count": pose_count,
                     "obstacle_count": obstacle_count,
+                    "pose_id_start": pose_id_start,
                     "iterations": 3,
                 },
                 "phase_seconds": {
@@ -50,7 +58,11 @@ class Goal1086RobotChunkedEmbreeBaselineIntakeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             directory = Path(tmpdir)
             for index in range(180):
-                _write_chunk(directory / f"chunk_{index}.json", query_sec=0.25)
+                _write_chunk(
+                    directory / f"chunk_{index}.json",
+                    pose_id_start=index * 200_000 + 1,
+                    query_sec=0.25,
+                )
 
             intake = build_intake(input_dir=directory)
 
@@ -65,13 +77,31 @@ class Goal1086RobotChunkedEmbreeBaselineIntakeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             directory = Path(tmpdir)
             for index in range(180):
-                _write_chunk(directory / f"chunk_{index}.json", pose_count=100_000)
+                _write_chunk(
+                    directory / f"chunk_{index}.json",
+                    pose_count=100_000,
+                    pose_id_start=index * 200_000 + 1,
+                )
 
             intake = build_intake(input_dir=directory)
 
         self.assertEqual(intake["status"], "missing_or_invalid_chunks")
         self.assertEqual(intake["observed"]["scale_ok_chunk_count"], 0)
         self.assertIn("does not authorize public RTX speedup claims", to_markdown(intake))
+
+    def test_wrong_pose_id_start_keeps_status_blocked(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            directory = Path(tmpdir)
+            for index in range(180):
+                _write_chunk(
+                    directory / f"chunk_{index}.json",
+                    pose_id_start=1,
+                )
+
+            intake = build_intake(input_dir=directory)
+
+        self.assertEqual(intake["status"], "missing_or_invalid_chunks")
+        self.assertEqual(intake["observed"]["scale_ok_chunk_count"], 1)
 
 
 if __name__ == "__main__":

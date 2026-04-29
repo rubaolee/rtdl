@@ -130,13 +130,26 @@ def _exact_pose_flags_cpu(
     return tuple(merged)
 
 
-def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int, *, worker_count: int) -> dict[str, Any]:
+def _cpu_oracle_artifact(
+    pose_count: int,
+    obstacle_count: int,
+    iterations: int,
+    *,
+    worker_count: int,
+    pose_id_start: int,
+) -> dict[str, Any]:
     row = load_goal835_row(
         app="robot_collision_screening",
         path_name="prepared_pose_flags",
         baseline_name="cpu_oracle_pose_count",
     )
-    case, input_sec = _time_call(lambda: robot_app.make_scaled_case(pose_count=pose_count, obstacle_count=obstacle_count))
+    case, input_sec = _time_call(
+        lambda: robot_app.make_scaled_case(
+            pose_count=pose_count,
+            obstacle_count=obstacle_count,
+            pose_id_start=pose_id_start,
+        )
+    )
     pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
     rows_query_samples: list[float] = []
     postprocess_samples: list[float] = []
@@ -161,7 +174,12 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int, 
         row=row,
         baseline_name="cpu_oracle_pose_count",
         source_backend="cpu_oracle",
-        benchmark_scale={"pose_count": pose_count, "obstacle_count": obstacle_count, "iterations": iterations},
+        benchmark_scale={
+            "pose_count": pose_count,
+            "obstacle_count": obstacle_count,
+            "iterations": iterations,
+            "pose_id_start": pose_id_start,
+        },
         repeated_runs=iterations,
         correctness_parity=True,
         phase_seconds={
@@ -188,13 +206,26 @@ def _cpu_oracle_artifact(pose_count: int, obstacle_count: int, iterations: int, 
     return artifact
 
 
-def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int, *, worker_count: int) -> dict[str, Any]:
+def _embree_artifact(
+    pose_count: int,
+    obstacle_count: int,
+    iterations: int,
+    *,
+    worker_count: int,
+    pose_id_start: int,
+) -> dict[str, Any]:
     row = load_goal835_row(
         app="robot_collision_screening",
         path_name="prepared_pose_flags",
         baseline_name="embree_anyhit_pose_count_or_equivalent_compact_summary",
     )
-    case, input_sec = _time_call(lambda: robot_app.make_scaled_case(pose_count=pose_count, obstacle_count=obstacle_count))
+    case, input_sec = _time_call(
+        lambda: robot_app.make_scaled_case(
+            pose_count=pose_count,
+            obstacle_count=obstacle_count,
+            pose_id_start=pose_id_start,
+        )
+    )
     pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
     oracle_flags, oracle_query_sec = _time_call(
         lambda: _exact_pose_flags_cpu(
@@ -233,7 +264,12 @@ def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int, *, w
         row=row,
         baseline_name="embree_anyhit_pose_count_or_equivalent_compact_summary",
         source_backend="embree",
-        benchmark_scale={"pose_count": pose_count, "obstacle_count": obstacle_count, "iterations": iterations},
+        benchmark_scale={
+            "pose_count": pose_count,
+            "obstacle_count": obstacle_count,
+            "iterations": iterations,
+            "pose_id_start": pose_id_start,
+        },
         repeated_runs=iterations,
         correctness_parity=parity,
         phase_seconds={
@@ -260,18 +296,40 @@ def _embree_artifact(pose_count: int, obstacle_count: int, iterations: int, *, w
     return artifact
 
 
-def build_artifact(*, backend: str, pose_count: int, obstacle_count: int, iterations: int, worker_count: int | None = None) -> dict[str, Any]:
+def build_artifact(
+    *,
+    backend: str,
+    pose_count: int,
+    obstacle_count: int,
+    iterations: int,
+    worker_count: int | None = None,
+    pose_id_start: int = 1,
+) -> dict[str, Any]:
     if iterations <= 0:
         raise ValueError("iterations must be positive")
     if pose_count <= 0 or obstacle_count <= 0:
         raise ValueError("pose_count and obstacle_count must be positive")
+    if pose_id_start <= 0:
+        raise ValueError("pose_id_start must be positive")
     resolved_worker_count = int(worker_count or _default_cpu_oracle_workers(pose_count=pose_count))
     if resolved_worker_count <= 0:
         raise ValueError("worker_count must be positive")
     if backend == "cpu":
-        return _cpu_oracle_artifact(pose_count, obstacle_count, iterations, worker_count=resolved_worker_count)
+        return _cpu_oracle_artifact(
+            pose_count,
+            obstacle_count,
+            iterations,
+            worker_count=resolved_worker_count,
+            pose_id_start=pose_id_start,
+        )
     if backend == "embree":
-        return _embree_artifact(pose_count, obstacle_count, iterations, worker_count=resolved_worker_count)
+        return _embree_artifact(
+            pose_count,
+            obstacle_count,
+            iterations,
+            worker_count=resolved_worker_count,
+            pose_id_start=pose_id_start,
+        )
     raise ValueError(f"unsupported backend {backend}")
 
 
@@ -282,6 +340,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--obstacle-count", type=int, default=1024)
     parser.add_argument("--iterations", type=int, default=10)
     parser.add_argument("--worker-count", type=int)
+    parser.add_argument("--pose-id-start", type=int, default=1)
     parser.add_argument("--output-json", required=True)
     args = parser.parse_args(argv)
     artifact = build_artifact(
@@ -290,6 +349,7 @@ def main(argv: list[str] | None = None) -> int:
         obstacle_count=args.obstacle_count,
         iterations=args.iterations,
         worker_count=args.worker_count,
+        pose_id_start=args.pose_id_start,
     )
     write_baseline_artifact(args.output_json, artifact)
     print(json.dumps(artifact, indent=2, sort_keys=True))

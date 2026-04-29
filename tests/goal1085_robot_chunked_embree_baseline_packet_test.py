@@ -59,6 +59,7 @@ class Goal1085RobotChunkedEmbreeBaselinePacketTest(unittest.TestCase):
             self.assertIn("--backend embree", runner)
             self.assertIn("--pose-count 200000", runner)
             self.assertIn("--obstacle-count 4096", runner)
+            self.assertIn("--pose-id-start $(( chunk_index * 200000 + 1 ))", runner)
             self.assertIn('chunk_${chunk_index}.json', runner)
 
 

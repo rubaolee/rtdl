@@ -94,11 +94,13 @@ def make_demo_case() -> dict[str, object]:
     }
 
 
-def make_scaled_case(*, pose_count: int, obstacle_count: int) -> dict[str, object]:
+def make_scaled_case(*, pose_count: int, obstacle_count: int, pose_id_start: int = 1) -> dict[str, object]:
     if pose_count < 1:
         raise ValueError("pose_count must be positive")
     if obstacle_count < 1:
         raise ValueError("obstacle_count must be positive")
+    if pose_id_start < 1:
+        raise ValueError("pose_id_start must be positive")
 
     grid = int(math.ceil(math.sqrt(obstacle_count)))
     obstacle_triangles: list[rt.Triangle] = []
@@ -111,7 +113,7 @@ def make_scaled_case(*, pose_count: int, obstacle_count: int) -> dict[str, objec
 
     poses: list[dict[str, object]] = []
     edge_rays: list[rt.Ray2D] = []
-    for pose_id in range(1, pose_count + 1):
+    for pose_id in range(pose_id_start, pose_id_start + pose_count):
         gx = (pose_id - 1) % grid
         gy = ((pose_id - 1) // grid) % grid
         # Alternate clear and obstacle-crossing poses on a deterministic grid.
