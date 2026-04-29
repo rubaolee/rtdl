@@ -15,20 +15,20 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "README.md": (
         "not automatic public speedup claims",
         "robot_collision_screening / prepared_pose_flags",
-        "larger RTX repeats stayed below the 100 ms",
+        "Goal1121 cleared the 100 ms timing floor",
         "docs/v1_0_rtx_app_status.md",
     ),
     "docs/v1_0_rtx_app_status.md": (
         "not release authorization and not a public speedup claim",
         "blocked_for_public_speedup_wording",
         "rtdsl.rtx_public_wording_matrix()",
-        "larger RTX repeats stayed below the 100 ms",
+        "Goal1123 kept public ratio wording blocked",
     ),
     "docs/app_engine_support_matrix.md": (
         "The machine-readable source of truth is `rtdsl.rtx_public_wording_matrix()`",
         "public_wording_blocked",
         "blocked_for_public_speedup_wording",
-        "larger repeat clears the 100 ms timing floor",
+        "Goal1123 keeps public speedup wording blocked",
     ),
     "docs/application_catalog.md": (
         "is not by itself a NVIDIA RT-core claim",
@@ -48,7 +48,7 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "`--backend optix` is not enough for a public",
         "rtdsl.rtx_public_wording_matrix()",
         "public_wording_blocked",
-        "100 ms public-review timing floor",
+        "Goal1121 cleared",
     ),
     "docs/quick_tutorial.md": (
         "`--backend optix` selects an OptiX-capable path; it is not by itself",

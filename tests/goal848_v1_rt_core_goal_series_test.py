@@ -14,8 +14,8 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         self.assertEqual(summary["rt_core_partial_ready_now"], 0)
         self.assertEqual(summary["needs_redesign_or_new_surface"], 0)
         self.assertEqual(summary["out_of_scope_for_nvidia_rt"], 2)
-        self.assertEqual(summary["reviewed_public_wording"], 7)
-        self.assertEqual(summary["blocked_public_wording"], 2)
+        self.assertEqual(summary["reviewed_public_wording"], 9)
+        self.assertEqual(summary["blocked_public_wording"], 1)
 
     def test_priority_buckets_match_expected_apps(self) -> None:
         payload = goal848.build_goal_series()
@@ -77,7 +77,7 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         self.assertEqual(robot["current_status"], "rt_core_ready")
         self.assertEqual(robot["benchmark_readiness"], "ready_for_rtx_claim_review")
         self.assertEqual(robot["public_wording_status"], "public_wording_blocked")
-        self.assertIn("100 ms", robot["public_wording_boundary"])
+        self.assertIn("same-scale", robot["public_wording_boundary"])
 
 
 if __name__ == "__main__":

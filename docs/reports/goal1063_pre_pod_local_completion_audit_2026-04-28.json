@@ -1,28 +1,11 @@
 {
   "blocked_apps": [
-    "facility_knn_assignment",
     "robot_collision_screening"
   ],
   "boundary": "Goal1063 is a local planning/audit artifact. It does not run a pod, change public wording, authorize release, or authorize speedup claims.",
   "date": "2026-04-28",
   "goal": "Goal1063 pre-pod local completion audit",
   "goal1062_blocked_rows": [
-    {
-      "app": "facility_knn_assignment",
-      "contains_skip_validation": false,
-      "output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_validation.json",
-      "path_name": "coverage_threshold_prepared",
-      "phase": "correctness_validation",
-      "timing_floor_sec": null
-    },
-    {
-      "app": "facility_knn_assignment",
-      "contains_skip_validation": true,
-      "output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_large_timing.json",
-      "path_name": "coverage_threshold_prepared",
-      "phase": "large_timing_repeat",
-      "timing_floor_sec": 0.1
-    },
     {
       "app": "robot_collision_screening",
       "contains_skip_validation": false,
@@ -46,7 +29,6 @@
     "rtdsl.rtx_public_wording_matrix()"
   ],
   "not_reviewed_apps": [
-    "barnes_hut_force_app",
     "database_analytics",
     "graph_analytics",
     "hausdorff_distance",
@@ -55,7 +37,7 @@
     "road_hazard_screening"
   ],
   "pod_ready_now": true,
-  "pod_ready_scope": "Only Goal1062 facility/robot validation plus large timing repeats are pod-ready now. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.",
+  "pod_ready_scope": "Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.",
   "rejected_rows_requiring_local_work": [
     {
       "app": "database_analytics",
@@ -148,30 +130,24 @@
   ],
   "reviewed_apps": [
     "ann_candidate_search",
+    "barnes_hut_force_app",
     "dbscan_clustering",
     "event_hotspot_screening",
+    "facility_knn_assignment",
     "outlier_detection",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "service_coverage_gaps"
   ],
   "summary": {
-    "blocked_public_wording_apps": 2,
-    "blocked_rows_ready_for_one_pod": 4,
+    "blocked_public_wording_apps": 1,
+    "blocked_rows_ready_for_one_pod": 2,
     "local_only_blockers_before_broader_pod": 8,
-    "not_reviewed_public_wording_apps": 7,
+    "not_reviewed_public_wording_apps": 6,
     "rejected_current_speedup_rows": 8,
-    "reviewed_public_wording_apps": 7
+    "reviewed_public_wording_apps": 9
   },
   "unreviewed_candidate_rows_requiring_goal1062_pod": [
-    {
-      "app": "facility_knn_assignment",
-      "current_public_wording_status": "public_wording_blocked",
-      "path_name": "coverage_threshold_prepared",
-      "warnings": [
-        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
-      ]
-    },
     {
       "app": "robot_collision_screening",
       "current_public_wording_status": "public_wording_blocked",

@@ -647,15 +647,16 @@ _GOAL1048_VALIDATED_BOUNDARY_POLICY = (
 )
 
 _GOAL1058_FACILITY_VALIDATED_POLICY = (
-    "Goal1058 RTX A5000 diagnostic rerun validated facility coverage with "
-    "oracle parity. Public speedup wording remains blocked until a separate "
-    "baseline/timing wording review authorizes a bounded sub-path claim."
+    "Goal1123 accepted narrow public wording for the prepared facility "
+    "coverage-threshold RTX query sub-path only. Ranked KNN assignment, "
+    "fallback assignment, Python setup, and whole-app speedup remain outside "
+    "the claim."
 )
 
 _GOAL1058_ROBOT_VALIDATED_POLICY = (
-    "Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with "
-    "oracle parity. Public speedup wording remains blocked because the "
-    "claim-review path still needs timing-floor/baseline review."
+    "Goal1121 robot timing crossed the 100 ms review floor, but Goal1123 kept "
+    "public speedup wording blocked until a same-scale or explicitly accepted "
+    "normalized baseline review exists."
 )
 
 
@@ -830,10 +831,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "facility_knn_assignment": _public_wording(
         "facility_knn_assignment",
-        PUBLIC_WORDING_BLOCKED,
-        "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1058.",
-        "Goal1058",
-        "The prepared service-coverage decision sub-path is a real RT-core path and Goal1058 validated oracle parity, but no bounded public speedup wording is authorized until a separate timing/baseline review accepts it.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.103119 s and 87.24x versus the reviewed same-contract CPU oracle baseline.",
+        "Goal1121/Goal1123",
+        "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup are outside this wording.",
     ),
     "road_hazard_screening": _public_wording(
         "road_hazard_screening",
@@ -902,15 +903,15 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
         "robot_collision_screening",
         PUBLIC_WORDING_BLOCKED,
         "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-        "Goal1058",
-        "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until 100 ms timing-floor and baseline evidence are reviewed.",
+        "Goal1121/Goal1123",
+        "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and now has timing-floor evidence, but public ratio wording remains blocked until a same-scale or explicitly normalized baseline review is accepted.",
     ),
     "barnes_hut_force_app": _public_wording(
         "barnes_hut_force_app",
-        PUBLIC_WORDING_NOT_REVIEWED,
-        _NO_GOAL1009_REVIEW,
-        "Goal887/Goal941",
-        "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.240634 s and 222.19x versus the reviewed same-contract Embree node-coverage baseline.",
+        "Goal1121/Goal1123",
+        "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup are outside this wording.",
     ),
     "hiprt_ray_triangle_hitcount": _public_wording(
         "hiprt_ray_triangle_hitcount",

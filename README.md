@@ -69,7 +69,7 @@ speedup, Python post-processing, exact polygon area/Jaccard refinement, ranked
 KNN, full DBSCAN cluster expansion, and graph-system claims remain outside the
 claim unless a later review explicitly authorizes them.
 
-The following RTX A5000 artifact-backed wording has passed the Goal1009
+The following RTX A5000 artifact-backed wording has passed bounded public
 sub-path wording review. Each line is limited to the prepared query/native
 sub-path shown here; it is not a whole-app, default-mode, Python-postprocess, or
 broad RT-core acceleration claim:
@@ -96,17 +96,19 @@ broad RT-core acceleration claim:
 - `ann_candidate_search / candidate_threshold_prepared`: median RTX phase
   `0.105215` s, `4.86x` faster than the fastest same-semantics non-OptiX
   baseline for the measured sub-path
+- `facility_knn_assignment / coverage_threshold_prepared_recentered`: RTX
+  query phase `0.103119` s, `87.24x` faster than the reviewed same-contract CPU
+  oracle baseline for the prepared facility coverage-threshold query sub-path
+- `barnes_hut_force_app / node_coverage_prepared_rich`: RTX query phase
+  `0.240634` s, `222.19x` faster than the reviewed same-contract Embree
+  node-coverage baseline for the prepared Barnes-Hut node-coverage query
+  sub-path
 
 `robot_collision_screening / prepared_pose_flags` remains excluded from public
-RTX speedup wording because its larger RTX repeats stayed below the 100 ms
-public-review timing floor. The later Goal1058 RTX A5000 diagnostic rerun
-validated pose-flag oracle parity, but it did not authorize public speedup
-wording.
-
-`facility_knn_assignment / coverage_threshold_prepared` is also excluded from
-public RTX speedup wording after Goal1058. The new RTX A5000 diagnostic rerun
-validated oracle parity, but no separate timing/baseline wording review has
-authorized a bounded public speedup claim.
+RTX speedup wording. Goal1121 cleared the 100 ms timing floor with a 64M-pose
+RTX timing row and validated pose-flag oracle parity, but Goal1123 kept public
+ratio wording blocked until a same-scale or explicitly accepted normalized
+baseline review exists.
 
 Still outside public RTX claim review today: SQL/DBMS behavior, default
 row-materializing DB output, full road-hazard/GIS routing, unbounded
@@ -119,7 +121,10 @@ review. See `docs/app_engine_support_matrix.md` and
 newer large-repeat and wording-review trail is in
 `docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md`,
 `docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md`, and
-`docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md`.
+`docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md`. The
+current-source Goal1121/Goal1123 wording trail is in
+`docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md` and
+`docs/reports/goal1123_two_ai_consensus_2026-04-29.md`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute

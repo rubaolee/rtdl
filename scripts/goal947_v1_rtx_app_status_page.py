@@ -132,10 +132,10 @@ GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS = {
         "scope": "prepared fixed-radius scalar core-count sub-path only",
     },
     "facility_knn_assignment": {
-        "app_path": "facility_knn_assignment / coverage_threshold_prepared",
-        "rtx_phase_sec": "0.157368",
-        "ratio": "22.81x",
-        "scope": "prepared service-coverage decision sub-path only",
+        "app_path": "facility_knn_assignment / coverage_threshold_prepared_recentered",
+        "rtx_phase_sec": "0.103119",
+        "ratio": "87.24x",
+        "scope": "prepared facility coverage-threshold query sub-path only",
     },
     "segment_polygon_hitcount": {
         "app_path": "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
@@ -154,6 +154,12 @@ GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS = {
         "rtx_phase_sec": "0.105215",
         "ratio": "4.86x",
         "scope": "prepared ANN candidate-coverage decision sub-path only",
+    },
+    "barnes_hut_force_app": {
+        "app_path": "barnes_hut_force_app / node_coverage_prepared_rich",
+        "rtx_phase_sec": "0.240634",
+        "ratio": "222.19x",
+        "scope": "prepared Barnes-Hut node-coverage query sub-path only",
     },
 }
 
@@ -255,11 +261,11 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- post-Goal1048 validated RTX artifact intake completed (Goal1058): `True`",
         "",
         "Use this page as the release-facing source of truth for app-level RTX claim review. For engine-by-engine details, see `docs/app_engine_support_matrix.md`.",
-        "Goal1048 completed the consolidated RTX rerun on an RTX A5000 from commit `0c79b64d1b71383080f2e8572612488796d1c16c`. Goal1058 added a tracked-only archive rerun from commit `21fa036881bf9a0c806f69c15727d87b482ccfcf` and validated the facility and robot diagnostic rows with oracle parity. Only validated/strict bounded paths may be described as claim-review evidence, and most rows remain bounded prepared sub-path or native-assisted phase evidence, not whole-app speedup.",
+        "Goal1048 completed the consolidated RTX rerun on an RTX A5000 from commit `0c79b64d1b71383080f2e8572612488796d1c16c`. Goal1058 added a tracked-only archive rerun from commit `21fa036881bf9a0c806f69c15727d87b482ccfcf` and validated the facility and robot diagnostic rows with oracle parity. Goal1121 added current-source RTX A5000 evidence for facility, robot, and Barnes-Hut, and Goal1123 accepted narrow public wording for facility and Barnes-Hut only. Only validated/strict bounded paths may be described as claim-review evidence, and most rows remain bounded prepared sub-path or native-assisted phase evidence, not whole-app speedup.",
         "",
-        "## Goal1009 Reviewed Public RTX Sub-Path Wording",
+        "## Reviewed Public RTX Sub-Path Wording",
         "",
-        "The following rows have passed the Goal1009 wording review for bounded prepared",
+        "The following rows have passed bounded wording review for prepared",
         "RTX A5000 query/native sub-path wording. These are not whole-app, default-mode,",
         "Python-postprocess, or broad RT-core acceleration claims:",
         "",
@@ -283,13 +289,11 @@ def to_markdown(payload: dict[str, Any]) -> str:
         [
             "",
             "`robot_collision_screening / prepared_pose_flags` remains excluded from public",
-            "RTX speedup wording because its larger RTX repeats stayed below the 100 ms",
-            "public-review timing floor. `facility_knn_assignment / coverage_threshold_prepared`",
-            "is also excluded from public speedup wording after Goal1058: the validation",
-            "rerun proved oracle parity, but no separate timing/baseline wording review has",
-            "authorized a public speedup claim. Other `ready_for_rtx_claim_review` rows",
-            "remain engineering-ready or claim-review-ready, but do not yet have Goal1009",
-            "public speedup wording.",
+            "RTX speedup wording. Goal1121 cleared the 100 ms timing floor with a 64M-pose",
+            "RTX timing row, but Goal1123 kept public ratio wording blocked until a",
+            "same-scale or explicitly normalized baseline review is accepted. Other",
+            "`ready_for_rtx_claim_review` rows remain engineering-ready or",
+            "claim-review-ready, but do not yet have reviewed public speedup wording.",
             "",
         "## Status Table",
         "",
@@ -301,6 +305,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
         readiness_status = row["readiness_status"]
         evidence_or_goal = row["evidence_or_goal"]
         non_claim_boundary = row["non_claim_boundary"]
+        if row["public_wording_status"] == "public_wording_reviewed":
+            evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"
         if row["public_wording_status"] == "public_wording_blocked":
             readiness_status = "blocked_for_public_speedup_wording"
             evidence_or_goal = f"{evidence_or_goal}/{row['public_wording_evidence']}"

@@ -1,0 +1,54 @@
+{
+  "blocked_count": 1,
+  "boundary": "Goal1123 is a public-wording review packet after Goal1121/Goal1122. It proposes narrow wording for two prepared RTX query sub-paths, keeps robot speedup wording blocked, and does not itself edit public docs or authorize release.",
+  "candidate_reviewed_count": 2,
+  "current_public_wording_source": "rtdsl.rtx_public_wording_matrix()",
+  "date": "2026-04-29",
+  "goal": "Goal1123 public RTX wording review after Goal1121",
+  "public_speedup_claim_authorized": false,
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "baseline": "fastest same-contract non-OptiX baseline is CPU oracle",
+      "boundary": "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup are outside this wording.",
+      "candidate_public_wording": "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.103119 s and 87.24x versus the reviewed same-contract CPU oracle baseline.",
+      "decision": "candidate_public_wording_reviewed",
+      "fastest_baseline_ratio": 87.24420889676654,
+      "path_name": "coverage_threshold_prepared_recentered",
+      "rtx_median_query_sec": 0.10311873722821474,
+      "secondary_baseline_ratio": 289.05300574065524,
+      "status_to_apply": "public_wording_reviewed"
+    },
+    {
+      "app": "robot_collision_screening",
+      "baseline": "RTX 64M timing crosses floor, but the available Embree aggregate is 36M chunked work",
+      "boundary": "The prepared ray/triangle any-hit pose-flag path is real RT-core work and now has timing-floor evidence, but public ratio wording remains blocked until a same-scale or explicitly normalized baseline review is accepted.",
+      "candidate_public_wording": "No public RTX speedup wording is authorized for robot_collision_screening yet.",
+      "decision": "keep_public_wording_blocked_pending_same_scale_baseline",
+      "diagnostic_normalized_ratio_not_public": 917.748263779144,
+      "fastest_baseline_ratio": null,
+      "path_name": "prepared_pose_flags",
+      "rtx_median_query_sec": 0.17869762983173132,
+      "status_to_apply": "public_wording_blocked"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "baseline": "same-contract chunked Embree node-coverage baseline",
+      "boundary": "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup are outside this wording.",
+      "candidate_public_wording": "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.240634 s and 222.19x versus the reviewed same-contract Embree node-coverage baseline.",
+      "decision": "candidate_public_wording_reviewed",
+      "fastest_baseline_ratio": 222.18724954557567,
+      "path_name": "node_coverage_prepared_rich",
+      "rtx_median_query_sec": 0.2406342839822173,
+      "secondary_baseline_ratio": null,
+      "status_to_apply": "public_wording_reviewed"
+    }
+  ],
+  "sources": [
+    "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+    "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
+    "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
+    "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
+    "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json"
+  ]
+}

@@ -36,8 +36,12 @@ repository review work. Read it regularly after context compaction.
 - `v0.9.6` is released.
 - Current post-release RTX app work is not a new release authorization.
 - `robot_collision_screening / prepared_pose_flags` is a real bounded
-  RT-core path, but public RTX speedup wording remains blocked because larger
-  RTX repeats stayed below the 100 ms public-review timing floor.
+  RT-core path. Goal1121 cleared the 100 ms timing floor, but Goal1123 kept
+  public RTX speedup wording blocked until a same-scale or explicitly accepted
+  normalized baseline review exists.
+- Goal1123 accepted narrow public wording for
+  `facility_knn_assignment / coverage_threshold_prepared_recentered` and
+  `barnes_hut_force_app / node_coverage_prepared_rich` only.
 - `--backend optix` is not by itself a public NVIDIA RT-core speedup claim.
 - Public RTX wording must follow `rtdsl.rtx_public_wording_matrix()`.
 - Reviewers should prefer strict, bounded judgments over open-ended redesign.

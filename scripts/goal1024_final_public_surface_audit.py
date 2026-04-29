@@ -32,7 +32,7 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "current released version is `v0.9.6`",
         "not automatic public speedup claims",
         "robot_collision_screening / prepared_pose_flags",
-        "larger RTX repeats stayed below the 100 ms",
+        "Goal1121 cleared the 100 ms timing floor",
     ),
     "docs/README.md": (
         "current released version is `v0.9.6`",
@@ -61,7 +61,7 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "docs/rtdl_feature_guide.md": (
         "`--backend optix` is not enough for a public",
         "rtdsl.rtx_public_wording_matrix()",
-        "100 ms public-review timing floor",
+        "Goal1121 cleared",
     ),
     "docs/v1_0_rtx_app_status.md": (
         "not release authorization and not a public speedup claim",

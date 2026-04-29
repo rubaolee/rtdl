@@ -99,8 +99,11 @@ ranking/index behavior, Barnes-Hut opening-rule/force reduction, and broad
 whole-app speedup remain outside the claim unless the support matrix and a
 later review explicitly authorize them.
 `robot_collision_screening / prepared_pose_flags` is currently
-`public_wording_blocked`: it is a real bounded RT-core path, but larger RTX
-repeats stayed below the 100 ms public-review timing floor.
+`public_wording_blocked`: it is a real bounded RT-core path and Goal1121 cleared
+the 100 ms timing floor, but Goal1123 kept public ratio wording blocked until a
+same-scale or explicitly normalized baseline review is accepted. Goal1123 did
+accept narrow public wording for facility coverage-threshold and Barnes-Hut
+node-coverage prepared RTX query sub-paths.
 
 Current supported workload families:
 

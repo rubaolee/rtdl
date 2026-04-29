@@ -16,8 +16,8 @@ class Goal939CurrentRtxClaimReviewPackageTest(unittest.TestCase):
         module = __import__("scripts.goal939_current_rtx_claim_review_package", fromlist=["build_package"])
         payload = module.build_package()
         self.assertEqual(payload["ready_count"], 16)
-        self.assertEqual(payload["reviewed_public_wording_count"], 7)
-        self.assertEqual(payload["blocked_public_wording_count"], 2)
+        self.assertEqual(payload["reviewed_public_wording_count"], 9)
+        self.assertEqual(payload["blocked_public_wording_count"], 1)
         self.assertEqual(
             payload["source_of_truth"]["public_wording"],
             "rtdsl.rtx_public_wording_matrix()",
@@ -62,13 +62,12 @@ class Goal939CurrentRtxClaimReviewPackageTest(unittest.TestCase):
             rows["robot_collision_screening"]["public_wording_status"],
             "public_wording_blocked",
         )
-        self.assertIn("100 ms", rows["robot_collision_screening"]["public_wording_boundary"])
+        self.assertIn("same-scale", rows["robot_collision_screening"]["public_wording_boundary"])
         self.assertEqual(
             rows["facility_knn_assignment"]["public_wording_status"],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
-        self.assertIn("Goal1058", rows["facility_knn_assignment"]["public_wording_boundary"])
-        self.assertIn("oracle parity", rows["facility_knn_assignment"]["public_wording_boundary"])
+        self.assertIn("whole-app speedup", rows["facility_knn_assignment"]["public_wording_boundary"])
         self.assertIn("RTDL accelerates the whole app", payload["forbidden_wording"])
         self.assertIn("All graph/database/spatial work is RT-core accelerated", payload["forbidden_wording"])
 
@@ -103,7 +102,7 @@ class Goal939CurrentRtxClaimReviewPackageTest(unittest.TestCase):
             self.assertIn("Goal939 Current RTX Claim-Review Package", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["ready_count"], 16)
-            self.assertEqual(payload["reviewed_public_wording_count"], 7)
+            self.assertEqual(payload["reviewed_public_wording_count"], 9)
             self.assertIn("public_wording_blocked", output_md.read_text(encoding="utf-8"))
             self.assertTrue(output_md.exists())
 

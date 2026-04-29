@@ -8,23 +8,21 @@ Goal1063 is a local planning/audit artifact. It does not run a pod, change publi
 
 ## Summary
 
-- reviewed_public_wording_apps: `7`
-- blocked_public_wording_apps: `2`
-- not_reviewed_public_wording_apps: `7`
+- reviewed_public_wording_apps: `9`
+- blocked_public_wording_apps: `1`
+- not_reviewed_public_wording_apps: `6`
 - rejected_current_speedup_rows: `8`
-- blocked_rows_ready_for_one_pod: `4`
+- blocked_rows_ready_for_one_pod: `2`
 - local_only_blockers_before_broader_pod: `8`
 
 ## Pod-Ready Scope
 
-Only Goal1062 facility/robot validation plus large timing repeats are pod-ready now. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.
+Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.
 
 ### Goal1062 Rows
 
 | App | Path | Phase | Skip validation | Timing floor |
 | --- | --- | --- | --- | ---: |
-| `facility_knn_assignment` | `coverage_threshold_prepared` | `correctness_validation` | `False` | `` |
-| `facility_knn_assignment` | `coverage_threshold_prepared` | `large_timing_repeat` | `True` | `0.100` |
 | `robot_collision_screening` | `prepared_pose_flags` | `correctness_validation` | `False` | `` |
 | `robot_collision_screening` | `prepared_pose_flags` | `large_timing_repeat` | `True` | `0.100` |
 

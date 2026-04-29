@@ -79,6 +79,7 @@ def build_audit() -> dict[str, Any]:
             "timing_floor_sec": row["timing_floor_sec"],
         }
         for row in goal1062["rows"]
+        if row["app"] in blocked
     ]
     blocked_apps_in_manifest = sorted({row["app"] for row in blocked_rows})
 
@@ -137,18 +138,18 @@ def build_audit() -> dict[str, Any]:
         "not_reviewed_apps": not_reviewed,
         "pod_ready_now": pod_ready_now,
         "pod_ready_scope": (
-            "Only Goal1062 facility/robot validation plus large timing repeats are pod-ready now. "
+            "Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. "
             "Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale."
         ),
         "goal1062_blocked_rows": blocked_rows,
         "rejected_rows_requiring_local_work": rejected_rows,
         "unreviewed_candidate_rows_requiring_goal1062_pod": stale_candidates,
         "valid": (
-            len(reviewed) == 7
-            and blocked == ["facility_knn_assignment", "robot_collision_screening"]
-            and len(not_reviewed) == 7
+            len(reviewed) == 9
+            and blocked == ["robot_collision_screening"]
+            and len(not_reviewed) == 6
             and len(rejected_rows) == 8
-            and len(blocked_rows) == 4
+            and len(blocked_rows) == 2
             and pod_ready_now
             and all(row["pod_policy"].startswith("no_pod_until") for row in rejected_rows)
         ),
