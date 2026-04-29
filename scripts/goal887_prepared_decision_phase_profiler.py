@@ -190,6 +190,7 @@ def _profile_ann(*, mode: str, copies: int, iterations: int, radius: float, skip
         radius=radius,
         iterations=iterations,
         skip_validation=skip_validation,
+        hit_threshold=1,
         oracle_fn=lambda: ann_app.expected_tiled_candidate_threshold(copies=copies, radius=radius),
         oracle_result_key="within_candidate_radius",
     )
@@ -215,25 +216,41 @@ def _profile_facility(*, mode: str, copies: int, iterations: int, radius: float,
         radius=radius,
         iterations=iterations,
         skip_validation=skip_validation,
+        hit_threshold=1,
         oracle_fn=lambda: facility_app.facility_coverage_oracle(customers, depots, radius=radius),
         oracle_result_key="all_customers_covered",
     )
 
 
-def _profile_barnes(*, mode: str, body_count: int, iterations: int, radius: float, skip_validation: bool) -> dict[str, Any]:
+def _profile_barnes(
+    *,
+    mode: str,
+    body_count: int,
+    iterations: int,
+    radius: float,
+    skip_validation: bool,
+    barnes_tree_depth: int,
+    hit_threshold: int,
+) -> dict[str, Any]:
     def build_case() -> tuple[tuple[barnes_app.Body, ...], tuple[barnes_app.QuadNode, ...], tuple[rt.Point, ...], tuple[rt.Point, ...]]:
         bodies = barnes_app.make_generated_bodies(body_count)
-        nodes = barnes_app.build_one_level_quadtree(bodies)
+        nodes = (
+            barnes_app.build_one_level_quadtree(bodies)
+            if barnes_tree_depth == 1 and hit_threshold == 1
+            else barnes_app.build_fixed_depth_quadtree_cells(bodies, depth=barnes_tree_depth)
+        )
         return bodies, nodes, barnes_app._body_points(bodies), barnes_app._node_points(nodes)
 
     (bodies, nodes, body_points, node_points), input_sec = _time_call(build_case)
     if mode == "dry-run":
-        oracle, reference_sec = _time_call(lambda: barnes_app.node_coverage_oracle(bodies, nodes, radius=radius))
+        oracle, reference_sec = _time_call(
+            lambda: barnes_app.node_coverage_oracle(bodies, nodes, radius=radius, threshold=hit_threshold)
+        )
         return {
             "scenario": "barnes_hut_node_coverage",
             "mode": mode,
             "timings_sec": {"input_build_sec": input_sec, "cpu_reference_total_sec": reference_sec},
-            "result": oracle,
+            "result": {**oracle, "node_count": len(nodes), "barnes_tree_depth": barnes_tree_depth},
         }
     return _profile_single_threshold(
         scenario="barnes_hut_node_coverage",
@@ -243,8 +260,10 @@ def _profile_barnes(*, mode: str, body_count: int, iterations: int, radius: floa
         radius=radius,
         iterations=iterations,
         skip_validation=skip_validation,
-        oracle_fn=lambda: barnes_app.node_coverage_oracle(bodies, nodes, radius=radius),
+        hit_threshold=hit_threshold,
+        oracle_fn=lambda: barnes_app.node_coverage_oracle(bodies, nodes, radius=radius, threshold=hit_threshold),
         oracle_result_key="all_bodies_have_node_candidate",
+        extra_result_fields={"node_count": len(nodes), "barnes_tree_depth": barnes_tree_depth, "hit_threshold": hit_threshold},
     )
 
 
@@ -257,8 +276,10 @@ def _profile_single_threshold(
     radius: float,
     iterations: int,
     skip_validation: bool,
+    hit_threshold: int,
     oracle_fn: Callable[[], dict[str, object]],
     oracle_result_key: str,
+    extra_result_fields: dict[str, object] | None = None,
 ) -> dict[str, Any]:
     packed_build, pack_build_sec = _time_call(lambda: _pack(build_points))
     packed_query, pack_query_sec = _time_call(lambda: _pack(query_points))
@@ -272,7 +293,7 @@ def _profile_single_threshold(
     try:
         for _ in range(iterations):
             reached_count, query_sec = _time_call(
-                lambda: prepared.count_threshold_reached(packed_query, radius=radius, threshold=1)
+                lambda: prepared.count_threshold_reached(packed_query, radius=radius, threshold=hit_threshold)
             )
             query_samples.append(query_sec)
             all_covered, postprocess_sec = _time_call(lambda: int(reached_count) == len(query_points))
@@ -286,10 +307,12 @@ def _profile_single_threshold(
                 "radius": radius,
                 "query_count": len(query_points),
                 "build_count": len(build_points),
+                "hit_threshold": hit_threshold,
                 "threshold_reached_count": int(reached_count),
                 "all_queries_reached_threshold": all_covered,
                 "oracle_all_queries_reached_threshold": oracle_value,
                 "matches_oracle": None if skip_validation else all_covered == oracle_value,
+                **(extra_result_fields or {}),
             }
     finally:
         _, close_sec = _time_call(prepared.close)
@@ -318,6 +341,8 @@ def run_profile(
     iterations: int,
     radius: float | None,
     skip_validation: bool,
+    barnes_tree_depth: int = 1,
+    hit_threshold: int = 1,
 ) -> dict[str, Any]:
     if iterations < 1:
         raise ValueError("iterations must be at least 1")
@@ -325,6 +350,10 @@ def run_profile(
         raise ValueError("copies must be at least 1")
     if body_count < 1:
         raise ValueError("body_count must be at least 1")
+    if barnes_tree_depth < 1:
+        raise ValueError("barnes_tree_depth must be at least 1")
+    if hit_threshold < 1:
+        raise ValueError("hit_threshold must be at least 1")
 
     if scenario == "hausdorff_threshold":
         scenario_payload = _profile_hausdorff(
@@ -357,6 +386,8 @@ def run_profile(
             iterations=iterations,
             radius=barnes_app.NODE_DISCOVERY_RADIUS if radius is None else radius,
             skip_validation=skip_validation,
+            barnes_tree_depth=barnes_tree_depth,
+            hit_threshold=hit_threshold,
         )
     else:
         raise ValueError("unsupported scenario")
@@ -376,6 +407,8 @@ def run_profile(
             "iterations": iterations,
             "radius": radius,
             "skip_validation": skip_validation,
+            "barnes_tree_depth": barnes_tree_depth,
+            "hit_threshold": hit_threshold,
         },
         "boundary": (
             "This profiler separates input build, point packing, OptiX preparation, "
@@ -403,6 +436,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--body-count", type=int, default=1000)
     parser.add_argument("--iterations", type=int, default=3)
     parser.add_argument("--radius", type=float)
+    parser.add_argument("--barnes-tree-depth", type=int, default=1)
+    parser.add_argument("--hit-threshold", type=int, default=1)
     parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -415,6 +450,8 @@ def main(argv: list[str] | None = None) -> int:
         iterations=args.iterations,
         radius=args.radius,
         skip_validation=args.skip_validation,
+        barnes_tree_depth=args.barnes_tree_depth,
+        hit_threshold=args.hit_threshold,
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")

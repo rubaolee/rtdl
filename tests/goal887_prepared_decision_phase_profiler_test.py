@@ -99,6 +99,64 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
         self.assertEqual(result["query_count"], 15000)
         self.assertEqual(result["covered_query_count"], 15000)
 
+    def test_barnes_hut_rich_contract_uses_depth_and_hit_threshold(self) -> None:
+        from scripts import goal887_prepared_decision_phase_profiler as goal887
+
+        payload = goal887.run_profile(
+            scenario="barnes_hut_node_coverage",
+            mode="dry-run",
+            copies=1,
+            body_count=64,
+            iterations=1,
+            radius=1.0,
+            skip_validation=False,
+            barnes_tree_depth=4,
+            hit_threshold=4,
+        )
+        result = payload["scenario"]["result"]
+        self.assertEqual(payload["parameters"]["barnes_tree_depth"], 4)
+        self.assertEqual(payload["parameters"]["hit_threshold"], 4)
+        self.assertEqual(result["node_count"], 256)
+        self.assertEqual(result["barnes_tree_depth"], 4)
+        self.assertEqual(result["threshold"], 4)
+        self.assertGreaterEqual(result["max_candidate_count"], result["min_candidate_count"])
+
+    def test_barnes_hut_rich_contract_cli_flags_are_recorded(self) -> None:
+        with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
+            output = Path(tmpdir) / "barnes_rich.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--scenario",
+                    "barnes_hut_node_coverage",
+                    "--mode",
+                    "dry-run",
+                    "--body-count",
+                    "64",
+                    "--iterations",
+                    "1",
+                    "--radius",
+                    "1.0",
+                    "--barnes-tree-depth",
+                    "4",
+                    "--hit-threshold",
+                    "4",
+                    "--output-json",
+                    str(output.relative_to(ROOT)),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertIn("barnes_hut_node_coverage", completed.stdout)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(payload["parameters"]["barnes_tree_depth"], 4)
+            self.assertEqual(payload["parameters"]["hit_threshold"], 4)
+            self.assertEqual(payload["scenario"]["result"]["node_count"], 256)
+
 
 if __name__ == "__main__":
     unittest.main()

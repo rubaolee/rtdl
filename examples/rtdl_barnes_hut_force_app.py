@@ -123,6 +123,49 @@ def build_one_level_quadtree(bodies: tuple[Body, ...]) -> tuple[QuadNode, ...]:
     return tuple(nodes)
 
 
+def build_fixed_depth_quadtree_cells(
+    bodies: tuple[Body, ...],
+    *,
+    depth: int,
+) -> tuple[QuadNode, ...]:
+    if depth < 1:
+        raise ValueError("depth must be at least 1")
+    if not bodies:
+        raise ValueError("Barnes-Hut app requires at least one body")
+
+    min_x = min(body.x for body in bodies)
+    max_x = max(body.x for body in bodies)
+    min_y = min(body.y for body in bodies)
+    max_y = max(body.y for body in bodies)
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    half_size = max(max_x - min_x, max_y - min_y) / 2.0 + 0.25
+    cells_per_axis = 1 << depth
+    cell_size = (2.0 * half_size) / cells_per_axis
+    child_half_size = cell_size / 2.0
+
+    nodes: list[QuadNode] = []
+    node_id = 1
+    min_square_x = center_x - half_size
+    min_square_y = center_y - half_size
+    for y_index in range(cells_per_axis):
+        cy = min_square_y + (y_index + 0.5) * cell_size
+        for x_index in range(cells_per_axis):
+            cx = min_square_x + (x_index + 0.5) * cell_size
+            nodes.append(
+                QuadNode(
+                    id=node_id,
+                    cx=cx,
+                    cy=cy,
+                    half_size=child_half_size,
+                    mass=0.0,
+                    body_ids=(),
+                )
+            )
+            node_id += 1
+    return tuple(nodes)
+
+
 def _body_points(bodies: tuple[Body, ...]) -> tuple[rt.Point, ...]:
     return tuple(rt.Point(id=body.id, x=body.x, y=body.y) for body in bodies)
 
@@ -276,17 +319,31 @@ def node_coverage_oracle(
     nodes: tuple[QuadNode, ...],
     *,
     radius: float,
+    threshold: int = 1,
 ) -> dict[str, object]:
+    if threshold < 1:
+        raise ValueError("threshold must be at least 1")
     uncovered: list[int] = []
+    min_candidate_count: int | None = None
+    max_candidate_count = 0
     for body in bodies:
-        has_node = any(math.hypot(body.x - node.cx, body.y - node.cy) <= radius for node in nodes)
-        if not has_node:
+        candidate_count = sum(
+            1 for node in nodes if math.hypot(body.x - node.cx, body.y - node.cy) <= radius
+        )
+        min_candidate_count = (
+            candidate_count if min_candidate_count is None else min(min_candidate_count, candidate_count)
+        )
+        max_candidate_count = max(max_candidate_count, candidate_count)
+        if candidate_count < threshold:
             uncovered.append(body.id)
     return {
         "radius": radius,
+        "threshold": threshold,
         "body_count": len(bodies),
         "covered_body_count": len(bodies) - len(uncovered),
         "all_bodies_have_node_candidate": not uncovered,
+        "min_candidate_count": 0 if min_candidate_count is None else min_candidate_count,
+        "max_candidate_count": max_candidate_count,
         "uncovered_body_ids": uncovered,
     }
 

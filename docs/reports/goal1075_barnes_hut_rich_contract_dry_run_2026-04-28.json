@@ -1,0 +1,58 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not Barnes-Hut opening-rule evaluation, force-vector reduction, or a full N-body solver",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ]
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-04-28T22:02:28",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "parameters": {
+    "barnes_tree_depth": 6,
+    "body_count": 1024,
+    "copies": 1,
+    "hit_threshold": 4,
+    "iterations": 1,
+    "mode": "dry-run",
+    "radius": 0.1,
+    "skip_validation": false
+  },
+  "scenario": {
+    "mode": "dry-run",
+    "result": {
+      "all_bodies_have_node_candidate": true,
+      "barnes_tree_depth": 6,
+      "body_count": 1024,
+      "covered_body_count": 1024,
+      "max_candidate_count": 8,
+      "min_candidate_count": 4,
+      "node_count": 4096,
+      "radius": 0.1,
+      "threshold": 4,
+      "uncovered_body_ids": []
+    },
+    "scenario": "barnes_hut_node_coverage",
+    "timings_sec": {
+      "cpu_reference_total_sec": 0.21755308308638632,
+      "input_build_sec": 0.004244792042300105
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1"
+}
