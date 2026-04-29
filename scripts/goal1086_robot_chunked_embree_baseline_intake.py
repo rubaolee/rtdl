@@ -24,6 +24,8 @@ def _load(path: Path) -> dict[str, Any]:
 
 def _chunk_index(path: Path) -> int:
     stem = path.stem
+    if stem.startswith("timing_chunk_"):
+        return int(stem.removeprefix("timing_chunk_"))
     if not stem.startswith("chunk_"):
         raise ValueError(f"unexpected chunk filename {path.name}")
     return int(stem.removeprefix("chunk_"))
@@ -31,12 +33,16 @@ def _chunk_index(path: Path) -> int:
 
 def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]:
     directory = ROOT / input_dir
-    paths = sorted(directory.glob("chunk_*.json"), key=_chunk_index) if directory.exists() else []
-    chunks = [_load(path) for path in paths]
-    present_indices = [_chunk_index(path) for path in paths]
+    validation_paths = sorted(directory.glob("chunk_*.json"), key=_chunk_index) if directory.exists() else []
+    timing_paths = sorted(directory.glob("timing_chunk_*.json"), key=_chunk_index) if directory.exists() else []
+    chunks = [_load(path) for path in validation_paths]
+    timing_chunks = [_load(path) for path in timing_paths]
+    present_indices = [_chunk_index(path) for path in validation_paths]
+    timing_indices = [_chunk_index(path) for path in timing_paths]
     expected_indices = set(range(EXPECTED_CHUNKS))
     missing_indices = sorted(expected_indices.difference(present_indices))
-    unexpected_indices = sorted(set(present_indices).difference(expected_indices))
+    timing_missing_indices = sorted(expected_indices.difference(timing_indices))
+    unexpected_indices = sorted(set(present_indices).union(timing_indices).difference(expected_indices))
     ok_chunks = [
         chunk
         for chunk in chunks
@@ -46,30 +52,58 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
     ]
     scale_ok_chunks = [
         chunk
-        for path, chunk in zip(paths, chunks, strict=True)
+        for path, chunk in zip(validation_paths, chunks, strict=True)
         if chunk.get("benchmark_scale", {}).get("pose_count") == EXPECTED_CHUNK_POSES
         and chunk.get("benchmark_scale", {}).get("obstacle_count") == EXPECTED_OBSTACLES
         and chunk.get("benchmark_scale", {}).get("pose_id_start")
         == _chunk_index(path) * EXPECTED_CHUNK_POSES + 1
     ]
+    timing_ok_chunks = [
+        chunk
+        for chunk in timing_chunks
+        if chunk.get("status") == "timing_only"
+        and chunk.get("correctness_parity") is None
+        and chunk.get("source_backend") == "embree"
+        and chunk.get("validation", {}).get("skipped") is True
+    ]
+    timing_scale_ok_chunks = [
+        chunk
+        for path, chunk in zip(timing_paths, timing_chunks, strict=True)
+        if chunk.get("benchmark_scale", {}).get("pose_count") == EXPECTED_CHUNK_POSES
+        and chunk.get("benchmark_scale", {}).get("obstacle_count") == EXPECTED_OBSTACLES
+        and chunk.get("benchmark_scale", {}).get("pose_id_start")
+        == _chunk_index(path) * EXPECTED_CHUNK_POSES + 1
+    ]
+    timing_source = timing_chunks if timing_chunks else chunks
     native_query_samples = [
         float(chunk["phase_seconds"]["native_anyhit_query"])
-        for chunk in chunks
+        for chunk in timing_source
         if "phase_seconds" in chunk and "native_anyhit_query" in chunk["phase_seconds"]
     ]
     prepare_samples = [
         float(chunk["phase_seconds"]["backend_scene_prepare"])
-        for chunk in chunks
+        for chunk in timing_source
         if "phase_seconds" in chunk and "backend_scene_prepare" in chunk["phase_seconds"]
     ]
     total_pose_count = sum(int(chunk.get("benchmark_scale", {}).get("pose_count", 0)) for chunk in chunks)
-    complete = (
+    timing_total_pose_count = sum(int(chunk.get("benchmark_scale", {}).get("pose_count", 0)) for chunk in timing_chunks)
+    legacy_complete = (
         len(chunks) == EXPECTED_CHUNKS
         and not missing_indices
         and not unexpected_indices
         and len(ok_chunks) == EXPECTED_CHUNKS
         and len(scale_ok_chunks) == EXPECTED_CHUNKS
         and total_pose_count == EXPECTED_TOTAL_POSES
+    )
+    split_complete = (
+        len(ok_chunks) >= 1
+        and len(scale_ok_chunks) >= 1
+        and len(timing_chunks) == EXPECTED_CHUNKS
+        and not timing_missing_indices
+        and not unexpected_indices
+        and len(timing_ok_chunks) == EXPECTED_CHUNKS
+        and len(timing_scale_ok_chunks) == EXPECTED_CHUNKS
+        and timing_total_pose_count == EXPECTED_TOTAL_POSES
     )
     return {
         "goal": GOAL,
@@ -91,6 +125,11 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
             "scale_ok_chunk_count": len(scale_ok_chunks),
             "total_pose_count": total_pose_count,
             "missing_indices": missing_indices,
+            "timing_chunk_count": len(timing_chunks),
+            "timing_ok_chunk_count": len(timing_ok_chunks),
+            "timing_scale_ok_chunk_count": len(timing_scale_ok_chunks),
+            "timing_total_pose_count": timing_total_pose_count,
+            "timing_missing_indices": timing_missing_indices,
             "unexpected_indices": unexpected_indices,
         },
         "phase_seconds": {
@@ -99,10 +138,12 @@ def build_intake(*, input_dir: str | Path = DEFAULT_INPUT_DIR) -> dict[str, Any]
             "backend_scene_prepare_sum_sec": sum(prepare_samples),
             "backend_scene_prepare_median_chunk_sec": statistics.median(prepare_samples) if prepare_samples else 0.0,
         },
-        "status": "complete" if complete else "missing_or_invalid_chunks",
+        "status": "complete" if legacy_complete or split_complete else "missing_or_invalid_chunks",
+        "contract_mode": "split_validation_and_timing" if timing_chunks else "legacy_validated_chunks",
         "public_speedup_claim_authorized": False,
         "interpretation": (
-            "This intake aggregates chunked same-total-work Embree evidence. Even when complete, it does not by itself "
+            "This intake aggregates chunked same-total-work Embree evidence. It accepts either legacy all-validated chunks "
+            "or split validation/timing chunks. Even when complete, it does not by itself "
             "authorize a speedup claim against the 36M single RTX timing artifact because the comparison boundary is "
             "same-total-work, not same-single-launch, and still requires 2+ AI review."
         ),
@@ -135,6 +176,10 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- Scale-OK chunks: `{observed['scale_ok_chunk_count']}`",
         f"- Total poses represented: `{observed['total_pose_count']}`",
         f"- Missing indices: `{observed['missing_indices'][:20]}`{' ...' if len(observed['missing_indices']) > 20 else ''}",
+        f"- Timing chunk count: `{observed['timing_chunk_count']}` / `{payload['expected']['chunk_count']}`",
+        f"- Timing OK chunks: `{observed['timing_ok_chunk_count']}`",
+        f"- Timing total poses represented: `{observed['timing_total_pose_count']}`",
+        f"- Timing missing indices: `{observed['timing_missing_indices'][:20]}`{' ...' if len(observed['timing_missing_indices']) > 20 else ''}",
         "",
         "## Aggregated Phases",
         "",

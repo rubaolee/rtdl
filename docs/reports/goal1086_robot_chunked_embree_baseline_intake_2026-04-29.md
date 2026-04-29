@@ -15,6 +15,10 @@ Goal1086 is an intake/aggregation tool for robot Embree chunk artifacts. It does
 - Scale-OK chunks: `0`
 - Total poses represented: `0`
 - Missing indices: `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]` ...
+- Timing chunk count: `0` / `180`
+- Timing OK chunks: `0`
+- Timing total poses represented: `0`
+- Timing missing indices: `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]` ...
 
 ## Aggregated Phases
 
@@ -25,4 +29,4 @@ Goal1086 is an intake/aggregation tool for robot Embree chunk artifacts. It does
 
 ## Interpretation
 
-This intake aggregates chunked same-total-work Embree evidence. Even when complete, it does not by itself authorize a speedup claim against the 36M single RTX timing artifact because the comparison boundary is same-total-work, not same-single-launch, and still requires 2+ AI review.
+This intake aggregates chunked same-total-work Embree evidence. It accepts either legacy all-validated chunks or split validation/timing chunks. Even when complete, it does not by itself authorize a speedup claim against the 36M single RTX timing artifact because the comparison boundary is same-total-work, not same-single-launch, and still requires 2+ AI review.

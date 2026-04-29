@@ -22,6 +22,7 @@ class Goal1085RobotChunkedEmbreeBaselinePacketTest(unittest.TestCase):
         self.assertEqual(scale["chunk_pose_count"], 200_000)
         self.assertEqual(scale["chunk_count"], 180)
         self.assertEqual(scale["obstacle_count"], 4096)
+        self.assertEqual(payload["timing_only_controls"]["env"], "RTDL_GOAL1085_TIMING_ONLY")
         self.assertFalse(payload["public_speedup_claim_authorized"])
         self.assertIn("same-total-work engineering baseline", payload["baseline_interpretation"])
 
@@ -55,12 +56,15 @@ class Goal1085RobotChunkedEmbreeBaselinePacketTest(unittest.TestCase):
             self.assertIn("RTDL_GOAL1085_START_CHUNK", runner)
             self.assertIn("RTDL_GOAL1085_END_CHUNK", runner)
             self.assertIn("RTDL_GOAL1085_SKIP_EXISTING", runner)
+            self.assertIn("RTDL_GOAL1085_TIMING_ONLY", runner)
             self.assertIn('seq "${RTDL_GOAL1085_START_CHUNK}" "${RTDL_GOAL1085_END_CHUNK}"', runner)
             self.assertIn("--backend embree", runner)
             self.assertIn("--pose-count 200000", runner)
             self.assertIn("--obstacle-count 4096", runner)
             self.assertIn("--pose-id-start $(( chunk_index * 200000 + 1 ))", runner)
             self.assertIn('chunk_${chunk_index}.json', runner)
+            self.assertIn('timing_chunk_${chunk_index}.json', runner)
+            self.assertIn("--skip-validation", runner)
 
 
 if __name__ == "__main__":

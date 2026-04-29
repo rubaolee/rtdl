@@ -37,12 +37,17 @@ def build_packet() -> dict[str, Any]:
             "iterations_per_chunk": ITERATIONS,
             "worker_count": WORKER_COUNT,
         },
+        "timing_only_controls": {
+            "env": "RTDL_GOAL1085_TIMING_ONLY",
+            "output_prefix": "timing_chunk_",
+            "requires_separate_validation": True,
+        },
         "command_template": (
             "PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py "
             "--backend embree --pose-count {chunk_pose_count} --obstacle-count {obstacle_count} "
             "--iterations {iterations} --worker-count {worker_count} "
             "--pose-id-start $(( chunk_index * {chunk_pose_count} + 1 )) "
-            "--output-json {report_dir}/chunk_${{chunk_index}}.json"
+            "--output-json \"${{output_json}}\" ${{validation_flag}}"
         ).format(
             chunk_pose_count=CHUNK_POSE_COUNT,
             obstacle_count=OBSTACLE_COUNT,
@@ -90,8 +95,9 @@ def to_markdown(payload: dict[str, Any]) -> str:
             f"- Chunk poses: `{scale['chunk_pose_count']}`",
             f"- Chunk count: `{scale['chunk_count']}`",
             f"- Obstacles: `{scale['obstacle_count']}`",
-        f"- Iterations per chunk: `{scale['iterations_per_chunk']}`",
+            f"- Iterations per chunk: `{scale['iterations_per_chunk']}`",
         "- Resume controls: `RTDL_GOAL1085_START_CHUNK`, `RTDL_GOAL1085_END_CHUNK`, `RTDL_GOAL1085_SKIP_EXISTING`",
+        "- Timing-only control: `RTDL_GOAL1085_TIMING_ONLY=1` writes `timing_chunk_<index>.json` and uses `--skip-validation`.",
             "",
             "## Interpretation",
             "",
@@ -134,7 +140,13 @@ def to_shell(payload: dict[str, Any]) -> str:
         "",
         f"mkdir -p {payload['report_dir']}",
         'for chunk_index in $(seq "${RTDL_GOAL1085_START_CHUNK}" "${RTDL_GOAL1085_END_CHUNK}"); do',
-        f'  output_json="{payload["report_dir"]}/chunk_${{chunk_index}}.json"',
+        '  if [ "${RTDL_GOAL1085_TIMING_ONLY:-0}" = "1" ]; then',
+        f'    output_json="{payload["report_dir"]}/timing_chunk_${{chunk_index}}.json"',
+        '    validation_flag="--skip-validation"',
+        "  else",
+        f'    output_json="{payload["report_dir"]}/chunk_${{chunk_index}}.json"',
+        '    validation_flag=""',
+        "  fi",
         '  if [ "${RTDL_GOAL1085_SKIP_EXISTING}" = "1" ] && [ -s "${output_json}" ]; then',
         '    echo "Skipping existing robot Embree baseline chunk ${chunk_index}"',
         "    continue",
@@ -142,7 +154,7 @@ def to_shell(payload: dict[str, Any]) -> str:
         '  echo "Running robot Embree baseline chunk ${chunk_index}"',
         "  " + payload["command_template"],
         "done",
-        f'echo "Goal1085 complete. Review {payload["report_dir"]}/chunk_*.json before any comparison."',
+        f'echo "Goal1085 complete. Review {payload["report_dir"]}/chunk_*.json and timing_chunk_*.json before any comparison."',
         "",
     ]
     return "\n".join(lines)
