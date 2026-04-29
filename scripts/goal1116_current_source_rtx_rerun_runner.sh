@@ -19,8 +19,11 @@ if [ -z "${RTDL_SOURCE_COMMIT}" ]; then
 fi
 
 mkdir -p docs/reports/goal1116_current_source_rtx_rerun_packet
+exec > >(tee -a "docs/reports/goal1116_current_source_rtx_rerun_packet/goal1116_runner.log") 2>&1
 echo "Goal1116 current-source RTX rerun packet"
 echo "source_commit=${RTDL_SOURCE_COMMIT}"
+echo "git_head=$(git rev-parse HEAD 2>/dev/null || true)"
+date -u +"utc_start=%Y-%m-%dT%H:%M:%SZ"
 nvidia-smi
 
 echo "Running 1/5: facility_knn_assignment:coverage_threshold_prepared_recentered:same_scale_validation_and_timing"
@@ -43,4 +46,5 @@ echo "Running 5/5: barnes_hut_force_app:node_coverage_prepared_rich:large_timing
 python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario barnes_hut_node_coverage --mode optix --body-count 20000000 --iterations 3 --radius 0.1 --barnes-tree-depth 8 --hit-threshold 4 --skip-validation --output-json docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json
 echo "Completed docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json"
 
+date -u +"utc_end=%Y-%m-%dT%H:%M:%SZ"
 echo "Goal1116 complete. Copy back docs/reports/goal1116_current_source_rtx_rerun_packet before stopping the pod."

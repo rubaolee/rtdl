@@ -283,8 +283,11 @@ def to_shell(payload: dict[str, Any]) -> str:
         "fi",
         "",
         f"mkdir -p {payload['report_dir']}",
+        f'exec > >(tee -a "{payload["report_dir"]}/goal1116_runner.log") 2>&1',
         'echo "Goal1116 current-source RTX rerun packet"',
         'echo "source_commit=${RTDL_SOURCE_COMMIT}"',
+        'echo "git_head=$(git rev-parse HEAD 2>/dev/null || true)"',
+        'date -u +"utc_start=%Y-%m-%dT%H:%M:%SZ"',
         "nvidia-smi",
         "",
     ]
@@ -293,6 +296,7 @@ def to_shell(payload: dict[str, Any]) -> str:
         lines.append(" ".join(row["command"]))
         lines.append(f'echo "Completed {row["output_json"]}"')
         lines.append("")
+    lines.append('date -u +"utc_end=%Y-%m-%dT%H:%M:%SZ"')
     lines.append(f'echo "Goal1116 complete. Copy back {payload["report_dir"]} before stopping the pod."')
     lines.append("")
     return "\n".join(lines)

@@ -87,6 +87,10 @@ class Goal1116CurrentSourceRtxRerunPacketTest(unittest.TestCase):
             self.assertIn("barnes_hut_depth8_20m_timing.json", markdown)
             runner = output_sh.read_text(encoding="utf-8")
             self.assertIn("RTDL_SOURCE_COMMIT", runner)
+            self.assertIn("goal1116_runner.log", runner)
+            self.assertIn("git_head=", runner)
+            self.assertIn("utc_start=", runner)
+            self.assertIn("utc_end=", runner)
             self.assertIn("nvidia-smi", runner)
             self.assertIn("Goal1116 complete", runner)
 
