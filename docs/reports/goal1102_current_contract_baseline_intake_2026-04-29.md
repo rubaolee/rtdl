@@ -2,9 +2,9 @@
 
 Date: 2026-04-29
 
-Overall status: `waiting_for_baseline_artifacts`
+Overall status: `ready_for_2ai_baseline_review_not_public_claim`
 
-Artifact set complete: `false`
+Artifact set complete: `true`
 
 Valid: `true`
 
@@ -17,8 +17,8 @@ Goal1102 intakes current-contract non-OptiX baseline artifacts only. It does not
 | Metric | Value |
 | --- | ---: |
 | `row_count` | `4` |
-| `ok_count` | `3` |
-| `missing_count` | `1` |
+| `ok_count` | `4` |
+| `missing_count` | `0` |
 | `blocked_count` | `0` |
 | `public_speedup_claim_authorized_count` | `0` |
 
@@ -29,7 +29,7 @@ Goal1102 intakes current-contract non-OptiX baseline artifacts only. It does not
 | `facility_cpu_oracle` | `ok` | 8.996513 |  |
 | `facility_embree` | `ok` | 29.806781 |  |
 | `barnes_hut_validation_embree` | `ok` | 0.010342 |  |
-| `barnes_hut_timing_embree` | `missing` |  | artifact missing |
+| `barnes_hut_timing_embree` | `ok` | 53.904498 |  |
 
 ## Boundary
 

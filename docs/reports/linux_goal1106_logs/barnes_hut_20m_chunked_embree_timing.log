@@ -1,0 +1,24 @@
+{"backend": "embree", "output_json": "/tmp/rtdl_goal1106_chunked/docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json", "query_count": 20000000, "scenario": "barnes_hut_node_coverage"}
+	Command being timed: "env PYTHONPATH=src:. python3 scripts/goal1106_barnes_hut_chunked_embree_timing_baseline.py --body-count 20000000 --chunk-size 250000 --iterations 3 --barnes-tree-depth 8 --hit-threshold 4 --output-json docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json"
+	User time (seconds): 376.62
+	System time (seconds): 5.01
+	Percent of CPU this job got: 118%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 5:22.56
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 325240
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3329100
+	Voluntary context switches: 885
+	Involuntary context switches: 4855
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

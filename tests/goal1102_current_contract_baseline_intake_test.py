@@ -36,7 +36,8 @@ def _artifact(expected: dict, *, matches_oracle=True) -> dict:
 
 class Goal1102CurrentContractBaselineIntakeTest(unittest.TestCase):
     def test_default_intake_waits_when_artifacts_are_missing(self) -> None:
-        payload = build_intake()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            payload = build_intake(Path(tmpdir))
 
         self.assertTrue(payload["valid"])
         self.assertFalse(payload["artifact_set_complete"])
@@ -79,7 +80,8 @@ class Goal1102CurrentContractBaselineIntakeTest(unittest.TestCase):
         self.assertEqual(payload["overall_status"], "waiting_for_baseline_artifacts")
 
     def test_markdown_preserves_no_claim_boundary(self) -> None:
-        markdown = to_markdown(build_intake())
+        with tempfile.TemporaryDirectory() as tmpdir:
+            markdown = to_markdown(build_intake(Path(tmpdir)))
 
         self.assertIn("Goal1102 Current-Contract Baseline Intake", markdown)
         self.assertIn("Artifact set complete: `false`", markdown)
