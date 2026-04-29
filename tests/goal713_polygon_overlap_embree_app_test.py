@@ -21,6 +21,7 @@ def _canonical(value):
                 "native_continuation_backend",
                 "rt_core_accelerated",
                 "rt_core_candidate_discovery_active",
+                "run_phases",
             }
         }
     if isinstance(value, list) or isinstance(value, tuple):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -292,29 +293,49 @@ def run_case(
     if output_mode not in {"rows", "summary"}:
         raise ValueError("output_mode must be 'rows' or 'summary'")
     _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_authored_polygon_pair_overlap_case(copies=copies)
+    run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
     rows: tuple[dict[str, int], ...] = ()
     if backend == "cpu_python_reference":
+        query_start = time.perf_counter()
         rows = rt.run_cpu_python_reference(polygon_pair_overlap_area_rows_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
         candidate_row_count = None
+        summary_start = time.perf_counter()
         summary = _summarize_rows(tuple(rows))
+        run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
     elif backend == "cpu":
+        query_start = time.perf_counter()
         rows = rt.run_cpu(polygon_pair_overlap_area_rows_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
         candidate_row_count = None
+        summary_start = time.perf_counter()
         summary = _summarize_rows(tuple(rows))
+        run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
     elif backend == "embree":
+        candidate_start = time.perf_counter()
+        candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        exact_start = time.perf_counter()
         if output_mode == "summary":
-            summary, candidate_pairs = _run_embree_summary(case["left"], case["right"])
+            summary = _exact_overlap_summary_for_candidates(case["left"], case["right"], candidate_pairs)
         else:
-            rows, candidate_pairs = _run_embree_native_assisted(case["left"], case["right"])
+            rows = _native_overlap_rows_for_candidates(case["left"], case["right"], candidate_pairs)
             summary = _summarize_rows(tuple(rows))
+        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     elif backend == "optix":
+        candidate_start = time.perf_counter()
+        candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        exact_start = time.perf_counter()
         if output_mode == "summary":
-            summary, candidate_pairs = _run_optix_summary(case["left"], case["right"])
+            summary = _exact_overlap_summary_for_candidates(case["left"], case["right"], candidate_pairs)
         else:
-            rows, candidate_pairs = _run_optix_native_assisted(case["left"], case["right"])
+            rows = _native_overlap_rows_for_candidates(case["left"], case["right"], candidate_pairs)
             summary = _summarize_rows(tuple(rows))
+        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
@@ -334,6 +355,7 @@ def run_case(
         "row_count": summary["overlap_pair_count"],
         "candidate_row_count": candidate_row_count,
         "summary": summary,
+        "run_phases": run_phases,
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
         "native_continuation_active": backend in {"embree", "optix"},

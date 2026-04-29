@@ -39,6 +39,7 @@ def _canonical(value: Any) -> Any:
                 "native_continuation_backend",
                 "optix_performance",
                 "boundary",
+                "run_phases",
             }
         }
     if isinstance(value, list) or isinstance(value, tuple):
@@ -110,7 +111,7 @@ def _cpu_payload(app: str, copies: int, output_mode: str) -> dict[str, Any]:
                 "row_count": payload["row_count"],
                 "candidate_row_count": payload["row_count"],
                 "summary": payload["summary"],
-                "rt_core_candidate_discovery_active": True,
+                "rt_core_candidate_discovery_active": False,
             }
         return payload
     payload = jaccard_app.run_case("cpu_python_reference", copies=copies)
@@ -123,7 +124,7 @@ def _cpu_payload(app: str, copies: int, output_mode: str) -> dict[str, Any]:
             "row_count": 1,
             "candidate_row_count": 2 * copies,
             "summary": row,
-            "rt_core_candidate_discovery_active": True,
+            "rt_core_candidate_discovery_active": False,
         }
     return payload
 
@@ -299,10 +300,12 @@ def run_profile(
                     "backend": "optix",
                     "backend_mode": "optix_native_assisted",
                     "copies": copies,
+                    "output_mode": "rows",
                     "left_polygon_count": len(case["left"]),
                     "right_polygon_count": len(case["right"]),
                     "row_count": len(rows),
                     "candidate_row_count": len(candidate_pairs),
+                    "summary": dict(rows[0]) if rows else {},
                     "rows": rows,
                     "rt_core_accelerated": False,
                     "rt_core_candidate_discovery_active": True,

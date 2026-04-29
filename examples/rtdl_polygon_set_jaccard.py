@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -133,39 +134,73 @@ def run_case(
     backend: str = "cpu_python_reference",
     *,
     copies: int = 1,
+    output_mode: str = "rows",
     require_rt_core: bool = False,
 ) -> dict[str, object]:
+    if output_mode not in {"rows", "summary"}:
+        raise ValueError("output_mode must be 'rows' or 'summary'")
     _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_authored_polygon_set_jaccard_case(copies=copies)
+    run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
     if backend == "cpu_python_reference":
+        query_start = time.perf_counter()
         rows = rt.run_cpu_python_reference(polygon_set_jaccard_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
         candidate_row_count = None
     elif backend == "cpu":
+        query_start = time.perf_counter()
         rows = rt.run_cpu(polygon_set_jaccard_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
         candidate_row_count = None
     elif backend == "embree":
-        rows, candidate_pairs = _run_embree_native_assisted(case["left"], case["right"])
+        candidate_start = time.perf_counter()
+        candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        exact_start = time.perf_counter()
+        rows = _native_jaccard_rows_for_candidates(case["left"], case["right"], candidate_pairs)
+        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     elif backend == "optix":
-        rows, candidate_pairs = _run_optix_native_assisted(case["left"], case["right"])
+        candidate_start = time.perf_counter()
+        candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        exact_start = time.perf_counter()
+        rows = _native_jaccard_rows_for_candidates(case["left"], case["right"], candidate_pairs)
+        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
+    summary_start = time.perf_counter()
+    summary = (
+        dict(rows[0])
+        if rows
+        else {
+            "intersection_area": 0,
+            "left_area": 0,
+            "right_area": 0,
+            "union_area": 0,
+            "jaccard_similarity": 0.0,
+        }
+    )
+    run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
     backend_mode = (
         "embree_native_assisted" if backend == "embree"
         else "optix_native_assisted" if backend == "optix"
         else "cpu_exact"
     )
-    return {
+    payload: dict[str, object] = {
         "app": "polygon_set_jaccard",
         "backend": backend,
         "backend_mode": backend_mode,
         "copies": copies,
+        "output_mode": output_mode,
         "left_polygon_count": len(case["left"]),
         "right_polygon_count": len(case["right"]),
         "row_count": len(rows),
         "candidate_row_count": candidate_row_count,
-        "rows": rows,
+        "summary": summary,
+        "run_phases": run_phases,
         "rt_core_accelerated": False,
         "rt_core_candidate_discovery_active": backend == "optix",
         "native_continuation_active": backend in {"embree", "optix"},
@@ -181,12 +216,16 @@ def run_case(
             "native-continuation pipelines, not monolithic GPU Jaccard kernels."
         ),
     }
+    if output_mode == "rows":
+        payload["rows"] = rows
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run bounded polygon-set Jaccard.")
     parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
     parser.add_argument(
         "--require-rt-core",
         action="store_true",
@@ -198,6 +237,7 @@ def main(argv: list[str] | None = None) -> int:
             run_case(
                 args.backend,
                 copies=args.copies,
+                output_mode=args.output_mode,
                 require_rt_core=args.require_rt_core,
             ),
             indent=2,
