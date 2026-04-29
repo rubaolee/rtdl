@@ -5,15 +5,16 @@ restart/stop cycles while RTDL is validating NVIDIA RT-core app evidence.
 
 After Goal1043, every claim-grade pod batch must preserve source traceability
 even when the repo is staged with `rsync` instead of `git clone`. After
-Goal1072, the current follow-up batch is the post-scale-up path: rerun the two
-remaining blocked public wording rows (`facility_knn_assignment` and
-`robot_collision_screening`) at the scales proven useful by Goal1071, with
-separate correctness-validation and large timing-repeat commands. Barnes-Hut is
-not in the active pod batch because Goal1071 showed its current four-node
-contract is too small to produce meaningful RTX traversal timing. Do not spend
-paid pod time rerunning the other rejected not-reviewed rows until their local
-code or scale contracts change. The runner accepts `RTDL_SOURCE_COMMIT` first,
-then falls back to git, then to `.rtdl_source_commit`.
+Goal1082, the original Goal1072 global-coordinate facility 2.5M timing row is
+blocked because the same-scale CPU oracle disagrees with the validation-skipped
+RTX artifact. After Goal1083/Goal1084, the next facility pod run must use the
+precision-safe `facility_service_coverage_recentered` scenario and must not use
+`--skip-validation`. Robot still needs a same-scale non-OptiX baseline before
+public wording review; that baseline is not a cloud-GPU task. Barnes-Hut remains
+separate until its 20M validation/intake contract is superseded. Do not spend
+paid pod time rerunning rejected rows until their local code or scale contracts
+change. The runner accepts `RTDL_SOURCE_COMMIT` first, then falls back to git,
+then to `.rtdl_source_commit`.
 
 ## Before Starting A Pod
 
@@ -46,37 +47,32 @@ targets, 2 non-NVIDIA exclusions, 17 active+deferred manifest entries, and 16
 unique manifest commands. If those counts drift, refresh the manifest and the
 runbook before starting paid cloud time.
 
-For the current post-Goal1072 follow-up, also regenerate the Goal1062,
-Goal1063, Goal1067, Goal1072, and Goal1073 artifacts locally before starting
-paid cloud time:
+For the current post-Goal1084 follow-up, also regenerate the Goal1062,
+Goal1063, Goal1067, Goal1084, and relevant intake artifacts locally before
+starting paid cloud time:
 
 ```bash
 PYTHONPATH=src:. python3 scripts/goal1062_blocked_rtx_wording_rerun_manifest.py
 PYTHONPATH=src:. python3 scripts/goal1063_pre_pod_local_completion_audit.py
 PYTHONPATH=src:. python3 scripts/goal1067_scale_contract_repair_audit.py
-PYTHONPATH=src:. python3 scripts/goal1072_post_scale_up_rtx_pod_batch.py
-PYTHONPATH=src:. python3 scripts/goal1073_goal1072_artifact_intake.py
+PYTHONPATH=src:. python3 scripts/goal1084_facility_recentered_rtx_pod_packet.py
 PYTHONPATH=src:. python3 -m unittest \
   tests.goal1062_blocked_rtx_wording_rerun_manifest_test \
   tests.goal1063_pre_pod_local_completion_audit_test \
   tests.goal1067_scale_contract_repair_audit_test \
-  tests.goal1072_post_scale_up_rtx_pod_batch_test \
-  tests.goal1073_goal1072_artifact_intake_test
+  tests.goal1084_facility_recentered_rtx_pod_packet_test
 ```
 
-The generated Goal1062, Goal1063, Goal1067, and Goal1072 artifacts must report:
+The generated Goal1062, Goal1063, Goal1067, and Goal1084 artifacts must report:
 
 ```text
 "valid": true
 ```
 
-The generated Goal1072 runner must contain no `--skip-validation` in the
-`facility_knn_assignment` or `robot_collision_screening`
-correctness-validation commands. Its large timing rows intentionally use
-`--skip-validation`; those rows are timing-only and cannot authorize public
-wording without later artifact-intake and 2+ AI review. The Goal1073 intake
-should report `needs_cloud_artifacts` before the next pod run and must still
-authorize zero public speedup claims.
+The generated Goal1084 runner must contain no `--skip-validation`. If the
+facility recentered validation is too expensive on the pod, copy back the
+partial artifact and stop rather than publishing a speedup ratio. No public
+wording can change without later artifact intake and 2+ AI review.
 
 If the only pending follow-up is the historical graph/Jaccard retry, use
 Goal914 instead of the full group list:
@@ -136,23 +132,21 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
 
 Do not continue if bootstrap status is not `ok`.
 
-## Current Post-Goal1072 Runner
+## Current Post-Goal1084 Runner
 
-For the next current v1.0 RTX pod session, prefer the generated Goal1072 runner
-over the older Goal1068, Goal1053, or Goal759/Goal761 grouped paths. Goal1072
-combines the remaining blocked facility/robot wording rows at the Goal1071
-scale-up values that crossed the 100 ms timing floor. It excludes Barnes-Hut
-until a richer node/tree traversal contract exists, so the next pod session
-does not waste paid GPU time repeating the known four-node Barnes-Hut contract.
-The older broad batch lists below are retained for historical fallback and
-targeted debugging, but they are not the primary post-Goal1072 procedure.
+For the next current v1.0 RTX pod session, prefer the generated Goal1084 runner
+for facility. The older Goal1072 runner is historical evidence and should not be
+used for facility public wording because Goal1082 found same-scale disagreement
+in its validation-skipped 2.5M global-coordinate row. The older broad batch
+lists below are retained for historical fallback and targeted debugging, but
+they are not the primary post-Goal1084 procedure.
 
 From the pod checkout root:
 
 ```bash
 cd /workspace/rtdl_python_only
 export PYTHONPATH=src:.
-export OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0
+export OPTIX_PREFIX=/workspace/vendor/optix-dev-9.0.0
 export CUDA_PREFIX=/usr/local/cuda-12.4
 export NVCC=/usr/local/cuda-12.4/bin/nvcc
 export RTDL_NVCC=/usr/local/cuda-12.4/bin/nvcc
@@ -160,27 +154,22 @@ export RTDL_OPTIX_PTX_COMPILER=nvcc
 export RTDL_OPTIX_LIB=/workspace/rtdl_python_only/build/librtdl_optix.so
 export RTDL_SOURCE_COMMIT="$(cat /workspace/rtdl_python_only/.rtdl_source_commit 2>/dev/null || git rev-parse HEAD)"
 
-bash scripts/goal1072_post_scale_up_rtx_pod_batch_runner.sh
+bash scripts/goal1084_facility_recentered_rtx_pod_packet_runner.sh
 ```
 
-Goal1072 executes exactly four active rows:
+Goal1084 executes exactly one active row:
 
-- correctness-validation `facility_knn_assignment / coverage_threshold_prepared`
-- large timing-repeat `facility_knn_assignment / coverage_threshold_prepared` at 2,500,000 copies
-- correctness-validation `robot_collision_screening / prepared_pose_flags`
-- large timing-repeat `robot_collision_screening / prepared_pose_flags` at 36,000,000 poses
+- same-scale validation and timing for `facility_knn_assignment / coverage_threshold_prepared_recentered` at 2,500,000 copies
 
-Do not edit the generated runner on the pod to add `--skip-validation` to the
-two correctness-validation rows. If a validation row cannot finish, copy
-back the failing artifact and stop interpreting that row as claim-grade
-evidence. The two large timing rows already use `--skip-validation`; they are
-timing-only evidence and require separate validation rows plus later review.
-Barnes-Hut is intentionally absent from the Goal1072 runner and remains blocked
-for benchmark-contract redesign.
+Do not edit the generated runner on the pod to add `--skip-validation`. If the
+row cannot finish, copy back the failing artifact and stop interpreting it as
+claim-grade evidence. Barnes-Hut is intentionally absent and remains blocked for
+benchmark-contract redesign. Robot is intentionally absent because its next
+blocker is a same-scale non-OptiX baseline, not another RTX timing row.
 
 After Goal1075/Goal1076, Barnes-Hut has a separate rich-contract pod candidate.
 Do not merge it into the facility/robot Goal1072 batch. If pod time remains
-after Goal1072 artifacts are copied back, run it as a separate small batch:
+after Goal1084 artifacts are copied back, run it as a separate small batch:
 
 ```bash
 bash scripts/goal1076_barnes_hut_rich_rtx_pod_candidate_runner.sh
@@ -197,21 +186,21 @@ The Goal1076 timing row is timing-only and uses `--skip-validation`; it requires
 the separate validation row and later artifact intake/review before any public
 wording can change.
 
-Copy back the entire Goal1072 report directory before stopping the pod:
+Copy back the entire Goal1084 report directory before stopping the pod:
 
 ```bash
 scp -r -P <port> -i ~/.ssh/id_ed25519 \
-  root@<host>:/workspace/rtdl_python_only/docs/reports/goal1072_post_scale_up_rtx_pod_batch \
+  root@<host>:/workspace/rtdl_python_only/docs/reports/goal1084_facility_recentered_rtx_pod_packet \
   /Users/rl2025/rtdl_python_only/docs/reports/
 ```
 
-Then run the Goal1073 artifact-intake step before interpreting the copied
-artifacts. Until that intake and 2+ AI review exist, copied artifacts
-are engineering evidence only:
+Then write/run a Goal1084 artifact-intake step before interpreting the copied
+artifacts. Until that intake and 2+ AI review exist, copied artifacts are
+engineering evidence only:
 
 ```bash
 cd /Users/rl2025/rtdl_python_only
-PYTHONPATH=src:. python3 scripts/goal1073_goal1072_artifact_intake.py
+# pending after the pod run: scripts/goal1085_goal1084_artifact_intake.py
 ```
 
 Goal1063 says the broader rejected not-reviewed rows remain local-only until

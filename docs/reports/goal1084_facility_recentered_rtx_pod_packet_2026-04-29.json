@@ -1,0 +1,58 @@
+{
+  "boundary": "Goal1084 prepares a corrected facility RTX pod run only. It does not create cloud resources, does not run cloud locally, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "global_preconditions": [
+    "Run only from an already-running RTX-class NVIDIA pod checkout.",
+    "Build the OptiX backend from the checked-out commit before commands.",
+    "Export RTDL_SOURCE_COMMIT or keep .rtdl_source_commit populated.",
+    "Do not add --skip-validation. If validation is too expensive, copy back the partial artifact and stop.",
+    "Treat this as evidence collection only; no public wording changes are authorized by this runner."
+  ],
+  "goal": "Goal1084 facility recentered RTX pod packet",
+  "report_dir": "docs/reports/goal1084_facility_recentered_rtx_pod_packet",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage_recentered",
+        "--mode",
+        "optix",
+        "--copies",
+        "2500000",
+        "--iterations",
+        "5",
+        "--radius",
+        "1.0",
+        "--output-json",
+        "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json"
+      ],
+      "contains_skip_validation": false,
+      "output_json": "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "phase": "same_scale_validation_and_timing",
+      "purpose": "Validate and time the precision-safe recentered facility service-coverage decision at the same 2.5M-copy / 10M-query scale that blocked the global-coordinate row.",
+      "requires_validation": true,
+      "source_evidence": "docs/reports/goal1083_facility_recentered_2_5m_cpu_oracle.json",
+      "source_goal": "Goal1083",
+      "timing_floor_sec": 0.1
+    }
+  ],
+  "source_artifacts": [
+    "docs/reports/goal1082_facility_same_scale_baseline_intake_2026-04-29.md",
+    "docs/reports/goal1083_facility_recentered_2_5m_cpu_oracle.json",
+    "docs/reports/goal1083_facility_recentered_precision_safe_profiler_2026-04-29.md"
+  ],
+  "summary": {
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 1,
+    "rows_with_skip_validation": [],
+    "validation_row_count": 1
+  },
+  "supersedes_for_facility": [
+    "docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_2_5m_timing.json"
+  ],
+  "valid": true
+}
