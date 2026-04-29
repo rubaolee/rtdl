@@ -1,0 +1,66 @@
+{
+  "boundary": "Goal1100 audits baseline readiness after Goal1098/Goal1099. It does not authorize public RTX speedup claims. Both audited apps still need same-current-contract baseline review before public wording.",
+  "date": "2026-04-29",
+  "goal": "Goal1100 post-pod baseline gap audit",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "baseline_artifacts": [
+        {
+          "limitation": "CPU oracle total time is present, but this is not a reviewed fastest non-OptiX phase-separated baseline for public wording.",
+          "path": "docs/reports/goal1083_facility_recentered_2_5m_cpu_oracle.json",
+          "scale": {
+            "coordinate_mapping": "copy_local_recentered_queries_canonical_depots",
+            "customer_count": 10000000
+          },
+          "status": "usable_for_correctness_and_cpu_oracle_context",
+          "timings_sec": {
+            "cpu_reference_total_sec": 8.273853874998167,
+            "input_build_sec": 109.27930337400176
+          }
+        },
+        {
+          "limitation": "Older Goal835 best-available baseline covers coverage_threshold_prepared at 80k rows, not the current recentered 10M-query contract.",
+          "path": "docs/reports/goal835_baseline_facility_knn_assignment_coverage_threshold_prepared_best_available_non_optix_backend_same_semantics_2026-04-23.json",
+          "status": "not_same_current_contract"
+        }
+      ],
+      "baseline_status": "partial_cpu_oracle_present_needs_fastest_non_optix_phase_baseline",
+      "next_action": "Produce a same current-contract fastest non-OptiX phase-separated baseline, preferably Embree or CPU oracle with input/prepare/query/postprocess phases separated and reviewed against the recentered RTX artifact.",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "public_speedup_claim_ready": false,
+      "rtx_artifact": "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "rtx_correctness": true,
+      "rtx_query_median_sec": 0.13505441695451736
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "baseline_artifacts": [
+        {
+          "limitation": "Older Goal835 baseline is 4,096 bodies at radius 10.0; current rich contract uses depth 8, radius 0.1, threshold 4, and a 20M timing repeat.",
+          "path": "docs/reports/goal835_baseline_barnes_hut_force_app_node_coverage_prepared_best_available_non_optix_backend_same_semantics_2026-04-23.json",
+          "status": "not_same_current_contract"
+        }
+      ],
+      "baseline_status": "current_contract_baseline_missing",
+      "next_action": "Produce a same current-contract non-OptiX baseline pair: one validated depth-8 small-scale row matching the RTX validation contract and one large timing row matching the 20M timing contract, then run 2+ AI review before public wording.",
+      "path_name": "node_coverage_prepared_rich",
+      "public_speedup_claim_ready": false,
+      "rtx_artifacts": [
+        "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json",
+        "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json"
+      ],
+      "rtx_correctness": true,
+      "rtx_timing_has_validation": false,
+      "rtx_timing_query_median_sec": 0.23063642531633377,
+      "rtx_validation_query_median_sec": 0.007581695914268494
+    }
+  ],
+  "summary": {
+    "baseline_missing_or_partial_count": 2,
+    "public_speedup_claim_ready_count": 0,
+    "row_count": 2,
+    "rtx_correct_count": 2
+  },
+  "valid": true
+}
