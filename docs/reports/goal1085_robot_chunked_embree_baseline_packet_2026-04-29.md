@@ -1,0 +1,29 @@
+# Goal1085 Robot Chunked Embree Baseline Packet
+
+Date: 2026-04-29
+
+Valid: `true`
+
+Goal1085 prepares a non-cloud robot Embree baseline runner only. It does not run the heavy baseline, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.
+
+## Scale
+
+- Total poses: `36000000`
+- Chunk poses: `200000`
+- Chunk count: `180`
+- Obstacles: `4096`
+- Iterations per chunk: `3`
+
+## Interpretation
+
+Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and 2+ AI review decide whether the comparison boundary is acceptable.
+
+## Command Template
+
+```bash
+PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 200000 --obstacle-count 4096 --iterations 3 --worker-count 8 --output-json docs/reports/goal1085_robot_chunked_embree_baseline/chunk_${chunk_index}.json
+```
+
+## Boundary
+
+Goal1085 prepares a non-cloud robot Embree baseline runner only. It does not run the heavy baseline, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.
