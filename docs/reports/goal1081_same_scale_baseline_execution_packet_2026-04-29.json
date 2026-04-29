@@ -1,0 +1,102 @@
+{
+  "boundary": "Goal1081 prepares same-scale baseline commands only. It does not run them, does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1081 same-scale baseline execution packet",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "baseline_kind": "cpu_oracle_same_scale",
+      "command": [
+        "PYTHONPATH=src:.",
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage",
+        "--mode",
+        "dry-run",
+        "--copies",
+        "2500000",
+        "--iterations",
+        "1",
+        "--radius",
+        "1.0",
+        "--output-json",
+        "docs/reports/goal1081_same_scale_baselines/facility_coverage_threshold_2_5m_cpu_oracle.json"
+      ],
+      "expected_output_json": "docs/reports/goal1081_same_scale_baselines/facility_coverage_threshold_2_5m_cpu_oracle.json",
+      "path_name": "coverage_threshold_prepared",
+      "public_speedup_claim_authorized": false,
+      "purpose": "Measure same-scale CPU oracle for the facility RTX timing row before any public speedup wording review.",
+      "recommended_host": "local_or_linux",
+      "required_before_public_wording": true,
+      "scale": {
+        "copies": 2500000,
+        "iterations": 1,
+        "query_count": 10000000
+      },
+      "target_rtx_artifact": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_2_5m_timing.json"
+    },
+    {
+      "app": "robot_collision_screening",
+      "baseline_kind": "embree_same_scale",
+      "command": [
+        "PYTHONPATH=src:.",
+        "python3",
+        "scripts/goal839_robot_pose_count_baseline.py",
+        "--backend",
+        "embree",
+        "--pose-count",
+        "36000000",
+        "--obstacle-count",
+        "4096",
+        "--iterations",
+        "3",
+        "--worker-count",
+        "8",
+        "--output-json",
+        "docs/reports/goal1081_same_scale_baselines/robot_prepared_pose_flags_36m_embree_baseline.json"
+      ],
+      "expected_output_json": "docs/reports/goal1081_same_scale_baselines/robot_prepared_pose_flags_36m_embree_baseline.json",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "purpose": "Measure same-scale Embree pose-count baseline for the Goal1079 robot RTX timing row.",
+      "recommended_host": "linux_or_windows_high_memory",
+      "required_before_public_wording": true,
+      "scale": {
+        "iterations": 3,
+        "obstacle_count": 4096,
+        "pose_count": 36000000,
+        "worker_count": 8
+      },
+      "target_rtx_artifact": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/robot_prepared_pose_flags_36m_timing.json"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "baseline_kind": "future_contract",
+      "command": [],
+      "expected_output_json": null,
+      "path_name": "node_coverage_prepared_rich",
+      "public_speedup_claim_authorized": false,
+      "purpose": "Do not collect public-wording baseline yet. First define a reviewed 20M validation/intake contract and decide whether the huge Python input/packing overhead should be part of the claim boundary.",
+      "recommended_host": "not_ready",
+      "required_before_public_wording": true,
+      "scale": {
+        "body_count": 20000000,
+        "iterations": 5,
+        "node_count": 65536
+      },
+      "target_rtx_artifact": "docs/reports/goal1079_barnes_hut_rich_scale_up_probe/barnes_hut_rich_node_coverage_20m_timing.json"
+    }
+  ],
+  "source_artifacts": [
+    "docs/reports/goal1080_post_pod_public_wording_readiness_audit_2026-04-29.json",
+    "docs/reports/goal1079_rtx_pod_batch_result_2026-04-29.md"
+  ],
+  "summary": {
+    "executable_row_count": 2,
+    "not_ready_row_count": 1,
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 3
+  },
+  "valid": true
+}
