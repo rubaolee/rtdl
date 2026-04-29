@@ -294,7 +294,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--body-count", type=int, default=20_000_000)
     parser.add_argument("--chunk-size", type=int, default=250_000)
     parser.add_argument("--iterations", type=int, default=3)
-    parser.add_argument("--radius", type=float, default=barnes_app.NODE_DISCOVERY_RADIUS)
+    parser.add_argument("--radius", type=float, default=0.1)
     parser.add_argument("--barnes-tree-depth", type=int, default=8)
     parser.add_argument("--hit-threshold", type=int, default=4)
     parser.add_argument("--output-json", type=Path, default=DEFAULT_OUTPUT)

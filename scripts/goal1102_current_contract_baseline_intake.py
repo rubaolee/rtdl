@@ -22,6 +22,7 @@ EXPECTED = [
         "backend": "cpu_oracle",
         "scenario": "facility_service_coverage_recentered",
         "query_count": 10_000_000,
+        "radius": 1.0,
         "requires_matches_oracle": True,
     },
     {
@@ -32,6 +33,7 @@ EXPECTED = [
         "backend": "embree",
         "scenario": "facility_service_coverage_recentered",
         "query_count": 10_000_000,
+        "radius": 1.0,
         "requires_matches_oracle": True,
     },
     {
@@ -42,6 +44,7 @@ EXPECTED = [
         "backend": "embree",
         "scenario": "barnes_hut_node_coverage",
         "query_count": 4_096,
+        "radius": 0.1,
         "barnes_tree_depth": 8,
         "hit_threshold": 4,
         "requires_matches_oracle": True,
@@ -54,6 +57,7 @@ EXPECTED = [
         "backend": "embree",
         "scenario": "barnes_hut_node_coverage",
         "query_count": 20_000_000,
+        "radius": 0.1,
         "barnes_tree_depth": 8,
         "hit_threshold": 4,
         "requires_matches_oracle": False,
@@ -93,6 +97,8 @@ def _validate(expected: dict[str, Any], payload: dict[str, Any]) -> tuple[str, l
         issues.append("scenario mismatch")
     if _nested(payload, ("scenario", "result", "query_count")) != expected["query_count"]:
         issues.append("query_count mismatch")
+    if _nested(payload, ("scenario", "result", "radius")) != expected["radius"]:
+        issues.append("radius mismatch")
     if expected.get("barnes_tree_depth") is not None and _nested(payload, ("scenario", "result", "barnes_tree_depth")) != expected["barnes_tree_depth"]:
         issues.append("barnes_tree_depth mismatch")
     if expected.get("hit_threshold") is not None and _nested(payload, ("scenario", "result", "hit_threshold")) != expected["hit_threshold"]:

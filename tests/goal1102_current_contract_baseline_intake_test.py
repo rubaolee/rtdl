@@ -14,6 +14,7 @@ def _artifact(expected: dict, *, matches_oracle=True) -> dict:
     result = {
         "query_count": expected["query_count"],
         "matches_oracle": matches_oracle,
+        "radius": expected["radius"],
     }
     if expected.get("barnes_tree_depth") is not None:
         result["barnes_tree_depth"] = expected["barnes_tree_depth"]
@@ -77,6 +78,21 @@ class Goal1102CurrentContractBaselineIntakeTest(unittest.TestCase):
 
         self.assertEqual(row["status"], "blocked")
         self.assertIn("public_speedup_claim_authorized is not false", row["issues"])
+        self.assertEqual(payload["overall_status"], "waiting_for_baseline_artifacts")
+
+    def test_intake_blocks_radius_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            baseline_dir = Path(tmpdir)
+            expected = EXPECTED[-1]
+            artifact = _artifact(expected, matches_oracle=None)
+            artifact["scenario"]["result"]["radius"] = 10.0
+            (baseline_dir / expected["path"].name).write_text(json.dumps(artifact), encoding="utf-8")
+
+            payload = build_intake(baseline_dir)
+            row = next(row for row in payload["rows"] if row["name"] == expected["name"])
+
+        self.assertEqual(row["status"], "blocked")
+        self.assertIn("radius mismatch", row["issues"])
         self.assertEqual(payload["overall_status"], "waiting_for_baseline_artifacts")
 
     def test_markdown_preserves_no_claim_boundary(self) -> None:
