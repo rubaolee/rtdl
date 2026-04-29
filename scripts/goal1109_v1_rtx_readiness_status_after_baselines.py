@@ -35,15 +35,22 @@ def build_status() -> dict[str, Any]:
         {
             "app": "robot_collision_screening",
             "path_name": "prepared_pose_flags",
-            "status": "ready_for_non_cloud_chunked_embree_baseline_execution",
+            "status": "engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review",
             "latest_evidence": [
                 "docs/reports/goal1090_robot_embree_local_runbook_2026-04-29.json",
                 "docs/reports/goal1091_robot_pose_offset_smoke_intake_2026-04-29.json",
+                "docs/reports/goal1085_robot_chunked_embree_baseline/validation_chunk_0.json",
+                "docs/reports/goal1085_robot_chunked_embree_baseline/timing_chunk_*.json",
+                "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json",
+                "docs/reports/goal1114_two_ai_consensus_2026-04-29.md",
             ],
-            "engineering_ratio_summary": None,
+            "engineering_ratio_summary": (
+                "Robot non-OptiX baseline complete: 36M poses, Embree native any-hit sum 92.25s; "
+                "ratio intentionally withheld until same-source RTX rerun"
+            ),
             "next_action": (
-                "Use Goal1090 to run the Goal1085 resumable 180-chunk Embree baseline on Linux/Windows, "
-                "then run Goal1086 intake and 2+ AI review."
+                "On next RTX pod, rerun the Robot prepared pose-flags RTX timing from the current source "
+                "revision at a scale comparable to the 36M-pose Embree baseline, then perform public wording review."
             ),
             "public_speedup_claim_authorized": False,
         },
@@ -79,8 +86,8 @@ def build_status() -> dict[str, Any]:
     }
     valid = (
         len(rows) == 3
-        and summary["engineering_comparison_ready_count"] == 2
-        and summary["non_cloud_ready_count"] == 1
+        and summary["engineering_comparison_ready_count"] == 3
+        and summary["non_cloud_ready_count"] == 0
         and summary["blocked_count"] == 0
         and summary["public_speedup_claim_authorized_count"] == 0
     )
@@ -94,7 +101,7 @@ def build_status() -> dict[str, Any]:
         "boundary": (
             "Goal1109 refreshes v1 RTX readiness after same-contract baseline comparison. It does not run cloud, "
             "does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. "
-            "Facility and Barnes-Hut have engineering comparison evidence only; same-source RTX reruns and public wording review remain required."
+            "Facility, Robot, and Barnes-Hut have engineering comparison evidence only; same-source RTX reruns and public wording review remain required."
         ),
     }
 

@@ -12,8 +12,8 @@ class Goal1109V1RtxReadinessStatusAfterBaselinesTest(unittest.TestCase):
 
         self.assertTrue(payload["valid"])
         self.assertEqual(payload["summary"]["row_count"], 3)
-        self.assertEqual(payload["summary"]["engineering_comparison_ready_count"], 2)
-        self.assertEqual(payload["summary"]["non_cloud_ready_count"], 1)
+        self.assertEqual(payload["summary"]["engineering_comparison_ready_count"], 3)
+        self.assertEqual(payload["summary"]["non_cloud_ready_count"], 0)
         self.assertEqual(payload["summary"]["public_speedup_claim_authorized_count"], 0)
         by_app = {row["app"]: row for row in payload["rows"]}
         self.assertEqual(
@@ -26,7 +26,7 @@ class Goal1109V1RtxReadinessStatusAfterBaselinesTest(unittest.TestCase):
         )
         self.assertEqual(
             by_app["robot_collision_screening"]["status"],
-            "ready_for_non_cloud_chunked_embree_baseline_execution",
+            "engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review",
         )
 
     def test_rows_keep_no_public_claim_boundary_and_next_actions(self) -> None:
@@ -43,6 +43,7 @@ class Goal1109V1RtxReadinessStatusAfterBaselinesTest(unittest.TestCase):
 
         self.assertIn("Supersedes:", markdown)
         self.assertIn("66.61x vs CPU oracle", markdown)
+        self.assertIn("Robot non-OptiX baseline complete", markdown)
         self.assertIn("231.82x vs Embree", markdown)
         self.assertIn("same-source RTX reruns", markdown)
 
