@@ -1,0 +1,88 @@
+{
+  "boundary": "Goal1076 prepares a separate Barnes-Hut rich-contract pod candidate. It does not run cloud, does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-28",
+  "goal": "Goal1076 Barnes-Hut rich RTX pod candidate",
+  "report_dir": "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate",
+  "rows": [
+    {
+      "app": "barnes_hut_force_app",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "1024",
+        "--iterations",
+        "3",
+        "--radius",
+        "0.1",
+        "--barnes-tree-depth",
+        "6",
+        "--hit-threshold",
+        "4",
+        "--output-json",
+        "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_validation.json"
+      ],
+      "contains_skip_validation": false,
+      "current_public_wording_boundary": "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "current_public_wording_status": "public_wording_not_reviewed",
+      "output_json": "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_validation.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "correctness_validation",
+      "purpose": "Validate the richer Barnes-Hut node-coverage contract with a manageable oracle.",
+      "requires_validation": true,
+      "source_goal": "Goal1075",
+      "timing_floor_sec": null
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "1000000",
+        "--iterations",
+        "5",
+        "--radius",
+        "0.1",
+        "--barnes-tree-depth",
+        "8",
+        "--hit-threshold",
+        "4",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_large_timing.json"
+      ],
+      "contains_skip_validation": true,
+      "current_public_wording_boundary": "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
+      "current_public_wording_status": "public_wording_not_reviewed",
+      "output_json": "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_large_timing.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "large_timing_repeat",
+      "purpose": "Collect timing-only RTX traversal evidence for the richer Barnes-Hut node contract.",
+      "requires_validation": false,
+      "source_goal": "Goal1075",
+      "timing_floor_sec": 0.1
+    }
+  ],
+  "source_artifacts": [
+    "docs/reports/goal1075_barnes_hut_rich_contract_design_2026-04-28.md",
+    "docs/reports/goal1075_barnes_hut_rich_contract_dry_run_2026-04-28.json",
+    "docs/reports/goal1075_two_ai_consensus_2026-04-28.md"
+  ],
+  "summary": {
+    "row_count": 2,
+    "timing_row_count": 1,
+    "timing_rows_without_floor": [],
+    "validation_row_count": 1,
+    "validation_rows_with_skip_validation": []
+  },
+  "valid": true
+}
