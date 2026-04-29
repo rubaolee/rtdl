@@ -1,0 +1,41 @@
+{
+  "baseline_result": {
+    "all_customers_covered": true,
+    "covered_customer_count": 10000000,
+    "cpu_reference_total_sec": 156.35385558300186,
+    "input_build_sec": 22.138179957983084
+  },
+  "boundary": "Goal1082 is an intake/audit of one same-scale facility baseline. It does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "checks": {
+    "covered_count_matches": false,
+    "decision_matches": false,
+    "public_claim_authorized": false,
+    "same_scale": true
+  },
+  "date": "2026-04-29",
+  "goal": "Goal1082 facility same-scale baseline intake",
+  "next_actions": [
+    "Do not publish a facility RTX speedup ratio from the current 2.5M timing row.",
+    "Add or use a precision-aware tiled/recentered facility benchmark mapping before the next cloud run.",
+    "Rerun same-scale OptiX with validation enabled or with a reviewed validation-equivalent artifact."
+  ],
+  "reason": "The same-scale CPU oracle says all 10,000,000 customers are covered, but the RTX timing row with validation skipped reports only 8,898,102 threshold-reaching queries. The facility RTX public wording remains blocked until a corrected same-scale RTX validation run passes. The likely engineering cause is coordinate precision at 2.5M copies: x coordinates reach about 15 million while the radius is 1.0, which is unsafe for float-oriented RT traversal without tiling, recentering, or another precision-aware mapping.",
+  "rtx_result": {
+    "all_queries_reached_threshold": false,
+    "matches_oracle_in_artifact": null,
+    "optix_query_median_sec": 0.11103759799152613,
+    "skip_validation": true,
+    "threshold_reached_count": 8898102
+  },
+  "scale": {
+    "copies": 2500000,
+    "query_count": 10000000,
+    "radius": 1.0
+  },
+  "source_artifacts": [
+    "docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_2_5m_timing.json",
+    "docs/reports/goal1081_same_scale_baselines/facility_coverage_threshold_2_5m_cpu_oracle.json"
+  ],
+  "valid": true,
+  "verdict": "BLOCK"
+}
