@@ -9,12 +9,12 @@ Goal1082, the original Goal1072 global-coordinate facility 2.5M timing row is
 blocked because the same-scale CPU oracle disagrees with the validation-skipped
 RTX artifact. After Goal1083/Goal1084, the next facility pod run must use the
 precision-safe `facility_service_coverage_recentered` scenario and must not use
-`--skip-validation`. Robot still needs a same-scale non-OptiX baseline before
-public wording review; that baseline is not a cloud-GPU task. Barnes-Hut remains
-separate until its 20M validation/intake contract is superseded. Do not spend
-paid pod time rerunning rejected rows until their local code or scale contracts
-change. The runner accepts `RTDL_SOURCE_COMMIT` first, then falls back to git,
-then to `.rtdl_source_commit`.
+`--skip-validation`. After Goal1093, Barnes-Hut has a superseding depth-8
+validation plus 20M timing packet. Robot still needs a same-scale non-OptiX
+baseline before public wording review; that baseline is not a cloud-GPU task.
+Do not spend paid pod time rerunning rejected rows until their local code or
+scale contracts change. The runner accepts `RTDL_SOURCE_COMMIT` first, then
+falls back to git, then to `.rtdl_source_commit`.
 
 ## Before Starting A Pod
 
@@ -47,23 +47,21 @@ targets, 2 non-NVIDIA exclusions, 17 active+deferred manifest entries, and 16
 unique manifest commands. If those counts drift, refresh the manifest and the
 runbook before starting paid cloud time.
 
-For the current post-Goal1084 follow-up, also regenerate the Goal1062,
-Goal1063, Goal1067, Goal1084, and relevant intake artifacts locally before
+For the current post-Goal1094 follow-up, also regenerate the Goal1084,
+Goal1093, Goal1094, and relevant intake/status artifacts locally before
 starting paid cloud time:
 
 ```bash
-PYTHONPATH=src:. python3 scripts/goal1062_blocked_rtx_wording_rerun_manifest.py
-PYTHONPATH=src:. python3 scripts/goal1063_pre_pod_local_completion_audit.py
-PYTHONPATH=src:. python3 scripts/goal1067_scale_contract_repair_audit.py
 PYTHONPATH=src:. python3 scripts/goal1084_facility_recentered_rtx_pod_packet.py
+PYTHONPATH=src:. python3 scripts/goal1093_barnes_hut_20m_contract_packet.py
+PYTHONPATH=src:. python3 scripts/goal1094_v1_rtx_readiness_status_refresh.py
 PYTHONPATH=src:. python3 -m unittest \
-  tests.goal1062_blocked_rtx_wording_rerun_manifest_test \
-  tests.goal1063_pre_pod_local_completion_audit_test \
-  tests.goal1067_scale_contract_repair_audit_test \
-  tests.goal1084_facility_recentered_rtx_pod_packet_test
+  tests.goal1084_facility_recentered_rtx_pod_packet_test \
+  tests.goal1093_barnes_hut_20m_contract_packet_test \
+  tests.goal1094_v1_rtx_readiness_status_refresh_test
 ```
 
-The generated Goal1062, Goal1063, Goal1067, and Goal1084 artifacts must report:
+The generated Goal1084, Goal1093, and Goal1094 artifacts must report:
 
 ```text
 "valid": true
@@ -72,7 +70,9 @@ The generated Goal1062, Goal1063, Goal1067, and Goal1084 artifacts must report:
 The generated Goal1084 runner must contain no `--skip-validation`. If the
 facility recentered validation is too expensive on the pod, copy back the
 partial artifact and stop rather than publishing a speedup ratio. No public
-wording can change without later artifact intake and 2+ AI review.
+wording can change without later artifact intake and 2+ AI review. The generated
+Goal1093 Barnes-Hut runner must run the depth-8 validation row without
+`--skip-validation`, then run the 20M timing-only row with `--skip-validation`.
 
 If the only pending follow-up is the historical graph/Jaccard retry, use
 Goal914 instead of the full group list:
@@ -132,14 +132,17 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
 
 Do not continue if bootstrap status is not `ok`.
 
-## Current Post-Goal1084 Runner
+## Current Post-Goal1094 Runner
 
-For the next current v1.0 RTX pod session, prefer the generated Goal1084 runner
-for facility. The older Goal1072 runner is historical evidence and should not be
-used for facility public wording because Goal1082 found same-scale disagreement
-in its validation-skipped 2.5M global-coordinate row. The older broad batch
+For the next current v1.0 RTX pod session, run the generated Goal1084 facility
+runner and, if pod time remains after copying back Goal1084 artifacts, run the
+generated Goal1093 Barnes-Hut runner. The older Goal1072 runner is historical
+evidence and should not be used for facility public wording because Goal1082
+found same-scale disagreement in its validation-skipped 2.5M global-coordinate
+row. The older Goal1076 Barnes-Hut runner is also historical because Goal1093
+supersedes its depth-6-validation/depth-8-timing mismatch. The older broad batch
 lists below are retained for historical fallback and targeted debugging, but
-they are not the primary post-Goal1084 procedure.
+they are not the primary post-Goal1094 procedure.
 
 From the pod checkout root:
 
@@ -161,30 +164,29 @@ Goal1084 executes exactly one active row:
 
 - same-scale validation and timing for `facility_knn_assignment / coverage_threshold_prepared_recentered` at 2,500,000 copies
 
-Do not edit the generated runner on the pod to add `--skip-validation`. If the
-row cannot finish, copy back the failing artifact and stop interpreting it as
-claim-grade evidence. Barnes-Hut is intentionally absent and remains blocked for
-benchmark-contract redesign. Robot is intentionally absent because its next
-blocker is a same-scale non-OptiX baseline, not another RTX timing row.
+Do not edit the generated Goal1084 runner on the pod to add
+`--skip-validation`. If the row cannot finish, copy back the failing artifact
+and stop interpreting it as claim-grade evidence. Robot is intentionally absent
+because its next blocker is a same-scale non-OptiX baseline, not another RTX
+timing row.
 
-After Goal1075/Goal1076, Barnes-Hut has a separate rich-contract pod candidate.
-Do not merge it into the facility/robot Goal1072 batch. If pod time remains
-after Goal1084 artifacts are copied back, run it as a separate small batch:
+If pod time remains after Goal1084 artifacts are copied back, run the current
+Barnes-Hut Goal1093 contract packet as a separate small batch:
 
 ```bash
-bash scripts/goal1076_barnes_hut_rich_rtx_pod_candidate_runner.sh
+bash scripts/goal1093_barnes_hut_20m_contract_runner.sh
 ```
 
-Goal1076 executes exactly two rows:
+Goal1093 executes exactly two rows:
 
-- correctness-validation `barnes_hut_force_app / node_coverage_prepared_rich`
-  at 1,024 bodies, tree depth 6, radius 0.1, hit threshold 4
-- large timing-repeat `barnes_hut_force_app / node_coverage_prepared_rich`
-  at 1,000,000 bodies, tree depth 8, radius 0.1, hit threshold 4
+- depth-8 correctness-validation `barnes_hut_force_app / node_coverage_prepared_rich`
+  at 4,096 bodies, 65,536 nodes, radius 0.1, hit threshold 4, without `--skip-validation`
+- depth-8 20M timing-repeat `barnes_hut_force_app / node_coverage_prepared_rich`
+  at 20,000,000 bodies, 65,536 nodes, radius 0.1, hit threshold 4, with `--skip-validation`
 
-The Goal1076 timing row is timing-only and uses `--skip-validation`; it requires
-the separate validation row and later artifact intake/review before any public
-wording can change.
+The Goal1093 timing row is timing-only and uses `--skip-validation`; it requires
+the separate depth-8 validation row and later artifact intake/review before any
+public wording can change.
 
 Copy back the entire Goal1084 report directory before stopping the pod:
 
@@ -202,6 +204,18 @@ engineering evidence only:
 cd /Users/rl2025/rtdl_python_only
 # pending after the pod run: scripts/goal1085_goal1084_artifact_intake.py
 ```
+
+For Goal1093, copy back the whole Barnes-Hut report directory as well:
+
+```bash
+scp -r -P <port> -i ~/.ssh/id_ed25519 \
+  root@<host>:/workspace/rtdl_python_only/docs/reports/goal1093_barnes_hut_20m_contract \
+  /Users/rl2025/rtdl_python_only/docs/reports/
+```
+
+Then write/run a Goal1093 artifact-intake step before interpreting the copied
+artifacts. Until that intake and 2+ AI review exist, copied artifacts are
+engineering evidence only.
 
 Goal1063 says the broader rejected not-reviewed rows remain local-only until
 code or scale changes. Goal1071 superseded the Goal1068 facility/robot timing
