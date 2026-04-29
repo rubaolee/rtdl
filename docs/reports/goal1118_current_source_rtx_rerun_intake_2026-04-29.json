@@ -1,0 +1,74 @@
+{
+  "boundary": "Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1118 current-source RTX rerun intake",
+  "input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet",
+  "packet": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet_2026-04-29.json",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "exists": false,
+      "findings": [
+        "missing_output_json"
+      ],
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "phase": "same_scale_validation_and_timing",
+      "valid": false
+    },
+    {
+      "app": "robot_collision_screening",
+      "exists": false,
+      "findings": [
+        "missing_output_json"
+      ],
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "correctness_validation",
+      "valid": false
+    },
+    {
+      "app": "robot_collision_screening",
+      "exists": false,
+      "findings": [
+        "missing_output_json"
+      ],
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_8m_timing.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "large_timing_repeat",
+      "valid": false
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "exists": false,
+      "findings": [
+        "missing_output_json"
+      ],
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "correctness_validation",
+      "valid": false
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "exists": false,
+      "findings": [
+        "missing_output_json"
+      ],
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "large_timing_repeat",
+      "valid": false
+    }
+  ],
+  "summary": {
+    "missing_row_count": 5,
+    "public_speedup_claim_authorized": false,
+    "row_count": 5,
+    "runner_log_exists": false,
+    "same_source_commit": false,
+    "source_commits": [],
+    "valid_row_count": 0
+  },
+  "valid": false
+}
