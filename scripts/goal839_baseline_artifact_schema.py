@@ -67,4 +67,6 @@ def build_baseline_artifact(
 
 
 def write_baseline_artifact(path: str | Path, artifact: dict[str, Any]) -> None:
-    Path(path).write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output = Path(path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")

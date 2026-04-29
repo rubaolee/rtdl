@@ -47,6 +47,8 @@ OK
 
 Second-AI review found one blocker: the timing-only CLI wrote the right artifact but exited nonzero because `main()` only returned success for `status: ok`. The fix changes the CLI to return success for `status in {"ok", "timing_only"}` and adds a regression test for `--skip-validation`.
 
+Linux follow-up found one utility bug: `write_baseline_artifact()` failed when the output directory did not already exist. The fix now creates parent directories before writing, and the CLI regression writes to a nested path.
+
 Compile check:
 
 ```text

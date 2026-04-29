@@ -136,7 +136,7 @@ class Goal839LocalBaselineCollectorsTest(unittest.TestCase):
 
     def test_robot_embree_skip_validation_cli_writes_timing_only_successfully(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            output_json = Path(tmpdir) / "robot_timing_only.json"
+            output_json = Path(tmpdir) / "nested" / "robot_timing_only.json"
             completed = subprocess.run(
                 [
                     sys.executable,

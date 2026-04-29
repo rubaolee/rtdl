@@ -20,3 +20,13 @@ Explicit temp CLI checks passed for both timing-only and validated paths
 py_compile passed
 scoped git diff --check clean
 ```
+
+Follow-up review after Linux parent-directory failure:
+
+```text
+ACCEPT. No blockers found.
+
+write_baseline_artifact() now creates parent directories before writing. The CLI regression writes a --skip-validation timing-only artifact to a nested path with check=True, so it covers both parent-dir creation and zero exit status.
+
+Focused tests pass (9 OK), py_compile passes, scoped git diff --check is clean, and timing-only artifacts still keep authorizes_public_speedup_claim: false.
+```
