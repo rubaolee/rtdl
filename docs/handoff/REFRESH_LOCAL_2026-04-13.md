@@ -17,7 +17,13 @@ repository review work. Read it regularly after context compaction.
 ## Review and closure discipline
 
 - Every bounded goal should have `2+` AI consensus before it is called closed.
-- External-style AI review should be saved into repo files.
+- For this project, `2-AI consensus` means Codex plus at least one external AI:
+  Claude or Gemini. An internal Codex subagent does not satisfy the external-AI
+  side of this rule.
+- `3-AI consensus` means Codex plus both Claude and Gemini.
+- External-style AI review should be saved into repo files. If an external AI
+  returns a verdict in stdout but cannot write the file itself, save the stdout
+  verdict into a repo report and note that capture path explicitly.
 - Codex consensus is still required in addition to external-style review.
 - Prefer file-based handoff and response-file review trails.
 - Do not rewrite historical external reviews. If later evidence changes a
