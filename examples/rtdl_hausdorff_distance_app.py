@@ -4,6 +4,7 @@ import argparse
 import json
 import math
 import sys
+import time
 from pathlib import Path
 from typing import Iterable
 
@@ -225,8 +226,13 @@ def _run_optix_directed_threshold(
     radius: float,
     label: str,
 ) -> dict[str, object]:
-    with rt.prepare_optix_fixed_radius_count_threshold_2d(target, max_radius=radius) as prepared:
+    prepare_start = time.perf_counter()
+    prepared_context = rt.prepare_optix_fixed_radius_count_threshold_2d(target, max_radius=radius)
+    prepare_sec = time.perf_counter() - prepare_start
+    with prepared_context as prepared:
+        query_start = time.perf_counter()
         covered_count = prepared.count_threshold_reached(source, radius=radius, threshold=1)
+        query_sec = time.perf_counter() - query_start
     violating = [] if int(covered_count) == len(source) else None
     return {
         "label": label,
@@ -238,6 +244,10 @@ def _run_optix_directed_threshold(
         "identity_parity_available": violating is not None,
         "row_count": None,
         "summary_mode": "scalar_threshold_count",
+        "run_phases": {
+            "optix_prepare_sec": prepare_sec,
+            "optix_query_sec": query_sec,
+        },
     }
 
 
@@ -263,7 +273,9 @@ def run_app(
     hausdorff_threshold: float = 0.4,
     require_rt_core: bool = False,
 ) -> dict[str, object]:
+    input_start = time.perf_counter()
     case = make_authored_point_sets(copies=copies)
+    run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
     points_a = case["points_a"]
     points_b = case["points_b"]
     if not points_a or not points_b:
@@ -294,9 +306,19 @@ def run_app(
             radius=hausdorff_threshold,
             label="b_to_a",
         )
-        oracle = expected_tiled_hausdorff(copies=copies)
+        run_phases["optix_prepare_sec"] = float(directed_ab["run_phases"]["optix_prepare_sec"]) + float(
+            directed_ba["run_phases"]["optix_prepare_sec"]
+        )
+        run_phases["optix_query_sec"] = float(directed_ab["run_phases"]["optix_query_sec"]) + float(
+            directed_ba["run_phases"]["optix_query_sec"]
+        )
+        postprocess_start = time.perf_counter()
         within_threshold = bool(directed_ab["within_threshold"] and directed_ba["within_threshold"])
+        run_phases["python_postprocess_sec"] = time.perf_counter() - postprocess_start
+        validation_start = time.perf_counter()
+        oracle = expected_tiled_hausdorff(copies=copies)
         oracle_within_threshold = float(oracle["hausdorff_distance"]) <= hausdorff_threshold + 1e-12
+        run_phases["validation_sec"] = time.perf_counter() - validation_start
         return {
             "app": "hausdorff_distance",
             "backend": backend,
@@ -329,18 +351,23 @@ def run_app(
             "native_continuation_active": native_continuation_backend != "none",
             "native_continuation_backend": native_continuation_backend,
             "rt_core_accelerated": True,
+            "run_phases": run_phases,
         }
 
     if backend == "embree" and embree_result_mode == "directed_summary":
+        query_start = time.perf_counter()
         directed_ab = rt.directed_hausdorff_2d_embree(points_a, points_b)
         directed_ba = rt.directed_hausdorff_2d_embree(points_b, points_a)
+        run_phases["native_directed_summary_sec"] = time.perf_counter() - query_start
         rtdl_role = (
             "RTDL/Embree runs k=1 nearest-neighbor traversal and directed max reduction "
             "inside the native Embree summary path; Python keeps only undirected comparison "
             "and oracle validation."
         )
     elif embree_result_mode == "directed_summary":
+        query_start = time.perf_counter()
         oracle_summary = expected_tiled_hausdorff(copies=copies)
+        run_phases["analytic_summary_sec"] = time.perf_counter() - query_start
         directed_ab = oracle_summary["directed_a_to_b"]
         directed_ba = oracle_summary["directed_b_to_a"]
         rtdl_role = (
@@ -348,10 +375,14 @@ def run_app(
             "summary so large app-level Embree comparisons do not spend time in an O(N^2) oracle."
         )
     else:
+        query_start = time.perf_counter()
         rows_ab = _run_nearest(backend, points_a, points_b)
         rows_ba = _run_nearest(backend, points_b, points_a)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        reduction_start = time.perf_counter()
         directed_ab = _directed_from_rows(rows_ab, "a_to_b")
         directed_ba = _directed_from_rows(rows_ba, "b_to_a")
+        run_phases["python_reduction_sec"] = time.perf_counter() - reduction_start
         rtdl_role = (
             "RTDL emits k=1 nearest-neighbor rows; rt.reduce_rows(max) computes directed "
             "Hausdorff distances, while Python keeps witness selection and undirected comparison."
@@ -360,11 +391,13 @@ def run_app(
         (("a_to_b", directed_ab), ("b_to_a", directed_ba)),
         key=lambda item: (float(item[1]["distance"]), item[0]),
     )
+    validation_start = time.perf_counter()
     oracle = (
         expected_tiled_hausdorff(copies=copies)
         if embree_result_mode == "directed_summary"
         else brute_force_hausdorff(points_a, points_b)
     )
+    run_phases["validation_sec"] = time.perf_counter() - validation_start
 
     return {
         "app": "hausdorff_distance",
@@ -391,6 +424,7 @@ def run_app(
         "native_continuation_active": native_continuation_backend != "none",
         "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": False,
+        "run_phases": run_phases,
     }
 
 
