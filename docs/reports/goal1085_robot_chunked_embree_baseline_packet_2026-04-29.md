@@ -13,10 +13,11 @@ Goal1085 prepares a non-cloud robot Embree baseline runner only. It does not run
 - Chunk count: `180`
 - Obstacles: `4096`
 - Iterations per chunk: `3`
+- Resume controls: `RTDL_GOAL1085_START_CHUNK`, `RTDL_GOAL1085_END_CHUNK`, `RTDL_GOAL1085_SKIP_EXISTING`
 
 ## Interpretation
 
-Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and 2+ AI review decide whether the comparison boundary is acceptable.
+Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and 2+ AI review decide whether the comparison boundary is acceptable. The generated runner is resumable through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING.
 
 ## Command Template
 

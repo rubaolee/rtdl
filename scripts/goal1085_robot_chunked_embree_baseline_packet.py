@@ -54,7 +54,8 @@ def build_packet() -> dict[str, Any]:
             "Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count "
             "as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a "
             "same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and "
-            "2+ AI review decide whether the comparison boundary is acceptable."
+            "2+ AI review decide whether the comparison boundary is acceptable. The generated runner is resumable "
+            "through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING."
         ),
         "valid": (
             TOTAL_POSE_COUNT % CHUNK_POSE_COUNT == 0
@@ -87,7 +88,8 @@ def to_markdown(payload: dict[str, Any]) -> str:
             f"- Chunk poses: `{scale['chunk_pose_count']}`",
             f"- Chunk count: `{scale['chunk_count']}`",
             f"- Obstacles: `{scale['obstacle_count']}`",
-            f"- Iterations per chunk: `{scale['iterations_per_chunk']}`",
+        f"- Iterations per chunk: `{scale['iterations_per_chunk']}`",
+        "- Resume controls: `RTDL_GOAL1085_START_CHUNK`, `RTDL_GOAL1085_END_CHUNK`, `RTDL_GOAL1085_SKIP_EXISTING`",
             "",
             "## Interpretation",
             "",
@@ -117,8 +119,24 @@ def to_shell(payload: dict[str, Any]) -> str:
         "# Boundary: does not authorize public RTX speedup claims.",
         "",
         'export PYTHONPATH="${PYTHONPATH:-src:.}"',
+        f'export RTDL_GOAL1085_START_CHUNK="${{RTDL_GOAL1085_START_CHUNK:-0}}"',
+        f'export RTDL_GOAL1085_END_CHUNK="${{RTDL_GOAL1085_END_CHUNK:-{scale["chunk_count"] - 1}}}"',
+        'export RTDL_GOAL1085_SKIP_EXISTING="${RTDL_GOAL1085_SKIP_EXISTING:-1}"',
+        "",
+        'if [ "${RTDL_GOAL1085_START_CHUNK}" -lt 0 ] || [ "${RTDL_GOAL1085_END_CHUNK}" -gt '
+        + str(scale["chunk_count"] - 1)
+        + ' ] || [ "${RTDL_GOAL1085_START_CHUNK}" -gt "${RTDL_GOAL1085_END_CHUNK}" ]; then',
+        '  echo "invalid chunk range ${RTDL_GOAL1085_START_CHUNK}..${RTDL_GOAL1085_END_CHUNK}" >&2',
+        "  exit 2",
+        "fi",
+        "",
         f"mkdir -p {payload['report_dir']}",
-        f"for chunk_index in $(seq 0 {scale['chunk_count'] - 1}); do",
+        'for chunk_index in $(seq "${RTDL_GOAL1085_START_CHUNK}" "${RTDL_GOAL1085_END_CHUNK}"); do',
+        f'  output_json="{payload["report_dir"]}/chunk_${{chunk_index}}.json"',
+        '  if [ "${RTDL_GOAL1085_SKIP_EXISTING}" = "1" ] && [ -s "${output_json}" ]; then',
+        '    echo "Skipping existing robot Embree baseline chunk ${chunk_index}"',
+        "    continue",
+        "  fi",
         '  echo "Running robot Embree baseline chunk ${chunk_index}"',
         "  " + payload["command_template"],
         "done",
