@@ -90,6 +90,22 @@ class Goal839LocalBaselineCollectorsTest(unittest.TestCase):
         self.assertEqual(artifact["benchmark_scale"]["pose_id_start"], 200001)
         self.assertEqual(artifact["summary"]["colliding_pose_ids_sample"][0], 200002)
 
+    def test_robot_embree_timing_only_can_skip_cpu_oracle_validation(self) -> None:
+        module = __import__("scripts.goal839_robot_pose_count_baseline", fromlist=["build_artifact"])
+        artifact = module.build_artifact(
+            backend="embree",
+            pose_count=8,
+            obstacle_count=4,
+            iterations=1,
+            skip_validation=True,
+        )
+
+        self.assertEqual(artifact["status"], "timing_only")
+        self.assertIsNone(artifact["correctness_parity"])
+        self.assertEqual(artifact["phase_seconds"]["oracle_validation_separate"], 0.0)
+        self.assertTrue(artifact["validation"]["skipped"])
+        self.assertIn("validation skipped", " ".join(artifact["notes"]))
+
     def test_cli_writes_artifact_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_json = Path(tmpdir) / "artifact.json"
@@ -117,6 +133,37 @@ class Goal839LocalBaselineCollectorsTest(unittest.TestCase):
             self.assertIn('"status": "ok"', completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["baseline_name"], "cpu_scalar_threshold_count_oracle")
+
+    def test_robot_embree_skip_validation_cli_writes_timing_only_successfully(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_json = Path(tmpdir) / "robot_timing_only.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/goal839_robot_pose_count_baseline.py",
+                    "--backend",
+                    "embree",
+                    "--pose-count",
+                    "8",
+                    "--obstacle-count",
+                    "4",
+                    "--iterations",
+                    "1",
+                    "--skip-validation",
+                    "--output-json",
+                    str(output_json),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertIn('"status": "timing_only"', completed.stdout)
+            payload = json.loads(output_json.read_text(encoding="utf-8"))
+            self.assertEqual(payload["status"], "timing_only")
+            self.assertIsNone(payload["correctness_parity"])
+            self.assertTrue(payload["validation"]["skipped"])
 
 
 if __name__ == "__main__":

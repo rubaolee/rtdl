@@ -213,6 +213,7 @@ def _embree_artifact(
     *,
     worker_count: int,
     pose_id_start: int,
+    skip_validation: bool,
 ) -> dict[str, Any]:
     row = load_goal835_row(
         app="robot_collision_screening",
@@ -227,18 +228,22 @@ def _embree_artifact(
         )
     )
     pose_indices, ray_pack_sec = _time_call(lambda: _pose_indices_for_case(case))
-    oracle_flags, oracle_query_sec = _time_call(
-        lambda: _exact_pose_flags_cpu(
-            case["edge_rays"],
-            case["obstacle_triangles"],
-            pose_indices,
-            pose_count=len(case["poses"]),
-            worker_count=worker_count,
+    oracle_summary: dict[str, Any] | None = None
+    oracle_validation_sec = 0.0
+    if not skip_validation:
+        oracle_flags, oracle_query_sec = _time_call(
+            lambda: _exact_pose_flags_cpu(
+                case["edge_rays"],
+                case["obstacle_triangles"],
+                pose_indices,
+                pose_count=len(case["poses"]),
+                worker_count=worker_count,
+            )
         )
-    )
-    oracle_summary, oracle_post_sec = _time_call(
-        lambda: _summary_from_pose_flags(oracle_flags, case["poses"])
-    )
+        oracle_summary, oracle_post_sec = _time_call(
+            lambda: _summary_from_pose_flags(oracle_flags, case["poses"])
+        )
+        oracle_validation_sec = oracle_query_sec + oracle_post_sec
     prepared_kernel, prepare_sec = _time_call(lambda: rt.prepare_embree(robot_app.robot_edge_any_hit_kernel).bind(
         edge_rays=case["edge_rays"],
         obstacle_triangles=case["obstacle_triangles"],
@@ -259,7 +264,7 @@ def _embree_artifact(
         close = getattr(prepared_kernel, "close", None)
         if callable(close):
             close()
-    parity = last_summary == oracle_summary
+    parity = None if skip_validation else last_summary == oracle_summary
     artifact = build_baseline_artifact(
         row=row,
         baseline_name="embree_anyhit_pose_count_or_equivalent_compact_summary",
@@ -279,18 +284,27 @@ def _embree_artifact(
             "pose_index_prepare": 0.0,
             "native_anyhit_query": _stats(query_samples)["median_sec"],
             "scalar_copyback": 0.0,
-            "oracle_validation_separate": oracle_query_sec + oracle_post_sec,
+            "oracle_validation_separate": oracle_validation_sec,
         },
         summary=last_summary,
         notes=[
             "Embree baseline uses prepared RTDL kernel binding and compact pose-count postprocess.",
             "This is an equivalent compact summary baseline, not a native scalar ABI.",
-            f"CPU oracle validation worker_count={worker_count}. On Linux, worker_count>1 uses exact process-level OR-reduction over disjoint ray chunks.",
+            (
+                "CPU oracle validation skipped for timing-only artifact."
+                if skip_validation
+                else f"CPU oracle validation worker_count={worker_count}. On Linux, worker_count>1 uses exact process-level OR-reduction over disjoint ray chunks."
+            ),
         ],
         validation={
-            "method": "compare Embree compact pose summary against CPU oracle compact pose summary",
+            "method": (
+                "skipped timing-only chunk; use separate validation chunks before claim review"
+                if skip_validation
+                else "compare Embree compact pose summary against CPU oracle compact pose summary"
+            ),
             "matches_reference": parity,
             "worker_count": worker_count,
+            "skipped": skip_validation,
         },
     )
     return artifact
@@ -304,6 +318,7 @@ def build_artifact(
     iterations: int,
     worker_count: int | None = None,
     pose_id_start: int = 1,
+    skip_validation: bool = False,
 ) -> dict[str, Any]:
     if iterations <= 0:
         raise ValueError("iterations must be positive")
@@ -329,6 +344,7 @@ def build_artifact(
             iterations,
             worker_count=resolved_worker_count,
             pose_id_start=pose_id_start,
+            skip_validation=skip_validation,
         )
     raise ValueError(f"unsupported backend {backend}")
 
@@ -341,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--iterations", type=int, default=10)
     parser.add_argument("--worker-count", type=int)
     parser.add_argument("--pose-id-start", type=int, default=1)
+    parser.add_argument("--skip-validation", action="store_true")
     parser.add_argument("--output-json", required=True)
     args = parser.parse_args(argv)
     artifact = build_artifact(
@@ -350,10 +367,11 @@ def main(argv: list[str] | None = None) -> int:
         iterations=args.iterations,
         worker_count=args.worker_count,
         pose_id_start=args.pose_id_start,
+        skip_validation=args.skip_validation,
     )
     write_baseline_artifact(args.output_json, artifact)
     print(json.dumps(artifact, indent=2, sort_keys=True))
-    return 0 if artifact["status"] == "ok" else 1
+    return 0 if artifact["status"] in {"ok", "timing_only"} else 1
 
 
 if __name__ == "__main__":
