@@ -1,0 +1,52 @@
+{
+  "boundary": "This is a phase profiler, not a speedup claim. dry-run mode is schema/logic validation only. optix mode can support future RTX claim review only on RTX-class hardware with exported prepared OptiX any-hit symbols, and only for prepared ray/triangle pose-flag summary timing. packed_arrays input mode avoids per-ray Python object construction but remains app-specific. pose_count result mode returns only a scalar colliding-pose count for clean native summary timing.",
+  "cloud_claim_contract": {
+    "claim_scope": "prepared OptiX ray/triangle any-hit compact pose summary",
+    "cloud_policy": "include in the single active RTX batch only after local pre-cloud readiness passes",
+    "non_claim": "not continuous collision detection, full robot planning, full kinematics, witness-row speedup, or mesh-engine replacement",
+    "required_phase_groups": [
+      "python_input_construction_sec",
+      "optix_prepare_scene_sec",
+      "optix_prepare_rays_sec",
+      "optix_prepare_pose_indices_sec",
+      "prepared_pose_flags_warm_query_sec",
+      "oracle_validate_sec",
+      "close_sec",
+      "total_sec"
+    ],
+    "result_mode": "pose_count"
+  },
+  "date": "2026-04-22",
+  "edge_ray_count": 32000000,
+  "input_mode": "packed_arrays",
+  "iterations": 7,
+  "matches_oracle": null,
+  "mode": "optix",
+  "obstacle_count": 4096,
+  "obstacle_triangle_count": 8192,
+  "phases": {
+    "close_sec": 0.00793911051005125,
+    "optix_prepare_pose_indices_sec": 0.012918991968035698,
+    "optix_prepare_rays_sec": 0.6194218872115016,
+    "optix_prepare_scene_sec": 1.4744926691055298,
+    "oracle_validate_sec": 0.0,
+    "prepared_pose_flags_warm_query_sec": {
+      "max_sec": 0.8475945396348834,
+      "median_sec": 0.01596713997423649,
+      "min_sec": 0.013921590521931648
+    },
+    "python_input_construction_sec": 3.79562275018543,
+    "total_sec": 9.830133472569287
+  },
+  "pose_count": 8000000,
+  "result": {
+    "colliding_pose_count": 7875000,
+    "colliding_pose_ids_sample": [],
+    "oracle_colliding_pose_count": null,
+    "pose_collision_flags_sample": []
+  },
+  "result_mode": "pose_count",
+  "schema_version": "goal825_tier1_phase_contract_v1",
+  "suite": "Goal760 OptiX robot pose-flags phase profiler",
+  "validated": false
+}
