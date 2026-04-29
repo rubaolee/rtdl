@@ -9,7 +9,7 @@
     "reason": "The 20M Barnes-Hut timing baseline must preserve the same prepared Embree node-coverage query contract without materializing all query bodies as Python objects in one process."
   },
   "date": "2026-04-29",
-  "generated_at": "2026-04-29T08:32:59",
+  "generated_at": "2026-04-29T08:42:22",
   "goal": "Goal1106 Barnes-Hut chunked Embree timing baseline",
   "host": {
     "hostname": "lx1",
@@ -25,7 +25,7 @@
     "chunk_size": 250000,
     "hit_threshold": 4,
     "iterations": 3,
-    "radius": 10.0,
+    "radius": 0.1,
     "scenario": "barnes_hut_node_coverage",
     "skip_validation": true,
     "timing_only": true
@@ -43,38 +43,38 @@
       "node_count": 65536,
       "oracle_all_queries_reached_threshold": null,
       "query_count": 20000000,
-      "radius": 10.0,
+      "radius": 0.1,
       "threshold_reached_count": 20000000
     },
     "scenario": "barnes_hut_node_coverage",
     "timings_sec": {
-      "backend_close_sec": 0.00014714302960783243,
-      "backend_prepare_sec": 0.0938204670092091,
+      "backend_close_sec": 0.00014045508578419685,
+      "backend_prepare_sec": 0.093212945968844,
       "chunk_native_query_sec": {
-        "max_sec": 0.7512341750552878,
-        "median_sec": 0.6866056825383566,
-        "min_sec": 0.6204643410164863
+        "max_sec": 0.7392864499706775,
+        "median_sec": 0.6756776589900255,
+        "min_sec": 0.6148665609071031
       },
       "chunk_point_pack_sec": {
-        "max_sec": 0.5603482730221003,
-        "median_sec": 0.5305250220117159,
-        "min_sec": 0.44726467097643763
+        "max_sec": 0.5590805419487879,
+        "median_sec": 0.52744142053416,
+        "min_sec": 0.44696327100973576
       },
-      "input_build_sec": 24.795445980969816,
+      "input_build_sec": 24.66683020396158,
       "native_query_sec": {
-        "max_sec": 54.25369358237367,
-        "median_sec": 53.9044976051664,
-        "min_sec": 53.72381670109462
+        "max_sec": 53.7591739653144,
+        "median_sec": 53.46586970437784,
+        "min_sec": 53.176144241471775
       },
       "point_pack_sec": {
-        "max_sec": 41.04774158925284,
-        "median_sec": 41.02822069206741,
-        "min_sec": 40.83119023463223
+        "max_sec": 41.03539942135103,
+        "median_sec": 40.991653365199454,
+        "min_sec": 40.82224682008382
       },
       "python_postprocess_sec": {
-        "max_sec": 1.8891449919901788,
-        "median_sec": 1.8865050732856616,
-        "min_sec": 1.8852129497099668
+        "max_sec": 1.888563591404818,
+        "median_sec": 1.886022625840269,
+        "min_sec": 1.8859594491077587
       },
       "validation_sec": {
         "max_sec": 0.0,
@@ -84,5 +84,5 @@
     }
   },
   "schema_version": "goal1101_current_contract_non_optix_baseline_v1",
-  "source_commit": "87b077894ea6056b0af4e329d006321d41816392"
+  "source_commit": "a4a636d96c169362e5c6acea3df20582a3af8a71"
 }

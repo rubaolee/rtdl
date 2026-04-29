@@ -14,6 +14,7 @@ Goal1106 adds a bounded-memory timing runner for the same current-contract non-O
 - query count: `20,000,000`
 - Barnes-Hut tree depth: `8`
 - hit threshold: `4`
+- radius: `0.1`
 - validation mode: timing-only, `matches_oracle: null`
 - public claim flag: `public_speedup_claim_authorized: false`
 
@@ -29,6 +30,8 @@ The new script `scripts/goal1106_barnes_hut_chunked_embree_timing_baseline.py` p
 4. Stream body query points in chunks.
 5. Sum per-chunk native query time into one logical iteration timing.
 6. Emit a Goal1101-schema-compatible timing artifact at `docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json`.
+
+The runner default radius is `0.1`, matching the Goal1093 current RTX Barnes-Hut contract. Goal1102 now validates radius explicitly so a structurally valid but semantically mismatched timing row cannot pass intake.
 
 ## Boundary
 

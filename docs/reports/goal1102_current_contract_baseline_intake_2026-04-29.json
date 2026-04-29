@@ -1,10 +1,10 @@
 {
-  "artifact_set_complete": false,
+  "artifact_set_complete": true,
   "baseline_dir": "docs/reports/goal1101_current_contract_non_optix_baselines",
   "boundary": "Goal1102 intakes current-contract non-OptiX baseline artifacts only. It does not authorize public RTX speedup claims. Even a fully OK intake still requires 2+ AI review and a separate public wording gate.",
   "date": "2026-04-29",
   "goal": "Goal1102 current-contract baseline intake",
-  "overall_status": "waiting_for_baseline_artifacts",
+  "overall_status": "ready_for_2ai_baseline_review_not_public_claim",
   "rows": [
     {
       "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
@@ -32,19 +32,17 @@
     },
     {
       "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
-      "issues": [
-        "radius mismatch"
-      ],
+      "issues": [],
       "name": "barnes_hut_timing_embree",
-      "native_query_median_sec": 53.9044976051664,
+      "native_query_median_sec": 53.46586970437784,
       "public_speedup_claim_authorized": false,
-      "status": "blocked"
+      "status": "ok"
     }
   ],
   "summary": {
-    "blocked_count": 1,
+    "blocked_count": 0,
     "missing_count": 0,
-    "ok_count": 3,
+    "ok_count": 4,
     "public_speedup_claim_authorized_count": 0,
     "row_count": 4
   },
