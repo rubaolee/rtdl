@@ -71,7 +71,7 @@ def _cloud_claim_contract(scenario: str) -> dict[str, object]:
         ),
     }
     claim_scope, non_claim = contracts[scenario]
-    return {
+    payload: dict[str, object] = {
         "claim_scope": claim_scope,
         "non_claim": non_claim,
         "required_phase_groups": (
@@ -85,7 +85,24 @@ def _cloud_claim_contract(scenario: str) -> dict[str, object]:
         ),
         "activation_status": "deferred_until_real_rtx_phase_run_and_review",
         "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+        "schema_scope": "goal887_profiler_payload",
     }
+    if scenario == "hausdorff_threshold":
+        payload["app_level_phase_aliases"] = {
+            "input_build_sec": "run_app.run_phases.input_construction_sec",
+            "optix_prepare_sec": "run_app.run_phases.optix_prepare_sec",
+            "optix_query_sec": "run_app.run_phases.optix_query_sec",
+            "python_postprocess_sec": "run_app.run_phases.python_postprocess_sec",
+            "validation_sec": "run_app.run_phases.validation_sec",
+            "point_pack_sec": "profiler-only packed array phase; not emitted by run_app",
+            "optix_close_sec": "profiler-only prepared-handle close phase; not emitted by run_app",
+        }
+        payload["phase_schema_note"] = (
+            "Goal887 required_phase_groups describe the cloud profiler payload. "
+            "Goal1132 app-level Hausdorff payloads use run_phases field names listed "
+            "in app_level_phase_aliases."
+        )
+    return payload
 
 
 def _host() -> dict[str, str]:
