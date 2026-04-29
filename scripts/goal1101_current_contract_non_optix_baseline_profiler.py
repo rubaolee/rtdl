@@ -57,10 +57,6 @@ def _host() -> dict[str, str]:
 def _source_commit() -> str | None:
     if os.environ.get("RTDL_SOURCE_COMMIT"):
         return os.environ["RTDL_SOURCE_COMMIT"]
-    source_file = ROOT / ".rtdl_source_commit"
-    if source_file.exists():
-        value = source_file.read_text(encoding="utf-8").strip()
-        return value or None
     completed = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=ROOT,
@@ -71,6 +67,10 @@ def _source_commit() -> str | None:
     )
     if completed.returncode == 0:
         value = completed.stdout.strip()
+        return value or None
+    source_file = ROOT / ".rtdl_source_commit"
+    if source_file.exists():
+        value = source_file.read_text(encoding="utf-8").strip()
         return value or None
     return None
 

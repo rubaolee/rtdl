@@ -11,7 +11,7 @@ export NVCC="${NVCC:-${CUDA_PREFIX}/bin/nvcc}"
 export RTDL_NVCC="${RTDL_NVCC:-${NVCC}}"
 export RTDL_OPTIX_PTX_COMPILER="${RTDL_OPTIX_PTX_COMPILER:-nvcc}"
 export RTDL_OPTIX_LIB="${RTDL_OPTIX_LIB:-$(pwd)/build/librtdl_optix.so}"
-export RTDL_SOURCE_COMMIT="${RTDL_SOURCE_COMMIT:-$(cat .rtdl_source_commit 2>/dev/null || git rev-parse HEAD 2>/dev/null || true)}"
+export RTDL_SOURCE_COMMIT="${RTDL_SOURCE_COMMIT:-$(git rev-parse HEAD 2>/dev/null || cat .rtdl_source_commit 2>/dev/null || true)}"
 
 if [ -z "${RTDL_SOURCE_COMMIT}" ]; then
   echo "RTDL_SOURCE_COMMIT is empty; refusing to collect claim-grade artifacts." >&2

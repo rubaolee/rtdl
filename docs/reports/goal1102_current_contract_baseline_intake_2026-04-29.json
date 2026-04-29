@@ -28,13 +28,11 @@
     },
     {
       "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_4096_embree_validation_baseline.json",
-      "issues": [
-        "artifact missing"
-      ],
+      "issues": [],
       "name": "barnes_hut_validation_embree",
-      "native_query_median_sec": null,
+      "native_query_median_sec": 0.00486608303617686,
       "public_speedup_claim_authorized": false,
-      "status": "missing"
+      "status": "ok"
     },
     {
       "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
@@ -49,8 +47,8 @@
   ],
   "summary": {
     "blocked_count": 0,
-    "missing_count": 4,
-    "ok_count": 0,
+    "missing_count": 3,
+    "ok_count": 1,
     "public_speedup_claim_authorized_count": 0,
     "row_count": 4
   },

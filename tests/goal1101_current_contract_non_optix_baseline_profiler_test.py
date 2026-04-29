@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -48,6 +49,42 @@ class Goal1101CurrentContractNonOptixBaselineProfilerTest(unittest.TestCase):
         self.assertTrue(payload["scenario"]["result"]["matches_oracle"])
         self.assertFalse(payload["public_speedup_claim_authorized"])
         self.assertIn("does not authorize public RTX speedup claims", payload["boundary"])
+
+    def test_source_commit_prefers_git_head_over_stale_source_file(self) -> None:
+        module = __import__(
+            "scripts.goal1101_current_contract_non_optix_baseline_profiler",
+            fromlist=["run_profile"],
+        )
+        expected_head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+
+        payload = module.run_profile(
+            scenario="facility_service_coverage_recentered",
+            backend="cpu_oracle",
+            copies=1,
+            body_count=1,
+            iterations=1,
+            radius=1.0,
+            barnes_tree_depth=1,
+            hit_threshold=1,
+            skip_validation=False,
+        )
+
+        self.assertEqual(payload["source_commit"], expected_head)
+
+    def test_source_commit_falls_back_to_source_file_when_git_is_unavailable(self) -> None:
+        module = __import__(
+            "scripts.goal1101_current_contract_non_optix_baseline_profiler",
+            fromlist=["_source_commit"],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / ".rtdl_source_commit").write_text("archive-commit\n", encoding="utf-8")
+            completed = subprocess.CompletedProcess(args=["git"], returncode=1, stdout="", stderr="")
+            with mock.patch.dict(os.environ, {"RTDL_SOURCE_COMMIT": ""}, clear=False):
+                with mock.patch.object(module, "ROOT", root):
+                    with mock.patch.object(module.subprocess, "run", return_value=completed):
+                        self.assertEqual(module._source_commit(), "archive-commit")
 
     def test_embree_barnes_profile_uses_prepared_threshold_surface(self) -> None:
         module = __import__(

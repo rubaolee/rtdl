@@ -5,7 +5,7 @@ set -euo pipefail
 # Boundary: does not run OptiX, does not create cloud resources, and does not authorize speedup claims.
 
 export PYTHONPATH="${PYTHONPATH:-src:.}"
-export RTDL_SOURCE_COMMIT="${RTDL_SOURCE_COMMIT:-$(cat .rtdl_source_commit 2>/dev/null || git rev-parse HEAD 2>/dev/null || true)}"
+export RTDL_SOURCE_COMMIT="${RTDL_SOURCE_COMMIT:-$(git rev-parse HEAD 2>/dev/null || cat .rtdl_source_commit 2>/dev/null || true)}"
 
 if [ -z "${RTDL_SOURCE_COMMIT}" ]; then
   echo "RTDL_SOURCE_COMMIT is empty; refusing to collect claim-review baseline artifacts." >&2
