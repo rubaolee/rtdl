@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -78,7 +79,10 @@ def run_backend(
     if optix_graph_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError(f"unsupported optix_graph_mode: {optix_graph_mode}")
     _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_case(copies)
+    input_construction_sec = time.perf_counter() - input_start
+    query_start = time.perf_counter()
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(bfs_expand_kernel, **case)
     elif backend == "cpu":
@@ -101,6 +105,10 @@ def run_backend(
         rows = rt.run_vulkan(bfs_expand_kernel, **case)
     else:
         raise ValueError(f"unsupported backend: {backend}")
+    query_and_materialize_sec = time.perf_counter() - query_start
+    summary_start = time.perf_counter()
+    summary = _summarize(rows)
+    native_summary_postprocess_sec = time.perf_counter() - summary_start
 
     return {
         "app": "graph_bfs",
@@ -114,7 +122,12 @@ def run_backend(
         "visited_size": len(case["visited"]),
         "row_count": len(rows),
         "rows": rows if output_mode == "rows" else [],
-        "summary": _summarize(rows),
+        "summary": summary,
+        "run_phases": {
+            "input_construction_sec": input_construction_sec,
+            "query_and_materialize_sec": query_and_materialize_sec,
+            "native_summary_postprocess_sec": native_summary_postprocess_sec,
+        },
         "native_continuation_active": output_mode == "summary",
         "native_continuation_backend": "oracle_cpp" if output_mode == "summary" else None,
         "ray_tracing_accelerated": backend == "embree",

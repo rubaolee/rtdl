@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,9 +74,12 @@ def make_visibility_edge_case(copies: int = 1) -> dict[str, tuple[object, ...]]:
 
 
 def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[str, Any]:
+    input_start = time.perf_counter()
     case = make_visibility_edge_case(copies)
+    input_construction_sec = time.perf_counter() - input_start
     visibility_backend = "cpu" if backend == "cpu_python_reference" else backend
     if backend == "optix" and output_mode == "summary":
+        ray_pack_start = time.perf_counter()
         rays = tuple(
             rt.Ray2D(
                 id=ray_id,
@@ -87,23 +91,49 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
             )
             for ray_id, (observer, target) in enumerate(case["candidate_edges"])
         )
+        ray_pack_sec = time.perf_counter() - ray_pack_start
+        scene_prepare_start = time.perf_counter()
         with rt.prepare_optix_ray_triangle_any_hit_2d(case["blockers"]) as prepared_scene:
+            scene_prepare_sec = time.perf_counter() - scene_prepare_start
+            ray_prepare_start = time.perf_counter()
             with rt.prepare_optix_rays_2d(rays) as prepared_rays:
+                ray_prepare_sec = time.perf_counter() - ray_prepare_start
+                query_start = time.perf_counter()
                 blocked_count = int(prepared_scene.count(prepared_rays))
+                query_sec = time.perf_counter() - query_start
         rows = ()
+        postprocess_start = time.perf_counter()
         visible_count = len(case["candidate_edges"]) - blocked_count
         native_continuation_active = True
         native_continuation_backend = "optix_prepared_visibility_anyhit_count"
+        postprocess_sec = time.perf_counter() - postprocess_start
+        run_phases = {
+            "input_construction_sec": input_construction_sec,
+            "ray_pack_sec": ray_pack_sec,
+            "scene_prepare_sec": scene_prepare_sec,
+            "ray_prepare_sec": ray_prepare_sec,
+            "query_anyhit_count_sec": query_sec,
+            "summary_postprocess_sec": postprocess_sec,
+        }
     else:
+        query_start = time.perf_counter()
         rows = rt.visibility_pair_rows(
             case["candidate_edges"],
             case["blockers"],
             backend=visibility_backend,
         )
+        query_sec = time.perf_counter() - query_start
+        postprocess_start = time.perf_counter()
         visible_count = sum(1 for row in rows if int(row["visible"]) == 1)
         blocked_count = len(rows) - visible_count
         native_continuation_active = backend == "optix"
         native_continuation_backend = "optix_visibility_pair_rows" if backend == "optix" else "none"
+        postprocess_sec = time.perf_counter() - postprocess_start
+        run_phases = {
+            "input_construction_sec": input_construction_sec,
+            "query_visibility_pair_rows_sec": query_sec,
+            "summary_postprocess_sec": postprocess_sec,
+        }
     return {
         "app": "graph_visibility_edges",
         "backend": backend,
@@ -119,6 +149,7 @@ def _run_visibility_edges(backend: str, copies: int, output_mode: str) -> dict[s
             "visible_edge_count": visible_count,
             "blocked_edge_count": blocked_count,
         },
+        "run_phases": run_phases,
         "native_continuation_active": native_continuation_active,
         "native_continuation_backend": native_continuation_backend,
         "rt_core_accelerated": backend == "optix",
@@ -173,6 +204,10 @@ def run_app(
         for section in sections.values()
         if section.get("native_continuation_active")
     )
+    phase_totals: dict[str, float] = {}
+    for section in sections.values():
+        for name, value in section.get("run_phases", {}).items():
+            phase_totals[name] = phase_totals.get(name, 0.0) + float(value)
 
     return {
         "app": "graph_analytics",
@@ -203,6 +238,13 @@ def run_app(
             "+".join(native_continuation_backends)
             if native_continuation_backends
             else "none"
+        ),
+        "graph_phase_totals_sec": phase_totals,
+        "phase_contract": (
+            "Graph phase totals split fixture construction, ray packing or row "
+            "query/materialization, prepared any-hit count, and summary "
+            "postprocess where the public app can observe them. They are local "
+            "diagnostics, not public RTX speedup claims."
         ),
         "ray_tracing_accelerated": backend == "embree" or (
             backend == "optix" and scenario == "visibility_edges"
