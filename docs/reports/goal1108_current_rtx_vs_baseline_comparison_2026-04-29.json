@@ -1,0 +1,79 @@
+{
+  "boundary": "Goal1108 computes engineering comparison ratios between existing RTX artifacts and same-contract baselines. It does not authorize public RTX speedup claims because the current artifacts are cross-host, source commits differ, and public wording review remains required.",
+  "date": "2026-04-29",
+  "goal": "Goal1108 current RTX vs same-contract baseline comparison",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "baselines": [
+        {
+          "artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
+          "baseline": "cpu_oracle",
+          "engineering_ratio_baseline_over_rtx": 66.6139831245869,
+          "issues": [],
+          "native_query_median_sec": 8.996512651909143,
+          "source_commit": "cf22fb302bbd85afaa8ea6f9e2da26d278313635",
+          "status": "ok"
+        },
+        {
+          "artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
+          "baseline": "embree",
+          "engineering_ratio_baseline_over_rtx": 220.70200750290442,
+          "issues": [],
+          "native_query_median_sec": 29.806780943996273,
+          "source_commit": "cf22fb302bbd85afaa8ea6f9e2da26d278313635",
+          "status": "ok"
+        }
+      ],
+      "name": "facility_recentered_coverage_threshold_2_5m",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "public_claim_blockers": [
+        "cross_host_comparison_not_public_claim",
+        "public_wording_review_required",
+        "source_commit_mismatch_requires_rerun_for_public_claim"
+      ],
+      "public_speedup_claim_authorized": false,
+      "rtx_artifact": "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "rtx_issues": [],
+      "rtx_query_median_sec": 0.13505441695451736,
+      "rtx_source_commit": "58ca06f2573d53754663a2dd10a76207113ab044",
+      "rtx_status": "ok",
+      "rtx_validation_status": null
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "baselines": [
+        {
+          "artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
+          "baseline": "embree",
+          "engineering_ratio_baseline_over_rtx": 231.8188448812702,
+          "issues": [],
+          "native_query_median_sec": 53.46586970437784,
+          "source_commit": "a4a636d96c169362e5c6acea3df20582a3af8a71",
+          "status": "ok"
+        }
+      ],
+      "name": "barnes_hut_depth8_20m_node_coverage",
+      "path_name": "node_coverage_prepared_rich",
+      "public_claim_blockers": [
+        "cross_host_comparison_not_public_claim",
+        "public_wording_review_required",
+        "source_commit_mismatch_requires_rerun_for_public_claim"
+      ],
+      "public_speedup_claim_authorized": false,
+      "rtx_artifact": "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json",
+      "rtx_issues": [],
+      "rtx_query_median_sec": 0.23063642531633377,
+      "rtx_source_commit": "58ca06f2573d53754663a2dd10a76207113ab044",
+      "rtx_status": "ok",
+      "rtx_validation_status": "ok"
+    }
+  ],
+  "summary": {
+    "baseline_ok_count": 3,
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 2,
+    "rtx_ok_count": 2
+  },
+  "valid": true
+}
