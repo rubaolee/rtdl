@@ -1,0 +1,48 @@
+{
+  "boundary": "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path. Full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside the wording.",
+  "candidate_public_wording": "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+  "checks": {
+    "current_source_intake_ok": true,
+    "embree_chunked_baseline_ok": true,
+    "pose_counts_differ": true,
+    "same_obstacle_count": true,
+    "same_result_contract": true,
+    "separate_current_source_validation_ok": true,
+    "wording_explicitly_normalized": true
+  },
+  "current_goal1123_robot_decision": "keep_public_wording_blocked_pending_same_scale_baseline",
+  "date": "2026-04-29",
+  "decision_under_review": "accept_explicit_normalized_baseline_review",
+  "embree": {
+    "contract_mode": "split_validation_and_timing",
+    "native_anyhit_sum_sec": 92.24968472972978,
+    "obstacle_count": 4096,
+    "per_pose_sec": 2.562491242492494e-06,
+    "pose_count": 36000000
+  },
+  "goal": "Goal1126 robot normalized public RTX wording review",
+  "normalized_ratio_embree_per_pose_over_rtx_per_pose": 917.748263779144,
+  "public_speedup_claim_authorized": false,
+  "reviewer_questions": [
+    "Is the normalized per-pose comparison acceptable despite 64M RTX versus 36M Embree total pose counts?",
+    "Is the wording narrow enough to avoid same-total-work, whole-app, or robot-planning claims?",
+    "If accepted, should a follow-up update only robot_collision_screening in rtdsl.rtx_public_wording_matrix() and public docs?"
+  ],
+  "rtx": {
+    "matches_oracle": null,
+    "median_query_sec": 0.17869762983173132,
+    "obstacle_count": 4096,
+    "per_pose_sec": 2.792150466120802e-09,
+    "pose_count": 64000000,
+    "source_commit": "2ba7ae0",
+    "timing_validation_mode": "skip_validation_large_timing_repeat"
+  },
+  "sources": [
+    "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1121.json",
+    "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
+    "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+    "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json",
+    "docs/reports/goal1123_public_wording_review_after_goal1121_2026-04-29.json"
+  ],
+  "valid": true
+}
