@@ -3,9 +3,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import platform
+import socket
 import statistics
+import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
 
@@ -56,6 +61,36 @@ def _stats(samples: list[float]) -> dict[str, float]:
         "median_sec": statistics.median(samples),
         "max_sec": max(samples),
     }
+
+
+def _host() -> dict[str, str]:
+    return {
+        "hostname": socket.gethostname(),
+        "platform": platform.platform(),
+        "python": platform.python_version(),
+        "machine": platform.machine(),
+    }
+
+
+def _source_commit() -> str | None:
+    if os.environ.get("RTDL_SOURCE_COMMIT"):
+        return os.environ["RTDL_SOURCE_COMMIT"]
+    completed = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if completed.returncode == 0:
+        value = completed.stdout.strip()
+        return value or None
+    source_file = ROOT / ".rtdl_source_commit"
+    if source_file.exists():
+        value = source_file.read_text(encoding="utf-8").strip()
+        return value or None
+    return None
 
 
 def _pose_indices(
@@ -281,6 +316,9 @@ def run_suite(
         "schema_version": SCHEMA_VERSION,
         "cloud_claim_contract": _cloud_claim_contract(result_mode),
         "date": DATE,
+        "source_commit": _source_commit(),
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "host": _host(),
         "mode": mode,
         "input_mode": input_mode,
         "result_mode": result_mode,
