@@ -1,0 +1,161 @@
+{
+  "boundary": "Goal1133 is a local post-prep audit. It does not run cloud, tag, release, or authorize public RTX wording.",
+  "cloud_policy": "The next pod should be one consolidated RTX run for changed paths only. Do not start/stop pods per app. Do not use these local changes as public RTX speedup claims without real RTX artifacts, same-semantics baselines, and 2-AI review.",
+  "date": "2026-04-29",
+  "goal": "Goal1133 post-local-prep RTX app audit",
+  "rows": [
+    {
+      "app_states": [
+        {
+          "app": "database_analytics",
+          "maturity": "rt_core_ready",
+          "public_wording": "public_wording_not_reviewed",
+          "readiness": "ready_for_rtx_claim_review"
+        }
+      ],
+      "apps": [
+        "database_analytics"
+      ],
+      "closed_locally": true,
+      "cloud_next": "Rerun prepared DB compact-summary paths on RTX only as part of a consolidated pod batch.",
+      "goal": "Goal1128",
+      "local_change": "Embree compact-summary wrappers remove row materialization from local DB summary baselines.",
+      "missing_reports": [],
+      "missing_tests": [],
+      "reports": [
+        "docs/reports/goal1128_embree_db_compact_summary_optimization_2026-04-29.md",
+        "docs/reports/goal1128_two_ai_consensus_2026-04-29.md"
+      ],
+      "tests": [
+        "tests/goal1128_embree_db_compact_summary_contract_test.py"
+      ]
+    },
+    {
+      "app_states": [
+        {
+          "app": "graph_analytics",
+          "maturity": "rt_core_ready",
+          "public_wording": "public_wording_not_reviewed",
+          "readiness": "ready_for_rtx_claim_review"
+        }
+      ],
+      "apps": [
+        "graph_analytics"
+      ],
+      "closed_locally": true,
+      "cloud_next": "Rerun visibility-edge RTX path after phase split; do not claim BFS/triangle whole-app speedup.",
+      "goal": "Goal1129",
+      "local_change": "Graph app emits phase split for visibility query/materialization and postprocess stages.",
+      "missing_reports": [],
+      "missing_tests": [],
+      "reports": [
+        "docs/reports/goal1129_graph_phase_split_local_2026-04-29.md",
+        "docs/reports/goal1129_two_ai_consensus_2026-04-29.md"
+      ],
+      "tests": [
+        "tests/goal1129_graph_phase_split_contract_test.py"
+      ]
+    },
+    {
+      "app_states": [
+        {
+          "app": "road_hazard_screening",
+          "maturity": "rt_core_ready",
+          "public_wording": "public_wording_not_reviewed",
+          "readiness": "ready_for_rtx_claim_review"
+        }
+      ],
+      "apps": [
+        "road_hazard_screening"
+      ],
+      "closed_locally": true,
+      "cloud_next": "Collect real RTX summary timing; priority-segment id mode remains row-materializing.",
+      "goal": "Goal1130",
+      "local_change": "Native OptiX summary uses prepared threshold count instead of materializing hit-count rows.",
+      "missing_reports": [],
+      "missing_tests": [],
+      "reports": [
+        "docs/reports/goal1130_road_hazard_native_summary_count_path_2026-04-29.md",
+        "docs/reports/goal1130_two_ai_consensus_2026-04-29.md"
+      ],
+      "tests": [
+        "tests/goal1130_road_hazard_native_summary_count_test.py"
+      ]
+    },
+    {
+      "app_states": [
+        {
+          "app": "polygon_pair_overlap_area_rows",
+          "maturity": "rt_core_ready",
+          "public_wording": "public_wording_not_reviewed",
+          "readiness": "ready_for_rtx_claim_review"
+        },
+        {
+          "app": "polygon_set_jaccard",
+          "maturity": "rt_core_ready",
+          "public_wording": "public_wording_not_reviewed",
+          "readiness": "ready_for_rtx_claim_review"
+        }
+      ],
+      "apps": [
+        "polygon_pair_overlap_area_rows",
+        "polygon_set_jaccard"
+      ],
+      "closed_locally": true,
+      "cloud_next": "Measure OptiX LSI/PIP candidate discovery separately from exact CPU/native continuation.",
+      "goal": "Goal1131",
+      "local_change": "Polygon apps expose RT candidate discovery vs exact continuation phases; Jaccard adds summary output.",
+      "missing_reports": [],
+      "missing_tests": [],
+      "reports": [
+        "docs/reports/goal1131_polygon_app_phase_and_summary_contract_2026-04-29.md",
+        "docs/reports/goal1131_two_ai_consensus_2026-04-29.md"
+      ],
+      "tests": [
+        "tests/goal1131_polygon_app_phase_contract_test.py"
+      ]
+    },
+    {
+      "app_states": [
+        {
+          "app": "hausdorff_distance",
+          "maturity": "rt_core_ready",
+          "public_wording": "public_wording_not_reviewed",
+          "readiness": "ready_for_rtx_claim_review"
+        }
+      ],
+      "apps": [
+        "hausdorff_distance"
+      ],
+      "closed_locally": true,
+      "cloud_next": "Treat Hausdorff as capability/phase evidence unless a non-analytic speed baseline is designed.",
+      "goal": "Goal1132",
+      "local_change": "Hausdorff threshold and Embree directed-summary paths expose app-level phases.",
+      "missing_reports": [],
+      "missing_tests": [],
+      "reports": [
+        "docs/reports/goal1132_hausdorff_phase_contract_2026-04-29.md",
+        "docs/reports/goal1132_two_ai_consensus_2026-04-29.md"
+      ],
+      "tests": [
+        "tests/goal1132_hausdorff_phase_contract_test.py"
+      ]
+    }
+  ],
+  "summary": {
+    "all_goal_artifacts_present": true,
+    "goal_count": 5,
+    "public_wording_not_promoted": true,
+    "ready_for_review": true,
+    "tracked_app_count": 6
+  },
+  "tracked_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "hausdorff_distance",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "road_hazard_screening"
+  ],
+  "valid": true
+}
