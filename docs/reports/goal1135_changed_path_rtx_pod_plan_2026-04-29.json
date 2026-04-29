@@ -1,0 +1,159 @@
+{
+  "cloud_policy": "Run these entries in one pod session after building/installing the current source. Do not start/stop cloud per app. If one entry OOMs, lower only that entry's scale and continue the remaining entries.",
+  "date": "2026-04-29",
+  "entries": [
+    {
+      "apps": [
+        "database_analytics"
+      ],
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "all",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/database_analytics_compact_summary.json"
+      ],
+      "label": "database_analytics_compact_summary",
+      "reason": "Goal1128 changed compact-summary row-materialization behavior."
+    },
+    {
+      "apps": [
+        "graph_analytics"
+      ],
+      "command": [
+        "python3",
+        "scripts/goal889_graph_visibility_optix_gate.py",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "0",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/graph_visibility_edges_gate.json"
+      ],
+      "label": "graph_visibility_edges_gate",
+      "reason": "Goal1129 added graph phase splits; retest bounded graph RT sub-paths."
+    },
+    {
+      "apps": [
+        "road_hazard_screening"
+      ],
+      "command": [
+        "python3",
+        "scripts/goal888_road_hazard_native_optix_gate.py",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/road_hazard_native_summary_count.json"
+      ],
+      "label": "road_hazard_native_summary_count",
+      "reason": "Goal1130 changed native summary to use prepared threshold count."
+    },
+    {
+      "apps": [
+        "polygon_pair_overlap_area_rows"
+      ],
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "pair_overlap",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/polygon_pair_overlap_phase_gate.json"
+      ],
+      "label": "polygon_pair_overlap_phase_gate",
+      "reason": "Goal1131 exposed candidate-discovery vs exact-continuation phase split."
+    },
+    {
+      "apps": [
+        "polygon_set_jaccard"
+      ],
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "jaccard",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/polygon_set_jaccard_phase_gate.json"
+      ],
+      "label": "polygon_set_jaccard_phase_gate",
+      "reason": "Goal1131 added compact Jaccard summary and phase split."
+    },
+    {
+      "apps": [
+        "hausdorff_distance"
+      ],
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "hausdorff_threshold",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--radius",
+        "0.4",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/hausdorff_threshold_phase_gate.json"
+      ],
+      "label": "hausdorff_threshold_phase_gate",
+      "reason": "Goals1132-1134 clarified app/profiler phase contracts; collect capability-phase evidence only."
+    }
+  ],
+  "entry_count": 6,
+  "goal": "Goal1135 changed-path RTX pod plan",
+  "non_claim": "This plan collects changed-path RTX artifacts only. It does not authorize public RTX speedup wording, release, or broad whole-app acceleration claims.",
+  "report_dir": "docs/reports/goal1135_changed_path_rtx_pod",
+  "setup_commands": [
+    [
+      "mkdir",
+      "-p",
+      "docs/reports/goal1135_changed_path_rtx_pod"
+    ],
+    [
+      "export",
+      "PYTHONPATH=src:."
+    ]
+  ],
+  "valid": true
+}
