@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -42,6 +43,7 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
                 completed = subprocess.run(
                     command,
                     cwd=ROOT,
+                    env={**os.environ, "RTDL_SOURCE_COMMIT": "goal887-test-commit"},
                     check=True,
                     text=True,
                     stdout=subprocess.PIPE,
@@ -53,6 +55,7 @@ class Goal887PreparedDecisionPhaseProfilerTest(unittest.TestCase):
                 self.assertEqual(payload["schema_version"], "goal887_prepared_decision_phase_contract_v1")
                 self.assertEqual(payload["scenario"]["scenario"], scenario)
                 self.assertEqual(payload["scenario"]["mode"], "dry-run")
+                self.assertEqual(payload["source_commit"], "goal887-test-commit")
                 self.assertIn("cloud_claim_contract", payload)
                 self.assertIn("required_phase_groups", payload["cloud_claim_contract"])
                 self.assertIn("does not authorize an RTX speedup claim", payload["boundary"])

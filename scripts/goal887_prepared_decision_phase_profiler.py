@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import socket
 import statistics
+import subprocess
 import sys
 import time
 from datetime import datetime
@@ -93,6 +95,27 @@ def _host() -> dict[str, str]:
         "python": platform.python_version(),
         "machine": platform.machine(),
     }
+
+
+def _source_commit() -> str | None:
+    if os.environ.get("RTDL_SOURCE_COMMIT"):
+        return os.environ["RTDL_SOURCE_COMMIT"]
+    source_file = ROOT / ".rtdl_source_commit"
+    if source_file.exists():
+        value = source_file.read_text(encoding="utf-8").strip()
+        return value or None
+    completed = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if completed.returncode == 0:
+        value = completed.stdout.strip()
+        return value or None
+    return None
 
 
 def _pack(points: tuple[rt.Point, ...]) -> Any:
@@ -466,6 +489,7 @@ def run_profile(
         "date": DATE,
         "schema_version": SCHEMA_VERSION,
         "cloud_claim_contract": _cloud_claim_contract(scenario),
+        "source_commit": _source_commit(),
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "host": _host(),
         "scenario": scenario_payload,
