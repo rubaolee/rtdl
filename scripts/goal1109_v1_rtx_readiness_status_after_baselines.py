@@ -9,7 +9,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DATE = "2026-04-29"
-GOAL = "Goal1109 v1 RTX readiness status after baseline comparison"
+GOAL = "Goal1109 v1 RTX readiness status after Goal1121 current-source RTX intake"
 
 
 def build_status() -> dict[str, Any]:
@@ -17,25 +17,24 @@ def build_status() -> dict[str, Any]:
         {
             "app": "facility_knn_assignment",
             "path_name": "coverage_threshold_prepared_recentered",
-            "status": "engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review",
+            "status": "engineering_review_ready_needs_public_wording_review",
             "latest_evidence": [
-                "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+                "docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
                 "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
                 "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
-                "docs/reports/goal1108_current_rtx_vs_baseline_comparison_2026-04-29.json",
-                "docs/reports/goal1108_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+                "docs/reports/goal1121_two_ai_consensus_2026-04-29.md",
             ],
-            "engineering_ratio_summary": "66.61x vs CPU oracle; 220.70x vs Embree",
+            "engineering_ratio_summary": "87.24x vs CPU oracle; 289.05x vs Embree using query-phase medians",
             "next_action": (
-                "On next RTX pod, rerun the facility RTX artifact from the current source revision, "
-                "then perform public wording review before any README/front-page claim."
+                "Run a public wording review against the Goal1121 current-source artifact before any README/front-page claim."
             ),
             "public_speedup_claim_authorized": False,
         },
         {
             "app": "robot_collision_screening",
             "path_name": "prepared_pose_flags",
-            "status": "engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review",
+            "status": "engineering_review_ready_needs_public_wording_review",
             "latest_evidence": [
                 "docs/reports/goal1090_robot_embree_local_runbook_2026-04-29.json",
                 "docs/reports/goal1091_robot_pose_offset_smoke_intake_2026-04-29.json",
@@ -43,32 +42,36 @@ def build_status() -> dict[str, Any]:
                 "docs/reports/goal1085_robot_chunked_embree_baseline/timing_chunk_*.json",
                 "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json",
                 "docs/reports/goal1114_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
+                "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1121.json",
+                "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+                "docs/reports/goal1121_two_ai_consensus_2026-04-29.md",
             ],
             "engineering_ratio_summary": (
-                "Robot non-OptiX baseline complete: 36M poses, Embree native any-hit sum 92.25s; "
-                "ratio intentionally withheld until same-source RTX rerun"
+                "Robot same-source RTX evidence complete: 4096-pose correctness passed; 64M-pose timing crossed "
+                "the 100 ms floor at 0.178698s median query. Same-scale public ratio still requires wording review."
             ),
             "next_action": (
-                "On next RTX pod, rerun the Robot prepared pose-flags RTX timing from the current source "
-                "revision at a scale comparable to the 36M-pose Embree baseline, then perform public wording review."
+                "Run a public wording review that decides whether the 64M RTX timing can be compared to the 36M "
+                "chunked Embree native-any-hit baseline, and document any normalization limits."
             ),
             "public_speedup_claim_authorized": False,
         },
         {
             "app": "barnes_hut_force_app",
             "path_name": "node_coverage_prepared_rich",
-            "status": "engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review",
+            "status": "engineering_review_ready_needs_public_wording_review",
             "latest_evidence": [
-                "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json",
-                "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json",
+                "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json",
+                "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json",
                 "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
-                "docs/reports/goal1108_current_rtx_vs_baseline_comparison_2026-04-29.json",
-                "docs/reports/goal1108_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+                "docs/reports/goal1121_two_ai_consensus_2026-04-29.md",
             ],
-            "engineering_ratio_summary": "231.82x vs Embree",
+            "engineering_ratio_summary": "222.19x vs Embree using query-phase medians",
             "next_action": (
-                "On next RTX pod, rerun the Barnes-Hut validation and 20M timing artifacts from the current "
-                "source revision, then perform public wording review before any README/front-page claim."
+                "Run a public wording review against the Goal1121 current-source validation and 20M timing artifacts "
+                "before any README/front-page claim."
             ),
             "public_speedup_claim_authorized": False,
         },
@@ -76,7 +79,7 @@ def build_status() -> dict[str, Any]:
     summary = {
         "row_count": len(rows),
         "engineering_comparison_ready_count": sum(
-            row["status"].startswith("engineering_comparison_ready") for row in rows
+            row["status"].startswith("engineering_review_ready") for row in rows
         ),
         "non_cloud_ready_count": sum("ready_for_non_cloud" in row["status"] for row in rows),
         "blocked_count": sum("blocked" in row["status"] for row in rows),
@@ -94,21 +97,21 @@ def build_status() -> dict[str, Any]:
     return {
         "goal": GOAL,
         "date": DATE,
-        "supersedes": "docs/reports/goal1099_post_pod_readiness_status_refresh_2026-04-29.json",
+        "supersedes": "docs/reports/goal1109_v1_rtx_readiness_status_after_baselines_2026-04-29.json",
         "rows": rows,
         "summary": summary,
         "valid": valid,
         "boundary": (
-            "Goal1109 refreshes v1 RTX readiness after same-contract baseline comparison. It does not run cloud, "
+            "Goal1109 refreshes v1 RTX readiness after Goal1121 current-source RTX intake. It does not run cloud, "
             "does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. "
-            "Facility, Robot, and Barnes-Hut have engineering comparison evidence only; same-source RTX reruns and public wording review remain required."
+            "Facility, Robot, and Barnes-Hut have engineering review evidence only; public wording review remains required."
         ),
     }
 
 
 def to_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        "# Goal1109 V1 RTX Readiness Status After Baseline Comparison",
+        "# Goal1109 V1 RTX Readiness Status After Goal1121 Current-Source RTX Intake",
         "",
         f"Date: {payload['date']}",
         "",

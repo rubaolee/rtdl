@@ -18,18 +18,21 @@ Codex verified:
 - Mechanical artifact checks confirmed six copied pod JSON artifacts all use source commit `2ba7ae0`.
 - Mechanical packet checks confirmed the robot 64M packet row matches artifact fields: `pose_count=64000000`, `iterations=5`.
 
-## Second-AI Verdict
+## Claude/Gemini Verdict
 
-ACCEPT. The second-AI reviewer initially blocked a packet/artifact mismatch, then accepted after remediation. Both the initial block and final review are saved:
+ACCEPT. The internal second-AI reviewer initially blocked a packet/artifact mismatch, then accepted after remediation. That was useful but not sufficient under the clarified closure rule.
+
+Claude and Gemini then independently reviewed Goal1121 and Goal1122 and both returned ACCEPT. The qualifying external review files are:
 
 ```text
-docs/reports/goal1121_second_ai_review_initial_block_2026-04-29.md
-docs/reports/goal1121_second_ai_review_2026-04-29.md
+docs/reports/goal1122_claude_review_2026-04-29.md
+docs/reports/goal1122_gemini_review_2026-04-29.md
+docs/reports/goal1121_goal1122_claude_gemini_review_summary_2026-04-29.md
 ```
 
 ## Consensus
 
-Goal1121 is closed with 2-AI consensus.
+Goal1121 is closed with Codex + Claude 2-AI consensus, and also has Gemini confirmation. This satisfies the clarified rule that a 2-AI closure must include Claude or Gemini.
 
 The valid engineering artifact set is the Goal1121 packet variant with robot 64M timing. The original Goal1116/Goal1118 artifact set remains preserved and honestly shows why the planned robot 8M timing row was insufficient for the timing-floor gate.
 

@@ -1,12 +1,12 @@
-# Goal1109 V1 RTX Readiness Status After Baseline Comparison
+# Goal1109 V1 RTX Readiness Status After Goal1121 Current-Source RTX Intake
 
 Date: 2026-04-29
 
 Valid: `true`
 
-Supersedes: `docs/reports/goal1099_post_pod_readiness_status_refresh_2026-04-29.json`
+Supersedes: `docs/reports/goal1109_v1_rtx_readiness_status_after_baselines_2026-04-29.json`
 
-Goal1109 refreshes v1 RTX readiness after same-contract baseline comparison. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. Facility, Robot, and Barnes-Hut have engineering comparison evidence only; same-source RTX reruns and public wording review remain required.
+Goal1109 refreshes v1 RTX readiness after Goal1121 current-source RTX intake. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. Facility, Robot, and Barnes-Hut have engineering review evidence only; public wording review remains required.
 
 ## Summary
 
@@ -22,10 +22,10 @@ Goal1109 refreshes v1 RTX readiness after same-contract baseline comparison. It 
 
 | App | Path | Status | Engineering ratio summary | Next action | Claim authorized |
 | --- | --- | --- | --- | --- | --- |
-| `facility_knn_assignment` | `coverage_threshold_prepared_recentered` | `engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review` | 66.61x vs CPU oracle; 220.70x vs Embree | On next RTX pod, rerun the facility RTX artifact from the current source revision, then perform public wording review before any README/front-page claim. | `False` |
-| `robot_collision_screening` | `prepared_pose_flags` | `engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review` | Robot non-OptiX baseline complete: 36M poses, Embree native any-hit sum 92.25s; ratio intentionally withheld until same-source RTX rerun | On next RTX pod, rerun the Robot prepared pose-flags RTX timing from the current source revision at a scale comparable to the 36M-pose Embree baseline, then perform public wording review. | `False` |
-| `barnes_hut_force_app` | `node_coverage_prepared_rich` | `engineering_comparison_ready_needs_same_source_rtx_rerun_and_public_wording_review` | 231.82x vs Embree | On next RTX pod, rerun the Barnes-Hut validation and 20M timing artifacts from the current source revision, then perform public wording review before any README/front-page claim. | `False` |
+| `facility_knn_assignment` | `coverage_threshold_prepared_recentered` | `engineering_review_ready_needs_public_wording_review` | 87.24x vs CPU oracle; 289.05x vs Embree using query-phase medians | Run a public wording review against the Goal1121 current-source artifact before any README/front-page claim. | `False` |
+| `robot_collision_screening` | `prepared_pose_flags` | `engineering_review_ready_needs_public_wording_review` | Robot same-source RTX evidence complete: 4096-pose correctness passed; 64M-pose timing crossed the 100 ms floor at 0.178698s median query. Same-scale public ratio still requires wording review. | Run a public wording review that decides whether the 64M RTX timing can be compared to the 36M chunked Embree native-any-hit baseline, and document any normalization limits. | `False` |
+| `barnes_hut_force_app` | `node_coverage_prepared_rich` | `engineering_review_ready_needs_public_wording_review` | 222.19x vs Embree using query-phase medians | Run a public wording review against the Goal1121 current-source validation and 20M timing artifacts before any README/front-page claim. | `False` |
 
 ## Boundary
 
-Goal1109 refreshes v1 RTX readiness after same-contract baseline comparison. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. Facility, Robot, and Barnes-Hut have engineering comparison evidence only; same-source RTX reruns and public wording review remain required.
+Goal1109 refreshes v1 RTX readiness after Goal1121 current-source RTX intake. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. Facility, Robot, and Barnes-Hut have engineering review evidence only; public wording review remains required.
