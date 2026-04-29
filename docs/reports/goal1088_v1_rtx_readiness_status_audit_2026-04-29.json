@@ -1,0 +1,42 @@
+{
+  "boundary": "Goal1088 is a status audit only. It does not run cloud or local heavy baselines, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1088 v1 RTX readiness status audit",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "current_status": "pending_next_rtx_pod_validation",
+      "next_action": "Run Goal1084 via scripts/goal1084_facility_recentered_rtx_pod_packet_runner.sh on the next RTX pod without --skip-validation, then write intake/review.",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "public_speedup_claim_authorized": false,
+      "ready_artifact": "docs/reports/goal1084_facility_recentered_rtx_pod_packet_2026-04-29.json",
+      "reason": "Original global-coordinate facility 2.5M row is blocked by Goal1082; Goal1083/1084 provide the precision-safe replacement candidate."
+    },
+    {
+      "app": "robot_collision_screening",
+      "current_status": "pending_non_cloud_embree_baseline_execution",
+      "next_action": "Run the resumable Goal1085 chunked Embree baseline on a strong non-cloud host, then run Goal1086 intake.",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "ready_artifact": "docs/reports/goal1085_robot_chunked_embree_baseline_packet_2026-04-29.json",
+      "reason": "RTX timing/validation evidence exists, but Goal1080 blocked public wording because the non-OptiX baseline scale did not match."
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "current_status": "pending_contract_supersession",
+      "next_action": "Define and review a 20M validation/intake contract and decide how Python input/packing overhead belongs in the comparison boundary.",
+      "path_name": "node_coverage_prepared_rich",
+      "public_speedup_claim_authorized": false,
+      "ready_artifact": "docs/reports/goal1079_barnes_hut_rich_scale_up_probe/barnes_hut_rich_node_coverage_20m_timing.json",
+      "reason": "The reviewed Goal1076 1M row failed the timing floor; the 20M row is timing-only engineering evidence."
+    }
+  ],
+  "summary": {
+    "pending_contract_supersession_count": 1,
+    "pending_next_rtx_pod_validation_count": 1,
+    "pending_non_cloud_baseline_count": 1,
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 3
+  },
+  "valid": true
+}
