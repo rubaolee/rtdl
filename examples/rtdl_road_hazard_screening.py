@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,21 +114,46 @@ def run_case(
     if optix_mode not in {"auto", "host_indexed", "native"}:
         raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
     _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_demo_case(copies=copies)
-    if backend == "cpu_python_reference":
-        rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
-    elif backend == "cpu":
-        rows = rt.run_cpu(road_hazard_hitcount, **case)
-    elif backend == "embree":
-        rows = rt.run_embree(road_hazard_hitcount, **case)
-    elif backend == "optix":
-        with _temporary_optix_segpoly_mode(optix_mode):
-            rows = rt.run_optix(road_hazard_hitcount, **case)
-    elif backend == "vulkan":
-        rows = rt.run_vulkan(road_hazard_hitcount, **case)
+    input_construction_sec = time.perf_counter() - input_start
+    run_phases: dict[str, float] = {"input_construction_sec": input_construction_sec}
+    summary_materializes_rows = True
+    if backend == "optix" and optix_mode == "native" and output_mode == "summary":
+        prepare_start = time.perf_counter()
+        prepared = rt.prepare_optix_segment_polygon_hitcount_2d(case["hazards"])
+        run_phases["native_prepare_sec"] = time.perf_counter() - prepare_start
+        try:
+            query_start = time.perf_counter()
+            priority_segment_count = int(prepared.count_at_least(case["roads"], threshold=2))
+            run_phases["native_threshold_count_sec"] = time.perf_counter() - query_start
+        finally:
+            close_start = time.perf_counter()
+            prepared.close()
+            run_phases["native_close_sec"] = time.perf_counter() - close_start
+        rows = ()
+        hot_segments: list[object] = []
+        summary_materializes_rows = False
     else:
-        raise ValueError(f"unsupported backend `{backend}`")
-    hot_segments = [row["segment_id"] for row in rows if row["hit_count"] >= 2]
+        query_start = time.perf_counter()
+        if backend == "cpu_python_reference":
+            rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
+        elif backend == "cpu":
+            rows = rt.run_cpu(road_hazard_hitcount, **case)
+        elif backend == "embree":
+            rows = rt.run_embree(road_hazard_hitcount, **case)
+        elif backend == "optix":
+            with _temporary_optix_segpoly_mode(optix_mode):
+                rows = rt.run_optix(road_hazard_hitcount, **case)
+        elif backend == "vulkan":
+            rows = rt.run_vulkan(road_hazard_hitcount, **case)
+        else:
+            raise ValueError(f"unsupported backend `{backend}`")
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        summary_start = time.perf_counter()
+        hot_segments = [row["segment_id"] for row in rows if row["hit_count"] >= 2]
+        priority_segment_count = len(hot_segments)
+        run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
     native_continuation_backend = _native_continuation_backend(backend, optix_mode)
     payload: dict[str, object] = {
         "app": "road_hazard_screening",
@@ -137,7 +163,9 @@ def run_case(
         "optix_mode": optix_mode if backend == "optix" else "not_applicable",
         "row_count": len(rows),
         "priority_segments": hot_segments,
-        "priority_segment_count": len(hot_segments),
+        "priority_segment_count": priority_segment_count,
+        "summary_materializes_rows": summary_materializes_rows,
+        "run_phases": run_phases,
         "optix_performance": _optix_performance(),
         "native_continuation_active": native_continuation_backend != "none",
         "native_continuation_backend": native_continuation_backend,
@@ -145,7 +173,9 @@ def run_case(
         "boundary": (
             "Rows mode emits per-road hit-count rows. Compact priority_segments "
             "and summary modes omit rows from the app payload when only priority "
-            "road ids or counts are needed. OptiX app exposure is currently "
+            "road ids or counts are needed. Native OptiX summary mode returns a "
+            "count-only threshold summary and does not materialize segment ids. "
+            "OptiX app exposure is currently "
             "classified separately from RT-core performance; use optix_performance "
             "for the current classification."
         ),

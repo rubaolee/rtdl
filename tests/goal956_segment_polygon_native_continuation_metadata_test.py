@@ -32,6 +32,36 @@ class Goal956SegmentPolygonNativeContinuationMetadataTest(unittest.TestCase):
         self.assertFalse(payload["rt_core_accelerated"])
         self.assertEqual(payload["priority_segments"], [1])
 
+    def test_road_hazard_native_summary_uses_threshold_count_without_rows(self) -> None:
+        class FakePrepared:
+            def __init__(self) -> None:
+                self.closed = False
+
+            def count_at_least(self, roads, *, threshold):
+                self.road_count = len(roads)
+                self.threshold = threshold
+                return 2
+
+            def run(self, roads):
+                raise AssertionError("summary mode should not materialize hit-count rows")
+
+            def close(self):
+                self.closed = True
+
+        fake = FakePrepared()
+        with mock.patch.object(road.rt, "prepare_optix_segment_polygon_hitcount_2d", return_value=fake):
+            payload = road.run_case("optix", output_mode="summary", optix_mode="native")
+
+        self.assertTrue(payload["native_continuation_active"])
+        self.assertEqual(payload["native_continuation_backend"], "optix_native_hitcount_gated")
+        self.assertFalse(payload["summary_materializes_rows"])
+        self.assertEqual(payload["priority_segment_count"], 2)
+        self.assertEqual(payload["priority_segments"], [])
+        self.assertEqual(fake.threshold, 2)
+        self.assertEqual(fake.road_count, 3)
+        self.assertTrue(fake.closed)
+        self.assertIn("native_threshold_count_sec", payload["run_phases"])
+
     def test_anyhit_native_pair_rows_reports_rt_core_pair_row_path(self) -> None:
         with mock.patch.object(
             anyhit.rt,

@@ -26,6 +26,11 @@ DATE = "2026-04-24"
 
 
 def _canonical(payload: dict[str, object]) -> dict[str, object]:
+    if payload.get("output_mode") == "summary":
+        keep = {
+            "priority_segment_count",
+        }
+        return {key: payload[key] for key in sorted(keep) if key in payload}
     keep = {
         "row_count",
         "priority_segments",

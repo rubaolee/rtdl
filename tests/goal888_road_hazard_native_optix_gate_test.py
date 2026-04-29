@@ -26,12 +26,35 @@ class Goal888RoadHazardNativeOptixGateTest(unittest.TestCase):
     def test_strict_passes_when_native_matches_cpu_digest(self) -> None:
         from scripts import goal888_road_hazard_native_optix_gate as goal888
 
-        payload = {"row_count": 1, "priority_segments": [1], "priority_segment_count": 1}
+        payload = {"output_mode": "summary", "priority_segment_count": 1, "summary_materializes_rows": False}
         with mock.patch.object(goal888, "_run_cpu", return_value=payload):
             with mock.patch.object(goal888, "_run_optix_native", return_value=payload):
                 result = goal888.run_gate(copies=1, output_mode="summary", strict=True)
         self.assertEqual(result["status"], "pass")
         self.assertTrue(result["records"][1]["parity_vs_cpu_python_reference"])
+
+    def test_summary_digest_ignores_materialized_priority_ids(self) -> None:
+        from scripts import goal888_road_hazard_native_optix_gate as goal888
+
+        cpu = {
+            "output_mode": "summary",
+            "row_count": 3,
+            "priority_segments": [1, 3],
+            "priority_segment_count": 2,
+            "summary_materializes_rows": True,
+        }
+        native = {
+            "output_mode": "summary",
+            "row_count": 0,
+            "priority_segments": [],
+            "priority_segment_count": 2,
+            "summary_materializes_rows": False,
+        }
+
+        self.assertEqual(
+            goal888._canonical(cpu)["priority_segment_count"],
+            goal888._canonical(native)["priority_segment_count"],
+        )
 
     def test_cli_writes_non_strict_json(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:
