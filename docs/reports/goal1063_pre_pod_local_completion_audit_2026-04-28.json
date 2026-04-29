@@ -1,28 +1,9 @@
 {
-  "blocked_apps": [
-    "robot_collision_screening"
-  ],
+  "blocked_apps": [],
   "boundary": "Goal1063 is a local planning/audit artifact. It does not run a pod, change public wording, authorize release, or authorize speedup claims.",
   "date": "2026-04-28",
   "goal": "Goal1063 pre-pod local completion audit",
-  "goal1062_blocked_rows": [
-    {
-      "app": "robot_collision_screening",
-      "contains_skip_validation": false,
-      "output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_validation.json",
-      "path_name": "prepared_pose_flags",
-      "phase": "correctness_validation",
-      "timing_floor_sec": null
-    },
-    {
-      "app": "robot_collision_screening",
-      "contains_skip_validation": true,
-      "output_json": "docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_large_timing.json",
-      "path_name": "prepared_pose_flags",
-      "phase": "large_timing_repeat",
-      "timing_floor_sec": 0.1
-    }
-  ],
+  "goal1062_blocked_rows": [],
   "inputs": [
     "docs/reports/goal1060_post_goal1058_speedup_candidate_audit_2026-04-28.json",
     "docs/reports/goal1062_blocked_rtx_wording_rerun_manifest_2026-04-28.json",
@@ -37,7 +18,7 @@
     "road_hazard_screening"
   ],
   "pod_ready_now": true,
-  "pod_ready_scope": "Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.",
+  "pod_ready_scope": "No currently blocked public-wording rows remain after Goal1126. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.",
   "rejected_rows_requiring_local_work": [
     {
       "app": "database_analytics",
@@ -135,27 +116,19 @@
     "event_hotspot_screening",
     "facility_knn_assignment",
     "outlier_detection",
+    "robot_collision_screening",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "service_coverage_gaps"
   ],
   "summary": {
-    "blocked_public_wording_apps": 1,
-    "blocked_rows_ready_for_one_pod": 2,
+    "blocked_public_wording_apps": 0,
+    "blocked_rows_ready_for_one_pod": 0,
     "local_only_blockers_before_broader_pod": 8,
     "not_reviewed_public_wording_apps": 6,
     "rejected_current_speedup_rows": 8,
-    "reviewed_public_wording_apps": 9
+    "reviewed_public_wording_apps": 10
   },
-  "unreviewed_candidate_rows_requiring_goal1062_pod": [
-    {
-      "app": "robot_collision_screening",
-      "current_public_wording_status": "public_wording_blocked",
-      "path_name": "prepared_pose_flags",
-      "warnings": [
-        "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
-      ]
-    }
-  ],
+  "unreviewed_candidate_rows_requiring_goal1062_pod": [],
   "valid": true
 }

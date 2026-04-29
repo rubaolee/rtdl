@@ -98,12 +98,12 @@ GIS/routing behavior, unbounded pair-row output, exact Hausdorff distance, ANN
 ranking/index behavior, Barnes-Hut opening-rule/force reduction, and broad
 whole-app speedup remain outside the claim unless the support matrix and a
 later review explicitly authorize them.
-`robot_collision_screening / prepared_pose_flags` is currently
-`public_wording_blocked`: it is a real bounded RT-core path and Goal1121 cleared
-the 100 ms timing floor, but Goal1123 kept public ratio wording blocked until a
-same-scale or explicitly normalized baseline review is accepted. Goal1123 did
-accept narrow public wording for facility coverage-threshold and Barnes-Hut
-node-coverage prepared RTX query sub-paths.
+`robot_collision_screening / prepared_pose_flags` now has reviewed normalized
+per-pose RTX wording after Goal1126: it is a real bounded RT-core path, not a
+same-total-work wall-time claim and not a whole-app robot-planning claim.
+Goal1123 accepted narrow public wording for facility coverage-threshold and
+Barnes-Hut node-coverage prepared RTX query sub-paths; Goal1126 accepted the
+robot normalized per-pose wording.
 
 Current supported workload families:
 

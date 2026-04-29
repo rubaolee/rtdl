@@ -21,8 +21,8 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
         by_app = {row["app"]: row for row in payload["rows"]}
 
         self.assertTrue(payload["valid"])
-        self.assertEqual(payload["summary"]["unresolved_nvidia_public_wording_apps"], 7)
-        self.assertEqual(payload["summary"]["public_wording_blocked"], 1)
+        self.assertEqual(payload["summary"]["unresolved_nvidia_public_wording_apps"], 6)
+        self.assertEqual(payload["summary"]["public_wording_blocked"], 0)
         self.assertEqual(payload["summary"]["public_wording_not_reviewed"], 6)
         self.assertEqual(set(by_app), {
             "database_analytics",
@@ -31,7 +31,6 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
             "road_hazard_screening",
-            "robot_collision_screening",
         })
 
     def test_buckets_prevent_wasteful_pod_runs(self) -> None:
@@ -41,10 +40,6 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
         )
         by_app = {row["app"]: row for row in module.build_audit()["rows"]}
 
-        self.assertEqual(
-            by_app["robot_collision_screening"]["action_bucket"],
-            "needs_same_scale_or_normalized_baseline_review",
-        )
         self.assertEqual(
             by_app["hausdorff_distance"]["action_bucket"],
             "needs_larger_nontrivial_scale_contract",
@@ -84,7 +79,7 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("Goal1125 Unresolved RTX Public-Wording Prioritization", markdown)
-            self.assertIn("robot_collision_screening", markdown)
+            self.assertNotIn("robot_collision_screening", markdown)
             self.assertIn("local_optimization_first", markdown)
 
 

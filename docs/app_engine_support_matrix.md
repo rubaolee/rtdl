@@ -97,7 +97,7 @@ The machine-readable source of truth is `rtdsl.optix_app_performance_matrix()`.
 | `examples/rtdl_ann_candidate_app.py` | `optix_traversal_prepared_summary` | Default candidate reranking emits KNN rows and now uses native C++ continuation for compact row/query/rank summaries. The explicit `candidate_threshold_prepared` mode uses prepared OptiX fixed-radius scalar threshold-count traversal for candidate-coverage decisions only; ANN indexing, candidate construction, quality policy, ranking, and uncovered-query witness claims remain outside the OptiX claim. Goal991 keeps the public prepared app path off count-row materialization. |
 | `examples/rtdl_outlier_detection_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_count_threshold_prepared` plus `--output-mode density_count` uses prepared OptiX scalar threshold-count continuation and avoids neighbor rows and per-point density rows, with RTX 4090 phase evidence preserved in Goals 793 and 795. Use `density_summary` when per-point outlier labels are required. |
 | `examples/rtdl_dbscan_clustering_app.py` | `optix_traversal_prepared_summary` | Default row path uses fixed-radius rows through CUDA-style kernels; explicit `rt_core_flags_prepared` plus `--output-mode core_count` uses prepared OptiX scalar threshold-count continuation for core counts only. Use `core_flags` when per-point core labels are required; Python clustering expansion remains outside the native summary path. |
-| `examples/rtdl_robot_collision_screening_app.py` | `optix_traversal` | Uses OptiX ray/triangle any-hit traversal and remains a real RT-core path. Goal1121 cleared the 100 ms timing floor, but Goal1123 keeps public speedup wording blocked until a same-scale or explicitly normalized baseline review is accepted. Pre-Goal748 OptiX robot evidence is superseded because a short-ray `optixReportIntersection` bug was fixed; use post-fix artifacts only. Compact row-output modes avoid returning full witness rows, while prepared OptiX scalar hit-count and pose-flag modes report native continuation and avoid per-ray row materialization; edge witnesses still require row mode. |
+| `examples/rtdl_robot_collision_screening_app.py` | `optix_traversal` | Uses OptiX ray/triangle any-hit traversal and remains a real RT-core path. Goal1126 accepted normalized per-pose public wording for the prepared pose-count query sub-path: 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline. Pre-Goal748 OptiX robot evidence is superseded because a short-ray `optixReportIntersection` bug was fixed; use post-fix artifacts only. Compact row-output modes avoid returning full witness rows, while prepared OptiX scalar hit-count and pose-flag modes report native continuation and avoid per-ray row materialization; edge witnesses still require row mode. |
 | `examples/rtdl_barnes_hut_force_app.py` | `optix_traversal_prepared_summary` | Default candidate rows use fixed-radius candidate generation and native C++ continuation for compact candidate summaries. The explicit `node_coverage_prepared` mode uses prepared OptiX fixed-radius scalar threshold-count traversal for node-coverage decisions only. Goal990 keeps the public app path off count-row materialization; uncovered body IDs are not emitted in scalar mode unless all bodies are covered. Python opening-rule and force reduction remain outside the claim. |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `not_optix_exposed` | HIPRT-specific app; OptiX is not exposed by this public app CLI. |
 
@@ -157,7 +157,7 @@ materialization, validation, and post-processing.
 | `examples/rtdl_ann_candidate_app.py` | `ready_for_rtx_claim_review` | Goal887/Goal969 | prepared ANN candidate-coverage decision sub-path may enter claim review; no full ANN index or ranking speedup claim |
 | `examples/rtdl_outlier_detection_app.py` | `ready_for_rtx_claim_review` | Goal795/Goal992 | prepared fixed-radius scalar threshold-count sub-path may enter claim review; no per-point outlier-label or broad outlier-app speedup claim |
 | `examples/rtdl_dbscan_clustering_app.py` | `ready_for_rtx_claim_review` | Goal795/Goal992 | prepared fixed-radius scalar core-count sub-path may enter claim review; no per-point core-flag or full DBSCAN clustering acceleration claim |
-| `examples/rtdl_robot_collision_screening_app.py` | `blocked_for_public_speedup_wording` | Goal795/Goal1008/Goal1121/Goal1123 | real prepared ray/triangle any-hit scalar pose-count sub-path exists and timing floor is cleared, but public speedup wording remains blocked until same-scale or accepted normalized baseline review; no full robot-planning speedup claim |
+| `examples/rtdl_robot_collision_screening_app.py` | `ready_for_rtx_claim_review` | Goal795/Goal1008/Goal1121/Goal1123/Goal1126 | Goal1126 reviewed normalized per-pose public wording for the prepared ray/triangle any-hit scalar pose-count sub-path only; no same-total-work wall-time claim and no full robot-planning speedup claim |
 | `examples/rtdl_barnes_hut_force_app.py` | `ready_for_rtx_claim_review` | Goal887/Goal969/Goal990/Goal1121/Goal1123 | Goal1123 reviewed narrow public wording for prepared scalar Barnes-Hut node-coverage decision sub-path only; no uncovered-ID witness, force-vector, or opening-rule speedup claim |
 | `examples/rtdl_hiprt_ray_triangle_hitcount.py` | `exclude_from_rtx_app_benchmark` | none | HIPRT validation only, not NVIDIA OptiX |
 
@@ -165,10 +165,12 @@ Cloud benchmark policy after Goal1048/Goal1058: The consolidated RTX rerun is
 complete on an RTX A5000 from commit 0c79b64d1b71383080f2e8572612488796d1c16c,
 and Goal1058 added a tracked-only archive rerun from commit
 21fa036881bf9a0c806f69c15727d87b482ccfcf. Facility and robot diagnostic rows
-now have oracle-parity artifacts, but no new public speedup wording is
-authorized. Most Groups D-H are bounded prepared sub-path or native-assisted
-phase evidence, not whole-app speedup. Future pods should only be run after
-local analyzer/intake work is complete for new functionality.
+now have oracle-parity artifacts. Goal1126 additionally authorized normalized
+per-pose robot public wording for the prepared pose-count query sub-path only;
+it did not authorize same-total-work wall-time or whole-app speedup wording.
+Most Groups D-H are bounded prepared sub-path or native-assisted phase
+evidence, not whole-app speedup. Future pods should only be run after local
+analyzer/intake work is complete for new functionality.
 
 ## NVIDIA RTX Public Wording Status
 
@@ -185,14 +187,13 @@ claims.
 | `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
 | `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
 
-Current reviewed public wording rows after Goal1123: `9`. Goal1123 promoted
-only `facility_knn_assignment / coverage_threshold_prepared_recentered` and
+Current reviewed public wording rows after Goal1126: `10`. Goal1123 promoted
+`facility_knn_assignment / coverage_threshold_prepared_recentered` and
 `barnes_hut_force_app / node_coverage_prepared_rich` after current-source
-Goal1121 evidence and 3-AI review.
-`robot_collision_screening` remains `public_wording_blocked`: the prepared
-ray/triangle any-hit pose-flag path is a real RT-core path and Goal1121 cleared
-the 100 ms timing floor, but public speedup wording remains blocked until a
-same-scale or explicitly normalized baseline review is accepted.
+Goal1121 evidence and 3-AI review. Goal1126 promoted
+`robot_collision_screening / prepared_pose_flags` with explicitly normalized
+per-pose wording only; it is not a same-total-work wall-time claim and not a
+whole-app robot-planning claim.
 
 ## RT-Core App Maturity Contract
 
@@ -241,6 +242,6 @@ down.
 | `ann_candidate_search` | `rt_core_ready` | `rt_core_ready` | Use `candidate_threshold_prepared` as the only RT-core ANN claim path. Native C++ rerank-summary continuation is allowed as an app postprocess improvement, but KNN ranking, candidate construction, quality policy, uncovered-query witnesses, and full ANN indexing remain outside the RT-core claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `outlier_detection` | `rt_core_ready` | `rt_core_ready` | Keep `--output-mode density_count --optix-summary-mode rt_count_threshold_prepared` as the scalar RT-core claim path and prevent default rows or per-point labels from being presented as the claim. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
 | `dbscan_clustering` | `rt_core_ready` | `rt_core_ready` | Keep `--output-mode core_count --optix-summary-mode rt_core_flags_prepared` as the scalar RT-core claim path and split per-point core flags plus Python cluster expansion from native timing. | Goal1048 RTX A5000 run completed from commit 0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade for validated bounds only, not whole-app speedup. |
-| `robot_collision_screening` | `rt_core_ready` | `rt_core_ready` | Keep prepared ray/triangle any-hit scalar pose-count as a real RT-core path, but do not use it for public speedup wording until same-scale or accepted normalized baseline review exists. | Goal1121 robot timing crossed the 100 ms review floor, but Goal1123 kept public speedup wording blocked pending baseline normalization review. |
+| `robot_collision_screening` | `rt_core_ready` | `rt_core_ready` | Keep prepared ray/triangle any-hit scalar pose-count as a real RT-core path with reviewed normalized per-pose wording only; do not present it as same-total-work wall-time, full kinematics, witness-row, continuous collision, or whole robot-planning speedup. | Goal1126 accepted normalized per-pose public wording for the prepared pose-count query sub-path only. |
 | `barnes_hut_force_app` | `rt_core_ready` | `rt_core_ready` | Use `node_coverage_prepared` as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but uncovered-ID witnesses, opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim. | Goal1123 accepted narrow public wording for the prepared Barnes-Hut node-coverage RTX query sub-path only; force and opening-rule claims remain outside. |
 | `hiprt_ray_triangle_hitcount` | `not_nvidia_rt_core_target` | `not_nvidia_rt_core_target` | Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity. | Never include in NVIDIA OptiX cloud batches. |

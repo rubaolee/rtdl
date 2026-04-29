@@ -60,8 +60,9 @@ The machine-readable public wording source is
 [App Engine Support Matrix](app_engine_support_matrix.md) and
 [v1.0 RTX App Status](v1_0_rtx_app_status.md). In particular,
 `robot_collision_screening / prepared_pose_flags` is a real bounded RT-core
-path but remains blocked for public RTX speedup wording until the 100 ms
-evidence gate is cleared and reviewed.
+path with reviewed normalized per-pose wording only after Goal1126; it is not a
+same-total-work wall-time claim and not a whole-app robot-planning speedup
+claim.
 
 The original RTDL root spatial workloads are still first-class:
 [LSI](features/lsi/README.md) turns segment sets into segment-intersection

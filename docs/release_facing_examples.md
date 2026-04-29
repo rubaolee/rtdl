@@ -69,11 +69,10 @@ Hausdorff distance, Barnes-Hut force reduction/opening-rule evaluation, full
 DBSCAN expansion, graph-system behavior, and whole-app speedup remain outside
 the claim.
 
-`robot_collision_screening / prepared_pose_flags` remains excluded from public
-RTX speedup wording. Goal1121 cleared the 100 ms timing floor, but Goal1123
-kept public ratio wording blocked until a same-scale or explicitly normalized
-baseline review is accepted. Treat it as a real bounded RT-core path whose
-public wording is currently blocked, not as an authorized speedup claim.
+`robot_collision_screening / prepared_pose_flags` now has reviewed normalized
+per-pose RTX wording after Goal1126. Treat it as a real bounded RT-core
+pose-count query path, not as a same-total-work wall-time claim and not as a
+whole-app robot-planning speedup claim.
 
 If you want a guided learning order instead of a flat example list, start with:
 

@@ -14,6 +14,7 @@ REVIEWED_APPS = {
     "segment_polygon_anyhit_rows",
     "ann_candidate_search",
     "facility_knn_assignment",
+    "robot_collision_screening",
     "barnes_hut_force_app",
 }
 
@@ -34,7 +35,7 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
             if row.status == "public_wording_reviewed"
         }
         self.assertEqual(reviewed, REVIEWED_APPS)
-        self.assertEqual(len(reviewed), 9)
+        self.assertEqual(len(reviewed), 10)
 
     def test_reviewed_rows_are_bounded_to_named_subpaths(self) -> None:
         matrix = rt.rtx_public_wording_matrix()
@@ -44,30 +45,33 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
                 self.assertEqual(row.evidence, "Goal1061")
             elif app in {"facility_knn_assignment", "barnes_hut_force_app"}:
                 self.assertIn("Goal1121/Goal1123", row.evidence)
+            elif app == "robot_collision_screening":
+                self.assertIn("Goal1126", row.evidence)
             else:
                 self.assertIn("Goal1008/Goal1009", row.evidence)
             self.assertIn("sub-path", row.reviewed_wording)
             self.assertTrue(
                 "same-semantics baseline" in row.reviewed_wording
                 or "same-contract" in row.reviewed_wording
+                or "per-pose throughput" in row.reviewed_wording
             )
             self.assertNotIn("whole app", row.reviewed_wording.lower())
             self.assertNotIn("default mode", row.reviewed_wording.lower())
             self.assertNotIn("python-postprocess", row.reviewed_wording.lower())
             self.assertNotIn("broad rt-core", row.reviewed_wording.lower())
 
-    def test_robot_keeps_rt_core_ready_but_blocks_public_speedup_wording(self) -> None:
+    def test_robot_keeps_rt_core_ready_and_has_normalized_public_wording(self) -> None:
         readiness = rt.optix_app_benchmark_readiness("robot_collision_screening")
         maturity = rt.rt_core_app_maturity("robot_collision_screening")
         wording = rt.rtx_public_wording_status("robot_collision_screening")
 
         self.assertEqual(readiness.status, "ready_for_rtx_claim_review")
         self.assertEqual(maturity.current_status, "rt_core_ready")
-        self.assertEqual(wording.status, "public_wording_blocked")
-        self.assertEqual(wording.evidence, "Goal1121/Goal1123")
-        self.assertIn("real RT-core path", wording.boundary)
-        self.assertIn("timing-floor evidence", wording.boundary)
-        self.assertIn("same-scale", wording.boundary)
+        self.assertEqual(wording.status, "public_wording_reviewed")
+        self.assertEqual(wording.evidence, "Goal1121/Goal1123/Goal1126")
+        self.assertIn("917.75x per-pose", wording.reviewed_wording)
+        self.assertIn("normalized per-pose", wording.boundary)
+        self.assertIn("not a same-total-work wall-time claim", wording.boundary)
 
     def test_facility_and_barnes_hut_have_goal1123_reviewed_wording(self) -> None:
         wording = rt.rtx_public_wording_status("facility_knn_assignment")

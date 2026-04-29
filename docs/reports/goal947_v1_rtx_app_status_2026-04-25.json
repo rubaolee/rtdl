@@ -52,6 +52,12 @@
       "scope": "prepared ANN candidate-coverage decision sub-path only"
     },
     {
+      "app_path": "robot_collision_screening / prepared_pose_flags",
+      "ratio": "917.75x",
+      "rtx_phase_sec": "0.178698",
+      "scope": "prepared robot collision pose-count query sub-path only; normalized per-pose versus 36M chunked Embree"
+    },
+    {
       "app_path": "barnes_hut_force_app / node_coverage_prepared_rich",
       "ratio": "222.19x",
       "rtx_phase_sec": "0.240634",
@@ -454,7 +460,7 @@
       "app": "robot_collision_screening",
       "app_path": "examples/rtdl_robot_collision_screening_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count",
-      "cloud_action": "Goal1121 robot timing crossed the 100 ms review floor, but Goal1123 kept public speedup wording blocked until a same-scale or explicitly accepted normalized baseline review exists.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -467,10 +473,10 @@
       "native_continuation_contract": "native continuation only for prepared OptiX count or pose-flag summaries",
       "non_claim_boundary": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
       "performance_class": "optix_traversal",
-      "public_wording": "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-      "public_wording_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and now has timing-floor evidence, but public ratio wording remains blocked until a same-scale or explicitly normalized baseline review is accepted.",
-      "public_wording_evidence": "Goal1121/Goal1123",
-      "public_wording_status": "public_wording_blocked",
+      "public_wording": "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+      "public_wording_boundary": "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path; full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside this wording.",
+      "public_wording_evidence": "Goal1121/Goal1123/Goal1126",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared ray/triangle any-hit scalar pose-count traversal"
@@ -536,12 +542,12 @@
     "readiness": "rtdsl.optix_app_benchmark_readiness_matrix()"
   },
   "summary": {
-    "blocked_public_wording": 1,
+    "blocked_public_wording": 0,
     "broad_or_whole_app_public_speedup_claim_authorized": false,
     "not_nvidia_rt_core_target": 2,
     "public_app_count": 18,
     "public_speedup_claim_authorized": false,
     "ready_for_rtx_claim_review": 16,
-    "reviewed_public_wording": 9
+    "reviewed_public_wording": 10
   }
 }

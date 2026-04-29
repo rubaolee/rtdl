@@ -12,7 +12,7 @@
       "exists": true,
       "missing_phrases": [],
       "path": "README.md",
-      "required_phrase_count": 4,
+      "required_phrase_count": 5,
       "status": "ok"
     },
     {

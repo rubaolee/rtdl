@@ -138,18 +138,23 @@ def build_audit() -> dict[str, Any]:
         "not_reviewed_apps": not_reviewed,
         "pod_ready_now": pod_ready_now,
         "pod_ready_scope": (
-            "Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. "
+            "No currently blocked public-wording rows remain after Goal1126. "
             "Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale."
+            if not blocked
+            else (
+                "Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. "
+                "Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale."
+            )
         ),
         "goal1062_blocked_rows": blocked_rows,
         "rejected_rows_requiring_local_work": rejected_rows,
         "unreviewed_candidate_rows_requiring_goal1062_pod": stale_candidates,
         "valid": (
-            len(reviewed) == 9
-            and blocked == ["robot_collision_screening"]
+            len(reviewed) == 10
+            and blocked == []
             and len(not_reviewed) == 6
             and len(rejected_rows) == 8
-            and len(blocked_rows) == 2
+            and len(blocked_rows) == 0
             and pod_ready_now
             and all(row["pod_policy"].startswith("no_pod_until") for row in rejected_rows)
         ),

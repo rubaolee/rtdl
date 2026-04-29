@@ -8,16 +8,15 @@ Goal1125 is a prioritization audit only. It does not edit public wording, author
 
 ## Summary
 
-- unresolved_nvidia_public_wording_apps: `7`
-- public_wording_blocked: `1`
+- unresolved_nvidia_public_wording_apps: `6`
+- public_wording_blocked: `0`
 - public_wording_not_reviewed: `6`
 - local_optimization_first: `5`
-- needs_same_scale_or_normalized_baseline_review: `1`
+- needs_same_scale_or_normalized_baseline_review: `0`
 - needs_larger_nontrivial_scale_contract: `1`
 
 ## Recommended Order
 
-- `robot_collision_screening`
 - `database_analytics`
 - `graph_analytics`
 - `road_hazard_screening`
@@ -29,7 +28,6 @@ Goal1125 is a prioritization audit only. It does not edit public wording, author
 
 | App | Status | Bucket | Priority | Performance class | Pod policy | Next action |
 | --- | --- | --- | --- | --- | --- | --- |
-| `robot_collision_screening` | `public_wording_blocked` | `needs_same_scale_or_normalized_baseline_review` | `p0` | `optix_traversal` | `pod_after_baseline_review_decision` | Decide whether the 64M RTX versus 36M Embree normalized comparison is acceptable. If not, prepare a same-scale Embree/native baseline contract before the next pod. |
 | `database_analytics` | `public_wording_not_reviewed` | `local_optimization_first` | `p1` | `python_interface_dominated` | `no_pod_until_code_or_contract_changes` | Profile prepared DB compact-summary transfer and aggregation overhead; reduce Python row materialization before a broader RTX rerun. |
 | `graph_analytics` | `public_wording_not_reviewed` | `local_optimization_first` | `p1` | `optix_traversal` | `no_pod_until_phase_split_or_code_changes` | Split RT traversal timing from BFS/triangle bookkeeping and reduce host-side frontier or set-intersection overhead before retesting on RTX. |
 | `road_hazard_screening` | `public_wording_not_reviewed` | `local_optimization_first` | `p1` | `optix_traversal_prepared_summary` | `no_pod_until_code_or_batching_changes` | Root-cause segment/polygon batching and summary-return overhead; keep claim scope to the prepared compact summary gate. |
@@ -38,14 +36,6 @@ Goal1125 is a prioritization audit only. It does not edit public wording, author
 | `polygon_set_jaccard` | `public_wording_not_reviewed` | `local_optimization_first` | `p2` | `python_interface_dominated` | `no_pod_until_candidate_chunking_changes` | Fix Jaccard candidate discovery/chunking and document that exact set-area/Jaccard refinement remains CPU/Python-owned until a native reducer exists. |
 
 ## Evidence Notes
-
-### `robot_collision_screening`
-
-Goal1121 gives a real RT-core prepared pose-flag path above the timing floor, but Goal1123 intentionally blocked public wording until a same-scale or explicitly accepted normalized baseline review exists.
-
-Goal1060 candidate rows:
-
-- `prepared_pose_flags`: RTX `0.002990s`, fastest baseline `embree_anyhit_pose_count_or_equivalent_compact_summary` `0.581851s`, ratio baseline/RTX `194.588792`; warnings `['RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence.']`.
 
 ### `database_analytics`
 

@@ -82,7 +82,7 @@
       "path_names": [
         "coverage_threshold_prepared"
       ],
-      "public_wording": "public_wording_blocked",
+      "public_wording": "public_wording_reviewed",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -212,7 +212,7 @@
       "path_names": [
         "prepared_pose_flags"
       ],
-      "public_wording": "public_wording_blocked",
+      "public_wording": "public_wording_reviewed",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -225,7 +225,7 @@
       "path_names": [
         "node_coverage_prepared"
       ],
-      "public_wording": "public_wording_not_reviewed",
+      "public_wording": "public_wording_reviewed",
       "readiness": "ready_for_rtx_claim_review"
     },
     {
@@ -300,21 +300,20 @@
   },
   "missing_nvidia_targets": [],
   "public_app_count": 18,
-  "public_wording_blocked_apps": [
-    "facility_knn_assignment",
-    "robot_collision_screening"
-  ],
+  "public_wording_blocked_apps": [],
   "public_wording_counts": {
     "not_nvidia_public_wording_target": 2,
-    "public_wording_blocked": 2,
-    "public_wording_not_reviewed": 7,
-    "public_wording_reviewed": 7
+    "public_wording_not_reviewed": 6,
+    "public_wording_reviewed": 10
   },
   "public_wording_reviewed_apps": [
     "ann_candidate_search",
+    "barnes_hut_force_app",
     "dbscan_clustering",
     "event_hotspot_screening",
+    "facility_knn_assignment",
     "outlier_detection",
+    "robot_collision_screening",
     "segment_polygon_anyhit_rows",
     "segment_polygon_hitcount",
     "service_coverage_gaps"

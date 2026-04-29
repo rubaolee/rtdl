@@ -103,12 +103,17 @@ broad RT-core acceleration claim:
   `0.240634` s, `222.19x` faster than the reviewed same-contract Embree
   node-coverage baseline for the prepared Barnes-Hut node-coverage query
   sub-path
+- `robot_collision_screening / prepared_pose_flags`: RTX query phase
+  `0.178698` s for 64M poses, `917.75x` per-pose throughput versus the
+  reviewed 36M chunked Embree any-hit baseline for the prepared robot
+  collision pose-count query sub-path
 
-`robot_collision_screening / prepared_pose_flags` remains excluded from public
-RTX speedup wording. Goal1121 cleared the 100 ms timing floor with a 64M-pose
-RTX timing row and validated pose-flag oracle parity, but Goal1123 kept public
-ratio wording blocked until a same-scale or explicitly accepted normalized
-baseline review exists.
+`robot_collision_screening / prepared_pose_flags` now has reviewed normalized
+per-pose RTX wording after Goal1126. This is not a same-total-work wall-time
+claim and not a whole-app robot-planning claim; full robot kinematics, scene
+construction, ray packing, witness-row output, continuous collision detection,
+Python input construction, and whole-app planning speedup remain outside the
+wording.
 
 Still outside public RTX claim review today: SQL/DBMS behavior, default
 row-materializing DB output, full road-hazard/GIS routing, unbounded
@@ -122,9 +127,10 @@ newer large-repeat and wording-review trail is in
 `docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md`,
 `docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md`, and
 `docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md`. The
-current-source Goal1121/Goal1123 wording trail is in
+current-source Goal1121/Goal1123/Goal1126 wording trail is in
 `docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md` and
-`docs/reports/goal1123_two_ai_consensus_2026-04-29.md`.
+`docs/reports/goal1123_two_ai_consensus_2026-04-29.md` and
+`docs/reports/goal1126_three_ai_consensus_2026-04-29.md`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute

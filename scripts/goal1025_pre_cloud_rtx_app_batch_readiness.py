@@ -108,12 +108,9 @@ def build_audit() -> dict[str, Any]:
         and readiness_counts["exclude_from_rtx_app_benchmark"] == 2
         and maturity_counts["rt_core_ready"] == 16
         and maturity_counts["not_nvidia_rt_core_target"] == 2
-        and public_wording_counts["public_wording_reviewed"] == 7
-        and public_wording_counts["public_wording_blocked"] == 2
-        and public_wording_blocked == [
-            "facility_knn_assignment",
-            "robot_collision_screening",
-        ]
+        and public_wording_counts["public_wording_reviewed"] == 10
+        and public_wording_counts["public_wording_blocked"] == 0
+        and public_wording_blocked == []
         and not missing_nvidia_targets
         and not unexpected_non_nvidia_targets
         and has_rtx_hardware_precondition

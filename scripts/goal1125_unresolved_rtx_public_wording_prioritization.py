@@ -27,20 +27,6 @@ NEEDS_SCALE_CONTRACT = "needs_larger_nontrivial_scale_contract"
 
 
 APP_PLANS: dict[str, dict[str, str]] = {
-    "robot_collision_screening": {
-        "action_bucket": NEEDS_BASELINE_REVIEW,
-        "priority": "p0",
-        "why": (
-            "Goal1121 gives a real RT-core prepared pose-flag path above the timing floor, "
-            "but Goal1123 intentionally blocked public wording until a same-scale or explicitly "
-            "accepted normalized baseline review exists."
-        ),
-        "next_local_action": (
-            "Decide whether the 64M RTX versus 36M Embree normalized comparison is acceptable. "
-            "If not, prepare a same-scale Embree/native baseline contract before the next pod."
-        ),
-        "pod_policy": "pod_after_baseline_review_decision",
-    },
     "database_analytics": {
         "action_bucket": LOCAL_OPTIMIZATION_FIRST,
         "priority": "p1",
@@ -219,7 +205,6 @@ def build_audit() -> dict[str, Any]:
         },
         "rows": rows,
         "recommended_order": [
-            "robot_collision_screening",
             "database_analytics",
             "graph_analytics",
             "road_hazard_screening",
@@ -228,10 +213,10 @@ def build_audit() -> dict[str, Any]:
             "polygon_set_jaccard",
         ],
         "valid": (
-            len(rows) == 7
+            len(rows) == 6
             and {row["app"] for row in rows} == set(APP_PLANS)
             and bucket_counts.get(LOCAL_OPTIMIZATION_FIRST, 0) == 5
-            and bucket_counts.get(NEEDS_BASELINE_REVIEW, 0) == 1
+            and bucket_counts.get(NEEDS_BASELINE_REVIEW, 0) == 0
             and bucket_counts.get(NEEDS_SCALE_CONTRACT, 0) == 1
             and all(row["rt_core_status"] == "rt_core_ready" for row in rows)
             and all(row["readiness_status"] == "ready_for_rtx_claim_review" for row in rows)

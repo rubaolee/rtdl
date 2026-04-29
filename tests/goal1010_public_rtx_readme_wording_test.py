@@ -26,16 +26,18 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("ann_candidate_search / candidate_threshold_prepared", text)
         self.assertIn("facility_knn_assignment / coverage_threshold_prepared_recentered", text)
         self.assertIn("barnes_hut_force_app / node_coverage_prepared_rich", text)
+        self.assertIn("robot_collision_screening / prepared_pose_flags", text)
+        self.assertIn("917.75x` per-pose throughput", text)
         self.assertIn("Goal1123", text)
 
-    def test_robot_remains_excluded_from_public_speedup_wording(self) -> None:
+    def test_robot_has_normalized_public_speedup_wording(self) -> None:
         text = README.read_text(encoding="utf-8")
+        compact = " ".join(text.split())
         self.assertIn("robot_collision_screening / prepared_pose_flags", text)
-        self.assertIn("remains excluded from public", text)
-        self.assertIn("RTX speedup wording", text)
-        self.assertIn("cleared the 100 ms timing floor", text)
-        self.assertIn("validated pose-flag oracle parity", text)
-        self.assertIn("same-scale or explicitly accepted normalized", text)
+        self.assertIn("reviewed normalized", text)
+        self.assertIn("not a same-total-work wall-time claim", compact)
+        self.assertIn("not a whole-app robot-planning claim", text)
+        self.assertIn("witness-row output", text)
 
     def test_artifact_trail_points_to_goal1008_and_goal1009(self) -> None:
         text = README.read_text(encoding="utf-8")
@@ -44,23 +46,24 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md", text)
         self.assertIn("docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md", text)
         self.assertIn("docs/reports/goal1123_two_ai_consensus_2026-04-29.md", text)
+        self.assertIn("docs/reports/goal1126_three_ai_consensus_2026-04-29.md", text)
 
     def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
         v1 = V1_STATUS.read_text(encoding="utf-8")
         matrix = APP_MATRIX.read_text(encoding="utf-8")
-        self.assertIn("reviewed public RTX sub-path wording rows: `9`", v1)
+        self.assertIn("reviewed public RTX sub-path wording rows: `10`", v1)
         self.assertIn("robot_collision_screening / prepared_pose_flags", v1)
-        self.assertIn("blocked_for_public_speedup_wording", v1)
+        self.assertIn("917.75x", v1)
         self.assertIn("facility_knn_assignment / coverage_threshold_prepared_recentered", v1)
         self.assertIn("barnes_hut_force_app / node_coverage_prepared_rich", v1)
-        self.assertIn("Goal1123 accepted narrow public wording", v1)
-        self.assertIn("same-scale or explicitly normalized", v1)
-        self.assertIn("blocked_for_public_speedup_wording", matrix)
-        self.assertIn("Goal1123 keeps public speedup wording blocked", matrix)
+        self.assertIn("Goal1126 accepted normalized per-pose public wording", v1)
+        self.assertIn("normalized per-pose", v1)
+        self.assertIn("Goal1126 reviewed normalized per-pose public wording", matrix)
+        self.assertIn("Goal1126 accepted normalized per-pose public wording", matrix)
         self.assertIn("Goal1123 reviewed narrow public wording", matrix)
         self.assertIn("rtdsl.rtx_public_wording_matrix()", v1)
         self.assertIn("rtdsl.rtx_public_wording_matrix()", matrix)
-        self.assertIn("public_wording_blocked", matrix)
+        self.assertIn("public_wording_reviewed", matrix)
 
 
 if __name__ == "__main__":

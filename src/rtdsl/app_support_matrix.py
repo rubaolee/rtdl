@@ -901,10 +901,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "robot_collision_screening": _public_wording(
         "robot_collision_screening",
-        PUBLIC_WORDING_BLOCKED,
-        "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-        "Goal1121/Goal1123",
-        "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and now has timing-floor evidence, but public ratio wording remains blocked until a same-scale or explicitly normalized baseline review is accepted.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+        "Goal1121/Goal1123/Goal1126",
+        "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path; full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside this wording.",
     ),
     "barnes_hut_force_app": _public_wording(
         "barnes_hut_force_app",

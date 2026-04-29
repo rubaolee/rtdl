@@ -42,9 +42,11 @@ repository review work. Read it regularly after context compaction.
 - `v0.9.6` is released.
 - Current post-release RTX app work is not a new release authorization.
 - `robot_collision_screening / prepared_pose_flags` is a real bounded
-  RT-core path. Goal1121 cleared the 100 ms timing floor, but Goal1123 kept
-  public RTX speedup wording blocked until a same-scale or explicitly accepted
-  normalized baseline review exists.
+  RT-core path. Goal1126 accepted normalized per-pose public wording only:
+  it is not a same-total-work wall-time claim, not a whole-app robot-planning
+  speedup claim, and excludes full kinematics, scene construction, ray packing,
+  witness rows, continuous collision detection, Python input construction, and
+  whole-app planning speedup.
 - Goal1123 accepted narrow public wording for
   `facility_knn_assignment / coverage_threshold_prepared_recentered` and
   `barnes_hut_force_app / node_coverage_prepared_rich` only.

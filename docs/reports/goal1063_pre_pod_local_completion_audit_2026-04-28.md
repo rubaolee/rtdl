@@ -8,23 +8,21 @@ Goal1063 is a local planning/audit artifact. It does not run a pod, change publi
 
 ## Summary
 
-- reviewed_public_wording_apps: `9`
-- blocked_public_wording_apps: `1`
+- reviewed_public_wording_apps: `10`
+- blocked_public_wording_apps: `0`
 - not_reviewed_public_wording_apps: `6`
 - rejected_current_speedup_rows: `8`
-- blocked_rows_ready_for_one_pod: `2`
+- blocked_rows_ready_for_one_pod: `0`
 - local_only_blockers_before_broader_pod: `8`
 
 ## Pod-Ready Scope
 
-Only currently blocked Goal1062 validation plus large timing repeats are pod-ready now. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.
+No currently blocked public-wording rows remain after Goal1126. Do not rerun rejected not-reviewed rows on paid cloud until their listed local work changes code or scale.
 
 ### Goal1062 Rows
 
 | App | Path | Phase | Skip validation | Timing floor |
 | --- | --- | --- | --- | ---: |
-| `robot_collision_screening` | `prepared_pose_flags` | `correctness_validation` | `False` | `` |
-| `robot_collision_screening` | `prepared_pose_flags` | `large_timing_repeat` | `True` | `0.100` |
 
 ## Rejected Rows Requiring Local Work Before Broader Pod Use
 

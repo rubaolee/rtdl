@@ -1,9 +1,6 @@
 {
-  "blocked_public_wording_apps": [
-    "facility_knn_assignment",
-    "robot_collision_screening"
-  ],
-  "blocked_public_wording_count": 2,
+  "blocked_public_wording_apps": [],
+  "blocked_public_wording_count": 0,
   "boundary": "This package is a current claim-review index. It does not run benchmarks, does not start cloud resources, does not promote held apps, and does not authorize public speedup claims.",
   "date": "2026-04-25",
   "forbidden_wording": [
@@ -55,13 +52,16 @@
   "reviewed_public_wording_apps": [
     "service_coverage_gaps",
     "event_hotspot_screening",
+    "facility_knn_assignment",
     "segment_polygon_hitcount",
     "segment_polygon_anyhit_rows",
     "ann_candidate_search",
     "outlier_detection",
-    "dbscan_clustering"
+    "dbscan_clustering",
+    "robot_collision_screening",
+    "barnes_hut_force_app"
   ],
-  "reviewed_public_wording_count": 7,
+  "reviewed_public_wording_count": 10,
   "rows": [
     {
       "allowed_claim": "prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim",
@@ -135,15 +135,15 @@
       "allowed_claim": "bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim",
       "app": "facility_knn_assignment",
       "benchmark_contract": "coverage_threshold_prepared decision mode has an RTX phase artifact and same-scale CPU oracle parity for the bounded service-coverage decision",
-      "cloud_policy": "Goal1058 RTX A5000 diagnostic rerun validated facility coverage with oracle parity. Public speedup wording remains blocked until a separate baseline/timing wording review authorizes a bounded sub-path claim.",
+      "cloud_policy": "Goal1123 accepted narrow public wording for the prepared facility coverage-threshold RTX query sub-path only. Ranked KNN assignment, fallback assignment, Python setup, and whole-app speedup remain outside the claim.",
       "native_continuation_required": true,
       "next_goal_or_evidence": "Goal887/Goal920/Goal1058",
       "non_claim_or_blocker": "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "No public RTX speedup wording is authorized for facility_knn_assignment after Goal1058.",
-      "public_wording_boundary": "The prepared service-coverage decision sub-path is a real RT-core path and Goal1058 validated oracle parity, but no bounded public speedup wording is authorized until a separate timing/baseline review accepts it.",
-      "public_wording_evidence": "Goal1058",
-      "public_wording_status": "public_wording_blocked",
+      "public_wording": "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.103119 s and 87.24x versus the reviewed same-contract CPU oracle baseline.",
+      "public_wording_boundary": "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup are outside this wording.",
+      "public_wording_evidence": "Goal1121/Goal1123",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "required_action": "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
       "rt_core_status": "rt_core_ready"
@@ -305,15 +305,15 @@
       "allowed_claim": "prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim",
       "app": "robot_collision_screening",
       "benchmark_contract": "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
-      "cloud_policy": "Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with oracle parity. Public speedup wording remains blocked because the claim-review path still needs timing-floor/baseline review.",
+      "cloud_policy": "Goal1121 robot timing crossed the 100 ms review floor, but Goal1123 kept public speedup wording blocked until a same-scale or explicitly accepted normalized baseline review exists.",
       "native_continuation_required": true,
       "next_goal_or_evidence": "Goal795/Goal1058",
       "non_claim_or_blocker": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
       "performance_class": "optix_traversal",
-      "public_wording": "No public RTX speedup wording is authorized for robot_collision_screening yet.",
-      "public_wording_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and Goal1058 validated oracle parity, but public speedup wording remains blocked until 100 ms timing-floor and baseline evidence are reviewed.",
-      "public_wording_evidence": "Goal1058",
-      "public_wording_status": "public_wording_blocked",
+      "public_wording": "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+      "public_wording_boundary": "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path; full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside this wording.",
+      "public_wording_evidence": "Goal1121/Goal1123/Goal1126",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "required_action": "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
       "rt_core_status": "rt_core_ready"
@@ -327,10 +327,10 @@
       "next_goal_or_evidence": "Goal887/Goal941",
       "non_claim_or_blocker": "Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Prepared Barnes-Hut node-coverage traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal887/Goal941",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording": "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.240634 s and 222.19x versus the reviewed same-contract Embree node-coverage baseline.",
+      "public_wording_boundary": "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup are outside this wording.",
+      "public_wording_evidence": "Goal1121/Goal1123",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "required_action": "Use node_coverage_prepared as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim.",
       "rt_core_status": "rt_core_ready"

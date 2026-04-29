@@ -11,7 +11,6 @@
     "rtdsl.rt_core_app_maturity_matrix()"
   ],
   "recommended_order": [
-    "robot_collision_screening",
     "database_analytics",
     "graph_analytics",
     "road_hazard_screening",
@@ -177,42 +176,15 @@
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "why": "The prepared road-hazard RTX summary is far slower than the same-semantics Embree summary in Goal1060."
-    },
-    {
-      "action_bucket": "needs_same_scale_or_normalized_baseline_review",
-      "allowed_claim": "prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim",
-      "app": "robot_collision_screening",
-      "current_boundary": "The prepared ray/triangle any-hit pose-flag path is a real RT-core path and now has timing-floor evidence, but public ratio wording remains blocked until a same-scale or explicitly normalized baseline review is accepted.",
-      "goal1060_candidate_rows": [
-        {
-          "fastest_baseline": "embree_anyhit_pose_count_or_equivalent_compact_summary",
-          "fastest_baseline_sec": 0.5818509249947965,
-          "path_name": "prepared_pose_flags",
-          "ratio_baseline_over_rtx": 194.5887922904229,
-          "rtx_phase_sec": 0.002990156412124634,
-          "warnings": [
-            "RTX phase is shorter than 10 ms; public wording needs larger-scale repeat evidence."
-          ]
-        }
-      ],
-      "goal1060_rejected_rows": [],
-      "next_local_action": "Decide whether the 64M RTX versus 36M Embree normalized comparison is acceptable. If not, prepare a same-scale Embree/native baseline contract before the next pod.",
-      "performance_class": "optix_traversal",
-      "pod_policy": "pod_after_baseline_review_decision",
-      "priority": "p0",
-      "public_wording_status": "public_wording_blocked",
-      "readiness_status": "ready_for_rtx_claim_review",
-      "rt_core_status": "rt_core_ready",
-      "why": "Goal1121 gives a real RT-core prepared pose-flag path above the timing floor, but Goal1123 intentionally blocked public wording until a same-scale or explicitly accepted normalized baseline review exists."
     }
   ],
   "summary": {
     "local_optimization_first": 5,
     "needs_larger_nontrivial_scale_contract": 1,
-    "needs_same_scale_or_normalized_baseline_review": 1,
-    "public_wording_blocked": 1,
+    "needs_same_scale_or_normalized_baseline_review": 0,
+    "public_wording_blocked": 0,
     "public_wording_not_reviewed": 6,
-    "unresolved_nvidia_public_wording_apps": 7
+    "unresolved_nvidia_public_wording_apps": 6
   },
   "valid": true
 }

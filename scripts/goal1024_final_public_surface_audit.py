@@ -32,7 +32,8 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "current released version is `v0.9.6`",
         "not automatic public speedup claims",
         "robot_collision_screening / prepared_pose_flags",
-        "Goal1121 cleared the 100 ms timing floor",
+        "Goal1126",
+        "not a same-total-work wall-time",
     ),
     "docs/README.md": (
         "current released version is `v0.9.6`",
@@ -46,7 +47,7 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "docs/application_catalog.md": (
         "is not by itself a NVIDIA RT-core claim",
         "rtdsl.rtx_public_wording_matrix()",
-        "remains blocked for public RTX speedup wording",
+        "reviewed normalized per-pose wording only",
     ),
     "docs/app_engine_support_matrix.md": (
         "The machine-readable source of truth is `rtdsl.rtx_public_wording_matrix()`",
@@ -56,16 +57,16 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "docs/release_facing_examples.md": (
         "`--backend optix` is a backend-selection flag, not an automatic NVIDIA RT-core",
         "These commands are bounded sub-paths, not broad speedup claims",
-        "100 ms",
+        "same-total-work wall-time claim",
     ),
     "docs/rtdl_feature_guide.md": (
         "`--backend optix` is not enough for a public",
         "rtdsl.rtx_public_wording_matrix()",
-        "Goal1121 cleared",
+        "Goal1126 accepted",
     ),
     "docs/v1_0_rtx_app_status.md": (
         "not release authorization and not a public speedup claim",
-        "blocked_for_public_speedup_wording",
+        "Goal1126 accepted normalized per-pose public wording for robot",
         "rtdsl.rtx_public_wording_matrix()",
     ),
     "history/COMPLETE_HISTORY.md": (
