@@ -132,4 +132,3 @@ The timing result is near parity rather than a clear speedup at these scales on 
 No public performance-classification change should be made from this report alone.
 
 Outlier detection and DBSCAN remain classified as `cuda_through_optix` at the app level until a future RTX-class benchmark proves that the new summary path is faster under phase-split measurement. The next required performance gate should use RTX/Ampere/Ada hardware and report build, BVH construction, launch/traversal, output copy, and Python postprocess separately.
-

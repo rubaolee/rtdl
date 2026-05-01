@@ -12,7 +12,7 @@ The duplicate-point guard implemented for Goal 286 is technically coherent, the 
 ## Risks
 
 * **Strict Float Equality**: The guard relies on exact floating-point equality `(query_point.x == search_point.x, etc.)`. If the point packages are generated or transformed using different parsing pipelines or precisions before this guard is hit, near-duplicates due to floating-point drift might slip past the guard. However, for "exact" duplicate prevention as stated in the requirements, this approach is completely appropriate.
-* **Coarse Rejection**: The comparison path rejects the entire package if even a single duplicate pair is found. If real-world (e.g., Kitti) datasets naturally feature high rates of exact cross-package overlaps, this strict guard might drastically shrink the pool of eligible packages for live execution. 
+* **Coarse Rejection**: The comparison path rejects the entire package if even a single duplicate pair is found. If real-world (e.g., Kitti) datasets naturally feature high rates of exact cross-package overlaps, this strict guard might drastically shrink the pool of eligible packages for live execution.
 
 ## Conclusion
 

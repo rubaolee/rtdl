@@ -35,4 +35,3 @@ re-review: these callback variables are declared `thread_local` in
 `src/native/embree/rtdl_embree_scene.cpp`, and the point-query state used by
 the parallel fixed-radius/KNN path is passed through Embree `args->userPtr`.
 A Gemini re-review is requested after this evidence is documented explicitly.
-

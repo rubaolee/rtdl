@@ -1,0 +1,39 @@
+{
+  "app": "ann_candidate_search",
+  "backend": "optix",
+  "boundary": "Candidate-threshold decision only; this is not a full ANN index, not nearest-neighbor ranking, and not a recall/latency optimizer. Python still owns candidate-set construction and any quality policy.",
+  "candidate_count": 3072,
+  "candidate_radius": 0.2,
+  "candidate_threshold": {
+    "covered_query_count": 3072,
+    "identity_parity_available": true,
+    "query_count": 3072,
+    "radius": 0.2,
+    "row_count": null,
+    "summary_mode": "scalar_threshold_count",
+    "uncovered_query_ids": [],
+    "within_candidate_radius": true
+  },
+  "copies": 1024,
+  "k": 1,
+  "matches_oracle": true,
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only."
+  },
+  "optix_summary_mode": "candidate_threshold_prepared",
+  "oracle_candidate_threshold": {
+    "covered_query_count": 3072,
+    "query_count": 3072,
+    "radius": 0.2,
+    "uncovered_query_ids": [],
+    "within_candidate_radius": true
+  },
+  "oracle_decision_matches": true,
+  "oracle_identity_matches": true,
+  "output_mode": "quality_summary",
+  "query_count": 3072,
+  "rt_core_accelerated": true,
+  "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded ANN candidate-coverage decision: every query has at least one Python-selected candidate within the acceptance radius.",
+  "search_count": 6144
+}

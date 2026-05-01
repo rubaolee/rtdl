@@ -7,7 +7,7 @@
 ## Verdict: ACCEPT
 
 **Rationale:**
-The proposed masked chunked nearest-hit strategy is a sound and reasonably bounded experiment for optimizing the Apple RT `segment_intersection` path. The analysis accurately points out that `MPSIntersectionTypeAny` over a multi-primitive AS lacks the primitive indices required for exact output. 
+The proposed masked chunked nearest-hit strategy is a sound and reasonably bounded experiment for optimizing the Apple RT `segment_intersection` path. The analysis accurately points out that `MPSIntersectionTypeAny` over a multi-primitive AS lacks the primitive indices required for exact output.
 
 Shifting to a chunked nearest-hit design with primitive masking (up to 32 primitives per chunk) effectively addresses the high overhead of building individual quadrilateral acceleration structures, potentially reducing AS builds by up to 32x. Even though worst-case dispatch counts remain bounded at `R` for dense all-pair scenarios, the reduction in AS build overhead makes this a worthwhile architectural experiment.
 

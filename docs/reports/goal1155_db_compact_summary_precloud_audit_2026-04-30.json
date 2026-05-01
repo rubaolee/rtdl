@@ -1,0 +1,71 @@
+{
+  "app": "database_analytics",
+  "blockers": [],
+  "boundary": "Goal1155 is a pre-cloud DB performance audit. It does not authorize public speedup wording, does not start cloud resources, and does not change release status.",
+  "cloud_policy": "no_pod_until_code_or_contract_changes",
+  "conclusions": [
+    "The public DB app already has a compact-summary gate that rejects row-materializing public RTX claim paths.",
+    "The current OptiX evidence is slower than Embree compact-summary baselines for both DB scenarios, so another pod rerun without code or contract changes is low-value.",
+    "The compact-summary implementation still performs three native DB operations per scenario and grouped summaries still travel through grouped row-return APIs before Python dict decoding.",
+    "The next useful optimization is a generic prepared DB compact-summary batch primitive that can execute scan-count, grouped-count summary, and grouped-sum summary in one native prepared-session dispatch with explicit phase counters."
+  ],
+  "current_public_wording_status": "public_wording_not_reviewed",
+  "date": "2026-04-30",
+  "goal": "Goal1155 DB compact-summary pre-cloud audit",
+  "goal1060_database_rows": [
+    {
+      "fastest_baseline": "embree_compact_summary",
+      "fastest_baseline_sec": 0.061593040940351784,
+      "path_name": "prepared_db_session_sales_risk",
+      "ratio_baseline_over_rtx": 0.6054848098670358,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "rtx_sec": 0.10172516293823719
+    },
+    {
+      "fastest_baseline": "embree_compact_summary",
+      "fastest_baseline_sec": 0.12720579199958593,
+      "path_name": "prepared_db_session_regional_dashboard",
+      "ratio_baseline_over_rtx": 0.9189635867968468,
+      "reason": "RTX is slower than the fastest non-OptiX same-semantics baseline in current final A5000 evidence.",
+      "rtx_sec": 0.138423103839159
+    }
+  ],
+  "local_profile_observations": {
+    "copies": 1000,
+    "included": true,
+    "iterations": 3,
+    "output_mode": "compact_summary",
+    "profile_path": "/tmp/goal1155_db_local_profile.json",
+    "rows": {
+      "cpu": {
+        "compact_summary_operation_count": 0,
+        "observation_status": "needs_interface_tuning",
+        "row_materializing_operation_count": 3,
+        "status": "ok",
+        "warm_query_median_sec": 0.12789133295882493
+      },
+      "embree": {
+        "compact_summary_operation_count": 6,
+        "observation_status": "needs_native_counter_artifact",
+        "row_materializing_operation_count": 0,
+        "status": "ok",
+        "warm_query_median_sec": 0.006249167025089264
+      }
+    },
+    "scenario": "all"
+  },
+  "next_actions": [
+    "Design a generic DB compact-summary batch request format rather than hardcoding a sales/dashboard-only API.",
+    "Implement OptiX first: one prepared dataset, one batch dispatch for the scenario's scan-count and grouped summaries, and phase counters for traversal, copyback, exact filtering/grouping, and output packing.",
+    "Mirror the API in Embree after OptiX so the fastest same-semantics CPU RT baseline remains fair.",
+    "Only then include database_analytics in the next consolidated RTX pod batch."
+  ],
+  "source_observations": {
+    "compact_summary_has_no_public_row_materialization_gate": true,
+    "embree_grouped_summary_uses_grouped_row_api": true,
+    "optix_grouped_summary_uses_grouped_row_api": true,
+    "regional_dashboard_runs_three_compact_native_ops": true,
+    "sales_risk_runs_three_compact_native_ops": true
+  },
+  "valid": true
+}

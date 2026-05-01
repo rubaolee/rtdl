@@ -1,0 +1,66 @@
+{
+  "app": "barnes_hut_force_app",
+  "backend": "embree",
+  "boundary": "Goal1101 collects same-current-contract non-OptiX baseline artifacts for later review. It does not authorize public RTX speedup claims; claim review still requires artifact intake and 2+ AI consensus.",
+  "date": "2026-04-29",
+  "generated_at": "2026-04-29T08:15:02",
+  "goal": "Goal1101 current-contract non-OptiX baseline profiler",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "parameters": {
+    "backend": "embree",
+    "barnes_tree_depth": 8,
+    "body_count": 4096,
+    "copies": 1,
+    "hit_threshold": 4,
+    "iterations": 3,
+    "radius": 0.1,
+    "scenario": "barnes_hut_node_coverage",
+    "skip_validation": false
+  },
+  "path_name": "node_coverage_prepared_rich",
+  "public_speedup_claim_authorized": false,
+  "scenario": {
+    "mode": "embree",
+    "result": {
+      "all_queries_reached_threshold": true,
+      "barnes_tree_depth": 8,
+      "build_count": 65536,
+      "hit_threshold": 4,
+      "matches_oracle": true,
+      "node_count": 65536,
+      "oracle_all_queries_reached_threshold": true,
+      "query_count": 4096,
+      "radius": 0.1,
+      "threshold_reached_count": 4096
+    },
+    "scenario": "barnes_hut_node_coverage",
+    "timings_sec": {
+      "backend_close_sec": 6.569502875208855e-05,
+      "backend_prepare_sec": 0.17572803399525583,
+      "input_build_sec": 0.17322281992528588,
+      "native_query_sec": {
+        "max_sec": 0.02884387003723532,
+        "median_sec": 0.010342210996896029,
+        "min_sec": 0.008801012067124248
+      },
+      "point_pack_sec": 0.0,
+      "python_postprocess_sec": {
+        "max_sec": 1.6440171748399734e-06,
+        "median_sec": 1.5650875866413116e-06,
+        "min_sec": 1.1479714885354042e-06
+      },
+      "validation_sec": {
+        "max_sec": 31.288423820980825,
+        "median_sec": 31.284009681083262,
+        "min_sec": 31.268449082039297
+      }
+    }
+  },
+  "schema_version": "goal1101_current_contract_non_optix_baseline_v1",
+  "source_commit": "cf22fb302bbd85afaa8ea6f9e2da26d278313635"
+}

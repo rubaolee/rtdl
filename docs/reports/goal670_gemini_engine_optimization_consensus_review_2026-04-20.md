@@ -12,7 +12,7 @@ This is the cross-consensus review of the three primary engine performance optim
 **Verdict: ACCEPT WITH NOTES**
 
 - **Validity and Actionability:** Highly valid and actionable. Correctly prioritizes prepared ray/triangle any-hit with scalar count, mirroring the Apple RT playbook.
-- **Overclaims Check:** 
+- **Overclaims Check:**
   - *Scalar vs Row:* Explicitly warns not to compare scalar-count OptiX against full-row Embree/Vulkan/HIPRT.
   - *Prepared vs First-query:* Emphasizes reporting first-query and repeated-query costs separately.
   - *Mechanism Honesty:* Correctly boundaries OptiX RT traversal vs CUDA compute vs host-indexed paths, specifically noting that current graph workloads use a host-indexed native C++ path, and GTX 1070 results are not RT-core evidence.
@@ -26,7 +26,7 @@ This is the cross-consensus review of the three primary engine performance optim
   - *Scalar vs Row:* Highlights output-contract reduction as the next high-value step.
   - *Prepared vs First-query:* Thoroughly distinguishes between one-shot (cold) and prepared query times.
   - *Mechanism Honesty:* Explicitly documents that HIPRT-on-NVIDIA/Orochi (GTX 1070) is not AMD GPU validation and does not use hardware RT cores.
-- **Blockers:** 
+- **Blockers:**
   - Large-scale claims are blocked by unquantified OOM risks (seen in previous graph evidence).
   - Any kNN performance claim for `k > 64` is blocked by a silent correctness bug (silent zero-result).
   - AMD claims are blocked until validated on actual AMD hardware.

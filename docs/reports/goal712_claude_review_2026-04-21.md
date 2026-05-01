@@ -1,7 +1,7 @@
 # Goal 712 Review: App Mode Identity And Embree Parity Cleanup
 
-Date: 2026-04-21  
-Reviewer: Claude (claude-sonnet-4-6)  
+Date: 2026-04-21
+Reviewer: Claude (claude-sonnet-4-6)
 Verdict: **ACCEPT**
 
 ---

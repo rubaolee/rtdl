@@ -5,7 +5,7 @@
 **Verdict**: ACCEPT
 
 ## Summary
-The implementation successfully adds Apple MPS RT-backed 3D point-neighborhood candidate discovery without overreaching its scope. The candidate discovery strategy leveraging MPS bounding cubes combined with exact Euclidean filtering on the CPU provides a correct, hardware-backed 3D search. 
+The implementation successfully adds Apple MPS RT-backed 3D point-neighborhood candidate discovery without overreaching its scope. The candidate discovery strategy leveraging MPS bounding cubes combined with exact Euclidean filtering on the CPU provides a correct, hardware-backed 3D search.
 
 ## Analysis
 - **`src/native/rtdl_apple_rt.mm`**: Correctly implements `rtdl_apple_rt_run_fixed_radius_neighbors_3d`. The search points are bounded via axis-aligned cube triangles with side `2 * radius`, and queries are correctly transformed into rays traversing the bounding volume. Exact distance refinement correctly resolves hits within the specified radius.

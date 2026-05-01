@@ -1,0 +1,157 @@
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+RUNBOOK = ROOT / "docs" / "rtx_cloud_single_session_runbook.md"
+OPTIX_WORKLOADS = ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp"
+
+
+class Goal829RtxCloudSingleSessionRunbookTest(unittest.TestCase):
+    def test_prepared_db_optix_launch_has_traversal_start_timer(self) -> None:
+        text = OPTIX_WORKLOADS.read_text(encoding="utf-8")
+        start = text.index("static std::vector<size_t> db_collect_candidate_row_indices_optix_prepared(")
+        end = text.index("static void run_db_conjunctive_scan_optix(", start)
+        body = text[start:end]
+
+        self.assertIn("auto t_start_trav = std::chrono::steady_clock::now();", body)
+        self.assertIn("auto t_end_trav = std::chrono::steady_clock::now();", body)
+        self.assertLess(body.index("auto t_start_trav"), body.index("OPTIX_CHECK(optixLaunch("))
+        self.assertLess(body.index("OPTIX_CHECK(optixLaunch("), body.index("auto t_end_trav"))
+
+    def test_runbook_enforces_local_readiness_before_pod(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("goal824_pre_cloud_rtx_readiness_gate.py", text)
+        self.assertIn("goal1025_pre_cloud_rtx_app_batch_readiness.py", text)
+        self.assertIn("goal1026_pre_cloud_runner_dry_run_audit.py", text)
+        self.assertIn("goal1084_facility_recentered_rtx_pod_packet.py", text)
+        self.assertIn("goal1093_barnes_hut_20m_contract_packet.py", text)
+        self.assertIn("goal1094_v1_rtx_readiness_status_refresh.py", text)
+        self.assertIn("17 active+deferred manifest entries", text)
+        self.assertIn("16\nunique manifest commands", text)
+        self.assertIn('"valid": true', text)
+        self.assertIn("Do not start a pod for one app at a time.", text)
+
+    def test_runbook_prefers_goal1084_and_goal1093_for_current_batch(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("Current Post-Goal1094 Runner", text)
+        self.assertIn("run the generated Goal1084 facility\nrunner", text)
+        self.assertIn("bash scripts/goal1084_facility_recentered_rtx_pod_packet_runner.sh", text)
+        self.assertIn("goal1084_facility_recentered_rtx_pod_packet", text)
+        self.assertIn("facility_service_coverage_recentered", text)
+        self.assertIn("2,500,000 copies", text)
+        self.assertIn("Robot is intentionally absent", text)
+        self.assertIn("bash scripts/goal1093_barnes_hut_20m_contract_runner.sh", text)
+        self.assertIn("goal1093_barnes_hut_20m_contract", text)
+        self.assertIn("node_coverage_prepared_rich", text)
+        self.assertIn("20,000,000 bodies", text)
+        self.assertIn("Do not edit the generated Goal1084 runner on the pod to add", text)
+        self.assertIn("Copy back the entire Goal1084 report directory", text)
+        self.assertIn("Goal1063 says the broader rejected not-reviewed rows remain local-only", text)
+        self.assertIn("Goal1071 superseded the Goal1068 facility/robot timing", text)
+        self.assertIn("Hausdorff remains\nblocked", text)
+
+    def test_runbook_uses_bootstrap_and_artifact_audit(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("goal763_rtx_cloud_bootstrap_check.py", text)
+        self.assertIn("Unsupported ABI version", text)
+        self.assertIn("OptiX SDK headers `v8.0.0`", text)
+        self.assertIn("OptiX SDK headers `v9.0.0` worked", text)
+        self.assertIn("Do not patch `OPTIX_ABI_VERSION` manually", text)
+        self.assertIn("libgeos-dev", text)
+        self.assertIn("pkg-config", text)
+        self.assertIn("cannot find -lgeos_c", text)
+        self.assertIn("native CPU/oracle reference path", text)
+        self.assertIn("RTDL_OPTIX_PTX_COMPILER=nvcc", text)
+        self.assertIn("gnu/stubs-32.h", text)
+        self.assertIn("RTDL_SOURCE_COMMIT", text)
+        self.assertIn(".rtdl_source_commit", text)
+        self.assertIn("artifacts without a source", text)
+        self.assertIn("cloud_claim_contract", text)
+        self.assertIn("required_phase_groups", text)
+        self.assertIn("needs_attention", text)
+
+    def test_runbook_has_deferred_batch_controls_and_shutdown_rule(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("--include-deferred", text)
+        for app in (
+            "graph_analytics",
+            "road_hazard_screening",
+            "segment_polygon_hitcount",
+            "segment_polygon_anyhit_rows",
+            "hausdorff_distance",
+            "ann_candidate_search",
+            "barnes_hut_force_app",
+            "polygon_pair_overlap_area_rows",
+            "polygon_set_jaccard",
+        ):
+            with self.subTest(app=app):
+                self.assertIn(app, text)
+        self.assertIn("--only graph_visibility_edges_gate", text)
+        self.assertIn("After copying artifacts back, stop or terminate the pod.", text)
+        self.assertIn("does not authorize public RTX speedup claims", text)
+
+    def test_runbook_prefers_oom_safe_groups_and_targeted_retry(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("OOM-Safe Small Batches", text)
+        self.assertIn("Run one group at a time.", text)
+        self.assertIn("After every group, copy back that group's summary JSON", text)
+        self.assertIn("do not run the\nentire active+deferred manifest blindly", text)
+        self.assertNotIn("One Full-Batch Command On The Pod", text)
+        self.assertIn("Optional Targeted Deferred Retry", text)
+        self.assertIn("Do not\nrestart the pod per app.", text)
+        self.assertIn("The deferred batch is allowed to expose failures", text)
+        self.assertIn("goal761_rtx_cloud_run_all.py", text)
+        for group in (
+            "Group A: Robot Flagship",
+            "Group B: Fixed-Radius Scalar Counts",
+            "Group C: Database Analytics",
+            "Group D: Spatial Prepared Summaries",
+            "Group E: Segment/Polygon And Road Gates",
+            "Group F: Graph Gate",
+            "Group G: Prepared Decision Apps",
+            "Group H: Polygon Apps",
+        ):
+            with self.subTest(group=group):
+                self.assertIn(group, text)
+
+        self.assertIn("density_count", text)
+        self.assertIn("core_count", text)
+        self.assertIn("It must not be interpreted as per-point", text)
+        self.assertIn("Group B must run with validation enabled", text)
+
+    def test_group_g_uses_validated_manifest_commands(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+        start = text.index("### Group G: Prepared Decision Apps")
+        end = text.index("### Group H: Polygon Apps", start)
+        group_g = text[start:end]
+
+        self.assertIn("--only directed_threshold_prepared", group_g)
+        self.assertIn("--only candidate_threshold_prepared", group_g)
+        self.assertIn("--only node_coverage_prepared", group_g)
+        self.assertIn("Do not add\n`--skip-validation`", group_g)
+        self.assertNotIn("--skip-validation \\", group_g)
+
+    def test_segment_polygon_group_uses_current_prepared_gates(self) -> None:
+        text = RUNBOOK.read_text(encoding="utf-8")
+
+        self.assertIn("--only road_hazard_native_summary_gate", text)
+        self.assertIn("--only segment_polygon_hitcount_native_experimental", text)
+        self.assertIn("--only segment_polygon_anyhit_rows_prepared_bounded_gate", text)
+        self.assertNotIn("--only segment_polygon_anyhit_rows_native_bounded_gate", text)
+        self.assertIn("goal933_prepared_segment_polygon_optix_profiler.py", text)
+        self.assertIn("goal934_prepared_segment_polygon_pair_rows_optix_profiler.py", text)
+        self.assertIn("emitted_count", text)
+        self.assertIn("copied_count", text)
+        self.assertIn("overflowed", text)
+
+
+if __name__ == "__main__":
+    unittest.main()

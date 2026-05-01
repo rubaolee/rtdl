@@ -1,0 +1,24 @@
+{
+  "app": "event_hotspot_screening",
+  "backend": "optix",
+  "copies": 65536,
+  "embree_summary_mode": null,
+  "event_count": 393216,
+  "hotspot_count": 327679,
+  "hotspot_threshold": 3,
+  "hotspots": null,
+  "k_max": 12,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_threshold_count",
+  "neighbor_count_by_event": {},
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Explicit count_summary_prepared mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path."
+  },
+  "optix_summary_mode": "count_summary_prepared",
+  "radius": 0.75,
+  "rows": [],
+  "rt_core_accelerated": true,
+  "summary_boundary": "count_summary_prepared reports only scalar hotspot count; use rows or Embree count_summary mode when hotspot event ids or per-event counts are required.",
+  "summary_rows": []
+}

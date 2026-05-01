@@ -1,0 +1,57 @@
+{
+  "app": "pair_overlap",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from CPU/Python exact area/Jaccard refinement. It does not authorize full polygon-overlap RTX speedup claims.",
+  "copies": 1,
+  "cpu_digest": {
+    "app": "polygon_pair_overlap_area_rows",
+    "copies": 1,
+    "left_polygon_count": 2,
+    "output_mode": "rows",
+    "right_polygon_count": 3,
+    "row_count": 2,
+    "rows": [
+      {
+        "intersection_area": 4,
+        "left_area": 9,
+        "left_polygon_id": 1,
+        "right_area": 9,
+        "right_polygon_id": 10,
+        "union_area": 14
+      },
+      {
+        "intersection_area": 1,
+        "left_area": 4,
+        "left_polygon_id": 2,
+        "right_area": 2,
+        "right_polygon_id": 11,
+        "union_area": 5
+      }
+    ],
+    "summary": {
+      "overlap_pair_count": 2,
+      "total_intersection_area": 5,
+      "total_union_area": 19
+    }
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-04-24T06:42:23",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "mode": "dry-run",
+  "optix_digest": null,
+  "optix_metadata": null,
+  "parity_vs_cpu": null,
+  "phases": {
+    "cpu_exact_refinement_sec": null,
+    "cpu_reference_sec": 0.00014350004494190216,
+    "input_build_sec": 1.2499978765845299e-05,
+    "optix_candidate_discovery_sec": null
+  },
+  "status": "pass"
+}

@@ -1,0 +1,1 @@
+Review Goal883 by checking the uncommitted change to `docs/goal_823_v1_0_nvidia_rt_core_app_promotion_plan.md`; decide whether moving Hausdorff, ANN, facility coverage, and Barnes-Hut prepared decision sub-paths into Tier 2 while keeping exact/ranking/force work in Tier 3 is consistent with Goals879-882 and does not overstate NVIDIA RT-core readiness.

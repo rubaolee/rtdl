@@ -1,0 +1,49 @@
+{
+  "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_graph_analytics_graph_visibility_edges_gate_embree_graph_ray_bfs_and_triangle_when_available_2026-04-23.json",
+  "claim_effect": "Graph now has a positive same-scale non-OptiX timing baseline; Goal978 can classify it by timing.",
+  "copies": 20000,
+  "date": "2026-04-26",
+  "expected_summary": {
+    "bfs": {
+      "discovered_edge_count": 40000,
+      "discovered_vertex_count": 40000,
+      "max_level": 1
+    },
+    "triangle_count": {
+      "touched_vertex_count": 60000,
+      "triangle_count": 20000
+    },
+    "visibility_edges": {
+      "blocked_edge_count": 60000,
+      "visible_edge_count": 20000
+    }
+  },
+  "goal": "Goal982 graph same-scale timing repair",
+  "phase_seconds": {
+    "native_query": 0.5672194170765579,
+    "records": 3.0,
+    "row_digest": 1.0,
+    "status": 1.0,
+    "strict_failures": 0.0,
+    "strict_pass": 1.0
+  },
+  "public_speedup_claim_authorized": false,
+  "repeats": 3,
+  "status": "ok",
+  "summary": {
+    "bfs": {
+      "discovered_edge_count": 40000,
+      "discovered_vertex_count": 40000,
+      "max_level": 1
+    },
+    "triangle_count": {
+      "touched_vertex_count": 60000,
+      "triangle_count": 20000
+    },
+    "visibility_edges": {
+      "blocked_edge_count": 60000,
+      "visible_edge_count": 20000
+    }
+  },
+  "wrote_artifact": true
+}

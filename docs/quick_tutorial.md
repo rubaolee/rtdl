@@ -95,6 +95,19 @@ Backend note:
 - released v0.9.4 Apple RT work also adds prepared closest-hit reuse and
   masked traversal for hit-count and segment-intersection
 
+NVIDIA RT-core claim note:
+
+- `--backend optix` selects an OptiX-capable path; it is not by itself a
+  NVIDIA RT-core acceleration claim
+- use `--require-rt-core` only in claim-sensitive app runs; public apps fail
+  fast unless the selected OptiX mode is a documented bounded RT-core path
+- start from `docs/application_catalog.md` and
+  `docs/app_engine_support_matrix.md` before benchmarking or publishing RTX
+  claims
+- Goal1177 and Goal1184 are external-review input only; they do not authorize
+  new public RTX speedup wording
+- Goal1177 does not authorize new public RTX speedup wording
+
 Optional Embree backend build/probe:
 
 ```bash

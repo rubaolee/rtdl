@@ -1,0 +1,55 @@
+{
+  "boundary": "This gate validates the new native bounded pair-row OptiX symbol. It does not promote the public segment_polygon_anyhit_rows path by itself.",
+  "cloud_claim_contract": {
+    "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
+    "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
+    "required_phase_groups": [
+      "records",
+      "row_digest",
+      "emitted_count",
+      "copied_count",
+      "overflowed",
+      "strict_pass",
+      "strict_failures"
+    ]
+  },
+  "dataset": "authored_segment_polygon_minimal",
+  "date": "2026-04-24",
+  "generated_at": "2026-04-25T03:09:32",
+  "goal": "Goal873 native bounded pair-row OptiX gate",
+  "host": {
+    "hostname": "adb9499ef733",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "output_capacity": 1024,
+  "records": [
+    {
+      "label": "cpu_python_reference",
+      "row_digest": {
+        "row_count": 2,
+        "sha256": "eddb2c560c5d9e96f5a6506af943b2ebc938cf0b637f6f42e40af228f817aede"
+      },
+      "sec": 0.0003299219533801079,
+      "status": "ok"
+    },
+    {
+      "copied_count": 2,
+      "emitted_count": 2,
+      "label": "optix_native_bounded",
+      "overflowed": 0,
+      "parity_vs_cpu_python_reference": true,
+      "row_digest": {
+        "row_count": 2,
+        "sha256": "eddb2c560c5d9e96f5a6506af943b2ebc938cf0b637f6f42e40af228f817aede"
+      },
+      "sec": 4.3492764234542847e-07,
+      "status": "ok"
+    }
+  ],
+  "status": "pass",
+  "strict": true,
+  "strict_failures": [],
+  "strict_pass": true
+}

@@ -1,0 +1,130 @@
+{
+  "app": "database_analytics",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "postgresql_same_semantics_on_linux_when_available",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 10
+  },
+  "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+  "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "This PostgreSQL artifact is same-semantics compact-summary baseline evidence for Linux hosts with live PostgreSQL available.",
+    "The unified database analytics app does not expose PostgreSQL as a public backend; this collector validates equivalent bounded DB semantics against the CPU prepared compact-summary path.",
+    "The current collector measures PostgreSQL query plus row materialization as one aggregate query total, so native_query and copyback_or_materialization share that total.",
+    "This artifact does not authorize any public speedup claim."
+  ],
+  "path_name": "prepared_db_session_sales_risk",
+  "phase_seconds": {
+    "backend_prepare": 6.946981385000981,
+    "copyback_or_materialization": 0.10380191204603761,
+    "input_pack_or_table_build": 0.04781311104306951,
+    "native_query": 0.10380191204603761,
+    "python_summary_postprocess": 0.005738065985497087
+  },
+  "phase_separated": true,
+  "repeated_runs": 10,
+  "required_phase_coverage": [
+    "input_pack_or_table_build",
+    "backend_prepare",
+    "native_query",
+    "copyback_or_materialization",
+    "python_summary_postprocess"
+  ],
+  "source_backend": "postgresql",
+  "status": "ok",
+  "summary": {
+    "prepared_session_section": {
+      "app": "sales_risk_screening",
+      "backend": "postgresql",
+      "copies": 20000,
+      "execution_mode": "prepared_session_semantics",
+      "output_mode": "compact_summary",
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "rows": {},
+      "run_phases": {
+        "python_summary_postprocess_sec": 0.005738065985497087,
+        "query_conjunctive_scan_and_materialize_sec": 0.06011685001431033,
+        "query_grouped_count_and_materialize_sec": 0.02150606899522245,
+        "query_grouped_sum_and_materialize_sec": 0.022178993036504835
+      },
+      "session": {
+        "input_construction_sec": 0.04781311104306951,
+        "prepare_sec": 6.946981385000981
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    },
+    "scenario": "sales_risk"
+  },
+  "summary_sha256": "bdd247a6922982fcf07e4ba089f38d660934781025b21a459e4154acf1ceea81",
+  "validation": {
+    "date": "2026-04-23",
+    "goal": "Goal842 PostgreSQL prepared DB baseline collector",
+    "reference_backend": "cpu",
+    "reference_summary": {
+      "output_mode": "compact_summary",
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    },
+    "scenario": "sales_risk",
+    "target_backend": "postgresql",
+    "target_summary": {
+      "output_mode": "compact_summary",
+      "row_counts": {
+        "grouped_count": 3,
+        "grouped_sum": 3,
+        "scan": 80000
+      },
+      "summary": {
+        "highest_risk_region": "west",
+        "risky_order_count": 80000,
+        "risky_order_count_by_region": {
+          "central": 20000,
+          "east": 20000,
+          "west": 40000
+        },
+        "risky_revenue_by_region": {
+          "central": 5200000,
+          "east": 6200000,
+          "west": 8600000
+        }
+      }
+    }
+  }
+}

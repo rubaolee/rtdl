@@ -1,0 +1,77 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for recentered facility service-coverage decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not ranked nearest-depot assignment, KNN fallback assignment, facility-location optimization, or global-coordinate identity matching",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ],
+    "schema_scope": "goal887_profiler_payload"
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-04-29T20:07:55",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "09d2c4c4b876",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "parameters": {
+    "barnes_tree_depth": 1,
+    "body_count": 1000,
+    "copies": 2500000,
+    "hit_threshold": 1,
+    "iterations": 5,
+    "mode": "optix",
+    "radius": 1.0,
+    "skip_validation": false
+  },
+  "scenario": {
+    "coordinate_mapping": "copy_local_recentered_queries_canonical_depots",
+    "mode": "optix",
+    "result": {
+      "all_queries_reached_threshold": true,
+      "build_count": 4,
+      "coordinate_mapping": "copy_local_recentered_queries_canonical_depots",
+      "hit_threshold": 1,
+      "matches_oracle": true,
+      "oracle_all_queries_reached_threshold": true,
+      "query_count": 10000000,
+      "radius": 1.0,
+      "threshold_reached_count": 10000000
+    },
+    "scenario": "facility_service_coverage_recentered",
+    "timings_sec": {
+      "input_build_sec": 54.00116168707609,
+      "optix_close_sec": 0.00018251873552799225,
+      "optix_prepare_sec": 1.3546443162485957,
+      "optix_query_sec": {
+        "max_sec": 0.11418766248971224,
+        "median_sec": 0.11161934863775969,
+        "min_sec": 0.10696904826909304
+      },
+      "point_pack_sec": 20.027014416642487,
+      "python_postprocess_sec": {
+        "max_sec": 1.4514662325382233e-05,
+        "median_sec": 1.8291175365447998e-06,
+        "min_sec": 1.3951212167739868e-06
+      },
+      "validation_sec": {
+        "max_sec": 13.10911175981164,
+        "median_sec": 12.20148690789938,
+        "min_sec": 12.189147308468819
+      }
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1",
+  "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf"
+}

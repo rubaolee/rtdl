@@ -1,0 +1,378 @@
+{
+  "app": "robot_collision_screening",
+  "backend": "optix",
+  "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
+  "edge_ray_count": 256,
+  "matches_oracle": true,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_prepared_pose_flags",
+  "obstacle_triangle_count": 32,
+  "optix_summary_mode": "prepared_pose_flags",
+  "oracle_colliding_pose_ids": [
+    2,
+    3,
+    4,
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    14,
+    15,
+    16,
+    18,
+    19,
+    20,
+    22,
+    23,
+    24,
+    26,
+    27,
+    28,
+    30,
+    31,
+    32,
+    34,
+    35,
+    36,
+    38,
+    39,
+    40,
+    42,
+    43,
+    44,
+    46,
+    47,
+    48,
+    50,
+    51,
+    52,
+    54,
+    55,
+    56,
+    58,
+    59,
+    60,
+    62,
+    63,
+    64
+  ],
+  "output_mode": "pose_flags",
+  "pose_count": 64,
+  "prepared_summary": {
+    "colliding_pose_count": 48,
+    "colliding_pose_ids": [
+      2,
+      3,
+      4,
+      6,
+      7,
+      8,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      22,
+      23,
+      24,
+      26,
+      27,
+      28,
+      30,
+      31,
+      32,
+      34,
+      35,
+      36,
+      38,
+      39,
+      40,
+      42,
+      43,
+      44,
+      46,
+      47,
+      48,
+      50,
+      51,
+      52,
+      54,
+      55,
+      56,
+      58,
+      59,
+      60,
+      62,
+      63,
+      64
+    ],
+    "edge_ray_count": 256,
+    "mode": "optix_prepared_pose_flags",
+    "obstacle_triangle_count": 32,
+    "pose_collision_flags": [
+      {
+        "collides": false,
+        "pose_id": 1
+      },
+      {
+        "collides": true,
+        "pose_id": 2
+      },
+      {
+        "collides": true,
+        "pose_id": 3
+      },
+      {
+        "collides": true,
+        "pose_id": 4
+      },
+      {
+        "collides": false,
+        "pose_id": 5
+      },
+      {
+        "collides": true,
+        "pose_id": 6
+      },
+      {
+        "collides": true,
+        "pose_id": 7
+      },
+      {
+        "collides": true,
+        "pose_id": 8
+      },
+      {
+        "collides": false,
+        "pose_id": 9
+      },
+      {
+        "collides": true,
+        "pose_id": 10
+      },
+      {
+        "collides": true,
+        "pose_id": 11
+      },
+      {
+        "collides": true,
+        "pose_id": 12
+      },
+      {
+        "collides": false,
+        "pose_id": 13
+      },
+      {
+        "collides": true,
+        "pose_id": 14
+      },
+      {
+        "collides": true,
+        "pose_id": 15
+      },
+      {
+        "collides": true,
+        "pose_id": 16
+      },
+      {
+        "collides": false,
+        "pose_id": 17
+      },
+      {
+        "collides": true,
+        "pose_id": 18
+      },
+      {
+        "collides": true,
+        "pose_id": 19
+      },
+      {
+        "collides": true,
+        "pose_id": 20
+      },
+      {
+        "collides": false,
+        "pose_id": 21
+      },
+      {
+        "collides": true,
+        "pose_id": 22
+      },
+      {
+        "collides": true,
+        "pose_id": 23
+      },
+      {
+        "collides": true,
+        "pose_id": 24
+      },
+      {
+        "collides": false,
+        "pose_id": 25
+      },
+      {
+        "collides": true,
+        "pose_id": 26
+      },
+      {
+        "collides": true,
+        "pose_id": 27
+      },
+      {
+        "collides": true,
+        "pose_id": 28
+      },
+      {
+        "collides": false,
+        "pose_id": 29
+      },
+      {
+        "collides": true,
+        "pose_id": 30
+      },
+      {
+        "collides": true,
+        "pose_id": 31
+      },
+      {
+        "collides": true,
+        "pose_id": 32
+      },
+      {
+        "collides": false,
+        "pose_id": 33
+      },
+      {
+        "collides": true,
+        "pose_id": 34
+      },
+      {
+        "collides": true,
+        "pose_id": 35
+      },
+      {
+        "collides": true,
+        "pose_id": 36
+      },
+      {
+        "collides": false,
+        "pose_id": 37
+      },
+      {
+        "collides": true,
+        "pose_id": 38
+      },
+      {
+        "collides": true,
+        "pose_id": 39
+      },
+      {
+        "collides": true,
+        "pose_id": 40
+      },
+      {
+        "collides": false,
+        "pose_id": 41
+      },
+      {
+        "collides": true,
+        "pose_id": 42
+      },
+      {
+        "collides": true,
+        "pose_id": 43
+      },
+      {
+        "collides": true,
+        "pose_id": 44
+      },
+      {
+        "collides": false,
+        "pose_id": 45
+      },
+      {
+        "collides": true,
+        "pose_id": 46
+      },
+      {
+        "collides": true,
+        "pose_id": 47
+      },
+      {
+        "collides": true,
+        "pose_id": 48
+      },
+      {
+        "collides": false,
+        "pose_id": 49
+      },
+      {
+        "collides": true,
+        "pose_id": 50
+      },
+      {
+        "collides": true,
+        "pose_id": 51
+      },
+      {
+        "collides": true,
+        "pose_id": 52
+      },
+      {
+        "collides": false,
+        "pose_id": 53
+      },
+      {
+        "collides": true,
+        "pose_id": 54
+      },
+      {
+        "collides": true,
+        "pose_id": 55
+      },
+      {
+        "collides": true,
+        "pose_id": 56
+      },
+      {
+        "collides": false,
+        "pose_id": 57
+      },
+      {
+        "collides": true,
+        "pose_id": 58
+      },
+      {
+        "collides": true,
+        "pose_id": 59
+      },
+      {
+        "collides": true,
+        "pose_id": 60
+      },
+      {
+        "collides": false,
+        "pose_id": 61
+      },
+      {
+        "collides": true,
+        "pose_id": 62
+      },
+      {
+        "collides": true,
+        "pose_id": 63
+      },
+      {
+        "collides": true,
+        "pose_id": 64
+      }
+    ]
+  },
+  "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path."
+}

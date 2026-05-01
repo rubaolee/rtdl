@@ -1,0 +1,88 @@
+{
+  "boundary": "This bootstrap check verifies cloud build/test readiness. It does not run performance benchmarks and does not authorize RTX speedup claims.",
+  "dry_run": false,
+  "preflight": {
+    "cuda_header_exists": true,
+    "cuda_prefix": "/usr/local/cuda-12.4",
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "output_tail": "a8ba20f4aa173b9d057acf56998b60abd09eaa68\n",
+      "returncode": 0
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": " M docs/reports/goal763_rtx_cloud_bootstrap_check.json\n?? docs/reports/goal1007_ann_candidate_coverage_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x4_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.md\n?? docs/reports/goal1007_outlier_dbscan_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x35_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x3_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_dense_obstacles_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_anyhit_rows_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_hitcount_large_rtx.json\n",
+      "returncode": 0
+    },
+    "nvcc": "/usr/local/cuda-12.4/bin/nvcc",
+    "nvcc_exists": true,
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda-12.4/bin/nvcc",
+        "--version"
+      ],
+      "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:18:24_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0\n",
+      "returncode": 0
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "output_tail": "Sun Apr 26 16:56:49 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   20C    P5             20W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+      "returncode": 0
+    },
+    "optix_header_exists": true,
+    "optix_prefix": "/workspace/vendor/optix-dev-9.0.0"
+  },
+  "preflight_blockers": [],
+  "skip_build": false,
+  "skip_tests": false,
+  "status": "ok",
+  "steps": [
+    {
+      "name": "build_optix",
+      "result": {
+        "command": [
+          "make",
+          "build-optix",
+          "OPTIX_PREFIX=/workspace/vendor/optix-dev-9.0.0",
+          "CUDA_PREFIX=/usr/local/cuda-12.4",
+          "NVCC=/usr/local/cuda-12.4/bin/nvcc"
+        ],
+        "elapsed_sec": 11.679299356415868,
+        "returncode": 0,
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "mkdir -p build\n/usr/local/cuda-12.4/bin/nvcc -std=c++17 -O3 -shared -I/workspace/vendor/optix-dev-9.0.0/include -I/usr/local/cuda-12.4/include  -DRTDL_OPTIX_INCLUDE_DIR=\\\"/workspace/vendor/optix-dev-9.0.0/include\\\" -DRTDL_CUDA_INCLUDE_DIR=\\\"/usr/local/cuda-12.4/include\\\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\\\"/usr/include/x86_64-linux-gnu\\\" -Xcompiler -fPIC \\\n\tsrc/native/rtdl_optix.cpp \\\n\t-L/usr/local/cuda-12.4/lib64 -lcuda -lnvrtc -lgeos_c \\\n\t-o build/librtdl_optix.so\n"
+      }
+    },
+    {
+      "name": "native_optix_focused_tests",
+      "result": {
+        "command": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.goal671_optix_prepared_anyhit_count_test",
+          "tests.goal757_prepared_optix_fixed_radius_count_test",
+          "tests.goal760_optix_robot_pose_flags_phase_profiler_test"
+        ],
+        "elapsed_sec": 5.31701292283833,
+        "returncode": 0,
+        "status": "ok",
+        "stderr_tail": "ptixFixedRadiusNativeTest.test_native_outlier_and_dbscan_prepared_sessions_match_oracles) ... ok\ntest_native_prepared_rows_match_one_shot_rows (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusNativeTest.test_native_prepared_rows_match_one_shot_rows) ... ok\ntest_closed_prepared_handle_is_rejected (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_closed_prepared_handle_is_rejected) ... ok\ntest_dbscan_app_prepared_optix_core_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_app_prepared_optix_core_count_uses_scalar_count) ... ok\ntest_dbscan_app_prepared_optix_core_flags_match_oracle (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_app_prepared_optix_core_flags_match_oracle) ... ok\ntest_dbscan_prepared_session_core_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_prepared_session_core_count_uses_scalar_count) ... ok\ntest_dbscan_prepared_session_matches_oracle_and_closes (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_prepared_session_matches_oracle_and_closes) ... ok\ntest_empty_prepared_handle_needs_no_native_library (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_empty_prepared_handle_needs_no_native_library) ... ok\ntest_fixed_radius_profiler_scalar_threshold_count_matches_oracle (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_fixed_radius_profiler_scalar_threshold_count_matches_oracle) ... ok\ntest_native_sources_export_prepared_optix_fixed_radius_symbols (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_native_sources_export_prepared_optix_fixed_radius_symbols) ... ok\ntest_outlier_app_prepared_optix_density_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_app_prepared_optix_density_count_uses_scalar_count) ... ok\ntest_outlier_app_prepared_optix_summary_matches_oracle (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_app_prepared_optix_summary_matches_oracle) ... ok\ntest_outlier_prepared_session_density_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_prepared_session_density_count_uses_scalar_count) ... ok\ntest_outlier_prepared_session_matches_oracle_and_closes (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_prepared_session_matches_oracle_and_closes) ... ok\ntest_prepared_handle_rejects_radius_above_max_radius (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_prepared_handle_rejects_radius_above_max_radius) ... ok\ntest_cli_emits_valid_json (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_cli_emits_valid_json) ... ok\ntest_dry_run_schema_and_boundary (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_dry_run_schema_and_boundary) ... ok\ntest_packed_arrays_requires_optix_and_skip_validation (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_packed_arrays_requires_optix_and_skip_validation) ... ok\ntest_skip_validation_records_no_oracle_claim (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_skip_validation_records_no_oracle_claim) ... ok\n\n----------------------------------------------------------------------\nRan 34 tests in 4.047s\n\nOK\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "suite": "goal763_rtx_cloud_bootstrap_check"
+}

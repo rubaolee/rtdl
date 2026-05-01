@@ -1,0 +1,219 @@
+{
+  "archive": "docs/reports/goal1200_live_pod_2026-04-30/goal1200_optix_slower_app_investigation.tgz",
+  "archive_sha256": "4e7409a0ad3015662026956696bca22ba832a5a3c7719e73e3c9a5a23e5d5079",
+  "boundary": "Goal1201 intakes Goal1200 cloud artifacts only. It does not authorize public docs, release, or public RTX speedup claims.",
+  "database_analytics": [
+    {
+      "copies": 30000,
+      "embree_sec": 0.09257701504975557,
+      "embree_status": "ok",
+      "optix_sec": 0.12207397149177268,
+      "optix_status": "ok",
+      "ratio_embree_over_optix": 0.7583681756105961
+    },
+    {
+      "copies": 100000,
+      "embree_sec": null,
+      "embree_status": "failed",
+      "optix_sec": null,
+      "optix_status": "failed",
+      "ratio_embree_over_optix": null
+    },
+    {
+      "copies": 300000,
+      "embree_sec": null,
+      "embree_status": "failed",
+      "optix_sec": null,
+      "optix_status": "failed",
+      "ratio_embree_over_optix": null
+    }
+  ],
+  "date": "2026-05-01",
+  "decisions": {
+    "database_analytics": "blocked_scale_ceiling_and_no_positive_speedup",
+    "graph_analytics": "rt_subpaths_completed_but_total_pack_prepare_dominated",
+    "hausdorff_distance": "normalized_repair_evidence_collected_same_scale_still_missing",
+    "polygon_pair_overlap_area_rows": "stable_rt_path_evidence_largest_scale_near_parity_no_public_positive_claim",
+    "polygon_set_jaccard": "blocked_existing_artifact_has_chunk64_failure_future_runs_must_use_public_safe_chunk_policy",
+    "road_hazard_screening": "positive_control_reproduced_but_public_floor_not_met_in_this_run"
+  },
+  "followups": [
+    "database_analytics needs chunked/streamed RT lowering before larger-scale DB claims",
+    "polygon_set_jaccard needs chunk-stable OptiX correctness before promotion",
+    "road_hazard_screening needs a larger floor-safe positive-control rerun",
+    "hausdorff_distance needs same-scale or formally reviewed normalized evidence",
+    "graph_analytics should keep kernel/pack/prepare/bookkeeping wording separated",
+    "polygon_pair_overlap_area_rows needs additional tuning before public positive wording"
+  ],
+  "goal": "Goal1201 OptiX slower-app investigation intake",
+  "graph_analytics": [
+    {
+      "copies": 30000,
+      "embree_sec": 0.7896496870089322,
+      "optix_anyhit_kernel_sec": 0.0001701581059023738,
+      "optix_sec": 1.3862660139566287,
+      "optix_status": "pass",
+      "ratio_embree_over_optix": 0.5696234914936301,
+      "ratio_embree_over_optix_kernel": 4640.682163340396
+    },
+    {
+      "copies": 60000,
+      "embree_sec": 1.5886823970358819,
+      "optix_anyhit_kernel_sec": 0.0001921179937198758,
+      "optix_sec": 2.1648744250414893,
+      "optix_status": "pass",
+      "ratio_embree_over_optix": 0.7338450575512874,
+      "ratio_embree_over_optix_kernel": 8269.305577656169
+    },
+    {
+      "copies": 120000,
+      "embree_sec": 3.180447860970162,
+      "optix_anyhit_kernel_sec": 0.00021231803111732006,
+      "optix_sec": 3.9689135709777474,
+      "optix_status": "pass",
+      "ratio_embree_over_optix": 0.8013396623768388,
+      "ratio_embree_over_optix_kernel": 14979.64089169963
+    }
+  ],
+  "hausdorff_distance": {
+    "best_embree_points_per_sec": 21962.964435268357,
+    "best_optix_points_per_sec": 169656829.5059569,
+    "embree_rows": [
+      {
+        "copies": 2000,
+        "matches_oracle": true,
+        "point_count_a": 8000,
+        "points_per_sec": 21962.964435268357,
+        "sec": 0.3642495539970696
+      },
+      {
+        "copies": 10000,
+        "matches_oracle": true,
+        "point_count_a": 40000,
+        "points_per_sec": 3987.636426939428,
+        "sec": 10.031004765070975
+      },
+      {
+        "copies": 20000,
+        "matches_oracle": true,
+        "point_count_a": 80000,
+        "points_per_sec": 2290.505399927573,
+        "sec": 34.92678952100687
+      }
+    ],
+    "normalized_optix_over_embree_throughput": 7724.678060012709,
+    "optix_rows": [
+      {
+        "copies": 200000,
+        "matches_oracle": true,
+        "point_count_a": 800000,
+        "points_per_sec": 169656829.5059569,
+        "sec": 0.004715401097200811
+      },
+      {
+        "copies": 1200000,
+        "matches_oracle": true,
+        "point_count_a": 4800000,
+        "points_per_sec": 45037986.285704225,
+        "sec": 0.106576701044105
+      }
+    ],
+    "same_scale_pair_available": false
+  },
+  "input_dir": "docs/reports/goal1200_live_pod_2026-04-30/extracted/docs/reports/goal1200_optix_slower_app_investigation",
+  "polygon_pair_overlap_area_rows": [
+    {
+      "copies": 10000,
+      "embree_sec": 1.0960830569965765,
+      "optix_sec": 1.5969412550330162,
+      "optix_status": "pass",
+      "parity_vs_cpu": true,
+      "ratio_embree_over_optix": 0.6863640434750465
+    },
+    {
+      "copies": 20000,
+      "embree_sec": 2.2246342479484156,
+      "optix_sec": 2.3485536796506494,
+      "optix_status": "pass",
+      "parity_vs_cpu": true,
+      "ratio_embree_over_optix": 0.947235852952415
+    },
+    {
+      "copies": 40000,
+      "embree_sec": 4.5920146650169045,
+      "optix_sec": 4.38470490812324,
+      "optix_status": "pass",
+      "parity_vs_cpu": true,
+      "ratio_embree_over_optix": 1.0472802072745184
+    }
+  ],
+  "polygon_set_jaccard": [
+    {
+      "chunk_copies": 1,
+      "chunk_policy": null,
+      "copies": 8192,
+      "embree_sec": 0.7297016349621117,
+      "exit_code": 0,
+      "optix_sec": 10.882802252541296,
+      "parity_vs_cpu": true,
+      "ratio_embree_over_optix": 0.06705089535112296,
+      "status": "ok"
+    },
+    {
+      "chunk_copies": 8,
+      "chunk_policy": null,
+      "copies": 8192,
+      "embree_sec": 0.7297016349621117,
+      "exit_code": 0,
+      "optix_sec": 2.2758018238237128,
+      "parity_vs_cpu": true,
+      "ratio_embree_over_optix": 0.32063496360860444,
+      "status": "ok"
+    },
+    {
+      "chunk_copies": 64,
+      "chunk_policy": null,
+      "copies": 8192,
+      "embree_sec": 0.7297016349621117,
+      "exit_code": 1,
+      "optix_sec": 1.4597200537100434,
+      "parity_vs_cpu": false,
+      "ratio_embree_over_optix": 0.4998914915962774,
+      "status": "failed"
+    },
+    {
+      "chunk_copies": 512,
+      "chunk_policy": null,
+      "copies": 8192,
+      "embree_sec": 0.7297016349621117,
+      "exit_code": 0,
+      "optix_sec": 1.336367278941907,
+      "parity_vs_cpu": true,
+      "ratio_embree_over_optix": 0.5460337487010803,
+      "status": "ok"
+    }
+  ],
+  "public_positive_candidates_from_this_batch": [],
+  "road_hazard_screening": {
+    "copies": 20000,
+    "embree_sec": 0.36470687796827406,
+    "optix_sec": 0.07834535196889192,
+    "optix_status": "pass",
+    "public_positive_ratio_safe": false,
+    "ratio_embree_over_optix": 4.655118252746964,
+    "timing_floor_met": false
+  },
+  "status_summary": {
+    "failed_count": 5,
+    "failed_labels": [
+      "db_embree_100000",
+      "db_embree_300000",
+      "db_optix_100000",
+      "db_optix_300000",
+      "polygon_jaccard_optix_8192_chunk_64"
+    ],
+    "status_count": 31
+  },
+  "timing_floor_sec": 0.1,
+  "valid": true
+}

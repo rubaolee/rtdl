@@ -1,0 +1,21 @@
+{
+  "blockers": [],
+  "boundary": "Goal1119 is a local pre-pod gate. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "checks": {
+    "barnes_uses_depth_8": true,
+    "barnes_uses_radius_0_1": true,
+    "facility_uses_recentered_contract": true,
+    "intake_exists_and_blocks_until_pod": true,
+    "intake_has_no_public_claim": true,
+    "packet_has_no_public_claim": true,
+    "packet_has_three_apps": true,
+    "packet_valid": true,
+    "required_paths_exist": true,
+    "robot_uses_packed_8m_timing": true,
+    "runner_logs_output": true
+  },
+  "date": "2026-04-29",
+  "goal": "Goal1119 pre-pod local gate",
+  "next_action": "Start an RTX pod and run scripts/goal1116_current_source_rtx_rerun_runner.sh",
+  "ready_for_pod": true
+}

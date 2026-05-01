@@ -1,0 +1,110 @@
+{
+  "archive": {
+    "archive_bytes": 1517157,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1204_rtdl_source_2026-05-01.tar.gz",
+    "archive_sha256": "4e1b389db324e6a265be73a20047491fe309d42075563dadeac53efbafd43e0f",
+    "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
+    "date": "2026-04-30",
+    "goal": "Goal1175 staged source archive builder",
+    "manifest_aggregate_sha256": "3c8e3dbc89ace2e8ef32a91e42ac9593046b278254c4830ce23e6407fb85b77c",
+    "manifest_file_count": 1788,
+    "valid": true
+  },
+  "boundary": "Goal1204 prepares a future repaired-path pod batch only. It does not run cloud, authorize public docs, release, or public RTX speedup wording.",
+  "commands": {
+    "copy_back": [
+      "mkdir -p docs/reports/goal1204_live_pod_2026-05-01",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1204_repaired_rtx_pod.tgz docs/reports/goal1204_live_pod_2026-05-01/",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1204_repaired_rtx_pod.tgz.sha256 docs/reports/goal1204_live_pod_2026-05-01/",
+      "tar -xzf docs/reports/goal1204_live_pod_2026-05-01/goal1204_repaired_rtx_pod.tgz -C docs/reports/goal1204_live_pod_2026-05-01"
+    ],
+    "run_on_pod": "ARCHIVE=/tmp/goal1204_rtdl_source_2026-05-01.tar.gz EXPECTED_SHA256=4e1b389db324e6a265be73a20047491fe309d42075563dadeac53efbafd43e0f WORKDIR=/workspace/rtdl_goal1204 RESULT_TGZ=/tmp/goal1204_repaired_rtx_pod.tgz RESULT_SHA=/tmp/goal1204_repaired_rtx_pod.tgz.sha256 bash /tmp/goal1204_executor.sh",
+    "upload": [
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1204_rtdl_source_2026-05-01.tar.gz root@<pod_host>:/tmp/goal1204_rtdl_source_2026-05-01.tar.gz",
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1204_repaired_rtx_pod_executor.sh root@<pod_host>:/tmp/goal1204_executor.sh"
+    ]
+  },
+  "date": "2026-05-01",
+  "goal": "Goal1204 repaired RTX pod packet",
+  "pod_batch": {
+    "local_copyback_dir": "docs/reports/goal1204_live_pod_2026-05-01",
+    "pod_executor": "scripts/goal1204_repaired_rtx_pod_executor.sh",
+    "remote_archive": "/tmp/goal1204_rtdl_source_2026-05-01.tar.gz",
+    "remote_result": "/tmp/goal1204_repaired_rtx_pod.tgz",
+    "remote_result_sha": "/tmp/goal1204_repaired_rtx_pod.tgz.sha256",
+    "target_repairs": [
+      "database_analytics chunked compact-summary",
+      "polygon_set_jaccard public-safe chunk policy",
+      "road_hazard_screening floor-safe scale"
+    ]
+  },
+  "preconditions": [
+    "Run only after local Goal1202 and Goal1203 tests pass.",
+    "Use one RTX-class Linux pod session; do not restart per app.",
+    "Install GEOS/Embree/CUDA/OptiX once, then run all rows.",
+    "Copy back the result tgz and sha256 before interpretation.",
+    "A separate intake/review goal must interpret results after copy-back."
+  ],
+  "rows": [
+    {
+      "app": "database_analytics",
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 100000 --iterations 3 --output-mode compact_summary --strict --output-json ${RESULT_DIR}/db_embree_100000_chunked_repair.json",
+      "label": "db_embree_100000_chunked_repair",
+      "purpose": "Verify the previously failing 100k DB Embree scale now passes with compact-summary chunking."
+    },
+    {
+      "app": "database_analytics",
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 100000 --iterations 3 --output-mode compact_summary --strict --output-json ${RESULT_DIR}/db_optix_100000_chunked_repair.json",
+      "label": "db_optix_100000_chunked_repair",
+      "purpose": "Verify the previously failing 100k DB OptiX scale now passes with compact-summary chunking."
+    },
+    {
+      "app": "database_analytics",
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 300000 --iterations 2 --output-mode compact_summary --strict --output-json ${RESULT_DIR}/db_embree_300000_chunked_repair.json",
+      "label": "db_embree_300000_chunked_repair",
+      "purpose": "Collect same-scale 300k DB Embree control for the repaired compact-summary path."
+    },
+    {
+      "app": "database_analytics",
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 300000 --iterations 2 --output-mode compact_summary --strict --output-json ${RESULT_DIR}/db_optix_300000_chunked_repair.json",
+      "label": "db_optix_300000_chunked_repair",
+      "purpose": "Verify the previous 300k OptiX row-ceiling failure is repaired by chunking."
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json ${RESULT_DIR}/jaccard_optix_8192_public_safe_chunk_512.json",
+      "label": "jaccard_optix_8192_public_safe_chunk_512",
+      "purpose": "Collect Jaccard claim-path evidence using the reviewed public-safe chunk policy."
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 64 --output-json ${RESULT_DIR}/jaccard_optix_8192_diagnostic_chunk_64.json",
+      "label": "jaccard_optix_8192_diagnostic_chunk_64",
+      "purpose": "Confirm the formerly failing chunk-64 shape is classified diagnostic-only, not claim-ready."
+    },
+    {
+      "app": "road_hazard_screening",
+      "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 40000 --output-mode summary > ${RESULT_DIR}/road_hazard_embree_control_40000.json",
+      "label": "road_hazard_embree_control_40000",
+      "purpose": "Collect same-scale Embree control for the larger road-hazard floor repair."
+    },
+    {
+      "app": "road_hazard_screening",
+      "command": "python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 40000 --iterations 5 --mode run --output-json ${RESULT_DIR}/road_hazard_optix_control_40000.json",
+      "label": "road_hazard_optix_control_40000",
+      "purpose": "Rerun road hazard at larger scale so OptiX query time can clear the 0.1s timing floor."
+    }
+  ],
+  "source_manifest": {
+    "aggregate_sha256": "3c8e3dbc89ace2e8ef32a91e42ac9593046b278254c4830ce23e6407fb85b77c",
+    "file_count": 1788
+  },
+  "valid": true,
+  "verification": {
+    "actual_sha256": "4e1b389db324e6a265be73a20047491fe309d42075563dadeac53efbafd43e0f",
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1204_rtdl_source_2026-05-01.tar.gz",
+    "exists": true,
+    "expected_sha256": "4e1b389db324e6a265be73a20047491fe309d42075563dadeac53efbafd43e0f",
+    "valid": true
+  }
+}

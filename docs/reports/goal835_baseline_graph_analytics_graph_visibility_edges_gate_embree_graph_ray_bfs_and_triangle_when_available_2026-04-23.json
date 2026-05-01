@@ -1,0 +1,78 @@
+{
+  "app": "graph_analytics",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "embree_graph_ray_bfs_and_triangle_when_available",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 3,
+    "scenario": "all"
+  },
+  "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+  "comparable_metric_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Same-scale local Embree graph timing baseline for the A5000 graph visibility-edge gate.",
+    "This is a conservative non-OptiX baseline: it times the unified Embree graph RT summary path at copies=20000.",
+    "It does not authorize public RTX speedup claims."
+  ],
+  "path_name": "graph_visibility_edges_gate",
+  "phase_seconds": {
+    "native_query": 0.5672194170765579,
+    "records": 3.0,
+    "row_digest": 1.0,
+    "status": 1.0,
+    "strict_failures": 0.0,
+    "strict_pass": 1.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "records",
+    "row_digest",
+    "strict_pass",
+    "strict_failures",
+    "status"
+  ],
+  "source_backend": "embree",
+  "status": "ok",
+  "summary": {
+    "bfs": {
+      "discovered_edge_count": 40000,
+      "discovered_vertex_count": 40000,
+      "max_level": 1
+    },
+    "triangle_count": {
+      "touched_vertex_count": 60000,
+      "triangle_count": 20000
+    },
+    "visibility_edges": {
+      "blocked_edge_count": 60000,
+      "visible_edge_count": 20000
+    }
+  },
+  "summary_sha256": "d5959af8c3d2c121e60a5d69d3db7e150aad3251a3b7f7c9f13f09e140bd5642",
+  "validation": {
+    "expected_summary": {
+      "bfs": {
+        "discovered_edge_count": 40000,
+        "discovered_vertex_count": 40000,
+        "max_level": 1
+      },
+      "triangle_count": {
+        "touched_vertex_count": 60000,
+        "triangle_count": 20000
+      },
+      "visibility_edges": {
+        "blocked_edge_count": 60000,
+        "visible_edge_count": 20000
+      }
+    },
+    "matches_analytic_expected": true,
+    "samples": [
+      0.8390610410133377,
+      0.5528912920271978,
+      0.5672194170765579
+    ]
+  }
+}

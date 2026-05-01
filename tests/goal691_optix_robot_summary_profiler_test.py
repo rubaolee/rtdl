@@ -34,8 +34,8 @@ class Goal691OptixRobotSummaryProfilerTest(unittest.TestCase):
         payload = run_json("scripts/goal691_optix_app_phase_profiler.py", "--list-apps")
         matrix = payload["optix_app_performance_matrix"]
         self.assertEqual(matrix["robot_collision_screening"]["performance_class"], "optix_traversal")
-        self.assertEqual(matrix["graph_analytics"]["performance_class"], "host_indexed_fallback")
-        self.assertEqual(matrix["hausdorff_distance"]["performance_class"], "cuda_through_optix")
+        self.assertEqual(matrix["graph_analytics"]["performance_class"], "optix_traversal")
+        self.assertEqual(matrix["hausdorff_distance"]["performance_class"], "optix_traversal_prepared_summary")
 
     def test_profiler_runs_portable_robot_rows_mode(self) -> None:
         payload = run_json(

@@ -35,6 +35,13 @@ class Goal756PreparedDbAppSessionTest(unittest.TestCase):
         self.assertEqual(one_shot["sections"]["regional_dashboard"]["summary"], prepared["sections"]["regional_dashboard"]["summary"])
         self.assertEqual(one_shot["sections"]["sales_risk"]["summary"], prepared["sections"]["sales_risk"]["summary"])
         self.assertIn("prepare_session_sec", prepared["prepared_session"])
+        self.assertIn("per_section_run_sec", prepared["prepared_session"])
+        self.assertIn("run_phases", prepared["sections"]["regional_dashboard"])
+        self.assertIn("run_phases", prepared["sections"]["sales_risk"])
+        self.assertIn(
+            "query_conjunctive_scan_and_materialize_sec",
+            prepared["sections"]["sales_risk"]["run_phases"],
+        )
 
     def test_session_rejects_run_after_close(self) -> None:
         from examples import rtdl_database_analytics_app as db_app
@@ -63,6 +70,8 @@ class Goal756PreparedDbAppSessionTest(unittest.TestCase):
         self.assertEqual(payload["execution_mode"], "prepared_session")
         self.assertEqual(payload["session_iterations"], 3)
         self.assertIn("session_run_timing_sec", payload)
+        self.assertIn("per_section_run_sec", payload["prepared_session"])
+        self.assertIn("run_phases", payload["sections"]["sales_risk"])
         self.assertEqual(payload["sections"]["sales_risk"]["row_counts"]["scan"], 8)
 
     def test_cli_rejects_non_positive_session_iterations(self) -> None:

@@ -22,21 +22,34 @@ def _time_json_payload(fn, *, repeats: int) -> tuple[float, list[float], dict[st
     return min(values), values, payload, len(encoded)
 
 
-def run(*, backend: str, copies: tuple[int, ...], repeats: int) -> dict[str, object]:
+def run(*, backend: str, copies: tuple[int, ...], repeats: int, optix_mode: str = "auto") -> dict[str, object]:
+    if optix_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
     cases = []
     for copy_count in copies:
         rows_best, rows_values, rows_payload, rows_bytes = _time_json_payload(
-            lambda copy_count=copy_count: app.run_case(backend, copies=copy_count, output_mode="rows"),
+            lambda copy_count=copy_count: app.run_case(
+                backend,
+                copies=copy_count,
+                output_mode="rows",
+                optix_mode=optix_mode,
+            ),
             repeats=repeats,
         )
         compact_best, compact_values, compact_payload, compact_bytes = _time_json_payload(
-            lambda copy_count=copy_count: app.run_case(backend, copies=copy_count, output_mode="priority_segments"),
+            lambda copy_count=copy_count: app.run_case(
+                backend,
+                copies=copy_count,
+                output_mode="priority_segments",
+                optix_mode=optix_mode,
+            ),
             repeats=repeats,
         )
         cases.append(
             {
                 "copies": copy_count,
                 "backend": backend,
+                "optix_mode": optix_mode if backend == "optix" else "not_applicable",
                 "rows_best_sec": rows_best,
                 "priority_segments_best_sec": compact_best,
                 "speedup_vs_rows": rows_best / compact_best if compact_best > 0 else None,
@@ -54,6 +67,7 @@ def run(*, backend: str, copies: tuple[int, ...], repeats: int) -> dict[str, obj
         "platform": platform.platform(),
         "python": platform.python_version(),
         "backend": backend,
+        "optix_mode": optix_mode if backend == "optix" else "not_applicable",
         "repeats": repeats,
         "cases": cases,
         "geomean_speedup_vs_rows": statistics.geometric_mean(
@@ -66,7 +80,10 @@ def run(*, backend: str, copies: tuple[int, ...], repeats: int) -> dict[str, obj
             "Measures app payload generation plus JSON serialization. Compact "
             "road-hazard modes do not change backend traversal; they avoid "
             "returning full per-road rows when only priority road ids/counts "
-            "are needed."
+            "are needed. When backend=optix, optix_mode selects default "
+            "behavior, forced host-indexed fallback, or experimental native "
+            "segment/polygon hit-count mode. This script does not authorize "
+            "any RT-core claim by itself."
         ),
     }
 
@@ -74,16 +91,23 @@ def run(*, backend: str, copies: tuple[int, ...], repeats: int) -> dict[str, obj
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--backend", default="embree", choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"))
+    parser.add_argument("--optix-mode", default="auto", choices=("auto", "host_indexed", "native"))
     parser.add_argument("--copies", nargs="+", type=int, default=(1024, 4096, 16384))
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
 
-    payload = run(backend=args.backend, copies=tuple(args.copies), repeats=args.repeats)
+    payload = run(
+        backend=args.backend,
+        copies=tuple(args.copies),
+        repeats=args.repeats,
+        optix_mode=args.optix_mode,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({
         "backend": payload["backend"],
+        "optix_mode": payload["optix_mode"],
         "cases": len(payload["cases"]),
         "geomean_speedup_vs_rows": payload["geomean_speedup_vs_rows"],
         "geomean_json_size_reduction": payload["geomean_json_size_reduction"],

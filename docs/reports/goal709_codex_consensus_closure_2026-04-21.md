@@ -40,4 +40,3 @@ Goal709 is accepted and can feed Goal710. Goal710 must not claim speedup merely
 because the configuration API exists. It must implement native parallel loops,
 preserve exact row parity, and produce measured single-thread versus
 multi-thread evidence.
-

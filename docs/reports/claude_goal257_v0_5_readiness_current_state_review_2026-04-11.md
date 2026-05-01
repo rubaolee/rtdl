@@ -1,7 +1,7 @@
 # RTDL v0.4.0 Published State: v0.5 Readiness Review
 
-Date: 2026-04-11  
-Reviewer: Claude (Sonnet 4.6)  
+Date: 2026-04-11
+Reviewer: Claude (Sonnet 4.6)
 Scope: README.md, docs/README.md, docs/tutorials/README.md,
 docs/tutorials/rendering_and_visual_demos.md,
 docs/release_reports/v0_4/README.md,

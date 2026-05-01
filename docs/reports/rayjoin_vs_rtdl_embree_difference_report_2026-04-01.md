@@ -325,7 +325,7 @@ They show that:
    - paper-style reports
 4. the project now has an honest Embree-phase baseline before GPU bring-up
 
-So the current work is not “just a mockup.”  
+So the current work is not “just a mockup.”
 But it is also not yet “the RayJoin paper fully reproduced.”
 
 ## 10. Best Honest Summary for the First Author

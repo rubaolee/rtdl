@@ -1,10 +1,10 @@
 # RTDL Current Main Support Matrix
 
-Status: live support matrix for the released `v0.9.6` tag and current `main`.
+Status: live support matrix for the released `v0.9.8` tag and current `main`.
 
 This page is intentionally separate from the
-[v0.9.6 release support matrix](release_reports/v0_9_6/support_matrix.md).
-The released `v0.9.6` tag is the current public release boundary. Users who
+[v0.9.8 release support matrix](release_reports/v0_9_8/support_matrix.md).
+The released `v0.9.8` tag is the current public release boundary. Users who
 build from the latest source should read this page together with the release
 matrix because stale local backend libraries may not contain the newest native
 symbols until rebuilt.
@@ -17,10 +17,12 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
 
 ## Boundary
 
-- Current public release: `v0.9.6`.
-- Current `main`: released `v0.9.6` surface plus any later untagged local work.
+- Current public release: `v0.9.8`.
+- Current `main`: released `v0.9.8` surface plus any later untagged local work.
 - The `v0.9.6` release boundary includes the native/native-assisted any-hit work
   and prepared repeated-query visibility/count optimizations from Goals650-681.
+- The `v0.9.8` release boundary adds bounded RTX app evidence and public wording
+  state without widening whole-app or backend-flag-only speedup claims.
 - Backend libraries must be rebuilt from current source before current-main
   native paths are available.
 - Stale backend libraries may fall back to compatibility dispatch or reject a
@@ -35,6 +37,7 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
 | `ray_triangle_any_hit` 3D | supported | native early-exit | native early-exit | native early-exit | native traversal-loop early-exit | MPS RT nearest-intersection any-hit |
 | `visibility_rows_cpu` | supported | not applicable | not applicable | not applicable | not applicable | not applicable |
 | `visibility_rows(..., backend=...)` | supported through `backend="cpu"` | dispatches through any-hit | dispatches through any-hit | dispatches through any-hit | dispatches through any-hit | dispatches through any-hit |
+| `visibility_pair_rows(..., backend=...)` | supported through `backend="cpu"` | dispatches through any-hit | dispatches through any-hit | dispatches through any-hit | dispatches through any-hit | dispatches through any-hit |
 | prepared repeated 2D any-hit | not applicable | use standard prepared execution / row path | prepared 2D scene plus optional prepacked rays | prepared 2D scene plus optional prepacked rays | prepared 2D scene | prepared 2D scene plus optional prepacked rays |
 | prepared scalar visibility count | Python reduction over rows | row output then count | prepared/prepacked scalar count path | prepared/prepacked compact rows then count | prepared 2D any-hit rows then count | prepared 2D scene plus prepacked rays returns scalar blocked-ray count |
 | `reduce_rows` | Python helper | Python helper after emitted rows | Python helper after emitted rows | Python helper after emitted rows | Python helper after emitted rows | Python helper after emitted rows |
@@ -57,6 +60,11 @@ Implementation notes:
 - The OptiX prepared/prepacked visibility-count path is also narrower than full
   row emission: it reuses the OptiX build-side acceleration structure and can
   count prepacked 2D rays without materializing row dictionaries.
+- `visibility_rows(...)` means all observers crossed with all targets.
+  `visibility_pair_rows(...)` means exactly the caller-provided candidate
+  observer-target pairs. Use the pair helper for graph edges, sparse
+  line-of-sight candidate lists, and copied fixtures where Cartesian expansion
+  would be semantically wrong or too large.
 - The HIPRT prepared 2D any-hit path reuses HIPRT context, geometry, function
   table, kernel, and device-side build buffers. It is validated on the
   HIPRT/Orochi CUDA path, not on AMD GPU hardware.
@@ -131,5 +139,8 @@ For the public release boundary, use:
 - [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
 - [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
 - [v0.9.6 Audit Report](release_reports/v0_9_6/audit_report.md)
+- [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
+- [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
+- [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
 - [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
 - [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)

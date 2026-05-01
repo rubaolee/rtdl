@@ -94,11 +94,17 @@ from .app_support_matrix import app_engine_support
 from .app_support_matrix import (
     OPTIX_APP_PERFORMANCE_CLASSES,
     OPTIX_APP_BENCHMARK_READINESS_STATUSES,
+    RT_CORE_APP_MATURITY_STATUSES,
+    RTX_PUBLIC_WORDING_STATUSES,
     app_engine_support_matrix,
     optix_app_benchmark_readiness,
     optix_app_benchmark_readiness_matrix,
     optix_app_performance_matrix,
     optix_app_performance_support,
+    rt_core_app_maturity,
+    rt_core_app_maturity_matrix,
+    rtx_public_wording_matrix,
+    rtx_public_wording_status,
 )
 from .app_support_matrix import APP_ENGINES
 from .app_support_matrix import APP_SUPPORT_STATUSES
@@ -148,23 +154,33 @@ from .external_baselines import run_postgis_bounded_knn_rows_3d
 from .external_baselines import run_postgis_knn_rows
 from .external_baselines import run_postgis_knn_rows_3d
 from .external_baselines import run_scipy_fixed_radius_neighbors
+from .external_baselines import run_scipy_fixed_radius_count_threshold
 from .external_baselines import run_scipy_knn_rows
 from .external_baselines import scipy_available
 from .optix_runtime import optix_version
 from .optix_runtime import fixed_radius_count_threshold_2d_optix
+from .optix_runtime import get_last_db_phase_timings
 from .optix_runtime import OptixRay2DBuffer
+from .optix_runtime import OptixPoseIndexBuffer
 from .optix_runtime import OptixRowView
+from .optix_runtime import pack_rays_2d_from_arrays
 from .optix_runtime import prepare_optix
 from .optix_runtime import prepare_optix_db_dataset
 from .optix_runtime import prepare_optix_fixed_radius_count_threshold_2d
+from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
+from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
+from .optix_runtime import prepare_optix_pose_indices_2d
 from .optix_runtime import prepare_optix_rays_2d
 from .optix_runtime import PreparedOptixDbDataset
 from .optix_runtime import PreparedOptixExecution
 from .optix_runtime import PreparedOptixFixedRadiusCountThreshold2D
 from .optix_runtime import PreparedOptixKernel
 from .optix_runtime import PreparedOptixRayTriangleAnyHit2D
+from .optix_runtime import PreparedOptixSegmentPolygonAnyHitRows2D
+from .optix_runtime import PreparedOptixSegmentPolygonHitcount2D
 from .optix_runtime import run_optix
+from .optix_runtime import segment_polygon_anyhit_rows_native_bounded_optix
 from .reduction_runtime import reduce_rows
 from .hiprt_runtime import fixed_radius_neighbors_2d_hiprt
 from .hiprt_runtime import fixed_radius_neighbors_3d_hiprt
@@ -297,6 +313,14 @@ from .ir import RefineOp
 from .lowering import lower_to_execution_plan
 from .lowering import lower_to_rayjoin
 from .oracle_runtime import oracle_version
+from .oracle_runtime import refine_polygon_pair_overlap_area_rows_for_pairs
+from .oracle_runtime import refine_polygon_set_jaccard_for_pairs
+from .oracle_runtime import summarize_bfs_row_view
+from .oracle_runtime import summarize_bfs_rows
+from .oracle_runtime import summarize_fixed_radius_rows
+from .oracle_runtime import summarize_knn_rows
+from .oracle_runtime import summarize_triangle_row_view
+from .oracle_runtime import summarize_triangle_rows
 from .plan_schema import load_plan_schema
 from .plan_schema import schema_path
 from .plan_schema import validate_plan_dict
@@ -375,6 +399,8 @@ from .reference import Ray2D
 from .reference import Ray3D
 from .reference import ray_triangle_hit_count_cpu
 from .reference import ray_triangle_any_hit_cpu
+from .reference import ray_triangle_pose_count_cpu
+from .reference import ray_triangle_pose_flags_cpu
 from .reference import ray_triangle_closest_hit_cpu
 from .reference import Segment
 from .reference import segment_polygon_anyhit_rows_cpu
@@ -384,6 +410,7 @@ from .reference import Triangle3D
 from .reference import visibility_ray_pairs
 from .reference import visibility_rows_cpu
 from .reference import visibility_rows_from_any_hit
+from .visibility_runtime import visibility_pair_rows
 from .visibility_runtime import visibility_rows
 from .graph_reference import bfs_expand_cpu
 from .db_reference import conjunctive_scan_cpu
@@ -581,6 +608,14 @@ __all__ = [
     "overlay_compose",
     "overlay_compose_hiprt",
     "oracle_version",
+    "refine_polygon_pair_overlap_area_rows_for_pairs",
+    "refine_polygon_set_jaccard_for_pairs",
+    "summarize_bfs_row_view",
+    "summarize_bfs_rows",
+    "summarize_fixed_radius_rows",
+    "summarize_knn_rows",
+    "summarize_triangle_row_view",
+    "summarize_triangle_rows",
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
@@ -641,6 +676,7 @@ __all__ = [
     "Triangles3D",
     "validate_csr_graph",
     "visibility_rows_cpu",
+    "visibility_pair_rows",
     "visibility_rows",
     "visibility_ray_pairs",
     "visibility_rows_from_any_hit",
@@ -703,17 +739,25 @@ __all__ = [
     "OptixRowView",
     "optix_version",
     "OptixRay2DBuffer",
+    "OptixPoseIndexBuffer",
+    "pack_rays_2d_from_arrays",
     "prepare_optix",
     "prepare_optix_db_dataset",
     "prepare_optix_fixed_radius_count_threshold_2d",
+    "prepare_optix_segment_polygon_anyhit_rows_2d",
+    "prepare_optix_segment_polygon_hitcount_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
+    "prepare_optix_pose_indices_2d",
     "prepare_optix_rays_2d",
     "PreparedOptixDbDataset",
     "PreparedOptixExecution",
     "PreparedOptixFixedRadiusCountThreshold2D",
     "PreparedOptixKernel",
     "PreparedOptixRayTriangleAnyHit2D",
+    "PreparedOptixSegmentPolygonAnyHitRows2D",
+    "PreparedOptixSegmentPolygonHitcount2D",
     "run_optix",
+    "segment_polygon_anyhit_rows_native_bounded_optix",
     "triangle_match_apple_rt",
     "triangle_match_hiprt",
     "VulkanRowView",
@@ -843,6 +887,8 @@ __all__ = [
     "ray_triangle_hit_count",
     "ray_triangle_closest_hit",
     "ray_triangle_any_hit_cpu",
+    "ray_triangle_pose_count_cpu",
+    "ray_triangle_pose_flags_cpu",
     "ray_triangle_any_hit_apple_rt",
     "ray_triangle_any_hit_hiprt",
     "ray_triangle_hit_count_cpu",
@@ -874,7 +920,13 @@ __all__ = [
     "optix_app_benchmark_readiness",
     "optix_app_benchmark_readiness_matrix",
     "OPTIX_APP_BENCHMARK_READINESS_STATUSES",
+    "rt_core_app_maturity",
+    "rt_core_app_maturity_matrix",
+    "RT_CORE_APP_MATURITY_STATUSES",
+    "RTX_PUBLIC_WORDING_STATUSES",
     "public_apps",
+    "rtx_public_wording_matrix",
+    "rtx_public_wording_status",
     "run_baseline_benchmark",
     "run_baseline_case",
     "run_adaptive",
@@ -908,6 +960,7 @@ __all__ = [
     "run_postgresql_grouped_sum",
     "run_postgresql_triangle_probe",
     "run_scipy_fixed_radius_neighbors",
+    "run_scipy_fixed_radius_count_threshold",
     "run_scipy_knn_rows",
     "run_section_5_6",
     "ScalabilityConfig",

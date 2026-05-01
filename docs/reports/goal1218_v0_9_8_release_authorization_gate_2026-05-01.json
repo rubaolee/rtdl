@@ -1,0 +1,116 @@
+{
+  "blockers": [],
+  "boundary": "Goal1218 is an authorization gate, not a release action. It does not tag, publish, push, upload packages, or bump VERSION to v0.9.8.",
+  "current_public_state": {
+    "database_analytics_public_speedup": "blocked",
+    "polygon_set_jaccard_public_speedup": "blocked",
+    "reviewed_public_rtx_wording_rows": 11,
+    "road_hazard_new_public_row": "road_hazard_screening / prepared_native_compact_summary_40k"
+  },
+  "date": "2026-05-01",
+  "final_authorization_files": [
+    {
+      "exists": true,
+      "path": "docs/reports/goal1220_v0_9_8_final_authorization_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1220_two_ai_consensus_2026-05-01.md"
+    }
+  ],
+  "goal": "Goal1218 v0.9.8 release-authorization gate",
+  "hardware_evidence_decision": "No additional pod run is required before the release-authorization paperwork gate. Existing Goal1206/Goal1208 RTX evidence is sufficient for the currently bounded public claims. If the release manager wants fresh hardware replay anyway, it should be one batched final RTX run.",
+  "phrase_rows": [
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1216_v0_9_8_release_candidate_audit_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1216_two_ai_consensus_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1217_two_ai_consensus_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "status": "ok"
+    }
+  ],
+  "pod_needed_before_authorization": false,
+  "ready_files": [
+    {
+      "exists": true,
+      "path": "docs/reports/goal1216_v0_9_8_release_candidate_audit_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1216_two_ai_consensus_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1217_version_marker_current_release_sync_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1217_gemini_version_marker_sync_review_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1217_two_ai_consensus_2026-05-01.md"
+    }
+  ],
+  "recommended_next_action": "authorize_release_action",
+  "release_authorized": true,
+  "release_package_files": [
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_9_8/README.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_9_8/release_statement.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_9_8/support_matrix.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_9_8/audit_report.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/release_reports/v0_9_8/tag_preparation.md"
+    }
+  ],
+  "release_package_review_files": [
+    {
+      "exists": true,
+      "path": "docs/reports/goal1219_v0_9_8_release_package_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1219_gemini_v0_9_8_release_package_review_2026-05-01.md"
+    },
+    {
+      "exists": true,
+      "path": "docs/reports/goal1219_two_ai_consensus_2026-05-01.md"
+    }
+  ],
+  "valid_gate": true,
+  "version_marker": "v0.9.8"
+}

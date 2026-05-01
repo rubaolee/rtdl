@@ -17,7 +17,7 @@ class Goal700FixedRadiusSummaryPublicDocTest(unittest.TestCase):
         self.assertEqual(dbscan.performance_class, "optix_traversal_prepared_summary")
         self.assertIn("Default row path uses fixed-radius rows through CUDA-style kernels", outlier.note)
         self.assertIn("rt_count_threshold_prepared", outlier.note)
-        self.assertIn("RTX-class measurements are still pending", outlier.note)
+        self.assertIn("RTX 4090 phase evidence", outlier.note)
         self.assertIn("Default row path uses fixed-radius rows through CUDA-style kernels", dbscan.note)
         self.assertIn("rt_core_flags_prepared", dbscan.note)
         self.assertIn("Python clustering expansion remains outside", dbscan.note)
@@ -48,7 +48,7 @@ class Goal700FixedRadiusSummaryPublicDocTest(unittest.TestCase):
             "docs/app_engine_support_matrix.md": (
                 "explicit `rt_count_threshold_prepared`",
                 "explicit `rt_core_flags_prepared`",
-                "RTX-class measurements are still pending",
+                "RTX 4090 phase evidence",
             ),
         }
         for label, path in docs.items():

@@ -1,0 +1,47 @@
+{
+  "app": "outlier_detection",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+  "benchmark_scale": {
+    "copies": 20000,
+    "iterations": 10
+  },
+  "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+  "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Optional SciPy/reference-neighbor baseline for the same compact outlier threshold-count contract.",
+    "This artifact does not authorize public RTX speedup claims."
+  ],
+  "path_name": "prepared_fixed_radius_density_summary",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "native_threshold_query": 0.5924256040016189,
+    "point_pack": 0.05973204202018678,
+    "python_postprocess": 0.26273481297539547,
+    "scalar_copyback": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 10,
+  "required_phase_coverage": [
+    "point_pack",
+    "backend_prepare",
+    "native_threshold_query",
+    "scalar_copyback",
+    "python_postprocess"
+  ],
+  "source_backend": "scipy_ckdtree",
+  "status": "ok",
+  "summary": {
+    "outlier_count": 40000,
+    "point_count": 160000,
+    "threshold_reached_count": 120000
+  },
+  "summary_sha256": "0b6670a3bcd2155e5d7bfebf0985f3407f9372fa379f8fd1deecca112d90e10c",
+  "validation": {
+    "copies": 20000,
+    "matches_reference": true,
+    "method": "SciPy cKDTree fixed-radius neighbor rows reduced to the outlier density summary"
+  }
+}

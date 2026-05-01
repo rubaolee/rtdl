@@ -1,0 +1,53 @@
+{
+  "boundary": "Goal1161 repairs the Hausdorff pre-cloud benchmark contract by replacing the previous analytic tiled fixture with a deterministic non-analytic threshold-decision point cloud. It does not run cloud, does not authorize public RTX speedup wording, and does not claim exact Hausdorff distance.",
+  "cloud_claim_contract": {
+    "activation_status": "eligible_for_next_real_rtx_batch_after_2_ai_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for non-analytic Hausdorff <= radius decisions",
+    "non_claim": "not exact Hausdorff distance, not KNN-row output, not a full whole-app speedup claim, and not public wording authorization",
+    "required_phase_groups": [
+      "input_build_sec",
+      "validation_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "optix_close_sec"
+    ]
+  },
+  "date": "2026-04-30",
+  "generated_at": "2026-04-30T09:04:24",
+  "goal": "Goal1161 Hausdorff non-analytic threshold contract",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "parameters": {
+    "iterations": 1,
+    "mode": "dry-run",
+    "point_count": 2048,
+    "radius": 0.35,
+    "skip_validation": false
+  },
+  "scenario": {
+    "app": "hausdorff_distance",
+    "native_rt_path": "prepared OptiX fixed-radius threshold traversal",
+    "non_analytic_fixture": true,
+    "path_name": "directed_threshold_prepared_nonanalytic",
+    "replaces_blocked_tiled_scale_contract": true,
+    "result": {
+      "covered_a_to_b": 1861,
+      "covered_b_to_a": 1861,
+      "point_count_a": 2048,
+      "point_count_b": 2048,
+      "radius": 0.35,
+      "within_threshold": false
+    },
+    "timings_sec": {
+      "input_build_sec": 0.0030414590146392584,
+      "validation_sec": 0.43514154094737023
+    }
+  },
+  "schema_version": "goal1161_hausdorff_nonanalytic_threshold_contract_v1",
+  "source_commit": "d0ebf9d69041cf013b7af4dcb20a570d25d92c3f",
+  "valid": true
+}

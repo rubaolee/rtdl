@@ -11,4 +11,3 @@ returned:
 > `history/revision_dashboard.md` as `v0.9.5-current-main` entries.
 > Documentation explicitly states this is not a new release tag and does not
 > claim retroactive v0.9.5 support.
-

@@ -1,6 +1,6 @@
 # Goal 549 External Review: HIPRT 3D KNN Rows
 
-Date: 2026-04-18  
+Date: 2026-04-18
 Reviewer: Claude Sonnet 4.6 (external AI review)
 
 ## Verdict: ACCEPT

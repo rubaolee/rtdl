@@ -1,0 +1,73 @@
+{
+  "boundary": "This gate validates the road-hazard app through the explicit native segment/polygon OptiX mode. It does not promote the default app path or authorize a public RTX speedup claim by itself.",
+  "cloud_claim_contract": {
+    "claim_scope": "native OptiX segment/polygon hit-count traversal for compact road-hazard summaries",
+    "non_claim": "not default road-hazard public speedup and not a full GIS routing or risk model claim",
+    "required_phase_groups": [
+      "cpu_python_reference",
+      "optix_native",
+      "run_phases",
+      "summary_materializes_rows",
+      "native_continuation_backend",
+      "strict_pass",
+      "strict_failures"
+    ]
+  },
+  "copies": 8192,
+  "date": "2026-04-24",
+  "generated_at": "2026-04-30T14:04:04",
+  "goal": "Goal888 road hazard native OptiX gate",
+  "host": {
+    "hostname": "ed2fb89e0cc0",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-107-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "output_mode": "summary",
+  "records": [
+    {
+      "digest": {
+        "priority_segment_count": 8192
+      },
+      "label": "cpu_python_reference",
+      "native_continuation_active": false,
+      "native_continuation_backend": "none",
+      "output_mode": "summary",
+      "priority_segment_count": 8192,
+      "row_count": 24576,
+      "run_phases": {
+        "input_construction_sec": 0.13198614120483398,
+        "query_and_materialize_sec": 0.5770097151398659,
+        "summary_postprocess_sec": 0.0009478330612182617
+      },
+      "sec": 0.7172547578811646,
+      "status": "ok",
+      "summary_materializes_rows": true
+    },
+    {
+      "digest": {
+        "priority_segment_count": 8192
+      },
+      "label": "optix_native",
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_native_hitcount_gated",
+      "output_mode": "summary",
+      "parity_vs_cpu_python_reference": true,
+      "priority_segment_count": 8192,
+      "row_count": 0,
+      "run_phases": {
+        "input_construction_sec": 0.10181783884763718,
+        "native_close_sec": 0.0002083033323287964,
+        "native_prepare_sec": 0.71749047935009,
+        "native_threshold_count_sec": 0.03000383824110031
+      },
+      "sec": 0.8603763207793236,
+      "status": "ok",
+      "summary_materializes_rows": false
+    }
+  ],
+  "status": "pass",
+  "strict": true,
+  "strict_failures": [],
+  "strict_pass": true
+}

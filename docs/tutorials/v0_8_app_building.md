@@ -108,6 +108,7 @@ Python chooses a candidate subset, and RTDL ranks that subset.
 RTDL owns:
 
 - nearest-neighbor rows over a Python-selected candidate subset
+- optional OptiX prepared fixed-radius candidate-coverage decisions
 
 Python owns:
 
@@ -115,9 +116,21 @@ Python owns:
 - exact brute-force comparison against the full search set
 - recall and distance-ratio reporting
 
+OptiX decision mode:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py \
+  --backend optix \
+  --optix-summary-mode candidate_threshold_prepared \
+  --candidate-radius 0.2 \
+  --require-rt-core
+```
+
 Boundary:
 
 - this is a bounded candidate-search demo
+- `candidate_threshold_prepared` answers "does each query have a candidate
+  within radius"; it does not return the nearest candidate
 - this is not FAISS, HNSW, IVF, or a trained ANN index
 - RTDL does not yet expose ANN index construction, recall tuning, or
   latency/quality optimization

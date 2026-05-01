@@ -1,0 +1,18 @@
+{
+  "boundary": "This goal records the bounded ABI scaffold for the native pair-row emitter. Later goals may add implementation behind the helper, but the public rows path still uses the host-indexed helper until a promotion gate passes.",
+  "date": "2026-04-23",
+  "evidence": {
+    "api_delegates_to_workload_helper": true,
+    "contract_fields_present": true,
+    "declaration_present": true,
+    "definition_present": true,
+    "public_rows_path_still_host_indexed": true
+  },
+  "goal": "Goal870 native pair-row emitter ABI packet",
+  "recommended_status": "abi_scaffold_added",
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "prelude_h": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_prelude.h"
+  },
+  "symbol": "rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded"
+}

@@ -116,8 +116,8 @@ This hybrid layout is more practical than:
 ## Current State
 
 This archive began with the March 29, 2026 review-and-revision cycle and now
-contains later rounds through the `v0.9.5` release and post-release
-fresh-checkout verification, plus the Goals650-656 current-main any-hit,
+contains later rounds through the `v0.9.6` release and Goal1023
+public-history catch-up, plus the Goals650-656 current-main any-hit,
 documentation, and full-test catch-up, plus the Goals658-679 cross-engine
 prepared visibility/count optimization and release-gate catch-up:
 
@@ -134,6 +134,9 @@ prepared visibility/count optimization and release-gate catch-up:
   repair records
 - `v0.9.5` bounded any-hit, visibility-row, emitted-row reduction,
   post-release front-page refresh, and fresh-checkout verification records
+- `v0.9.6` prepared/prepacked repeated visibility/count release records through
+  Goal684, appended by Goal1023 after Goal1022 detected public-history drift
+  in `2026-04-26-goal1023-v0_9_6-history-catchup`
 - Goals650-656 current-main native/native-assisted any-hit backend work,
   current-main support matrix, tutorial/example boundary refresh, and
   post-doc-refresh full local test evidence

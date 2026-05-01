@@ -1,7 +1,7 @@
 # Codex Technical Deep-Dive: Vulkan KHR Ray-Tracing Backend
 
-**Reviewer:** Codex (Systems Engineer)  
-**Date:** 2026-04-02  
+**Reviewer:** Codex (Systems Engineer)
+**Date:** 2026-04-02
 **Subject:** Vulkan Backend Architecture, Reliability, and Parity Analysis
 
 ## 1. Executive Summary

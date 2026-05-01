@@ -1,0 +1,127 @@
+{
+  "app": "graph_analytics",
+  "backend": "cpu_python_reference",
+  "copies": 1000,
+  "data_flow": [
+    "application graph data",
+    "bounded RTDL graph kernels",
+    "BFS discovery rows and triangle rows",
+    "visibility edge rows for the RT-core sub-path",
+    "native C++ summary continuation for BFS and triangle_count summary mode",
+    "Python-owned unified app JSON assembly"
+  ],
+  "graph_phase_totals_sec": {
+    "input_construction_sec": 0.004581791930831969,
+    "native_summary_postprocess_sec": 0.014042875962331891,
+    "query_and_materialize_sec": 0.004834165913052857,
+    "query_visibility_pair_rows_sec": 7.9149645830038935,
+    "summary_postprocess_sec": 0.00010183302219957113
+  },
+  "honesty_boundary": "Unified app over bounded graph kernels. Embree BFS and triangle_count use CPU ray-tracing traversal for candidate generation. Only visibility_edges is an OptiX ray/triangle any-hit RT-core candidate; OptiX BFS and triangle_count remain host-indexed by default, and native graph-ray mode remains gated. BFS and triangle_count summary mode uses native C++ continuation, but this is not a full graph database or distributed graph analytics system.",
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp+oracle_cpp",
+  "optix_graph_mode": "not_applicable",
+  "optix_performance": {
+    "class": "optix_traversal",
+    "note": "Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal; summary mode uses prepared any-hit count to avoid row materialization. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, and graph summary mode uses native C++ continuation after rows are produced. The default remains host-indexed until RTX validation."
+  },
+  "output_mode": "summary",
+  "phase_contract": "Graph phase totals split fixture construction, ray packing or row query/materialization, prepared any-hit count, and summary postprocess where the public app can observe them. They are local diagnostics, not public RTX speedup claims.",
+  "ray_tracing_accelerated": false,
+  "ray_tracing_note": "For Embree, BFS and triangle_count now use ray traversal over graph-edge primitives for candidate generation, and visibility_edges uses ray/triangle any-hit. For OptiX, BFS and triangle_count have an explicit native graph-ray mode behind --optix-graph-mode native, visibility_edges summary mode uses prepared any-hit count to avoid row materialization, and graph summary mode uses native C++ continuation after rows are produced. Only visibility_edges is a current RT-core claim until cloud validation promotes the graph-ray path.",
+  "rt_core_accelerated": false,
+  "scenario": "all",
+  "sections": {
+    "bfs": {
+      "app": "graph_bfs",
+      "backend": "cpu_python_reference",
+      "copies": 1000,
+      "frontier_size": 2000,
+      "graph_edge_count": 5000,
+      "graph_vertex_count": 4000,
+      "native_continuation_active": true,
+      "native_continuation_backend": "oracle_cpp",
+      "optix_graph_mode": "not_applicable",
+      "optix_performance": {
+        "class": "host_indexed_fallback",
+        "note": "OptiX BFS currently uses a host-indexed CSR expansion correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+      },
+      "output_mode": "summary",
+      "ray_tracing_accelerated": false,
+      "ray_tracing_note": "This backend is not currently classified as the graph BFS ray-tracing path.",
+      "row_count": 2000,
+      "rows": [],
+      "rt_core_accelerated": false,
+      "run_phases": {
+        "input_construction_sec": 0.0014354169834405184,
+        "native_summary_postprocess_sec": 0.01362904196139425,
+        "query_and_materialize_sec": 0.0018228329718112946
+      },
+      "summary": {
+        "discovered_edge_count": 2000,
+        "discovered_vertex_count": 2000,
+        "max_level": 1
+      },
+      "visited_size": 2000
+    },
+    "triangle_count": {
+      "app": "graph_triangle_count",
+      "backend": "cpu_python_reference",
+      "copies": 1000,
+      "graph_edge_count": 6000,
+      "graph_vertex_count": 4000,
+      "native_continuation_active": true,
+      "native_continuation_backend": "oracle_cpp",
+      "optix_graph_mode": "not_applicable",
+      "optix_performance": {
+        "class": "host_indexed_fallback",
+        "note": "OptiX triangle-count currently uses a host-indexed CSR probe correctness path; native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native but is not an RTX graph acceleration claim until cloud-gated."
+      },
+      "output_mode": "summary",
+      "ray_tracing_accelerated": false,
+      "ray_tracing_note": "This backend is not currently classified as the graph triangle-count ray-tracing path.",
+      "row_count": 1000,
+      "rows": [],
+      "rt_core_accelerated": false,
+      "run_phases": {
+        "input_construction_sec": 0.0008789999410510063,
+        "native_summary_postprocess_sec": 0.00041383400093764067,
+        "query_and_materialize_sec": 0.0030113329412415624
+      },
+      "seed_count": 3000,
+      "summary": {
+        "touched_vertex_count": 3000,
+        "triangle_count": 1000
+      }
+    },
+    "visibility_edges": {
+      "app": "graph_visibility_edges",
+      "backend": "cpu_python_reference",
+      "blocker_count": 1000,
+      "boundary": "Graph visibility_edges maps candidate graph edges to RTDL visibility rays and uses ray/triangle any-hit traversal. It is not BFS, triangle-count, shortest path, or general graph database acceleration.",
+      "candidate_edge_count": 4000,
+      "copies": 1000,
+      "native_continuation_active": false,
+      "native_continuation_backend": "none",
+      "observer_count": 2000,
+      "output_mode": "summary",
+      "row_count": 4000,
+      "rows": [],
+      "rt_core_accelerated": false,
+      "run_phases": {
+        "input_construction_sec": 0.002267375006340444,
+        "query_visibility_pair_rows_sec": 7.9149645830038935,
+        "summary_postprocess_sec": 0.00010183302219957113
+      },
+      "summary": {
+        "blocked_edge_count": 3000,
+        "visible_edge_count": 1000
+      },
+      "target_count": 2000
+    }
+  },
+  "unifies": [
+    "examples/rtdl_graph_bfs.py",
+    "examples/rtdl_graph_triangle_count.py"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "archive": {
+    "archive_bytes": 1488357,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1194_rtdl_source_2026-04-30.tar.gz",
+    "archive_sha256": "a0d685b3b28a3045c187b720477f8a6ce1f3b5a3739e125ff33a20fb77082805",
+    "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
+    "date": "2026-04-30",
+    "goal": "Goal1175 staged source archive builder",
+    "manifest_aggregate_sha256": "67c4bab9c9207835de506122a400a50f61d94563e76951344d6afd80641e5ce2",
+    "manifest_file_count": 1759,
+    "valid": true
+  },
+  "boundary": "This packet prepares a future pod execution path for Goal1192 evidence. It creates a source archive and replay commands only; it does not run cloud, does not authorize release, and does not authorize public RTX speedup wording.",
+  "commands": {
+    "copy_back_and_intake": [
+      "mkdir -p docs/reports/goal1194_live_pod_2026-04-30",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1194_goal1192_public_wording_evidence_batch.tgz docs/reports/goal1194_live_pod_2026-04-30/",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1194_goal1192_public_wording_evidence_batch.tgz.sha256 docs/reports/goal1194_live_pod_2026-04-30/",
+      "tar -xzf docs/reports/goal1194_live_pod_2026-04-30/goal1194_goal1192_public_wording_evidence_batch.tgz -C docs/reports/goal1194_live_pod_2026-04-30",
+      "PYTHONPATH=src:. python3 scripts/goal1193_public_wording_evidence_batch_intake.py --input-dir docs/reports/goal1194_live_pod_2026-04-30/docs/reports/goal1192_public_wording_evidence_batch --output-json docs/reports/goal1194_goal1192_public_wording_evidence_batch_intake_2026-04-30.json --output-md docs/reports/goal1194_goal1192_public_wording_evidence_batch_intake_2026-04-30.md"
+    ],
+    "run_on_pod": "ARCHIVE=/tmp/goal1194_rtdl_source_2026-04-30.tar.gz EXPECTED_SHA256=a0d685b3b28a3045c187b720477f8a6ce1f3b5a3739e125ff33a20fb77082805 WORKDIR=/workspace/rtdl_goal1194 RESULT_TGZ=/tmp/goal1194_goal1192_public_wording_evidence_batch.tgz RESULT_SHA=/tmp/goal1194_goal1192_public_wording_evidence_batch.tgz.sha256 bash /tmp/goal1194_executor.sh",
+    "upload": [
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1194_rtdl_source_2026-04-30.tar.gz root@<pod_host>:/tmp/goal1194_rtdl_source_2026-04-30.tar.gz",
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1194_public_wording_evidence_pod_executor.sh root@<pod_host>:/tmp/goal1194_executor.sh"
+    ]
+  },
+  "date": "2026-04-30",
+  "goal": "Goal1194 public wording evidence pod packet",
+  "pod_batch": {
+    "expected_app_pairs": 6,
+    "expected_artifacts": 12,
+    "intake": "scripts/goal1193_public_wording_evidence_batch_intake.py",
+    "local_copyback_dir": "docs/reports/goal1194_live_pod_2026-04-30",
+    "pod_executor": "scripts/goal1194_public_wording_evidence_pod_executor.sh",
+    "remote_archive": "/tmp/goal1194_rtdl_source_2026-04-30.tar.gz",
+    "remote_result": "/tmp/goal1194_goal1192_public_wording_evidence_batch.tgz",
+    "remote_result_sha": "/tmp/goal1194_goal1192_public_wording_evidence_batch.tgz.sha256",
+    "runner": "scripts/goal1192_public_wording_evidence_batch_runner.sh"
+  },
+  "preconditions": [
+    "Use one RTX-class Linux pod session and run the full batch once.",
+    "Use the local key that actually exists, usually ~/.ssh/id_ed25519_rtdl_codex on this Mac.",
+    "Do not patch source on the pod; the executor creates a synthetic clean git commit from the archive.",
+    "Executor installs GEOS/pkg-config before Embree/geometry baselines.",
+    "Executor builds OptiX before running Goal1192.",
+    "Copy the result tgz and sha256 back, then run Goal1193 intake locally before interpreting timing."
+  ],
+  "source_manifest": {
+    "aggregate_sha256": "67c4bab9c9207835de506122a400a50f61d94563e76951344d6afd80641e5ce2",
+    "file_count": 1759,
+    "include_dirs": [
+      "src",
+      "examples",
+      "scripts",
+      "tests",
+      "docs/handoff"
+    ],
+    "include_files": [
+      "README.md",
+      "Makefile",
+      "pyproject.toml",
+      "setup.cfg",
+      "pytest.ini"
+    ]
+  },
+  "valid": true,
+  "verification": {
+    "actual_sha256": "a0d685b3b28a3045c187b720477f8a6ce1f3b5a3739e125ff33a20fb77082805",
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1194_rtdl_source_2026-04-30.tar.gz",
+    "exists": true,
+    "expected_sha256": "a0d685b3b28a3045c187b720477f8a6ce1f3b5a3739e125ff33a20fb77082805",
+    "valid": true
+  }
+}

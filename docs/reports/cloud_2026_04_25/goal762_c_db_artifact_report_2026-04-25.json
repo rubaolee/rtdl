@@ -1,0 +1,90 @@
+{
+  "boundary": "This report checks cloud artifacts and summarizes phase metrics. It does not authorize RTX speedup claims; claims require human/AI review of correctness, phase separation, hardware metadata, and comparison baselines.",
+  "dry_run": false,
+  "entry_count": 2,
+  "failure_count": 0,
+  "git_head": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "nvidia_smi": "Sat Apr 25 03:07:40 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:53:00.0 Off |                  Off |\n| 30%   36C    P0            109W /  230W |       1MiB /  24564MiB |      5%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact_path": "/workspace/rtdl_python_only/docs/reports/goal759_db_sales_risk_rtx.json",
+      "artifact_status": "ok",
+      "baseline_review_contract_claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+      "baseline_review_contract_missing_fields": [],
+      "baseline_review_contract_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "baseline_review_contract_status": "ok",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "close_sec": 0.13738613855093718,
+      "cloud_contract_claim_scope": "prepared DB compact-summary sessions only",
+      "cloud_contract_missing_phases": [],
+      "cloud_contract_non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+      "cloud_contract_status": "ok",
+      "db_native_phase_groups": [
+        "sales_risk"
+      ],
+      "db_query_total_sec": 0.10512283351272345,
+      "db_run_phase_modes": {
+        "sales_risk": {
+          "grouped_count": "group_summary",
+          "grouped_sum": "group_summary",
+          "scan": "count_summary"
+        }
+      },
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "one_shot_total_sec": 8.648269670084119,
+      "path_name": "prepared_db_session_sales_risk",
+      "phase_contract_present": true,
+      "postprocess_median_sec": 1.4351680874824524e-05,
+      "prepare_sec": 0.9216217156499624,
+      "prepare_total_sec": 0.9216217156499624,
+      "runner_returncode": 0,
+      "runner_status": "ok",
+      "schema_version": "goal825_tier1_phase_contract_v1",
+      "speedup_one_shot_over_warm_query_median": 83.33829756345158,
+      "warm_query_median_sec": 0.1037730542011559
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "/workspace/rtdl_python_only/docs/reports/goal759_db_regional_dashboard_rtx.json",
+      "artifact_status": "ok",
+      "baseline_review_contract_claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+      "baseline_review_contract_missing_fields": [],
+      "baseline_review_contract_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "baseline_review_contract_status": "ok",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "close_sec": 0.22021593898534775,
+      "cloud_contract_claim_scope": "prepared DB compact-summary sessions only",
+      "cloud_contract_missing_phases": [],
+      "cloud_contract_non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+      "cloud_contract_status": "ok",
+      "db_native_phase_groups": [
+        "regional_dashboard"
+      ],
+      "db_query_total_sec": 0.14416313264518976,
+      "db_run_phase_modes": {
+        "regional_dashboard": {
+          "grouped_count": "group_summary",
+          "grouped_sum": "group_summary",
+          "scan": "count_summary"
+        }
+      },
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "one_shot_total_sec": 7.61891499068588,
+      "path_name": "prepared_db_session_regional_dashboard",
+      "phase_contract_present": true,
+      "postprocess_median_sec": 2.75392085313797e-06,
+      "prepare_sec": 1.4848705409094691,
+      "prepare_total_sec": 1.4848705409094691,
+      "runner_returncode": 0,
+      "runner_status": "ok",
+      "schema_version": "goal825_tier1_phase_contract_v1",
+      "speedup_one_shot_over_warm_query_median": 52.28310628646765,
+      "warm_query_median_sec": 0.14572422206401825
+    }
+  ],
+  "runner_status": "ok",
+  "status": "ok",
+  "suite": "goal762_rtx_cloud_artifact_report",
+  "summary_path": "/workspace/rtdl_python_only/docs/reports/goal761_group_c_db_summary_2026-04-25.json"
+}

@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_512.json",
+  "exit_code": 0,
+  "label": "polygon_jaccard_optix_8192_chunk_512",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_512.log",
+  "status": "ok"
+}

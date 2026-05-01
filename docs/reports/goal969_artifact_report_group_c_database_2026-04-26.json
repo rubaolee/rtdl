@@ -1,0 +1,174 @@
+{
+  "boundary": "This report checks cloud artifacts and summarizes phase metrics. It does not authorize RTX speedup claims; claims require human/AI review of correctness, phase separation, hardware metadata, and comparison baselines.",
+  "dry_run": false,
+  "entry_count": 2,
+  "failure_count": 0,
+  "git_head": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "nvidia_smi": "Sun Apr 26 09:04:19 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   35C    P2            116W /  230W |       1MiB /  24564MiB |     85%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_db_sales_risk_rtx.json",
+      "artifact_status": "ok",
+      "baseline_review_contract_claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+      "baseline_review_contract_missing_fields": [],
+      "baseline_review_contract_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "baseline_review_contract_status": "ok",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "close_sec": 0.00044968200381845236,
+      "cloud_contract_claim_scope": "prepared DB compact-summary sessions only",
+      "cloud_contract_missing_phases": [],
+      "cloud_contract_non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+      "cloud_contract_status": "ok",
+      "db_native_phase_groups": [
+        "sales_risk"
+      ],
+      "db_native_phase_totals": {
+        "bitset_copyback_sec": 5.2755000000000006e-05,
+        "counter_status": "exported",
+        "emitted_count": 80006,
+        "exact_filter_sec": 0.016162217,
+        "operation_count": 3,
+        "output_pack_sec": 0.0036215929999999998,
+        "raw_candidate_count": 240000,
+        "sections": {
+          "sales_risk": {
+            "bitset_copyback_sec": 5.2755000000000006e-05,
+            "emitted_count": 80006,
+            "exact_filter_sec": 0.016162217,
+            "operation_count": 3,
+            "output_pack_sec": 0.0036215929999999998,
+            "raw_candidate_count": 240000,
+            "traversal_sec": 0.078752187
+          }
+        },
+        "traversal_sec": 0.078752187
+      },
+      "db_query_total_sec": 0.09911317995283753,
+      "db_review_observation": {
+        "blocker": "None for local shape; compare RTX artifact against baselines before promotion.",
+        "compact_summary_operation_count": 3,
+        "native_counter_status": "exported",
+        "row_materializing_operation_count": 0,
+        "status": "phase_clean_candidate_for_rtx_review"
+      },
+      "db_run_phase_modes": {
+        "sales_risk": {
+          "grouped_count": "group_summary",
+          "grouped_sum": "group_summary",
+          "scan": "count_summary"
+        }
+      },
+      "db_run_phase_totals": {
+        "all_sections_python_summary_postprocess_sec": 1.0877964086830616e-05,
+        "all_sections_query_sec": 0.09911317995283753,
+        "compact_summary_operation_count": 3,
+        "row_materializing_operation_count": 0,
+        "sections": {
+          "sales_risk": {
+            "compact_summary_operation_count": 3,
+            "python_summary_postprocess_sec": 1.0877964086830616e-05,
+            "query_sec": 0.09911317995283753,
+            "row_materializing_operation_count": 0
+          }
+        }
+      },
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "one_shot_total_sec": 1.8774225719971582,
+      "path_name": "prepared_db_session_sales_risk",
+      "phase_contract_present": true,
+      "postprocess_median_sec": 1.0877964086830616e-05,
+      "prepare_sec": 0.5311937159858644,
+      "prepare_total_sec": 0.5311937159858644,
+      "runner_returncode": 0,
+      "runner_status": "ok",
+      "schema_version": "goal921_db_phase_review_contract_v2",
+      "speedup_one_shot_over_warm_query_median": 18.742236475907294,
+      "warm_query_median_sec": 0.10017067997250706
+    },
+    {
+      "app": "database_analytics",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal759_db_regional_dashboard_rtx.json",
+      "artifact_status": "ok",
+      "baseline_review_contract_claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+      "baseline_review_contract_missing_fields": [],
+      "baseline_review_contract_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+      "baseline_review_contract_status": "ok",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "close_sec": 0.0004554379265755415,
+      "cloud_contract_claim_scope": "prepared DB compact-summary sessions only",
+      "cloud_contract_missing_phases": [],
+      "cloud_contract_non_claim": "not SQL, not DBMS behavior, not full row materialization speedup, and not broad RTX app speedup",
+      "cloud_contract_status": "ok",
+      "db_native_phase_groups": [
+        "regional_dashboard"
+      ],
+      "db_native_phase_totals": {
+        "bitset_copyback_sec": 5.6942e-05,
+        "counter_status": "exported",
+        "emitted_count": 80005,
+        "exact_filter_sec": 0.019056996,
+        "operation_count": 3,
+        "output_pack_sec": 0.003429356,
+        "raw_candidate_count": 280000,
+        "sections": {
+          "regional_dashboard": {
+            "bitset_copyback_sec": 5.6942e-05,
+            "emitted_count": 80005,
+            "exact_filter_sec": 0.019056996,
+            "operation_count": 3,
+            "output_pack_sec": 0.003429356,
+            "raw_candidate_count": 280000,
+            "traversal_sec": 0.113263642
+          }
+        },
+        "traversal_sec": 0.113263642
+      },
+      "db_query_total_sec": 0.13627126591745764,
+      "db_review_observation": {
+        "blocker": "None for local shape; compare RTX artifact against baselines before promotion.",
+        "compact_summary_operation_count": 3,
+        "native_counter_status": "exported",
+        "row_materializing_operation_count": 0,
+        "status": "phase_clean_candidate_for_rtx_review"
+      },
+      "db_run_phase_modes": {
+        "regional_dashboard": {
+          "grouped_count": "group_summary",
+          "grouped_sum": "group_summary",
+          "scan": "count_summary"
+        }
+      },
+      "db_run_phase_totals": {
+        "all_sections_python_summary_postprocess_sec": 2.66998540610075e-06,
+        "all_sections_query_sec": 0.13627126591745764,
+        "compact_summary_operation_count": 3,
+        "row_materializing_operation_count": 0,
+        "sections": {
+          "regional_dashboard": {
+            "compact_summary_operation_count": 3,
+            "python_summary_postprocess_sec": 2.66998540610075e-06,
+            "query_sec": 0.13627126591745764,
+            "row_materializing_operation_count": 0
+          }
+        }
+      },
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "one_shot_total_sec": 1.7786951169837266,
+      "path_name": "prepared_db_session_regional_dashboard",
+      "phase_contract_present": true,
+      "postprocess_median_sec": 2.66998540610075e-06,
+      "prepare_sec": 0.6755071569932625,
+      "prepare_total_sec": 0.6755071569932625,
+      "runner_returncode": 0,
+      "runner_status": "ok",
+      "schema_version": "goal921_db_phase_review_contract_v2",
+      "speedup_one_shot_over_warm_query_median": 13.120063018655054,
+      "warm_query_median_sec": 0.13557062298059464
+    }
+  ],
+  "runner_status": "ok",
+  "status": "ok",
+  "suite": "goal762_rtx_cloud_artifact_report",
+  "summary_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal761_group_c_database_summary.json"
+}

@@ -1,0 +1,38 @@
+{
+  "boundary": "This gate validates the new native bounded pair-row OptiX symbol. It does not promote the public segment_polygon_anyhit_rows path by itself.",
+  "dataset": "authored_segment_polygon_minimal",
+  "date": "2026-04-24",
+  "generated_at": "2026-04-24T06:19:56",
+  "goal": "Goal873 native bounded pair-row OptiX gate",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "output_capacity": 1024,
+  "records": [
+    {
+      "label": "cpu_python_reference",
+      "row_digest": {
+        "row_count": 2,
+        "sha256": "eddb2c560c5d9e96f5a6506af943b2ebc938cf0b637f6f42e40af228f817aede"
+      },
+      "sec": 0.0001192920608446002,
+      "status": "ok"
+    },
+    {
+      "error": "librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "error_type": "FileNotFoundError",
+      "label": "optix_native_bounded",
+      "sec": 0.0004235830856487155,
+      "status": "unavailable_or_failed"
+    }
+  ],
+  "status": "non_strict_recorded_gaps",
+  "strict": false,
+  "strict_failures": [
+    "optix_native_bounded did not run"
+  ],
+  "strict_pass": false
+}

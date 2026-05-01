@@ -1,6 +1,6 @@
 # Goal 218 — Fixed-Radius Neighbors Vulkan Implementation
 
-**Date:** 2026-04-10  
+**Date:** 2026-04-10
 **Author:** Claude Sonnet 4.6 (independent review of in-tree implementation)
 
 ---

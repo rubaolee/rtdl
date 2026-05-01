@@ -1,0 +1,13 @@
+{
+  "allowed_claim_today": "no RTX road-hazard speedup claim today",
+  "app": "road_hazard_screening",
+  "blocker": "segment_polygon_real_optix_artifact_missing",
+  "boundary": "This packet does not promote road_hazard_screening into an active RTX claim set. It only makes the dependency on the segment/polygon native gate explicit.",
+  "claim_scope_after_promotion": "bounded compact road-hazard outputs only, and only after the segment/polygon native gate reaches review-ready status",
+  "date": "2026-04-23",
+  "goal": "Goal865 road hazard review packet",
+  "next_step": "Collect the real OptiX/RTX segment-polygon gate artifact first; road hazard cannot be promoted ahead of its core hit-count primitive.",
+  "road_hazard_recommended_status": "needs_segment_polygon_real_optix_artifact",
+  "segment_polygon_recommended_status": "needs_real_optix_artifact",
+  "source_segment_polygon_packet": "/Users/rl2025/rtdl_python_only/docs/reports/goal864_segment_polygon_gate_review_packet_2026-04-23.json"
+}

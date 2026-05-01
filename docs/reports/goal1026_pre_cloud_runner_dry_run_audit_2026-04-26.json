@@ -1,0 +1,72 @@
+{
+  "apps": [
+    "ann_candidate_search",
+    "barnes_hut_force_app",
+    "database_analytics",
+    "dbscan_clustering",
+    "event_hotspot_screening",
+    "facility_knn_assignment",
+    "graph_analytics",
+    "hausdorff_distance",
+    "outlier_detection",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "road_hazard_screening",
+    "robot_collision_screening",
+    "segment_polygon_anyhit_rows",
+    "segment_polygon_hitcount",
+    "service_coverage_gaps"
+  ],
+  "boundary": "This is a local dry-run audit only. It does not start cloud, run benchmarks, tag, release, or authorize public RTX speedup claims.",
+  "cloud_policy": "The next pod session should run OOM-safe small groups from the single-session runbook, not isolated per-app pod restarts.",
+  "command_result_reuse_paths": [
+    "prepared_fixed_radius_core_flags"
+  ],
+  "date": "2026-04-26",
+  "dry_run_status": "ok",
+  "duplicate_paths": [],
+  "entry_count": 17,
+  "execution_mode_counts": {
+    "executed": 16,
+    "reused_command_result": 1
+  },
+  "failed_count": 0,
+  "git_head": "4ef710a6927827d56e7adbb50ac11edf8820afa9",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "goal": "Goal1026 pre-cloud RTX runner dry-run audit",
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "path_names": [
+    "prepared_db_session_sales_risk",
+    "prepared_db_session_regional_dashboard",
+    "prepared_fixed_radius_density_summary",
+    "prepared_fixed_radius_core_flags",
+    "prepared_pose_flags",
+    "prepared_gap_summary",
+    "prepared_count_summary",
+    "coverage_threshold_prepared",
+    "graph_visibility_edges_gate",
+    "road_hazard_native_summary_gate",
+    "segment_polygon_hitcount_native_experimental",
+    "directed_threshold_prepared",
+    "candidate_threshold_prepared",
+    "node_coverage_prepared",
+    "segment_polygon_anyhit_rows_prepared_bounded_gate",
+    "polygon_pair_overlap_optix_native_assisted_phase_gate",
+    "polygon_set_jaccard_optix_native_assisted_phase_gate"
+  ],
+  "result_status_counts": {
+    "dry_run": 17
+  },
+  "section_counts": {
+    "deferred_entries": 9,
+    "entries": 8
+  },
+  "source_commit": "4ef710a6927827d56e7adbb50ac11edf8820afa9",
+  "unique_command_count": 16,
+  "valid": true
+}

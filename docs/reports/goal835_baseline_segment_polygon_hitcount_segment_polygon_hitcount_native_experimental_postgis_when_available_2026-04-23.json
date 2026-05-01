@@ -1,0 +1,48 @@
+{
+  "app": "segment_polygon_hitcount",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "postgis_when_available",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "experimental prepared hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+  "comparable_metric_scope": "prepared segment/polygon hit-count result on the same dataset and output count semantics",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Linux PostGIS baseline for segment/polygon hit-count semantics with GiST indexed geometry tables."
+  ],
+  "path_name": "segment_polygon_hitcount_native_experimental",
+  "phase_seconds": {
+    "input_build_sec": 0.007476031896658242,
+    "optix_close_sec": 0.0,
+    "optix_prepare_sec": 0.0,
+    "optix_query_sec": 0.0501979379914701,
+    "python_postprocess_sec": 0.0,
+    "validation_sec": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "optix_prepare_sec",
+    "optix_query_sec",
+    "python_postprocess_sec",
+    "validation_sec",
+    "optix_close_sec"
+  ],
+  "source_backend": "postgis",
+  "status": "ok",
+  "summary": {
+    "backend_row_count": 2560,
+    "backend_sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099",
+    "row_count": 2560,
+    "sha256": "ad4265f181053e2f181b0e6b7e6bdd4379e1ec59e4d58581be0d6f61fb0fd099"
+  },
+  "summary_sha256": "3571d2114f30104741159f123d0c70660519239c1a3b7d015ab6d615d6604039",
+  "validation": {
+    "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+    "stable_and_cpu_parity": true
+  }
+}

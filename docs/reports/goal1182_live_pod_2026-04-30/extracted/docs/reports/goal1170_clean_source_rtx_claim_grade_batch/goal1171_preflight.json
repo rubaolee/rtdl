@@ -1,0 +1,87 @@
+{
+  "blockers": [],
+  "boundary": "This preflight checks readiness for the clean-source Goal1170 RTX batch. It does not run benchmarks and does not authorize public speedup wording.",
+  "checks": {
+    "cuda_prefix_exists": true,
+    "geos_c_library_available": true,
+    "geos_pkg_config_available": true,
+    "manifest_exists": true,
+    "manifest_has_eight_rows": true,
+    "nvcc_exists": true,
+    "nvidia_smi_available": true,
+    "optix_library_exists": true,
+    "runner_exists": true,
+    "runner_refuses_dirty_tree": true,
+    "source_clean": true
+  },
+  "date": "2026-04-30",
+  "dry_run": false,
+  "environment": {
+    "cuda_prefix": "/usr/local/cuda",
+    "geos": {
+      "geos_c_library": "libgeos_c.so.1",
+      "install_hint": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config",
+      "pkg_config": "/usr/bin/pkg-config",
+      "pkg_config_geos_package": "geos",
+      "pkg_config_probes": {
+        "geos": {
+          "command": [
+            "/usr/bin/pkg-config",
+            "--libs",
+            "geos"
+          ],
+          "output_tail": "-lgeos_c \n",
+          "returncode": 0
+        },
+        "geos_c": {
+          "command": [
+            "/usr/bin/pkg-config",
+            "--libs",
+            "geos_c"
+          ],
+          "output_tail": "Package geos_c was not found in the pkg-config search path.\nPerhaps you should add the directory containing `geos_c.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'geos_c', required by 'virtual:world', not found\n",
+          "returncode": 1
+        }
+      }
+    },
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "output_tail": "3b6161f40931f49a1ea8261cd31d6dcfd51c330b\n",
+      "returncode": 0
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": "",
+      "returncode": 0
+    },
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "--version"
+      ],
+      "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0\n",
+      "returncode": 0
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "output_tail": "Thu Apr 30 17:47:59 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 550.127.05             Driver Version: 550.127.05     CUDA Version: 12.4     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A4500               On  |   00000000:81:00.0 Off |                  Off |\n| 30%   30C    P8             23W /  200W |       2MiB /  20470MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+      "returncode": 0
+    },
+    "optix_library": "/workspace/rtdl_goal1182/rtdl_staged_source/build/librtdl_optix.so"
+  },
+  "goal": "Goal1171 clean-source RTX pod preflight",
+  "manifest_path": "/workspace/rtdl_goal1182/rtdl_staged_source/docs/reports/goal1170_clean_source_rtx_batch_manifest_2026-04-30.json",
+  "runner_path": "/workspace/rtdl_goal1182/rtdl_staged_source/scripts/goal1170_clean_source_rtx_batch_runner.sh",
+  "valid": true
+}

@@ -42,7 +42,7 @@ The repository is now officially prepared for the **Final External Review Round*
 
 ## 4. Final Verdict and Next Steps
 
-The repository has passed all technical and process gates required for the **v0.5 Preview Launch**. 
+The repository has passed all technical and process gates required for the **v0.5 Preview Launch**.
 
 ### Next Logical Steps:
 1. **External Review**: Distribute the `audit_and_external_review_packet.md` to the final reviewer round.

@@ -1,0 +1,1 @@
+{"backend": "embree", "output_json": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_4096_embree_validation_baseline.json", "scenario": "barnes_hut_node_coverage"}

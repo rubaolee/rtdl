@@ -1,0 +1,23 @@
+{
+  "blocked_apps": [],
+  "boundary": "Goal1062 prepares one batched rerun plan for any remaining blocked NVIDIA RTX wording rows. It does not run cloud, create resources, authorize release, or authorize public speedup wording.",
+  "date": "2026-04-28",
+  "global_preconditions": [
+    "Run only from an already-running RTX-class NVIDIA pod checkout.",
+    "Build the OptiX backend from the checked-out commit before commands.",
+    "Export RTDL_SOURCE_COMMIT or keep .rtdl_source_commit populated.",
+    "Copy the whole report directory back before stopping or terminating the pod.",
+    "Do not use this manifest to authorize public wording without a later artifact-intake and 2+ AI review."
+  ],
+  "goal": "Goal1062 blocked RTX wording rerun manifest",
+  "report_dir": "docs/reports/goal1062_blocked_rtx_wording_rerun",
+  "rows": [],
+  "summary": {
+    "row_count": 0,
+    "timing_row_count": 0,
+    "timing_rows_without_floor": [],
+    "validation_row_count": 0,
+    "validation_rows_with_skip_validation": []
+  },
+  "valid": true
+}

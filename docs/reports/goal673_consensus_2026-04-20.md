@@ -24,4 +24,3 @@ ACCEPT.
 
 - Remove or shrink the host triangle copy in `PreparedRayAnyHit2D` if future prepared-scene memory footprint becomes important.
 - Add a closed-scene `count()` lifecycle test.
-

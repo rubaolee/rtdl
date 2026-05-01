@@ -64,6 +64,44 @@ def run_scipy_fixed_radius_neighbors(
     return tuple(rows)
 
 
+def run_scipy_fixed_radius_count_threshold(
+    query_points: tuple[Point, ...],
+    search_points: tuple[Point, ...],
+    *,
+    radius: float,
+    threshold: int,
+    k_max: int | None = None,
+    tree_factory=None,
+) -> tuple[dict[str, int], ...]:
+    if threshold < 1:
+        raise ValueError("threshold must be at least 1")
+    if tree_factory is None:
+        tree_factory = _load_ckdtree()
+
+    search_coords = tuple((point.x, point.y) for point in search_points)
+    tree = tree_factory(search_coords)
+    rows: list[dict[str, int]] = []
+    for query_point in query_points:
+        candidate_indexes = tree.query_ball_point((query_point.x, query_point.y), r=radius)
+        count = 0
+        for index in candidate_indexes:
+            search_point = search_points[int(index)]
+            distance = math.hypot(search_point.x - query_point.x, search_point.y - query_point.y)
+            if distance <= radius:
+                count += 1
+        if k_max is not None:
+            count = min(count, k_max)
+        rows.append(
+            {
+                "query_id": query_point.id,
+                "neighbor_count": count,
+                "threshold_reached": 1 if count >= threshold else 0,
+            }
+        )
+    rows.sort(key=lambda row: row["query_id"])
+    return tuple(rows)
+
+
 def run_scipy_knn_rows(
     query_points: tuple[Point, ...],
     search_points: tuple[Point, ...],

@@ -1,0 +1,28 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "boundary": "This packet does not promote segment_polygon_anyhit_rows into an active RTX claim set. Compact modes may only inherit native readiness through the segment-polygon hit-count gate; rows mode remains blocked by missing native pair-row output.",
+  "compact_modes": {
+    "segment_counts": {
+      "blocker": "segment_polygon_real_optix_artifact_missing",
+      "claim_scope_after_promotion": "compact any-hit counts only; not pair-row output",
+      "next_step": "Collect the real OptiX/RTX segment-polygon gate artifact first; compact anyhit modes cannot outrun the underlying native hit-count primitive.",
+      "recommended_status": "needs_segment_polygon_real_optix_artifact"
+    },
+    "segment_flags": {
+      "blocker": "segment_polygon_real_optix_artifact_missing",
+      "claim_scope_after_promotion": "compact any-hit flags only; not pair-row output",
+      "next_step": "Collect the real OptiX/RTX segment-polygon gate artifact first; compact anyhit modes cannot outrun the underlying native hit-count primitive.",
+      "recommended_status": "needs_segment_polygon_real_optix_artifact"
+    }
+  },
+  "date": "2026-04-23",
+  "goal": "Goal866 segment_polygon_anyhit_rows review packet",
+  "rows_mode": {
+    "allowed_claim_today": "no RTX pair-row speedup claim today",
+    "blocker": "native_pair_row_emitter_missing",
+    "next_step": "Implement a true native OptiX any-hit row emitter before any row-output RT claim review.",
+    "recommended_status": "needs_native_pair_row_emitter"
+  },
+  "source_segment_polygon_packet": "/Users/rl2025/rtdl_python_only/docs/reports/goal864_segment_polygon_gate_review_packet_2026-04-23.json",
+  "source_segment_polygon_status": "needs_real_optix_artifact"
+}

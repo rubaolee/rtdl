@@ -8,7 +8,7 @@ I have verified that the Goal 157 package is accurate, honest, and appropriately
 The Goal 157 package is **accepted** as a technically honest and accurate representation of the fresh-clone validation state for RTDL v0.2.
 
 ### Findings
-*   **Repo Accuracy:** The report correctly references the primary Linux host (`lestat`), the specific commit (`ec1174e`), and the project's internal structure (e.g., `src/rtdsl`). 
+*   **Repo Accuracy:** The report correctly references the primary Linux host (`lestat`), the specific commit (`ec1174e`), and the project's internal structure (e.g., `src/rtdsl`).
 *   **Technical Honesty:** The documentation transparently reports a failed first attempt in Task C (due to kernel return shapes) and a metadata mismatch in Task B, demonstrating a high degree of integrity.
 *   **Evidence Quality:** Fresh-clone evidence is robustly described with unique `/tmp/` clone paths, explicit build commands, and detailed authored-program logic that goes beyond simply running existing examples.
 *   **Bounded Scope:** The release-readiness conclusion is properly constrained to the primary Linux platform and the specific RTDL surfaces tested, explicitly avoiding over-claiming regarding Mac or native Jaccard kernels.

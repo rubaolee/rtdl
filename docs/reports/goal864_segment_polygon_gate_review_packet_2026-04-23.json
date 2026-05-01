@@ -1,0 +1,57 @@
+{
+  "boundary": "This packet interprets a Goal807 gate artifact only. It does not promote segment/polygon to an active RTX claim path and does not authorize a public speedup claim.",
+  "dataset": "authored_segment_polygon_minimal",
+  "date": "2026-04-23",
+  "gate_status": "non_strict_recorded_gaps",
+  "goal": "Goal864 segment/polygon gate review packet",
+  "include_postgis": false,
+  "postgis_required_for_promotion": false,
+  "recommended_status": "needs_real_optix_artifact",
+  "records": [
+    {
+      "error": null,
+      "error_type": null,
+      "label": "cpu_python_reference",
+      "optix_mode": "not_applicable",
+      "parity_vs_cpu_python_reference": true,
+      "postgis_query_sec": null,
+      "row_digest": {
+        "row_count": 2,
+        "sha256": "072953b91142607004f2c21198cd7f3d870235e021f52c388d93db4c55a6a074"
+      },
+      "sec": 0.00011833396274596453,
+      "status": "ok"
+    },
+    {
+      "error": "librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "error_type": "FileNotFoundError",
+      "label": "optix_host_indexed",
+      "optix_mode": null,
+      "parity_vs_cpu_python_reference": false,
+      "postgis_query_sec": null,
+      "row_digest": null,
+      "sec": 0.00047224992886185646,
+      "status": "unavailable_or_failed"
+    },
+    {
+      "error": "librtdl_optix not found.  Build it with 'make build-optix' or set RTDL_OPTIX_LIB=/path/to/lib.",
+      "error_type": "FileNotFoundError",
+      "label": "optix_native",
+      "optix_mode": null,
+      "parity_vs_cpu_python_reference": false,
+      "postgis_query_sec": null,
+      "row_digest": null,
+      "sec": 0.00023154192604124546,
+      "status": "unavailable_or_failed"
+    }
+  ],
+  "required_parity_ok": false,
+  "required_records_ok": false,
+  "source_goal": "Goal807 segment/polygon OptiX native-mode gate",
+  "source_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal807_segment_polygon_optix_mode_gate_local_2026-04-23.json",
+  "strict_failures": [
+    "optix_host_indexed did not run",
+    "optix_native did not run"
+  ],
+  "strict_pass": false
+}

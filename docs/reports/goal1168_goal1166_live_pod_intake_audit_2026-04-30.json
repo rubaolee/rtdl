@@ -1,0 +1,33 @@
+{
+  "artifact_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1166_live_rtx_pod_2026-04-30",
+  "boundary": "This audit validates the copied Goal1166 live RTX pod artifacts as engineering evidence only. It does not authorize public speedup wording or claim-grade release evidence.",
+  "checks": {
+    "all_expected_files_present": true,
+    "ann_large_timing_query_under_prior_timeout": true,
+    "ann_large_timing_validation_skipped": true,
+    "ann_validation_matches_oracle": true,
+    "intake_records_engineering_accept_claim_block": true,
+    "jaccard_chunk256_diagnostic_failed": true,
+    "jaccard_chunk512_passed": true,
+    "robot_timing_query_under_prior_timeout": true,
+    "robot_timing_validation_skipped": true,
+    "robot_validation_matches_oracle": true,
+    "single_source_marker": true,
+    "source_context_records_dirty_tree": true,
+    "source_marked_local_dirty": true
+  },
+  "claim_grade_blockers": [
+    "source tree was copied from a dirty local working tree",
+    "ANN large row skipped validation and is timing-only",
+    "robot large row skipped validation and is timing-only",
+    "Jaccard chunk256 remains an expected diagnostic failure"
+  ],
+  "claim_grade_verdict": "blocked",
+  "engineering_verdict": "accept",
+  "goal": "Goal1168 Goal1166 live RTX pod intake audit",
+  "missing": [],
+  "source_markers": [
+    "d0ebf9d69041cf013b7af4dcb20a570d25d92c3f-local-dirty-goal1166"
+  ],
+  "valid": true
+}

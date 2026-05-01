@@ -1,0 +1,103 @@
+{
+  "boundary": "This packet requests real RTX collection only for the two spatial prepared-summary apps. It does not promote them automatically and does not authorize a public speedup claim.",
+  "date": "2026-04-23",
+  "goal": "Goal862 spatial RTX collection packet",
+  "one_shot_runner_example": [
+    "python3",
+    "scripts/goal769_rtx_pod_one_shot.py",
+    "--only",
+    "service_coverage_gaps",
+    "--only",
+    "event_hotspot_screening",
+    "--include-deferred"
+  ],
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "row_count": 2,
+  "rows": [
+    {
+      "activation_gate": "already active after artifact intake",
+      "app": "event_hotspot_screening",
+      "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+      "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot summaries",
+      "gate_status": "ready_for_review",
+      "non_claim": "not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+      "optional_local_baselines": [
+        {
+          "baseline": "scipy_baseline_when_available",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "path_name": "prepared_count_summary",
+      "reason_deferred": "active after artifact intake",
+      "required_local_baselines": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json",
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal919_event_hotspot_same_scale_embree_baseline_2026-04-25.json",
+          "status": "valid"
+        }
+      ],
+      "rtx_command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "event_hotspot_screening",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal811_event_hotspot_rtx.json"
+      ],
+      "rtx_output_json": "docs/reports/goal811_event_hotspot_rtx.json"
+    },
+    {
+      "activation_gate": "already active after artifact intake",
+      "app": "service_coverage_gaps",
+      "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
+      "gate_status": "ready_for_review",
+      "non_claim": "not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim",
+      "optional_local_baselines": [
+        {
+          "baseline": "scipy_baseline_when_available",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json",
+          "status": "missing"
+        }
+      ],
+      "path_name": "prepared_gap_summary",
+      "reason_deferred": "active after artifact intake",
+      "required_local_baselines": [
+        {
+          "baseline": "cpu_oracle_summary",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json",
+          "status": "valid"
+        },
+        {
+          "baseline": "embree_summary_path",
+          "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json",
+          "status": "valid"
+        }
+      ],
+      "rtx_command": [
+        "python3",
+        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+        "--scenario",
+        "service_coverage_gaps",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-json",
+        "docs/reports/goal811_service_coverage_rtx.json"
+      ],
+      "rtx_output_json": "docs/reports/goal811_service_coverage_rtx.json"
+    }
+  ],
+  "source_goal860_status": "ready_for_review"
+}

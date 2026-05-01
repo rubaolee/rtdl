@@ -1,0 +1,66 @@
+{
+  "boundary": "This profiler only separates prepared OptiX setup from warm query execution. It does not promote road/segment apps or authorize speedup claims without real RTX artifact review.",
+  "cloud_claim_contract": {
+    "claim_scope": "prepared OptiX custom-AABB segment/polygon traversal with polygon BVH built once and reused across segment batches",
+    "non_claim": "not a public speedup claim until a real RTX artifact is compared with same-semantics CPU/Embree/PostGIS baselines and reviewed",
+    "required_phase_groups": [
+      "input_build_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ],
+    "scenario": "road_hazard_prepared_summary"
+  },
+  "copies": 20000,
+  "date": "2026-04-25",
+  "generated_at": "2026-04-27T05:13:54",
+  "goal": "Goal933 prepared segment/polygon OptiX profiler",
+  "host": {
+    "hostname": "8b8db62e9958",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "iterations": 5,
+  "mode": "run",
+  "result": {
+    "actual_digest": null,
+    "expected_digest": {
+      "hit_sum": 80000,
+      "positive_count": 60000,
+      "row_count": 60000
+    },
+    "expected_priority_segment_count": 20000,
+    "hazard_count": 60000,
+    "matches_oracle": true,
+    "priority_segment_count": 20000,
+    "road_count": 60000
+  },
+  "scenario": "road_hazard_prepared_summary",
+  "schema_version": "goal933_prepared_segment_polygon_optix_contract_v1",
+  "status": "pass",
+  "strict_failures": [],
+  "strict_pass": true,
+  "timings_sec": {
+    "input_build_sec": 0.37422610679641366,
+    "optix_close_sec": 0.0006595789454877377,
+    "optix_prepare_sec": 1.8519900836981833,
+    "optix_query_sec": {
+      "max_sec": 0.1413868092931807,
+      "median_sec": 0.12417701631784439,
+      "min_sec": 0.12110168999060988
+    },
+    "python_postprocess_sec": {
+      "max_sec": 1.2367963790893555e-06,
+      "median_sec": 4.889443516731262e-07,
+      "min_sec": 4.00003045797348e-07
+    },
+    "validation_sec": {
+      "max_sec": 1.7851723600178957,
+      "median_sec": 1.7851723600178957,
+      "min_sec": 1.7851723600178957
+    }
+  }
+}

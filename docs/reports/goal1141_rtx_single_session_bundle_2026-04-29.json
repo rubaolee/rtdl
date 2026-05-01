@@ -1,0 +1,303 @@
+{
+  "boundary": "Goal1141 prepares one consolidated RTX pod session for Goal1116 current-source reruns plus Goal1135 changed-path artifacts. It does not create cloud resources, does not run cloud locally, does not authorize release, and does not authorize public RTX speedup or broad whole-app acceleration claims.",
+  "cloud_policy": "Run this bundle only after a pod is already running. Do not start/stop a pod per app. The generated shell keeps going after individual entry failures, writes a status TSV, and asks for copying back the whole report directory before stopping the pod.",
+  "date": "2026-04-29",
+  "entries": [
+    {
+      "app": "facility_knn_assignment",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage_recentered",
+        "--mode",
+        "optix",
+        "--copies",
+        "2500000",
+        "--iterations",
+        "5",
+        "--radius",
+        "1.0",
+        "--output-json",
+        "docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json"
+      ],
+      "label": "goal1116_facility_knn_assignment_same_scale_validation_and_timing",
+      "output_json": "docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "reason": "Current-source rerun of the recentered facility contract used by Goal1084 and Goal1108.",
+      "source_goal": "goal1116"
+    },
+    {
+      "app": "robot_collision_screening",
+      "command": [
+        "python3",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
+        "optix",
+        "--pose-count",
+        "4096",
+        "--obstacle-count",
+        "256",
+        "--iterations",
+        "3",
+        "--input-mode",
+        "python_objects",
+        "--result-mode",
+        "pose_flags",
+        "--output-json",
+        "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json"
+      ],
+      "label": "goal1116_robot_collision_screening_correctness_validation",
+      "output_json": "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
+      "reason": "Current-source oracle parity check for prepared robot pose flags.",
+      "source_goal": "goal1116"
+    },
+    {
+      "app": "robot_collision_screening",
+      "command": [
+        "python3",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
+        "optix",
+        "--pose-count",
+        "8000000",
+        "--obstacle-count",
+        "4096",
+        "--iterations",
+        "7",
+        "--input-mode",
+        "packed_arrays",
+        "--result-mode",
+        "pose_count",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_8m_timing.json"
+      ],
+      "label": "goal1116_robot_collision_screening_large_timing_repeat",
+      "output_json": "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_8m_timing.json",
+      "reason": "Current-source large packed robot timing repeat. This is the safe cloud timing target; the 36M Embree baseline enables later scale-normalized review but not automatic public wording.",
+      "source_goal": "goal1116"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "4096",
+        "--iterations",
+        "3",
+        "--radius",
+        "0.1",
+        "--barnes-tree-depth",
+        "8",
+        "--hit-threshold",
+        "4",
+        "--output-json",
+        "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json"
+      ],
+      "label": "goal1116_barnes_hut_force_app_correctness_validation",
+      "output_json": "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json",
+      "reason": "Current-source validation for the corrected Barnes-Hut depth-8/radius-0.1 contract.",
+      "source_goal": "goal1116"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "20000000",
+        "--iterations",
+        "3",
+        "--radius",
+        "0.1",
+        "--barnes-tree-depth",
+        "8",
+        "--hit-threshold",
+        "4",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json"
+      ],
+      "label": "goal1116_barnes_hut_force_app_large_timing_repeat",
+      "output_json": "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json",
+      "reason": "Current-source rerun of the 20M Barnes-Hut timing contract used by Goal1093 and Goal1108.",
+      "source_goal": "goal1116"
+    },
+    {
+      "app": "database_analytics",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "all",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/database_analytics_compact_summary.json"
+      ],
+      "label": "goal1135_database_analytics_compact_summary",
+      "output_json": "docs/reports/goal1135_changed_path_rtx_pod/database_analytics_compact_summary.json",
+      "reason": "Goal1128 changed compact-summary row-materialization behavior.",
+      "source_goal": "goal1135"
+    },
+    {
+      "app": "graph_analytics",
+      "command": [
+        "python3",
+        "scripts/goal889_graph_visibility_optix_gate.py",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "0",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/graph_visibility_edges_gate.json"
+      ],
+      "label": "goal1135_graph_visibility_edges_gate",
+      "output_json": "docs/reports/goal1135_changed_path_rtx_pod/graph_visibility_edges_gate.json",
+      "reason": "Goal1129 added graph phase splits; retest bounded graph RT sub-paths.",
+      "source_goal": "goal1135"
+    },
+    {
+      "app": "road_hazard_screening",
+      "command": [
+        "python3",
+        "scripts/goal888_road_hazard_native_optix_gate.py",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/road_hazard_native_summary_count.json"
+      ],
+      "label": "goal1135_road_hazard_native_summary_count",
+      "output_json": "docs/reports/goal1135_changed_path_rtx_pod/road_hazard_native_summary_count.json",
+      "reason": "Goal1130 changed native summary to use prepared threshold count.",
+      "source_goal": "goal1135"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "pair_overlap",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/polygon_pair_overlap_phase_gate.json"
+      ],
+      "label": "goal1135_polygon_pair_overlap_phase_gate",
+      "output_json": "docs/reports/goal1135_changed_path_rtx_pod/polygon_pair_overlap_phase_gate.json",
+      "reason": "Goal1131 exposed candidate-discovery vs exact-continuation phase split.",
+      "source_goal": "goal1135"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "jaccard",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/polygon_set_jaccard_phase_gate.json"
+      ],
+      "label": "goal1135_polygon_set_jaccard_phase_gate",
+      "output_json": "docs/reports/goal1135_changed_path_rtx_pod/polygon_set_jaccard_phase_gate.json",
+      "reason": "Goal1131 added compact Jaccard summary and phase split.",
+      "source_goal": "goal1135"
+    },
+    {
+      "app": "hausdorff_distance",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "hausdorff_threshold",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--radius",
+        "0.4",
+        "--output-json",
+        "docs/reports/goal1135_changed_path_rtx_pod/hausdorff_threshold_phase_gate.json"
+      ],
+      "label": "goal1135_hausdorff_threshold_phase_gate",
+      "output_json": "docs/reports/goal1135_changed_path_rtx_pod/hausdorff_threshold_phase_gate.json",
+      "reason": "Goals1132-1134 clarified app/profiler phase contracts; collect capability-phase evidence only.",
+      "source_goal": "goal1135"
+    }
+  ],
+  "goal": "Goal1141 RTX single-session pod bundle",
+  "report_dir": "docs/reports/goal1141_rtx_single_session_bundle",
+  "setup_commands": [
+    [
+      "bash",
+      "-lc",
+      "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config"
+    ],
+    [
+      "python3",
+      "scripts/goal763_rtx_cloud_bootstrap_check.py",
+      "--skip-tests",
+      "--output-json",
+      "docs/reports/goal1141_rtx_single_session_bundle/bootstrap_preflight.json"
+    ],
+    [
+      "python3",
+      "scripts/goal763_rtx_cloud_bootstrap_check.py",
+      "--output-json",
+      "docs/reports/goal1141_rtx_single_session_bundle/bootstrap_full.json"
+    ]
+  ],
+  "summary": {
+    "entry_count": 11,
+    "goal1116_entry_count": 5,
+    "goal1135_entry_count": 6,
+    "public_speedup_claim_authorized_count": 0,
+    "setup_count": 3
+  },
+  "valid": true
+}

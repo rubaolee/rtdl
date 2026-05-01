@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -11,6 +12,7 @@ import rtdsl as rt
 from rtdsl.reference import _polygon_set_unit_cells
 from rtdsl.reference import _polygon_unit_cells
 from examples.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_embree
+from examples.rtdl_polygon_pair_overlap_area_rows import _positive_candidate_pairs_optix
 from examples.rtdl_polygon_pair_overlap_area_rows import _shift_vertices
 
 
@@ -59,8 +61,26 @@ def make_authored_polygon_set_jaccard_case(*, copies: int = 1):
     return {"left": tuple(left), "right": tuple(right)}
 
 
-def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
-    candidate_pairs = _positive_candidate_pairs_embree(left, right)
+def _run_native_assisted(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    *,
+    candidate_backend: str,
+):
+    if candidate_backend == "embree":
+        candidate_pairs = _positive_candidate_pairs_embree(left, right)
+    elif candidate_backend == "optix":
+        candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    else:
+        raise ValueError("candidate_backend must be 'embree' or 'optix'")
+    return _native_jaccard_rows_for_candidates(left, right, candidate_pairs), candidate_pairs
+
+
+def _exact_jaccard_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+):
     left_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in left}
     right_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in right}
     left_cells = _polygon_set_unit_cells(left)
@@ -81,45 +101,149 @@ def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Po
             "jaccard_similarity": 0.0 if union_area == 0 else intersection_area / union_area,
         },
     )
-    return rows, candidate_pairs
+    return rows
 
 
-def run_case(backend: str = "cpu_python_reference", *, copies: int = 1) -> dict[str, object]:
+def _native_jaccard_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+):
+    return tuple(
+        dict(row)
+        for row in rt.refine_polygon_set_jaccard_for_pairs(left, right, candidate_pairs)
+    )
+
+
+def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    return _run_native_assisted(left, right, candidate_backend="embree")
+
+
+def _run_optix_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    return _run_native_assisted(left, right, candidate_backend="optix")
+
+
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+
+
+def run_case(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    require_rt_core: bool = False,
+) -> dict[str, object]:
+    if output_mode not in {"rows", "summary"}:
+        raise ValueError("output_mode must be 'rows' or 'summary'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_authored_polygon_set_jaccard_case(copies=copies)
+    run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
     if backend == "cpu_python_reference":
+        query_start = time.perf_counter()
         rows = rt.run_cpu_python_reference(polygon_set_jaccard_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
         candidate_row_count = None
     elif backend == "cpu":
+        query_start = time.perf_counter()
         rows = rt.run_cpu(polygon_set_jaccard_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
         candidate_row_count = None
     elif backend == "embree":
-        rows, candidate_pairs = _run_embree_native_assisted(case["left"], case["right"])
+        candidate_start = time.perf_counter()
+        candidate_pairs = _positive_candidate_pairs_embree(case["left"], case["right"])
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        exact_start = time.perf_counter()
+        rows = _native_jaccard_rows_for_candidates(case["left"], case["right"], candidate_pairs)
+        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+        candidate_row_count = len(candidate_pairs)
+    elif backend == "optix":
+        candidate_start = time.perf_counter()
+        candidate_pairs = _positive_candidate_pairs_optix(case["left"], case["right"])
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        exact_start = time.perf_counter()
+        rows = _native_jaccard_rows_for_candidates(case["left"], case["right"], candidate_pairs)
+        run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
         candidate_row_count = len(candidate_pairs)
     else:
         raise ValueError(f"unsupported backend `{backend}`")
-    return {
+    summary_start = time.perf_counter()
+    summary = (
+        dict(rows[0])
+        if rows
+        else {
+            "intersection_area": 0,
+            "left_area": 0,
+            "right_area": 0,
+            "union_area": 0,
+            "jaccard_similarity": 0.0,
+        }
+    )
+    run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
+    backend_mode = (
+        "embree_native_assisted" if backend == "embree"
+        else "optix_native_assisted" if backend == "optix"
+        else "cpu_exact"
+    )
+    payload: dict[str, object] = {
         "app": "polygon_set_jaccard",
         "backend": backend,
-        "backend_mode": "embree_native_assisted" if backend == "embree" else "cpu_exact",
+        "backend_mode": backend_mode,
         "copies": copies,
+        "output_mode": output_mode,
         "left_polygon_count": len(case["left"]),
         "right_polygon_count": len(case["right"]),
         "row_count": len(rows),
         "candidate_row_count": candidate_row_count,
-        "rows": rows,
+        "summary": summary,
+        "run_phases": run_phases,
+        "rt_core_accelerated": False,
+        "rt_core_candidate_discovery_active": backend == "optix",
+        "native_continuation_active": backend in {"embree", "optix"},
+        "native_continuation_backend": "oracle_cpp" if backend in {"embree", "optix"} else None,
+        "optix_performance": {
+            "class": rt.optix_app_performance_support("polygon_set_jaccard").performance_class,
+            "note": rt.optix_app_performance_support("polygon_set_jaccard").note,
+        },
         "boundary": (
-            "Embree mode uses native Embree LSI/PIP positive candidate discovery and CPU/Python exact "
-            "grid-cell set-area refinement. It is native-assisted, not a fully native Jaccard kernel."
+            "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact "
+            "grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate "
+            "discovery and the same native C++ continuation. These modes are RT-candidate plus "
+            "native-continuation pipelines, not monolithic GPU Jaccard kernels."
         ),
     }
+    if output_mode == "rows":
+        payload["rows"] = rows
+    return payload
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run bounded polygon-set Jaccard.")
-    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree"), default="cpu_python_reference")
+    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
     parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Require the native-assisted OptiX candidate-discovery path.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

@@ -1,0 +1,185 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 3,
+  "failed_count": 0,
+  "git_head": "a8ba20f4aa173b9d057acf56998b60abd09eaa68",
+  "git_status_short": "M docs/reports/goal759_db_regional_dashboard_rtx.json\n M docs/reports/goal759_db_sales_risk_rtx.json\n M docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json\n M docs/reports/goal759_robot_pose_flags_phase_rtx.json\n M docs/reports/goal763_rtx_cloud_bootstrap_check.json\n M docs/reports/goal811_event_hotspot_rtx.json\n M docs/reports/goal811_service_coverage_rtx.json\n M docs/reports/goal887_ann_candidate_coverage_rtx.json\n M docs/reports/goal887_barnes_hut_node_coverage_rtx.json\n M docs/reports/goal887_facility_service_coverage_rtx.json\n M docs/reports/goal887_hausdorff_threshold_rtx.json\n M docs/reports/goal889_graph_visibility_optix_gate_rtx.json\n M docs/reports/goal933_road_hazard_prepared_summary_rtx.json\n M docs/reports/goal933_segment_polygon_hitcount_prepared_rtx.json\n M docs/reports/goal934_segment_polygon_anyhit_rows_prepared_bounded_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_ann_candidate_coverage_x4_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_large_rtx.json\n?? docs/reports/goal1007_facility_service_coverage_x3_large_rtx.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.json\n?? docs/reports/goal1007_larger_scale_rtx_repeat_plan_pod_audit.md\n?? docs/reports/goal1007_outlier_dbscan_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x35_large_rtx.json\n?? docs/reports/goal1007_outlier_dbscan_x3_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_dense_obstacles_large_rtx.json\n?? docs/reports/goal1007_robot_pose_flags_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_anyhit_rows_large_rtx.json\n?? docs/reports/goal1007_segment_polygon_hitcount_large_rtx.json\n?? docs/reports/goal1008_extra_current_pod_full_gate/",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sun Apr 26 16:58:29 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:D2:00.0 Off |                  Off |\n| 30%   28C    P0             79W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl",
+  "results": [
+    {
+      "app": "hausdorff_distance",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for hausdorff_distance:directed_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not an exact Hausdorff distance, KNN-row, or nearest-neighbor ranking speedup claim",
+      "path_name": "directed_threshold_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "hausdorff_threshold",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--radius",
+          "0.4",
+          "--output-json",
+          "docs/reports/goal887_hausdorff_threshold_rtx.json"
+        ],
+        "elapsed_sec": 2.902997139841318,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:58:15+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal887_hausdorff_threshold_rtx.json\", \"scenario\": \"hausdorff_threshold\"}\n"
+      }
+    },
+    {
+      "app": "ann_candidate_search",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for ann_candidate_search:candidate_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for ANN candidate-coverage decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a full ANN index, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ, or recall-optimizer claim",
+      "path_name": "candidate_threshold_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "ann_candidate_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--radius",
+          "0.2",
+          "--output-json",
+          "docs/reports/goal887_ann_candidate_coverage_rtx.json"
+        ],
+        "elapsed_sec": 2.9213813887909055,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:58:18+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal887_ann_candidate_coverage_rtx.json\", \"scenario\": \"ann_candidate_coverage\"}\n"
+      }
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for barnes_hut_force_app:node_coverage_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a Barnes-Hut opening-rule, force-vector reduction, or N-body solver speedup claim",
+      "path_name": "node_coverage_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "barnes_hut_node_coverage",
+          "--mode",
+          "optix",
+          "--body-count",
+          "200000",
+          "--iterations",
+          "10",
+          "--radius",
+          "10.0",
+          "--output-json",
+          "docs/reports/goal887_barnes_hut_node_coverage_rtx.json"
+        ],
+        "elapsed_sec": 5.682599689811468,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-26T16:58:21+0000",
+        "status": "ok",
+        "stderr_tail": "",
+        "stdout_tail": "{\"mode\": \"optix\", \"output_json\": \"docs/reports/goal887_barnes_hut_node_coverage_rtx.json\", \"scenario\": \"barnes_hut_node_coverage\"}\n"
+      }
+    }
+  ],
+  "source_commit": "a8ba20f4aa173b9d057acf56998b60abd09eaa68",
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-26T16:58:27+0000",
+  "unique_command_count": 3
+}

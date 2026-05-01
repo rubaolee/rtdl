@@ -1,0 +1,66 @@
+{
+  "app": "robot_collision_screening",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+  "benchmark_scale": {
+    "iterations": 1,
+    "obstacle_count": 128,
+    "pose_count": 1000,
+    "pose_id_start": 1
+  },
+  "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+  "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Embree baseline uses prepared RTDL kernel binding and compact pose-count postprocess.",
+    "This is an equivalent compact summary baseline, not a native scalar ABI.",
+    "CPU oracle validation worker_count=1. On Linux, worker_count>1 uses exact process-level OR-reduction over disjoint ray chunks."
+  ],
+  "path_name": "prepared_pose_flags",
+  "phase_seconds": {
+    "backend_scene_prepare": 7.619741394999437,
+    "native_anyhit_query": 0.0037849429063498974,
+    "oracle_validation_separate": 1.9414652499835938,
+    "pose_and_obstacle_generation": 0.009621341014280915,
+    "pose_index_prepare": 0.0,
+    "ray_pack": 0.0009185099042952061,
+    "scalar_copyback": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 1,
+  "required_phase_coverage": [
+    "pose_and_obstacle_generation",
+    "ray_pack",
+    "backend_scene_prepare",
+    "pose_index_prepare",
+    "native_anyhit_query",
+    "scalar_copyback",
+    "oracle_validation_separate"
+  ],
+  "source_backend": "embree",
+  "status": "ok",
+  "summary": {
+    "colliding_pose_count": 826,
+    "colliding_pose_ids_sample": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "pose_count": 1000
+  },
+  "summary_sha256": "840d5732b76f8f99f672d6516963072310c789bd325bd9115374b84ac93f61a5",
+  "validation": {
+    "matches_reference": true,
+    "method": "compare Embree compact pose summary against CPU oracle compact pose summary",
+    "skipped": false,
+    "worker_count": 1
+  }
+}

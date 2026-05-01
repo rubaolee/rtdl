@@ -21,4 +21,3 @@ Key notes returned by Gemini:
 ## Tooling Note
 
 Gemini CLI could not write the requested file directly because its `write_file` tool was unavailable in that session. This file records the returned Gemini Flash verdict and limitation.
-

@@ -1,0 +1,51 @@
+{
+  "app": "segment_polygon_hitcount",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_python_reference",
+  "benchmark_scale": {
+    "copies": 256,
+    "iterations": 3
+  },
+  "claim_limit": "experimental prepared hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+  "comparable_metric_scope": "prepared segment/polygon hit-count result on the same dataset and output count semantics",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Local segment/polygon hitcount baseline; PostGIS remains a separate unavailable baseline."
+  ],
+  "path_name": "segment_polygon_hitcount_native_experimental",
+  "phase_seconds": {
+    "input_build_sec": 0.012532667024061084,
+    "optix_close_sec": 0.0,
+    "optix_prepare_sec": 0.0,
+    "optix_query_sec": 0.014505499973893166,
+    "python_postprocess_sec": 0.00020554102957248688,
+    "validation_sec": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build_sec",
+    "optix_prepare_sec",
+    "optix_query_sec",
+    "python_postprocess_sec",
+    "validation_sec",
+    "optix_close_sec"
+  ],
+  "source_backend": "cpu_python_reference",
+  "status": "ok",
+  "summary": {
+    "hit_sum": 2816,
+    "positive_count": 2560,
+    "row_count": 2560
+  },
+  "summary_sha256": "26071b5678f525c04115c2986c5bd2e788072e18b76976f93adc396fe9b52656",
+  "validation": {
+    "matches_reference": true,
+    "reference_summary": {
+      "hit_sum": 2816,
+      "positive_count": 2560,
+      "row_count": 2560
+    }
+  }
+}

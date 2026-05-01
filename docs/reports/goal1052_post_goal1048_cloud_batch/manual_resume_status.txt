@@ -1,0 +1,7 @@
+5_graph_visibility_edges_gate rc=0 start=2026-04-28T19:59:29Z end=2026-04-28T19:59:37Z
+6_event_hotspot_screening_prepared_count_summary rc=0 start=2026-04-28T19:59:37Z end=2026-04-28T19:59:39Z
+7_road_hazard_native_summary_gate rc=0 start=2026-04-28T19:59:39Z end=2026-04-28T19:59:43Z
+8_polygon_pair_overlap_optix_native_assisted_phase_gate rc=0 start=2026-04-28T19:59:43Z end=2026-04-28T19:59:49Z
+9_polygon_set_jaccard_optix_native_assisted_phase_gate rc=0 start=2026-04-28T19:59:49Z end=2026-04-28T19:59:55Z
+10_hausdorff_directed_threshold_prepared rc=0 start=2026-04-28T19:59:55Z end=2026-04-28T19:59:57Z
+11_barnes_hut_node_coverage_prepared rc=0 start=2026-04-28T19:59:57Z end=2026-04-28T20:00:01Z

@@ -23,4 +23,3 @@ ACCEPT AS CORRECTNESS PROGRESS; DO NOT CLAIM PERFORMANCE CLOSURE.
 ## Release Claim Boundary
 
 This goal may be described as an implementation and correctness milestone. It must not be described as an OptiX performance optimization closure or speedup until a follow-up benchmark demonstrates a win against the existing OptiX row-output path.
-

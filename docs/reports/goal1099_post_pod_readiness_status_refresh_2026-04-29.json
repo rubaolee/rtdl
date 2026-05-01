@@ -1,0 +1,54 @@
+{
+  "boundary": "Goal1099 refreshes readiness after the RTX A5000 pod evidence intake. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. Same-semantics baselines and public wording review remain required.",
+  "date": "2026-04-29",
+  "goal": "Goal1099 post-pod RTX readiness status refresh",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "latest_evidence": [
+        "docs/reports/goal1083_facility_recentered_2_5m_cpu_oracle.json",
+        "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+        "docs/reports/goal1096_current_rtx_pod_artifact_intake_2026-04-29.json",
+        "docs/reports/goal1098_two_ai_consensus_2026-04-29.md"
+      ],
+      "next_action": "Run or identify a same-semantics baseline for the same recentered facility contract, then perform a public wording review before any README/front-page speedup claim.",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "public_speedup_claim_authorized": false,
+      "status": "rtx_pod_evidence_intaked_needs_same_semantics_baseline_and_public_wording_review"
+    },
+    {
+      "app": "robot_collision_screening",
+      "latest_evidence": [
+        "docs/reports/goal1090_robot_embree_local_runbook_2026-04-29.json",
+        "docs/reports/goal1091_robot_pose_offset_smoke_intake_2026-04-29.json"
+      ],
+      "next_action": "Use Goal1090 to run the Goal1085 resumable 180-chunk Embree baseline on Linux/Windows, then run Goal1086 intake and 2+ AI review.",
+      "path_name": "prepared_pose_flags",
+      "public_speedup_claim_authorized": false,
+      "status": "ready_for_non_cloud_chunked_embree_baseline_execution"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "latest_evidence": [
+        "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json",
+        "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json",
+        "docs/reports/goal1096_current_rtx_pod_artifact_intake_2026-04-29.json",
+        "docs/reports/goal1098_two_ai_consensus_2026-04-29.md"
+      ],
+      "next_action": "Run or identify a same-semantics baseline for the Barnes-Hut node-coverage contract, then perform a public wording review before any README/front-page speedup claim.",
+      "path_name": "node_coverage_prepared_rich",
+      "public_speedup_claim_authorized": false,
+      "status": "rtx_pod_evidence_intaked_needs_same_semantics_baseline_and_public_wording_review"
+    }
+  ],
+  "summary": {
+    "blocked_count": 0,
+    "evidence_intaked_count": 2,
+    "non_cloud_ready_count": 1,
+    "pod_ready_count": 0,
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 3
+  },
+  "supersedes": "docs/reports/goal1094_v1_rtx_readiness_status_refresh_2026-04-29.json",
+  "valid": true
+}

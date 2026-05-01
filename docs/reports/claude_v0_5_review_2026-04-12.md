@@ -1,9 +1,9 @@
 # v0.5 Code Review and Test Report
 
-Date: 2026-04-12  
-Working directory: `/Users/rl2025/claude-work/rtdl_review_2026-04-12`  
-Base commit (last reviewed): `2d51d38 Fix accelerated fixed-radius boundary parity`  
-Tip commit (this review): `917bcdc Add RTNN bounded dataset manifests for v0.5`  
+Date: 2026-04-12
+Working directory: `/Users/rl2025/claude-work/rtdl_review_2026-04-12`
+Base commit (last reviewed): `2d51d38 Fix accelerated fixed-radius boundary parity`
+Tip commit (this review): `917bcdc Add RTNN bounded dataset manifests for v0.5`
 New commits reviewed: 34
 
 ---
@@ -136,16 +136,16 @@ Adapter skeleton only. `resolve_cunsearch_binary` checks filesystem existence â€
 
 ## Findings
 
-**F-1 (low): `_point_distance_sq` silent 2D/3D coercion**  
+**F-1 (low): `_point_distance_sq` silent 2D/3D coercion**
 `getattr(left, "z", 0.0)` silently treats 2D points as z=0.0 when mixed with 3D. Not a bug for current use (the only callers are the `_cpu` functions which handle homogeneous inputs), but the behavior is implicit. A comment in the function noting this convention would help future readers.
 
-**F-2 (low): `rtnn_local_profiles` artifact filter**  
+**F-2 (low): `rtnn_local_profiles` artifact filter**
 `rtnn_local_profiles(artifact=...)` checks `artifact in profile.artifact.split("|")` but the current profile records have `artifact="dataset_packaging"` (singular). Splitting on `|` still works correctly, but is defensive code for a separator that doesn't appear in the data yet. No correctness issue.
 
-**F-3 (low): stale test (goal187)**  
+**F-3 (low): stale test (goal187)**
 `tests/goal187_v0_3_audit_test.py:24` checks for the old YouTube Shorts URL after the README was upgraded to the 4K link. One-line fix: update `SHORTS_URL` to the 4K URL.
 
-**F-4 (info): cuNSearch binary path resolves symlinks**  
+**F-4 (info): cuNSearch binary path resolves symlinks**
 `resolve_cunsearch_binary` calls `resolved.resolve()` which expands symlinks. `config.binary_path` will differ from `sys.executable` if `sys.executable` is a symlink (as on Homebrew Python). This is correct behavior but worth knowing when writing adapter tests.
 
 ---

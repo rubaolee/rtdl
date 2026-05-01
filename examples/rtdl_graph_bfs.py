@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -50,42 +52,130 @@ def make_case(copies: int = 1) -> dict[str, object]:
 
 
 def _summarize(rows) -> dict[str, object]:
-    row_list = list(rows)
-    return {
-        "discovered_edge_count": len(row_list),
-        "discovered_vertex_count": len({int(row["dst_vertex"]) for row in row_list}),
-        "max_level": max((int(row["level"]) for row in row_list), default=0),
-    }
+    return rt.summarize_bfs_rows(rows)
 
 
-def run_backend(backend: str, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "graph_bfs OptiX native graph-ray mode is not NVIDIA RT-core traversal "
+        "claim-safe until the RTX cloud gate passes"
+    )
+
+
+def run_backend(
+    backend: str,
+    copies: int = 1,
+    output_mode: str = "rows",
+    *,
+    require_rt_core: bool = False,
+    optix_graph_mode: str = "auto",
+) -> dict[str, object]:
     if output_mode not in {"rows", "summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if optix_graph_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError(f"unsupported optix_graph_mode: {optix_graph_mode}")
+    _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_case(copies)
+    input_construction_sec = time.perf_counter() - input_start
+    query_start = time.perf_counter()
+    raw_summary = None
+    raw_row_count = None
+    raw_summary_backend = None
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(bfs_expand_kernel, **case)
     elif backend == "cpu":
         rows = rt.run_cpu(bfs_expand_kernel, **case)
+    elif backend == "embree" and output_mode == "summary":
+        raw_rows = rt.run_embree(bfs_expand_kernel, result_mode="raw", **case)
+        try:
+            raw_row_count = len(raw_rows)
+            raw_summary = rt.summarize_bfs_row_view(raw_rows)
+            raw_summary_backend = "oracle_cpp_raw_row_view"
+        finally:
+            raw_rows.close()
+        rows = ()
     elif backend == "embree":
         rows = rt.run_embree(bfs_expand_kernel, **case)
     elif backend == "optix":
-        rows = rt.run_optix(bfs_expand_kernel, **case)
+        previous = os.environ.get("RTDL_OPTIX_GRAPH_MODE")
+        if optix_graph_mode != "auto":
+            os.environ["RTDL_OPTIX_GRAPH_MODE"] = "native" if optix_graph_mode == "native" else "host_indexed"
+        try:
+            if output_mode == "summary":
+                raw_rows = rt.run_optix(bfs_expand_kernel, result_mode="raw", **case)
+                try:
+                    raw_row_count = len(raw_rows)
+                    raw_summary = rt.summarize_bfs_row_view(raw_rows)
+                    raw_summary_backend = "oracle_cpp_raw_row_view"
+                finally:
+                    raw_rows.close()
+                rows = ()
+            else:
+                rows = rt.run_optix(bfs_expand_kernel, **case)
+        finally:
+            if optix_graph_mode != "auto":
+                if previous is None:
+                    os.environ.pop("RTDL_OPTIX_GRAPH_MODE", None)
+                else:
+                    os.environ["RTDL_OPTIX_GRAPH_MODE"] = previous
     elif backend == "vulkan":
         rows = rt.run_vulkan(bfs_expand_kernel, **case)
     else:
         raise ValueError(f"unsupported backend: {backend}")
+    query_and_materialize_sec = time.perf_counter() - query_start
+    summary_start = time.perf_counter()
+    summary = raw_summary if raw_summary is not None else _summarize(rows)
+    native_summary_postprocess_sec = time.perf_counter() - summary_start
+    row_count = raw_row_count if raw_row_count is not None else len(rows)
 
     return {
         "app": "graph_bfs",
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
+        "optix_graph_mode": optix_graph_mode if backend == "optix" else "not_applicable",
         "graph_vertex_count": 4 * copies,
         "graph_edge_count": 5 * copies,
         "frontier_size": len(case["frontier"]),
         "visited_size": len(case["visited"]),
+        "row_count": row_count,
         "rows": rows if output_mode == "rows" else [],
-        "summary": _summarize(rows),
+        "summary": summary,
+        "run_phases": {
+            "input_construction_sec": input_construction_sec,
+            "query_and_materialize_sec": query_and_materialize_sec,
+            "query_raw_view_sec": query_and_materialize_sec if raw_row_count is not None else 0.0,
+            "row_materialization_sec": 0.0 if raw_row_count is not None else query_and_materialize_sec,
+            "native_summary_postprocess_sec": native_summary_postprocess_sec,
+        },
+        "native_continuation_active": output_mode == "summary",
+        "native_continuation_backend": (
+            raw_summary_backend
+            if raw_summary_backend is not None
+            else ("oracle_cpp" if output_mode == "summary" else None)
+        ),
+        "ray_tracing_accelerated": backend == "embree",
+        "ray_tracing_note": (
+            "Embree uses ray traversal over graph-edge primitives for frontier "
+            "candidate generation; CPU-side visited/frontier bookkeeping remains "
+            "outside the RT traversal."
+            if backend == "embree"
+            else "This backend is not currently classified as the graph BFS ray-tracing path."
+        ),
+        "rt_core_accelerated": False,
+        "optix_performance": {
+            "class": "host_indexed_fallback",
+            "note": (
+                "OptiX BFS currently uses a host-indexed CSR expansion correctness path; "
+                "native graph-ray mode is available behind RTDL_OPTIX_GRAPH_MODE=native "
+                "but is not an RTX graph acceleration claim until cloud-gated."
+            ),
+        },
     }
 
 
@@ -98,8 +188,26 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic graph fixture this many times.")
     parser.add_argument("--output-mode", default="rows", choices=("rows", "summary"))
+    parser.add_argument("--optix-graph-mode", default="auto", choices=("auto", "host_indexed", "native"))
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_backend(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_backend(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                require_rt_core=args.require_rt_core,
+                optix_graph_mode=args.optix_graph_mode,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

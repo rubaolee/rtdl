@@ -1,8 +1,8 @@
 # Final Session Audit Summary: RTDL v0.5 Preview Transition
 
-**Date**: 2026-04-12  
-**Auditor**: Gemini (Antigravity)  
-**Session Scope**: Goals 258–323  
+**Date**: 2026-04-12
+**Auditor**: Gemini (Antigravity)
+**Session Scope**: Goals 258–323
 **Status**: AUDIT SESSION COMPLETE (PREVIEW-READY, NOT FINAL RELEASE)
 
 ---
@@ -33,5 +33,5 @@ is ready for final external review. It does **not** mean that final release
 packaging or release tagging is already complete.
 
 ---
-**Sign-off**: Antigravity (Gemini)  
+**Sign-off**: Antigravity (Gemini)
 **Timestamp**: 2026-04-12 22:35 ET

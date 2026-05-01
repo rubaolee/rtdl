@@ -1,6 +1,7 @@
 #include "rtdl_oracle_internal.h"
 
 #include <map>
+#include <set>
 
 #if defined(_WIN32)
 #  define RTDL_ORACLE_EXPORT extern "C" __declspec(dllexport)
@@ -119,6 +120,48 @@ bool db_row_matches(
            db_scalar_compare(row_value, clause.value_hi) <= 0;
   }
   throw std::runtime_error("unsupported DB predicate operator");
+}
+
+std::vector<size_t> candidate_polygon_indexes(
+    const std::vector<rtdl::oracle::Polygon2D>& polygons,
+    uint32_t polygon_id) {
+  std::vector<size_t> indexes;
+  for (size_t index = 0; index < polygons.size(); ++index) {
+    if (polygons[index].id == polygon_id) {
+      indexes.push_back(index);
+    }
+  }
+  return indexes;
+}
+
+std::set<std::pair<uint32_t, uint32_t>> normalize_polygon_pair_candidates(
+    const RtdlPolygonPairCandidate* candidates,
+    size_t candidate_count) {
+  std::set<std::pair<uint32_t, uint32_t>> pairs;
+  for (size_t index = 0; index < candidate_count; ++index) {
+    pairs.insert({candidates[index].left_polygon_id, candidates[index].right_polygon_id});
+  }
+  return pairs;
+}
+
+std::vector<uint64_t> intersect_cell_values(
+    const std::vector<uint64_t>& left,
+    const std::vector<uint64_t>& right) {
+  std::vector<uint64_t> cells;
+  size_t left_index = 0;
+  size_t right_index = 0;
+  while (left_index < left.size() && right_index < right.size()) {
+    if (left[left_index] == right[right_index]) {
+      cells.push_back(left[left_index]);
+      left_index += 1;
+      right_index += 1;
+    } else if (left[left_index] < right[right_index]) {
+      left_index += 1;
+    } else {
+      right_index += 1;
+    }
+  }
+  return cells;
 }
 
 }  // namespace
@@ -588,6 +631,153 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_polygon_set_jaccard(
   }, error_out, error_size);
 }
 
+RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_pair_overlap_area_rows_for_pairs(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    const RtdlPolygonPairCandidate* candidates,
+    size_t candidate_count,
+    RtdlPolygonPairOverlapAreaRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (candidate_count > 0 && candidates == nullptr) {
+      throw std::runtime_error("candidate pointer must not be null when candidate_count is non-zero");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<rtdl::oracle::Polygon2D> left_values =
+        rtdl::oracle::decode_polygons(left_polygons, left_count, left_vertices_xy, left_vertex_xy_count);
+    std::vector<rtdl::oracle::Polygon2D> right_values =
+        rtdl::oracle::decode_polygons(right_polygons, right_count, right_vertices_xy, right_vertex_xy_count);
+    std::vector<std::vector<uint64_t>> left_cells;
+    std::vector<std::vector<uint64_t>> right_cells;
+    left_cells.reserve(left_values.size());
+    right_cells.reserve(right_values.size());
+    for (const rtdl::oracle::Polygon2D& polygon : left_values) {
+      left_cells.push_back(rtdl::oracle::polygon_unit_cells(polygon));
+    }
+    for (const rtdl::oracle::Polygon2D& polygon : right_values) {
+      right_cells.push_back(rtdl::oracle::polygon_unit_cells(polygon));
+    }
+    const std::set<std::pair<uint32_t, uint32_t>> candidate_pairs =
+        rtdl::oracle::normalize_polygon_pair_candidates(candidates, candidate_count);
+    std::vector<RtdlPolygonPairOverlapAreaRow> rows;
+    for (size_t left_index = 0; left_index < left_values.size(); ++left_index) {
+      const uint32_t left_id = left_values[left_index].id;
+      const uint32_t left_area = static_cast<uint32_t>(left_cells[left_index].size());
+      for (size_t right_index = 0; right_index < right_values.size(); ++right_index) {
+        const uint32_t right_id = right_values[right_index].id;
+        if (candidate_pairs.find({left_id, right_id}) == candidate_pairs.end()) {
+          continue;
+        }
+        const uint32_t intersection_area =
+            rtdl::oracle::intersect_cell_sets(left_cells[left_index], right_cells[right_index]);
+        if (intersection_area == 0) {
+          continue;
+        }
+        const uint32_t right_area = static_cast<uint32_t>(right_cells[right_index].size());
+        rows.push_back({
+            left_id,
+            right_id,
+            intersection_area,
+            left_area,
+            right_area,
+            static_cast<uint32_t>(left_area + right_area - intersection_area),
+        });
+      }
+    }
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_refine_polygon_set_jaccard_for_pairs(
+    const RtdlPolygonRef* left_polygons,
+    size_t left_count,
+    const double* left_vertices_xy,
+    size_t left_vertex_xy_count,
+    const RtdlPolygonRef* right_polygons,
+    size_t right_count,
+    const double* right_vertices_xy,
+    size_t right_vertex_xy_count,
+    const RtdlPolygonPairCandidate* candidates,
+    size_t candidate_count,
+    RtdlPolygonSetJaccardRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (candidate_count > 0 && candidates == nullptr) {
+      throw std::runtime_error("candidate pointer must not be null when candidate_count is non-zero");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<rtdl::oracle::Polygon2D> left_values =
+        rtdl::oracle::decode_polygons(left_polygons, left_count, left_vertices_xy, left_vertex_xy_count);
+    std::vector<rtdl::oracle::Polygon2D> right_values =
+        rtdl::oracle::decode_polygons(right_polygons, right_count, right_vertices_xy, right_vertex_xy_count);
+    std::vector<std::vector<uint64_t>> left_cells_by_index;
+    std::vector<std::vector<uint64_t>> right_cells_by_index;
+    left_cells_by_index.reserve(left_values.size());
+    right_cells_by_index.reserve(right_values.size());
+    for (const rtdl::oracle::Polygon2D& polygon : left_values) {
+      left_cells_by_index.push_back(rtdl::oracle::polygon_unit_cells(polygon));
+    }
+    for (const rtdl::oracle::Polygon2D& polygon : right_values) {
+      right_cells_by_index.push_back(rtdl::oracle::polygon_unit_cells(polygon));
+    }
+    const std::vector<uint64_t> left_cells = rtdl::oracle::polygon_set_unit_cells(left_values);
+    const std::vector<uint64_t> right_cells = rtdl::oracle::polygon_set_unit_cells(right_values);
+
+    std::vector<uint64_t> intersection_cells;
+    const std::set<std::pair<uint32_t, uint32_t>> candidate_pairs =
+        rtdl::oracle::normalize_polygon_pair_candidates(candidates, candidate_count);
+    for (const auto& [left_id, right_id] : candidate_pairs) {
+      const std::vector<size_t> left_indexes =
+          rtdl::oracle::candidate_polygon_indexes(left_values, left_id);
+      const std::vector<size_t> right_indexes =
+          rtdl::oracle::candidate_polygon_indexes(right_values, right_id);
+      for (size_t left_index : left_indexes) {
+        for (size_t right_index : right_indexes) {
+          std::vector<uint64_t> pair_cells = rtdl::oracle::intersect_cell_values(
+              left_cells_by_index[left_index],
+              right_cells_by_index[right_index]);
+          intersection_cells.insert(intersection_cells.end(), pair_cells.begin(), pair_cells.end());
+        }
+      }
+    }
+    std::sort(intersection_cells.begin(), intersection_cells.end());
+    intersection_cells.erase(std::unique(intersection_cells.begin(), intersection_cells.end()), intersection_cells.end());
+
+    const uint32_t intersection_area = static_cast<uint32_t>(intersection_cells.size());
+    const uint32_t left_area = static_cast<uint32_t>(left_cells.size());
+    const uint32_t right_area = static_cast<uint32_t>(right_cells.size());
+    const uint32_t union_area = static_cast<uint32_t>(left_area + right_area - intersection_area);
+    const double jaccard_similarity =
+        union_area == 0 ? 0.0 : static_cast<double>(intersection_area) / static_cast<double>(union_area);
+
+    std::vector<RtdlPolygonSetJaccardRow> rows;
+    rows.push_back({intersection_area, left_area, right_area, union_area, jaccard_similarity});
+    *rows_out = rtdl::oracle::copy_rows_out(rows);
+    *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
 RTDL_ORACLE_EXPORT int rtdl_oracle_run_point_nearest_segment(
     const RtdlPoint* points,
     size_t point_count,
@@ -753,6 +943,47 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_fixed_radius_neighbors_3d(
 
     *rows_out = rtdl::oracle::copy_rows_out(rows);
     *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_fixed_radius_rows(
+    const RtdlFixedRadiusNeighborRow* rows,
+    size_t row_count,
+    RtdlFixedRadiusSummaryRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (row_count > 0 && rows == nullptr) {
+      throw std::runtime_error("fixed-radius rows pointer must not be null when row_count is non-zero");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<uint32_t> query_ids;
+    std::vector<uint32_t> neighbor_ids;
+    query_ids.reserve(row_count);
+    neighbor_ids.reserve(row_count);
+    for (size_t index = 0; index < row_count; ++index) {
+      query_ids.push_back(rows[index].query_id);
+      neighbor_ids.push_back(rows[index].neighbor_id);
+    }
+    std::sort(query_ids.begin(), query_ids.end());
+    query_ids.erase(std::unique(query_ids.begin(), query_ids.end()), query_ids.end());
+    std::sort(neighbor_ids.begin(), neighbor_ids.end());
+    neighbor_ids.erase(std::unique(neighbor_ids.begin(), neighbor_ids.end()), neighbor_ids.end());
+
+    std::vector<RtdlFixedRadiusSummaryRow> summary;
+    summary.push_back({
+        static_cast<uint32_t>(row_count),
+        static_cast<uint32_t>(query_ids.size()),
+        static_cast<uint32_t>(neighbor_ids.size()),
+    });
+    *rows_out = rtdl::oracle::copy_rows_out(summary);
+    *row_count_out = summary.size();
   }, error_out, error_size);
 }
 
@@ -1010,6 +1241,44 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_bounded_knn_rows_3d(
   }, error_out, error_size);
 }
 
+RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_knn_rows(
+    const RtdlKnnNeighborRow* rows,
+    size_t row_count,
+    RtdlKnnSummaryRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (row_count > 0 && rows == nullptr) {
+      throw std::runtime_error("KNN rows pointer must not be null when row_count is non-zero");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<uint32_t> query_ids;
+    query_ids.reserve(row_count);
+    uint32_t max_neighbor_rank = 0;
+    for (size_t index = 0; index < row_count; ++index) {
+      query_ids.push_back(rows[index].query_id);
+      max_neighbor_rank = std::max(max_neighbor_rank, rows[index].neighbor_rank);
+    }
+    std::sort(query_ids.begin(), query_ids.end());
+    query_ids.erase(std::unique(query_ids.begin(), query_ids.end()), query_ids.end());
+
+    std::vector<RtdlKnnSummaryRow> summary;
+    summary.push_back({
+        static_cast<uint32_t>(row_count),
+        static_cast<uint32_t>(query_ids.size()),
+        max_neighbor_rank,
+    });
+    *rows_out = rtdl::oracle::copy_rows_out(summary);
+    *row_count_out = summary.size();
+  }, error_out, error_size);
+}
+
 RTDL_ORACLE_EXPORT int rtdl_oracle_run_bfs_expand(
     const uint32_t* row_offsets,
     size_t row_offset_count,
@@ -1226,6 +1495,81 @@ RTDL_ORACLE_EXPORT int rtdl_oracle_run_triangle_probe(
 
     *rows_out = rtdl::oracle::copy_rows_out(rows);
     *row_count_out = rows.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_bfs_rows(
+    const RtdlBfsExpandRow* rows,
+    size_t row_count,
+    RtdlBfsSummaryRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (row_count > 0 && rows == nullptr) {
+      throw std::runtime_error("BFS rows pointer must not be null when row_count is non-zero");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<uint32_t> discovered_vertices;
+    discovered_vertices.reserve(row_count);
+    uint32_t max_level = 0;
+    for (size_t index = 0; index < row_count; ++index) {
+      discovered_vertices.push_back(rows[index].dst_vertex);
+      max_level = std::max(max_level, rows[index].level);
+    }
+    std::sort(discovered_vertices.begin(), discovered_vertices.end());
+    discovered_vertices.erase(std::unique(discovered_vertices.begin(), discovered_vertices.end()), discovered_vertices.end());
+
+    std::vector<RtdlBfsSummaryRow> summary;
+    summary.push_back({
+        static_cast<uint32_t>(row_count),
+        static_cast<uint32_t>(discovered_vertices.size()),
+        max_level,
+    });
+    *rows_out = rtdl::oracle::copy_rows_out(summary);
+    *row_count_out = summary.size();
+  }, error_out, error_size);
+}
+
+RTDL_ORACLE_EXPORT int rtdl_oracle_summarize_triangle_rows(
+    const RtdlTriangleRow* rows,
+    size_t row_count,
+    RtdlTriangleSummaryRow** rows_out,
+    size_t* row_count_out,
+    char* error_out,
+    size_t error_size) {
+  return rtdl::oracle::handle_native_call([&]() {
+    if (rows_out == nullptr || row_count_out == nullptr) {
+      throw std::runtime_error("output pointers must not be null");
+    }
+    if (row_count > 0 && rows == nullptr) {
+      throw std::runtime_error("triangle rows pointer must not be null when row_count is non-zero");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+
+    std::vector<uint32_t> vertices;
+    vertices.reserve(row_count * 3);
+    for (size_t index = 0; index < row_count; ++index) {
+      vertices.push_back(rows[index].u);
+      vertices.push_back(rows[index].v);
+      vertices.push_back(rows[index].w);
+    }
+    std::sort(vertices.begin(), vertices.end());
+    vertices.erase(std::unique(vertices.begin(), vertices.end()), vertices.end());
+
+    std::vector<RtdlTriangleSummaryRow> summary;
+    summary.push_back({
+        static_cast<uint32_t>(row_count),
+        static_cast<uint32_t>(vertices.size()),
+    });
+    *rows_out = rtdl::oracle::copy_rows_out(summary);
+    *row_count_out = summary.size();
   }, error_out, error_size);
 }
 

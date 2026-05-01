@@ -117,6 +117,13 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
         src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
     }
     std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
+    if (!std::getenv("RTDL_NVCC")) {
+        std::error_code ignored;
+        if (!std::filesystem::exists(nvcc, ignored)
+            && std::filesystem::exists("/usr/local/cuda/bin/nvcc", ignored)) {
+            nvcc = "/usr/local/cuda/bin/nvcc";
+        }
+    }
     std::vector<std::string> argv_storage = {
         nvcc,
         "-ptx",
@@ -230,11 +237,17 @@ std::string compile_to_ptx(const char* cuda_src,
     }
 
     std::vector<const char*> opts;
-    opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 1);
+    opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 3);
     for (const std::string& include_opt : nvrtc_include_opts) {
         opts.push_back(include_opt.c_str());
     }
     opts.push_back("--std=c++14");
+#if defined(__linux__) && defined(__x86_64__)
+    // CUDA 13 NVRTC can include glibc headers without the host architecture
+    // predefines, which makes gnu/stubs.h look for missing 32-bit stubs.
+    opts.push_back("-D__x86_64__=1");
+    opts.push_back("-D__LP64__=1");
+#endif
     for (const char* o : extra_opts) opts.push_back(o);
 
     nvrtcProgram prog;
@@ -287,7 +300,8 @@ static void init_optix_context() {
     CUdevice  dev;
     CUcontext cu_ctx;
     CU_CHECK(cuDeviceGet(&dev, 0));
-    CU_CHECK(cuCtxCreate(&cu_ctx, 0, dev));
+    CU_CHECK(cuDevicePrimaryCtxRetain(&cu_ctx, dev));
+    CU_CHECK(cuCtxSetCurrent(cu_ctx));
     OPTIX_CHECK(optixInit());
     OptixDeviceContextOptions opts = {};
     if (const char* log_level = std::getenv("RTDL_OPTIX_LOG_LEVEL")) {
@@ -1435,6 +1449,175 @@ extern "C" __global__ void __anyhit__segpoly_anyhit() {
 }
 )CUDA";
 
+static const char* kSegPolyAnyhitRowsKernelSrc = R"CUDA(
+#include <optix.h>
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    uint32_t id;
+};
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct SegPolyPairRecord {
+    uint32_t segment_id, polygon_id;
+};
+
+struct SegPolyRowsParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* segments;
+    const GpuPolygonRef* polygons;
+    const float* vertices_x;
+    const float* vertices_y;
+    SegPolyPairRecord* output;
+    uint32_t* output_count;
+    uint32_t* overflowed;
+    uint32_t output_capacity;
+    uint32_t segment_count;
+};
+
+extern "C" {
+__constant__ SegPolyRowsParams params;
+}
+
+static __forceinline__ __device__ float segpoly_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool point_on_segment_dev(
+        float px, float py,
+        float ax, float ay,
+        float bx, float by)
+{
+    const float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (segpoly_absf(cross) > 1.0e-5f) return false;
+    const float min_x = ax < bx ? ax : bx;
+    const float max_x = ax > bx ? ax : bx;
+    const float min_y = ay < by ? ay : by;
+    const float max_y = ay > by ? ay : by;
+    return px >= min_x - 1.0e-5f && px <= max_x + 1.0e-5f &&
+           py >= min_y - 1.0e-5f && py <= max_y + 1.0e-5f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_inclusive_dev(
+        float px, float py,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (point_on_segment_dev(px, py, xi, yi, xj, yj)) {
+            return true;
+        }
+    }
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi)) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+static __forceinline__ __device__ bool seg_edge_hit_dev(
+        float sx0, float sy0, float sx1, float sy1,
+        float ax, float ay, float bx, float by)
+{
+    const float rx = sx1 - sx0;
+    const float ry = sy1 - sy0;
+    const float ex = bx - ax;
+    const float ey = by - ay;
+    const float denom = rx * ey - ry * ex;
+    if (segpoly_absf(denom) < 1.0e-7f) {
+        return point_on_segment_dev(sx0, sy0, ax, ay, bx, by) ||
+               point_on_segment_dev(sx1, sy1, ax, ay, bx, by) ||
+               point_on_segment_dev(ax, ay, sx0, sy0, sx1, sy1) ||
+               point_on_segment_dev(bx, by, sx0, sy0, sx1, sy1);
+    }
+    const float qpx = ax - sx0;
+    const float qpy = ay - sy0;
+    const float t = (qpx * ey - qpy * ex) / denom;
+    const float u = (qpx * ry - qpy * rx) / denom;
+    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+}
+
+static __forceinline__ __device__ bool seg_hits_polygon(
+        float sx0, float sy0, float sx1, float sy1,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    if (point_in_polygon_inclusive_dev(sx0, sy0, poly) ||
+        point_in_polygon_inclusive_dev(sx1, sy1, poly)) {
+        return true;
+    }
+    for (uint32_t i = 0; i < n; ++i) {
+        const float ax = params.vertices_x[off + i], ay = params.vertices_y[off + i];
+        const float bx = params.vertices_x[off + (i + 1) % n], by = params.vertices_y[off + (i + 1) % n];
+        if (seg_edge_hit_dev(sx0, sy0, sx1, sy1, ax, ay, bx, by)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+extern "C" __global__ void __raygen__segpoly_rows_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.segment_count) return;
+    const GpuSegment s = params.segments[idx];
+    float dx = s.x1 - s.x0, dy = s.y1 - s.y0;
+    float len = sqrtf(dx * dx + dy * dy);
+    if (len < 1.0e-10f) return;
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(s.x0, s.y0, 0.0f),
+               make_float3(dx / len, dy / len, 0.0f),
+               0.0f, len, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__segpoly_rows_miss() {}
+
+extern "C" __global__ void __intersection__segpoly_rows_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t sidx = optixGetPayload_0();
+    const GpuSegment s = params.segments[sidx];
+    const GpuPolygonRef poly = params.polygons[prim];
+    if (!seg_hits_polygon(s.x0, s.y0, s.x1, s.y1, poly)) return;
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__segpoly_rows_anyhit() {
+    const uint32_t sidx = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity && params.output != nullptr) {
+        params.output[slot] = {params.segments[sidx].id, params.polygons[prim].id};
+    } else if (params.overflowed != nullptr) {
+        atomicExch(params.overflowed, 1u);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 // ---------- Point-nearest-segment: CUDA kernel (no OptiX BVH) ---------------
 //
 // PointNearestSegment does not map well to OptiX ray traversal (it needs a
@@ -1630,6 +1813,7 @@ struct FixedRadiusCountParams {
     const GpuPoint* query_points;
     const GpuPoint* search_points;
     FixedRadiusCountRecord* output;
+    uint32_t* threshold_reached_count;
     uint32_t query_count;
     uint32_t threshold;
     float radius;
@@ -1653,7 +1837,12 @@ extern "C" __global__ void __raygen__frn_count_probe() {
                OPTIX_RAY_FLAG_NONE,
                0, 1, 0,
                p0, p1, p2);
-    params.output[idx] = {query.id, p1, p2};
+    if (params.output) {
+        params.output[idx] = {query.id, p1, p2};
+    }
+    if (params.threshold_reached_count && p2 != 0u) {
+        atomicAdd(params.threshold_reached_count, 1u);
+    }
 }
 
 extern "C" __global__ void __miss__frn_count_miss() {}
@@ -1811,6 +2000,190 @@ extern "C" __global__ void __anyhit__db_scan_anyhit() {
 }
 )CUDA";
 
+static const char* kGraphBfsRayKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct FrontierVertex {
+    uint32_t vertex_id;
+    uint32_t level;
+};
+
+struct EdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct GraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct BfsRow {
+    uint32_t src_vertex;
+    uint32_t dst_vertex;
+    uint32_t level;
+};
+
+struct GraphBfsParams {
+    OptixTraversableHandle traversable;
+    const GraphEdge* edges;
+    const FrontierVertex* frontier;
+    const uint32_t* visited_flags;
+    uint32_t* discovered_flags;
+    BfsRow* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t frontier_count;
+    uint32_t vertex_count;
+    uint32_t dedupe;
+};
+
+extern "C" {
+__constant__ GraphBfsParams params;
+}
+
+extern "C" __global__ void __raygen__graph_bfs_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.frontier_count) {
+        return;
+    }
+    const FrontierVertex f = params.frontier[idx];
+    if (f.vertex_id >= params.vertex_count) {
+        return;
+    }
+    uint32_t p0 = idx;
+    optixTrace(
+        params.traversable,
+        make_float3(static_cast<float>(f.vertex_id), -1.0f, 0.0f),
+        make_float3(0.0f, 1.0f, 0.0f),
+        0.0f,
+        static_cast<float>(params.vertex_count + 2u),
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0,
+        p0);
+}
+
+extern "C" __global__ void __miss__graph_bfs_miss() {}
+
+extern "C" __global__ void __intersection__graph_bfs_isect() {
+    optixReportIntersection(optixGetRayTmin() + 1.0e-6f, 0u);
+}
+
+extern "C" __global__ void __anyhit__graph_bfs_anyhit() {
+    const uint32_t frontier_index = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const FrontierVertex f = params.frontier[frontier_index];
+    const GraphEdge edge = params.edges[prim];
+    if (edge.src != f.vertex_id) {
+        optixIgnoreIntersection();
+        return;
+    }
+    if (params.visited_flags[edge.dst] != 0u) {
+        optixIgnoreIntersection();
+        return;
+    }
+    if (params.dedupe != 0u) {
+        if (atomicExch(params.discovered_flags + edge.dst, 1u) != 0u) {
+            optixIgnoreIntersection();
+            return;
+        }
+    }
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        params.output[slot] = {edge.src, edge.dst, f.level + 1u};
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kGraphTriangleRayKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct EdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct GraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct TriangleCandidate {
+    uint32_t seed_index;
+    uint32_t side;
+    uint32_t dst_vertex;
+};
+
+struct GraphTriangleParams {
+    OptixTraversableHandle traversable;
+    const GraphEdge* edges;
+    const EdgeSeed* seeds;
+    TriangleCandidate* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t seed_count;
+    uint32_t vertex_count;
+};
+
+extern "C" {
+__constant__ GraphTriangleParams params;
+}
+
+extern "C" __global__ void __raygen__graph_triangle_probe() {
+    const uint32_t ray_index = optixGetLaunchIndex().x;
+    const uint32_t seed_index = ray_index >> 1;
+    if (seed_index >= params.seed_count) {
+        return;
+    }
+    const EdgeSeed seed = params.seeds[seed_index];
+    const uint32_t src = (ray_index & 1u) == 0u ? seed.u : seed.v;
+    if (src >= params.vertex_count) {
+        return;
+    }
+    uint32_t p0 = ray_index;
+    optixTrace(
+        params.traversable,
+        make_float3(static_cast<float>(src), -1.0f, 0.0f),
+        make_float3(0.0f, 1.0f, 0.0f),
+        0.0f,
+        static_cast<float>(params.vertex_count + 2u),
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0,
+        p0);
+}
+
+extern "C" __global__ void __miss__graph_triangle_miss() {}
+
+extern "C" __global__ void __intersection__graph_triangle_isect() {
+    optixReportIntersection(optixGetRayTmin() + 1.0e-6f, 0u);
+}
+
+extern "C" __global__ void __anyhit__graph_triangle_anyhit() {
+    const uint32_t ray_index = optixGetPayload_0();
+    const uint32_t seed_index = ray_index >> 1;
+    const uint32_t side = ray_index & 1u;
+    const EdgeSeed seed = params.seeds[seed_index];
+    const uint32_t src = side == 0u ? seed.u : seed.v;
+    const GraphEdge edge = params.edges[optixGetPrimitiveIndex()];
+    if (edge.src != src) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        params.output[slot] = {seed_index, side, edge.dst};
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
 static const char* kKnnRows3DKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
@@ -1923,6 +2296,11 @@ struct DbScanPipeline {
     std::once_flag init;
 };
 
+struct GraphEdgePipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag init;
+};
+
 struct PnsCuFunction {
     CUmodule   module   = nullptr;
     CUfunction fn       = nullptr;
@@ -1952,7 +2330,10 @@ static RayAnyHitPipeline    g_rayanyhit_count;
 static RayAnyHitPipeline    g_rayanyhit_pose_flags;
 static RayAnyHitPipeline    g_frn_count_rt;
 static SegPolyPipeline     g_segpoly;
+static SegPolyPipeline     g_segpoly_rows;
 static DbScanPipeline      g_dbscan;
+static GraphEdgePipeline   g_graph_bfs;
+static GraphEdgePipeline   g_graph_triangle;
 static PnsCuFunction      g_pns;
 static FrnCuFunction      g_frn;
 static FrnCuFunction      g_frn3d;

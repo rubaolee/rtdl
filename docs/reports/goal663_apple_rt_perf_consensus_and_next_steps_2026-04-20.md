@@ -135,4 +135,3 @@ Allowed claim:
 - Apple RT any-hit is now substantially faster than the earlier Apple RT path.
 - Apple RT beats Shapely/GEOS on the measured Mac visibility/collision benchmark.
 - Embree is still the fastest measured backend on this Mac.
-

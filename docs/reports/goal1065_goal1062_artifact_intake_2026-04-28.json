@@ -1,0 +1,19 @@
+{
+  "artifact_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1062_blocked_rtx_wording_rerun",
+  "blocked_count": 0,
+  "boundary": "This intake checks copied Goal1062 artifacts only. It does not run cloud, change public wording, authorize release, or authorize public RTX speedup claims.",
+  "date": "2026-04-28",
+  "expected_artifact_count": 0,
+  "goal": "Goal1065 Goal1062 artifact intake",
+  "manifest_goal": "Goal1062 blocked RTX wording rerun manifest",
+  "missing_artifact_count": 0,
+  "overall_status": "no_blocked_public_wording_rows",
+  "present_artifact_count": 0,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [],
+  "status_counts": {},
+  "timing_below_floor_count": 0,
+  "timing_floor_passed_count": 0,
+  "valid": true,
+  "validation_passed_count": 0
+}

@@ -29,8 +29,12 @@ Explicitly excluded:
 - `hausdorff_distance`, `ann_candidate_search`, and `barnes_hut_force_app`
   because current paths are CUDA-through-OptiX or Python/app dominated, not
   RT-core traversal app claims.
-- `graph_analytics` and segment/polygon OptiX app paths because current public
-  paths are still host-indexed fallback for RTX app-claim purposes.
+- `graph_analytics`, `road_hazard_screening`, and segment/polygon OptiX app
+  paths because current public paths are still host-indexed fallback or
+  strict-validation-gated for RTX app-claim purposes.
+- `facility_knn_assignment`, `polygon_pair_overlap_area_rows`, and
+  `polygon_set_jaccard` because current public app CLIs do not expose a true
+  OptiX/NVIDIA RT-core app surface.
 - Apple/HIPRT-specific apps because this manifest is for NVIDIA OptiX RTX cloud
   runs.
 

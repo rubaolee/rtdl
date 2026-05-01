@@ -1,0 +1,47 @@
+{
+  "boundary": "This gate validates the road-hazard app through the explicit native segment/polygon OptiX mode. It does not promote the default app path or authorize a public RTX speedup claim by itself.",
+  "cloud_claim_contract": {
+    "claim_scope": "native OptiX segment/polygon hit-count traversal for compact road-hazard summaries",
+    "non_claim": "not default road-hazard public speedup and not a full GIS routing or risk model claim",
+    "required_phase_groups": [
+      "cpu_python_reference",
+      "optix_native",
+      "strict_pass",
+      "strict_failures"
+    ]
+  },
+  "copies": 20000,
+  "date": "2026-04-24",
+  "generated_at": "2026-04-29T20:14:21",
+  "goal": "Goal888 road hazard native OptiX gate",
+  "host": {
+    "hostname": "09d2c4c4b876",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "output_mode": "summary",
+  "records": [
+    {
+      "digest": {
+        "priority_segment_count": 20000
+      },
+      "label": "cpu_python_reference",
+      "sec": 2.2491640178486705,
+      "status": "ok"
+    },
+    {
+      "digest": {
+        "priority_segment_count": 20000
+      },
+      "label": "optix_native",
+      "parity_vs_cpu_python_reference": true,
+      "sec": 2.0674943840131164,
+      "status": "ok"
+    }
+  ],
+  "status": "pass",
+  "strict": true,
+  "strict_failures": [],
+  "strict_pass": true
+}

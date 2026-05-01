@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 10000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_10000.json",
+  "exit_code": 0,
+  "label": "polygon_pair_embree_10000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_10000.log",
+  "status": "ok"
+}

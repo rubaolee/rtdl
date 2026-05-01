@@ -1,0 +1,17 @@
+{
+  "actions": [],
+  "boundary": "This runner executes only Goal838 local_command_ready artifact collectors. It does not collect Linux/PostgreSQL baselines, optional SciPy/reference baselines, or deferred-app baselines.",
+  "date": "2026-04-23",
+  "failure_count": 0,
+  "goal": "Goal841 local baseline collector runner",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "result_count": 0,
+  "results": [],
+  "selected_count": 0,
+  "selection": {
+    "app": "robot_collision_screening",
+    "baseline": null,
+    "path_name": null
+  },
+  "status": "plan_only"
+}

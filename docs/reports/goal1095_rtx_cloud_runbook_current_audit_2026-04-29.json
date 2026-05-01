@@ -1,0 +1,18 @@
+{
+  "boundary": "Goal1095 audits the cloud runbook text only. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "checks": {
+    "barnes_timing_skip": true,
+    "barnes_validation_no_skip": true,
+    "marks_goal1072_historical": true,
+    "marks_goal1076_historical": true,
+    "mentions_current_post_goal1094": true,
+    "no_public_claim_boundary": true,
+    "robot_is_not_cloud_gpu_task": true,
+    "runs_goal1084_facility": true,
+    "runs_goal1093_barnes": true
+  },
+  "date": "2026-04-29",
+  "goal": "Goal1095 RTX cloud runbook current audit",
+  "runbook": "docs/rtx_cloud_single_session_runbook.md",
+  "valid": true
+}

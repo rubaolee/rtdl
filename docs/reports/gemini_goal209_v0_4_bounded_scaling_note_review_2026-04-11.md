@@ -5,7 +5,7 @@
 
 ## Findings
 - **Goal Definition:** Goal 209 is clearly defined in `docs/goal_209_v0_4_bounded_scaling_note.md` and fulfills the `v0.4` acceptance requirement for a nearest-neighbor scaling baseline.
-- **Implementation & Consistency:** 
+- **Implementation & Consistency:**
     - A runnable scaling harness (`rtdl_v0_4_nearest_neighbor_scaling_note.py`) and associated tests are present and functional.
     - The saved JSON artifact (`goal209_v0_4_bounded_scaling_note_data_2026-04-10.json`) confirms that the scaling note was executed across three tiers (`fixture`, `x8`, `x32`) with full parity across `cpu_python_reference`, `cpu`, and `embree` backends.
     - The implementation report correctly identifies a critical bug in the Embree dispatch (`g_query_kind` omission) which was repaired and verified during this goal slice.

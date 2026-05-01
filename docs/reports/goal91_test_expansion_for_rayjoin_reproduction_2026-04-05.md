@@ -109,4 +109,3 @@ Goal 91 strengthens the current milestone package in three ways:
 - backend claims now have direct regression checks against published artifacts
 - Vulkan is no longer the odd backend out in fast-path coverage
 - current native API limits are now tested instead of merely implied in prose
-

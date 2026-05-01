@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 10000 --output-mode summary --validation-mode analytic_summary --chunk-copies 100 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_10000.json",
+  "exit_code": 0,
+  "label": "polygon_pair_optix_10000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_10000.log",
+  "status": "ok"
+}

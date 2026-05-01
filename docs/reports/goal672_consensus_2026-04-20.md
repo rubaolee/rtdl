@@ -38,4 +38,3 @@ Do not claim this speedup for:
 - Vulkan, HIPRT, Embree, or Apple RT.
 
 Goal 672 does not supersede Goal 671's finding that prepared scene plus unpacked rays is slower than existing row output on the dense probe.
-

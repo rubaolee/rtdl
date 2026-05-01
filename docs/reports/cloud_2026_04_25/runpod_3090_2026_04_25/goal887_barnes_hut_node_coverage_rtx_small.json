@@ -1,0 +1,70 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not Barnes-Hut opening-rule evaluation, force-vector reduction, or a full N-body solver",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ]
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-04-25T05:51:48",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "2f7110a266f5",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-106-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "parameters": {
+    "body_count": 50000,
+    "copies": 1,
+    "iterations": 5,
+    "mode": "optix",
+    "radius": 10.0,
+    "skip_validation": true
+  },
+  "scenario": {
+    "mode": "optix",
+    "result": {
+      "all_queries_reached_threshold": true,
+      "build_count": 4,
+      "matches_oracle": true,
+      "oracle_all_queries_reached_threshold": null,
+      "query_count": 50000,
+      "radius": 10.0,
+      "threshold_reached_count": 50000
+    },
+    "scenario": "barnes_hut_node_coverage",
+    "timings_sec": {
+      "input_build_sec": 0.13032153993844986,
+      "optix_close_sec": 2.2780150175094604e-05,
+      "optix_prepare_sec": 0.8953600996173918,
+      "optix_query_sec": {
+        "max_sec": 0.0005872710607945919,
+        "median_sec": 0.0003634300082921982,
+        "min_sec": 0.0003558811731636524
+      },
+      "point_pack_sec": 0.06115638464689255,
+      "python_postprocess_sec": {
+        "max_sec": 2.739951014518738e-06,
+        "median_sec": 6.202608346939087e-07,
+        "min_sec": 5.201436579227448e-07
+      },
+      "validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      }
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1"
+}

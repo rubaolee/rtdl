@@ -1,0 +1,199 @@
+{
+  "blocked_public_speedup_wording": [
+    "database_analytics",
+    "polygon_set_jaccard"
+  ],
+  "boundary": "Goal1210 audits current release-readiness evidence after Goal1209. It confirms public docs and source match the 11-row wording matrix, that Goal1204-Goal1209 have external-AI consensus trails, and that DB/Jaccard remain blocked from public speedup wording. It does not tag or release v0.9.8.",
+  "date": "2026-05-01",
+  "failing_goal_count": 0,
+  "failing_surface_doc_count": 0,
+  "goal": "Goal1210 v0.9.8 release-readiness audit after Goal1209",
+  "goal_count": 6,
+  "goal_rows": [
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1204_repaired_rtx_pod_packet_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1204_gemini_repaired_rtx_pod_packet_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1204_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1204",
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1205_repaired_rtx_pod_intake_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1205_gemini_repaired_rtx_pod_intake_fix_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1205_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1205",
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1206_repaired_rtx_recovery_merge_intake_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1206_gemini_live_pod_merged_evidence_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1206_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1206",
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1207_linux_embree_prefix_env_fix_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1207_gemini_linux_embree_prefix_fix_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1207_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1207",
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1208_public_wording_decision_after_goal1206_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1208_claude_public_wording_decision_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1208_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1208",
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1209_public_status_sync_after_goal1208_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1209_claude_public_status_sync_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1209_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1209",
+      "missing_files": [],
+      "status": "ok"
+    }
+  ],
+  "new_public_wording_rows": [
+    "road_hazard_screening / prepared_native_compact_summary_40k"
+  ],
+  "public_wording_row_count_expected": 11,
+  "recorded_checks": [
+    {
+      "command": "PYTHONPATH=src:. python3 -m unittest tests.goal1011_rtx_public_wording_matrix_test tests.goal947_v1_rtx_app_status_page_test tests.goal1010_public_rtx_readme_wording_test tests.goal938_public_rtx_wording_sync_test tests.goal1179_public_docs_goal1177_boundary_audit_test tests.goal1180_current_release_readiness_window_audit_test tests.goal1185_goal1184_public_status_sync_audit_test tests.goal1186_current_release_readiness_after_goal1185_audit_test -v",
+      "name": "goal1209_public_surface_suite",
+      "result": "OK",
+      "tests": 35
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 -m unittest tests.goal1011_rtx_public_wording_matrix_test tests.goal947_v1_rtx_app_status_page_test tests.goal1010_public_rtx_readme_wording_test -v",
+      "name": "goal1209_focused_matrix_docs_suite",
+      "result": "OK",
+      "tests": 18
+    }
+  ],
+  "surface_doc_count": 7,
+  "surface_rows": [
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "README.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/app_engine_support_matrix.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/application_catalog.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/release_facing_examples.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/rtdl_feature_guide.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "src/rtdsl/app_support_matrix.py",
+      "status": "ok"
+    }
+  ],
+  "valid": true
+}

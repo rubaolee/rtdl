@@ -9,7 +9,7 @@
 *   **Honesty & Scope:** Both `goal_264_v0_5_bounded_knn_rows_cpu_oracle.md` and the report document are explicit and transparent. They correctly identify the closure as being purely for the 2D CPU oracle, explicitly disclaiming 3D, Embree, OptiX, and Vulkan support.
 
 ### Risks
-*   **No immediate risks identified.** The changes are strictly additive and cleanly isolated within the oracle layer. The reliance on existing data structures (`RtdlKnnNeighborRow`) minimizes the ABI surface area. 
+*   **No immediate risks identified.** The changes are strictly additive and cleanly isolated within the oracle layer. The reliance on existing data structures (`RtdlKnnNeighborRow`) minimizes the ABI surface area.
 
 ### Conclusion
 This is a high-quality, surgical slice. It successfully delivers the 2D native CPU oracle implementation for `bounded_knn_rows`. By establishing a verified native baseline, it provides the necessary ground truth for safely proceeding into Embree, OptiX, or Vulkan hardware acceleration in subsequent goals.

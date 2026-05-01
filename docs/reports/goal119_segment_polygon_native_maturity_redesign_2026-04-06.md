@@ -1,6 +1,6 @@
 # Goal 119 Segment/Polygon Native-Maturity Redesign
 
-Date: 2026-04-06  
+Date: 2026-04-06
 Status: current redesign package
 
 ## Summary

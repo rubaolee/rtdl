@@ -1,0 +1,46 @@
+{
+  "artifact_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate",
+  "blocked_count": 0,
+  "boundary": "This intake checks copied Goal1076 artifacts only. It does not run cloud, does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-28",
+  "expected_artifact_count": 2,
+  "goal": "Goal1078 Goal1076 Barnes-Hut rich artifact intake",
+  "manifest_goal": "Goal1076 Barnes-Hut rich RTX pod candidate",
+  "missing_artifact_count": 2,
+  "overall_status": "needs_cloud_artifacts",
+  "present_artifact_count": 0,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_validation.json",
+      "artifact_status": "missing",
+      "expected_output_json": "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_validation.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "correctness_validation",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected Goal1076 artifact has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact",
+      "rtx_phase_sec": null
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_large_timing.json",
+      "artifact_status": "missing",
+      "expected_output_json": "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate/barnes_hut_rich_node_coverage_large_timing.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "large_timing_repeat",
+      "public_speedup_claim_authorized": false,
+      "reason": "expected Goal1076 artifact has not been copied back from the pod",
+      "review_status": "needs_cloud_artifact",
+      "rtx_phase_sec": null
+    }
+  ],
+  "status_counts": {
+    "needs_cloud_artifact": 2
+  },
+  "timing_below_floor_count": 0,
+  "timing_floor_passed_count": 0,
+  "valid": true,
+  "validation_passed_count": 0
+}

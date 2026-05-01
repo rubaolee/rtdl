@@ -1,0 +1,73 @@
+{
+  "app": "jaccard",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from CPU/Python exact area/Jaccard refinement. It does not authorize full polygon-overlap RTX speedup claims.",
+  "chunk_copies": 100,
+  "chunk_count": 200,
+  "cloud_claim_contract": {
+    "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+    "non_claim": "not a fully native Jaccard kernel and not a full app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build_sec",
+      "cpu_reference_sec",
+      "optix_candidate_discovery_sec",
+      "cpu_exact_refinement_sec",
+      "parity_vs_cpu",
+      "rt_core_candidate_discovery_active",
+      "validation_mode",
+      "output_mode"
+    ]
+  },
+  "copies": 20000,
+  "cpu_digest": {
+    "app": "polygon_set_jaccard",
+    "copies": 20000,
+    "output_mode": "summary",
+    "row_count": 1,
+    "summary": {
+      "intersection_area": 100000,
+      "jaccard_similarity": 0.263157894737,
+      "left_area": 260000,
+      "right_area": 220000,
+      "union_area": 380000
+    }
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-04-25T03:13:05",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "adb9499ef733",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "mode": "optix",
+  "optix_digest": {
+    "app": "polygon_set_jaccard",
+    "copies": 20000,
+    "output_mode": "summary",
+    "row_count": 1,
+    "summary": {
+      "intersection_area": 78500,
+      "jaccard_similarity": 0.195516811955,
+      "left_area": 260000,
+      "right_area": 220000,
+      "union_area": 401500
+    }
+  },
+  "optix_metadata": {
+    "backend_mode": "optix_native_assisted",
+    "rt_core_accelerated": false,
+    "rt_core_candidate_discovery_active": true
+  },
+  "output_mode": "summary",
+  "parity_vs_cpu": false,
+  "phases": {
+    "cpu_exact_refinement_sec": 12.89767355658114,
+    "cpu_reference_sec": null,
+    "input_build_sec": 0.0,
+    "optix_candidate_discovery_sec": 33.54274830408394
+  },
+  "status": "fail",
+  "validation_mode": "analytic_summary"
+}

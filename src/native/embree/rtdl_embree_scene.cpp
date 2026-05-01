@@ -34,6 +34,8 @@ struct SceneHolder {
   }
 };
 
+constexpr float kBvhCandidatePad = 2.5e-1f;
+
 enum class QueryKind {
   kNone,
   kLsi,
@@ -169,6 +171,7 @@ struct GraphBfsExpandQueryState {
 
 struct GraphTriangleProbeQueryState {
   const std::vector<GraphEdgePoint>* edge_points;
+  uint32_t query_vertex;
   std::vector<uint32_t>* neighbor_marks;
   uint32_t mark;
   std::vector<uint32_t>* neighbors;
@@ -561,11 +564,11 @@ void segment_bounds(const RTCBoundsFunctionArguments* args) {
   auto* data = static_cast<SegmentSceneData*>(args->geometryUserPtr);
   const Segment2D& segment = (*data->segments)[args->primID];
   Bounds2D b = bounds_for_segment(segment);
-  args->bounds_o->lower_x = b.min_x;
-  args->bounds_o->lower_y = b.min_y;
+  args->bounds_o->lower_x = b.min_x - kEps;
+  args->bounds_o->lower_y = b.min_y - kEps;
   args->bounds_o->lower_z = -kEps;
-  args->bounds_o->upper_x = b.max_x;
-  args->bounds_o->upper_y = b.max_y;
+  args->bounds_o->upper_x = b.max_x + kEps;
+  args->bounds_o->upper_y = b.max_y + kEps;
   args->bounds_o->upper_z = kEps;
 }
 
@@ -606,12 +609,12 @@ void point_bounds_3d(const RTCBoundsFunctionArguments* args) {
 void graph_edge_point_bounds(const RTCBoundsFunctionArguments* args) {
   auto* data = static_cast<GraphEdgePointSceneData*>(args->geometryUserPtr);
   const GraphEdgePoint& point = (*data->points)[args->primID];
-  args->bounds_o->lower_x = point.p.x - kEps;
-  args->bounds_o->lower_y = point.p.y - kEps;
-  args->bounds_o->lower_z = -kEps;
-  args->bounds_o->upper_x = point.p.x + kEps;
-  args->bounds_o->upper_y = point.p.y + kEps;
-  args->bounds_o->upper_z = kEps;
+  args->bounds_o->lower_x = static_cast<float>(point.p.x) - kBvhCandidatePad;
+  args->bounds_o->lower_y = static_cast<float>(point.p.y) - kBvhCandidatePad;
+  args->bounds_o->lower_z = -kBvhCandidatePad;
+  args->bounds_o->upper_x = static_cast<float>(point.p.x) + kBvhCandidatePad;
+  args->bounds_o->upper_y = static_cast<float>(point.p.y) + kBvhCandidatePad;
+  args->bounds_o->upper_z = kBvhCandidatePad;
 }
 
 void db_row_box_bounds(const RTCBoundsFunctionArguments* args) {
@@ -630,12 +633,12 @@ void triangle_bounds(const RTCBoundsFunctionArguments* args) {
   auto* data = static_cast<TriangleSceneData*>(args->geometryUserPtr);
   const Triangle2D& triangle = (*data->triangles)[args->primID];
   Bounds2D b = bounds_for_triangle(triangle);
-  args->bounds_o->lower_x = b.min_x;
-  args->bounds_o->lower_y = b.min_y;
-  args->bounds_o->lower_z = -kEps;
-  args->bounds_o->upper_x = b.max_x;
-  args->bounds_o->upper_y = b.max_y;
-  args->bounds_o->upper_z = kEps;
+  args->bounds_o->lower_x = b.min_x - kBvhCandidatePad;
+  args->bounds_o->lower_y = b.min_y - kBvhCandidatePad;
+  args->bounds_o->lower_z = -kBvhCandidatePad;
+  args->bounds_o->upper_x = b.max_x + kBvhCandidatePad;
+  args->bounds_o->upper_y = b.max_y + kBvhCandidatePad;
+  args->bounds_o->upper_z = kBvhCandidatePad;
 }
 
 void triangle_bounds_3d(const RTCBoundsFunctionArguments* args) {
@@ -725,6 +728,41 @@ void polygon_intersect_filter(const RTCFilterFunctionNArguments* args) {
   const auto* hit = reinterpret_cast<const RTCHit*>(args->hit);
   state->candidate_polygon_indices->insert(hit->primID);
   args->valid[0] = 0;
+}
+
+void graph_edge_point_intersect(const RTCIntersectFunctionNArguments* args) {
+  if (args->N != 1 || args->valid[0] != -1 || g_query_state == nullptr) {
+    return;
+  }
+  auto* data = static_cast<GraphEdgePointSceneData*>(args->geometryUserPtr);
+  const GraphEdgePoint& edge_point = (*data->points)[args->primID];
+  if (g_query_kind == QueryKind::kGraphBfsExpand) {
+    auto* state = static_cast<GraphBfsExpandQueryState*>(g_query_state);
+    if (edge_point.src_vertex != state->frontier_vertex->vertex_id) {
+      return;
+    }
+    if ((*state->visited_flags)[edge_point.dst_vertex] != 0u) {
+      return;
+    }
+    if (state->dedupe != 0u && (*state->discovered_flags)[edge_point.dst_vertex] != 0u) {
+      return;
+    }
+    (*state->discovered_flags)[edge_point.dst_vertex] = 1u;
+    state->rows->push_back(
+        {state->frontier_vertex->vertex_id, edge_point.dst_vertex, state->frontier_vertex->level + 1u});
+    return;
+  }
+  if (g_query_kind == QueryKind::kGraphTriangleProbe) {
+    auto* state = static_cast<GraphTriangleProbeQueryState*>(g_query_state);
+    if (edge_point.src_vertex != state->query_vertex) {
+      return;
+    }
+    if ((*state->neighbor_marks)[edge_point.dst_vertex] == state->mark) {
+      return;
+    }
+    (*state->neighbor_marks)[edge_point.dst_vertex] = state->mark;
+    state->neighbors->push_back(edge_point.dst_vertex);
+  }
 }
 
 bool polygon_point_query_collect(RTCPointQueryFunctionArguments* args) {

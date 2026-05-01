@@ -32,6 +32,11 @@ class _FakePreparedOptixFixedRadius:
             raise RuntimeError("fake prepared handle is closed")
         return tuple(self._rows)
 
+    def count_threshold_reached(self, query_points, *, radius, threshold=0):
+        if self.closed:
+            raise RuntimeError("fake prepared handle is closed")
+        return sum(1 for row in self._rows if int(row["threshold_reached"]) != 0)
+
     def close(self):
         self.closed = True
 
@@ -69,6 +74,7 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         with rt.prepare_optix_fixed_radius_count_threshold_2d((), max_radius=1.0) as prepared:
             self.assertEqual(prepared.max_radius, 1.0)
             self.assertEqual(prepared.run((), radius=0.5, threshold=1), ())
+            self.assertEqual(prepared.count_threshold_reached((), radius=0.5, threshold=1), 0)
 
     def test_prepared_handle_rejects_radius_above_max_radius(self):
         with rt.prepare_optix_fixed_radius_count_threshold_2d((), max_radius=1.0) as prepared:
@@ -94,6 +100,32 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         self.assertEqual(result["native_summary_row_count"], result["point_count"])
         self.assertEqual(result["outlier_point_ids"], [7, 8])
 
+    def test_outlier_app_prepared_optix_density_count_uses_scalar_count(self):
+        class ScalarOnlyPrepared(_FakePreparedOptixFixedRadius):
+            def run(self, query_points, *, radius, threshold=0):
+                raise AssertionError("density_count must not materialize count rows")
+
+        def fake_prepare(search_points, *, max_radius):
+            self.assertEqual(max_radius, outlier.RADIUS)
+            return ScalarOnlyPrepared(_outlier_count_rows(search_points))
+
+        with mock.patch.object(outlier.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
+            result = outlier.run_app(
+                "optix",
+                optix_summary_mode="rt_count_threshold_prepared",
+                output_mode="density_count",
+            )
+
+        self.assertTrue(result["matches_oracle"])
+        self.assertEqual(result["neighbor_row_count"], 0)
+        self.assertEqual(result["native_summary_row_count"], 0)
+        self.assertEqual(result["threshold_reached_count"], 6)
+        self.assertEqual(result["outlier_count"], 2)
+        self.assertEqual(result["oracle_outlier_count"], 2)
+        self.assertIsNone(result["outlier_point_ids"])
+        self.assertEqual(result["density_rows"], ())
+        self.assertEqual(result["summary_mode"], "scalar_threshold_count")
+
     def test_outlier_prepared_session_matches_oracle_and_closes(self):
         def fake_prepare(search_points, *, max_radius):
             return _FakePreparedOptixFixedRadius(_outlier_count_rows(search_points))
@@ -108,6 +140,23 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "closed"):
             session.run()
 
+    def test_outlier_prepared_session_density_count_uses_scalar_count(self):
+        class ScalarOnlyPrepared(_FakePreparedOptixFixedRadius):
+            def run(self, query_points, *, radius, threshold=0):
+                raise AssertionError("density_count session must not materialize count rows")
+
+        def fake_prepare(search_points, *, max_radius):
+            return ScalarOnlyPrepared(_outlier_count_rows(search_points))
+
+        with mock.patch.object(outlier.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
+            session = outlier.prepare_session("optix")
+            result = session.run(output_mode="density_count")
+            session.close()
+
+        self.assertTrue(result["matches_oracle"])
+        self.assertEqual(result["outlier_count"], 2)
+        self.assertIsNone(result["outlier_point_ids"])
+
     def test_dbscan_app_prepared_optix_core_flags_match_oracle(self):
         def fake_prepare(search_points, *, max_radius):
             self.assertEqual(max_radius, dbscan.EPSILON)
@@ -120,6 +169,31 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         self.assertEqual(result["neighbor_row_count"], 0)
         self.assertEqual(result["cluster_rows"], ())
         self.assertEqual(len(result["core_flag_rows"]), result["point_count"])
+
+    def test_dbscan_app_prepared_optix_core_count_uses_scalar_count(self):
+        class ScalarOnlyPrepared(_FakePreparedOptixFixedRadius):
+            def run(self, query_points, *, radius, threshold=0):
+                raise AssertionError("core_count must not materialize count rows")
+
+        def fake_prepare(search_points, *, max_radius):
+            self.assertEqual(max_radius, dbscan.EPSILON)
+            return ScalarOnlyPrepared(_dbscan_count_rows(search_points))
+
+        with mock.patch.object(dbscan.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
+            result = dbscan.run_app(
+                "optix",
+                optix_summary_mode="rt_core_flags_prepared",
+                output_mode="core_count",
+            )
+
+        self.assertTrue(result["matches_oracle"])
+        self.assertEqual(result["neighbor_row_count"], 0)
+        self.assertEqual(result["cluster_rows"], ())
+        self.assertEqual(result["core_flag_rows"], ())
+        self.assertEqual(result["threshold_reached_count"], 7)
+        self.assertEqual(result["core_count"], 7)
+        self.assertEqual(result["oracle_core_count"], 7)
+        self.assertEqual(result["summary_mode"], "scalar_threshold_count")
 
     def test_dbscan_prepared_session_matches_oracle_and_closes(self):
         def fake_prepare(search_points, *, max_radius):
@@ -135,6 +209,62 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "closed"):
             session.run()
 
+    def test_dbscan_prepared_session_core_count_uses_scalar_count(self):
+        class ScalarOnlyPrepared(_FakePreparedOptixFixedRadius):
+            def run(self, query_points, *, radius, threshold=0):
+                raise AssertionError("core_count session must not materialize count rows")
+
+        def fake_prepare(search_points, *, max_radius):
+            return ScalarOnlyPrepared(_dbscan_count_rows(search_points))
+
+        with mock.patch.object(dbscan.rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
+            session = dbscan.prepare_session("optix")
+            result = session.run(output_mode="core_count")
+            session.close()
+
+        self.assertTrue(result["matches_oracle"])
+        self.assertEqual(result["core_count"], 7)
+        self.assertEqual(result["core_flag_rows"], ())
+
+    def test_fixed_radius_profiler_scalar_threshold_count_matches_oracle(self):
+        profiler = __import__(
+            "scripts.goal757_optix_fixed_radius_prepared_perf",
+            fromlist=["run_suite"],
+        )
+
+        def unpack_points(points):
+            if hasattr(points, "records") and hasattr(points, "count"):
+                return tuple(
+                    rt.Point(
+                        id=int(points.records[index].id),
+                        x=float(points.records[index].x),
+                        y=float(points.records[index].y),
+                    )
+                    for index in range(points.count)
+                )
+            return points
+
+        def fake_prepare(search_points, *, max_radius):
+            points = unpack_points(search_points)
+            is_outlier_fixture = any(int(point.id) == 4 and float(point.x) > 1.0 for point in points)
+            rows = _outlier_count_rows(points) if is_outlier_fixture else _dbscan_count_rows(points)
+            return _FakePreparedOptixFixedRadius(rows)
+
+        with mock.patch.object(rt, "prepare_optix_fixed_radius_count_threshold_2d", side_effect=fake_prepare):
+            payload = profiler.run_suite(copies=1, iterations=1, result_mode="threshold_count")
+
+        self.assertEqual(payload["schema_version"], "goal825_tier1_phase_contract_v1")
+        self.assertIn("cloud_claim_contract", payload)
+        self.assertEqual(payload["result_mode"], "threshold_count")
+        for result in payload["results"]:
+            with self.subTest(app=result["app"]):
+                self.assertEqual(result["schema_version"], "goal825_tier1_phase_contract_v1")
+                self.assertIn("cloud_claim_contract", result)
+                self.assertIn("required_phase_groups", result["cloud_claim_contract"])
+                self.assertEqual(result["result_mode"], "threshold_count")
+                self.assertTrue(result["prepared_output"]["matches_oracle"])
+                self.assertEqual(result["prepared_optix_postprocess_sec"]["median_sec"], 0.0)
+
     def test_native_sources_export_prepared_optix_fixed_radius_symbols(self):
         root = outlier.ROOT
         api_text = (root / "src" / "native" / "optix" / "rtdl_optix_api.cpp").read_text(encoding="utf-8")
@@ -144,6 +274,7 @@ class Goal757PreparedOptixFixedRadiusPortableTest(unittest.TestCase):
         for phrase in (
             "rtdl_optix_prepare_fixed_radius_count_threshold_2d",
             "rtdl_optix_run_prepared_fixed_radius_count_threshold_2d",
+            "rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d",
             "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d",
         ):
             with self.subTest(phrase=phrase):

@@ -1,0 +1,54 @@
+{
+  "app": "hausdorff_distance",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "cpu_oracle_same_semantics",
+  "benchmark_scale": {
+    "copies": 4096,
+    "iterations": 3
+  },
+  "claim_limit": "bounded sub-path only",
+  "comparable_metric_scope": "same app/path semantics for hausdorff_distance:directed_threshold_prepared",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "CPU oracle uses deterministic tiled Hausdorff summary and applies the same threshold decision.",
+    "Goal979 repaired CPU oracle comparable timing; previous artifact used native_query=0.0."
+  ],
+  "path_name": "directed_threshold_prepared",
+  "phase_seconds": {
+    "backend_prepare": 0.0,
+    "input_build": 0.013471791055053473,
+    "materialization_or_copyback": 0.0,
+    "native_query": 2.245791256427765e-05,
+    "postprocess": 0.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "input_build",
+    "backend_prepare",
+    "native_query",
+    "materialization_or_copyback",
+    "postprocess"
+  ],
+  "source_backend": "cpu_oracle",
+  "status": "ok",
+  "summary": {
+    "hausdorff_distance": 0.30000000000000004,
+    "point_count_a": 16384,
+    "point_count_b": 16384,
+    "radius": 0.4,
+    "within_threshold": true
+  },
+  "summary_sha256": "52f27529e1d3fed7a6bf26a4f8bf3ea77741e9b631bc3f0df5f5caf0ddf79ec4",
+  "validation": {
+    "goal979_timing_repair": {
+      "new_native_query": 2.245791256427765e-05,
+      "old_native_query": 0.0,
+      "repeats": 3,
+      "summary_matches_existing": true
+    },
+    "matches_reference": true,
+    "reference": "expected_tiled_hausdorff"
+  }
+}

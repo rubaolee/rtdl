@@ -1,0 +1,6 @@
+**ACCEPT**
+
+- **Blocker correctly named and grounded.** The script reads real source files and surface-checks for the hitcount foundation (`kSegPolyHitcountKernelSrc`, `__raygen__segpoly_probe`, fixed `sizeof(GpuSegPolyRecord) * segment_count` buffer) while confirming `native_rows_impl_present: False` — the output document honestly reflects what exists and what doesn't.
+- **Plan is concrete and sequenced.** The four implementation steps follow a defensible order: reuse the existing traversal foundation → add variable-length emission contract → resolve overflow strategy → gate the host-indexed fallback removal on correctness parity. No steps skip ahead.
+- **Boundary clause is explicit.** The packet explicitly declines to authorize promotion and bans any RT-core/RTX claim review until a real OptiX artifact exists, which is the right guard given the current `host_indexed` dispatch path.
+- **One minor gap:** the evidence probes are substring matches on raw source text; a rename or refactor of `GpuSegPolyRecord` would silently flip evidence flags without any detection. This is acceptable for an implementation-facing packet (not a gate), but worth noting if the probe logic is later reused for a promotion gate.

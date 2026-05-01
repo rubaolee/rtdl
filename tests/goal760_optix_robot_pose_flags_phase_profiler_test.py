@@ -22,6 +22,13 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
             validate=True,
         )
         self.assertEqual(payload["suite"], "Goal760 OptiX robot pose-flags phase profiler")
+        self.assertEqual(payload["schema_version"], "goal825_tier1_phase_contract_v1")
+        self.assertIn("cloud_claim_contract", payload)
+        self.assertIn("source_commit", payload)
+        self.assertIn("generated_at", payload)
+        self.assertIn("host", payload)
+        self.assertIn("hostname", payload["host"])
+        self.assertIn("prepared OptiX ray/triangle any-hit", payload["cloud_claim_contract"]["claim_scope"])
         self.assertEqual(payload["mode"], "dry-run")
         self.assertTrue(payload["validated"])
         self.assertTrue(payload["matches_oracle"])
@@ -33,6 +40,7 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
             "python_input_construction_sec",
             "optix_prepare_scene_sec",
             "optix_prepare_rays_sec",
+            "optix_prepare_pose_indices_sec",
             "prepared_pose_flags_warm_query_sec",
             "oracle_validate_sec",
             "close_sec",
@@ -43,6 +51,7 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
 
         self.assertEqual(phases["optix_prepare_scene_sec"], 0.0)
         self.assertEqual(phases["optix_prepare_rays_sec"], 0.0)
+        self.assertEqual(phases["optix_prepare_pose_indices_sec"], 0.0)
         self.assertGreaterEqual(phases["prepared_pose_flags_warm_query_sec"]["median_sec"], 0.0)
         self.assertIn("colliding_pose_count", payload["result"])
 
@@ -60,6 +69,58 @@ class Goal760OptixRobotPoseFlagsPhaseProfilerTest(unittest.TestCase):
         self.assertFalse(payload["validated"])
         self.assertIsNone(payload["matches_oracle"])
         self.assertIsNone(payload["result"]["oracle_colliding_pose_count"])
+
+    def test_packed_arrays_requires_optix_and_skip_validation(self):
+        module = __import__(
+            "scripts.goal760_optix_robot_pose_flags_phase_profiler",
+            fromlist=["run_suite"],
+        )
+        with self.assertRaisesRegex(ValueError, "only supported with mode='optix'"):
+            module.run_suite(
+                mode="dry-run",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=False,
+                input_mode="packed_arrays",
+            )
+        with self.assertRaisesRegex(ValueError, "requires --skip-validation"):
+            module.run_suite(
+                mode="optix",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=True,
+                input_mode="packed_arrays",
+            )
+        with self.assertRaisesRegex(ValueError, "pose_count result mode is only supported"):
+            module.run_suite(
+                mode="dry-run",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=False,
+                result_mode="pose_count",
+            )
+        with self.assertRaisesRegex(ValueError, "requires --skip-validation"):
+            module.run_suite(
+                mode="optix",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=True,
+                input_mode="packed_arrays",
+                result_mode="pose_count",
+            )
+        with self.assertRaisesRegex(ValueError, "pose_count result mode requires input_mode='packed_arrays'"):
+            module.run_suite(
+                mode="optix",
+                pose_count=4,
+                obstacle_count=2,
+                iterations=1,
+                validate=False,
+                result_mode="pose_count",
+            )
 
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(

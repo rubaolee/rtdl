@@ -7,7 +7,7 @@ Verdict: Accept as a bounded closure.
 
 ### 1. Is the implementation OptiX-specific or a disguised oracle fallback?
 
-The implementation is OptiX-specific in its boundary and dispatch, avoiding the disguised oracle fallback approach. 
+The implementation is OptiX-specific in its boundary and dispatch, avoiding the disguised oracle fallback approach.
 
 Unlike the Jaccard workloads which explicitly bypass the OptiX ABI and dispatch via `rt.run_cpu` (as documented in `optix_runtime.py`), `bfs_discover` is dispatched to the OptiX C++ backend library (`librtdl_optix`). The Python runtime requires the `rtdl_optix_run_bfs_expand` symbol to be present in the compiled OptiX library. Within the C++ backend (`rtdl_optix_workloads.cpp`), the logic is currently implemented as a native host-indexed reduction (`run_bfs_expand_optix_host_indexed`) over the graph CSR inputs, rather than a GPU-launched kernel. This adheres exactly to the stated honesty boundary: it is a native helper living inside the OptiX module, not an opaque bypass to the Python/CPU oracle.
 

@@ -255,6 +255,7 @@ class _RtdlTriangle(ctypes.Structure):
 
 
 class _RtdlTriangle3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -278,6 +279,7 @@ class _EmbreeRtdlDbGroupedSumRow(ctypes.Structure):
 
 
 class _RtdlRay2D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -290,6 +292,7 @@ class _RtdlRay2D(ctypes.Structure):
 
 
 class _RtdlRay3D(ctypes.Structure):
+    _layout_ = "ms"
     _pack_ = 1
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -1772,6 +1775,36 @@ class PreparedEmbreeDbDataset:
         finally:
             rows.close()
 
+    def conjunctive_scan_count(self, predicates) -> int:
+        bundle = normalize_predicate_bundle(predicates)
+        clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
+        rows = self._dataset.conjunctive_scan(clauses_array)
+        try:
+            return int(rows.row_count)
+        finally:
+            rows.close()
+
+    def compact_summary_batch(self, requests) -> dict[str, object]:
+        results: dict[str, object] = {}
+        phases: dict[str, object] = {}
+        for request in requests:
+            name = str(request["name"])
+            operation = str(request["operation"])
+            if operation == "conjunctive_scan_count":
+                results[name] = self.conjunctive_scan_count(request["predicates"])
+            elif operation == "grouped_count_summary":
+                results[name] = self.grouped_count_summary(request["query"])
+            elif operation == "grouped_sum_summary":
+                results[name] = self.grouped_sum_summary(request["query"])
+            else:
+                raise ValueError(f"unsupported DB compact-summary batch operation: {operation}")
+            phases[name] = None
+        self._last_compact_summary_batch_phase_timings = phases
+        return results
+
+    def last_compact_summary_batch_phase_timings(self) -> dict[str, object]:
+        return dict(getattr(self, "_last_compact_summary_batch_phase_timings", {}))
+
     def grouped_count(self, query) -> tuple[dict[str, object], ...]:
         normalized_query = normalize_grouped_query(query)
         if len(normalized_query.group_keys) != 1:
@@ -1788,6 +1821,22 @@ class PreparedEmbreeDbDataset:
                 }
                 for index in range(rows.row_count)
             )
+        finally:
+            rows.close()
+
+    def grouped_count_summary(self, query) -> dict[str, int]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave Embree DB grouped kernels support exactly one group key")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_count(clauses_array, group_key.encode("utf-8"))
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return {
+                str(_decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key)): int(rows.rows_ptr[index].count)
+                for index in range(rows.row_count)
+            }
         finally:
             rows.close()
 
@@ -1813,6 +1862,28 @@ class PreparedEmbreeDbDataset:
                 }
                 for index in range(rows.row_count)
             )
+        finally:
+            rows.close()
+
+    def grouped_sum_summary(self, query) -> dict[str, int]:
+        normalized_query = normalize_grouped_query(query)
+        if len(normalized_query.group_keys) != 1:
+            raise ValueError("first-wave Embree DB grouped kernels support exactly one group key")
+        if not normalized_query.value_field:
+            raise ValueError("grouped_sum requires a value_field")
+        group_key = normalized_query.group_keys[0]
+        clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+        rows = self._dataset.grouped_sum(
+            clauses_array,
+            group_key.encode("utf-8"),
+            normalized_query.value_field.encode("utf-8"),
+        )
+        try:
+            reverse_map = self._reverse_maps.get(group_key)
+            return {
+                str(_decode_db_group_key(reverse_map, rows.rows_ptr[index].group_key)): int(rows.rows_ptr[index].sum)
+                for index in range(rows.row_count)
+            }
         finally:
             rows.close()
 
@@ -3179,11 +3250,11 @@ def _check_status(status: int, error=None) -> None:
 
 
 def _default_embree_prefix(system: str) -> Path:
+    if "RTDL_EMBREE_PREFIX" in os.environ:
+        return Path(os.environ["RTDL_EMBREE_PREFIX"])
     if system == "Darwin":
         return Path("/opt/homebrew/opt/embree")
     if system == "Windows":
-        if "RTDL_EMBREE_PREFIX" in os.environ:
-            return Path(os.environ["RTDL_EMBREE_PREFIX"])
         home = Path.home()
         for candidate in (
             home / "vendor",

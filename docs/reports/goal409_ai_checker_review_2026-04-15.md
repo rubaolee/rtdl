@@ -1,6 +1,6 @@
-Date: 2026-04-15  
-Reviewer role: primary checker  
-Ledger reviewed: `docs/reports/goal409_repo_file_status_ledger_2026-04-15.csv:1`  
+Date: 2026-04-15
+Reviewer role: primary checker
+Ledger reviewed: `docs/reports/goal409_repo_file_status_ledger_2026-04-15.csv:1`
 Master report reviewed: `docs/reports/goal409_repo_wide_file_status_audit_2026-04-15.md:1`
 
 ---
@@ -141,5 +141,5 @@ The ledger is a good first-pass file universe and a usable starting scaffold, bu
 
 My checker verdict is:
 
-**Build on it as an inventory baseline, not as a final classification ledger.**  
+**Build on it as an inventory baseline, not as a final classification ledger.**
 **Required before relying on it:** fix `VERSION`, reconcile the report totals, and reclassify the overbroad live `doc` and `example` slices.

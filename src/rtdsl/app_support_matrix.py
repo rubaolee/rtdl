@@ -67,8 +67,27 @@ class OptixAppBenchmarkReadiness:
     allowed_claim: str
 
 
+@dataclass(frozen=True)
+class RtCoreAppMaturity:
+    app: str
+    current_status: str
+    target_status: str
+    required_action: str
+    cloud_policy: str
+
+
+@dataclass(frozen=True)
+class RtxPublicWordingStatus:
+    app: str
+    status: str
+    reviewed_wording: str
+    evidence: str
+    boundary: str
+
+
 READY_FOR_RTX_CLAIM_REVIEW = "ready_for_rtx_claim_review"
 NEEDS_PHASE_CONTRACT = "needs_phase_contract"
+NEEDS_REAL_RTX_ARTIFACT = "needs_real_rtx_artifact"
 NEEDS_INTERFACE_TUNING = "needs_interface_tuning"
 NEEDS_NATIVE_KERNEL_TUNING = "needs_native_kernel_tuning"
 NEEDS_POSTPROCESS_SPLIT = "needs_postprocess_split"
@@ -77,10 +96,37 @@ EXCLUDE_FROM_RTX_APP_BENCHMARK = "exclude_from_rtx_app_benchmark"
 OPTIX_APP_BENCHMARK_READINESS_STATUSES = (
     READY_FOR_RTX_CLAIM_REVIEW,
     NEEDS_PHASE_CONTRACT,
+    NEEDS_REAL_RTX_ARTIFACT,
     NEEDS_INTERFACE_TUNING,
     NEEDS_NATIVE_KERNEL_TUNING,
     NEEDS_POSTPROCESS_SPLIT,
     EXCLUDE_FROM_RTX_APP_BENCHMARK,
+)
+
+RT_CORE_READY = "rt_core_ready"
+RT_CORE_PARTIAL_READY = "rt_core_partial_ready"
+NEEDS_RT_CORE_REDESIGN = "needs_rt_core_redesign"
+NEEDS_OPTIX_APP_SURFACE = "needs_optix_app_surface"
+NOT_NVIDIA_RT_CORE_TARGET = "not_nvidia_rt_core_target"
+
+RT_CORE_APP_MATURITY_STATUSES = (
+    RT_CORE_READY,
+    RT_CORE_PARTIAL_READY,
+    NEEDS_RT_CORE_REDESIGN,
+    NEEDS_OPTIX_APP_SURFACE,
+    NOT_NVIDIA_RT_CORE_TARGET,
+)
+
+PUBLIC_WORDING_REVIEWED = "public_wording_reviewed"
+PUBLIC_WORDING_BLOCKED = "public_wording_blocked"
+PUBLIC_WORDING_NOT_REVIEWED = "public_wording_not_reviewed"
+NOT_NVIDIA_PUBLIC_WORDING_TARGET = "not_nvidia_public_wording_target"
+
+RTX_PUBLIC_WORDING_STATUSES = (
+    PUBLIC_WORDING_REVIEWED,
+    PUBLIC_WORDING_BLOCKED,
+    PUBLIC_WORDING_NOT_REVIEWED,
+    NOT_NVIDIA_PUBLIC_WORDING_TARGET,
 )
 
 
@@ -137,7 +183,7 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NATIVE,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios.",
+        note="Primary graph app exposes CPU/Embree/OptiX/Vulkan for BFS and triangle-count scenarios; Embree BFS/triangle-count use ray traversal over graph-edge primitives for candidate generation.",
     ),
     "apple_rt_demo": _row(
         "apple_rt_demo",
@@ -153,31 +199,31 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         "service_coverage_gaps",
         cpu_python_reference=_CPU,
         embree=_NATIVE,
-        optix=_NOCLI,
+        optix=_NATIVE,
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Spatial radius-join app currently exposes CPU, Embree, and SciPy baseline; other RT engines are not app CLI options.",
+        note="Spatial radius-join app exposes CPU, Embree, SciPy baseline, and an OptiX prepared gap-summary mode; Vulkan/HIPRT/Apple are not app CLI options.",
     ),
     "event_hotspot_screening": _row(
         "event_hotspot_screening",
         cpu_python_reference=_CPU,
         embree=_NATIVE,
-        optix=_NOCLI,
+        optix=_NATIVE,
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Spatial self-join app currently exposes CPU, Embree, and SciPy baseline.",
+        note="Spatial self-join app exposes CPU, Embree, SciPy baseline, and an OptiX prepared count-summary mode.",
     ),
     "facility_knn_assignment": _row(
         "facility_knn_assignment",
         cpu_python_reference=_CPU,
         embree=_NATIVE,
-        optix=_NOCLI,
+        optix=_NATIVE,
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Spatial KNN app currently exposes CPU, Embree, and SciPy baseline.",
+        note="Spatial KNN app exposes CPU, Embree, SciPy baseline, and an OptiX prepared coverage-threshold mode. Ranked KNN assignment remains CPU/Embree/SciPy only.",
     ),
     "road_hazard_screening": _row(
         "road_hazard_screening",
@@ -187,7 +233,7 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NATIVE,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan.",
+        note="Segment/polygon app exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection, but native mode is still gated.",
     ),
     "segment_polygon_hitcount": _row(
         "segment_polygon_hitcount",
@@ -197,37 +243,37 @@ _APP_MATRIX: dict[str, dict[str, AppEngineSupport]] = {
         vulkan=_NATIVE,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan.",
+        note="Released segment/polygon example exposes CPU, Embree, OptiX, and Vulkan; OptiX includes explicit auto/host_indexed/native mode selection.",
     ),
     "segment_polygon_anyhit_rows": _row(
         "segment_polygon_anyhit_rows",
         cpu_python_reference=_CPU,
         embree=_NATIVE,
-        optix=_COMPAT,
+        optix=_NATIVE,
         vulkan=_NATIVE,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan.",
+        note="Released segment/polygon pair-emitting example exposes CPU, Embree, OptiX, and Vulkan; explicit --backend optix --output-mode rows --optix-mode native uses the bounded native OptiX pair-row emitter while auto mode remains conservative.",
     ),
     "polygon_pair_overlap_area_rows": _row(
         "polygon_pair_overlap_area_rows",
         cpu_python_reference=_CPU,
         embree=_ASSISTED,
-        optix=_NOCLI,
+        optix=_ASSISTED,
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact area refinement.",
+        note="Public script exposes CPU plus Embree/OptiX native-assisted modes: native LSI/PIP positive candidate discovery plus CPU exact area refinement.",
     ),
     "polygon_set_jaccard": _row(
         "polygon_set_jaccard",
         cpu_python_reference=_CPU,
         embree=_ASSISTED,
-        optix=_NOCLI,
+        optix=_ASSISTED,
         vulkan=_NOCLI,
         hiprt=_NOCLI,
         apple_rt=_NOCLI,
-        note="Public script exposes CPU and Embree native-assisted mode: Embree overlay/candidate discovery plus CPU exact set-area/Jaccard refinement.",
+        note="Public script exposes CPU plus Embree/OptiX native-assisted modes: native LSI/PIP positive candidate discovery plus CPU exact set-area/Jaccard refinement.",
     ),
     "hausdorff_distance": _row(
         "hausdorff_distance",
@@ -305,12 +351,12 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     "database_analytics": OptixAppPerformanceSupport(
         app="database_analytics",
         performance_class=PYTHON_INTERFACE_DOMINATED,
-        note="Uses real OptiX DB BVH candidate discovery, but app-level performance is still dominated by Python/ctypes preparation, candidate copy-back, CPU exact filtering/grouping, and dict-row materialization.",
+        note="Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization.",
     ),
     "graph_analytics": OptixAppPerformanceSupport(
         app="graph_analytics",
-        performance_class=HOST_INDEXED_FALLBACK,
-        note="Current OptiX-facing BFS and triangle routines are host-indexed correctness paths, not dominant OptiX ray traversal or RT-core acceleration paths.",
+        performance_class=OPTIX_TRAVERSAL,
+        note="Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal; summary mode uses prepared any-hit count to avoid row materialization. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, and graph summary mode uses native C++ continuation after rows are produced. The default remains host-indexed until RTX validation.",
     ),
     "apple_rt_demo": OptixAppPerformanceSupport(
         app="apple_rt_demo",
@@ -319,73 +365,73 @@ _OPTIX_PERFORMANCE_MATRIX: dict[str, OptixAppPerformanceSupport] = {
     ),
     "service_coverage_gaps": OptixAppPerformanceSupport(
         app="service_coverage_gaps",
-        performance_class=NOT_OPTIX_EXPOSED,
-        note="Public app CLI does not expose OptiX today.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Explicit gap_summary_prepared mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path.",
     ),
     "event_hotspot_screening": OptixAppPerformanceSupport(
         app="event_hotspot_screening",
-        performance_class=NOT_OPTIX_EXPOSED,
-        note="Public app CLI does not expose OptiX today.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Explicit count_summary_prepared mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path.",
     ),
     "facility_knn_assignment": OptixAppPerformanceSupport(
         app="facility_knn_assignment",
-        performance_class=NOT_OPTIX_EXPOSED,
-        note="Public app CLI does not expose OptiX today.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Explicit coverage_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for service-coverage decisions only; ranked nearest-depot assignment remains outside the OptiX claim.",
     ),
     "road_hazard_screening": OptixAppPerformanceSupport(
         app="road_hazard_screening",
-        performance_class=HOST_INDEXED_FALLBACK,
-        note="Default segment/polygon OptiX app path uses host-indexed candidate reduction unless native OptiX mode is explicitly enabled and separately gated.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default segment/polygon OptiX app path remains conservative, but the prepared road-hazard summary profiler reuses a polygon BVH and runs native OptiX custom-AABB segment/polygon traversal for compact hazard summaries.",
     ),
     "segment_polygon_hitcount": OptixAppPerformanceSupport(
         app="segment_polygon_hitcount",
-        performance_class=HOST_INDEXED_FALLBACK,
-        note="Default segment/polygon OptiX path is host-indexed; native OptiX mode must be promoted only after correctness and performance gates.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default segment/polygon OptiX path remains conservative, but the prepared hit-count profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal for compact hit-count summaries.",
     ),
     "segment_polygon_anyhit_rows": OptixAppPerformanceSupport(
         app="segment_polygon_anyhit_rows",
-        performance_class=HOST_INDEXED_FALLBACK,
-        note="Default segment/polygon OptiX pair-row path is host-indexed and can also be row-volume dominated.",
+        performance_class=OPTIX_TRAVERSAL,
+        note="Default segment/polygon OptiX pair-row path remains conservative, but the prepared bounded pair-row profiler reuses a polygon BVH and runs native OptiX custom-AABB traversal with bounded output and overflow metadata.",
     ),
     "polygon_pair_overlap_area_rows": OptixAppPerformanceSupport(
         app="polygon_pair_overlap_area_rows",
-        performance_class=NOT_OPTIX_EXPOSED,
-        note="Public script is CPU-reference only today.",
+        performance_class=PYTHON_INTERFACE_DOMINATED,
+        note="Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell area continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU polygon-area kernel.",
     ),
     "polygon_set_jaccard": OptixAppPerformanceSupport(
         app="polygon_set_jaccard",
-        performance_class=NOT_OPTIX_EXPOSED,
-        note="Public script is CPU-reference only today.",
+        performance_class=PYTHON_INTERFACE_DOMINATED,
+        note="Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel.",
     ),
     "hausdorff_distance": OptixAppPerformanceSupport(
         app="hausdorff_distance",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Uses KNN rows through CUDA-style kernels in the OptiX backend library; useful GPU compute, but not an RT-core traversal claim.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.",
     ),
     "ann_candidate_search": OptixAppPerformanceSupport(
         app="ann_candidate_search",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Uses KNN rows through CUDA-style kernels in the OptiX backend library; recall metrics remain app/Python work.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only.",
     ),
     "outlier_detection": OptixAppPerformanceSupport(
         app="outlier_detection",
         performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
-        note="Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_count_threshold_prepared summary uses prepared OptiX traversal to avoid neighbor-row materialization, but RTX-class measurements are still pending.",
+        note="Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_count_threshold_prepared summary uses prepared OptiX traversal and native threshold-count continuation metadata to avoid neighbor-row materialization, with RTX 4090 phase evidence preserved in Goals 793 and 795.",
     ),
     "dbscan_clustering": OptixAppPerformanceSupport(
         app="dbscan_clustering",
         performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
-        note="Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_core_flags_prepared summary uses prepared OptiX traversal for core flags only, while Python clustering expansion remains outside the native summary path.",
+        note="Default row path uses fixed-radius rows through CUDA-style kernels; explicit rt_core_flags_prepared summary uses prepared OptiX traversal and native threshold-count continuation metadata for core flags only, while Python clustering expansion remains outside the native summary path.",
     ),
     "robot_collision_screening": OptixAppPerformanceSupport(
         app="robot_collision_screening",
         performance_class=OPTIX_TRAVERSAL,
-        note="Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact app output avoids returning full witness rows when only pose flags or hit counts are needed. OptiX has prepared scalar hit-count and prepared native pose-flag summary modes, while edge witnesses still require row mode.",
+        note="Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact row-output modes avoid returning full witness rows, while prepared scalar hit-count and prepared native pose-flag summary modes report native continuation and avoid per-ray row materialization. Edge witnesses still require row mode.",
     ),
     "barnes_hut_force_app": OptixAppPerformanceSupport(
         app="barnes_hut_force_app",
-        performance_class=CUDA_THROUGH_OPTIX,
-        note="Candidate generation uses KNN/radius-style GPU compute; Python tree/opening-rule/force reduction dominates the end-to-end app.",
+        performance_class=OPTIX_TRAVERSAL_PREPARED_SUMMARY,
+        note="Default candidate rows use fixed-radius candidate generation and native C++ continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim.",
     ),
     "hiprt_ray_triangle_hitcount": OptixAppPerformanceSupport(
         app="hiprt_ray_triangle_hitcount",
@@ -416,19 +462,19 @@ def _readiness(
 _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     "database_analytics": _readiness(
         "database_analytics",
-        NEEDS_INTERFACE_TUNING,
-        "Goal706",
-        "prepared dataset timing must split packing, BVH/build, launch/traversal, copy-back, exact filtering, grouping, and Python materialization",
-        "candidate copy-back, CPU exact filtering/grouping, and dict-row materialization still dominate app-level timing",
-        "correctness-capable OptiX DB path only; no RTX app speedup claim yet",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal921/Goal941",
+        "Goal941 provides real RTX compact-summary artifacts with native DB phase totals, strict output mode, and no row materialization operations for sales_risk and regional_dashboard",
+        "DB claims must stay limited to compact-summary prepared sub-paths; no SQL engine, DBMS, full dashboard, row-materializing, or broad whole-app speedup claim is allowed",
+        "prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim",
     ),
     "graph_analytics": _readiness(
         "graph_analytics",
-        NEEDS_NATIVE_KERNEL_TUNING,
-        "Goal707",
-        "BFS and triangle-count must run native GPU/OptiX traversal or be explicitly excluded from RTX app benchmarking",
-        "current OptiX-facing graph paths are host-indexed correctness paths",
-        "no RTX graph acceleration claim today",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal889/Goal905/Goal929",
+        "combined graph gate passed strict RTX validation for visibility any-hit plus native BFS and triangle-count graph-ray candidate generation; public claims still require final claim-review packaging",
+        "Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim",
+        "bounded graph visibility any-hit plus native BFS/triangle graph-ray candidate-generation sub-paths may enter claim review; no whole-app graph speedup claim",
     ),
     "apple_rt_demo": _readiness(
         "apple_rt_demo",
@@ -440,115 +486,115 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
     ),
     "service_coverage_gaps": _readiness(
         "service_coverage_gaps",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "none",
-        "not an OptiX-exposed app today",
-        "public app CLI does not expose OptiX",
-        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal917",
+        "prepared gap-summary mode has same-scale CPU/Embree baseline parity and a reviewed RTX phase artifact; public claims still require final claim-review packaging",
+        "Goal917 covers the bounded prepared gap-summary path only; row output, nearest-clinic output, and whole-app service-coverage optimization remain outside the claim",
+        "bounded prepared gap-summary path may enter claim review; no whole-app service-coverage speedup claim",
     ),
     "event_hotspot_screening": _readiness(
         "event_hotspot_screening",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "none",
-        "not an OptiX-exposed app today",
-        "public app CLI does not expose OptiX",
-        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal917/Goal919",
+        "prepared count-summary mode has a reviewed RTX phase artifact plus same-scale Embree baseline parity; public claims still require final claim-review packaging",
+        "Goal917 and Goal919 cover the bounded prepared count-summary path only; neighbor-row output and whole-app hotspot analytics remain outside the claim",
+        "bounded prepared count-summary path may enter claim review; no whole-app hotspot-screening speedup claim",
     ),
     "facility_knn_assignment": _readiness(
         "facility_knn_assignment",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "none",
-        "not an OptiX-exposed app today",
-        "public app CLI does not expose OptiX",
-        "CPU/Embree/SciPy baseline app only until an OptiX path is added",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal887/Goal920/Goal1058",
+        "coverage_threshold_prepared decision mode has an RTX phase artifact and same-scale CPU oracle parity for the bounded service-coverage decision",
+        "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
+        "bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim",
     ),
     "road_hazard_screening": _readiness(
         "road_hazard_screening",
-        NEEDS_NATIVE_KERNEL_TUNING,
-        "Goal708",
-        "segment/polygon OptiX benchmark must use the native any-hit/hit-count path and compact outputs, not host-indexed fallback",
-        "default app path remains host-indexed fallback",
-        "no RTX road-hazard speedup claim today",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal933/Goal941",
+        "Goal941 provides a real RTX prepared road-hazard artifact with strict digest parity, separated prepare/query/postprocess/validation phases, and native OptiX segment/polygon traversal",
+        "claim is limited to the prepared compact road-hazard summary gate; default public app behavior, full GIS/routing, and broad road-hazard speedup remain outside the claim",
+        "prepared native road-hazard summary traversal sub-path may enter claim review; no full GIS/routing or default-app speedup claim",
     ),
     "segment_polygon_hitcount": _readiness(
         "segment_polygon_hitcount",
-        NEEDS_NATIVE_KERNEL_TUNING,
-        "Goal708",
-        "native OptiX hit-count mode must be the measured path and must be separated from host-indexed fallback",
-        "default app path remains host-indexed fallback",
-        "no RTX segment/polygon hit-count speedup claim today",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal933/Goal941",
+        "Goal941 provides a real RTX prepared segment/polygon hit-count artifact with strict digest parity and separated prepared polygon-BVH query phases",
+        "claim is limited to prepared compact hit-count traversal; pair-row output, road-hazard whole-app behavior, and broad speedup remain outside the claim",
+        "prepared native segment/polygon hit-count traversal sub-path may enter claim review; no broad segment/polygon app speedup claim",
     ),
     "segment_polygon_anyhit_rows": _readiness(
         "segment_polygon_anyhit_rows",
-        NEEDS_NATIVE_KERNEL_TUNING,
-        "Goal708",
-        "benchmark must first promote and gate a native OptiX any-hit path, then compare row output against compact segment flags/counts",
-        "default app path remains host-indexed fallback, and pair-row output volume can dominate after native traversal is promoted",
-        "no RTX pair-row speedup claim today",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal934/Goal941",
+        "Goal941 provides a real RTX prepared bounded pair-row artifact with strict digest parity, zero overflow, emitted/copied counts, and separated prepare/query/postprocess phases",
+        "claim is limited to bounded prepared pair-row traversal at the reviewed output capacity; unbounded row-volume performance and default public app behavior remain outside the claim",
+        "prepared bounded native pair-row traversal sub-path may enter claim review; no unbounded pair-row or broad app speedup claim",
     ),
     "polygon_pair_overlap_area_rows": _readiness(
         "polygon_pair_overlap_area_rows",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "none",
-        "CPU-reference script only today",
-        "public app CLI does not expose OptiX",
-        "CPU correctness app only",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal877/Goal929",
+        "native-assisted OptiX candidate discovery has a phase-separated RTX artifact with parity; public claims still require final claim-review packaging",
+        "exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review",
+        "native-assisted candidate-discovery path only; no full polygon-area speedup claim",
     ),
     "polygon_set_jaccard": _readiness(
         "polygon_set_jaccard",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "none",
-        "CPU-reference script only today",
-        "public app CLI does not expose OptiX",
-        "CPU correctness app only",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal877/Goal929",
+        "native-assisted OptiX candidate discovery has a phase-separated RTX artifact with parity at the reviewed chunk-copies=20 contract; public claims still require final claim-review packaging",
+        "exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused",
+        "native-assisted candidate-discovery path only; no full Jaccard speedup claim",
     ),
     "hausdorff_distance": _readiness(
         "hausdorff_distance",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "Goal709",
-        "must be redesigned or explicitly benchmarked as CUDA/GPU compute, not RT-core traversal",
-        "current OptiX path is CUDA-through-OptiX KNN rows",
-        "GPU-compute comparison only; no RT-core acceleration claim",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal887/Goal941",
+        "Goal941 provides a real RTX directed_threshold_prepared artifact with same-semantics oracle parity and separated prepared fixed-radius traversal phases",
+        "exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, and whole-app speedup remain outside the claim",
+        "prepared Hausdorff <= radius decision sub-path may enter claim review; no exact-distance speedup claim",
     ),
     "ann_candidate_search": _readiness(
         "ann_candidate_search",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "Goal709",
-        "must be benchmarked against ANN/KNN baselines as GPU compute unless a true traversal design is implemented",
-        "current OptiX path is CUDA-through-OptiX KNN rows",
-        "GPU-compute comparison only; no RT-core acceleration claim",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal887/Goal941",
+        "Goal941 provides a real RTX candidate_threshold_prepared artifact with same-semantics oracle parity and separated prepared fixed-radius traversal phases",
+        "full ANN indexing, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ behavior, recall optimization, and whole-app speedup remain outside the claim",
+        "prepared ANN candidate-coverage decision sub-path may enter claim review; no full ANN index or ranking speedup claim",
     ),
     "outlier_detection": _readiness(
         "outlier_detection",
-        NEEDS_PHASE_CONTRACT,
-        "Goal710",
-        "validation-free RTX timing must split rows versus rt_count_threshold summary, backend/materialization, postprocess, and oracle validation",
-        "RunPod RTX A5000 evidence is promising, but the current profiler is app-level and still mixes validation/postprocess costs",
-        "candidate fixed-radius summary speedup claim only after phase-clean RTX rerun and review",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal795/Goal992",
+        "Goal992 exposes density_count as the public scalar claim path; validation-free RTX timing must split scalar threshold-count traversal, backend/materialization, postprocess, and oracle validation",
+        "RTX 4090 evidence covers the prepared scalar threshold-count sub-path only; full anomaly-detection app, per-point outlier labels, and row-returning paths remain outside the claim",
+        "prepared fixed-radius scalar threshold-count sub-path may enter claim review; no per-point outlier-label or broad outlier-app speedup claim",
     ),
     "dbscan_clustering": _readiness(
         "dbscan_clustering",
-        NEEDS_POSTPROCESS_SPLIT,
-        "Goal711",
-        "core-flag summary timing must be separated from Python cluster expansion and validation",
-        "RunPod RTX A5000 backend timing is near parity, but total app timing is slower because validation/postprocess dominates",
-        "core-flag summary claim only; no full DBSCAN acceleration claim yet",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal795/Goal992",
+        "Goal992 exposes core_count as the public scalar claim path; core-count timing must be separated from per-point core flags, Python cluster expansion, and validation",
+        "RTX 4090 evidence covers the prepared scalar core-count sub-path only; per-point core flags and Python cluster expansion remain outside the native scalar path",
+        "prepared fixed-radius scalar core-count sub-path may enter claim review; no per-point core-flag or full DBSCAN clustering acceleration claim",
     ),
     "robot_collision_screening": _readiness(
         "robot_collision_screening",
-        NEEDS_PHASE_CONTRACT,
-        "Goal712",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal795/Goal1058",
         "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
-        "best OptiX traversal candidate, but RTX A5000 cloud timing has not been run after compact output/profiler polish",
-        "flagship candidate; no final app speedup claim until RTX rerun",
+        "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
+        "prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim",
     ),
     "barnes_hut_force_app": _readiness(
         "barnes_hut_force_app",
-        EXCLUDE_FROM_RTX_APP_BENCHMARK,
-        "Goal709",
-        "must be benchmarked as CUDA/GPU compute or redesigned around a valid traversal primitive",
-        "current app is CUDA-through-OptiX plus Python tree/opening-rule/reduction work",
-        "no RT-core Barnes-Hut claim today",
+        READY_FOR_RTX_CLAIM_REVIEW,
+        "Goal887/Goal941",
+        "Goal941 provides a real RTX node_coverage_prepared artifact with same-semantics oracle parity and separated prepared fixed-radius traversal phases",
+        "Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim",
+        "prepared Barnes-Hut node-coverage decision sub-path may enter claim review; no force-vector or opening-rule speedup claim",
     ),
     "hiprt_ray_triangle_hitcount": _readiness(
         "hiprt_ray_triangle_hitcount",
@@ -557,6 +603,337 @@ _OPTIX_BENCHMARK_READINESS_MATRIX: dict[str, OptixAppBenchmarkReadiness] = {
         "HIPRT-specific app; not an OptiX app benchmark candidate",
         "public app CLI does not expose OptiX",
         "HIPRT validation only, not NVIDIA OptiX",
+    ),
+}
+
+
+def _maturity(
+    app: str,
+    current_status: str,
+    target_status: str,
+    required_action: str,
+    cloud_policy: str,
+) -> RtCoreAppMaturity:
+    return RtCoreAppMaturity(
+        app=app,
+        current_status=current_status,
+        target_status=target_status,
+        required_action=required_action,
+        cloud_policy=cloud_policy,
+    )
+
+
+def _public_wording(
+    app: str,
+    status: str,
+    reviewed_wording: str,
+    evidence: str,
+    boundary: str,
+) -> RtxPublicWordingStatus:
+    return RtxPublicWordingStatus(
+        app=app,
+        status=status,
+        reviewed_wording=reviewed_wording,
+        evidence=evidence,
+        boundary=boundary,
+    )
+
+
+_GOAL1048_VALIDATED_BOUNDARY_POLICY = (
+    "Goal1048/Goal1058 RTX A5000 evidence remains historical validation "
+    "context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from "
+    "source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 "
+    "added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local "
+    "ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. "
+    "Goal1177 accepted the recovered clean-source staged-archive RTX A5000 "
+    "Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only "
+    "for validated or strict bounded sub-path evidence, not whole-app speedup, "
+    "and does not authorize new public wording; public wording still requires same-semantics baseline review."
+)
+
+_GOAL1058_FACILITY_VALIDATED_POLICY = (
+    "Goal1048/Goal1058 RTX A5000 evidence remains historical validation "
+    "context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from "
+    "source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 "
+    "promoted narrow prepared coverage-threshold public wording only; "
+    "Goal1164/Goal1165/Goal1166/Goal1177/Goal1184 are follow-up engineering and "
+    "clean-source batch evidence, not new public wording. ranked KNN assignment, fallback "
+    "assignment, Python setup, and whole-app speedup remain outside the claim."
+)
+
+_GOAL1058_ROBOT_VALIDATED_POLICY = (
+    "Goal1048/Goal1058 RTX A5000 evidence remains historical validation "
+    "context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from "
+    "source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 "
+    "replaced stale-source 64M robot timing with same-source bounded sub-path evidence. "
+    "Goal1164 exposed large-scale robot timing bottlenecks, Goal1165 removed "
+    "avoidable CPU validation from prepared timing paths, Goal1166 prepared "
+    "the next validation/timing pod packet, and Goal1177 accepted the recovered "
+    "clean-source staged-archive robot timing row as timing-only review input. Goal1184 accepted the newer RTX A4500 robot timing row as timing-only external-review input. "
+    "Goal1126 accepted explicit normalized per-pose public wording only; this is not "
+    "a same-total-work wall-time or whole-app robot-planning claim."
+)
+
+
+_RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
+    "database_analytics": _maturity(
+        "database_analytics",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep compact_summary prepared DB outputs as the only RT-core claim path; row materialization, SQL-engine behavior, and whole-dashboard claims remain outside the RT-core claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "graph_analytics": _maturity(
+        "graph_analytics",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep visibility_edges any-hit plus explicit native BFS/triangle graph-ray candidate generation as the bounded graph-to-RT lowerings; keep CPU-side frontier bookkeeping and neighbor-set intersection outside the RT-core claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "apple_rt_demo": _maturity(
+        "apple_rt_demo",
+        NOT_NVIDIA_RT_CORE_TARGET,
+        NOT_NVIDIA_RT_CORE_TARGET,
+        "Keep as Apple Metal/MPS RT evidence; do not fold into NVIDIA OptiX claim tables.",
+        "Never include in NVIDIA cloud batches.",
+    ),
+    "service_coverage_gaps": _maturity(
+        "service_coverage_gaps",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep the prepared OptiX gap-summary path as the RT-core claim path, and prevent row output or nearest-clinic output from being presented as the claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "event_hotspot_screening": _maturity(
+        "event_hotspot_screening",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep the prepared OptiX count-summary path as the RT-core claim path, and prevent neighbor-row output or whole-app hotspot analytics from being presented as the claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "facility_knn_assignment": _maturity(
+        "facility_knn_assignment",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep coverage_threshold_prepared as the traversal-backed service-coverage decision path; no ranked KNN assignment RT-core claim exists, and KNN ranking/fallback assignment remain outside the RT-core claim until a native ranking design exists.",
+        _GOAL1058_FACILITY_VALIDATED_POLICY,
+    ),
+    "road_hazard_screening": _maturity(
+        "road_hazard_screening",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep the prepared native road-hazard compact-summary gate separate from default app behavior and full GIS/routing claims.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "segment_polygon_hitcount": _maturity(
+        "segment_polygon_hitcount",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep the prepared native hit-count gate separate from pair-row output and broader segment/polygon app claims.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "segment_polygon_anyhit_rows": _maturity(
+        "segment_polygon_anyhit_rows",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep the prepared bounded pair-row gate separate from unbounded row-volume performance and default app behavior.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "polygon_pair_overlap_area_rows": _maturity(
+        "polygon_pair_overlap_area_rows",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact area refinement; claim only the candidate-discovery sub-path.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "polygon_set_jaccard": _maturity(
+        "polygon_set_jaccard",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep OptiX native-assisted LSI/PIP candidate discovery split from CPU exact set-area/Jaccard refinement; claim only the reviewed chunked candidate-discovery sub-path.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "hausdorff_distance": _maturity(
+        "hausdorff_distance",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Use directed_threshold_prepared as the only RT-core Hausdorff claim path; exact-distance KNN rows remain outside the claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "ann_candidate_search": _maturity(
+        "ann_candidate_search",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim. Goal1165 replaced the tiled validation path with the single-tile analytic expectation so large prepared timing runs do not accidentally validate an O(copies^2) fixture.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "outlier_detection": _maturity(
+        "outlier_detection",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep --output-mode density_count with prepared scalar threshold-count as the RT-core claim path and prevent default rows or per-point labels from being presented as the claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "dbscan_clustering": _maturity(
+        "dbscan_clustering",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep --output-mode core_count with prepared scalar core-count as the RT-core claim path and split per-point core flags plus Python cluster expansion from native timing.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "robot_collision_screening": _maturity(
+        "robot_collision_screening",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Keep prepared ray/triangle any-hit scalar pose-count as the flagship RT-core path and expand only with phase-clean profilers.",
+        _GOAL1058_ROBOT_VALIDATED_POLICY,
+    ),
+    "barnes_hut_force_app": _maturity(
+        "barnes_hut_force_app",
+        RT_CORE_READY,
+        RT_CORE_READY,
+        "Use node_coverage_prepared as the only RT-core Barnes-Hut claim path. Native C++ candidate-summary continuation is allowed as an app postprocess improvement, but opening-rule evaluation, force-vector reduction, and N-body simulation remain outside the RT-core claim.",
+        _GOAL1048_VALIDATED_BOUNDARY_POLICY,
+    ),
+    "hiprt_ray_triangle_hitcount": _maturity(
+        "hiprt_ray_triangle_hitcount",
+        NOT_NVIDIA_RT_CORE_TARGET,
+        NOT_NVIDIA_RT_CORE_TARGET,
+        "Keep as HIPRT-specific validation; do not fold into NVIDIA OptiX app maturity.",
+        "Never include in NVIDIA OptiX cloud batches.",
+    ),
+}
+
+_NO_GOAL1009_REVIEW = (
+    "No Goal1009 public speedup wording has been reviewed for this app path yet."
+)
+
+_RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
+    "database_analytics": _public_wording(
+        "database_analytics",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal921/Goal941",
+        "Prepared DB compact-summary traversal/filter/grouping is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "graph_analytics": _public_wording(
+        "graph_analytics",
+        PUBLIC_WORDING_BLOCKED,
+        "RTDL's graph visibility_edges RTX sub-path has valid same-contract evidence, but measured 2.000505 s versus 1.000280 s for Embree, so the raw Embree-over-OptiX ratio is 0.50x and no positive public RTX speedup wording is authorized.",
+        "Goal1224",
+        "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, and whole-app graph speedup remain outside this wording.",
+    ),
+    "apple_rt_demo": _public_wording(
+        "apple_rt_demo",
+        NOT_NVIDIA_PUBLIC_WORDING_TARGET,
+        "Apple RT demo is outside NVIDIA RTX public wording.",
+        "none",
+        "Do not include Apple-specific evidence in NVIDIA RTX speedup wording.",
+    ),
+    "service_coverage_gaps": _public_wording(
+        "service_coverage_gaps",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared service-coverage gap-summary RTX query/native sub-path measured 0.136545 s and 1.61x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared gap-summary query/native sub-path is covered; row output, nearest-clinic output, and service-coverage optimization are outside this wording.",
+    ),
+    "event_hotspot_screening": _public_wording(
+        "event_hotspot_screening",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared event-hotspot count-summary RTX query sub-path measured 0.165999 s and 1.55x versus the reviewed same-semantics baseline.",
+        "Goal1061",
+        "Only the prepared count-summary query phase is covered; whole-app hotspot screening, neighbor-row output, Python-side postprocessing, validation, and unrelated app stages are outside this wording.",
+    ),
+    "facility_knn_assignment": _public_wording(
+        "facility_knn_assignment",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.111619 s and 80.60x versus the reviewed same-contract CPU oracle baseline.",
+        "Goal1146",
+        "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup remain outside this wording.",
+    ),
+    "road_hazard_screening": _public_wording(
+        "road_hazard_screening",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared native road-hazard RTX sub-path measured 0.230652 s and 3.53x versus the reviewed same-scale Embree sub-path at 40k copies.",
+        "Goal1208",
+        "Only the prepared native road-hazard compact-summary traversal/count sub-path at 40k copies is covered; default app behavior, full GIS/routing, row output, Python orchestration, and whole-app road-hazard speedup remain outside this wording.",
+    ),
+    "segment_polygon_hitcount": _public_wording(
+        "segment_polygon_hitcount",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared native segment/polygon hit-count RTX query/native sub-path measured 0.146860 s and 1.71x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only prepared compact hit-count traversal is covered; pair-row output and broader segment/polygon app behavior are outside this wording.",
+    ),
+    "segment_polygon_anyhit_rows": _public_wording(
+        "segment_polygon_anyhit_rows",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared bounded native segment/polygon pair-row RTX query/native sub-path measured 0.192639 s and 3.03x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only bounded prepared pair-row traversal at the reviewed output capacity is covered; unbounded row-volume performance is outside this wording.",
+    ),
+    "polygon_pair_overlap_area_rows": _public_wording(
+        "polygon_pair_overlap_area_rows",
+        PUBLIC_WORDING_BLOCKED,
+        "RTDL's polygon-pair candidate-discovery RTX sub-path has valid same-contract evidence, but measured 3.452362 s versus 2.896597 s for Embree, so the raw Embree-over-OptiX ratio is 0.84x and no positive public RTX speedup wording is authorized.",
+        "Goal1224",
+        "Only native-assisted LSI/PIP candidate discovery is covered; exact polygon-area continuation, row materialization, Python setup, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording.",
+    ),
+    "polygon_set_jaccard": _public_wording(
+        "polygon_set_jaccard",
+        PUBLIC_WORDING_NOT_REVIEWED,
+        _NO_GOAL1009_REVIEW,
+        "Goal877/Goal929",
+        "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+    ),
+    "hausdorff_distance": _public_wording(
+        "hausdorff_distance",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared Hausdorff threshold-decision RTX sub-path measured 0.122389 s and 13.73x versus the reviewed same-contract Embree directed-summary sub-path.",
+        "Goal1224",
+        "Only the prepared Hausdorff <= radius threshold-decision traversal sub-path is covered; exact Hausdorff distance, KNN rows, nearest-neighbor ranking, violating-ID witness output, Python setup, validation, and whole-app speedup remain outside this wording.",
+    ),
+    "ann_candidate_search": _public_wording(
+        "ann_candidate_search",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared ANN candidate-coverage RTX query/native sub-path measured 0.105215 s and 4.86x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared ANN candidate-coverage decision sub-path is covered; full ANN indexing, nearest-neighbor ranking, and recall policy are outside this wording.",
+    ),
+    "outlier_detection": _public_wording(
+        "outlier_detection",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared fixed-radius density-summary RTX query/native sub-path measured 0.122348 s and 4.64x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared fixed-radius scalar threshold-count sub-path is covered; per-point labels and full anomaly-detection behavior are outside this wording.",
+    ),
+    "dbscan_clustering": _public_wording(
+        "dbscan_clustering",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared fixed-radius DBSCAN core-count RTX query/native sub-path measured 0.122921 s and 6.62x versus the reviewed same-semantics baseline.",
+        "Goal1008/Goal1009",
+        "Only the prepared fixed-radius scalar core-count sub-path is covered; per-point core flags and Python cluster expansion are outside this wording.",
+    ),
+    "robot_collision_screening": _public_wording(
+        "robot_collision_screening",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178471 s for 64M poses and 918.91x normalized per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+        "Goal1126",
+        "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path. Full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside the wording.",
+    ),
+    "barnes_hut_force_app": _public_wording(
+        "barnes_hut_force_app",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.222256 s and 240.56x versus the reviewed same-contract Embree node-coverage baseline.",
+        "Goal1146",
+        "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside this wording.",
+    ),
+    "hiprt_ray_triangle_hitcount": _public_wording(
+        "hiprt_ray_triangle_hitcount",
+        NOT_NVIDIA_PUBLIC_WORDING_TARGET,
+        "HIPRT hit-count demo is outside NVIDIA RTX public wording.",
+        "none",
+        "Do not include HIPRT-specific evidence in NVIDIA RTX speedup wording.",
     ),
 }
 
@@ -596,3 +973,25 @@ def optix_app_benchmark_readiness(app: str) -> OptixAppBenchmarkReadiness:
 
 def optix_app_benchmark_readiness_matrix() -> dict[str, OptixAppBenchmarkReadiness]:
     return dict(_OPTIX_BENCHMARK_READINESS_MATRIX)
+
+
+def rt_core_app_maturity(app: str) -> RtCoreAppMaturity:
+    try:
+        return _RT_CORE_APP_MATURITY_MATRIX[app]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL app: app={app!r}") from exc
+
+
+def rt_core_app_maturity_matrix() -> dict[str, RtCoreAppMaturity]:
+    return dict(_RT_CORE_APP_MATURITY_MATRIX)
+
+
+def rtx_public_wording_status(app: str) -> RtxPublicWordingStatus:
+    try:
+        return _RTX_PUBLIC_WORDING_MATRIX[app]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL app: app={app!r}") from exc
+
+
+def rtx_public_wording_matrix() -> dict[str, RtxPublicWordingStatus]:
+    return dict(_RTX_PUBLIC_WORDING_MATRIX)

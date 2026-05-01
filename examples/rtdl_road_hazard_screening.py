@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
+import os
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,36 +68,114 @@ def _optix_performance() -> dict[str, str]:
     return {"class": support.performance_class, "note": support.note}
 
 
-def run_case(backend: str, *, copies: int = 1, output_mode: str = "rows") -> dict[str, object]:
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    raise RuntimeError(
+        "road_hazard_screening native OptiX mode remains gated by strict segment/polygon RTX validation; "
+        "no RT-core claim path is accepted today"
+    )
+
+
+@contextmanager
+def _temporary_optix_segpoly_mode(optix_mode: str):
+    previous = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
+    if optix_mode == "native":
+        os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = "native"
+    elif optix_mode == "host_indexed":
+        os.environ.pop("RTDL_OPTIX_SEGPOLY_MODE", None)
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("RTDL_OPTIX_SEGPOLY_MODE", None)
+        else:
+            os.environ["RTDL_OPTIX_SEGPOLY_MODE"] = previous
+
+
+def _native_continuation_backend(backend: str, optix_mode: str) -> str:
+    if backend == "optix" and optix_mode == "native":
+        return "optix_native_hitcount_gated"
+    return "none"
+
+
+def run_case(
+    backend: str,
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    optix_mode: str = "auto",
+    require_rt_core: bool = False,
+) -> dict[str, object]:
     if output_mode not in {"rows", "priority_segments", "summary"}:
         raise ValueError("output_mode must be 'rows', 'priority_segments', or 'summary'")
+    if optix_mode not in {"auto", "host_indexed", "native"}:
+        raise ValueError("optix_mode must be 'auto', 'host_indexed', or 'native'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
     case = make_demo_case(copies=copies)
-    if backend == "cpu_python_reference":
-        rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
-    elif backend == "cpu":
-        rows = rt.run_cpu(road_hazard_hitcount, **case)
-    elif backend == "embree":
-        rows = rt.run_embree(road_hazard_hitcount, **case)
-    elif backend == "optix":
-        rows = rt.run_optix(road_hazard_hitcount, **case)
-    elif backend == "vulkan":
-        rows = rt.run_vulkan(road_hazard_hitcount, **case)
+    input_construction_sec = time.perf_counter() - input_start
+    run_phases: dict[str, float] = {"input_construction_sec": input_construction_sec}
+    summary_materializes_rows = True
+    if backend == "optix" and optix_mode == "native" and output_mode == "summary":
+        prepare_start = time.perf_counter()
+        prepared = rt.prepare_optix_segment_polygon_hitcount_2d(case["hazards"])
+        run_phases["native_prepare_sec"] = time.perf_counter() - prepare_start
+        try:
+            query_start = time.perf_counter()
+            priority_segment_count = int(prepared.count_at_least(case["roads"], threshold=2))
+            run_phases["native_threshold_count_sec"] = time.perf_counter() - query_start
+        finally:
+            close_start = time.perf_counter()
+            prepared.close()
+            run_phases["native_close_sec"] = time.perf_counter() - close_start
+        rows = ()
+        hot_segments: list[object] = []
+        summary_materializes_rows = False
     else:
-        raise ValueError(f"unsupported backend `{backend}`")
-    hot_segments = [row["segment_id"] for row in rows if row["hit_count"] >= 2]
+        query_start = time.perf_counter()
+        if backend == "cpu_python_reference":
+            rows = rt.run_cpu_python_reference(road_hazard_hitcount, **case)
+        elif backend == "cpu":
+            rows = rt.run_cpu(road_hazard_hitcount, **case)
+        elif backend == "embree":
+            rows = rt.run_embree(road_hazard_hitcount, **case)
+        elif backend == "optix":
+            with _temporary_optix_segpoly_mode(optix_mode):
+                rows = rt.run_optix(road_hazard_hitcount, **case)
+        elif backend == "vulkan":
+            rows = rt.run_vulkan(road_hazard_hitcount, **case)
+        else:
+            raise ValueError(f"unsupported backend `{backend}`")
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        summary_start = time.perf_counter()
+        hot_segments = [row["segment_id"] for row in rows if row["hit_count"] >= 2]
+        priority_segment_count = len(hot_segments)
+        run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
+    native_continuation_backend = _native_continuation_backend(backend, optix_mode)
     payload: dict[str, object] = {
         "app": "road_hazard_screening",
         "backend": backend,
         "copies": copies,
         "output_mode": output_mode,
+        "optix_mode": optix_mode if backend == "optix" else "not_applicable",
         "row_count": len(rows),
         "priority_segments": hot_segments,
-        "priority_segment_count": len(hot_segments),
+        "priority_segment_count": priority_segment_count,
+        "summary_materializes_rows": summary_materializes_rows,
+        "run_phases": run_phases,
         "optix_performance": _optix_performance(),
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
+        "rt_core_accelerated": False,
         "boundary": (
             "Rows mode emits per-road hit-count rows. Compact priority_segments "
             "and summary modes omit rows from the app payload when only priority "
-            "road ids or counts are needed. OptiX app exposure is currently "
+            "road ids or counts are needed. Native OptiX summary mode returns a "
+            "count-only threshold summary and does not materialize segment ids. "
+            "OptiX app exposure is currently "
             "classified separately from RT-core performance; use optix_performance "
             "for the current classification."
         ),
@@ -120,8 +201,31 @@ def main(argv: list[str] | None = None) -> int:
         default="rows",
         help="Use compact modes to omit full per-road rows from the JSON payload.",
     )
+    parser.add_argument(
+        "--optix-mode",
+        choices=("auto", "host_indexed", "native"),
+        default="auto",
+        help="OptiX only: preserve current default, force host-indexed fallback, or request experimental native segment/polygon hit-count mode.",
+    )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail because road-hazard native OptiX remains behind strict segment/polygon RTX validation.",
+    )
     args = parser.parse_args(argv)
-    print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                optix_mode=args.optix_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

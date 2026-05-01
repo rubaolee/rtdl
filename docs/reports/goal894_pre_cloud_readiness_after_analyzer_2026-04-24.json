@@ -1,0 +1,79 @@
+{
+  "boundary": "Local readiness only; does not start cloud and does not authorize speedup claims.",
+  "checks": {
+    "active_runner_dry_run": {
+      "dry_run": true,
+      "entry_count": 5,
+      "status": "ok",
+      "unique_command_count": 4
+    },
+    "bootstrap_dry_run": {
+      "dry_run": true,
+      "status": "ok",
+      "step_names": [
+        "build_optix",
+        "native_optix_focused_tests"
+      ]
+    },
+    "deferred_runner_dry_run": {
+      "dry_run": true,
+      "entry_count": 17,
+      "include_deferred": true,
+      "status": "ok",
+      "unique_command_count": 16
+    },
+    "docs": {
+      "goal822_report_exists": true,
+      "plan_exists": true,
+      "valid": true
+    },
+    "git": {
+      "head": {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "output_tail": "f53736899b638150e4eae3c49cf681a6507712a5\n",
+        "returncode": 0
+      },
+      "status_short": {
+        "command": [
+          "git",
+          "status",
+          "--short"
+        ],
+        "output_tail": " M docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json\n?? docs/reports/gemini_embree_applications_review_2026-04-23.md\n?? docs/reports/gemini_rtdl_feature_analysis_report_2026-04-23.md\n?? docs/reports/gemini_rtdl_next_gen_cuda_partner_brainstorming_2026-04-23.md\n?? docs/reports/goal850_claude_review_2026-04-23.md\n",
+        "returncode": 0
+      }
+    },
+    "manifest": {
+      "active_count": 5,
+      "active_errors": [],
+      "baseline_contract_count": 17,
+      "baseline_contract_errors": [],
+      "deferred_count": 12,
+      "excluded_count": 8,
+      "missing_deferred": [],
+      "missing_excluded": [],
+      "valid": true
+    },
+    "public_command_audit": {
+      "command_count": 262,
+      "coverage_counts": {
+        "goal410_harness_exact": 226,
+        "goal410_harness_family": 15,
+        "goal513_front_page_smoke_exact": 6,
+        "goal593_public_example_smoke_exact": 4,
+        "goal821_require_rt_core_doc_gate_exact": 2,
+        "goal878_optix_doc_gate_exact": 8,
+        "postgresql_validation_command": 1
+      },
+      "valid": true
+    }
+  },
+  "invalid_checks": [],
+  "next_cloud_policy": "Start one RTX cloud pod only after this gate is valid. Run the active Goal759/Goal761 batch first, optionally include deferred entries only after their activation gates are met, collect artifacts, then shut down.",
+  "suite": "goal824_pre_cloud_rtx_readiness_gate",
+  "valid": true
+}

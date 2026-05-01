@@ -1,0 +1,759 @@
+[
+  {
+    "elapsed_sec": 0.5699766427278519,
+    "name": "outlier_detection",
+    "returncode": 2,
+    "stderr_head": "usage: rtdl_outlier_detection_app.py [-h]\n                                     [--backend {cpu_python_reference,cpu,embree,optix,vulkan,scipy}]\n                                     [--copies COPIES]\n                                     [--output-mode {full,density_summary,density_count}]\n                                     [--optix-summary-mode {rows,rt_count_threshold,rt_count_threshold_prepared}]\n                                     [--embree-summary-mode {rows,rt_count_threshold,rt_count_thr",
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/outlier_detection.stderr",
+    "stdout_head": "",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/outlier_detection.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.1914123520255089,
+    "json": {
+      "app": "facility_knn_assignment",
+      "backend": "optix",
+      "boundary": "Coverage-threshold decision only; this is not nearest-depot ranking, not K=3 fallback assignment, and not a facility-location optimizer.",
+      "copies": 1,
+      "coverage_threshold": {
+        "all_customers_covered": true,
+        "covered_customer_count": 4,
+        "customer_count": 4,
+        "identity_parity_available": true,
+        "radius": 1.0,
+        "row_count": null,
+        "summary_mode": "scalar_threshold_count",
+        "uncovered_customer_ids": []
+      },
+      "customer_count": 4,
+      "depot_count": 4,
+      "k": null,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "optix_summary_mode": "coverage_threshold_prepared",
+      "oracle_coverage_threshold": {
+        "all_customers_covered": true,
+        "covered_customer_count": 4,
+        "customer_count": 4,
+        "radius": 1.0,
+        "uncovered_customer_ids": []
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "output_mode": "summary",
+      "rt_core_accelerated": true,
+      "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded facility-coverage decision: every customer has at least one depot within the service radius.",
+      "service_radius": 1.0
+    },
+    "name": "facility_knn_assignment",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/facility_knn_assignment.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/facility_knn_assignment.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.2290899604558945,
+    "json": {
+      "app": "ann_candidate_search",
+      "backend": "optix",
+      "boundary": "Candidate-threshold decision only; this is not a full ANN index, not nearest-neighbor ranking, and not a recall/latency optimizer. Python still owns candidate-set construction and any quality policy.",
+      "candidate_count": 3,
+      "candidate_radius": 0.2,
+      "candidate_threshold": {
+        "covered_query_count": 3,
+        "identity_parity_available": true,
+        "query_count": 3,
+        "radius": 0.2,
+        "row_count": null,
+        "summary_mode": "scalar_threshold_count",
+        "uncovered_query_ids": [],
+        "within_candidate_radius": true
+      },
+      "copies": 1,
+      "k": 1,
+      "matches_oracle": true,
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Default candidate reranking uses KNN rows through CUDA-style kernels; explicit candidate_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for candidate-coverage decisions only."
+      },
+      "optix_summary_mode": "candidate_threshold_prepared",
+      "oracle_candidate_threshold": {
+        "covered_query_count": 3,
+        "query_count": 3,
+        "radius": 0.2,
+        "uncovered_query_ids": [],
+        "within_candidate_radius": true
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "output_mode": "quality_summary",
+      "query_count": 3,
+      "rt_core_accelerated": true,
+      "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded ANN candidate-coverage decision: every query has at least one Python-selected candidate within the acceptance radius.",
+      "search_count": 6
+    },
+    "name": "ann_candidate",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/ann_candidate.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/ann_candidate.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.1628058925271034,
+    "json": {
+      "app": "service_coverage_gaps",
+      "backend": "optix",
+      "clinic_count": 3,
+      "clinic_loads": {},
+      "copies": 1,
+      "coverage_summary_rows": [],
+      "covered_household_count": 3,
+      "embree_summary_mode": null,
+      "household_count": 4,
+      "k_max": 4,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "nearby_clinics_by_household": {},
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Explicit gap_summary_prepared mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path."
+      },
+      "optix_summary_mode": "gap_summary_prepared",
+      "radius": 0.85,
+      "rows": [],
+      "rt_core_accelerated": true,
+      "summary_boundary": "gap_summary_prepared reports only scalar covered/uncovered counts; use rows mode when household ids, clinic ids, distances, or clinic loads are required.",
+      "uncovered_household_ids": null
+    },
+    "name": "service_coverage_gaps",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/service_coverage_gaps.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/service_coverage_gaps.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.1509374529123306,
+    "json": {
+      "app": "event_hotspot_screening",
+      "backend": "optix",
+      "copies": 1,
+      "embree_summary_mode": null,
+      "event_count": 6,
+      "hotspot_count": 4,
+      "hotspot_threshold": 3,
+      "hotspots": null,
+      "k_max": 12,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "neighbor_count_by_event": {},
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Explicit count_summary_prepared mode uses prepared OptiX fixed-radius count traversal and compact hotspot summaries; rows mode is not the RT-core claim path."
+      },
+      "optix_summary_mode": "count_summary_prepared",
+      "radius": 0.75,
+      "rows": [],
+      "rt_core_accelerated": true,
+      "summary_boundary": "count_summary_prepared reports only scalar hotspot count; use rows or Embree count_summary mode when hotspot event ids or per-event counts are required.",
+      "summary_rows": []
+    },
+    "name": "event_hotspot_screening",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/event_hotspot_screening.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/event_hotspot_screening.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.7210602536797523,
+    "json": {
+      "app": "robot_collision_screening",
+      "backend": "optix",
+      "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
+      "edge_ray_count": 256,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_prepared_pose_flags",
+      "obstacle_triangle_count": 32,
+      "optix_summary_mode": "prepared_pose_flags",
+      "oracle_colliding_pose_ids": [
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        22,
+        23,
+        24,
+        26,
+        27,
+        28,
+        30,
+        31,
+        32,
+        34,
+        35,
+        36,
+        38,
+        39,
+        40,
+        42,
+        43,
+        44,
+        46,
+        47,
+        48,
+        50,
+        51,
+        52,
+        54,
+        55,
+        56,
+        58,
+        59,
+        60,
+        62,
+        63,
+        64
+      ],
+      "output_mode": "pose_flags",
+      "pose_count": 64,
+      "prepared_summary": {
+        "colliding_pose_count": 48,
+        "colliding_pose_ids": [
+          2,
+          3,
+          4,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          14,
+          15,
+          16,
+          18,
+          19,
+          20,
+          22,
+          23,
+          24,
+          26,
+          27,
+          28,
+          30,
+          31,
+          32,
+          34,
+          35,
+          36,
+          38,
+          39,
+          40,
+          42,
+          43,
+          44,
+          46,
+          47,
+          48,
+          50,
+          51,
+          52,
+          54,
+          55,
+          56,
+          58,
+          59,
+          60,
+          62,
+          63,
+          64
+        ],
+        "edge_ray_count": 256,
+        "mode": "optix_prepared_pose_flags",
+        "obstacle_triangle_count": 32,
+        "pose_collision_flags": [
+          {
+            "collides": false,
+            "pose_id": 1
+          },
+          {
+            "collides": true,
+            "pose_id": 2
+          },
+          {
+            "collides": true,
+            "pose_id": 3
+          },
+          {
+            "collides": true,
+            "pose_id": 4
+          },
+          {
+            "collides": false,
+            "pose_id": 5
+          },
+          {
+            "collides": true,
+            "pose_id": 6
+          },
+          {
+            "collides": true,
+            "pose_id": 7
+          },
+          {
+            "collides": true,
+            "pose_id": 8
+          },
+          {
+            "collides": false,
+            "pose_id": 9
+          },
+          {
+            "collides": true,
+            "pose_id": 10
+          },
+          {
+            "collides": true,
+            "pose_id": 11
+          },
+          {
+            "collides": true,
+            "pose_id": 12
+          },
+          {
+            "collides": false,
+            "pose_id": 13
+          },
+          {
+            "collides": true,
+            "pose_id": 14
+          },
+          {
+            "collides": true,
+            "pose_id": 15
+          },
+          {
+            "collides": true,
+            "pose_id": 16
+          },
+          {
+            "collides": false,
+            "pose_id": 17
+          },
+          {
+            "collides": true,
+            "pose_id": 18
+          },
+          {
+            "collides": true,
+            "pose_id": 19
+          },
+          {
+            "collides": true,
+            "pose_id": 20
+          },
+          {
+            "collides": false,
+            "pose_id": 21
+          },
+          {
+            "collides": true,
+            "pose_id": 22
+          },
+          {
+            "collides": true,
+            "pose_id": 23
+          },
+          {
+            "collides": true,
+            "pose_id": 24
+          },
+          {
+            "collides": false,
+            "pose_id": 25
+          },
+          {
+            "collides": true,
+            "pose_id": 26
+          },
+          {
+            "collides": true,
+            "pose_id": 27
+          },
+          {
+            "collides": true,
+            "pose_id": 28
+          },
+          {
+            "collides": false,
+            "pose_id": 29
+          },
+          {
+            "collides": true,
+            "pose_id": 30
+          },
+          {
+            "collides": true,
+            "pose_id": 31
+          },
+          {
+            "collides": true,
+            "pose_id": 32
+          },
+          {
+            "collides": false,
+            "pose_id": 33
+          },
+          {
+            "collides": true,
+            "pose_id": 34
+          },
+          {
+            "collides": true,
+            "pose_id": 35
+          },
+          {
+            "collides": true,
+            "pose_id": 36
+          },
+          {
+            "collides": false,
+            "pose_id": 37
+          },
+          {
+            "collides": true,
+            "pose_id": 38
+          },
+          {
+            "collides": true,
+            "pose_id": 39
+          },
+          {
+            "collides": true,
+            "pose_id": 40
+          },
+          {
+            "collides": false,
+            "pose_id": 41
+          },
+          {
+            "collides": true,
+            "pose_id": 42
+          },
+          {
+            "collides": true,
+            "pose_id": 43
+          },
+          {
+            "collides": true,
+            "pose_id": 44
+          },
+          {
+            "collides": false,
+            "pose_id": 45
+          },
+          {
+            "collides": true,
+            "pose_id": 46
+          },
+          {
+            "collides": true,
+            "pose_id": 47
+          },
+          {
+            "collides": true,
+            "pose_id": 48
+          },
+          {
+            "collides": false,
+            "pose_id": 49
+          },
+          {
+            "collides": true,
+            "pose_id": 50
+          },
+          {
+            "collides": true,
+            "pose_id": 51
+          },
+          {
+            "collides": true,
+            "pose_id": 52
+          },
+          {
+            "collides": false,
+            "pose_id": 53
+          },
+          {
+            "collides": true,
+            "pose_id": 54
+          },
+          {
+            "collides": true,
+            "pose_id": 55
+          },
+          {
+            "collides": true,
+            "pose_id": 56
+          },
+          {
+            "collides": false,
+            "pose_id": 57
+          },
+          {
+            "collides": true,
+            "pose_id": 58
+          },
+          {
+            "collides": true,
+            "pose_id": 59
+          },
+          {
+            "collides": true,
+            "pose_id": 60
+          },
+          {
+            "collides": false,
+            "pose_id": 61
+          },
+          {
+            "collides": true,
+            "pose_id": 62
+          },
+          {
+            "collides": true,
+            "pose_id": 63
+          },
+          {
+            "collides": true,
+            "pose_id": 64
+          }
+        ]
+      },
+      "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path."
+    },
+    "name": "robot_collision_screening",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/robot_collision_screening.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/robot_collision_screening.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.1785542964935303,
+    "json": {
+      "app": "barnes_hut_force_app",
+      "backend": "optix",
+      "body_count": 512,
+      "boundary": "Node-coverage decision only; this is not Barnes-Hut opening-rule evaluation, not force-vector reduction, and not a fully native N-body solver.",
+      "matches_oracle": true,
+      "node_count": 4,
+      "node_coverage": {
+        "all_bodies_have_node_candidate": true,
+        "body_count": 512,
+        "covered_body_count": 512,
+        "identity_parity_available": true,
+        "radius": 10.0,
+        "row_count": null,
+        "summary_mode": "scalar_threshold_count",
+        "uncovered_body_ids": []
+      },
+      "node_radius": 10.0,
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Default candidate rows use fixed-radius candidate generation and native C++ continuation for compact candidate summaries. Explicit node_coverage_prepared mode uses prepared OptiX fixed-radius threshold traversal for node-coverage decisions only. Python opening-rule and force reduction remain outside the claim."
+      },
+      "optix_summary_mode": "node_coverage_prepared",
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_node_coverage": {
+        "all_bodies_have_node_candidate": true,
+        "body_count": 512,
+        "covered_body_count": 512,
+        "max_candidate_count": 4,
+        "min_candidate_count": 4,
+        "radius": 10.0,
+        "threshold": 1,
+        "uncovered_body_ids": []
+      },
+      "output_mode": "candidate_summary",
+      "rt_core_accelerated": true,
+      "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded Barnes-Hut node-coverage decision: every body has at least one quadtree node candidate within the discovery radius.",
+      "theta": 0.75
+    },
+    "name": "barnes_hut_force",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/barnes_hut_force.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/barnes_hut_force.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.0592475160956383,
+    "json": {
+      "app": "hausdorff_distance",
+      "backend": "optix",
+      "copies": 1,
+      "directed_a_to_b": {
+        "covered_source_count": 4,
+        "identity_parity_available": true,
+        "label": "a_to_b",
+        "radius": 0.4,
+        "row_count": null,
+        "run_phases": {
+          "optix_prepare_sec": 0.5223067700862885,
+          "optix_query_sec": 0.0002087429165840149
+        },
+        "source_count": 4,
+        "summary_mode": "scalar_threshold_count",
+        "violating_source_ids": [],
+        "within_threshold": true
+      },
+      "directed_b_to_a": {
+        "covered_source_count": 4,
+        "identity_parity_available": true,
+        "label": "b_to_a",
+        "radius": 0.4,
+        "row_count": null,
+        "run_phases": {
+          "optix_prepare_sec": 0.00014529377222061157,
+          "optix_query_sec": 7.788091897964478e-05
+        },
+        "source_count": 4,
+        "summary_mode": "scalar_threshold_count",
+        "violating_source_ids": [],
+        "within_threshold": true
+      },
+      "embree_result_mode": null,
+      "hausdorff_distance": null,
+      "hausdorff_threshold": 0.4,
+      "matches_oracle": true,
+      "native_continuation_active": true,
+      "native_continuation_backend": "optix_threshold_count",
+      "optix_performance": {
+        "class": "optix_traversal_prepared_summary",
+        "note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only."
+      },
+      "optix_summary_mode": "directed_threshold_prepared",
+      "oracle": {
+        "directed_a_to_b": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 4,
+          "source_id": 3,
+          "target_id": 103
+        },
+        "directed_b_to_a": {
+          "distance": 0.30000000000000004,
+          "distance_reduction_rows": [
+            {
+              "directed_distance": 0.30000000000000004
+            }
+          ],
+          "row_count": 4,
+          "source_id": 103,
+          "target_id": 3
+        },
+        "hausdorff_distance": 0.30000000000000004,
+        "witness_direction": "b_to_a"
+      },
+      "oracle_decision_matches": true,
+      "oracle_identity_matches": true,
+      "oracle_within_threshold": true,
+      "point_count_a": 4,
+      "point_count_b": 4,
+      "rt_core_accelerated": true,
+      "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the Hausdorff decision subproblem: every source point has at least one target within the threshold. Python combines the two directed decisions and validates against the deterministic oracle.",
+      "run_phases": {
+        "input_construction_sec": 4.7676265239715576e-05,
+        "optix_prepare_sec": 0.5224520638585091,
+        "optix_query_sec": 0.00028662383556365967,
+        "python_postprocess_sec": 7.078051567077637e-07,
+        "validation_sec": 0.00018037855625152588
+      },
+      "within_threshold": true
+    },
+    "name": "hausdorff_app",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/hausdorff_app.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/hausdorff_app.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 2.176423616707325,
+    "json": {
+      "output_json": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/hausdorff_contract.json",
+      "valid": true
+    },
+    "name": "hausdorff_contract",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/hausdorff_contract.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/hausdorff_contract.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.3768070936203003,
+    "json": {
+      "output_json": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/road_hazard_gate.json",
+      "status": "pass",
+      "strict_pass": true
+    },
+    "name": "road_hazard_gate",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/road_hazard_gate.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/road_hazard_gate.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 7.0978313609957695,
+    "json": {
+      "output_json": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/graph_visibility_gate.json",
+      "status": "pass",
+      "strict_pass": true
+    },
+    "name": "graph_visibility_gate",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/graph_visibility_gate.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/graph_visibility_gate.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.6528485342860222,
+    "json": {
+      "output_json": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/polygon_pair_gate.json",
+      "status": "pass"
+    },
+    "name": "polygon_pair_gate",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/polygon_pair_gate.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/polygon_pair_gate.stdout",
+    "timed_out": false
+  },
+  {
+    "elapsed_sec": 1.48589438945055,
+    "json": {
+      "output_json": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/polygon_jaccard_gate.json",
+      "status": "pass"
+    },
+    "name": "polygon_jaccard_gate",
+    "returncode": 0,
+    "stderr_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/polygon_jaccard_gate.stderr",
+    "stdout_path": "/workspace/rtdl_python_only/docs/reports/goal1164_rtx_pod_batch_2026-04-30/smoke/polygon_jaccard_gate.stdout",
+    "timed_out": false
+  }
+]

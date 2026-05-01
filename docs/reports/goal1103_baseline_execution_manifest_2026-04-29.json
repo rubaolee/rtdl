@@ -1,0 +1,47 @@
+{
+  "boundary": "Goal1103 is an execution manifest only. It does not run full baselines, does not start cloud, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1103 baseline execution manifest",
+  "output_dir": "docs/reports/goal1101_current_contract_non_optix_baselines",
+  "recommended_next_local_action": "run_barnes_hut_validation_embree_then_goal1102_intake",
+  "row_count": 4,
+  "rows": [
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal1101_current_contract_non_optix_baseline_profiler.py --scenario barnes_hut_node_coverage --backend embree --body-count 4096 --iterations 3 --radius 0.1 --barnes-tree-depth 8 --hit-threshold 4 --output-json docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_4096_embree_validation_baseline.json",
+      "current_mac_recommendation": "safe_to_run",
+      "expected_artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_4096_embree_validation_baseline.json",
+      "name": "barnes_hut_validation_embree",
+      "recommended_order": 1,
+      "risk": "moderate",
+      "why": "Small validated baseline row needed before interpreting the Barnes-Hut 20M timing row."
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal1101_current_contract_non_optix_baseline_profiler.py --scenario facility_service_coverage_recentered --backend cpu_oracle --copies 2500000 --iterations 3 --radius 1.0 --output-json docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
+      "current_mac_recommendation": "prefer_linux_or_windows_large_ram",
+      "expected_artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
+      "name": "facility_cpu_oracle",
+      "recommended_order": 2,
+      "risk": "high",
+      "why": "Same-current-contract CPU oracle timing for the 10M-query facility row; 2.5M copies expands to 10M customers because the fixture has four customers per copy."
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal1101_current_contract_non_optix_baseline_profiler.py --scenario facility_service_coverage_recentered --backend embree --copies 2500000 --iterations 3 --radius 1.0 --output-json docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
+      "current_mac_recommendation": "prefer_linux_or_windows_large_ram",
+      "expected_artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
+      "name": "facility_embree",
+      "recommended_order": 3,
+      "risk": "high",
+      "why": "Same-current-contract Embree baseline for the 10M-query facility row; 2.5M copies expands to 10M customers and may allocate and scan large query arrays."
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal1101_current_contract_non_optix_baseline_profiler.py --scenario barnes_hut_node_coverage --backend embree --body-count 20000000 --iterations 3 --radius 0.1 --barnes-tree-depth 8 --hit-threshold 4 --skip-validation --output-json docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
+      "current_mac_recommendation": "do_not_run_on_16gb_mac_without_user_approval",
+      "expected_artifact": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
+      "name": "barnes_hut_timing_embree",
+      "recommended_order": 4,
+      "risk": "very_high",
+      "why": "Large timing-only baseline paired with the validated Barnes-Hut row; likely too memory-heavy for a 16 GB laptop."
+    }
+  ],
+  "valid": true
+}

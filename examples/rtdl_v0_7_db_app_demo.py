@@ -23,6 +23,20 @@ from rtdsl.db_reference import normalize_predicate_bundle
 BACKENDS = ("cpu_python_reference", "cpu_reference", "embree", "optix", "vulkan")
 
 
+def _timed_call(fn):
+    start = time.perf_counter()
+    value = fn()
+    return value, time.perf_counter() - start
+
+
+def _native_db_continuation_backend(backend: str, output_mode: str, run_phases: dict[str, float]) -> str:
+    if output_mode != "compact_summary" or backend not in {"embree", "optix", "vulkan"}:
+        return "none"
+    if any("materialize" in phase for phase in run_phases):
+        return "none"
+    return f"{backend}_db_compact_summary"
+
+
 def make_orders(copies: int = 1) -> tuple[dict[str, object], ...]:
     """Small denormalized app table; a real app would load this from its own store."""
     if copies <= 0:
@@ -152,22 +166,109 @@ class PreparedRegionalDashboardSession:
     def run(self, output_mode: str = "full") -> dict[str, Any]:
         if self._closed:
             raise RuntimeError("prepared regional dashboard session is closed")
-        if output_mode not in {"full", "summary"}:
+        if output_mode not in {"full", "summary", "compact_summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
+        run_phases: dict[str, float] = {}
+        native_db_phases: dict[str, object] = {}
         if self.backend == "cpu_reference":
-            results = _run_cpu_reference(self.table)
+            results, run_phases["cpu_reference_execute_and_postprocess_sec"] = _timed_call(
+                lambda: _run_cpu_reference(self.table)
+            )
             prepared_summary = None
         else:
             assert self._dataset is not None
+            compact_group_count_summary = None
+            compact_group_sum_summary = None
+            used_compact_summary_batch = False
+            if output_mode == "compact_summary" and hasattr(self._dataset, "compact_summary_batch"):
+                used_compact_summary_batch = True
+                batch_requests = (
+                    {"name": "promo_order_count", "operation": "conjunctive_scan_count", "predicates": PROMO_SCAN},
+                    {"name": "open_order_count_by_region", "operation": "grouped_count_summary", "query": REGION_WORKLOAD},
+                    {"name": "web_revenue_by_region", "operation": "grouped_sum_summary", "query": REGION_REVENUE},
+                )
+                batch_results, run_phases["query_compact_summary_batch_sec"] = _timed_call(
+                    lambda: self._dataset.compact_summary_batch(batch_requests)
+                )
+                promo_order_count = int(batch_results["promo_order_count"])
+                promo_order_ids = []
+                compact_group_count_summary = batch_results["open_order_count_by_region"]
+                compact_group_sum_summary = batch_results["web_revenue_by_region"]
+                open_order_count_by_region = []
+                web_revenue_by_region = []
+                if hasattr(self._dataset, "last_compact_summary_batch_phase_timings"):
+                    native_db_phases["compact_summary_batch"] = self._dataset.last_compact_summary_batch_phase_timings()
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
+                promo_order_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
+                    lambda: self._dataset.conjunctive_scan_count(PROMO_SCAN)
+                )
+                promo_order_ids = []
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan_count"] = self._dataset.last_phase_timings()
+            else:
+                promo_order_ids, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                    lambda: _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN))
+                )
+                promo_order_count = len(promo_order_ids)
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
+            if used_compact_summary_batch:
+                pass
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "grouped_count_summary"):
+                compact_group_count_summary, run_phases["query_grouped_count_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_count_summary(REGION_WORKLOAD)
+                )
+                open_order_count_by_region = []
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count_summary"] = self._dataset.last_phase_timings()
+            else:
+                open_order_count_by_region, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                    lambda: _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
+            if used_compact_summary_batch:
+                pass
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "grouped_sum_summary"):
+                compact_group_sum_summary, run_phases["query_grouped_sum_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_sum_summary(REGION_REVENUE)
+                )
+                web_revenue_by_region = []
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum_summary"] = self._dataset.last_phase_timings()
+            else:
+                web_revenue_by_region, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                    lambda: _sort_rows(self._dataset.grouped_sum(REGION_REVENUE))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
             results = {
-                "promo_order_ids": _sort_rows(self._dataset.conjunctive_scan(PROMO_SCAN)),
-                "open_order_count_by_region": _sort_rows(self._dataset.grouped_count(REGION_WORKLOAD)),
-                "web_revenue_by_region": _sort_rows(self._dataset.grouped_sum(REGION_REVENUE)),
+                "promo_order_ids": promo_order_ids,
+                "open_order_count_by_region": open_order_count_by_region,
+                "web_revenue_by_region": web_revenue_by_region,
             }
             prepared_summary = {
                 "transfer": self._dataset._dataset.transfer,
                 "row_count": self._dataset.row_count,
             }
+        summary_start = time.perf_counter()
+        if (
+            self.backend != "cpu_reference"
+            and output_mode == "compact_summary"
+            and compact_group_count_summary is not None
+            and compact_group_sum_summary is not None
+        ):
+            summary = {
+                "promo_order_count": promo_order_count,
+                "open_order_count_by_region": dict(compact_group_count_summary),
+                "web_revenue_by_region": dict(compact_group_sum_summary),
+            }
+        else:
+            summary = _summarize_results(results)
+            if self.backend != "cpu_reference" and output_mode == "compact_summary":
+                summary["promo_order_count"] = promo_order_count
+        run_phases["python_summary_postprocess_sec"] = time.perf_counter() - summary_start
+        native_continuation_backend = _native_db_continuation_backend(self.backend, output_mode, run_phases)
 
         return {
             "app": "regional_order_dashboard",
@@ -182,6 +283,10 @@ class PreparedRegionalDashboardSession:
                 "backend_selection_sec": self.backend_selection_sec,
                 "prepare_sec": self.prepare_sec,
             },
+            "run_phases": run_phases,
+            "native_db_phases": native_db_phases,
+            "native_continuation_active": native_continuation_backend != "none",
+            "native_continuation_backend": native_continuation_backend,
             "data_flow": [
                 "app order rows",
                 "RTDL v0.7 bounded DB workload",
@@ -211,7 +316,7 @@ class PreparedRegionalDashboardSession:
             },
             "prepared_dataset": prepared_summary,
             "results": results if output_mode == "full" else {},
-            "summary": _summarize_results(results),
+            "summary": summary,
             "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
         }
 
@@ -254,8 +359,11 @@ def _summarize_results(results: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_app(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, Any]:
-    if output_mode not in {"full", "summary"}:
+    if output_mode not in {"full", "summary", "compact_summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if output_mode == "compact_summary" and _canonical_backend(backend) != "cpu_reference":
+        with prepare_session(backend, copies=copies) as session:
+            return session.run(output_mode=output_mode)
     table = make_orders(copies)
     selected_backend, fallback_note = choose_backend(backend, table)
     if selected_backend == "cpu_reference":
@@ -304,6 +412,8 @@ def run_app(backend: str, copies: int = 1, output_mode: str = "full") -> dict[st
             },
         },
         "prepared_dataset": prepared_summary,
+        "native_continuation_active": False,
+        "native_continuation_backend": "none",
         "results": results if output_mode == "full" else {},
         "summary": _summarize_results(results),
         "honesty_boundary": "Demo of bounded v0.7 DB kernels; not a SQL engine, optimizer, transaction system, or DBMS.",
@@ -319,7 +429,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Use the CPU reference everywhere, or run a prepared RT backend when available.",
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic order table this many times.")
-    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary", "compact_summary"))
     args = parser.parse_args(argv)
     print(json.dumps(run_app(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0

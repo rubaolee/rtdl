@@ -1,0 +1,51 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not Barnes-Hut opening-rule evaluation, force-vector reduction, or a full N-body solver",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ]
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-04-28T19:08:16",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "parameters": {
+    "body_count": 1000000,
+    "copies": 1,
+    "iterations": 1,
+    "mode": "dry-run",
+    "radius": 10.0,
+    "skip_validation": false
+  },
+  "scenario": {
+    "mode": "dry-run",
+    "result": {
+      "all_bodies_have_node_candidate": true,
+      "body_count": 1000000,
+      "covered_body_count": 1000000,
+      "radius": 10.0,
+      "uncovered_body_ids": []
+    },
+    "scenario": "barnes_hut_node_coverage",
+    "timings_sec": {
+      "cpu_reference_total_sec": 0.17062895908020437,
+      "input_build_sec": 1.3587775829946622
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1"
+}

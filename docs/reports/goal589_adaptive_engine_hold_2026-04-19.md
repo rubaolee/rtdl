@@ -39,4 +39,3 @@ Resume Goal589 only when adaptive work is explicitly prioritized again. Before c
 - bounded performance smoke evidence
 - Claude/Gemini review or equivalent 2+ AI consensus
 - a clean commit that excludes unrelated Apple RT experiment files
-

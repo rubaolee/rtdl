@@ -1,0 +1,30 @@
+{
+  "boundary": "Recovery controls only; supersedes only same labels after review.",
+  "failed_count": 0,
+  "failed_labels": [],
+  "goal": "Goal1204 Embree4 /usr recovery controls",
+  "status_count": 3,
+  "statuses": [
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 100000 --iterations 3 --output-mode compact_summary --strict --output-json docs/reports/goal1204_embree4_usr_recovery/db_embree_100000_chunked_repair_usr_recovery.json",
+      "exit_code": 0,
+      "label": "db_embree_100000_chunked_repair_usr_recovery",
+      "log": "docs/reports/goal1204_embree4_usr_recovery/db_embree_100000_chunked_repair_usr_recovery.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 300000 --iterations 2 --output-mode compact_summary --strict --output-json docs/reports/goal1204_embree4_usr_recovery/db_embree_300000_chunked_repair_usr_recovery.json",
+      "exit_code": 0,
+      "label": "db_embree_300000_chunked_repair_usr_recovery",
+      "log": "docs/reports/goal1204_embree4_usr_recovery/db_embree_300000_chunked_repair_usr_recovery.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 40000 --output-mode summary > docs/reports/goal1204_embree4_usr_recovery/road_hazard_embree_control_40000_usr_recovery.json",
+      "exit_code": 0,
+      "label": "road_hazard_embree_control_40000_usr_recovery",
+      "log": "docs/reports/goal1204_embree4_usr_recovery/road_hazard_embree_control_40000_usr_recovery.log",
+      "status": "ok"
+    }
+  ]
+}

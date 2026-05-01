@@ -37,4 +37,3 @@ The re-review accepted the consensus state because:
 ## Required Fixes
 
 None after the applied fix.
-

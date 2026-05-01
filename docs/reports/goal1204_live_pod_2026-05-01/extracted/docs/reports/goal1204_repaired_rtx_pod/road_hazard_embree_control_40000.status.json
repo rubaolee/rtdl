@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 40000 --output-mode summary > docs/reports/goal1204_repaired_rtx_pod/road_hazard_embree_control_40000.json",
+  "exit_code": 1,
+  "label": "road_hazard_embree_control_40000",
+  "log": "docs/reports/goal1204_repaired_rtx_pod/road_hazard_embree_control_40000.log",
+  "status": "failed"
+}

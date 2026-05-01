@@ -1,0 +1,103 @@
+{
+  "artifact_count": 13,
+  "artifacts": [
+    {
+      "app": "road_hazard_screening",
+      "baseline_name": "cpu_python_reference",
+      "path_name": "road_hazard_native_summary_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "road_hazard_screening",
+      "baseline_name": "embree_same_semantics",
+      "path_name": "road_hazard_native_summary_gate",
+      "source_backend": "embree",
+      "status": "ok"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "baseline_name": "cpu_python_reference",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "baseline_name": "embree_same_semantics",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "source_backend": "embree",
+      "status": "ok"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "baseline_name": "cpu_python_reference",
+      "path_name": "segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "baseline_name": "cpu_python_reference",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "baseline_name": "embree_native_assisted_candidate_discovery",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "source_backend": "embree",
+      "status": "ok"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "baseline_name": "cpu_python_reference",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "baseline_name": "embree_native_assisted_candidate_discovery",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "source_backend": "embree",
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "baseline_name": "cpu_python_reference_visibility_edges",
+      "path_name": "graph_visibility_edges_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "baseline_name": "cpu_python_reference_bfs",
+      "path_name": "graph_visibility_edges_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "baseline_name": "cpu_python_reference_triangle_count",
+      "path_name": "graph_visibility_edges_gate",
+      "source_backend": "cpu_python_reference",
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "baseline_name": "embree_graph_ray_bfs_and_triangle_when_available",
+      "path_name": "graph_visibility_edges_gate",
+      "source_backend": "embree",
+      "status": "ok"
+    }
+  ],
+  "boundary": "Goal974 collects only locally available baseline artifacts. PostGIS and OptiX-only baselines remain missing unless separately collected on suitable hosts.",
+  "copies": 256,
+  "date": "2026-04-26",
+  "goal": "Goal974 remaining local baseline collector",
+  "graph_copies": 256,
+  "repeats": 3,
+  "status": "ok"
+}

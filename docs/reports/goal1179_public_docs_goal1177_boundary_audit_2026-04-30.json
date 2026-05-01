@@ -1,0 +1,68 @@
+{
+  "boundary": "This audit checks public-facing docs after Goal1177. Goal1177 may be described only as recovered clean-source RTX evidence for external-review input; it must not become public RTX speedup wording.",
+  "date": "2026-04-30",
+  "doc_count": 7,
+  "failing_doc_count": 0,
+  "goal": "Goal1179 public docs Goal1177 boundary audit",
+  "passing_doc_count": 7,
+  "public_wording_row_count_expected": 11,
+  "rows": [
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "README.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/application_catalog.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/release_facing_examples.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/rtdl_feature_guide.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/quick_tutorial.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "required_phrase_count": 5,
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/app_engine_support_matrix.md",
+      "required_phrase_count": 4,
+      "status": "ok"
+    }
+  ],
+  "valid": true
+}

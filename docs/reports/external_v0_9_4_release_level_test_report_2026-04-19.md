@@ -37,7 +37,7 @@
 - **Failures:** The latest commit (`a64ced4b`) successfully fixed the `goal207` floating-point precision mismatch and properly skipped native compilation blockers in `goal17`, `goal19`, and `report_smoke`. However, a solitary compilation exception `CalledProcessError` remains inside `tests.goal15_compare_test.py`, crashing the required base test sweep.
 
 ## 6. Documentation Findings
-- **Honesty Constraints:** The documentation complies perfectly with the strict formatting requirements. 
+- **Honesty Constraints:** The documentation complies perfectly with the strict formatting requirements.
     - `docs/backend_maturity.md` correctly segregates Apple VPS vs. Metal compute acceleration paths explicitly.
     - `capability_boundaries.md` makes no falsely advertised claims about RTDL existing as a full DBMS or renderer.
 - **Stale Docs/Code:** The `goal532_v0_8_release_authorization_test` fails specifically because it asserts the public docs identify `v0.9.1` as the current release. The test suite was not properly version-bumped to `v0.9.4`.

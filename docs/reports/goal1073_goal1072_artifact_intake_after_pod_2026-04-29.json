@@ -1,0 +1,90 @@
+{
+  "artifact_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1072_post_scale_up_rtx_pod_batch",
+  "blocked_count": 0,
+  "boundary": "This intake checks copied Goal1072 artifacts only. It does not run cloud, does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-28",
+  "excluded_rows": [
+    {
+      "app": "barnes_hut_force_app",
+      "exclusion_status": "blocked_contract_reframe_required",
+      "next_move": "Design a richer node/tree traversal contract before the next paid pod attempt; do not spend cloud time by simply increasing body_count under the current four-node build.",
+      "path_name": "node_coverage_prepared",
+      "reason": "The current Barnes-Hut node-coverage contract builds only four one-level quadtree nodes. The 1M-body pod run produced a 0.004204 s median RT query, so blind body-count scaling mostly measures input construction/packing rather than meaningful RTX traversal.",
+      "source_evidence": "docs/reports/goal1068_next_rtx_pod_efficiency_batch/barnes_hut_node_coverage_1m_timing.json",
+      "source_goal": "Goal1071"
+    }
+  ],
+  "expected_artifact_count": 4,
+  "goal": "Goal1073 Goal1072 artifact intake",
+  "manifest_goal": "Goal1072 post-scale-up RTX pod batch",
+  "missing_artifact_count": 0,
+  "overall_status": "ready_for_public_wording_review",
+  "present_artifact_count": 4,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_validation.json",
+      "artifact_status": "present",
+      "expected_output_json": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_validation.json",
+      "path_name": "coverage_threshold_prepared",
+      "phase": "correctness_validation",
+      "public_speedup_claim_authorized": false,
+      "reason": "facility_knn_assignment validation artifact proves optix oracle parity",
+      "review_status": "validation_passed",
+      "rtx_phase_sec": null,
+      "source_commit": null,
+      "source_goal": "Goal1068"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_2_5m_timing.json",
+      "artifact_status": "present",
+      "expected_output_json": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/facility_coverage_threshold_2_5m_timing.json",
+      "path_name": "coverage_threshold_prepared",
+      "phase": "large_timing_repeat",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX phase 0.111038s passes timing floor",
+      "review_status": "timing_floor_passed",
+      "rtx_phase_sec": 0.11103759799152613,
+      "source_commit": null,
+      "source_goal": "Goal1071"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1072_post_scale_up_rtx_pod_batch/robot_prepared_pose_flags_validation.json",
+      "artifact_status": "present",
+      "expected_output_json": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/robot_prepared_pose_flags_validation.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "correctness_validation",
+      "public_speedup_claim_authorized": false,
+      "reason": "robot validation artifact proves optix oracle parity",
+      "review_status": "validation_passed",
+      "rtx_phase_sec": null,
+      "source_commit": null,
+      "source_goal": "Goal1068"
+    },
+    {
+      "app": "robot_collision_screening",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1072_post_scale_up_rtx_pod_batch/robot_prepared_pose_flags_36m_timing.json",
+      "artifact_status": "present",
+      "expected_output_json": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/robot_prepared_pose_flags_36m_timing.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "large_timing_repeat",
+      "public_speedup_claim_authorized": false,
+      "reason": "RTX phase 0.100071s passes timing floor",
+      "review_status": "timing_floor_passed",
+      "rtx_phase_sec": 0.10007060505449772,
+      "source_commit": null,
+      "source_goal": "Goal1071"
+    }
+  ],
+  "status_counts": {
+    "timing_floor_passed": 2,
+    "validation_passed": 2
+  },
+  "timing_below_floor_count": 0,
+  "timing_floor_passed_count": 2,
+  "valid": true,
+  "validation_passed_count": 2
+}

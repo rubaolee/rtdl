@@ -1,0 +1,56 @@
+{
+  "app": "graph_analytics",
+  "authorizes_public_speedup_claim": false,
+  "baseline_name": "optix_visibility_anyhit",
+  "benchmark_scale": {
+    "copies": 20000,
+    "validation_mode": "analytic_summary"
+  },
+  "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+  "comparable_metric_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+  "correctness_parity": true,
+  "goal": "Goal839 local baseline artifact writer",
+  "notes": [
+    "Ingested from the existing Runpod A5000 graph OptiX gate artifact.",
+    "Validation is analytic-summary parity at the compact graph RT sub-path contract.",
+    "This artifact does not authorize public RTX speedup claims."
+  ],
+  "path_name": "graph_visibility_edges_gate",
+  "phase_seconds": {
+    "records": 6.0,
+    "row_digest": 1.0,
+    "status": 1.0,
+    "strict_failures": 0.0,
+    "strict_pass": 1.0
+  },
+  "phase_separated": true,
+  "repeated_runs": 3,
+  "required_phase_coverage": [
+    "records",
+    "row_digest",
+    "strict_pass",
+    "strict_failures",
+    "status"
+  ],
+  "source_backend": "optix",
+  "status": "ok",
+  "summary": {
+    "label": "optix_visibility_anyhit",
+    "row_count": 80000,
+    "row_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "scenario": "visibility_edges",
+    "sec": 1.5830601840279996,
+    "summary": {
+      "blocked_edge_count": 60000,
+      "visible_edge_count": 20000
+    }
+  },
+  "summary_sha256": "d522484ba25f981335ab2320ac34a8b09eb6ba714ae00861158a295133870f31",
+  "validation": {
+    "parity_vs_analytic_expected": true,
+    "record_status": "ok",
+    "source_artifact": "docs/reports/cloud_2026_04_26/runpod_a5000_0900/goal889_graph_visibility_optix_gate_rtx.json",
+    "strict_failures": [],
+    "strict_pass": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "app": "segment_polygon_anyhit_rows",
+  "blocker": "native_pair_row_emitter_missing",
+  "current_truth": {
+    "abi_surface": "present",
+    "device_codegen": "placeholder_only",
+    "runtime_execution": "host_indexed_exact_cpu_loop"
+  },
+  "date": "2026-04-23",
+  "evidence": {
+    "api_calls_host_indexed_helper": true,
+    "api_symbol_present": true,
+    "generated_closesthit_stub_present": true,
+    "generated_raygen_placeholder_present": true,
+    "host_indexed_helper_present": true,
+    "native_pair_row_impl_present": false
+  },
+  "goal": "Goal867 native pair-row emitter design packet",
+  "mode": "rows",
+  "promotion_boundary": "Do not promote segment_polygon_anyhit_rows rows mode into any RT-core-ready or active RTX claim set until the public OptiX row path stops using the host-indexed helper and the generated device path is no longer placeholder-only.",
+  "recommended_status": "needs_native_pair_row_emitter_implementation",
+  "required_work": [
+    "Add a true native OptiX pair-row emitter instead of calling the host-indexed helper from the public C ABI.",
+    "Define bounded native output memory semantics for pair-row emission, including count discovery and overflow policy.",
+    "Replace the generated segment_polygon_anyhit_rows OptiX device placeholder with an implementation-backed contract.",
+    "Add a strict correctness/performance gate with CPU reference digest and real OptiX artifact evidence before promotion."
+  ],
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "codegen_py": "/Users/rl2025/rtdl_python_only/src/rtdsl/codegen.py",
+    "workloads_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_workloads.cpp"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "app": "facility_knn_assignment",
+  "backend": "cpu_oracle",
+  "boundary": "Goal1101 collects same-current-contract non-OptiX baseline artifacts for later review. It does not authorize public RTX speedup claims; claim review still requires artifact intake and 2+ AI consensus.",
+  "date": "2026-04-29",
+  "generated_at": "2026-04-29T08:01:06",
+  "goal": "Goal1101 current-contract non-OptiX baseline profiler",
+  "host": {
+    "hostname": "lx1",
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "parameters": {
+    "backend": "cpu_oracle",
+    "barnes_tree_depth": 1,
+    "body_count": 1000,
+    "copies": 2500000,
+    "hit_threshold": 1,
+    "iterations": 3,
+    "radius": 1.0,
+    "scenario": "facility_service_coverage_recentered",
+    "skip_validation": false
+  },
+  "path_name": "coverage_threshold_prepared_recentered",
+  "public_speedup_claim_authorized": false,
+  "scenario": {
+    "mode": "cpu_oracle",
+    "result": {
+      "all_queries_reached_threshold": true,
+      "build_count": 4,
+      "coordinate_mapping": "copy_local_recentered_queries_canonical_depots",
+      "hit_threshold": 1,
+      "matches_oracle": true,
+      "oracle_all_queries_reached_threshold": true,
+      "query_count": 10000000,
+      "radius": 1.0,
+      "threshold_reached_count": 10000000
+    },
+    "scenario": "facility_service_coverage_recentered",
+    "timings_sec": {
+      "backend_close_sec": 0.0,
+      "backend_prepare_sec": 0.0,
+      "input_build_sec": 43.66394045599736,
+      "native_query_sec": {
+        "max_sec": 9.006104400963522,
+        "median_sec": 8.996512651909143,
+        "min_sec": 8.995900569017977
+      },
+      "point_pack_sec": 0.0,
+      "python_postprocess_sec": {
+        "max_sec": 1.5259720385074615e-06,
+        "median_sec": 1.1150259524583817e-06,
+        "min_sec": 6.509944796562195e-07
+      },
+      "validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      }
+    }
+  },
+  "schema_version": "goal1101_current_contract_non_optix_baseline_v1",
+  "source_commit": "cf22fb302bbd85afaa8ea6f9e2da26d278313635"
+}

@@ -1,0 +1,68 @@
+{
+  "boundary": "This profiler only separates prepared OptiX setup from warm query execution. It does not promote road/segment apps or authorize speedup claims without real RTX artifact review.",
+  "cloud_claim_contract": {
+    "claim_scope": "prepared OptiX custom-AABB segment/polygon traversal with polygon BVH built once and reused across segment batches",
+    "non_claim": "not a public speedup claim until a real RTX artifact is compared with same-semantics CPU/Embree/PostGIS baselines and reviewed",
+    "required_phase_groups": [
+      "input_build_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ],
+    "scenario": "segment_polygon_hitcount_prepared"
+  },
+  "dataset": "derived/br_county_subset_segment_polygon_tiled_x256",
+  "date": "2026-04-25",
+  "generated_at": "2026-04-26T16:57:56",
+  "goal": "Goal933 prepared segment/polygon OptiX profiler",
+  "host": {
+    "hostname": "9ce18d69636c",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "iterations": 5,
+  "mode": "run",
+  "result": {
+    "actual_digest": {
+      "hit_sum": 2816,
+      "positive_count": 2560,
+      "row_count": 2560
+    },
+    "expected_digest": {
+      "hit_sum": 2816,
+      "positive_count": 2560,
+      "row_count": 2560
+    },
+    "matches_oracle": true,
+    "polygon_count": 512,
+    "segment_count": 2560
+  },
+  "scenario": "segment_polygon_hitcount_prepared",
+  "schema_version": "goal933_prepared_segment_polygon_optix_contract_v1",
+  "status": "pass",
+  "strict_failures": [],
+  "strict_pass": true,
+  "timings_sec": {
+    "input_build_sec": 0.032946160063147545,
+    "optix_close_sec": 4.148390144109726e-05,
+    "optix_prepare_sec": 1.4222673689946532,
+    "optix_query_sec": {
+      "max_sec": 0.003616069443523884,
+      "median_sec": 0.002939987927675247,
+      "min_sec": 0.002781873568892479
+    },
+    "python_postprocess_sec": {
+      "max_sec": 2.5527551770210266e-06,
+      "median_sec": 9.201467037200928e-07,
+      "min_sec": 8.605420589447021e-07
+    },
+    "validation_sec": {
+      "max_sec": 0.026396069675683975,
+      "median_sec": 0.026396069675683975,
+      "min_sec": 0.026396069675683975
+    }
+  }
+}

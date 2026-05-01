@@ -1,8 +1,8 @@
 # RTDL GitHub Wiki Generation Report
 
-**Date**: 2026-04-09  
-**Status**: **DRAFTS COMPLETED**  
-**Target Audience**: Codex / Project Maintainers  
+**Date**: 2026-04-09
+**Status**: **DRAFTS COMPLETED**
+**Target Audience**: Codex / Project Maintainers
 
 ## Overview
 This report documents the generation of draft contents for the official RTDL GitHub Wiki. The drafts are intended to serve as the foundational documentation for the v0.3 release, providing a central hub for users to understand the DSL, backends, and examples.

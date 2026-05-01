@@ -1,7 +1,7 @@
 # Goal 550: HIPRT 2D Geometry Lowering Plan — External Review
 
-Date: 2026-04-18  
-Reviewer: Claude (Sonnet 4.6)  
+Date: 2026-04-18
+Reviewer: Claude (Sonnet 4.6)
 Verdict: **ACCEPT**
 
 ## Summary

@@ -1,0 +1,4 @@
+pod=69.30.85.195:22020
+gpu=NVIDIA RTX A5000
+key=~/.ssh/id_ed25519_rtdl_codex
+archive_sha256=e6978ed37cdab26737df80efbcb1d34411900a66f9ce1c79063620d128bcce37

@@ -44,10 +44,41 @@ python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_referen
 
 Use `python3` instead if that is what your shell exposes.
 
+Compact app surface:
+
+```bash
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --output-mode segment_counts --copies 16
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode segment_counts --optix-mode native --copies 16
+```
+
+Rows-mode boundary:
+
+```bash
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --copies 16 --output-capacity 1000000
+```
+
+That command uses the bounded native OptiX pair-row emitter. The bound matters:
+overflow fails rather than silently truncating rows. Goal934 added the prepared
+bounded pair-row profiler, and Goal969 supplied the real RTX artifact with
+row-digest parity and zero overflow for the reviewed output capacity. This is
+an explicit native traversal path, not an unbounded row-volume speedup claim.
+
+Claim-sensitive boundary:
+
+```bash
+python examples/rtdl_segment_polygon_anyhit_rows.py --backend optix --output-mode rows --optix-mode native --require-rt-core
+```
+
+That command enforces the explicit native pair-row traversal path. It does not
+authorize a speedup claim; public wording must stay limited to the reviewed
+bounded pair-row traversal capacity.
+
 ## Best Practices
 
 - use this when downstream code needs the exact polygon ids
 - prefer it over `segment_polygon_hitcount` when you want custom grouping later
+- when only counts or flags are needed, prefer `--output-mode segment_counts`
+  or `segment_flags` so the app can reuse the compact hit-count primitive
 - keep ids stable and sortable because row shape is the main value of this feature
 - compare accepted larger rows against PostGIS on Linux when the goal is correctness evidence
 
@@ -67,4 +98,8 @@ Use `python3` instead if that is what your shell exposes.
 
 - row materialization can be heavier than aggregated counting if you only need counts
 - current geometry path is float-based
+- explicit OptiX native bounded pair-row output exists for rows mode, and the
+  Goal969 artifact makes the prepared bounded path ready for claim review
+- broad or unbounded OptiX RT-core speedup claims remain blocked until a later
+  same-semantics performance review authorizes them
 - strongest evidence remains on the accepted Linux/PostGIS validation surface

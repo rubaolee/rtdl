@@ -1,0 +1,83 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": false,
+  "entry_count": 1,
+  "failed_count": 1,
+  "git_head": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "git_status_short": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "Sat Apr 25 03:10:56 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:53:00.0 Off |                  Off |\n| 30%   38C    P0             82W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+  "python_version": "Python 3.11.10",
+  "repo": "/workspace/rtdl_python_only",
+  "results": [
+    {
+      "app": "graph_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+        "comparable_metric_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference_visibility_edges",
+          "cpu_python_reference_bfs",
+          "cpu_python_reference_triangle_count",
+          "optix_visibility_anyhit",
+          "optix_native_graph_ray_bfs",
+          "optix_native_graph_ray_triangle_count",
+          "embree_graph_ray_bfs_and_triangle_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "row_digest",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering plus native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+      "path_name": "graph_visibility_edges_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal889_graph_visibility_optix_gate.py",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--validation-mode",
+          "analytic_summary",
+          "--chunk-copies",
+          "100",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal889_graph_visibility_optix_gate_rtx.json"
+        ],
+        "elapsed_sec": 53.12019299156964,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 1,
+        "started_at": "2026-04-25T03:10:03+0000",
+        "status": "failed",
+        "stderr_tail": "",
+        "stdout_tail": "{\"output_json\": \"docs/reports/goal889_graph_visibility_optix_gate_rtx.json\", \"status\": \"fail\", \"strict_pass\": false}\n"
+      }
+    }
+  ],
+  "source_commit": "0e4b66ee925196f7d5985c2e93c031ab162d2c99",
+  "status": "failed",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-25T03:10:56+0000",
+  "unique_command_count": 1
+}

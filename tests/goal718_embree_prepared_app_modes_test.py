@@ -21,7 +21,7 @@ class Goal718EmbreePreparedAppModesTest(unittest.TestCase):
         self.assertEqual(result["native_summary_row_count"], result["point_count"])
         self.assertEqual(result["outlier_point_ids"], [7, 8])
         self.assertEqual(result["embree_summary_mode"], "rt_count_threshold_prepared")
-        self.assertIn("reusable Embree BVH handle", result["rtdl_role"])
+        self.assertIn("prepared fixed-radius threshold traversal", result["rtdl_role"])
 
     def test_dbscan_app_exposes_prepared_embree_core_flag_mode(self):
         try:
@@ -36,7 +36,7 @@ class Goal718EmbreePreparedAppModesTest(unittest.TestCase):
         self.assertEqual(result["cluster_rows"], ())
         self.assertEqual(len(result["core_flag_rows"]), result["point_count"])
         self.assertEqual(result["embree_summary_mode"], "rt_core_flags_prepared")
-        self.assertIn("reusable Embree BVH handle", result["rtdl_role"])
+        self.assertIn("prepared fixed-radius threshold traversal", result["rtdl_role"])
 
 
 if __name__ == "__main__":

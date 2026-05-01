@@ -1,6 +1,6 @@
 # Goal 28A: Linux Exact-Input Feasibility Audit
 
-Date: 2026-04-02  
+Date: 2026-04-02
 Host: `192.168.1.20` (`lx1`)
 
 ## Purpose

@@ -12,6 +12,19 @@ SCRIPT = ROOT / "scripts" / "goal759_rtx_cloud_benchmark_manifest.py"
 
 
 class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
+    def test_goal832_two_ai_consensus_artifacts_exist(self):
+        ledger = ROOT / "docs" / "reports" / "goal832_two_ai_consensus_2026-04-23.md"
+        codex = ROOT / "docs" / "reports" / "goal832_codex_consensus_review_2026-04-23.md"
+        gemini = ROOT / "docs" / "reports" / "goal832_gemini_external_consensus_review_2026-04-23.md"
+
+        for path in (ledger, codex, gemini):
+            self.assertTrue(path.exists(), str(path))
+
+        ledger_text = ledger.read_text(encoding="utf-8")
+        self.assertIn("Codex: ACCEPT", ledger_text)
+        self.assertIn("Gemini 2.5 Flash: ACCEPT", ledger_text)
+        self.assertIn("No Claude verdict is claimed", ledger_text)
+
     def test_manifest_entries_match_machine_readable_matrices(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
@@ -38,6 +51,34 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
                 self.assertTrue(entry["claim_scope"])
                 self.assertTrue(entry["non_claim"])
                 self.assertTrue(entry["preconditions"])
+                self.assertEqual(
+                    entry["baseline_review_contract"]["status"],
+                    "required_before_public_speedup_claim",
+                )
+                self.assertTrue(entry["baseline_review_contract"]["required_baselines"])
+                self.assertTrue(entry["baseline_review_contract"]["requires_phase_separation"])
+
+    def test_active_entries_have_comparable_baseline_contracts(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        by_path = {entry["path_name"]: entry for entry in payload["entries"]}
+
+        db = by_path["prepared_db_session_sales_risk"]["baseline_review_contract"]
+        self.assertIn("postgresql_same_semantics_on_linux_when_available", db["required_baselines"])
+        self.assertIn("compact_summary prepared DB", db["comparable_metric_scope"])
+        self.assertIn("not a DBMS", db["claim_limit"])
+
+        fixed_radius = by_path["prepared_fixed_radius_density_summary"]["baseline_review_contract"]
+        self.assertIn("cpu_scalar_threshold_count_oracle", fixed_radius["required_baselines"])
+        self.assertIn("threshold-count", fixed_radius["claim_limit"])
+        self.assertIn("full DBSCAN", fixed_radius["claim_limit"])
+
+        robot = by_path["prepared_pose_flags"]["baseline_review_contract"]
+        self.assertIn("embree_anyhit_pose_count_or_equivalent_compact_summary", robot["required_baselines"])
+        self.assertIn("native_anyhit_query", robot["required_phases"])
+        self.assertIn("not full robot planning", robot["claim_limit"])
 
     def test_prepared_summary_apps_are_classified_without_whole_app_claims(self):
         payload = __import__(
@@ -47,22 +88,37 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         by_app = {entry["app"]: entry for entry in payload["entries"]}
 
         self.assertEqual(by_app["outlier_detection"]["optix_performance_class"], "optix_traversal_prepared_summary")
-        self.assertIn("prepared fixed-radius threshold summary", by_app["outlier_detection"]["claim_scope"])
+        self.assertIn("prepared fixed-radius scalar threshold-count", by_app["outlier_detection"]["claim_scope"])
+        self.assertIn("not per-point outlier labels", by_app["outlier_detection"]["non_claim"])
         self.assertIn("whole-app RTX speedup", by_app["outlier_detection"]["non_claim"])
+        self.assertNotIn("--skip-validation", by_app["outlier_detection"]["command"])
+        self.assertIn("--result-mode", by_app["outlier_detection"]["command"])
+        self.assertIn("threshold_count", by_app["outlier_detection"]["command"])
 
         self.assertEqual(by_app["dbscan_clustering"]["optix_performance_class"], "optix_traversal_prepared_summary")
-        self.assertIn("prepared fixed-radius core-flag", by_app["dbscan_clustering"]["claim_scope"])
+        self.assertIn("prepared fixed-radius scalar core-count", by_app["dbscan_clustering"]["claim_scope"])
+        self.assertIn("not per-point core flags", by_app["dbscan_clustering"]["non_claim"])
         self.assertIn("not a full DBSCAN", by_app["dbscan_clustering"]["non_claim"])
+        self.assertNotIn("--skip-validation", by_app["dbscan_clustering"]["command"])
+        self.assertIn("--result-mode", by_app["dbscan_clustering"]["command"])
+        self.assertIn("threshold_count", by_app["dbscan_clustering"]["command"])
 
-    def test_excluded_cuda_through_optix_apps_do_not_enter_manifest_entries(self):
+    def test_prepared_decision_apps_are_deferred_not_active(self):
         payload = __import__(
             "scripts.goal759_rtx_cloud_benchmark_manifest",
             fromlist=["build_manifest"],
         ).build_manifest()
         manifest_apps = {entry["app"] for entry in payload["entries"]}
-        excluded = {"hausdorff_distance", "ann_candidate_search", "barnes_hut_force_app"}
-        self.assertTrue(excluded.isdisjoint(manifest_apps))
-        self.assertTrue(excluded.issubset(payload["excluded_apps"]))
+        deferred = {entry["app"] for entry in payload["deferred_entries"]}
+        expected = {
+            "hausdorff_distance",
+            "ann_candidate_search",
+            "barnes_hut_force_app",
+        }
+        self.assertTrue(expected.isdisjoint(manifest_apps))
+        self.assertTrue(expected.issubset(deferred))
+        self.assertTrue(expected.isdisjoint(payload["excluded_apps"]))
+        self.assertIn("facility_knn_assignment", manifest_apps)
 
     def test_robot_entry_uses_current_prepared_pose_flag_status(self):
         payload = __import__(
@@ -76,6 +132,133 @@ class Goal759RtxCloudBenchmarkManifestTest(unittest.TestCase):
         self.assertIn("optix", robot["command"])
         self.assertIn("prepared native pose-flag summary", robot["optix_performance_note"])
         self.assertNotIn("future ABI work", robot["optix_performance_note"])
+
+    def test_deferred_segment_polygon_entry_uses_goal933_prepared_profiler(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        segment = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "segment_polygon_hitcount"
+        )
+        self.assertIn("scripts/goal933_prepared_segment_polygon_optix_profiler.py", segment["command"])
+        self.assertIn("--scenario", segment["command"])
+        self.assertIn("segment_polygon_hitcount_prepared", segment["command"])
+        self.assertIn("--mode", segment["command"])
+        self.assertIn("run", segment["command"])
+        self.assertIn("native-kernel tuning", segment["activation_gate"])
+        self.assertEqual(segment["benchmark_readiness"], "ready_for_rtx_claim_review")
+
+    def test_deferred_road_hazard_entry_uses_goal933_prepared_profiler(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        road = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "road_hazard_screening"
+        )
+        self.assertIn("scripts/goal933_prepared_segment_polygon_optix_profiler.py", road["command"])
+        self.assertIn("--scenario", road["command"])
+        self.assertIn("road_hazard_prepared_summary", road["command"])
+        self.assertIn("--mode", road["command"])
+        self.assertIn("run", road["command"])
+        self.assertEqual(road["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("native-kernel tuning", road["activation_gate"])
+
+    def test_deferred_segment_polygon_anyhit_rows_entry_uses_goal934_prepared_profiler(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        segment = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "segment_polygon_anyhit_rows"
+        )
+        self.assertIn("scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py", segment["command"])
+        self.assertIn("--copies", segment["command"])
+        self.assertIn("256", segment["command"])
+        self.assertIn("--mode", segment["command"])
+        self.assertIn("run", segment["command"])
+        self.assertIn("--output-capacity", segment["command"])
+        self.assertEqual(segment["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("larger RTX row-output evidence", segment["activation_gate"])
+        self.assertIn("optix_query_sec", segment["baseline_review_contract"]["required_phases"])
+        self.assertIn("overflowed", segment["baseline_review_contract"]["required_phases"])
+        self.assertIn("not default public app behavior", segment["non_claim"])
+
+    def test_spatial_entries_use_goal811_profiler_with_current_readiness(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        active = {entry["app"]: entry for entry in payload["entries"]}
+        deferred = {entry["app"]: entry for entry in payload["deferred_entries"]}
+        service = active["service_coverage_gaps"]
+        self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", service["command"])
+        self.assertIn("--mode", service["command"])
+        self.assertIn("optix", service["command"])
+        self.assertEqual(service["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("baseline_review_contract", service)
+        self.assertIn("prepared compact summary", service["baseline_review_contract"]["claim_limit"])
+
+        hotspot = active["event_hotspot_screening"]
+        self.assertIn("scripts/goal811_spatial_optix_summary_phase_profiler.py", hotspot["command"])
+        self.assertIn("--mode", hotspot["command"])
+        self.assertIn("optix", hotspot["command"])
+        self.assertEqual(hotspot["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("baseline_review_contract", hotspot)
+        self.assertIn("prepared compact summary", hotspot["baseline_review_contract"]["claim_limit"])
+
+    def test_deferred_graph_entry_uses_goal889_gate(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        graph = next(
+            entry
+            for entry in payload["deferred_entries"]
+            if entry["app"] == "graph_analytics"
+        )
+        self.assertIn("scripts/goal889_graph_visibility_optix_gate.py", graph["command"])
+        self.assertIn("--strict", graph["command"])
+        self.assertIn("--output-mode", graph["command"])
+        self.assertIn("summary", graph["command"])
+        self.assertIn("--validation-mode", graph["command"])
+        self.assertIn("analytic_summary", graph["command"])
+        self.assertIn("--chunk-copies", graph["command"])
+        self.assertEqual(graph["command"][graph["command"].index("--chunk-copies") + 1], "0")
+        self.assertEqual(graph["benchmark_readiness"], "ready_for_rtx_claim_review")
+        self.assertIn("visibility-edge", graph["claim_scope"])
+        self.assertIn("native OptiX graph-ray", graph["claim_scope"])
+        self.assertIn("cpu_python_reference_bfs", graph["baseline_review_contract"]["required_baselines"])
+        self.assertIn("optix_native_graph_ray_triangle_count", graph["baseline_review_contract"]["required_baselines"])
+        self.assertIn("not shortest-path", graph["non_claim"])
+
+    def test_deferred_polygon_overlap_entries_use_goal877_profiler(self):
+        payload = __import__(
+            "scripts.goal759_rtx_cloud_benchmark_manifest",
+            fromlist=["build_manifest"],
+        ).build_manifest()
+        deferred = {entry["app"]: entry for entry in payload["deferred_entries"]}
+        for app in ("polygon_pair_overlap_area_rows", "polygon_set_jaccard"):
+            with self.subTest(app=app):
+                entry = deferred[app]
+                self.assertIn("scripts/goal877_polygon_overlap_optix_phase_profiler.py", entry["command"])
+                self.assertIn("--mode", entry["command"])
+                self.assertIn("optix", entry["command"])
+                self.assertIn("--output-mode", entry["command"])
+                self.assertIn("summary", entry["command"])
+                self.assertIn("--validation-mode", entry["command"])
+                self.assertIn("analytic_summary", entry["command"])
+                self.assertIn("--chunk-copies", entry["command"])
+                self.assertIn("candidate discovery", entry["claim_scope"])
+                self.assertIn("cpu_exact_refinement_sec", entry["baseline_review_contract"]["required_phases"])
+                self.assertIn("not a full app RTX speedup claim", entry["non_claim"])
 
     def test_cli_emits_valid_json(self):
         completed = subprocess.run(

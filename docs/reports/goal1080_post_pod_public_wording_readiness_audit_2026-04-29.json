@@ -1,0 +1,81 @@
+{
+  "boundary": "Goal1080 audits post-pod wording readiness only. It does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "decision_counts": {
+    "needs_reviewed_20m_validation_and_baseline": 1,
+    "needs_same_scale_baseline_review": 2
+  },
+  "goal": "Goal1080 post-pod public wording readiness audit",
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "baseline_name": "cpu_oracle_same_semantics",
+      "baseline_phase_sec": 0.07139500009361655,
+      "current_public_wording_status": "public_wording_blocked",
+      "decision": "needs_same_scale_baseline_review",
+      "path_name": "coverage_threshold_prepared",
+      "post_pod_status": "ready_for_public_wording_review",
+      "public_speedup_claim_authorized": false,
+      "reason": "Goal1079 cleared validation and the 100 ms RTX timing floor, but the available same-semantics baseline is at 20k copies while the new RTX timing row is at 2.5M copies. Do not compute or publish a speedup ratio from mismatched scales.",
+      "rtx_phase_sec": 0.11103759799152613,
+      "same_scale_baseline_available": false,
+      "scale": {
+        "baseline_copies": 20000,
+        "baseline_customer_count": 80000,
+        "rtx_copies": 2500000,
+        "rtx_query_count": 10000000
+      },
+      "timing_status": "timing_floor_passed",
+      "validation_status": "validation_passed"
+    },
+    {
+      "app": "robot_collision_screening",
+      "baseline_name": "embree_anyhit_pose_count_or_equivalent_compact_summary",
+      "baseline_phase_sec": 0.5818509249947965,
+      "current_public_wording_status": "public_wording_blocked",
+      "decision": "needs_same_scale_baseline_review",
+      "path_name": "prepared_pose_flags",
+      "post_pod_status": "ready_for_public_wording_review",
+      "public_speedup_claim_authorized": false,
+      "reason": "Goal1079 cleared validation and barely cleared the 100 ms RTX timing floor, but the available Embree baseline is at 200k poses / 1,024 obstacles while the new RTX timing row is at 36M poses / 4,096 obstacles. Do not compute or publish a speedup ratio from mismatched scales.",
+      "rtx_phase_sec": 0.10007060505449772,
+      "same_scale_baseline_available": false,
+      "scale": {
+        "baseline_obstacle_count": 1024,
+        "baseline_pose_count": 200000,
+        "rtx_obstacle_count": 4096,
+        "rtx_pose_count": 36000000
+      },
+      "timing_status": "timing_floor_passed",
+      "validation_status": "validation_passed"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "current_public_wording_status": "public_wording_not_reviewed",
+      "decision": "needs_reviewed_20m_validation_and_baseline",
+      "path_name": "node_coverage_prepared_rich",
+      "post_pod_status": "timing_floor_not_met",
+      "public_speedup_claim_authorized": false,
+      "reason": "The reviewed Goal1076 1M timing row failed the 100 ms floor. The Goal1079 20M probe passed the floor, but it is timing-only engineering evidence and needs a matching reviewed validation/intake contract plus same-scale baseline before public wording review.",
+      "rtx_phase_sec_1m": 0.005456406623125076,
+      "rtx_phase_sec_20m_probe": 0.22139318380504847,
+      "same_scale_baseline_available": false,
+      "scale": {
+        "intake_body_count": 1000000,
+        "probe_body_count": 20000000,
+        "probe_node_count": 65536
+      },
+      "timing_status": "timing_below_floor",
+      "validation_status": "validation_passed"
+    }
+  ],
+  "source_artifacts": [
+    "docs/reports/goal1073_goal1072_artifact_intake_after_pod_2026-04-29.json",
+    "docs/reports/goal1078_goal1076_artifact_intake_after_pod_2026-04-29.json",
+    "docs/reports/goal1079_barnes_hut_rich_scale_up_probe/barnes_hut_rich_node_coverage_20m_timing.json",
+    "docs/reports/goal835_baseline_facility_knn_assignment_coverage_threshold_prepared_cpu_oracle_same_semantics_2026-04-23.json",
+    "docs/reports/goal835_baseline_robot_collision_screening_prepared_pose_flags_embree_anyhit_pose_count_or_equivalent_compact_summary_2026-04-23.json"
+  ],
+  "valid": true
+}

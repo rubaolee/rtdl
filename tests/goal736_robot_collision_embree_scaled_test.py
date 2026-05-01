@@ -49,6 +49,28 @@ class Goal736RobotCollisionEmbreeScaledTest(unittest.TestCase):
             app.make_scaled_case(pose_count=0, obstacle_count=1)
         with self.assertRaisesRegex(ValueError, "obstacle_count must be positive"):
             app.make_scaled_case(pose_count=1, obstacle_count=0)
+        with self.assertRaisesRegex(ValueError, "pose_id_start must be positive"):
+            app.make_scaled_case(pose_count=1, obstacle_count=1, pose_id_start=0)
+
+    def test_scaled_case_can_start_at_later_pose_id_for_chunked_baselines(self) -> None:
+        case = app.make_scaled_case(pose_count=3, obstacle_count=4, pose_id_start=200001)
+        pose_ids = [int(pose["pose_id"]) for pose in case["poses"]]
+
+        self.assertEqual(pose_ids, [200001, 200002, 200003])
+        self.assertEqual(case["edge_rays"][0].id // 1000, 200001)
+
+    def test_scaled_case_can_use_compact_ray_ids_for_native_chunks(self) -> None:
+        case = app.make_scaled_case(
+            pose_count=3,
+            obstacle_count=4,
+            pose_id_start=200001,
+            compact_ray_ids=True,
+        )
+        ray_ids = [int(ray.id) for ray in case["edge_rays"][:5]]
+
+        self.assertEqual(ray_ids, [0, 1, 2, 3, 4])
+        self.assertEqual(case["ray_metadata"][0]["pose_id"], 200001)
+        self.assertEqual(case["ray_metadata"][4]["pose_id"], 200002)
 
 
 if __name__ == "__main__":

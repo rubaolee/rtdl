@@ -30,6 +30,59 @@ It currently covers:
 Use these first if you want the examples that best match the current accepted
 live workload/package story.
 
+## OptiX Versus NVIDIA RT-Core Claims
+
+`--backend optix` is a backend-selection flag, not an automatic NVIDIA RT-core
+performance claim. For claim-sensitive scripts, add `--require-rt-core`; the
+app fails fast unless the selected mode is one of the documented bounded
+RT-core paths.
+
+Current paths ready for RTX claim review are:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core
+PYTHONPATH=src:. python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared
+PYTHONPATH=src:. python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core
+PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count
+PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count
+PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count
+PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core
+```
+
+These commands are bounded sub-paths, not broad speedup claims. The current
+public wording must say exactly what is accelerated: prepared DB compact
+summaries, graph visibility or native graph-ray candidate generation, compact
+fixed-radius summaries, prepared segment/polygon traversal, native-assisted
+polygon candidate discovery, prepared nearest-neighbor decision modes, or
+ray/triangle pose-count traversal. Python post-processing, SQL/DBMS behavior,
+exact polygon area/Jaccard refinement, ranked KNN or ANN assignment, exact
+Hausdorff distance, Barnes-Hut force reduction/opening-rule evaluation, full
+DBSCAN expansion, graph-system behavior, and whole-app speedup remain outside
+the claim.
+
+`facility_knn_assignment / coverage_threshold_prepared_recentered`,
+`road_hazard_screening / prepared_native_compact_summary_40k`,
+and `barnes_hut_force_app / node_coverage_prepared_rich` have reviewed
+bounded public RTX sub-path wording after Goal1146 and Goal1208.
+`robot_collision_screening / prepared_pose_flags` has reviewed Goal1126
+normalized per-pose wording only. Treat it as a real bounded RT-core pose-count
+query path, not as a same-total-work wall-time claim and not as a whole-app
+robot-planning speedup claim.
+Goal1177 is recovered clean-source RTX A5000 batch evidence for external
+review input only. Goal1184 is newer Goal1182 RTX A4500 batch evidence for
+external-review input only. Neither goal adds a new reviewed public wording row
+or authorizes public speedup wording. Goal1177 does not add a new reviewed public wording row
+and does not authorize public speedup wording. Goal1208 authorizes only the bounded road-hazard prepared native compact-summary wording; full GIS/routing, default-app behavior, row output, and whole-app road-hazard speedup remain outside the claim.
+
 If you want a guided learning order instead of a flat example list, start with:
 
 - [RTDL Tutorials](tutorials/README.md)
@@ -622,6 +675,7 @@ PYTHONPATH=src:. python examples/rtdl_segment_polygon_anyhit_rows.py --backend c
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py
 PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix
 ```
 
 ### Polygon-Pair Overlap Area Rows
@@ -633,11 +687,13 @@ PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend embree
 ```bash
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py
 PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree
+PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary
 ```
 
-For both polygon-overlap examples, `--backend embree` is native-assisted:
-Embree performs candidate discovery and CPU/Python performs exact bounded
-area/Jaccard refinement.
+For both polygon-overlap examples, `--backend embree` and `--backend optix` are
+native-assisted: the backend performs LSI/PIP candidate discovery and
+CPU/Python performs exact bounded area/Jaccard refinement. This is not a fully
+native polygon-area/Jaccard kernel or a public RTX speedup claim.
 
 ## App-style example
 

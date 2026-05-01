@@ -23,4 +23,3 @@ Non-blocking notes:
 
 - `PreparedRayAnyHit2D` still retains a host triangle copy after construction; this is a follow-up memory-footprint opportunity.
 - There is no test for calling `count()` on a closed scene handle; the guard exists but is uncovered.
-

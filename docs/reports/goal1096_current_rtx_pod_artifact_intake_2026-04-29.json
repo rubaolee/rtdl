@@ -1,0 +1,73 @@
+{
+  "artifact_root": "/Users/rl2025/rtdl_python_only/docs/reports",
+  "blocked_count": 0,
+  "boundary": "This intake checks copied Goal1084 and Goal1093 artifacts only. It does not run cloud, does not change public wording, does not authorize release, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "expected_artifact_count": 3,
+  "goal": "Goal1096 current RTX pod artifact intake",
+  "missing_artifact_count": 0,
+  "overall_status": "ready_for_2ai_review_not_public_claim",
+  "present_artifact_count": 3,
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "artifact_status": "present",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1084_facility_recentered_rtx_pod_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "phase": "same_scale_validation_and_timing",
+      "public_speedup_claim_authorized": false,
+      "reason": "facility artifact proves oracle parity and timing floor",
+      "requires_validation": true,
+      "review_status": "validation_and_timing_passed",
+      "rtx_phase_sec": 0.13505441695451736,
+      "source_commit": "58ca06f2573d53754663a2dd10a76207113ab044",
+      "timing_floor_sec": 0.1
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json",
+      "artifact_status": "present",
+      "contains_skip_validation": false,
+      "expected_output_json": "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "depth8_contract_validation",
+      "public_speedup_claim_authorized": false,
+      "reason": "Barnes-Hut artifact proves depth-8 oracle parity",
+      "requires_validation": true,
+      "review_status": "validation_passed",
+      "rtx_phase_sec": 0.007581695914268494,
+      "source_commit": "58ca06f2573d53754663a2dd10a76207113ab044",
+      "timing_floor_sec": null
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "artifact_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json",
+      "artifact_status": "present",
+      "contains_skip_validation": true,
+      "expected_output_json": "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "depth8_20m_timing_repeat",
+      "public_speedup_claim_authorized": false,
+      "reason": "Barnes-Hut timing artifact passes timing floor",
+      "requires_validation": false,
+      "review_status": "timing_floor_passed",
+      "rtx_phase_sec": 0.23063642531633377,
+      "source_commit": "58ca06f2573d53754663a2dd10a76207113ab044",
+      "timing_floor_sec": 0.1
+    }
+  ],
+  "source_packets": [
+    "docs/reports/goal1084_facility_recentered_rtx_pod_packet_2026-04-29.json",
+    "docs/reports/goal1093_barnes_hut_20m_contract_packet_2026-04-29.json"
+  ],
+  "status_counts": {
+    "timing_floor_passed": 1,
+    "validation_and_timing_passed": 1,
+    "validation_passed": 1
+  },
+  "timing_below_floor_count": 0,
+  "valid": true
+}

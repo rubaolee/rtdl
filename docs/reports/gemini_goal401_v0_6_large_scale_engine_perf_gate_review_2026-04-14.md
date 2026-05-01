@@ -11,7 +11,7 @@ The new loader and performance harness code is technically coherent. `src/rtdsl/
 The split is measured honestly. In `graph_perf.py`, `time.perf_counter()` boundaries strictly isolate `prepare_postgresql_graph_tables` and input preparation (setup time) from the subsequent query executions (query time). This separation accurately exposes the significant overhead of PostgreSQL index and temporary table construction.
 
 **3. Alignment of Claims with Implementation and Evidence**
-The claims in the report match the implementation and the empirical data. The harness indeed limits execution to a single bounded `bfs` expansion step and a single `triangle_count` probe step. The reported metrics showing PostgreSQL's setup time dominating the query time are accurately reflected in the harness measurement structures. 
+The claims in the report match the implementation and the empirical data. The harness indeed limits execution to a single bounded `bfs` expansion step and a single `triangle_count` probe step. The reported metrics showing PostgreSQL's setup time dominating the query time are accurately reflected in the harness measurement structures.
 
 **4. Goal Acceptance Within Stated Honesty Boundary**
 Goal 401 is accepted. The code and reporting strictly adhere to the honesty boundary by explicitly acknowledging that the performance metrics apply only to bounded RT-kernel steps rather than an end-to-end graph runtime. It successfully establishes a real-data baseline comparison against PostgreSQL.

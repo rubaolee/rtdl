@@ -1,7 +1,7 @@
 # Claude Assessment of Gemini Goal 78 Review
 
-**Date:** 2026-04-04  
-**Reviewed document:** `/Users/rl2025/gemini-work/Gemini_Goal78_Vulkan_Review_2026-04-04.md`  
+**Date:** 2026-04-04
+**Reviewed document:** `/Users/rl2025/gemini-work/Gemini_Goal78_Vulkan_Review_2026-04-04.md`
 **Reviewer:** Claude (Sonnet 4.6)
 
 ---
@@ -28,7 +28,7 @@ The Gemini approval is correct. The implementation can proceed. Two factual impr
 **Gemini states:**
 > "Reduces host-bound traffic from a dense bitmask/matrix (P×Q bits/bytes)..."
 
-**Correction:**  
+**Correction:**
 The old `positive_only` path had no GPU involvement at all. It was a pure CPU nested loop with no buffer, no matrix, and no GPU transfer. There was nothing to reduce traffic from. The Gemini review conflates the old positive-hit path with the full-matrix GPU path.
 
 The correct framing: the old path spent O(P×Q) CPU time running exact point-in-polygon tests on every pair. The new path uses GPU AABB ray tracing to filter down to candidates, so the host only runs exact tests on the candidate subset.
@@ -38,7 +38,7 @@ The correct framing: the old path spent O(P×Q) CPU time running exact point-in-
 **Gemini states:**
 > "...this naming asymmetry should be unified to prevent GLSL binding errors."
 
-**Correction:**  
+**Correction:**
 This will not cause a GLSL binding error. GLSL UBO layout is determined by field types and order, not field names. The `kPipRint` intersection shader does not read either `npolygons` or `capacity` — it uses only `gl_LaunchIDEXT.x` and `gl_PrimitiveID`. The `kPipRgen` rgen shader reads only `npoints`. The binary layout `{uint, uint}` is identical regardless of what the second field is named. No runtime mismatch occurs.
 
 The real concern is code-reader confusion and long-term maintainability, not a shader error. The Low severity rating is still correct for the right reason.

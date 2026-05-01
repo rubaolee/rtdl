@@ -91,4 +91,3 @@ External review sequence:
 - Re-review: ACCEPT.
 
 Goal595 is closed. Goal596 may proceed, with Goal595 as the baseline harness.
-

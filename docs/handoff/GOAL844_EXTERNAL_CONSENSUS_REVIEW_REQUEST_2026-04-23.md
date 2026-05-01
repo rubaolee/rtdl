@@ -1,0 +1,1 @@
+Read `docs/reports/goal844_robot_oracle_parallelization_2026-04-23.md`, inspect `scripts/goal839_robot_pose_count_baseline.py` and `tests/goal839_local_baseline_collectors_test.py`, and return only ACCEPT or BLOCK plus one short paragraph on whether the Linux-only process-parallel exact pose-flag oracle is technically sound and honest.

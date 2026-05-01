@@ -129,6 +129,17 @@ PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix
 PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend vulkan
 ```
 
+For a claim-sensitive NVIDIA RT-core run, use the compact OptiX summary mode:
+
+```bash
+PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core
+```
+
+`--require-rt-core` rejects the unified DB app's full and default summary modes
+because those modes can be interface/materialization dominated. The accepted
+claim is the bounded compact-summary traversal path only; it is not a DBMS or a
+general SQL acceleration claim.
+
 The unified app demo shows denormalized order tables becoming matched row IDs,
 grouped counts, grouped sums, and app summaries. The retired scenario-specific
 compatibility files still exist for historical tests, but the unified app is

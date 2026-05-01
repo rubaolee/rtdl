@@ -13,4 +13,3 @@ Saved review chain:
 Conclusion:
 
 Goal 282 is closed. The live 3D PostGIS KITTI path now requests the correct n-D GiST operator class and has a saved Linux plan audit showing indexed 3D execution on the search side.
-

@@ -160,4 +160,3 @@ ACCEPT
 Claude specifically checked the `#include` aggregation strategy and accepted it
 because each backend still compiles as one translation unit, preserving
 anonymous-namespace scoping, macro visibility, and exported `extern "C"` names.
-

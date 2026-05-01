@@ -1,0 +1,26 @@
+{
+  "boundary": "This goal records the bounded rows helper and device-emission path. It still does not authorize readiness because the public rows path remains host-indexed until a real OptiX gate passes.",
+  "current_behavior": {
+    "empty_input": "success_zero_rows",
+    "non_empty_input": "bounded_native_emission_attempt",
+    "public_rows_path": "unchanged_host_indexed"
+  },
+  "date": "2026-04-24",
+  "evidence": {
+    "api_delegates_to_helper": true,
+    "bounded_output_copy_present": true,
+    "device_kernel_present": true,
+    "device_launch_present": true,
+    "empty_input_success_path_present": true,
+    "helper_present": true,
+    "outputs_zeroed_before_work": true,
+    "public_rows_path_still_host_indexed": true
+  },
+  "goal": "Goal871 native pair-row bounded helper packet",
+  "helper": "run_seg_poly_anyhit_rows_optix_native_bounded",
+  "recommended_status": "bounded_helper_added",
+  "sources": {
+    "api_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_api.cpp",
+    "workloads_cpp": "/Users/rl2025/rtdl_python_only/src/native/optix/rtdl_optix_workloads.cpp"
+  }
+}

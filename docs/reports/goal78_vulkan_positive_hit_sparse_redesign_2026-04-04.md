@@ -1,6 +1,6 @@
 # Goal 78 Final Report: Vulkan Positive-Hit Sparse Redesign
 
-**Date:** 2026-04-04  
+**Date:** 2026-04-04
 **Status:** Accepted redesign; no hardware performance claim
 
 ## Scope

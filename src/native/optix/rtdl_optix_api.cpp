@@ -214,6 +214,73 @@ extern "C" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_pose_indices_2d(
+        const uint32_t* pose_indices,
+        size_t pose_index_count,
+        void** pose_indices_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!pose_indices_out)
+            throw std::runtime_error("pose_indices_out must not be null");
+        if (!pose_indices && pose_index_count != 0)
+            throw std::runtime_error("pose_indices pointer must not be null when pose_index_count is nonzero");
+        *pose_indices_out = nullptr;
+        *pose_indices_out = prepare_pose_indices_2d_optix(pose_indices, pose_index_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices(
+        void* prepared,
+        void* prepared_rays,
+        void* prepared_pose_indices,
+        uint32_t* pose_flags_out,
+        size_t pose_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_rays)
+            throw std::runtime_error("prepared_rays must not be null");
+        if (!prepared_pose_indices)
+            throw std::runtime_error("prepared_pose_indices must not be null");
+        pose_flags_prepared_ray_anyhit_2d_prepared_indices_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            reinterpret_cast<PreparedRays2D*>(prepared_rays),
+            reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices),
+            pose_flags_out,
+            pose_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices(
+        void* prepared,
+        void* prepared_rays,
+        void* prepared_pose_indices,
+        size_t pose_count,
+        size_t* colliding_pose_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_rays)
+            throw std::runtime_error("prepared_rays must not be null");
+        if (!prepared_pose_indices)
+            throw std::runtime_error("prepared_pose_indices must not be null");
+        if (!colliding_pose_count_out)
+            throw std::runtime_error("colliding_pose_count_out must not be null");
+        count_poses_prepared_ray_anyhit_2d_prepared_indices_optix(
+            reinterpret_cast<PreparedRayAnyHit2D*>(prepared),
+            reinterpret_cast<PreparedRays2D*>(prepared_rays),
+            reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices),
+            pose_count,
+            colliding_pose_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices)
+{
+    delete reinterpret_cast<PreparedPoseIndices2D*>(prepared_pose_indices);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays)
 {
     delete reinterpret_cast<PreparedRays2D*>(prepared_rays);
@@ -238,6 +305,76 @@ extern "C" int rtdl_optix_run_segment_polygon_hitcount(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_segment_polygon_hitcount_2d(
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!polygons && polygon_count != 0)
+            throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
+        if (polygon_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("polygon count exceeds uint32 primitive limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_segment_polygon_hitcount_2d_optix(
+            polygons, polygon_count, vertices_xy, vertex_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_polygon_hitcount_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_segment_polygon_hitcount_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared),
+            segments, segment_count, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        uint32_t threshold,
+        size_t* count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        count_prepared_segment_polygon_hitcount_at_least_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared),
+            segments, segment_count, threshold, count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        uint32_t positive_threshold,
+        size_t* row_count_out,
+        uint64_t* hit_sum_out,
+        size_t* positive_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        aggregate_prepared_segment_polygon_hitcount_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared),
+            segments, segment_count, positive_threshold,
+            row_count_out, hit_sum_out, positive_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedSegmentPolygonHitcount2D*>(prepared);
+}
+
 extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows(
         const RtdlSegment* segments, size_t segment_count,
         const RtdlPolygonRef* polygons, size_t polygon_count,
@@ -254,6 +391,77 @@ extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows(
         run_seg_poly_anyhit_rows_optix_host_indexed(
             segments, segment_count, polygons, polygon_count, vertices_xy, rows_out, row_count_out);
     }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
+        const RtdlSegment* segments, size_t segment_count,
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!emitted_count_out || !overflowed_out)
+            throw std::runtime_error("emitted_count_out and overflowed_out must not be null");
+        *emitted_count_out = 0;
+        *overflowed_out = 0;
+        if (!rows_out && output_capacity != 0)
+            throw std::runtime_error("rows_out must not be null when output_capacity is nonzero");
+        if (!segments && segment_count != 0)
+            throw std::runtime_error("segments pointer must not be null when segment_count is nonzero");
+        if (!polygons && polygon_count != 0)
+            throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
+        run_seg_poly_anyhit_rows_optix_native_bounded(
+            segments, segment_count,
+            polygons, polygon_count,
+            vertices_xy, vertex_xy_count,
+            rows_out, output_capacity,
+            emitted_count_out, overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(
+        const RtdlPolygonRef* polygons, size_t polygon_count,
+        const double* vertices_xy, size_t vertex_xy_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!polygons && polygon_count != 0)
+            throw std::runtime_error("polygons pointer must not be null when polygon_count is nonzero");
+        if (!vertices_xy && vertex_xy_count != 0)
+            throw std::runtime_error("vertices_xy pointer must not be null when vertex_xy_count is nonzero");
+        if (polygon_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("polygon count exceeds uint32 primitive limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_segment_polygon_anyhit_rows_2d_optix(
+            polygons, polygon_count, vertices_xy, vertex_xy_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d(
+        void* prepared,
+        const RtdlSegment* segments, size_t segment_count,
+        RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+        size_t* emitted_count_out, uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_segment_polygon_anyhit_rows_2d_optix(
+            reinterpret_cast<PreparedSegmentPolygonAnyhitRows2D*>(prepared),
+            segments, segment_count, rows_out, output_capacity,
+            emitted_count_out, overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedSegmentPolygonAnyhitRows2D*>(prepared);
 }
 
 extern "C" int rtdl_optix_run_point_nearest_segment(
@@ -400,6 +608,21 @@ extern "C" int rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d(
+        void* prepared,
+        const RtdlPoint* query_points, size_t query_count,
+        double radius,
+        size_t threshold,
+        size_t* threshold_reached_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        count_prepared_fixed_radius_threshold_reached_2d_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared),
+            query_points, query_count, radius, threshold, threshold_reached_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedFixedRadiusCountThreshold2D*>(prepared);
@@ -475,13 +698,24 @@ extern "C" int rtdl_optix_run_bfs_expand(
             throw std::runtime_error("output pointers must not be null");
         *rows_out = nullptr; *row_count_out = 0;
         if (frontier_count == 0) return;
-        run_bfs_expand_optix_host_indexed(
-            row_offsets, row_offset_count,
-            column_indices, column_index_count,
-            frontier, frontier_count,
-            visited_vertices, visited_count,
-            dedupe,
-            rows_out, row_count_out);
+        const char* mode = std::getenv("RTDL_OPTIX_GRAPH_MODE");
+        if (mode != nullptr && std::strcmp(mode, "native") == 0) {
+            run_bfs_expand_optix_graph_ray(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                frontier, frontier_count,
+                visited_vertices, visited_count,
+                dedupe,
+                rows_out, row_count_out);
+        } else {
+            run_bfs_expand_optix_host_indexed(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                frontier, frontier_count,
+                visited_vertices, visited_count,
+                dedupe,
+                rows_out, row_count_out);
+        }
     }, error_out, error_size);
 }
 
@@ -499,13 +733,24 @@ extern "C" int rtdl_optix_run_triangle_probe(
             throw std::runtime_error("output pointers must not be null");
         *rows_out = nullptr; *row_count_out = 0;
         if (seed_count == 0) return;
-        run_triangle_probe_optix_host_indexed(
-            row_offsets, row_offset_count,
-            column_indices, column_index_count,
-            seeds, seed_count,
-            enforce_id_ascending,
-            unique,
-            rows_out, row_count_out);
+        const char* mode = std::getenv("RTDL_OPTIX_GRAPH_MODE");
+        if (mode != nullptr && std::strcmp(mode, "native") == 0) {
+            run_triangle_probe_optix_graph_ray(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                seeds, seed_count,
+                enforce_id_ascending,
+                unique,
+                rows_out, row_count_out);
+        } else {
+            run_triangle_probe_optix_host_indexed(
+                row_offsets, row_offset_count,
+                column_indices, column_index_count,
+                seeds, seed_count,
+                enforce_id_ascending,
+                unique,
+                rows_out, row_count_out);
+        }
     }, error_out, error_size);
 }
 
@@ -642,6 +887,24 @@ extern "C" int rtdl_optix_db_dataset_conjunctive_scan(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_db_dataset_conjunctive_scan_count(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbClause* clauses, size_t clause_count,
+        size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!row_count_out) {
+            throw std::runtime_error("row_count_out pointer must not be null");
+        }
+        *row_count_out = 0;
+        run_db_conjunctive_scan_count_optix_prepared(
+            reinterpret_cast<OptixDbDatasetImpl*>(dataset),
+            clauses, clause_count,
+            row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_db_dataset_grouped_count(
         RtdlOptixDbDataset* dataset,
         const RtdlDbClause* clauses, size_t clause_count,
@@ -683,6 +946,123 @@ extern "C" int rtdl_optix_db_dataset_grouped_sum(
             group_key_field,
             value_field,
             rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+static void rtdl_optix_fill_db_compact_summary_phase(RtdlDbCompactSummaryResult& result)
+{
+    result.traversal = g_optix_last_db_traversal_s;
+    result.bitset_copyback = g_optix_last_db_bitset_copy_s;
+    result.exact_filter = g_optix_last_db_exact_filter_s;
+    result.output_pack = g_optix_last_db_output_pack_s;
+    result.raw_candidate_count = g_optix_last_db_raw_candidate_count;
+    result.emitted_count = g_optix_last_db_emitted_count;
+}
+
+extern "C" void rtdl_optix_db_compact_summary_results_destroy(
+        RtdlDbCompactSummaryResult* results,
+        size_t result_count)
+{
+    if (!results) {
+        return;
+    }
+    for (size_t index = 0; index < result_count; ++index) {
+        std::free(results[index].count_rows);
+        std::free(results[index].sum_rows);
+    }
+    std::free(results);
+}
+
+extern "C" int rtdl_optix_db_dataset_compact_summary_batch(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbCompactSummaryRequest* requests,
+        size_t request_count,
+        RtdlDbCompactSummaryResult** results_out,
+        size_t* result_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!dataset) {
+            throw std::runtime_error("OptiX prepared DB dataset must not be null");
+        }
+        if (!results_out || !result_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        if (request_count > 0 && !requests) {
+            throw std::runtime_error("compact summary request pointer must not be null when request_count > 0");
+        }
+        *results_out = nullptr;
+        *result_count_out = 0;
+
+        auto* impl = reinterpret_cast<OptixDbDatasetImpl*>(dataset);
+        std::vector<RtdlDbCompactSummaryResult> results(request_count);
+        try {
+            for (size_t index = 0; index < request_count; ++index) {
+                const RtdlDbCompactSummaryRequest& request = requests[index];
+                RtdlDbCompactSummaryResult& result = results[index];
+                result.operation = request.operation;
+                if (request.operation == kRtdlDbCompactSummaryScanCount) {
+                    run_db_conjunctive_scan_count_optix_prepared(
+                        impl,
+                        request.clauses,
+                        request.clause_count,
+                        &result.scalar_value);
+                    rtdl_optix_fill_db_compact_summary_phase(result);
+                } else if (request.operation == kRtdlDbCompactSummaryGroupedCount) {
+                    if (!request.group_key_field) {
+                        throw std::runtime_error("grouped_count compact summary requires group_key_field");
+                    }
+                    run_db_grouped_count_optix_prepared(
+                        impl,
+                        request.clauses,
+                        request.clause_count,
+                        request.group_key_field,
+                        &result.count_rows,
+                        &result.count_row_count);
+                    rtdl_optix_fill_db_compact_summary_phase(result);
+                } else if (request.operation == kRtdlDbCompactSummaryGroupedSum) {
+                    if (!request.group_key_field || !request.value_field) {
+                        throw std::runtime_error("grouped_sum compact summary requires group_key_field and value_field");
+                    }
+                    run_db_grouped_sum_optix_prepared(
+                        impl,
+                        request.clauses,
+                        request.clause_count,
+                        request.group_key_field,
+                        request.value_field,
+                        &result.sum_rows,
+                        &result.sum_row_count);
+                    rtdl_optix_fill_db_compact_summary_phase(result);
+                } else {
+                    throw std::runtime_error("unsupported DB compact-summary batch operation");
+                }
+            }
+        } catch (...) {
+            for (RtdlDbCompactSummaryResult& result : results) {
+                std::free(result.count_rows);
+                std::free(result.sum_rows);
+                result.count_rows = nullptr;
+                result.sum_rows = nullptr;
+            }
+            throw;
+        }
+
+        auto* out = static_cast<RtdlDbCompactSummaryResult*>(
+            std::calloc(results.size(), sizeof(RtdlDbCompactSummaryResult)));
+        if (!out && !results.empty()) {
+            for (RtdlDbCompactSummaryResult& result : results) {
+                std::free(result.count_rows);
+                std::free(result.sum_rows);
+                result.count_rows = nullptr;
+                result.sum_rows = nullptr;
+            }
+            throw std::bad_alloc();
+        }
+        if (!results.empty()) {
+            std::memcpy(out, results.data(), sizeof(RtdlDbCompactSummaryResult) * results.size());
+        }
+        *results_out = out;
+        *result_count_out = results.size();
     }, error_out, error_size);
 }
 

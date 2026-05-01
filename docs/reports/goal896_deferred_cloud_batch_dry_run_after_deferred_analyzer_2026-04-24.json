@@ -1,0 +1,905 @@
+{
+  "boundary": "This runner executes the manifest contract. It does not authorize RTX speedup claims; claims require review of generated JSON, phase separation, and hardware metadata.",
+  "dry_run": true,
+  "entry_count": 17,
+  "failed_count": 0,
+  "git_head": "f7c19e36865d5a4cda4316bc3f2ec5f216b93140",
+  "git_status_short": "M docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_cpu_oracle_summary_2026-04-23.json\n M docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_embree_summary_path_2026-04-23.json\n?? docs/reports/gemini_embree_applications_review_2026-04-23.md\n?? docs/reports/gemini_rtdl_feature_analysis_report_2026-04-23.md\n?? docs/reports/gemini_rtdl_next_gen_cuda_partner_brainstorming_2026-04-23.md\n?? docs/reports/goal850_claude_review_2026-04-23.md",
+  "global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "include_deferred": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "nvidia_smi": "probe failed: [Errno 2] No such file or directory: 'nvidia-smi'",
+  "python_version": "Python 3.14.0",
+  "repo": "/Users/rl2025/rtdl_python_only",
+  "results": [
+    {
+      "app": "database_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_compact_summary",
+          "embree_compact_summary",
+          "postgresql_same_semantics_on_linux_when_available"
+        ],
+        "required_phases": [
+          "input_pack_or_table_build",
+          "backend_prepare",
+          "native_query",
+          "copyback_or_materialization",
+          "python_summary_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "manifest_section": "entries",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_sales_risk",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "sales_risk",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_sales_risk_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "database_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_compact_summary",
+          "embree_compact_summary",
+          "postgresql_same_semantics_on_linux_when_available"
+        ],
+        "required_phases": [
+          "input_pack_or_table_build",
+          "backend_prepare",
+          "native_query",
+          "copyback_or_materialization",
+          "python_summary_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "manifest_section": "entries",
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal756_db_prepared_session_perf.py",
+          "--backend",
+          "optix",
+          "--scenario",
+          "regional_dashboard",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--output-mode",
+          "compact_summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal759_db_regional_dashboard_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "outlier_detection",
+      "baseline_review_contract": {
+        "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+        "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_scalar_threshold_count_oracle",
+          "embree_scalar_or_summary_path",
+          "scipy_or_reference_neighbor_baseline_when_used_in_app_report"
+        ],
+        "required_phases": [
+          "point_pack",
+          "backend_prepare",
+          "native_threshold_query",
+          "scalar_copyback",
+          "python_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared fixed-radius threshold summary traversal only",
+      "manifest_section": "entries",
+      "non_claim": "not a KNN, Hausdorff, ANN, Barnes-Hut, anomaly-detection-system, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_density_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--result-mode",
+          "threshold_count",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "dbscan_clustering",
+      "baseline_review_contract": {
+        "claim_limit": "outlier threshold-count or DBSCAN core-count summary only; not row-returning neighbors or full DBSCAN cluster expansion",
+        "comparable_metric_scope": "prepared fixed-radius scalar threshold-count/core-count result with identical radius, threshold, fixture, and copies",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_scalar_threshold_count_oracle",
+          "embree_scalar_or_summary_path",
+          "scipy_or_reference_neighbor_baseline_when_used_in_app_report"
+        ],
+        "required_phases": [
+          "point_pack",
+          "backend_prepare",
+          "native_threshold_query",
+          "scalar_copyback",
+          "python_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared fixed-radius core-flag traversal only",
+      "manifest_section": "entries",
+      "non_claim": "not a full DBSCAN clustering, KNN, Hausdorff, ANN, Barnes-Hut, or whole-app RTX speedup claim",
+      "path_name": "prepared_fixed_radius_core_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--result-mode",
+          "threshold_count",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "reused_command_result",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "robot_collision_screening",
+      "baseline_review_contract": {
+        "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+        "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_pose_count",
+          "embree_anyhit_pose_count_or_equivalent_compact_summary"
+        ],
+        "required_phases": [
+          "pose_and_obstacle_generation",
+          "ray_pack",
+          "backend_scene_prepare",
+          "pose_index_prepare",
+          "native_anyhit_query",
+          "scalar_copyback",
+          "oracle_validation_separate"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "manifest_section": "entries",
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "path_name": "prepared_pose_flags",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+          "--mode",
+          "optix",
+          "--pose-count",
+          "200000",
+          "--obstacle-count",
+          "1024",
+          "--iterations",
+          "10",
+          "--input-mode",
+          "packed_arrays",
+          "--result-mode",
+          "pose_count",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal759_robot_pose_flags_phase_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "graph_analytics",
+      "baseline_review_contract": {
+        "claim_limit": "visibility-edge filtering sub-path only; not BFS, triangle-count, shortest-path, or general graph analytics acceleration",
+        "comparable_metric_scope": "strict graph visibility-edge summary/row result for the same copies/output-mode semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference_visibility_edges",
+          "optix_visibility_anyhit",
+          "embree_visibility_anyhit_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX ray/triangle any-hit traversal for graph visibility-edge filtering",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not BFS, triangle-count, shortest-path, graph database, or general graph analytics acceleration",
+      "path_name": "graph_visibility_edges_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal889_graph_visibility_optix_gate.py",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal889_graph_visibility_optix_gate_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "service_coverage_gaps",
+      "baseline_review_contract": {
+        "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+        "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_summary",
+          "embree_summary_path",
+          "scipy_baseline_when_available"
+        ],
+        "required_phases": [
+          "input_build",
+          "optix_prepare",
+          "optix_query",
+          "python_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for coverage-gap summaries",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a whole-app service coverage speedup claim and not a nearest-clinic row-output claim",
+      "path_name": "prepared_gap_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+          "--scenario",
+          "service_coverage_gaps",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-json",
+          "docs/reports/goal811_service_coverage_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "event_hotspot_screening",
+      "baseline_review_contract": {
+        "claim_limit": "prepared compact summary only; not nearest-row or whole-app speedup",
+        "comparable_metric_scope": "prepared compact fixed-radius summary for the same generated households/events/facilities and radius",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_summary",
+          "embree_summary_path",
+          "scipy_baseline_when_available"
+        ],
+        "required_phases": [
+          "input_build",
+          "optix_prepare",
+          "optix_query",
+          "python_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius count traversal for hotspot summaries",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a whole-app hotspot-screening speedup claim and not a neighbor-row output claim",
+      "path_name": "prepared_count_summary",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal811_spatial_optix_summary_phase_profiler.py",
+          "--scenario",
+          "event_hotspot_screening",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-json",
+          "docs/reports/goal811_event_hotspot_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "road_hazard_screening",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+        "comparable_metric_scope": "strict road-hazard native OptiX summary result on the same copies/output-mode semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_host_indexed",
+          "postgis_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "native OptiX segment/polygon traversal for compact road-hazard summaries",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not default public road-hazard behavior and not a full GIS/routing speedup claim",
+      "path_name": "road_hazard_native_summary_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal888_road_hazard_native_optix_gate.py",
+          "--copies",
+          "20000",
+          "--output-mode",
+          "summary",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal888_road_hazard_native_optix_gate_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native hit-count gate only; not pair-row any-hit or road-hazard whole-app speedup",
+        "comparable_metric_scope": "strict segment/polygon hit-count result on the same dataset and output count semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_host_indexed",
+          "postgis_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "experimental native custom-AABB segment/polygon hit-count traversal",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not default public app behavior and not a row-returning any-hit claim",
+      "path_name": "segment_polygon_hitcount_native_experimental",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal807_segment_polygon_optix_mode_gate.py",
+          "--dataset",
+          "derived/br_county_subset_segment_polygon_tiled_x256",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal807_segment_polygon_optix_mode_gate_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "hausdorff_distance",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for hausdorff_distance:directed_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not an exact Hausdorff distance, KNN-row, or nearest-neighbor ranking speedup claim",
+      "path_name": "directed_threshold_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "hausdorff_threshold",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--radius",
+          "0.4",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal887_hausdorff_threshold_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "ann_candidate_search",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for ann_candidate_search:candidate_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for ANN candidate-coverage decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a full ANN index, nearest-neighbor ranking, FAISS/HNSW/IVF/PQ, or recall-optimizer claim",
+      "path_name": "candidate_threshold_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "ann_candidate_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--radius",
+          "0.2",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal887_ann_candidate_coverage_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "facility_knn_assignment",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+      "path_name": "coverage_threshold_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "facility_service_coverage",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--iterations",
+          "10",
+          "--radius",
+          "1.0",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal887_facility_service_coverage_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for barnes_hut_force_app:node_coverage_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a Barnes-Hut opening-rule, force-vector reduction, or N-body solver speedup claim",
+      "path_name": "node_coverage_prepared",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal887_prepared_decision_phase_profiler.py",
+          "--scenario",
+          "barnes_hut_node_coverage",
+          "--mode",
+          "optix",
+          "--body-count",
+          "200000",
+          "--iterations",
+          "10",
+          "--radius",
+          "10.0",
+          "--skip-validation",
+          "--output-json",
+          "docs/reports/goal887_barnes_hut_node_coverage_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "baseline_review_contract": {
+        "claim_limit": "experimental native bounded pair-row gate only; not default public app behavior and not unbounded row-volume performance",
+        "comparable_metric_scope": "strict bounded segment/polygon pair-row result on the same dataset and output capacity",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "optix_native_bounded_pair_rows",
+          "postgis_when_available_for_same_pair_semantics"
+        ],
+        "required_phases": [
+          "records",
+          "row_digest",
+          "emitted_count",
+          "copied_count",
+          "overflowed",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "experimental native bounded custom-AABB segment/polygon pair-row traversal",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not default public app behavior and not an unbounded pair-row performance claim",
+      "path_name": "segment_polygon_anyhit_rows_native_bounded_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal873_native_pair_row_optix_gate.py",
+          "--dataset",
+          "authored_segment_polygon_minimal",
+          "--output-capacity",
+          "1024",
+          "--strict",
+          "--output-json",
+          "docs/reports/goal873_native_pair_row_optix_gate_rtx_strict.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery path only; exact area/Jaccard refinement remains CPU/Python",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus CPU exact area refinement",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a fully native polygon-area kernel and not a full app RTX speedup claim",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+          "--app",
+          "pair_overlap",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-json",
+          "docs/reports/goal877_pair_overlap_phase_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery path only; exact area/Jaccard refinement remains CPU/Python",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus CPU exact Jaccard refinement",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+      "manifest_section": "deferred_entries",
+      "non_claim": "not a fully native Jaccard kernel and not a full app RTX speedup claim",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "result": {
+        "command": [
+          "python3",
+          "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+          "--app",
+          "jaccard",
+          "--mode",
+          "optix",
+          "--copies",
+          "20000",
+          "--output-json",
+          "docs/reports/goal877_jaccard_phase_rtx.json"
+        ],
+        "elapsed_sec": 0.0,
+        "env_overrides": {},
+        "execution_mode": "executed",
+        "returncode": 0,
+        "started_at": "2026-04-24T08:51:01-0400",
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "status": "ok",
+  "suite": "goal761_rtx_cloud_run_all",
+  "timestamp": "2026-04-24T08:51:01-0400",
+  "unique_command_count": 16
+}

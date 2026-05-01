@@ -268,8 +268,11 @@ PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 - Input: two point sets.
 - RTDL output: k=1 nearest-neighbor rows in both directions.
 - Standard-library helper: `rt.reduce_rows(max)` computes directed Hausdorff distance scalars.
+- RT-core decision mode: `--backend optix --optix-summary-mode directed_threshold_prepared`
+  maps "Hausdorff distance <= radius?" to prepared fixed-radius traversal.
 - Python output: undirected distance selection plus witness IDs.
-- Boundary: this is an app pattern over `knn_rows`, not a new built-in RTDL primitive.
+- Boundary: exact distance remains an app pattern over `knn_rows`; the OptiX
+  threshold mode is a decision sub-path, not an exact-distance speedup claim.
 - Linux performance evidence: Goal507 covers Embree, OptiX, Vulkan, SciPy
   `cKDTree`, scikit-learn `NearestNeighbors`, and FAISS `IndexFlatL2`; the
   honest result is that RTDL GPU backends beat RTDL Embree, but do not beat the
@@ -279,6 +282,7 @@ PYTHONPATH=src:. python examples/rtdl_knn_rows.py --backend cpu_python_reference
 
 ```bash
 PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --hausdorff-threshold 0.4 --require-rt-core
 ```
 
 - Learn from:

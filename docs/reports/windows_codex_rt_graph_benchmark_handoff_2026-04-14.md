@@ -226,4 +226,3 @@ The most important preserved message is:
 - the backends were validated at scale
 - OptiX and Vulkan are the main RTDL graph backends to carry forward
 - Gunrock and Neo4j provide credible external context
-

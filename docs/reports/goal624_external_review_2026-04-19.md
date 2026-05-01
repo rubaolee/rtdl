@@ -23,4 +23,3 @@ Consensus points:
   library.
 
 No blockers were identified.
-

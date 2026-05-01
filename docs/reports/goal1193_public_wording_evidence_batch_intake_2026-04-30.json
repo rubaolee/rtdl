@@ -1,0 +1,314 @@
+{
+  "archive": {
+    "archive": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch.tgz",
+    "archive_exists": false,
+    "archive_readable": false,
+    "sha256_file": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch.tgz.sha256",
+    "sha256_file_exists": false
+  },
+  "artifact_count": 12,
+  "boundary": "This intake validates copied Goal1192 evidence artifacts only. It does not run cloud, does not authorize release, and does not authorize public RTX speedup wording by itself.",
+  "date": "2026-04-30",
+  "goal": "Goal1193 public wording evidence batch intake",
+  "input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch",
+  "not_ready_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "road_hazard_screening",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "hausdorff_distance"
+  ],
+  "pair_count": 6,
+  "pairs": [
+    {
+      "app": "database_analytics",
+      "embree_artifact": "database_compact_summary_embree.json",
+      "embree_phase_sec": null,
+      "embree_timing_floor_met": false,
+      "optix_artifact": "database_compact_summary_optix.json",
+      "optix_phase_sec": null,
+      "optix_timing_floor_met": false,
+      "public_wording_review_ready": false,
+      "raw_phase_ratio_embree_over_optix": null,
+      "same_contract_pair_schema_valid": false,
+      "timing_floor_pair_met": false
+    },
+    {
+      "app": "graph_analytics",
+      "embree_artifact": "graph_visibility_edges_embree.json",
+      "embree_phase_sec": null,
+      "embree_timing_floor_met": false,
+      "optix_artifact": "graph_visibility_edges_optix.json",
+      "optix_phase_sec": null,
+      "optix_timing_floor_met": false,
+      "public_wording_review_ready": false,
+      "raw_phase_ratio_embree_over_optix": null,
+      "same_contract_pair_schema_valid": false,
+      "timing_floor_pair_met": false
+    },
+    {
+      "app": "road_hazard_screening",
+      "embree_artifact": "road_hazard_native_summary_embree.json",
+      "embree_phase_sec": null,
+      "embree_timing_floor_met": false,
+      "optix_artifact": "road_hazard_native_summary_optix.json",
+      "optix_phase_sec": null,
+      "optix_timing_floor_met": false,
+      "public_wording_review_ready": false,
+      "raw_phase_ratio_embree_over_optix": null,
+      "same_contract_pair_schema_valid": false,
+      "timing_floor_pair_met": false
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "embree_artifact": "polygon_pair_candidate_discovery_embree.json",
+      "embree_phase_sec": null,
+      "embree_timing_floor_met": false,
+      "optix_artifact": "polygon_pair_candidate_discovery_optix.json",
+      "optix_phase_sec": null,
+      "optix_timing_floor_met": false,
+      "public_wording_review_ready": false,
+      "raw_phase_ratio_embree_over_optix": null,
+      "same_contract_pair_schema_valid": false,
+      "timing_floor_pair_met": false
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "embree_artifact": "polygon_jaccard_safe_chunk_embree.json",
+      "embree_phase_sec": null,
+      "embree_timing_floor_met": false,
+      "optix_artifact": "polygon_jaccard_safe_chunk_optix.json",
+      "optix_phase_sec": null,
+      "optix_timing_floor_met": false,
+      "public_wording_review_ready": false,
+      "raw_phase_ratio_embree_over_optix": null,
+      "same_contract_pair_schema_valid": false,
+      "timing_floor_pair_met": false
+    },
+    {
+      "app": "hausdorff_distance",
+      "embree_artifact": "hausdorff_threshold_prepared_embree.json",
+      "embree_phase_sec": null,
+      "embree_timing_floor_met": false,
+      "optix_artifact": "hausdorff_threshold_prepared_optix.json",
+      "optix_phase_sec": null,
+      "optix_timing_floor_met": false,
+      "public_wording_review_ready": false,
+      "raw_phase_ratio_embree_over_optix": null,
+      "same_contract_pair_schema_valid": false,
+      "timing_floor_pair_met": false
+    }
+  ],
+  "public_wording_review_ready_apps": [],
+  "public_wording_review_ready_pair_count": 0,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "artifact": "database_compact_summary_embree.json",
+      "backend": "embree",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/database_compact_summary_embree.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "database_analytics",
+      "artifact": "database_compact_summary_optix.json",
+      "backend": "optix",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/database_compact_summary_optix.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "graph_analytics",
+      "artifact": "graph_visibility_edges_embree.json",
+      "backend": "embree",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/graph_visibility_edges_embree.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "graph_analytics",
+      "artifact": "graph_visibility_edges_optix.json",
+      "backend": "optix",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/graph_visibility_edges_optix.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact": "road_hazard_native_summary_embree.json",
+      "backend": "embree",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/road_hazard_native_summary_embree.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "road_hazard_screening",
+      "artifact": "road_hazard_native_summary_optix.json",
+      "backend": "optix",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/road_hazard_native_summary_optix.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact": "polygon_pair_candidate_discovery_embree.json",
+      "backend": "embree",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/polygon_pair_candidate_discovery_embree.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "artifact": "polygon_pair_candidate_discovery_optix.json",
+      "backend": "optix",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/polygon_pair_candidate_discovery_optix.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact": "polygon_jaccard_safe_chunk_embree.json",
+      "backend": "embree",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/polygon_jaccard_safe_chunk_embree.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "artifact": "polygon_jaccard_safe_chunk_optix.json",
+      "backend": "optix",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/polygon_jaccard_safe_chunk_optix.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact": "hausdorff_threshold_prepared_embree.json",
+      "backend": "embree",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/hausdorff_threshold_prepared_embree.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    },
+    {
+      "app": "hausdorff_distance",
+      "artifact": "hausdorff_threshold_prepared_optix.json",
+      "backend": "optix",
+      "exists": false,
+      "failed_truth_paths": [],
+      "missing_required_paths": [
+        "artifact"
+      ],
+      "parse_error": "",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1192_public_wording_evidence_batch/hausdorff_threshold_prepared_optix.json",
+      "phase_path": "",
+      "phase_sec": null,
+      "timing_floor_met": false,
+      "unexpected_status": "",
+      "valid_schema": false
+    }
+  ],
+  "timing_floor_sec": 0.1,
+  "valid": false,
+  "valid_schema_artifact_count": 0
+}

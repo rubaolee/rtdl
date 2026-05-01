@@ -27,7 +27,7 @@ This re-audit confirms that the RTDL `v0.4` nearest-neighbor workload family has
 
 ## Verdict
 
-The `v0.4` nearest-neighbor workload line is **Technically Closed**. The "reopened" period initiated at Goal 215 is complete. 
+The `v0.4` nearest-neighbor workload line is **Technically Closed**. The "reopened" period initiated at Goal 215 is complete.
 
 ### Recommendations
 1. Proceed with the `v0.4.0` version increment in the `VERSION` file.

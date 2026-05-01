@@ -1,0 +1,71 @@
+Skipping existing robot Embree baseline chunk 0
+Skipping existing robot Embree baseline chunk 1
+Skipping existing robot Embree baseline chunk 2
+Skipping existing robot Embree baseline chunk 3
+Skipping existing robot Embree baseline chunk 4
+Skipping existing robot Embree baseline chunk 5
+Skipping existing robot Embree baseline chunk 6
+Skipping existing robot Embree baseline chunk 7
+Skipping existing robot Embree baseline chunk 8
+Skipping existing robot Embree baseline chunk 9
+Skipping existing robot Embree baseline chunk 10
+Skipping existing robot Embree baseline chunk 11
+Skipping existing robot Embree baseline chunk 12
+Skipping existing robot Embree baseline chunk 13
+Skipping existing robot Embree baseline chunk 14
+Skipping existing robot Embree baseline chunk 15
+Skipping existing robot Embree baseline chunk 16
+Skipping existing robot Embree baseline chunk 17
+Skipping existing robot Embree baseline chunk 18
+Skipping existing robot Embree baseline chunk 19
+Skipping existing robot Embree baseline chunk 20
+Running robot Embree baseline chunk 21
+Traceback (most recent call last):
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 405, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 390, in main
+    artifact = build_artifact(
+               ^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 368, in build_artifact
+    return _embree_artifact(
+           ^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 285, in _embree_artifact
+    last_summary, post_sec = _time_call(
+                             ^^^^^^^^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 33, in _time_call
+    value = fn()
+            ^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 286, in <lambda>
+    lambda: _summary_from_rows(tuple(last_rows), case["poses"], case["edge_rays"], case["ray_metadata"])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 74, in _summary_from_rows
+    normalized_rows = _normalize_rows_for_metadata(rows, edge_rays, ray_metadata)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl_goal1114_robot_split/scripts/goal839_robot_pose_count_baseline.py", line 64, in _normalize_rows_for_metadata
+    raise KeyError(row_ray_id)
+KeyError: 800714
+Command exited with non-zero status 1
+	Command being timed: "env RTDL_GOAL1085_TIMING_ONLY=1 RTDL_GOAL1085_SKIP_EXISTING=1 bash scripts/goal1085_robot_chunked_embree_baseline_runner.sh"
+	User time (seconds): 4.86
+	System time (seconds): 0.45
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.31
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 952548
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 283464
+	Voluntary context switches: 38
+	Involuntary context switches: 59
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

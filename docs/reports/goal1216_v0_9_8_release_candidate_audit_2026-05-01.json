@@ -1,0 +1,326 @@
+{
+  "boundary": "Goal1216 is a local release-candidate audit. It does not tag, publish, upload packages, authorize new public RTX wording, or require a cloud pod by itself.",
+  "closure_failure_count": 0,
+  "closure_goal_count": 12,
+  "closure_rows": [
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1204_repaired_rtx_pod_packet_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1204_gemini_repaired_rtx_pod_packet_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1204_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1204",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1205_repaired_rtx_pod_intake_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1205_gemini_repaired_rtx_pod_intake_fix_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1205_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1205",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1206_repaired_rtx_recovery_merge_intake_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1206_gemini_live_pod_merged_evidence_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1206_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1206",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1207_linux_embree_prefix_env_fix_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1207_gemini_linux_embree_prefix_fix_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1207_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1207",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1208_public_wording_decision_after_goal1206_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1208_claude_public_wording_decision_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1208_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1208",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1209_public_status_sync_after_goal1208_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1209_claude_public_status_sync_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1209_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1209",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1210_v0_9_8_release_readiness_audit_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1210_claude_v0_9_8_release_readiness_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1210_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1210",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1211_local_release_window_smoke_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1211_claude_local_release_window_smoke_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1211_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1211",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1212_public_release_hygiene_sweep_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1212_claude_public_release_hygiene_sweep_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1212_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1212",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1213_full_discovery_stale_audit_repair_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1213_claude_full_discovery_stale_audit_repair_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1213_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1213",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1214_full_local_discovery_after_goal1213_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1214_claude_full_local_discovery_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1214_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1214",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    },
+    {
+      "files": [
+        {
+          "exists": true,
+          "path": "docs/reports/goal1215_release_surface_doc_audit_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1215_claude_release_surface_doc_audit_review_2026-05-01.md"
+        },
+        {
+          "exists": true,
+          "path": "docs/reports/goal1215_two_ai_consensus_2026-05-01.md"
+        }
+      ],
+      "goal": "Goal1215",
+      "has_external_review": true,
+      "has_two_ai_consensus": true,
+      "missing_files": [],
+      "status": "ok"
+    }
+  ],
+  "current_public_state": {
+    "database_analytics_public_speedup": "blocked",
+    "new_reviewed_row_after_goal1208": "road_hazard_screening / prepared_native_compact_summary_40k",
+    "polygon_set_jaccard_public_speedup": "blocked",
+    "reviewed_public_rtx_wording_rows": 11,
+    "road_hazard_boundary": "prepared native compact-summary traversal/count sub-path at 40k copies only; not default app behavior, GIS/routing, row output, Python orchestration, or whole-app speedup"
+  },
+  "date": "2026-05-01",
+  "evidence_failure_count": 0,
+  "evidence_file_count": 5,
+  "evidence_rows": [
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1214_full_local_discovery_after_goal1213_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1215_release_surface_doc_audit_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1206_repaired_rtx_recovery_merge_intake_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/reports/goal1208_public_wording_decision_after_goal1206_2026-05-01.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_phrases": [],
+      "path": "docs/v1_0_rtx_app_status.md",
+      "status": "ok"
+    }
+  ],
+  "goal": "Goal1216 v0.9.8 release-candidate audit",
+  "pod_decision": "No immediate pod is required for the local v0.9.8 release-candidate audit. The next pod run should be a single batched final RTX replay only if the final release decision requires fresh hardware evidence beyond the saved Goal1206/Goal1208 artifacts.",
+  "pod_needed_now": false,
+  "recommendation": "local_release_candidate_ready_for_final_external_release_decision",
+  "valid": true,
+  "validated_local_checks": {
+    "full_unittest_discovery": {
+      "errors": 0,
+      "failures": 0,
+      "goal": "Goal1214",
+      "result": "OK",
+      "skips": 196,
+      "tests": 2366
+    },
+    "release_surface_docs": {
+      "goal": "Goal1215",
+      "result": "OK",
+      "tests": 64
+    }
+  }
+}

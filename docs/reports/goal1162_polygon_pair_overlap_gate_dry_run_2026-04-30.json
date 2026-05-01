@@ -1,0 +1,64 @@
+{
+  "app": "pair_overlap",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from native C++ exact area/Jaccard continuation. It does not authorize full polygon-overlap RTX speedup claims.",
+  "candidate_diagnostics": {
+    "candidate_count_matches_expected": null,
+    "expected_or_cpu_candidate_row_count": 300,
+    "optix_candidate_row_count": null
+  },
+  "chunk_copies": 20,
+  "chunk_count": null,
+  "cloud_claim_contract": {
+    "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+    "non_claim": "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build_sec",
+      "cpu_reference_sec",
+      "optix_candidate_discovery_sec",
+      "cpu_exact_refinement_sec",
+      "native_exact_continuation_sec",
+      "parity_vs_cpu",
+      "rt_core_candidate_discovery_active",
+      "validation_mode",
+      "output_mode"
+    ]
+  },
+  "copies": 100,
+  "cpu_digest": {
+    "app": "polygon_pair_overlap_area_rows",
+    "copies": 100,
+    "output_mode": "summary",
+    "row_count": 200,
+    "summary": {
+      "overlap_pair_count": 200,
+      "total_intersection_area": 500,
+      "total_union_area": 1900
+    }
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-04-30T09:07:18",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "mode": "dry-run",
+  "optix_digest": null,
+  "optix_metadata": null,
+  "output_mode": "summary",
+  "parity_vs_cpu": null,
+  "phases": {
+    "cpu_exact_refinement_sec": null,
+    "cpu_reference_sec": null,
+    "input_build_sec": 0.0,
+    "native_exact_continuation_sec": null,
+    "optix_candidate_discovery_sec": null
+  },
+  "schema_version": "goal877_polygon_overlap_optix_phase_contract_v2",
+  "source_commit": "d0ebf9d69041cf013b7af4dcb20a570d25d92c3f",
+  "status": "pass",
+  "validation_mode": "analytic_summary"
+}

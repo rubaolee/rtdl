@@ -1,0 +1,33 @@
+{
+  "boundary": "This profiler separates input construction, OptiX preparation, prepared query, and Python postprocess for compact spatial summaries. It does not authorize an RTX speedup claim without a real RTX run and review.",
+  "copies": 4,
+  "date": "2026-04-23",
+  "generated_at": "2026-04-23T07:21:34",
+  "goal": "Goal811 spatial OptiX prepared-summary phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "scenario": {
+    "mode": "dry-run",
+    "result": {
+      "clinic_count": 12,
+      "covered_household_count": 12,
+      "household_count": 16,
+      "uncovered_household_count": 4,
+      "uncovered_household_ids": [
+        4,
+        104,
+        204,
+        304
+      ]
+    },
+    "scenario": "service_coverage_gaps",
+    "timings_sec": {
+      "cpu_reference_total": 0.0001877499744296074,
+      "input_build": 2.133403904736042e-05
+    }
+  }
+}

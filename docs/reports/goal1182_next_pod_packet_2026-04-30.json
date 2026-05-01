@@ -1,0 +1,67 @@
+{
+  "archive": {
+    "archive_bytes": 1464522,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz",
+    "archive_sha256": "b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+    "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
+    "date": "2026-04-30",
+    "goal": "Goal1175 staged source archive builder",
+    "manifest_aggregate_sha256": "e674619fcd7fff0b9802ba9f7b7ba2fe9113c30a848f3477c33270c26f77e544",
+    "manifest_file_count": 1726,
+    "valid": true
+  },
+  "boundary": "This packet prepares the next consolidated pod run. It creates a source archive and replay commands only; it does not run cloud benchmarks, authorize release, or authorize public RTX speedup wording.",
+  "commands": {
+    "copy_back": [
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1182_goal1170_results.tgz docs/reports/goal1182_live_pod_2026-04-30/",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1182_goal1170_results.tgz.sha256 docs/reports/goal1182_live_pod_2026-04-30/"
+    ],
+    "run_on_pod": "ARCHIVE=/tmp/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz EXPECTED_SHA256=b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00 WORKDIR=/workspace/rtdl_goal1182 RESULT_TGZ=/tmp/goal1182_goal1170_results.tgz RESULT_SHA=/tmp/goal1182_goal1170_results.tgz.sha256 bash /tmp/goal1182_executor.sh",
+    "upload": [
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz root@<pod_host>:/tmp/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz",
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1176_pod_archive_batch_executor.sh root@<pod_host>:/tmp/goal1182_executor.sh"
+    ]
+  },
+  "date": "2026-04-30",
+  "goal": "Goal1182 next consolidated RTX pod packet",
+  "pod_batch": {
+    "base_manifest": "scripts/goal1170_clean_source_rtx_batch_manifest.py",
+    "expected_rows": 8,
+    "pod_executor": "scripts/goal1176_pod_archive_batch_executor.sh",
+    "remote_archive": "/tmp/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz",
+    "remote_result": "/tmp/goal1182_goal1170_results.tgz",
+    "remote_result_sha": "/tmp/goal1182_goal1170_results.tgz.sha256"
+  },
+  "preconditions": [
+    "Use an RTX-class Linux pod with NVIDIA driver visible through nvidia-smi.",
+    "Do not patch source on the pod; the executor creates a synthetic clean git commit from this archive.",
+    "Executor installs GEOS/pkg-config and CUDA dev packages before strict correctness gates.",
+    "Run the full batch once per pod session and copy back the result archive plus SHA file."
+  ],
+  "source_manifest": {
+    "aggregate_sha256": "e674619fcd7fff0b9802ba9f7b7ba2fe9113c30a848f3477c33270c26f77e544",
+    "file_count": 1726,
+    "include_dirs": [
+      "src",
+      "examples",
+      "scripts",
+      "tests",
+      "docs/handoff"
+    ],
+    "include_files": [
+      "README.md",
+      "Makefile",
+      "pyproject.toml",
+      "setup.cfg",
+      "pytest.ini"
+    ]
+  },
+  "valid": true,
+  "verification": {
+    "actual_sha256": "b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz",
+    "exists": true,
+    "expected_sha256": "b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+    "valid": true
+  }
+}

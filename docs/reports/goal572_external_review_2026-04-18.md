@@ -1,7 +1,7 @@
 # Goal 572 External Review: v0.9 Post-RTXRMQ Release Addendum
 
-**Reviewer:** Claude Sonnet 4.6  
-**Date:** 2026-04-18  
+**Reviewer:** Claude Sonnet 4.6
+**Date:** 2026-04-18
 **Verdict:** ACCEPT
 
 ---

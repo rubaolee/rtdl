@@ -1,0 +1,446 @@
+{
+  "audited_goal_count": 29,
+  "boundary": "This audit checks that recent bounded goals have saved external-style AI review files and two-AI consensus files. It does not authorize public speedup claims.",
+  "complete_goal_count": 29,
+  "date": "2026-04-27",
+  "goal": "Goal1017 recent goal consensus audit",
+  "incomplete_goal_count": 0,
+  "required_review_trail": [
+    "external_review",
+    "two_ai_consensus"
+  ],
+  "rows": [
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1011_claude_review_2026-04-26.md",
+          "docs/reports/goal1011_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1011_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1011,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "RTX public wording matrix"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1012_claude_review_2026-04-26.md",
+          "docs/reports/goal1012_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1012_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1012,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "status generator public wording sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1013_claude_review_2026-04-26.md",
+          "docs/reports/goal1013_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1013_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1013,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "claim packet public wording sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1014_claude_review_2026-04-26.md",
+          "docs/reports/goal1014_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1014_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1014,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "public wording pipeline source sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1015_claude_review_2026-04-26.md",
+          "docs/reports/goal1015_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1015_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1015,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "upstream speedup evidence public wording sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1016_claude_review_2026-04-26.md",
+          "docs/reports/goal1016_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1016_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1016,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "historical review supersession audit"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1018_claude_review_2026-04-26.md",
+          "docs/reports/goal1018_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1018_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1018,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "Goal1007 repeat plan public wording sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1020_claude_review_2026-04-26.md",
+          "docs/reports/goal1020_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1020_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1020,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "public docs RTX boundary refresh"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1022_claude_review_2026-04-26.md",
+          "docs/reports/goal1022_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1022_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1022,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "history release drift audit"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1023_claude_review_2026-04-26.md",
+          "docs/reports/goal1023_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1023_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1023,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "v0.9.6 history catch-up"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1024_claude_review_2026-04-26.md",
+          "docs/reports/goal1024_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1024_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1024,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "final public-surface audit"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1025_claude_review_2026-04-26.md",
+          "docs/reports/goal1025_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1025_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1025,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "pre-cloud RTX app batch readiness"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1026_claude_review_2026-04-26.md",
+          "docs/reports/goal1026_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1026_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1026,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "pre-cloud RTX runner dry-run audit"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1027_claude_review_2026-04-26.md",
+          "docs/reports/goal1027_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1027_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1027,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "public release hygiene v0.9.6 repair"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1028_claude_review_2026-04-26.md",
+          "docs/reports/goal1028_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1028_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1028,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "A5000 RTX cloud batch evidence"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1029_claude_review_2026-04-26.md",
+          "docs/reports/goal1029_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1029_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1029,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "RTX baseline promotion plan"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1030_claude_review_2026-04-26.md",
+          "docs/reports/goal1030_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1030_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1030,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "local RTX baseline manifest"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1031_claude_review_2026-04-26.md",
+          "docs/reports/goal1031_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1031_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1031,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "local baseline smoke runner"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1032_claude_review_2026-04-26.md",
+          "docs/reports/goal1032_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1032_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1032,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "baseline manifest correction"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1033_claude_review_2026-04-26.md",
+          "docs/reports/goal1033_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1033_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1033,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "SciPy threshold-count baseline"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1034_claude_review_2026-04-26.md",
+          "docs/reports/goal1034_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1034_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1034,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "SciPy-enabled local baseline smoke"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1035_claude_review_2026-04-26.md",
+          "docs/reports/goal1035_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1035_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1035,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "local baseline scale-ramp runner"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1036_claude_review_2026-04-26.md",
+          "docs/reports/goal1036_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1036_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1036,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "outlier density-count oracle fix"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1037_claude_review_2026-04-26.md",
+          "docs/reports/goal1037_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1037_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1037,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "local baseline manifest SciPy wording sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1038_claude_review_2026-04-26.md",
+          "docs/reports/goal1038_gemini_review_2026-04-26.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1038_two_ai_consensus_2026-04-26.md"
+        ]
+      },
+      "goal": 1038,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "next RTX ready-app rerun packet"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1043_gemini_review_2026-04-27.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1043_two_ai_consensus_2026-04-27.md"
+        ]
+      },
+      "goal": 1043,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "claim-grade pod readiness repairs"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1044_gemini_review_2026-04-27.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1044_two_ai_consensus_2026-04-27.md"
+        ]
+      },
+      "goal": 1044,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "public RTX cloud policy sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1045_gemini_review_2026-04-27.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1045_two_ai_consensus_2026-04-27.md"
+        ]
+      },
+      "goal": 1045,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "RTX single-session runbook Goal1043 sync"
+    },
+    {
+      "files": {
+        "external_review": [
+          "docs/reports/goal1046_gemini_review_2026-04-27.md"
+        ],
+        "two_ai_consensus": [
+          "docs/reports/goal1046_two_ai_consensus_2026-04-27.md"
+        ]
+      },
+      "goal": 1046,
+      "missing_requirements": [],
+      "status": "complete",
+      "title": "pre-cloud gate Goal1043 policy sync"
+    }
+  ],
+  "valid": true
+}

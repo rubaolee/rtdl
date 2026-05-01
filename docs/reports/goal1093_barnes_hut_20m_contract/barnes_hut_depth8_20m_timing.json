@@ -1,0 +1,77 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for Barnes-Hut node-coverage decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not Barnes-Hut opening-rule evaluation, force-vector reduction, or a full N-body solver",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ]
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-04-29T11:13:27",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "35667be8fdfd",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-49-generic-x86_64-with-glibc2.35",
+    "python": "3.11.10"
+  },
+  "parameters": {
+    "barnes_tree_depth": 8,
+    "body_count": 20000000,
+    "copies": 1,
+    "hit_threshold": 4,
+    "iterations": 5,
+    "mode": "optix",
+    "radius": 0.1,
+    "skip_validation": true
+  },
+  "scenario": {
+    "mode": "optix",
+    "result": {
+      "all_queries_reached_threshold": true,
+      "barnes_tree_depth": 8,
+      "build_count": 65536,
+      "hit_threshold": 4,
+      "matches_oracle": null,
+      "node_count": 65536,
+      "oracle_all_queries_reached_threshold": null,
+      "query_count": 20000000,
+      "radius": 0.1,
+      "threshold_reached_count": 20000000
+    },
+    "scenario": "barnes_hut_node_coverage",
+    "timings_sec": {
+      "input_build_sec": 61.6048953011632,
+      "optix_close_sec": 0.004144221544265747,
+      "optix_prepare_sec": 1.4152905121445656,
+      "optix_query_sec": {
+        "max_sec": 0.33974243700504303,
+        "median_sec": 0.23063642531633377,
+        "min_sec": 0.22362351417541504
+      },
+      "point_pack_sec": 27.08339834958315,
+      "python_postprocess_sec": {
+        "max_sec": 4.850327968597412e-06,
+        "median_sec": 3.166496753692627e-06,
+        "min_sec": 2.7194619178771973e-06
+      },
+      "validation_sec": {
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0
+      }
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1",
+  "source_commit": "58ca06f2573d53754663a2dd10a76207113ab044",
+  "source_commit_note": "Stamped from .rtdl_source_commit after run because Goal887 profiler does not embed RTDL_SOURCE_COMMIT. Runner log also records the same commit. Timing/result fields are unchanged."
+}

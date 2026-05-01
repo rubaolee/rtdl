@@ -1,9 +1,9 @@
 # Vulkan RT Backend: Design, Implementation, and Revision History
 
-**Project:** rtdl-latest  
-**Author:** Rubao Lee  
-**Date:** 2026-04-02  
-**Target hardware:** NVIDIA GeForce GTX 1070, driver 580.126.09, host 192.168.1.20  
+**Project:** rtdl-latest
+**Author:** Rubao Lee
+**Date:** 2026-04-02
+**Target hardware:** NVIDIA GeForce GTX 1070, driver 580.126.09, host 192.168.1.20
 
 ---
 

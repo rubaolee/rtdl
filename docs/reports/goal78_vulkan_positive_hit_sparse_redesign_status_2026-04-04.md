@@ -1,6 +1,6 @@
 # Goal 78 Status: Vulkan Positive-Hit Sparse Redesign
 
-**Date:** 2026-04-04  
+**Date:** 2026-04-04
 **Status:** Accepted redesign; hardware-backed validation still pending
 
 ---

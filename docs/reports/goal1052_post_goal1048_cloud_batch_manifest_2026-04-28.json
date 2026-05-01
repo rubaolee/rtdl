@@ -1,0 +1,581 @@
+{
+  "bootstrap_command": [
+    "python3",
+    "scripts/goal763_rtx_cloud_bootstrap_check.py",
+    "--output-json",
+    "docs/reports/goal1052_post_goal1048_cloud_batch/goal763_rtx_cloud_bootstrap_check.json"
+  ],
+  "boundary": "This manifest prepares cloud execution only. It does not run cloud, authorize release, or authorize new public RTX speedup wording.",
+  "date": "2026-04-28",
+  "diagnostic_validation_reruns": [
+    {
+      "allowed_claim_today": "bounded prepared facility service-coverage decision sub-path may enter claim review; no KNN assignment or ranking speedup claim",
+      "app": "facility_knn_assignment",
+      "app_path": "examples/rtdl_facility_knn_assignment.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for facility_knn_assignment:coverage_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "diagnostic_validation_rerun",
+      "benchmark_contract": "coverage_threshold_prepared decision mode has an RTX phase artifact and same-scale CPU oracle parity for the bounded service-coverage decision",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for facility service-coverage decisions",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "facility_service_coverage",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "1.0",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/coverage_threshold_prepared.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": true,
+      "non_claim": "not a ranked nearest-depot, KNN fallback-assignment, or facility-location optimizer claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Explicit coverage_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for service-coverage decisions only; ranked nearest-depot assignment remains outside the OptiX claim.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/coverage_threshold_prepared.json",
+      "path_name": "coverage_threshold_prepared",
+      "preconditions": [
+        "Use the prepared coverage-threshold profiler, not KNN ranking output.",
+        "Interpret with the Goal887 RTX artifact and Goal920 same-scale CPU oracle baseline.",
+        "Do not start a pod only for this app; rerun only in a consolidated regression batch."
+      ],
+      "readiness_blocker": "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
+      "readiness_next_goal": "Goal887/Goal920/Goal1058",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "allowed_claim_today": "prepared ray/triangle any-hit scalar pose-count sub-path may enter claim review; no full robot-planning speedup claim",
+      "app": "robot_collision_screening",
+      "app_path": "examples/rtdl_robot_collision_screening_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "scalar pose-count collision screening only; not full robot planning, kinematics, CCD, or witness-row output",
+        "comparable_metric_scope": "prepared scalar colliding-pose count for the same poses, edges, obstacles, and iteration policy",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_pose_count",
+          "embree_anyhit_pose_count_or_equivalent_compact_summary"
+        ],
+        "required_phases": [
+          "pose_and_obstacle_generation",
+          "ray_pack",
+          "backend_scene_prepare",
+          "pose_index_prepare",
+          "native_anyhit_query",
+          "scalar_copyback",
+          "oracle_validation_separate"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "diagnostic_validation_rerun",
+      "benchmark_contract": "RTX timing must split prepared-scene build/reuse, ray buffer packing, OptiX traversal, compact output, and oracle validation",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "prepared OptiX ray/triangle any-hit pose-flag summary",
+      "command": [
+        "python3",
+        "scripts/goal760_optix_robot_pose_flags_phase_profiler.py",
+        "--mode",
+        "optix",
+        "--pose-count",
+        "4096",
+        "--obstacle-count",
+        "256",
+        "--iterations",
+        "3",
+        "--input-mode",
+        "python_objects",
+        "--result-mode",
+        "pose_flags",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": true,
+      "non_claim": "not continuous collision detection, full robot kinematics, or mesh-engine replacement",
+      "optix_performance_class": "optix_traversal",
+      "optix_performance_note": "Uses OptiX ray/triangle any-hit traversal and is the best current OptiX flagship candidate; compact row-output modes avoid returning full witness rows, while prepared scalar hit-count and prepared native pose-flag summary modes report native continuation and avoid per-ray row materialization. Edge witnesses still require row mode.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_pose_flags.json",
+      "path_name": "prepared_pose_flags",
+      "preconditions": [
+        "OptiX ray/triangle any-hit prepared symbols must be exported.",
+        "Use the phase profiler rather than raw app CLI timing for final claim review.",
+        "This diagnostic rerun must not include --skip-validation.",
+        "Use python_objects input mode because packed_arrays currently rejects oracle validation.",
+        "Use pose_flags result mode because pose_count currently rejects oracle validation."
+      ],
+      "readiness_blocker": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
+      "readiness_next_goal": "Goal795/Goal1058",
+      "scale": {
+        "iterations": 3,
+        "obstacle_count": 256,
+        "pose_count": 4096
+      }
+    }
+  ],
+  "global_preconditions": [
+    "RTX-class NVIDIA GPU with RT cores; do not use GTX 1070-class hardware for claims.",
+    "OptiX backend built from the checked-out commit before timing.",
+    "RTDL_SOURCE_COMMIT exported and non-empty before running any command.",
+    "Bootstrap check passes before app commands.",
+    "Diagnostic rerun rows must not include --skip-validation."
+  ],
+  "goal": "Goal1052 post-Goal1048 cloud batch manifest",
+  "policy": "Do not start or stop a cloud pod per app. Run this as one batched session, copy artifacts after each row or small group, and stop the pod before local review.",
+  "purpose": "One-pod post-Goal1048 RTX command manifest. It prioritizes validation-enabled reruns for diagnostic-only facility and robot paths, then packages remaining not-reviewed rows for same-semantics review evidence.",
+  "same_semantics_review_candidates": [
+    {
+      "allowed_claim_today": "prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim",
+      "app": "database_analytics",
+      "app_path": "examples/rtdl_database_analytics_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_compact_summary",
+          "embree_compact_summary",
+          "postgresql_same_semantics_on_linux_when_available"
+        ],
+        "required_phases": [
+          "input_pack_or_table_build",
+          "backend_prepare",
+          "native_query",
+          "copyback_or_materialization",
+          "python_summary_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_contract": "Goal941 provides real RTX compact-summary artifacts with native DB phase totals, strict output mode, and no row materialization operations for sales_risk and regional_dashboard",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "sales_risk",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_sales_risk.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_sales_risk.json",
+      "path_name": "prepared_db_session_sales_risk",
+      "preconditions": [
+        "OptiX DB backend must be available.",
+        "Use prepared-session profiler, not only one-shot CLI timing."
+      ],
+      "readiness_blocker": "DB claims must stay limited to compact-summary prepared sub-paths; no SQL engine, DBMS, full dashboard, row-materializing, or broad whole-app speedup claim is allowed",
+      "readiness_next_goal": "Goal921/Goal941",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "allowed_claim_today": "prepared DB compact-summary traversal/filter/grouping sub-path may enter claim review; no DBMS or SQL-engine speedup claim",
+      "app": "database_analytics",
+      "app_path": "examples/rtdl_database_analytics_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "prepared DB sub-path only; not a DBMS or SQL-engine speedup claim",
+        "comparable_metric_scope": "compact_summary prepared DB query result for the same scenario/copies/iterations",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_compact_summary",
+          "embree_compact_summary",
+          "postgresql_same_semantics_on_linux_when_available"
+        ],
+        "required_phases": [
+          "input_pack_or_table_build",
+          "backend_prepare",
+          "native_query",
+          "copyback_or_materialization",
+          "python_summary_postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_contract": "Goal941 provides real RTX compact-summary artifacts with native DB phase totals, strict output mode, and no row materialization operations for sales_risk and regional_dashboard",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "prepared OptiX DB session behavior and Python/interface cost split",
+      "command": [
+        "python3",
+        "scripts/goal756_db_prepared_session_perf.py",
+        "--backend",
+        "optix",
+        "--scenario",
+        "regional_dashboard",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--output-mode",
+        "compact_summary",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_regional_dashboard.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not a SQL engine claim and not a broad RTX RT-core app speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Uses real OptiX DB BVH candidate discovery and native C++ exact filtering/grouping. App-level performance is still limited by Python/ctypes preparation, candidate bitset copy-back, grouped-row decoding, and row materialization unless materialization-free compact_summary is selected; native-continuation metadata is active only for compact DB summaries that avoid row/group materialization.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_db_session_regional_dashboard.json",
+      "path_name": "prepared_db_session_regional_dashboard",
+      "preconditions": [
+        "OptiX DB backend must be available.",
+        "Use prepared-session profiler, not only one-shot CLI timing."
+      ],
+      "readiness_blocker": "DB claims must stay limited to compact-summary prepared sub-paths; no SQL engine, DBMS, full dashboard, row-materializing, or broad whole-app speedup claim is allowed",
+      "readiness_next_goal": "Goal921/Goal941",
+      "scale": {
+        "copies": 20000,
+        "iterations": 10
+      }
+    },
+    {
+      "activation_gate": "Regression artifact must pass strict mode on RTX hardware for visibility, native BFS graph-ray, and native triangle graph-ray; higher-level graph-system exclusions must remain explicit and independent review must accept the artifact.",
+      "app": "graph_analytics",
+      "app_path": "examples/rtdl_graph_analytics_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded graph RT sub-paths only: visibility any-hit plus BFS/triangle candidate generation; not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration",
+        "comparable_metric_scope": "strict graph visibility-edge, native BFS graph-ray, and native triangle-count graph-ray row-digest results for the same copies semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference_visibility_edges",
+          "cpu_python_reference_bfs",
+          "cpu_python_reference_triangle_count",
+          "optix_visibility_anyhit",
+          "optix_native_graph_ray_bfs",
+          "optix_native_graph_ray_triangle_count",
+          "embree_graph_ray_bfs_and_triangle_when_available"
+        ],
+        "required_phases": [
+          "records",
+          "row_digest",
+          "strict_pass",
+          "strict_failures",
+          "status"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "OptiX prepared ray/triangle any-hit count for graph visibility-edge summary filtering plus native OptiX graph-ray traversal candidate generation for BFS and triangle-count",
+      "command": [
+        "python3",
+        "scripts/goal889_graph_visibility_optix_gate.py",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "0",
+        "--strict",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/graph_visibility_edges_gate.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not shortest-path, graph database, distributed graph analytics, or whole-app graph-system acceleration; BFS visited/frontier bookkeeping and triangle set-intersection remain outside RT traversal",
+      "optix_performance_class": "optix_traversal",
+      "optix_performance_note": "Explicit visibility_edges mode maps candidate graph edges to ray/triangle any-hit traversal; summary mode uses prepared any-hit count to avoid row materialization. Embree BFS/triangle-count are ray-traversal candidate-generation paths; OptiX BFS and triangle_count now have an explicit native graph-ray mode behind RTDL_OPTIX_GRAPH_MODE=native, and graph summary mode uses native C++ continuation after rows are produced. The default remains host-indexed until RTX validation.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/graph_visibility_edges_gate.json",
+      "path_name": "graph_visibility_edges_gate",
+      "reason_deferred": "Goal929 passed this bounded graph gate on RTX 3090. Keep the command available for consolidated regression reruns: visibility maps candidate graph edges to a prepared OptiX any-hit count summary, while BFS and triangle-count use explicit native OptiX graph-ray mode for candidate generation."
+    },
+    {
+      "activation_gate": "Re-enter claim review only after native-kernel tuning shows competitive timing while the default host-indexed path remains clearly separated.",
+      "app": "road_hazard_screening",
+      "app_path": "examples/rtdl_road_hazard_screening.py",
+      "baseline_review_contract": {
+        "claim_limit": "experimental prepared road-hazard summary gate only; not default public app behavior or full GIS/routing speedup",
+        "comparable_metric_scope": "prepared road-hazard native OptiX summary result on the same copies and priority-threshold semantics",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_same_semantics",
+          "postgis_when_available"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "optix_prepare_sec",
+          "optix_query_sec",
+          "python_postprocess_sec",
+          "validation_sec",
+          "optix_close_sec"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "native OptiX segment/polygon traversal for compact road-hazard summaries",
+      "command": [
+        "python3",
+        "scripts/goal933_prepared_segment_polygon_optix_profiler.py",
+        "--scenario",
+        "road_hazard_prepared_summary",
+        "--copies",
+        "20000",
+        "--iterations",
+        "5",
+        "--mode",
+        "run",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not default public road-hazard behavior and not a full GIS/routing speedup claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default segment/polygon OptiX app path remains conservative, but the prepared road-hazard summary profiler reuses a polygon BVH and runs native OptiX custom-AABB segment/polygon traversal for compact hazard summaries.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json",
+      "path_name": "road_hazard_native_summary_gate",
+      "reason_deferred": "Goal929 proved strict native road-hazard parity on RTX 3090, but native timing was slower than CPU. Goal933 now measures a prepared polygon-BVH path so warm query time is separated from setup."
+    },
+    {
+      "activation_gate": "Regression artifacts must keep phases separated and top-level claims limited to candidate discovery.",
+      "app": "polygon_pair_overlap_area_rows",
+      "app_path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact area continuation",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "native_exact_continuation_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "pair_overlap",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "100",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell area continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU polygon-area kernel.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json",
+      "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate",
+      "reason_deferred": "Goal929 proved phase-separated RTX candidate-discovery timing, exact continuation timing, and parity for this native-assisted polygon overlap sub-path. Keep this command for consolidated regression reruns."
+    },
+    {
+      "activation_gate": "Regression artifacts must keep chunk-copies=20 unless larger chunks are fixed, phases separated, and top-level claims limited to candidate discovery.",
+      "app": "polygon_set_jaccard",
+      "app_path": "examples/rtdl_polygon_set_jaccard.py",
+      "baseline_review_contract": {
+        "claim_limit": "native-assisted candidate-discovery plus native exact continuation path only; no full app RTX speedup claim without same-semantics review",
+        "comparable_metric_scope": "native-assisted OptiX LSI/PIP candidate-discovery phase plus native C++ exact Jaccard continuation",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_python_reference",
+          "embree_native_assisted_candidate_discovery",
+          "postgis_when_available_for_same_unit_cell_contract"
+        ],
+        "required_phases": [
+          "input_build_sec",
+          "cpu_reference_sec",
+          "optix_candidate_discovery_sec",
+          "cpu_exact_refinement_sec",
+          "native_exact_continuation_sec",
+          "parity_vs_cpu",
+          "rt_core_candidate_discovery_active"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-set Jaccard",
+      "command": [
+        "python3",
+        "scripts/goal877_polygon_overlap_optix_phase_profiler.py",
+        "--app",
+        "jaccard",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--output-mode",
+        "summary",
+        "--validation-mode",
+        "analytic_summary",
+        "--chunk-copies",
+        "20",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not a monolithic GPU Jaccard kernel and not a full app RTX speedup claim",
+      "optix_performance_class": "python_interface_dominated",
+      "optix_performance_note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json",
+      "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate",
+      "reason_deferred": "Goal929 proved phase-separated RTX candidate-discovery timing, exact continuation timing, and parity for this native-assisted Jaccard sub-path at chunk-copies=20. Keep this command for consolidated regression reruns."
+    },
+    {
+      "activation_gate": "Promote only after a Goal879 RTX artifact separates prepare/query/postprocess and is reviewed against same-semantics threshold baselines.",
+      "app": "hausdorff_distance",
+      "app_path": "examples/rtdl_hausdorff_distance_app.py",
+      "baseline_review_contract": {
+        "claim_limit": "bounded sub-path only",
+        "comparable_metric_scope": "same app/path semantics for hausdorff_distance:directed_threshold_prepared",
+        "forbidden_comparison": "Do not compare a scalar/prepared RTX sub-path against a whole-app, row-output, validation-included, or different-result-mode baseline.",
+        "minimum_repeated_runs": 3,
+        "required_baselines": [
+          "cpu_oracle_same_semantics",
+          "best_available_non_optix_backend_same_semantics"
+        ],
+        "required_phases": [
+          "input_build",
+          "backend_prepare",
+          "native_query",
+          "materialization_or_copyback",
+          "postprocess"
+        ],
+        "requires_correctness_parity": true,
+        "requires_phase_separation": true,
+        "status": "required_before_public_speedup_claim"
+      },
+      "batch": "same_semantics_review_candidate",
+      "benchmark_readiness": "ready_for_rtx_claim_review",
+      "claim_scope": "prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "hausdorff_threshold",
+        "--mode",
+        "optix",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--radius",
+        "0.4",
+        "--output-json",
+        "docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json"
+      ],
+      "contains_skip_validation": false,
+      "env": {},
+      "force_validation_enabled": false,
+      "non_claim": "not an exact Hausdorff distance, KNN-row, or nearest-neighbor ranking speedup claim",
+      "optix_performance_class": "optix_traversal_prepared_summary",
+      "optix_performance_note": "Default exact-distance mode uses KNN rows through CUDA-style kernels; explicit directed_threshold_prepared mode uses prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions only.",
+      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json",
+      "path_name": "directed_threshold_prepared",
+      "reason_deferred": "Goal879 exposes a prepared OptiX threshold-decision sub-path, but a phase profiler and same-semantics RTX artifact are still required."
+    }
+  ],
+  "source_manifests": [
+    "docs/reports/goal1051_post_goal1048_followup_plan_2026-04-28.json",
+    "scripts/goal759_rtx_cloud_benchmark_manifest.py",
+    "docs/rtx_cloud_single_session_runbook.md"
+  ],
+  "summary": {
+    "diagnostic_rerun_count": 2,
+    "diagnostic_without_validation": [],
+    "duplicate_output_json": [],
+    "same_semantics_review_candidate_count": 7,
+    "total_command_count": 9
+  },
+  "valid": true
+}

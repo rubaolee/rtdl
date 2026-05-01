@@ -22,4 +22,3 @@ Gemini Flash agrees with the key Goal671 boundary:
 - The API is correctness-ready.
 - Dense-workload performance is not closed.
 - The report must not claim an OptiX speedup from this implementation.
-

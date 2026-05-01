@@ -1,0 +1,81 @@
+{
+  "boundary": "This bootstrap check verifies cloud build/test readiness. It does not run performance benchmarks and does not authorize RTX speedup claims.",
+  "dry_run": true,
+  "preflight": {
+    "cuda_header_exists": false,
+    "cuda_prefix": "/usr/local/cuda",
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "output_tail": "be444ffead8b5c60c57a8a11bbed2508cb0b61bd\n",
+      "returncode": 0
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": " M docs/reports/goal759_rtx_cloud_benchmark_manifest_2026-04-22.json\n M scripts/goal756_db_prepared_session_perf.py\n M scripts/goal757_optix_fixed_radius_prepared_perf.py\n M scripts/goal759_rtx_cloud_benchmark_manifest.py\n M tests/goal756_db_prepared_session_perf_test.py\n M tests/goal759_rtx_cloud_benchmark_manifest_test.py\n?? docs/reports/goal761_gemini_flash_review_2026-04-22.md\n?? docs/reports/goal761_pre_cloud_rtx_readiness_2026-04-22.md\n?? docs/reports/goal761_rtx_cloud_run_all_dry_run_2026-04-22.json\n?? docs/reports/goal762_post_cloud_artifact_analyzer_2026-04-22.md\n?? docs/reports/goal762_rtx_cloud_artifact_report_dry_run_2026-04-22.json\n?? docs/reports/goal762_rtx_cloud_artifact_report_dry_run_2026-04-22.md\n?? scripts/goal761_rtx_cloud_run_all.py\n?? scripts/goal762_rtx_cloud_artifact_report.py\n?? scripts/goal763_rtx_cloud_bootstrap_check.py\n?? tests/goal761_rtx_cloud_run_all_test.py\n?? tests/goal762_rtx_cloud_artifact_report_test.py\n?? tests/goal763_rtx_cloud_bootstrap_check_test.py\n",
+      "returncode": 0
+    },
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_exists": false,
+    "nvcc_version": null,
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "output_tail": "[Errno 2] No such file or directory: 'nvidia-smi'",
+      "returncode": -1
+    },
+    "optix_header_exists": false,
+    "optix_prefix": "/Users/rl2025/vendor/optix-dev"
+  },
+  "preflight_blockers": [],
+  "skip_build": false,
+  "skip_tests": false,
+  "status": "ok",
+  "steps": [
+    {
+      "name": "build_optix",
+      "result": {
+        "command": [
+          "make",
+          "build-optix",
+          "OPTIX_PREFIX=/Users/rl2025/vendor/optix-dev",
+          "CUDA_PREFIX=/usr/local/cuda",
+          "NVCC=/usr/local/cuda/bin/nvcc"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "name": "native_optix_focused_tests",
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.goal671_optix_prepared_anyhit_count_test",
+          "tests.goal757_prepared_optix_fixed_radius_count_test",
+          "tests.goal760_optix_robot_pose_flags_phase_profiler_test"
+        ],
+        "elapsed_sec": 0.0,
+        "returncode": 0,
+        "status": "dry_run",
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "suite": "goal763_rtx_cloud_bootstrap_check"
+}

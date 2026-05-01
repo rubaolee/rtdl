@@ -239,6 +239,33 @@ struct RtdlDbGroupedSumRow {
     int64_t sum;
 };
 
+constexpr uint32_t kRtdlDbCompactSummaryScanCount = 1u;
+constexpr uint32_t kRtdlDbCompactSummaryGroupedCount = 2u;
+constexpr uint32_t kRtdlDbCompactSummaryGroupedSum = 3u;
+
+struct RtdlDbCompactSummaryRequest {
+    uint32_t operation;
+    const RtdlDbClause* clauses;
+    size_t clause_count;
+    const char* group_key_field;
+    const char* value_field;
+};
+
+struct RtdlDbCompactSummaryResult {
+    uint32_t operation;
+    size_t scalar_value;
+    RtdlDbGroupedCountRow* count_rows;
+    size_t count_row_count;
+    RtdlDbGroupedSumRow* sum_rows;
+    size_t sum_row_count;
+    double traversal;
+    double bitset_copyback;
+    double exact_filter;
+    double output_pack;
+    size_t raw_candidate_count;
+    size_t emitted_count;
+};
+
 struct RtdlOptixDbDataset;
 
 int  rtdl_optix_get_version(int* major_out, int* minor_out, int* patch_out);
@@ -308,6 +335,26 @@ int  rtdl_optix_pose_flags_prepared_ray_anyhit_2d_packed(
          uint32_t* pose_flags_out,
          size_t pose_count,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_pose_indices_2d(
+         const uint32_t* pose_indices,
+         size_t pose_index_count,
+         void** pose_indices_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_pose_flags_prepared_ray_anyhit_2d_prepared_indices(
+         void* prepared,
+         void* prepared_rays,
+         void* prepared_pose_indices,
+         uint32_t* pose_flags_out,
+         size_t pose_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_poses_prepared_ray_anyhit_2d_prepared_indices(
+         void* prepared,
+         void* prepared_rays,
+         void* prepared_pose_indices,
+         size_t pose_count,
+         size_t* colliding_pose_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_pose_indices_2d(void* prepared_pose_indices);
 void rtdl_optix_destroy_prepared_rays_2d(void* prepared_rays);
 int  rtdl_optix_run_segment_polygon_hitcount(
          const RtdlSegment*   segments,  size_t segment_count,
@@ -315,12 +362,56 @@ int  rtdl_optix_run_segment_polygon_hitcount(
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_segment_polygon_hitcount_2d(
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_polygon_hitcount_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         RtdlSegmentPolygonHitCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_segment_polygon_hitcount_at_least_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         uint32_t threshold,
+         size_t* count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_aggregate_prepared_segment_polygon_hitcount_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         uint32_t positive_threshold,
+         size_t* row_count_out,
+         uint64_t* hit_sum_out,
+         size_t* positive_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_segment_polygon_hitcount_2d(void* prepared);
 int  rtdl_optix_run_segment_polygon_anyhit_rows(
          const RtdlSegment*   segments,  size_t segment_count,
          const RtdlPolygonRef* polygons, size_t polygon_count,
          const double* vertices_xy,      size_t vertex_xy_count,
          RtdlSegmentPolygonAnyHitRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_run_segment_polygon_anyhit_rows_native_bounded(
+         const RtdlSegment*   segments,  size_t segment_count,
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_segment_polygon_anyhit_rows_2d(
+         const RtdlPolygonRef* polygons, size_t polygon_count,
+         const double* vertices_xy,      size_t vertex_xy_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_polygon_anyhit_rows_2d(
+         void* prepared,
+         const RtdlSegment* segments, size_t segment_count,
+         RtdlSegmentPolygonAnyHitRow* rows_out, size_t output_capacity,
+         size_t* emitted_count_out, uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_segment_polygon_anyhit_rows_2d(void* prepared);
 int  rtdl_optix_run_point_nearest_segment(
          const RtdlPoint*   points,   size_t point_count,
          const RtdlSegment* segments, size_t segment_count,
@@ -358,6 +449,13 @@ int  rtdl_optix_run_prepared_fixed_radius_count_threshold_2d(
          double radius,
          size_t threshold,
          RtdlFixedRadiusCountRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_fixed_radius_threshold_reached_2d(
+         void* prepared,
+         const RtdlPoint* query_points, size_t query_count,
+         double radius,
+         size_t threshold,
+         size_t* threshold_reached_count_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_fixed_radius_count_threshold_2d(void* prepared);
 int  rtdl_optix_run_knn_rows(
@@ -427,6 +525,11 @@ int  rtdl_optix_db_dataset_conjunctive_scan(
          const RtdlDbClause* clauses, size_t clause_count,
          RtdlDbRowIdRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_db_dataset_conjunctive_scan_count(
+         RtdlOptixDbDataset* dataset,
+         const RtdlDbClause* clauses, size_t clause_count,
+         size_t* row_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_db_dataset_grouped_count(
          RtdlOptixDbDataset* dataset,
          const RtdlDbClause* clauses, size_t clause_count,
@@ -440,6 +543,23 @@ int  rtdl_optix_db_dataset_grouped_sum(
          const char* value_field,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_db_dataset_compact_summary_batch(
+         RtdlOptixDbDataset* dataset,
+         const RtdlDbCompactSummaryRequest* requests,
+         size_t request_count,
+         RtdlDbCompactSummaryResult** results_out,
+         size_t* result_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_db_compact_summary_results_destroy(
+         RtdlDbCompactSummaryResult* results,
+         size_t result_count);
+int  rtdl_optix_db_get_last_phase_timings(
+         double* traversal_out,
+         double* bitset_copy_out,
+         double* exact_filter_out,
+         double* output_pack_out,
+         size_t* raw_candidate_count_out,
+         size_t* emitted_count_out);
 int  rtdl_optix_get_last_phase_timings(
          double* bvh_build_out,
          double* traversal_out,

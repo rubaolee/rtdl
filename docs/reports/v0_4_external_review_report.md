@@ -1,6 +1,6 @@
 # RTDL v0.4 External Review Report
 
-**Date**: 2026-04-11  
+**Date**: 2026-04-11
 **Verdict**: **Technically Ready for Release**
 
 ## Summary

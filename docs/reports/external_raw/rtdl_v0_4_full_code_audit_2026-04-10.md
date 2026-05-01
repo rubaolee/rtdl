@@ -1,8 +1,8 @@
 # RTDL v0.4 Full Code Audit
-**Date:** 2026-04-10  
-**Auditor:** Claude Sonnet 4.6  
-**Scope:** All code added or modified since v0.3.0 release (`6fa4167`)  
-**Working directory:** `/Users/rl2025/claude-work/rtdl_review_2026-04-10-b`  
+**Date:** 2026-04-10
+**Auditor:** Claude Sonnet 4.6
+**Scope:** All code added or modified since v0.3.0 release (`6fa4167`)
+**Working directory:** `/Users/rl2025/claude-work/rtdl_review_2026-04-10-b`
 **Tip commit:** `767cbbf Preserve external Goal 201 review artifacts`
 
 ---
@@ -488,8 +488,8 @@ nearest-neighbor scaling note"` — no benchmark-win claim. Clean.
 
 ## Tests Added During This Audit
 
-**File:** `tests/goal_audit_knn_rows_contract_test.py`  
-**Count:** 36 tests across 9 classes  
+**File:** `tests/goal_audit_knn_rows_contract_test.py`
+**Count:** 36 tests across 9 classes
 **All pass:** Yes (`Ran 36 tests in 0.011s, OK`)
 
 | Class | Tests | What is covered |
@@ -517,52 +517,52 @@ These tests close contract audit gaps that were not previously covered:
 
 ### F-1: `reference.py` missing query_id sort (FIXED)
 
-**Severity:** Correctness — contract violation  
-**Location:** `fixed_radius_neighbors_cpu` in `reference.py`  
+**Severity:** Correctness — contract violation
+**Location:** `fixed_radius_neighbors_cpu` in `reference.py`
 **Description:** The Python reference returned rows in input query order
-rather than query_id ascending order, violating the documented contract.  
-**Fix:** Added `rows.sort(key=lambda row: row["query_id"])` before return.  
+rather than query_id ascending order, violating the documented contract.
+**Fix:** Added `rows.sort(key=lambda row: row["query_id"])` before return.
 **Status:** Fixed in `rtdl_review_2026-04-10` session; current `rtdl_review_2026-04-10-b`
 is correct.
 
 ### F-2: `rtdl_oracle_api.cpp` missing query_id sort (FIXED)
 
-**Severity:** Correctness — contract violation  
-**Location:** `rtdl_oracle_run_fixed_radius_neighbors` in `rtdl_oracle_api.cpp`  
+**Severity:** Correctness — contract violation
+**Location:** `rtdl_oracle_run_fixed_radius_neighbors` in `rtdl_oracle_api.cpp`
 **Description:** C oracle returned rows in input query order for
-`fixed_radius_neighbors`, violating the query_id-ascending contract.  
-**Fix:** Added `std::stable_sort` by `query_id` after all rows collected.  
+`fixed_radius_neighbors`, violating the query_id-ascending contract.
+**Fix:** Added `std::stable_sort` by `query_id` after all rows collected.
 **Status:** Fixed in `rtdl_review_2026-04-10` session; current `rtdl_review_2026-04-10-b`
 is correct.
 
 ### F-3: `rtdl_embree_api.cpp` missing `g_query_kind` set (FIXED IN HISTORY)
 
-**Severity:** Correctness — silent zero-row behavior  
-**Location:** `rtdl_embree_run_fixed_radius_neighbors`, `rtdl_embree_api.cpp`  
+**Severity:** Correctness — silent zero-row behavior
+**Location:** `rtdl_embree_run_fixed_radius_neighbors`, `rtdl_embree_api.cpp`
 **Description:** An earlier version of the Embree dispatch function did not
 set `g_query_kind = QueryKind::kFixedRadiusNeighbors` before calling
 `rtcPointQuery`, causing the callback to fall through to the knn_rows path
-which has no radius filter, producing wrong results.  
-**Fix:** Applied in commit `ffc38d8 Align Embree radius check with Goal 200 contract`.  
+which has no radius filter, producing wrong results.
+**Fix:** Applied in commit `ffc38d8 Align Embree radius check with Goal 200 contract`.
 **Status:** Fixed in repository history. Not present in `rtdl_review_2026-04-10-b`.
 
 ### F-4: `rtdl_embree_scene.cpp` radius epsilon overshoot (FIXED IN HISTORY)
 
-**Severity:** Correctness — over-inclusive boundary  
-**Location:** `point_point_query_collect` callback  
+**Severity:** Correctness — over-inclusive boundary
+**Location:** `point_point_query_collect` callback
 **Description:** Early Embree callback used `distance <= radius + 1.0e-12`,
-which admitted points strictly outside the contracted radius boundary.  
-**Fix:** Applied in commit `ffc38d8`. Current code uses exact `distance <= radius`.  
+which admitted points strictly outside the contracted radius boundary.
+**Fix:** Applied in commit `ffc38d8`. Current code uses exact `distance <= radius`.
 **Status:** Fixed in repository history. Not present in `rtdl_review_2026-04-10-b`.
 
 ### F-5: `RtdlKnnNeighborRow.k` naming (MINOR, NOT FIXED)
 
-**Severity:** Cosmetic — field name mismatch  
-**Location:** `rtdl_oracle_abi.h`, `RtdlKnnNeighborRow` struct  
+**Severity:** Cosmetic — field name mismatch
+**Location:** `rtdl_oracle_abi.h`, `RtdlKnnNeighborRow` struct
 **Description:** The field that carries neighbor rank is named `k` in the
 C struct but `neighbor_rank` in the Python binding and output rows. No runtime
-error because both sides use the same `uint32_t` type and struct field ordering.  
-**Suggestion:** Rename `k` → `neighbor_rank` in a future maintenance pass.  
+error because both sides use the same `uint32_t` type and struct field ordering.
+**Suggestion:** Rename `k` → `neighbor_rank` in a future maintenance pass.
 **Status:** Open cosmetic issue, no action required for release.
 
 ---

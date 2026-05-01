@@ -1,0 +1,328 @@
+{
+  "active_apps": [
+    "database_analytics",
+    "dbscan_clustering",
+    "event_hotspot_screening",
+    "facility_knn_assignment",
+    "outlier_detection",
+    "robot_collision_screening",
+    "service_coverage_gaps"
+  ],
+  "active_manifest_entry_count": 8,
+  "app_rows": [
+    {
+      "app": "database_analytics",
+      "manifest_bucket_count": 2,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "prepared_db_session_sales_risk",
+        "prepared_db_session_regional_dashboard"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "graph_analytics",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "graph_visibility_edges_gate"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "apple_rt_demo",
+      "manifest_bucket_count": 0,
+      "manifest_buckets": [],
+      "maturity": "not_nvidia_rt_core_target",
+      "path_names": [],
+      "public_wording": "not_nvidia_public_wording_target",
+      "readiness": "exclude_from_rtx_app_benchmark"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "prepared_gap_summary"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "prepared_count_summary"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "coverage_threshold_prepared"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "road_hazard_screening",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "road_hazard_native_summary_gate"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "segment_polygon_hitcount_native_experimental"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "segment_polygon_anyhit_rows_prepared_bounded_gate"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "polygon_pair_overlap_optix_native_assisted_phase_gate"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "polygon_set_jaccard_optix_native_assisted_phase_gate"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "hausdorff_distance",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "directed_threshold_prepared"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "ann_candidate_search",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "candidate_threshold_prepared"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "outlier_detection",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "prepared_fixed_radius_density_summary"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "dbscan_clustering",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "prepared_fixed_radius_core_flags"
+      ],
+      "public_wording": "public_wording_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "robot_collision_screening",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "active"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "prepared_pose_flags"
+      ],
+      "public_wording": "public_wording_blocked",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "manifest_bucket_count": 1,
+      "manifest_buckets": [
+        "deferred"
+      ],
+      "maturity": "rt_core_ready",
+      "path_names": [
+        "node_coverage_prepared"
+      ],
+      "public_wording": "public_wording_not_reviewed",
+      "readiness": "ready_for_rtx_claim_review"
+    },
+    {
+      "app": "hiprt_ray_triangle_hitcount",
+      "manifest_bucket_count": 0,
+      "manifest_buckets": [],
+      "maturity": "not_nvidia_rt_core_target",
+      "path_names": [],
+      "public_wording": "not_nvidia_public_wording_target",
+      "readiness": "exclude_from_rtx_app_benchmark"
+    }
+  ],
+  "boundary": "This pre-cloud audit checks readiness coverage only. It does not run cloud, tag, release, or authorize public RTX speedup claims.",
+  "cloud_policy": "Do not start a paid pod for one app. The next pod should run the manifest as one consolidated active+deferred regression/tuning batch after local checks are clean.",
+  "date": "2026-04-26",
+  "deferred_apps": [
+    "ann_candidate_search",
+    "barnes_hut_force_app",
+    "graph_analytics",
+    "hausdorff_distance",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "road_hazard_screening",
+    "segment_polygon_anyhit_rows",
+    "segment_polygon_hitcount"
+  ],
+  "deferred_manifest_entry_count": 9,
+  "duplicate_commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/goal757_optix_fixed_radius_prepared_perf.py",
+        "--copies",
+        "20000",
+        "--iterations",
+        "10",
+        "--result-mode",
+        "threshold_count",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal759_outlier_dbscan_fixed_radius_rtx.json"
+      ],
+      "path_names": [
+        "prepared_fixed_radius_density_summary",
+        "prepared_fixed_radius_core_flags"
+      ],
+      "reason": "runner may reuse duplicate command output in one paid session"
+    }
+  ],
+  "excluded_apps": [
+    "apple_rt_demo",
+    "graph_analytics",
+    "hiprt_ray_triangle_hitcount",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "road_hazard_screening",
+    "segment_polygon_anyhit_rows",
+    "segment_polygon_hitcount"
+  ],
+  "goal": "Goal1025 pre-cloud RTX app batch readiness",
+  "has_rtx_hardware_precondition": true,
+  "manifest_blocks_speedup_claims": true,
+  "manifest_boundary": "The manifest is a benchmark contract only. It does not authorize RTX speedup claims; claims require successful cloud runs, phase-clean evidence, and independent review.",
+  "manifest_global_preconditions": [
+    "Run on RTX-class NVIDIA hardware with RT cores, not GTX 1070.",
+    "Build the OptiX backend from the checked-out commit before timing.",
+    "Record GPU model, driver, CUDA, OptiX SDK, commit hash, and command output.",
+    "Keep validation/postprocess timing separate from native traversal where the profiler exposes it."
+  ],
+  "maturity_counts": {
+    "not_nvidia_rt_core_target": 2,
+    "rt_core_ready": 16
+  },
+  "missing_nvidia_targets": [],
+  "public_app_count": 18,
+  "public_wording_blocked_apps": [
+    "robot_collision_screening"
+  ],
+  "public_wording_counts": {
+    "not_nvidia_public_wording_target": 2,
+    "public_wording_blocked": 1,
+    "public_wording_not_reviewed": 8,
+    "public_wording_reviewed": 7
+  },
+  "public_wording_reviewed_apps": [
+    "ann_candidate_search",
+    "dbscan_clustering",
+    "facility_knn_assignment",
+    "outlier_detection",
+    "segment_polygon_anyhit_rows",
+    "segment_polygon_hitcount",
+    "service_coverage_gaps"
+  ],
+  "readiness_counts": {
+    "exclude_from_rtx_app_benchmark": 2,
+    "ready_for_rtx_claim_review": 16
+  },
+  "unexpected_non_nvidia_targets": [],
+  "valid": true
+}

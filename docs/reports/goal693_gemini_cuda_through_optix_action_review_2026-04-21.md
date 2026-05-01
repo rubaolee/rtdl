@@ -45,7 +45,7 @@ Across this group, the bottlenecks are highly consistent:
 ## 5. Honesty & Claims
 
 > [!WARNING]
-> **Prohibited Claims**: These applications must NOT claim NVIDIA RT-core acceleration today. 
+> **Prohibited Claims**: These applications must NOT claim NVIDIA RT-core acceleration today.
 > Because they do not use `rt.traverse` over BVHs for the dominant computation, they are purely "GPU-accelerated" via CUDA compute paths. Describing them as "RT-core accelerated OptiX apps" would be technically dishonest.
 
 ## 6. Verdict

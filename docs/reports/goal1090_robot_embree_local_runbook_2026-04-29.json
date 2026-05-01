@@ -1,0 +1,62 @@
+{
+  "boundary": "Goal1090 is a non-cloud robot baseline execution runbook. It does not run the heavy baseline, does not create cloud resources, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1090 robot Embree local baseline runbook",
+  "host_policy": "non_cloud_linux_or_windows_preferred",
+  "not_pod_work": true,
+  "scale_contract": {
+    "chunk_count": 180,
+    "chunk_pose_count": 200000,
+    "obstacle_count": 4096,
+    "pose_id_start_formula": "chunk_index * 200000 + 1",
+    "resume_controls": [
+      "RTDL_GOAL1085_START_CHUNK",
+      "RTDL_GOAL1085_END_CHUNK",
+      "RTDL_GOAL1085_SKIP_EXISTING"
+    ],
+    "total_pose_count": 36000000
+  },
+  "source_artifacts": [
+    "docs/reports/goal1085_robot_chunked_embree_baseline_packet_2026-04-29.json",
+    "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json",
+    "docs/reports/goal1089_robot_chunk_pose_id_offset_update_2026-04-29.md"
+  ],
+  "steps": [
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py --backend embree --pose-count 1000 --obstacle-count 128 --iterations 1 --worker-count 1 --pose-id-start 1 --output-json build/goal1090_robot_embree_smoke.json",
+      "heavy": false,
+      "name": "smoke_one_small_embree_chunk",
+      "purpose": "Verify local Embree/native baseline plumbing before starting the heavy 180-chunk run."
+    },
+    {
+      "command": "RTDL_GOAL1085_START_CHUNK=0 RTDL_GOAL1085_END_CHUNK=0 RTDL_GOAL1085_SKIP_EXISTING=1 bash scripts/goal1085_robot_chunked_embree_baseline_runner.sh",
+      "heavy": true,
+      "name": "run_one_real_chunk",
+      "purpose": "Run one claim-scale chunk and confirm it writes the expected chunk artifact."
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal1086_robot_chunked_embree_baseline_intake.py",
+      "heavy": false,
+      "name": "intake_after_partial_or_full_run",
+      "purpose": "Aggregate present chunks and report missing/invalid chunk indices without authorizing claims."
+    },
+    {
+      "command": "RTDL_GOAL1085_SKIP_EXISTING=1 bash scripts/goal1085_robot_chunked_embree_baseline_runner.sh",
+      "heavy": true,
+      "name": "run_remaining_chunks_when_host_is_available",
+      "purpose": "Complete the same-total-work non-cloud Embree baseline over all 36M pose ids."
+    },
+    {
+      "command": "PYTHONPATH=src:. python3 scripts/goal1086_robot_chunked_embree_baseline_intake.py",
+      "heavy": false,
+      "name": "final_intake",
+      "purpose": "Produce complete aggregate evidence after all 180 chunks exist."
+    }
+  ],
+  "summary": {
+    "heavy_step_count": 2,
+    "public_speedup_claim_authorized_count": 0,
+    "step_count": 5
+  },
+  "valid": true
+}

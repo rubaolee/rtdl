@@ -127,4 +127,3 @@ Goal 672 does not remove Goal 671's finding that the unpacked prepared-count pat
 - Replace global hit-count atomics with lower-contention per-block aggregation or bitset/popcount.
 - Add a benchmark script with multiple densities and scales.
 - Consider the same prepared+packed scalar contract for Vulkan and HIPRT if their APIs make persistent ray buffers practical.
-

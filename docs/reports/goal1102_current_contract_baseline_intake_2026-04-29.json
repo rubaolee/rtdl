@@ -1,0 +1,51 @@
+{
+  "artifact_set_complete": true,
+  "baseline_dir": "docs/reports/goal1101_current_contract_non_optix_baselines",
+  "boundary": "Goal1102 intakes current-contract non-OptiX baseline artifacts only. It does not authorize public RTX speedup claims. Even a fully OK intake still requires 2+ AI review and a separate public wording gate.",
+  "date": "2026-04-29",
+  "goal": "Goal1102 current-contract baseline intake",
+  "overall_status": "ready_for_2ai_baseline_review_not_public_claim",
+  "rows": [
+    {
+      "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
+      "issues": [],
+      "name": "facility_cpu_oracle",
+      "native_query_median_sec": 8.996512651909143,
+      "public_speedup_claim_authorized": false,
+      "status": "ok"
+    },
+    {
+      "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
+      "issues": [],
+      "name": "facility_embree",
+      "native_query_median_sec": 29.806780943996273,
+      "public_speedup_claim_authorized": false,
+      "status": "ok"
+    },
+    {
+      "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_4096_embree_validation_baseline.json",
+      "issues": [],
+      "name": "barnes_hut_validation_embree",
+      "native_query_median_sec": 0.010342210996896029,
+      "public_speedup_claim_authorized": false,
+      "status": "ok"
+    },
+    {
+      "artifact_path": "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
+      "issues": [],
+      "name": "barnes_hut_timing_embree",
+      "native_query_median_sec": 53.46586970437784,
+      "public_speedup_claim_authorized": false,
+      "status": "ok"
+    }
+  ],
+  "summary": {
+    "blocked_count": 0,
+    "missing_count": 0,
+    "ok_count": 4,
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 4
+  },
+  "valid": true,
+  "valid_meaning": "The intake schema and no-claim guard are structurally valid. Use artifact_set_complete and overall_status to determine whether baseline artifacts are actually present and ready for review."
+}

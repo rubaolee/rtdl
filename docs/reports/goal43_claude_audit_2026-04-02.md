@@ -1,11 +1,11 @@
 # Goal 43 Claude Audit: OptiX GPU Validation — Post-Fix Review
 
-**Date:** 2026-04-02  
-**Auditor:** Claude (claude-sonnet-4-6)  
-**Reviewed commits:** `5b6f436`, `1f8b305`, `f15bcd4`  
-**Remote host:** `192.168.1.20` (lx1, Ubuntu 24.04, x86_64)  
-**GPU:** NVIDIA GeForce GTX 1070  
-**OptiX runtime:** 9.0.0  
+**Date:** 2026-04-02
+**Auditor:** Claude (claude-sonnet-4-6)
+**Reviewed commits:** `5b6f436`, `1f8b305`, `f15bcd4`
+**Remote host:** `192.168.1.20` (lx1, Ubuntu 24.04, x86_64)
+**GPU:** NVIDIA GeForce GTX 1070
+**OptiX runtime:** 9.0.0
 **PTX compiler path:** `nvcc` (`/usr/bin/nvcc`)
 
 ---

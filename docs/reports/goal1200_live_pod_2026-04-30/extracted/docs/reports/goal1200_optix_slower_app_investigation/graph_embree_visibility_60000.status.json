@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 60000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_60000.json",
+  "exit_code": 0,
+  "label": "graph_embree_visibility_60000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_60000.log",
+  "status": "ok"
+}

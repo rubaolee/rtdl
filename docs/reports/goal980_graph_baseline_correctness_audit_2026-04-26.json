@@ -1,0 +1,46 @@
+{
+  "boundary": "Goal980 audits local graph baseline correctness only. It does not repair native graph kernels, collect cloud data, or authorize public speedup claims.",
+  "claim_effect": "graph local correctness check passed; timing review is still separate",
+  "date": "2026-04-26",
+  "goal": "Goal980 graph baseline correctness audit",
+  "mismatch_count": 0,
+  "public_speedup_claim_authorized": false,
+  "rows": [
+    {
+      "copies": 1,
+      "cpu_sec": 0.010129582951776683,
+      "embree_sec": 0.010822666925378144,
+      "mismatches": {},
+      "status": "ok"
+    },
+    {
+      "copies": 2,
+      "cpu_sec": 0.00017854198813438416,
+      "embree_sec": 0.0002561659784987569,
+      "mismatches": {},
+      "status": "ok"
+    },
+    {
+      "copies": 8,
+      "cpu_sec": 0.0007515000179409981,
+      "embree_sec": 0.00046612496953457594,
+      "mismatches": {},
+      "status": "ok"
+    },
+    {
+      "copies": 16,
+      "cpu_sec": 0.0024874580558389425,
+      "embree_sec": 0.0007431670092046261,
+      "mismatches": {},
+      "status": "ok"
+    },
+    {
+      "copies": 256,
+      "cpu_sec": 0.6694673750316724,
+      "embree_sec": 0.009487834060564637,
+      "mismatches": {},
+      "status": "ok"
+    }
+  ],
+  "status": "ok"
+}

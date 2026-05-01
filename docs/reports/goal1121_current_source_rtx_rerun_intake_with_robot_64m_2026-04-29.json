@@ -1,0 +1,87 @@
+{
+  "boundary": "Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1118 current-source RTX rerun intake",
+  "input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet",
+  "packet": "docs/reports/goal1121_current_source_rtx_rerun_packet_with_robot_64m_2026-04-29.json",
+  "rows": [
+    {
+      "app": "facility_knn_assignment",
+      "exists": true,
+      "findings": [],
+      "matches_oracle": true,
+      "median_query_sec": 0.11161934863775969,
+      "mode": "optix",
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
+      "path_name": "coverage_threshold_prepared_recentered",
+      "phase": "same_scale_validation_and_timing",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
+      "valid": true
+    },
+    {
+      "app": "robot_collision_screening",
+      "exists": true,
+      "findings": [],
+      "matches_oracle": true,
+      "median_query_sec": 0.006429227069020271,
+      "mode": "optix",
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "correctness_validation",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
+      "valid": true
+    },
+    {
+      "app": "robot_collision_screening",
+      "exists": true,
+      "findings": [],
+      "matches_oracle": null,
+      "median_query_sec": 0.17869762983173132,
+      "mode": "optix",
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1121.json",
+      "path_name": "prepared_pose_flags",
+      "phase": "large_timing_repeat",
+      "source_commit": "2ba7ae0",
+      "valid": true
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "exists": true,
+      "findings": [],
+      "matches_oracle": true,
+      "median_query_sec": 0.007976624183356762,
+      "mode": "optix",
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "correctness_validation",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
+      "valid": true
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "exists": true,
+      "findings": [],
+      "matches_oracle": null,
+      "median_query_sec": 0.22225642297416925,
+      "mode": "optix",
+      "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "large_timing_repeat",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
+      "valid": true
+    }
+  ],
+  "summary": {
+    "missing_row_count": 0,
+    "public_speedup_claim_authorized": false,
+    "row_count": 5,
+    "runner_log_exists": true,
+    "same_source_commit": false,
+    "source_commits": [
+      "21fa036881bf9a0c806f69c15727d87b482ccfcf",
+      "2ba7ae0"
+    ],
+    "valid_row_count": 5
+  },
+  "valid": false
+}

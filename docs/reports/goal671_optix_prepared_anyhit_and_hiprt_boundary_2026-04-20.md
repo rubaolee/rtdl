@@ -139,4 +139,3 @@ Not accepted as a performance closure:
 
 - The new OptiX prepared count API does not yet beat the existing unprepared row path on the dense probe.
 - Further OptiX optimization should replace global per-hit atomics with lower-contention aggregation or a packed bitset/popcount strategy before making any performance claim.
-

@@ -1,0 +1,97 @@
+{
+  "boundary": "Goal1093 prepares a superseding Barnes-Hut contract packet only. It does not run cloud, does not authorize release, does not change public wording, and does not authorize public RTX speedup claims.",
+  "date": "2026-04-29",
+  "goal": "Goal1093 Barnes-Hut 20M contract packet",
+  "report_dir": "docs/reports/goal1093_barnes_hut_20m_contract",
+  "rows": [
+    {
+      "app": "barnes_hut_force_app",
+      "barnes_tree_depth": 8,
+      "body_count": 4096,
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "4096",
+        "--iterations",
+        "3",
+        "--radius",
+        "0.1",
+        "--barnes-tree-depth",
+        "8",
+        "--hit-threshold",
+        "4",
+        "--output-json",
+        "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json"
+      ],
+      "contains_skip_validation": false,
+      "hit_threshold": 4,
+      "iterations": 3,
+      "node_count": 65536,
+      "output_json": "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_4096_validation.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "depth8_contract_validation",
+      "purpose": "Validate the same depth-8 / threshold-4 / radius-0.1 node-coverage contract used by the 20M timing row, but with a manageable 4,096-body oracle.",
+      "radius": 0.1,
+      "requires_validation": true,
+      "timing_floor_sec": null
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "barnes_tree_depth": 8,
+      "body_count": 20000000,
+      "command": [
+        "python3",
+        "scripts/goal887_prepared_decision_phase_profiler.py",
+        "--scenario",
+        "barnes_hut_node_coverage",
+        "--mode",
+        "optix",
+        "--body-count",
+        "20000000",
+        "--iterations",
+        "5",
+        "--radius",
+        "0.1",
+        "--barnes-tree-depth",
+        "8",
+        "--hit-threshold",
+        "4",
+        "--skip-validation",
+        "--output-json",
+        "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json"
+      ],
+      "contains_skip_validation": true,
+      "hit_threshold": 4,
+      "iterations": 5,
+      "node_count": 65536,
+      "output_json": "docs/reports/goal1093_barnes_hut_20m_contract/barnes_hut_depth8_20m_timing.json",
+      "path_name": "node_coverage_prepared_rich",
+      "phase": "depth8_20m_timing_repeat",
+      "purpose": "Repeat the Goal1079 20M timing row under the superseding depth-8 contract. This remains timing-only and requires the depth8_contract_validation row plus later intake/review.",
+      "radius": 0.1,
+      "requires_validation": false,
+      "timing_floor_sec": 0.1
+    }
+  ],
+  "source_artifacts": [
+    "docs/reports/goal1079_barnes_hut_rich_scale_up_probe/barnes_hut_rich_node_coverage_20m_timing.json",
+    "docs/reports/goal1079_two_ai_consensus_2026-04-29.md"
+  ],
+  "summary": {
+    "public_speedup_claim_authorized_count": 0,
+    "row_count": 2,
+    "timing_row_count": 1,
+    "validation_row_count": 1,
+    "validation_rows_with_skip_validation": []
+  },
+  "supersedes": [
+    "docs/reports/goal1076_barnes_hut_rich_rtx_pod_candidate_2026-04-28.json",
+    "docs/reports/goal1078_goal1076_artifact_intake_after_pod_2026-04-29.json"
+  ],
+  "valid": true
+}

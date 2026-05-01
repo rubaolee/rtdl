@@ -12,6 +12,71 @@ sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
 
+DB_COMPACT_SUMMARY_CHUNK_COPIES = 50_000
+
+
+def _timed_call(fn):
+    start = time.perf_counter()
+    value = fn()
+    return value, time.perf_counter() - start
+
+
+def _native_db_continuation_backend(backend: str, output_mode: str, run_phases: dict[str, float]) -> str:
+    if output_mode != "compact_summary" or backend not in {"embree", "optix", "vulkan"}:
+        return "none"
+    if any("materialize" in phase for phase in run_phases):
+        return "none"
+    return f"{backend}_db_compact_summary"
+
+
+def _split_copies(copies: int, chunk_copies: int = DB_COMPACT_SUMMARY_CHUNK_COPIES) -> tuple[int, ...]:
+    if copies <= 0:
+        raise ValueError("copies must be positive")
+    if chunk_copies <= 0:
+        raise ValueError("chunk_copies must be positive")
+    chunks: list[int] = []
+    remaining = copies
+    while remaining:
+        current = min(chunk_copies, remaining)
+        chunks.append(current)
+        remaining -= current
+    return tuple(chunks)
+
+
+def _sum_int_maps(payloads: list[dict[str, int]]) -> dict[str, int]:
+    total: dict[str, int] = {}
+    for payload in payloads:
+        for key, value in payload.items():
+            total[str(key)] = total.get(str(key), 0) + int(value)
+    return total
+
+
+def _sum_native_batch_phase_timings(payloads: list[dict[str, object]]) -> dict[str, object]:
+    totals: dict[str, dict[str, float | int]] = {}
+    for payload in payloads:
+        compact = payload.get("compact_summary_batch")
+        if not isinstance(compact, dict):
+            continue
+        for name, phase in compact.items():
+            if not isinstance(phase, dict):
+                continue
+            target = totals.setdefault(
+                str(name),
+                {
+                    "traversal": 0.0,
+                    "bitset_copyback": 0.0,
+                    "exact_filter": 0.0,
+                    "output_pack": 0.0,
+                    "raw_candidate_count": 0,
+                    "emitted_count": 0,
+                },
+            )
+            for field in ("traversal", "bitset_copyback", "exact_filter", "output_pack"):
+                target[field] = float(target[field]) + float(phase.get(field, 0.0) or 0.0)
+            for field in ("raw_candidate_count", "emitted_count"):
+                target[field] = int(target[field]) + int(phase.get(field, 0) or 0)
+    return {"compact_summary_batch": totals} if totals else {}
+
 
 @rt.kernel(backend="rtdl", precision="float_approx")
 def risky_order_scan():
@@ -164,12 +229,26 @@ class PreparedSalesRiskSession:
             raise ValueError("copies must be positive")
         self.backend = backend
         self.copies = copies
+        self._closed = False
+        self._dataset = None
+        self._chunk_sessions: list[PreparedSalesRiskSession] = []
+        self.prepare_sec = 0.0
+        if backend in {"embree", "optix", "vulkan"} and copies > DB_COMPACT_SUMMARY_CHUNK_COPIES:
+            case_start = time.perf_counter()
+            self.scan_case = None
+            self.grouped_case = None
+            chunk_sizes = _split_copies(copies, DB_COMPACT_SUMMARY_CHUNK_COPIES)
+            if any(chunk >= copies for chunk in chunk_sizes):
+                raise RuntimeError("DB compact-summary chunking failed to reduce the input size")
+            self.input_construction_sec = time.perf_counter() - case_start
+            prepare_start = time.perf_counter()
+            self._chunk_sessions = [PreparedSalesRiskSession(backend, copies=chunk) for chunk in chunk_sizes]
+            self.prepare_sec = time.perf_counter() - prepare_start
+            return
+
         case_start = time.perf_counter()
         self.scan_case, self.grouped_case = make_sales_case(copies)
         self.input_construction_sec = time.perf_counter() - case_start
-        self._closed = False
-        self._dataset = None
-        self.prepare_sec = 0.0
         if backend in {"embree", "optix", "vulkan"}:
             prepare_start = time.perf_counter()
             self._dataset = _prepare_dataset(backend, self.scan_case["table"])
@@ -184,14 +263,20 @@ class PreparedSalesRiskSession:
     def close(self) -> None:
         if not self._closed and self._dataset is not None:
             self._dataset.close()
+        for session in self._chunk_sessions:
+            session.close()
         self._closed = True
 
     def run(self, output_mode: str = "full") -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared sales-risk session is closed")
-        if output_mode not in {"full", "summary"}:
+        if output_mode not in {"full", "summary", "compact_summary"}:
             raise ValueError(f"unsupported output_mode: {output_mode}")
+        if self._chunk_sessions:
+            return self._run_chunked(output_mode=output_mode)
         prepared_dataset = None
+        run_phases: dict[str, float] = {}
+        native_db_phases: dict[str, object] = {}
         if self.backend in {"embree", "optix", "vulkan"}:
             assert self._dataset is not None
             predicates = self.scan_case["predicates"]
@@ -200,22 +285,110 @@ class PreparedSalesRiskSession:
                 "predicates": query["predicates"],
                 "group_keys": query["group_keys"],
             }
-            risky_rows = tuple(self._dataset.conjunctive_scan(predicates))
-            count_rows = tuple(self._dataset.grouped_count(count_query))
-            sum_rows = tuple(self._dataset.grouped_sum(query))
+            compact_count_summary = None
+            compact_sum_summary = None
+            used_compact_summary_batch = False
+            if output_mode == "compact_summary" and hasattr(self._dataset, "compact_summary_batch"):
+                used_compact_summary_batch = True
+                batch_requests = (
+                    {"name": "risky_scan_count", "operation": "conjunctive_scan_count", "predicates": predicates},
+                    {"name": "risky_order_count_by_region", "operation": "grouped_count_summary", "query": count_query},
+                    {"name": "risky_revenue_by_region", "operation": "grouped_sum_summary", "query": query},
+                )
+                batch_results, run_phases["query_compact_summary_batch_sec"] = _timed_call(
+                    lambda: self._dataset.compact_summary_batch(batch_requests)
+                )
+                risky_scan_count = int(batch_results["risky_scan_count"])
+                risky_rows = ()
+                compact_count_summary = batch_results["risky_order_count_by_region"]
+                compact_sum_summary = batch_results["risky_revenue_by_region"]
+                count_rows = ()
+                sum_rows = ()
+                if hasattr(self._dataset, "last_compact_summary_batch_phase_timings"):
+                    native_db_phases["compact_summary_batch"] = self._dataset.last_compact_summary_batch_phase_timings()
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
+                risky_scan_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
+                    lambda: self._dataset.conjunctive_scan_count(predicates)
+                )
+                risky_rows = ()
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan_count"] = self._dataset.last_phase_timings()
+            else:
+                risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                    lambda: tuple(self._dataset.conjunctive_scan(predicates))
+                )
+                risky_scan_count = len(risky_rows)
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
+            if used_compact_summary_batch:
+                pass
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "grouped_count_summary"):
+                compact_count_summary, run_phases["query_grouped_count_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_count_summary(count_query)
+                )
+                count_rows = ()
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count_summary"] = self._dataset.last_phase_timings()
+            else:
+                count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                    lambda: tuple(self._dataset.grouped_count(count_query))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
+            if used_compact_summary_batch:
+                pass
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "grouped_sum_summary"):
+                compact_sum_summary, run_phases["query_grouped_sum_summary_sec"] = _timed_call(
+                    lambda: self._dataset.grouped_sum_summary(query)
+                )
+                sum_rows = ()
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum_summary"] = self._dataset.last_phase_timings()
+            else:
+                sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                    lambda: tuple(self._dataset.grouped_sum(query))
+                )
+                if hasattr(self._dataset, "last_phase_timings"):
+                    native_db_phases["grouped_sum"] = self._dataset.last_phase_timings()
             prepared_dataset = {
                 "transfer": self._dataset._dataset.transfer,
                 "row_count": self._dataset.row_count,
             }
         else:
-            risky_rows = _run_scan_rows(self.backend, self.scan_case)
-            count_rows = _run_grouped_count_rows(self.backend, self.grouped_case)
-            sum_rows = _run_grouped_sum_rows(self.backend, self.grouped_case)
-        region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
-        region_revenue = {
-            str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
-            for row in sum_rows
+            risky_rows, run_phases["query_conjunctive_scan_and_materialize_sec"] = _timed_call(
+                lambda: _run_scan_rows(self.backend, self.scan_case)
+            )
+            risky_scan_count = len(risky_rows)
+            count_rows, run_phases["query_grouped_count_and_materialize_sec"] = _timed_call(
+                lambda: _run_grouped_count_rows(self.backend, self.grouped_case)
+            )
+            sum_rows, run_phases["query_grouped_sum_and_materialize_sec"] = _timed_call(
+                lambda: _run_grouped_sum_rows(self.backend, self.grouped_case)
+            )
+            compact_count_summary = None
+            compact_sum_summary = None
+        postprocess_start = time.perf_counter()
+        if output_mode == "compact_summary" and compact_count_summary is not None and compact_sum_summary is not None:
+            region_counts = {str(key): int(value) for key, value in compact_count_summary.items()}
+            region_revenue = {str(key): int(value) for key, value in compact_sum_summary.items()}
+        else:
+            region_counts = {str(row["region"]): int(row["count"]) for row in count_rows}
+            region_revenue = {
+                str(row["region"]): int(row["sum"]) if float(row["sum"]).is_integer() else float(row["sum"])
+                for row in sum_rows
+            }
+        risky_order_ids = [int(row["row_id"]) for row in risky_rows]
+        highest_risk_region = max(region_counts.items(), key=lambda item: (item[1], item[0]))[0]
+        run_phases["python_summary_postprocess_sec"] = time.perf_counter() - postprocess_start
+        summary = {
+            "risky_order_count": risky_scan_count,
+            "risky_order_count_by_region": region_counts,
+            "risky_revenue_by_region": region_revenue,
+            "highest_risk_region": highest_risk_region,
         }
+        if output_mode != "compact_summary":
+            summary["risky_order_ids"] = risky_order_ids
+        native_continuation_backend = _native_db_continuation_backend(self.backend, output_mode, run_phases)
         return {
             "app": "sales_risk_screening",
             "backend": self.backend,
@@ -226,23 +399,88 @@ class PreparedSalesRiskSession:
                 "input_construction_sec": self.input_construction_sec,
                 "prepare_sec": self.prepare_sec,
             },
+            "run_phases": run_phases,
+            "native_db_phases": native_db_phases,
+            "native_continuation_active": native_continuation_backend != "none",
+            "native_continuation_backend": native_continuation_backend,
             "prepared_dataset": prepared_dataset,
-            "summary": {
-                "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
-                "risky_order_count_by_region": region_counts,
-                "risky_revenue_by_region": region_revenue,
-                "highest_risk_region": max(region_counts.items(), key=lambda item: (item[1], item[0]))[0],
-            },
+            "summary": summary,
             "row_counts": {
-                "scan": len(risky_rows),
-                "grouped_count": len(count_rows),
-                "grouped_sum": len(sum_rows),
+                "scan": risky_scan_count,
+                "grouped_count": len(count_rows) if count_rows else len(region_counts),
+                "grouped_sum": len(sum_rows) if sum_rows else len(region_revenue),
             },
-            "rows": {} if output_mode == "summary" else {
+            "rows": {} if output_mode in {"summary", "compact_summary"} else {
                 "scan": list(risky_rows),
                 "grouped_count": list(count_rows),
                 "grouped_sum": list(sum_rows),
             },
+        }
+
+    def _run_chunked(self, output_mode: str = "full") -> dict[str, object]:
+        if output_mode != "compact_summary":
+            raise ValueError("chunked sales-risk prepared sessions support compact_summary output only")
+        run_start = time.perf_counter()
+        chunk_payloads = [session.run(output_mode=output_mode) for session in self._chunk_sessions]
+        query_sec = time.perf_counter() - run_start
+        postprocess_start = time.perf_counter()
+        summaries = [payload["summary"] for payload in chunk_payloads]
+        region_counts = _sum_int_maps(
+            [summary["risky_order_count_by_region"] for summary in summaries]
+        )
+        region_revenue = _sum_int_maps(
+            [summary["risky_revenue_by_region"] for summary in summaries]
+        )
+        risky_scan_count = sum(int(summary["risky_order_count"]) for summary in summaries)
+        highest_risk_region = max(region_counts.items(), key=lambda item: (item[1], item[0]))[0]
+        python_postprocess_sec = time.perf_counter() - postprocess_start
+        run_phases = {
+            "query_compact_summary_batch_sec": query_sec,
+            "python_summary_postprocess_sec": python_postprocess_sec,
+        }
+        native_db_phases = _sum_native_batch_phase_timings(
+            [
+                payload.get("native_db_phases", {})
+                for payload in chunk_payloads
+                if isinstance(payload.get("native_db_phases"), dict)
+            ]
+        )
+        chunk_copies = [int(payload["copies"]) for payload in chunk_payloads]
+        return {
+            "app": "sales_risk_screening",
+            "backend": self.backend,
+            "copies": self.copies,
+            "output_mode": output_mode,
+            "execution_mode": "prepared_session",
+            "session": {
+                "input_construction_sec": self.input_construction_sec,
+                "prepare_sec": self.prepare_sec,
+                "chunked_compact_summary": True,
+                "chunk_count": len(chunk_payloads),
+                "chunk_copies": chunk_copies,
+            },
+            "run_phases": run_phases,
+            "native_db_phases": native_db_phases,
+            "native_continuation_active": True,
+            "native_continuation_backend": _native_db_continuation_backend(self.backend, output_mode, run_phases),
+            "prepared_dataset": {
+                "transfer": "chunked_columnar",
+                "row_count": sum(int(payload["prepared_dataset"]["row_count"]) for payload in chunk_payloads),
+                "chunk_count": len(chunk_payloads),
+                "chunk_copies": chunk_copies,
+            },
+            "summary": {
+                "risky_order_count": risky_scan_count,
+                "risky_order_count_by_region": region_counts,
+                "risky_revenue_by_region": region_revenue,
+                "highest_risk_region": highest_risk_region,
+            },
+            "row_counts": {
+                "scan": risky_scan_count,
+                "grouped_count": len(region_counts),
+                "grouped_sum": len(region_revenue),
+            },
+            "rows": {},
         }
 
 
@@ -251,8 +489,11 @@ def prepare_session(backend: str, copies: int = 1) -> PreparedSalesRiskSession:
 
 
 def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[str, object]:
-    if output_mode not in {"full", "summary"}:
+    if output_mode not in {"full", "summary", "compact_summary"}:
         raise ValueError(f"unsupported output_mode: {output_mode}")
+    if output_mode == "compact_summary" and backend in {"embree", "optix", "vulkan"}:
+        with prepare_session(backend, copies=copies) as session:
+            return session.run(output_mode=output_mode)
     scan_case, grouped_case = make_sales_case(copies)
     prepared_dataset = None
     if backend in {"embree", "optix", "vulkan"}:
@@ -273,7 +514,10 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
         "output_mode": output_mode,
         "execution_mode": "one_shot",
         "prepared_dataset": prepared_dataset,
+        "native_continuation_active": False,
+        "native_continuation_backend": "none",
         "summary": {
+            "risky_order_count": len(risky_rows),
             "risky_order_ids": [int(row["row_id"]) for row in risky_rows],
             "risky_order_count_by_region": region_counts,
             "risky_revenue_by_region": region_revenue,
@@ -284,7 +528,7 @@ def run_case(backend: str, copies: int = 1, output_mode: str = "full") -> dict[s
             "grouped_count": len(count_rows),
             "grouped_sum": len(sum_rows),
         },
-        "rows": {} if output_mode == "summary" else {
+        "rows": {} if output_mode in {"summary", "compact_summary"} else {
             "scan": list(risky_rows),
             "grouped_count": list(count_rows),
             "grouped_sum": list(sum_rows),
@@ -302,7 +546,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
     )
     parser.add_argument("--copies", type=int, default=1, help="Repeat the deterministic sales table this many times.")
-    parser.add_argument("--output-mode", default="full", choices=("full", "summary"))
+    parser.add_argument("--output-mode", default="full", choices=("full", "summary", "compact_summary"))
     args = parser.parse_args(argv)
     print(json.dumps(run_case(args.backend, copies=args.copies, output_mode=args.output_mode), indent=2, sort_keys=True))
     return 0

@@ -1,0 +1,36 @@
+{
+  "artifact_count": 4,
+  "artifacts": [
+    {
+      "app": "outlier_detection",
+      "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_outlier_detection_prepared_fixed_radius_density_summary_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+      "status": "ok"
+    },
+    {
+      "app": "dbscan_clustering",
+      "baseline": "scipy_or_reference_neighbor_baseline_when_used_in_app_report",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_dbscan_clustering_prepared_fixed_radius_core_flags_scipy_or_reference_neighbor_baseline_when_used_in_app_report_2026-04-23.json",
+      "status": "ok"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "baseline": "scipy_baseline_when_available",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_service_coverage_gaps_prepared_gap_summary_scipy_baseline_when_available_2026-04-23.json",
+      "status": "ok"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "baseline": "scipy_baseline_when_available",
+      "path": "/Users/rl2025/rtdl_python_only/docs/reports/goal835_baseline_event_hotspot_screening_prepared_count_summary_scipy_baseline_when_available_2026-04-23.json",
+      "status": "ok"
+    }
+  ],
+  "boundary": "SciPy/reference-neighbor baselines are optional external baselines. These artifacts do not authorize public RTX speedup claims.",
+  "date": "2026-04-26",
+  "fixed_copies": 20000,
+  "goal": "Goal976 optional SciPy/reference-neighbor baseline collector",
+  "iterations": 10,
+  "spatial_copies": 20000,
+  "status": "ok"
+}

@@ -1,0 +1,42 @@
+{
+  "app": "jaccard",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from CPU/Python exact area/Jaccard refinement. It does not authorize full polygon-overlap RTX speedup claims.",
+  "copies": 1,
+  "cpu_digest": {
+    "app": "polygon_set_jaccard",
+    "copies": 1,
+    "left_polygon_count": 2,
+    "right_polygon_count": 2,
+    "row_count": 1,
+    "rows": [
+      {
+        "intersection_area": 5,
+        "jaccard_similarity": 0.263157894737,
+        "left_area": 13,
+        "right_area": 11,
+        "union_area": 19
+      }
+    ]
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-04-24T06:42:23",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "Rs-MacBook-Air.local",
+    "machine": "arm64",
+    "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+    "python": "3.14.0"
+  },
+  "mode": "dry-run",
+  "optix_digest": null,
+  "optix_metadata": null,
+  "parity_vs_cpu": null,
+  "phases": {
+    "cpu_exact_refinement_sec": null,
+    "cpu_reference_sec": 0.00014274998102337122,
+    "input_build_sec": 1.508404966443777e-05,
+    "optix_candidate_discovery_sec": null
+  },
+  "status": "pass"
+}

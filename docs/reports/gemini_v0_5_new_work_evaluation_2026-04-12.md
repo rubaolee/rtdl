@@ -13,7 +13,7 @@ The transition layer is highly disciplined, architecturally consistent with the 
 ## 1. System Audit Infrastructure (Goals 241-254)
 The transition from prose-based audit reports to a structured **SQLite-based Audit Database** (`rtdl_system_audit.sqlite`) is the most significant structural improvement in this session.
 
-- **Strengths**: 
+- **Strengths**:
     - Queryable status tracking for all 1,191 files in the `docs/` directory.
     - Tiered priority model (1–6) ensures that critical user-facing surfaces (Front Page, Tutorials) are audited before historical archives.
     - Automated inventory builder and view exporters provide actionable "gap reports" for the maintainer.
@@ -35,7 +35,7 @@ The core of the "new work" is the implementation of the RTNN registries in `src/
 ## 4. External Adapter Skeleton (Goal 269)
 The `cuNSearch` adapter in `rtnn_cunsearch.py` represents the first "Paper-to-RTDL" bridge.
 
-- **Design Assessment**: 
+- **Design Assessment**:
     - The use of environment variables (`RTDL_CUNSEARCH_BIN`) for binary resolution is consistent with the `RTDL_OPTIX_ROOT` and `VULKAN_SDK` patterns used in v0.4.
     - The JSON-based request serialization ensures that RTDL can invoke cuNSearch (or any future native adapter) as a black-box binary with stable input/output contracts.
 

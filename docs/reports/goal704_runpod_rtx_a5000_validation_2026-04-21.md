@@ -150,4 +150,3 @@ Do not claim:
 - KNN, Hausdorff, ANN, Barnes-Hut, graph, or DB RT-core speedup from this fixed-radius run;
 - RTX 4090, L4, L40S, or Ada behavior from this RTX A5000 run;
 - performance conclusions for untested apps.
-

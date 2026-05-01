@@ -23,4 +23,3 @@ Consensus meaning:
   shader-level Apple any-hit.
 - `reduce_rows` remains documented as a Python helper rather than a native
   backend reduction.
-

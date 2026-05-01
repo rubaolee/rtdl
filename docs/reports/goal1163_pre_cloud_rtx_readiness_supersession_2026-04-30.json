@@ -1,0 +1,86 @@
+{
+  "boundary": "Goal1163 supersedes the stale Goal1125 pre-cloud prioritization state. It does not run cloud, does not authorize public RTX speedup wording, and does not mark release readiness. It only records that the local pre-cloud remedies for the six previously unresolved app rows are now complete enough for a consolidated pod batch.",
+  "date": "2026-04-30",
+  "generated_at": "2026-04-30T09:10:00",
+  "goal": "Goal1163 pre-cloud RTX readiness supersession",
+  "rows": [
+    {
+      "app": "database_analytics",
+      "current_pre_cloud_status": "local_pre_cloud_complete_next_pod_batch",
+      "local_remedy_goals": [
+        "Goal1155",
+        "Goal1156",
+        "Goal1157"
+      ],
+      "next_pod_action": "run real OptiX compact-summary batch with same-source artifact intake",
+      "previous_goal1125_bucket": "local_optimization_first",
+      "public_wording_status": "blocked_until_real_rtx_artifact_and_review",
+      "rt_path": "OptiX compact summary for DB count/sum/group summaries"
+    },
+    {
+      "app": "graph_analytics",
+      "current_pre_cloud_status": "local_pre_cloud_complete_next_pod_batch",
+      "local_remedy_goals": [
+        "Goal1158",
+        "Goal1159"
+      ],
+      "next_pod_action": "run graph visibility/BFS/triangle gate and verify raw-view phase metadata",
+      "previous_goal1125_bucket": "local_optimization_first",
+      "public_wording_status": "blocked_until_real_rtx_artifact_and_review",
+      "rt_path": "OptiX graph ray traversal with raw row-view summary metadata"
+    },
+    {
+      "app": "road_hazard_screening",
+      "current_pre_cloud_status": "local_pre_cloud_complete_next_pod_batch",
+      "local_remedy_goals": [
+        "Goal1160"
+      ],
+      "next_pod_action": "run road hazard native OptiX gate and verify summary no-row-materialization metadata",
+      "previous_goal1125_bucket": "local_optimization_first",
+      "public_wording_status": "blocked_until_real_rtx_artifact_and_review",
+      "rt_path": "prepared OptiX segment/polygon compact hit-count summary"
+    },
+    {
+      "app": "hausdorff_distance",
+      "current_pre_cloud_status": "local_pre_cloud_complete_next_pod_batch",
+      "local_remedy_goals": [
+        "Goal1161"
+      ],
+      "next_pod_action": "run non-analytic Hausdorff threshold contract in OptiX mode",
+      "previous_goal1125_bucket": "needs_larger_nontrivial_scale_contract",
+      "public_wording_status": "blocked_until_real_rtx_artifact_and_review",
+      "rt_path": "prepared OptiX fixed-radius Hausdorff threshold-decision traversal"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "current_pre_cloud_status": "local_pre_cloud_complete_next_pod_batch",
+      "local_remedy_goals": [
+        "Goal1162"
+      ],
+      "next_pod_action": "rerun v2 polygon pair gate artifact with source/schema metadata",
+      "previous_goal1125_bucket": "local_optimization_first",
+      "public_wording_status": "blocked_until_real_rtx_artifact_and_review",
+      "rt_path": "OptiX LSI/PIP candidate discovery plus native exact bounded area continuation"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "current_pre_cloud_status": "local_pre_cloud_complete_next_pod_batch",
+      "local_remedy_goals": [
+        "Goal1162"
+      ],
+      "next_pod_action": "rerun v2 polygon Jaccard gate artifact with source/schema metadata",
+      "previous_goal1125_bucket": "local_optimization_first",
+      "public_wording_status": "blocked_until_real_rtx_artifact_and_review",
+      "rt_path": "OptiX LSI/PIP candidate discovery plus native exact bounded Jaccard continuation"
+    }
+  ],
+  "schema_version": "goal1163_pre_cloud_rtx_readiness_supersession_v1",
+  "source_commit": "d0ebf9d69041cf013b7af4dcb20a570d25d92c3f",
+  "summary": {
+    "local_pre_cloud_complete_next_pod_batch": 6,
+    "public_wording_authorized": 0,
+    "tracked_apps": 6
+  },
+  "supersedes": "docs/reports/goal1125_unresolved_rtx_public_wording_prioritization_2026-04-29.md",
+  "valid": true
+}

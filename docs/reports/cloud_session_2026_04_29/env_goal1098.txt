@@ -1,0 +1,6 @@
+host=35667be8fdfd
+source_commit=58ca06f2573d53754663a2dd10a76207113ab044
+optix_prefix=/workspace/vendor/optix-dev-8.0.0
+cuda_prefix=/usr/local/cuda-12.4
+nvcc=/usr/local/cuda-12.4/bin/nvcc
+gpu=NVIDIA RTX A5000, 565.57.01, 24564 MiB

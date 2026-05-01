@@ -1,0 +1,231 @@
+{
+  "boundary": "Execution summary only; no public wording, release, or speedup claims are authorized.",
+  "failed_count": 5,
+  "failed_labels": [
+    "db_embree_100000",
+    "db_embree_300000",
+    "db_optix_100000",
+    "db_optix_300000",
+    "polygon_jaccard_optix_8192_chunk_64"
+  ],
+  "goal": "Goal1200 OptiX slower-app investigation pod execution",
+  "status_count": 31,
+  "statuses": [
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 100000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_embree_100000.json",
+      "exit_code": 1,
+      "label": "db_embree_100000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/db_embree_100000.log",
+      "status": "failed"
+    },
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 30000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_embree_30000.json",
+      "exit_code": 0,
+      "label": "db_embree_30000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/db_embree_30000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 300000 --iterations 5 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_embree_300000.json",
+      "exit_code": 1,
+      "label": "db_embree_300000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/db_embree_300000.log",
+      "status": "failed"
+    },
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 100000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_optix_100000.json",
+      "exit_code": 1,
+      "label": "db_optix_100000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/db_optix_100000.log",
+      "status": "failed"
+    },
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 30000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_optix_30000.json",
+      "exit_code": 0,
+      "label": "db_optix_30000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/db_optix_30000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 300000 --iterations 5 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_optix_300000.json",
+      "exit_code": 1,
+      "label": "db_optix_300000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/db_optix_300000.log",
+      "status": "failed"
+    },
+    {
+      "command": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 120000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_120000.json",
+      "exit_code": 0,
+      "label": "graph_embree_visibility_120000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_120000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 30000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_30000.json",
+      "exit_code": 0,
+      "label": "graph_embree_visibility_30000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_30000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 60000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_60000.json",
+      "exit_code": 0,
+      "label": "graph_embree_visibility_60000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_embree_visibility_60000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies 120000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/graph_optix_visibility_120000.json",
+      "exit_code": 0,
+      "label": "graph_optix_visibility_120000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_optix_visibility_120000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies 30000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/graph_optix_visibility_30000.json",
+      "exit_code": 0,
+      "label": "graph_optix_visibility_30000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_optix_visibility_30000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies 60000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/graph_optix_visibility_60000.json",
+      "exit_code": 0,
+      "label": "graph_optix_visibility_60000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/graph_optix_visibility_60000.log",
+      "status": "ok"
+    },
+    {
+      "command": "timeout 600s python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 10000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_10000.json",
+      "exit_code": 0,
+      "label": "hausdorff_embree_repair_10000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_10000.log",
+      "status": "ok"
+    },
+    {
+      "command": "timeout 600s python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 2000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_2000.json",
+      "exit_code": 0,
+      "label": "hausdorff_embree_repair_2000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_2000.log",
+      "status": "ok"
+    },
+    {
+      "command": "timeout 600s python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 20000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_20000.json",
+      "exit_code": 0,
+      "label": "hausdorff_embree_repair_20000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_20000.log",
+      "status": "ok"
+    },
+    {
+      "command": "timeout 600s python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 1200000 --iterations 3 --radius 0.4 --output-json docs/reports/goal1200_optix_slower_app_investigation/hausdorff_optix_repair_1200000.json",
+      "exit_code": 0,
+      "label": "hausdorff_optix_repair_1200000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_optix_repair_1200000.log",
+      "status": "ok"
+    },
+    {
+      "command": "timeout 600s python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 200000 --iterations 3 --radius 0.4 --output-json docs/reports/goal1200_optix_slower_app_investigation/hausdorff_optix_repair_200000.json",
+      "exit_code": 0,
+      "label": "hausdorff_optix_repair_200000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_optix_repair_200000.log",
+      "status": "ok"
+    },
+    {
+      "exit_code": 0,
+      "label": "make_build_optix",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/make_build_optix.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies 8192 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_embree_8192.json",
+      "exit_code": 0,
+      "label": "polygon_jaccard_embree_8192",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_embree_8192.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 1 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_1.json",
+      "exit_code": 0,
+      "label": "polygon_jaccard_optix_8192_chunk_1",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_1.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 512 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_512.json",
+      "exit_code": 0,
+      "label": "polygon_jaccard_optix_8192_chunk_512",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_512.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 64 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_64.json",
+      "exit_code": 1,
+      "label": "polygon_jaccard_optix_8192_chunk_64",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_64.log",
+      "status": "failed"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies 8192 --output-mode summary --validation-mode analytic_summary --chunk-copies 8 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_8.json",
+      "exit_code": 0,
+      "label": "polygon_jaccard_optix_8192_chunk_8",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_jaccard_optix_8192_chunk_8.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 10000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_10000.json",
+      "exit_code": 0,
+      "label": "polygon_pair_embree_10000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_10000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_20000.json",
+      "exit_code": 0,
+      "label": "polygon_pair_embree_20000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_20000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 40000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_40000.json",
+      "exit_code": 0,
+      "label": "polygon_pair_embree_40000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_embree_40000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 10000 --output-mode summary --validation-mode analytic_summary --chunk-copies 100 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_10000.json",
+      "exit_code": 0,
+      "label": "polygon_pair_optix_10000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_10000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 20000 --output-mode summary --validation-mode analytic_summary --chunk-copies 100 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_20000.json",
+      "exit_code": 0,
+      "label": "polygon_pair_optix_20000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_20000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies 40000 --output-mode summary --validation-mode analytic_summary --chunk-copies 100 --output-json docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_40000.json",
+      "exit_code": 0,
+      "label": "polygon_pair_optix_40000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/polygon_pair_optix_40000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/road_hazard_embree_control_20000.json",
+      "exit_code": 0,
+      "label": "road_hazard_embree_control_20000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/road_hazard_embree_control_20000.log",
+      "status": "ok"
+    },
+    {
+      "command": "python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 20000 --iterations 5 --mode run --output-json docs/reports/goal1200_optix_slower_app_investigation/road_hazard_optix_control_20000.json",
+      "exit_code": 0,
+      "label": "road_hazard_optix_control_20000",
+      "log": "docs/reports/goal1200_optix_slower_app_investigation/road_hazard_optix_control_20000.log",
+      "status": "ok"
+    }
+  ]
+}
