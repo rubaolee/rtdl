@@ -1,0 +1,64 @@
+{
+  "boundary": "This packet resolves the remaining not-public-reviewed rows from valid Goal1194/Goal1193 same-contract evidence. It authorizes only source-of-truth status changes after external AI review; it does not move the v0.9.8 release tag and does not authorize whole-app claims.",
+  "date": "2026-05-01",
+  "goal": "Goal1224 resolve remaining public wording rows",
+  "mark_public_wording_blocked": [
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows"
+  ],
+  "min_public_ratio": 1.2,
+  "promote_to_public_wording_reviewed": [
+    "hausdorff_distance"
+  ],
+  "rows": [
+    {
+      "app": "graph_analytics",
+      "boundary": "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, and whole-app graph speedup remain outside this wording.",
+      "decision": "public_wording_blocked",
+      "embree_phase_sec": 1.0002804789692163,
+      "optix_phase_sec": 2.000505495816469,
+      "path_name": "graph_visibility_edges",
+      "positive_public_speedup": false,
+      "raw_ratio_embree_over_optix": 0.5000138620268926,
+      "review_ready": true,
+      "reviewed_wording": "RTDL's graph visibility_edges RTX sub-path has valid same-contract evidence, but measured 2.000505 s versus 1.000280 s for Embree, so the raw Embree-over-OptiX ratio is 0.50x and no positive public RTX speedup wording is authorized.",
+      "schema_ready": true,
+      "timing_ready": true
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "boundary": "Only native-assisted LSI/PIP candidate discovery is covered; exact polygon-area continuation, row materialization, Python setup, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording.",
+      "decision": "public_wording_blocked",
+      "embree_phase_sec": 2.89659671112895,
+      "optix_phase_sec": 3.4523619720712304,
+      "path_name": "native_assisted_lsi_pip_candidate_discovery",
+      "positive_public_speedup": false,
+      "raw_ratio_embree_over_optix": 0.8390188324867768,
+      "review_ready": true,
+      "reviewed_wording": "RTDL's polygon-pair candidate-discovery RTX sub-path has valid same-contract evidence, but measured 3.452362 s versus 2.896597 s for Embree, so the raw Embree-over-OptiX ratio is 0.84x and no positive public RTX speedup wording is authorized.",
+      "schema_ready": true,
+      "timing_ready": true
+    },
+    {
+      "app": "hausdorff_distance",
+      "boundary": "Only the prepared Hausdorff <= radius threshold-decision traversal sub-path is covered; exact Hausdorff distance, KNN rows, nearest-neighbor ranking, violating-ID witness output, Python setup, validation, and whole-app speedup remain outside this wording.",
+      "decision": "public_wording_reviewed",
+      "embree_phase_sec": 1.6802135026082397,
+      "optix_phase_sec": 0.12238904647529125,
+      "path_name": "directed_threshold_prepared",
+      "positive_public_speedup": true,
+      "raw_ratio_embree_over_optix": 13.72846305283907,
+      "review_ready": true,
+      "reviewed_wording": "RTDL's prepared Hausdorff threshold-decision RTX sub-path measured 0.122389 s and 13.73x versus the reviewed same-contract Embree directed-summary sub-path.",
+      "schema_ready": true,
+      "timing_ready": true
+    }
+  ],
+  "source_intake": "docs/reports/goal1194_goal1192_public_wording_evidence_batch_final_intake_2026-04-30.json",
+  "target_apps": [
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows",
+    "hausdorff_distance"
+  ],
+  "valid": true
+}

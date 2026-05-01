@@ -16,6 +16,7 @@ REVIEWED_APPS = {
     "ann_candidate_search",
     "facility_knn_assignment",
     "road_hazard_screening",
+    "hausdorff_distance",
     "barnes_hut_force_app",
 }
 
@@ -35,7 +36,7 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
             if row.status == "public_wording_reviewed"
         }
         self.assertEqual(reviewed, REVIEWED_APPS)
-        self.assertEqual(len(reviewed), 11)
+        self.assertEqual(len(reviewed), 12)
 
     def test_reviewed_rows_are_bounded_to_named_subpaths(self) -> None:
         matrix = rt.rtx_public_wording_matrix()
@@ -45,6 +46,8 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
                 self.assertEqual(row.evidence, "Goal1146")
             elif app == "road_hazard_screening":
                 self.assertEqual(row.evidence, "Goal1208")
+            elif app == "hausdorff_distance":
+                self.assertEqual(row.evidence, "Goal1224")
             elif app == "robot_collision_screening":
                 self.assertEqual(row.evidence, "Goal1126")
             elif app == "event_hotspot_screening":
@@ -57,6 +60,7 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
                 or "same-contract" in row.reviewed_wording
                 or "per-pose throughput" in row.reviewed_wording
                 or "same-scale Embree sub-path" in row.reviewed_wording
+                or "same-contract Embree" in row.reviewed_wording
             )
             self.assertNotIn("whole app", row.reviewed_wording.lower())
             self.assertNotIn("default mode", row.reviewed_wording.lower())
@@ -101,6 +105,25 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
         self.assertIn("prepared native road-hazard compact-summary", wording.boundary)
         self.assertIn("full GIS/routing", wording.boundary)
         self.assertIn("whole-app road-hazard speedup", wording.boundary)
+
+    def test_goal1224_resolves_remaining_not_reviewed_rows(self) -> None:
+        graph = rt.rtx_public_wording_status("graph_analytics")
+        polygon_pair = rt.rtx_public_wording_status("polygon_pair_overlap_area_rows")
+        hausdorff = rt.rtx_public_wording_status("hausdorff_distance")
+
+        self.assertEqual(graph.status, "public_wording_blocked")
+        self.assertEqual(graph.evidence, "Goal1224")
+        self.assertIn("0.50x", graph.reviewed_wording)
+        self.assertIn("BFS frontier bookkeeping", graph.boundary)
+        self.assertEqual(polygon_pair.status, "public_wording_blocked")
+        self.assertEqual(polygon_pair.evidence, "Goal1224")
+        self.assertIn("0.84x", polygon_pair.reviewed_wording)
+        self.assertIn("exact polygon-area continuation", polygon_pair.boundary)
+        self.assertEqual(hausdorff.status, "public_wording_reviewed")
+        self.assertEqual(hausdorff.evidence, "Goal1224")
+        self.assertIn("0.122389", hausdorff.reviewed_wording)
+        self.assertIn("13.73x", hausdorff.reviewed_wording)
+        self.assertIn("exact Hausdorff distance", hausdorff.boundary)
 
     def test_non_nvidia_apps_are_excluded_from_public_rtx_wording(self) -> None:
         for app in ("apple_rt_demo", "hiprt_ray_triangle_hitcount"):

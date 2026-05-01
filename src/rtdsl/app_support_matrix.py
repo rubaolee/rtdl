@@ -818,10 +818,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "graph_analytics": _public_wording(
         "graph_analytics",
-        PUBLIC_WORDING_NOT_REVIEWED,
-        _NO_GOAL1009_REVIEW,
-        "Goal889/Goal905/Goal929",
-        "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
+        PUBLIC_WORDING_BLOCKED,
+        "RTDL's graph visibility_edges RTX sub-path has valid same-contract evidence, but measured 2.000505 s versus 1.000280 s for Embree, so the raw Embree-over-OptiX ratio is 0.50x and no positive public RTX speedup wording is authorized.",
+        "Goal1224",
+        "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, and whole-app graph speedup remain outside this wording.",
     ),
     "apple_rt_demo": _public_wording(
         "apple_rt_demo",
@@ -874,10 +874,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "polygon_pair_overlap_area_rows": _public_wording(
         "polygon_pair_overlap_area_rows",
-        PUBLIC_WORDING_NOT_REVIEWED,
-        _NO_GOAL1009_REVIEW,
-        "Goal877/Goal929",
-        "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
+        PUBLIC_WORDING_BLOCKED,
+        "RTDL's polygon-pair candidate-discovery RTX sub-path has valid same-contract evidence, but measured 3.452362 s versus 2.896597 s for Embree, so the raw Embree-over-OptiX ratio is 0.84x and no positive public RTX speedup wording is authorized.",
+        "Goal1224",
+        "Only native-assisted LSI/PIP candidate discovery is covered; exact polygon-area continuation, row materialization, Python setup, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording.",
     ),
     "polygon_set_jaccard": _public_wording(
         "polygon_set_jaccard",
@@ -888,10 +888,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "hausdorff_distance": _public_wording(
         "hausdorff_distance",
-        PUBLIC_WORDING_NOT_REVIEWED,
-        _NO_GOAL1009_REVIEW,
-        "Goal887/Goal941",
-        "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared Hausdorff threshold-decision RTX sub-path measured 0.122389 s and 13.73x versus the reviewed same-contract Embree directed-summary sub-path.",
+        "Goal1224",
+        "Only the prepared Hausdorff <= radius threshold-decision traversal sub-path is covered; exact Hausdorff distance, KNN rows, nearest-neighbor ranking, violating-ID witness output, Python setup, validation, and whole-app speedup remain outside this wording.",
     ),
     "ann_candidate_search": _public_wording(
         "ann_candidate_search",

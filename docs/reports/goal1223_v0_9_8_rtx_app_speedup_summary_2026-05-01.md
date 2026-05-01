@@ -10,11 +10,12 @@ reviewed Embree sub-path. It is not a whole-app speedup claim.
 ## Summary
 
 - Current release: `v0.9.8`
-- Reviewed public RTX sub-path speedup rows: `11`
+- Reviewed public RTX sub-path speedup rows: `12` on the current post-release branch after Goal1224
 - Broad whole-app RTX speedup claims authorized: `0`
 - Non-NVIDIA app rows: `2`
 - Primary source: `docs/v1_0_rtx_app_status.md`
 - Release boundary source: `docs/release_reports/v0_9_8/support_matrix.md`
+- Release tag boundary: Goal1224 does not move the `v0.9.8` tag.
 
 ## App Table
 
@@ -32,25 +33,30 @@ reviewed Embree sub-path. It is not a whole-app speedup claim.
 | `ann_candidate_app` | Prepared fixed-radius candidate-coverage decision | Candidate coverage only, not ANN ranking/indexing | `4.86x` |
 | `barnes_hut_force_app` | Prepared fixed-radius node-coverage decision | Node-coverage query only, not force reduction | `240.56x` |
 | `database_analytics` | Prepared DB compact-summary traversal/filter/grouping | Real OptiX path, but public wording blocked because measured advantage is below the public threshold | `1.12x-1.16x`, blocked |
-| `graph_analytics` | Visibility any-hit plus native graph-ray candidate generation | RT-ready sub-paths exist, but no reviewed public speedup wording for the whole graph app | not public-reviewed |
-| `polygon_pair_overlap_area_rows` | Native-assisted LSI/PIP candidate discovery | Candidate discovery only; exact area continuation remains outside the claim | not public-reviewed |
+| `graph_analytics` | Visibility any-hit plus native graph-ray candidate generation | Valid same-contract evidence exists, but OptiX is slower than Embree; no positive public speedup wording is authorized | blocked / `0.50x` |
+| `polygon_pair_overlap_area_rows` | Native-assisted LSI/PIP candidate discovery | Valid same-contract evidence exists, but OptiX is slower than Embree; exact area continuation remains outside the claim | blocked / `0.84x` |
 | `polygon_set_jaccard` | Native-assisted LSI/PIP candidate discovery | Correctness-ready at safe chunk size, but public speedup wording is blocked | blocked / `n/a` |
-| `hausdorff_distance_app` | Prepared fixed-radius Hausdorff threshold decision | Threshold decision only, not exact Hausdorff distance | not public-reviewed |
+| `hausdorff_distance_app` | Prepared fixed-radius Hausdorff threshold decision | Threshold decision only, not exact Hausdorff distance | `13.73x` |
 | `apple_rt_demo_app` | Apple Metal/MPS RT path | Apple-specific app; not a NVIDIA RTX target | n/a |
 | `hiprt_ray_triangle_hitcount` | HIPRT-specific ray/triangle hit-count | HIPRT-specific app; not a NVIDIA RTX target | n/a |
 
 ## Interpretation
 
-v0.9.8 has reviewed public speedup wording for `11` bounded RTX sub-paths. These
-rows demonstrate RTDL can route app-critical kernels through NVIDIA OptiX/RTX
-traversal and compact native summary paths, but they do not authorize claims
-that RTDL accelerates entire apps.
+The current post-release branch has reviewed public speedup wording for `12`
+bounded RTX sub-paths after Goal1224. The `v0.9.8` tag remains unchanged; this
+report now records the current branch interpretation of the remaining three
+rows. These rows demonstrate RTDL can route app-critical kernels through NVIDIA
+OptiX/RTX traversal and compact native summary paths, but they do not authorize
+claims that RTDL accelerates entire apps.
 
-Several additional apps are RT-ready in code or evidence but remain blocked or
-not public-reviewed for speedup wording. The common blockers are same-scale
-evidence gaps, speedup below the public threshold, Python/interface dominance,
-row materialization, or postprocess/refinement work that is intentionally outside
-the RTX claim.
+Goal1224 resolves the prior not-public-reviewed rows: `hausdorff_distance_app`
+is reviewed for the prepared threshold-decision sub-path, while
+`graph_analytics` and `polygon_pair_overlap_area_rows` are blocked because valid
+same-contract evidence shows OptiX slower than Embree. Several additional apps
+are RT-ready in code or evidence but remain blocked for public speedup wording.
+The common blockers are same-scale evidence gaps, speedup below the public
+threshold, Python/interface dominance, row materialization, or
+postprocess/refinement work that is intentionally outside the RTX claim.
 
 ## Claim Boundary
 
