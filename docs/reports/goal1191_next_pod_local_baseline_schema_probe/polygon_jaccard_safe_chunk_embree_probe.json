@@ -1,0 +1,33 @@
+{
+  "app": "polygon_set_jaccard",
+  "backend": "embree",
+  "backend_mode": "embree_native_assisted",
+  "boundary": "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact grid-cell set-area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery and the same native C++ continuation. These modes are RT-candidate plus native-continuation pipelines, not monolithic GPU Jaccard kernels.",
+  "candidate_row_count": 6,
+  "copies": 2,
+  "left_polygon_count": 4,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell set-area/Jaccard continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU Jaccard kernel."
+  },
+  "output_mode": "summary",
+  "right_polygon_count": 4,
+  "row_count": 1,
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": false,
+  "run_phases": {
+    "input_construction_sec": 3.850006032735109e-05,
+    "native_exact_continuation_sec": 0.02579170896206051,
+    "rt_candidate_discovery_sec": 0.03278629097621888,
+    "summary_postprocess_sec": 9.59029421210289e-07
+  },
+  "summary": {
+    "intersection_area": 10,
+    "jaccard_similarity": 0.2631578947368421,
+    "left_area": 26,
+    "right_area": 22,
+    "union_area": 38
+  }
+}

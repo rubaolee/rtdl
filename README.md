@@ -15,10 +15,11 @@ The current released surface now spans geometric, nearest-neighbor, graph, and
 bounded database-style analytical workloads, but the language goal is broader
 than any one workload family alone.
 
-The current released version is `v0.9.6`. The release includes the existing
+The current released version is `v0.9.8`. The release includes the existing
 HIPRT line, exact bounded closest-hit support, Apple RT consolidation on macOS
 Apple Silicon, the bounded any-hit / visibility-row / emitted-row reduction
-slice, and prepared/prepacked repeated 2D visibility/count optimizations.
+slice, prepared/prepacked repeated 2D visibility/count optimizations, and the
+bounded RTX app evidence / public-claim cleanup package.
 
 `v0.9.5` added bounded any-hit / early-exit traversal as
 `rt.ray_triangle_any_hit(exact=False)`, line-of-sight helpers
@@ -96,27 +97,30 @@ broad RT-core acceleration claim:
 - `ann_candidate_search / candidate_threshold_prepared`: median RTX phase
   `0.105215` s, `4.86x` faster than the fastest same-semantics non-OptiX
   baseline for the measured sub-path
-- `facility_knn_assignment / coverage_threshold_prepared_recentered`: RTX
-  query phase `0.103119` s, `87.24x` faster than the reviewed same-contract CPU
+- `facility_knn_assignment / coverage_threshold_prepared_recentered`: RTX query
+  phase `0.111619` s, `80.60x` faster than the reviewed same-contract CPU
   oracle baseline for the prepared facility coverage-threshold query sub-path
+- `road_hazard_screening / prepared_native_compact_summary_40k`: RTX query
+  phase `0.230652` s, `3.53x` faster than the reviewed same-scale Embree
+  sub-path for the prepared native road-hazard compact-summary traversal/count
+  sub-path at 40k copies
 - `barnes_hut_force_app / node_coverage_prepared_rich`: RTX query phase
-  `0.240634` s, `222.19x` faster than the reviewed same-contract Embree
+  `0.222256` s, `240.56x` faster than the reviewed same-contract Embree
   node-coverage baseline for the prepared Barnes-Hut node-coverage query
   sub-path
 - `robot_collision_screening / prepared_pose_flags`: RTX query phase
-  `0.178698` s for 64M poses, `917.75x` per-pose throughput versus the
-  reviewed 36M chunked Embree any-hit baseline for the prepared robot
-  collision pose-count query sub-path
+  `0.178471` s, `918.91x normalized per-pose` versus the reviewed Embree
+  any-hit baseline for the prepared ray/triangle pose-count query sub-path
 
-`robot_collision_screening / prepared_pose_flags` now has reviewed normalized
-per-pose RTX wording after Goal1126. This is not a same-total-work wall-time
-claim and not a whole-app robot-planning claim; full robot kinematics, scene
+The robot wording is normalized per-pose only. It remains not a same-total-work
+wall-time claim and not a whole-app robot-planning claim; full robot kinematics, scene
 construction, ray packing, witness-row output, continuous collision detection,
-Python input construction, and whole-app planning speedup remain outside the
+Python input construction, and whole-app planning speedup remain outside any
 wording.
 
 Still outside public RTX claim review today: SQL/DBMS behavior, default
-row-materializing DB output, full road-hazard/GIS routing, unbounded
+row-materializing DB output, full road-hazard/GIS routing, road-hazard default
+app behavior or row output, unbounded
 segment/polygon pair-row volume, Hausdorff exact distance, ANN ranking or index
 speedup, and Barnes-Hut force reduction/opening-rule acceleration. The support
 matrix is the authority for whether a bounded sub-path is ready for claim
@@ -130,7 +134,21 @@ newer large-repeat and wording-review trail is in
 current-source Goal1121/Goal1123/Goal1126 wording trail is in
 `docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md` and
 `docs/reports/goal1123_two_ai_consensus_2026-04-29.md` and
-`docs/reports/goal1126_three_ai_consensus_2026-04-29.md`.
+`docs/reports/goal1126_three_ai_consensus_2026-04-29.md`; Goal1142 supersedes
+some earlier evidence for the current source window, Goal1146 re-promotes
+facility and Barnes-Hut, and Goal1126 authorizes only the robot normalized
+per-pose wording:
+`docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md`.
+Goal1177 adds recovered clean-source RTX A5000 batch evidence for external
+review input only; Goal1184 adds newer Goal1182 RTX A4500 batch evidence for
+external-review input only. Goal1177 does not add a new reviewed public wording row
+and does not authorize public speedup wording. Neither goal adds a new reviewed public wording row
+or authorizes public speedup wording. Goal1208
+authorizes exactly one later
+bounded public wording row for `road_hazard_screening /
+prepared_native_compact_summary_40k`; it does not authorize full GIS/routing,
+row-output, default-app, or whole-app road-hazard speedup wording:
+`docs/reports/goal1208_two_ai_consensus_2026-05-01.md`.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -160,11 +178,20 @@ bounded DB-style analytical workloads.
 
 ## Version Status At A Glance
 
-- current released version: `v0.9.6`
-- current mainline state: released `v0.9.6` bounded any-hit, visibility-row,
+- current released version: `v0.9.8`
+- current mainline state: released `v0.9.8` bounded RTX app evidence and
+  public-claim cleanup work on top of released `v0.9.6` bounded any-hit, visibility-row,
   and emitted-row reduction work on top of the released v0.7 DB, v0.8 app,
   v0.9 HIPRT/closest-hit, v0.9.4 Apple RT consolidation, and
   prepared/prepacked repeated visibility/count optimization lines
+- released `v0.9.8` surface:
+  - public RTX app wording is synchronized to `11` reviewed sub-path rows
+  - `road_hazard_screening / prepared_native_compact_summary_40k` is the only
+    newly reviewed public RTX speedup wording row
+  - `database_analytics` and `polygon_set_jaccard` public speedup wording
+    remain blocked
+  - no broad app-suite, whole-app, or all-OptiX RT-core speedup claim is
+    authorized
 - released `v0.9.6` surface:
   - `ray_triangle_any_hit` emits `{ray_id, any_hit}` rows and allows early
     termination after the first accepted triangle hit
@@ -302,6 +329,10 @@ For exact status:
 - [RTDL v0.9 Release Package](docs/release_reports/v0_9/README.md)
 - [Backend Maturity](docs/backend_maturity.md)
 - [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
+- [RTDL v0.9.8 Release Package](docs/release_reports/v0_9_8/README.md)
+- [RTDL v0.9.8 Release Statement](docs/release_reports/v0_9_8/release_statement.md)
+- [RTDL v0.9.8 Support Matrix](docs/release_reports/v0_9_8/support_matrix.md)
+- [RTDL v0.9.8 Audit Report](docs/release_reports/v0_9_8/audit_report.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
 - [RTDL v0.9.6 Release Package](docs/release_reports/v0_9_6/README.md)
 - [RTDL v0.9.6 Release Statement](docs/release_reports/v0_9_6/release_statement.md)
@@ -725,7 +756,7 @@ If you want the application/demo side:
 
 Current release:
 
-- `v0.9.6`
+- `v0.9.8`
 
 Current mainline release line:
 
@@ -745,6 +776,11 @@ Current mainline release line:
   any-hit, Apple RT 2D MPS-prism any-hit after backend rebuild, and
   prepared/prepacked visibility/count paths for Apple RT, OptiX, HIPRT, and
   Vulkan under bounded scalar/compact-output contracts
+- released `v0.9.8` carries the bounded RTX app-evidence and public-claim
+  cleanup line: 11 reviewed RTX app rows, road-hazard detection as the only
+  newly promoted public row in this release, and strict blocking of DB full
+  output and polygon Jaccard public speedup wording until matching evidence
+  exists
 
 Newest released graph workload surface:
 
@@ -814,8 +850,8 @@ Release and preview layers inside the current repository:
   - combines the untagged `v0.9.2`/`v0.9.3` Apple work with Apple Metal compute
     DB/graph slices, final release docs, full tests, and audit gates
   - Apple RT is not yet claimed as broadly faster than Embree
-- `v0.9.5`: previous public release
-- `v0.9.6`: current public release
+- `v0.9.5`: earlier public release
+- `v0.9.6`: previous backend-feature public release
   - adds `ray_triangle_any_hit`, `visibility_rows`, and `reduce_rows`
   - native early-exit any-hit exists for OptiX, Embree, HIPRT, and Vulkan when
     the backend library is rebuilt
@@ -825,6 +861,10 @@ Release and preview layers inside the current repository:
     app path; do not generalize it to full emitted-row performance
   - `reduce_rows` is a Python helper over emitted rows, not native backend
     acceleration
+- `v0.9.8`: current public release
+  - releases the bounded RTX app-evidence package and public wording state
+  - keeps DB full output and polygon Jaccard speedup wording blocked
+  - does not widen broad whole-app, generic RT-core, or backend-flag-only claims
 
 Current public demo artifact:
 
@@ -834,6 +874,8 @@ For exact backend/workload status, use:
 
 - [RTDL v0.9 Support Matrix](docs/release_reports/v0_9/support_matrix.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
+- [RTDL v0.9.8 Release Package](docs/release_reports/v0_9_8/README.md)
+- [RTDL v0.9.8 Support Matrix](docs/release_reports/v0_9_8/support_matrix.md)
 - [RTDL v0.9.6 Release Package](docs/release_reports/v0_9_6/README.md)
 - [RTDL Current Main Support Matrix](docs/current_main_support_matrix.md)
 - [RTDL v0.9.6 Support Matrix](docs/release_reports/v0_9_6/support_matrix.md)
@@ -918,9 +960,9 @@ For broader context:
 Important honesty boundaries:
 
 - the current released surface is strongest on geometric and nearest-neighbor workloads
-- the current v0.9 line is released as `v0.9.6`, but it is still bounded by the
-  documented Linux HIPRT, closest-hit, Apple RT, any-hit, visibility-row, and
-  emitted-row reduction support matrices
+- the current v0.9 line is released as `v0.9.8`, but it is still bounded by the
+  documented Linux HIPRT, closest-hit, Apple RT, any-hit, visibility-row,
+  emitted-row reduction, and RTX app-evidence support matrices
 - visual demos are bounded RTDL-plus-Python applications, not a renderer claim
 - backend/platform availability is not identical on every machine
 - Linux remains the primary validation platform

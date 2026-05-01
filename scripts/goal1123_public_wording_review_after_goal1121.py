@@ -14,9 +14,9 @@ sys.path.insert(0, str(ROOT / "src"))
 import rtdsl as rt
 
 DATE = "2026-04-29"
-GOAL = "Goal1123 public RTX wording review after Goal1121"
+GOAL = "Goal1123 public RTX wording review after Goal1142"
 
-INTAKE = ROOT / "docs" / "reports" / "goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json"
+INTAKE = ROOT / "docs" / "reports" / "goal1142_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json"
 FACILITY_CPU = ROOT / "docs" / "reports" / "goal1101_current_contract_non_optix_baselines" / "facility_recentered_2_5m_cpu_oracle_baseline.json"
 FACILITY_EMBREE = ROOT / "docs" / "reports" / "goal1101_current_contract_non_optix_baselines" / "facility_recentered_2_5m_embree_baseline.json"
 BARNES_EMBREE = ROOT / "docs" / "reports" / "goal1101_current_contract_non_optix_baselines" / "barnes_hut_depth8_20m_embree_timing_baseline.json"
@@ -163,7 +163,7 @@ def build_packet() -> dict[str, Any]:
         "public_speedup_claim_authorized": False,
         "rows": rows,
         "boundary": (
-            "Goal1123 is a public-wording review packet after Goal1121/Goal1122. It proposes "
+            "Goal1123 is a public-wording review packet after Goal1142 same-source RTX evidence. It proposes "
             "narrow wording for two prepared RTX query sub-paths, keeps robot speedup wording "
             "blocked, and does not itself edit public docs or authorize release."
         ),
@@ -172,7 +172,7 @@ def build_packet() -> dict[str, Any]:
 
 def to_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        "# Goal1123 Public RTX Wording Review After Goal1121",
+        "# Goal1123 Public RTX Wording Review After Goal1142",
         "",
         f"Date: {payload['date']}",
         "",

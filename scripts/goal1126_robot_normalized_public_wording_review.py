@@ -11,9 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DATE = "2026-04-29"
 GOAL = "Goal1126 robot normalized public RTX wording review"
 
-RTX_64M = ROOT / "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1121.json"
+RTX_64M = ROOT / "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1142.json"
 RTX_VALIDATION = ROOT / "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json"
-RTX_INTAKE = ROOT / "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json"
+RTX_INTAKE = ROOT / "docs/reports/goal1142_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json"
 EMBREE_36M = ROOT / "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json"
 GOAL1123 = ROOT / "docs/reports/goal1123_public_wording_review_after_goal1121_2026-04-29.json"
 

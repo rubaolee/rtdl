@@ -18,12 +18,12 @@
   },
   "date": "2026-04-22",
   "edge_ray_count": 32000000,
-  "generated_at": "2026-04-29T15:29:54",
+  "generated_at": "2026-04-29T20:09:15",
   "host": {
-    "hostname": "812b49ce658e",
+    "hostname": "09d2c4c4b876",
     "machine": "x86_64",
-    "platform": "Linux-5.15.0-124-generic-x86_64-with-glibc2.35",
-    "python": "3.11.10"
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
   },
   "input_mode": "packed_arrays",
   "iterations": 7,
@@ -32,18 +32,18 @@
   "obstacle_count": 4096,
   "obstacle_triangle_count": 8192,
   "phases": {
-    "close_sec": 0.003537026233971119,
-    "optix_prepare_pose_indices_sec": 0.014889965765178204,
-    "optix_prepare_rays_sec": 0.7919741179794073,
-    "optix_prepare_scene_sec": 1.142176117748022,
+    "close_sec": 0.006364275701344013,
+    "optix_prepare_pose_indices_sec": 0.019041097722947598,
+    "optix_prepare_rays_sec": 1.084119469858706,
+    "optix_prepare_scene_sec": 1.5963737070560455,
     "oracle_validate_sec": 0.0,
     "prepared_pose_flags_warm_query_sec": {
-      "max_sec": 0.6391031527891755,
-      "median_sec": 0.013836648315191269,
-      "min_sec": 0.013751793652772903
+      "max_sec": 0.9109029956161976,
+      "median_sec": 0.018729395233094692,
+      "min_sec": 0.017255191691219807
     },
-    "python_input_construction_sec": 9.324892562814057,
-    "total_sec": 15.15966095495969
+    "python_input_construction_sec": 9.539700199849904,
+    "total_sec": 17.279486659914255
   },
   "pose_count": 8000000,
   "result": {
@@ -54,7 +54,7 @@
   },
   "result_mode": "pose_count",
   "schema_version": "goal825_tier1_phase_contract_v1",
-  "source_commit": "2ba7ae0",
+  "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
   "suite": "Goal760 OptiX robot pose-flags phase profiler",
   "validated": false
 }

@@ -22,8 +22,8 @@ Do not start paid cloud per app. Use one batched pod only after local manifest, 
 
 | App | Why | Command |
 | --- | --- | --- |
-| `facility_knn_assignment` | `Goal1058 RTX A5000 diagnostic rerun validated facility coverage with oracle parity. Public speedup wording remains blocked until a separate baseline/timing wording review authorizes a bounded sub-path claim.` | `PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` |
-| `robot_collision_screening` | `Goal1058 RTX A5000 diagnostic rerun validated robot pose flags with oracle parity. Public speedup wording remains blocked because the claim-review path still needs timing-floor/baseline review.` | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` |
+| `facility_knn_assignment` | `Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 promoted narrow prepared coverage-threshold public wording only; ranked KNN assignment, fallback assignment, Python setup, and whole-app speedup remain outside the claim.` | `PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` |
+| `robot_collision_screening` | `Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 replaced stale-source 64M robot timing with same-source bounded sub-path evidence. Goal1126 accepted explicit normalized per-pose public wording only; this is not a same-total-work wall-time or whole-app robot-planning claim.` | `PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` |
 
 ## Same-Semantics Review Needed
 
@@ -35,17 +35,19 @@ Do not start paid cloud per app. Use one batched pod only after local manifest, 
 | `polygon_pair_overlap_area_rows` | native-assisted candidate-discovery path only; no full polygon-area speedup claim | exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review |
 | `polygon_set_jaccard` | native-assisted candidate-discovery path only; no full Jaccard speedup claim | exact set-area/Jaccard refinement remains CPU/Python-owned, and larger chunk sizes are diagnostic failures until root-caused |
 | `hausdorff_distance` | prepared Hausdorff <= radius decision sub-path may enter claim review; no exact-distance speedup claim | exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, and whole-app speedup remain outside the claim |
-| `barnes_hut_force_app` | prepared Barnes-Hut node-coverage decision sub-path may enter claim review; no force-vector or opening-rule speedup claim | Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim |
 
 ## Reviewed Rows To Preserve
 
 - `service_coverage_gaps`
 - `event_hotspot_screening`
+- `facility_knn_assignment`
 - `segment_polygon_hitcount`
 - `segment_polygon_anyhit_rows`
 - `ann_candidate_search`
 - `outlier_detection`
 - `dbscan_clustering`
+- `robot_collision_screening`
+- `barnes_hut_force_app`
 
 ## Next Local Actions
 

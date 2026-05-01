@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import socket
+import subprocess
 import sys
 import time
 from datetime import datetime
@@ -22,6 +24,44 @@ from examples import rtdl_polygon_set_jaccard as jaccard_app
 
 GOAL = "Goal877 polygon overlap OptiX phase profiler"
 DATE = "2026-04-24"
+SCHEMA_VERSION = "goal877_polygon_overlap_optix_phase_contract_v2"
+JACCARD_PUBLIC_SAFE_CHUNK_MIN = 512
+JACCARD_PUBLIC_SAFE_CHUNK_MAX = 4096
+
+
+def _jaccard_chunk_policy(app: str, output_mode: str, chunk_copies: int) -> dict[str, Any] | None:
+    if app != "jaccard" or output_mode != "summary":
+        return None
+    public_safe = JACCARD_PUBLIC_SAFE_CHUNK_MIN <= chunk_copies <= JACCARD_PUBLIC_SAFE_CHUNK_MAX
+    return {
+        "policy": "public_safe" if public_safe else "diagnostic_only",
+        "public_safe": public_safe,
+        "chunk_copies": chunk_copies,
+        "safe_min": JACCARD_PUBLIC_SAFE_CHUNK_MIN,
+        "safe_max": JACCARD_PUBLIC_SAFE_CHUNK_MAX,
+        "reason": (
+            "Goal1164/Goal1200 evidence supports public Jaccard summary checks only for reviewed safe chunks."
+            if public_safe
+            else "This chunk size is diagnostic-only; prior RTX evidence showed some smaller chunks can miss candidates."
+        ),
+    }
+
+
+def _source_commit() -> str | None:
+    if os.environ.get("RTDL_SOURCE_COMMIT"):
+        return os.environ["RTDL_SOURCE_COMMIT"]
+    completed = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if completed.returncode == 0:
+        value = completed.stdout.strip()
+        return value or None
+    return None
 
 
 def _canonical(value: Any) -> Any:
@@ -229,6 +269,7 @@ def run_profile(
         raise ValueError("analytic_summary validation is only valid with summary output")
     if chunk_copies < 1:
         raise ValueError("chunk_copies must be >= 1")
+    chunk_policy = _jaccard_chunk_policy(app, output_mode, chunk_copies)
 
     phases: dict[str, float | None] = {}
     chunk_count: int | None = None
@@ -343,6 +384,8 @@ def run_profile(
     }
     if error is not None:
         status = "needs_optix_runtime"
+    elif chunk_policy is not None and not chunk_policy["public_safe"]:
+        status = "diagnostic_chunk_config"
     elif mode == "dry-run" or validation_mode == "none" or parity:
         status = "pass"
     else:
@@ -350,6 +393,8 @@ def run_profile(
     return {
         "goal": GOAL,
         "date": DATE,
+        "schema_version": SCHEMA_VERSION,
+        "source_commit": _source_commit(),
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "host": {
             "hostname": socket.gethostname(),
@@ -364,6 +409,7 @@ def run_profile(
         "validation_mode": validation_mode,
         "chunk_copies": chunk_copies if output_mode == "summary" else None,
         "chunk_count": chunk_count,
+        "chunk_policy": chunk_policy,
         "phases": phases,
         "cpu_digest": _canonical(cpu_payload) if cpu_payload is not None else None,
         "optix_digest": _canonical(optix_payload) if optix_payload is not None else None,
@@ -408,6 +454,11 @@ def run_profile(
                 "validation_mode",
                 "output_mode",
             ),
+            "chunk_policy": (
+                "polygon-set Jaccard public evidence requires chunk_policy.public_safe=true"
+                if app == "jaccard" and output_mode == "summary"
+                else "not_applicable"
+            ),
         },
     }
 
@@ -423,7 +474,16 @@ def main(argv: list[str] | None = None) -> int:
         choices=("full_reference", "analytic_summary", "none"),
         default="full_reference",
     )
-    parser.add_argument("--chunk-copies", type=int, default=100)
+    parser.add_argument(
+        "--chunk-copies",
+        type=int,
+        default=512,
+        help=(
+            "Copies per OptiX chunk. Goal1164 RTX evidence showed that "
+            "polygon-set Jaccard at 8192 copies is safe at 512-4096, while "
+            "256 can miss candidates and 8192 can overflow output capacity."
+        ),
+    )
     parser.add_argument("--output-json", type=Path, required=True)
     args = parser.parse_args(argv)
     payload = run_profile(
@@ -434,9 +494,10 @@ def main(argv: list[str] | None = None) -> int:
         validation_mode=args.validation_mode,
         chunk_copies=args.chunk_copies,
     )
+    args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"output_json": str(args.output_json), "status": payload["status"]}, sort_keys=True))
-    return 0 if payload["status"] in {"pass", "needs_optix_runtime"} else 1
+    return 0 if payload["status"] in {"pass", "needs_optix_runtime", "diagnostic_chunk_config"} else 1
 
 
 if __name__ == "__main__":

@@ -98,12 +98,18 @@ GIS/routing behavior, unbounded pair-row output, exact Hausdorff distance, ANN
 ranking/index behavior, Barnes-Hut opening-rule/force reduction, and broad
 whole-app speedup remain outside the claim unless the support matrix and a
 later review explicitly authorize them.
-`robot_collision_screening / prepared_pose_flags` now has reviewed normalized
-per-pose RTX wording after Goal1126: it is a real bounded RT-core path, not a
-same-total-work wall-time claim and not a whole-app robot-planning claim.
-Goal1123 accepted narrow public wording for facility coverage-threshold and
-Barnes-Hut node-coverage prepared RTX query sub-paths; Goal1126 accepted the
-robot normalized per-pose wording.
+`facility_knn_assignment / coverage_threshold_prepared_recentered`,
+`road_hazard_screening / prepared_native_compact_summary_40k`,
+and `barnes_hut_force_app / node_coverage_prepared_rich` have reviewed
+bounded public RTX sub-path wording after Goal1146 and Goal1208.
+`robot_collision_screening / prepared_pose_flags` has reviewed Goal1126
+normalized per-pose wording only; it is not a same-total-work wall-time claim
+and not a whole-app robot-planning claim.
+Goal1177 adds recovered clean-source RTX A5000 batch evidence for external
+review input only. Goal1184 adds newer Goal1182 RTX A4500 batch evidence for
+external-review input only. Neither goal adds a new reviewed public wording row
+or authorizes public speedup wording. Goal1177 does not add a new reviewed public wording row
+and does not authorize public speedup wording. Goal1208 authorizes only the bounded road-hazard prepared native compact-summary wording; full GIS/routing, default-app behavior, row output, and whole-app road-hazard speedup remain outside the claim.
 
 Current supported workload families:
 

@@ -16,6 +16,8 @@ PUBLIC_RELEASE_DOCS = (
     "README.md",
     "docs/README.md",
     "docs/current_main_support_matrix.md",
+    "docs/release_reports/v0_9_8/README.md",
+    "docs/release_reports/v0_9_8/audit_report.md",
     "docs/release_reports/v0_9_6/README.md",
     "docs/release_reports/v0_9_6/audit_report.md",
 )
@@ -36,10 +38,10 @@ def _extract_public_release_versions() -> list[str]:
         text = _read(rel_path)
         for match in re.finditer(r"current released version(?: is|:)\s*`(v[0-9.]+)`", text):
             versions.add(match.group(1))
-        if "Status: released as `v0.9.6`" in text:
-            versions.add("v0.9.6")
-        if "current public release: `v0.9.6`" in text.lower():
-            versions.add("v0.9.6")
+        for match in re.finditer(r"Status: released as `(v[0-9.]+)`", text):
+            versions.add(match.group(1))
+        for match in re.finditer(r"current public release:\s*`(v[0-9.]+)`", text, re.IGNORECASE):
+            versions.add(match.group(1))
     return sorted(versions)
 
 
@@ -68,8 +70,9 @@ def build_audit() -> dict[str, Any]:
     history_status = "drift_detected" if history_drift_detected else "drift_resolved"
     refresh_current = (
         "/Users/rl2025/rtdl_python_only" in refresh
-        and "v0.9.6" in refresh
-        and "v1.0 RTX" in refresh
+        and "Current release/version facts belong in release docs and reports, not in this" in refresh
+        and "2-AI consensus" in refresh
+        and "Claude or Gemini" in refresh
     )
     full_suite_evidence = {
         "command": "PYTHONPATH=src:. python3 -m unittest discover -s tests -p '*_test.py' -v",
@@ -95,14 +98,14 @@ def build_audit() -> dict[str, Any]:
         "refresh_context_current": refresh_current,
         "full_suite_evidence": full_suite_evidence,
         "recommended_next_action": (
-            "Append or regenerate a post-v0.9.6 history catch-up round so "
+            "Append or regenerate a post-current-release history catch-up round so "
             "history/COMPLETE_HISTORY.md and history/revision_dashboard.md match "
-            "the released v0.9.6 public docs. Do not rewrite old records."
+            "the released public docs. Do not rewrite old records."
             if history_drift_detected
-            else "Goal1023 has resolved the v0.9.6 public-history drift; keep future release history catch-ups append-only."
+            else "The public-history drift is resolved for the current public release; keep future release history catch-ups append-only."
         ),
         "valid": (
-            current_public_release == "v0.9.6"
+            current_public_release == "v0.9.8"
             and release_report_claims_history_catchup
             and all(history_presence.values())
             and refresh_current

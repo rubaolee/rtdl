@@ -198,6 +198,38 @@ class _RtdlDbGroupedSumRow(ctypes.Structure):
     ]
 
 
+_DB_COMPACT_SUMMARY_OP_SCAN_COUNT = 1
+_DB_COMPACT_SUMMARY_OP_GROUPED_COUNT = 2
+_DB_COMPACT_SUMMARY_OP_GROUPED_SUM = 3
+
+
+class _RtdlDbCompactSummaryRequest(ctypes.Structure):
+    _fields_ = [
+        ("operation", ctypes.c_uint32),
+        ("clauses", ctypes.c_void_p),
+        ("clause_count", ctypes.c_size_t),
+        ("group_key_field", ctypes.c_char_p),
+        ("value_field", ctypes.c_char_p),
+    ]
+
+
+class _RtdlDbCompactSummaryResult(ctypes.Structure):
+    _fields_ = [
+        ("operation", ctypes.c_uint32),
+        ("scalar_value", ctypes.c_size_t),
+        ("count_rows", ctypes.POINTER(_RtdlDbGroupedCountRow)),
+        ("count_row_count", ctypes.c_size_t),
+        ("sum_rows", ctypes.POINTER(_RtdlDbGroupedSumRow)),
+        ("sum_row_count", ctypes.c_size_t),
+        ("traversal", ctypes.c_double),
+        ("bitset_copyback", ctypes.c_double),
+        ("exact_filter", ctypes.c_double),
+        ("output_pack", ctypes.c_double),
+        ("raw_candidate_count", ctypes.c_size_t),
+        ("emitted_count", ctypes.c_size_t),
+    ]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Row-view wrapper (RAII-style, mirrors EmbreeRowView)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1492,6 +1524,30 @@ class OptixPreparedDbDataset:
     def last_phase_timings(self) -> dict[str, float | int] | None:
         return _get_last_db_phase_timings_from_library(self.library)
 
+    def compact_summary_batch_native(self, requests_array, request_count):
+        symbol = getattr(self.library, "rtdl_optix_db_dataset_compact_summary_batch", None)
+        if symbol is None:
+            return None
+        results_ptr = ctypes.POINTER(_RtdlDbCompactSummaryResult)()
+        result_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self.handle,
+            requests_array,
+            ctypes.c_size_t(request_count),
+            ctypes.byref(results_ptr),
+            ctypes.byref(result_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return results_ptr, int(result_count.value)
+
+    def destroy_compact_summary_batch_results(self, results_ptr, result_count: int) -> None:
+        symbol = getattr(self.library, "rtdl_optix_db_compact_summary_results_destroy", None)
+        if symbol is not None:
+            symbol(results_ptr, ctypes.c_size_t(result_count))
+
     def grouped_count(self, clauses_array, group_key_field: bytes) -> OptixRowView:
         rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
         row_count_out = ctypes.c_size_t()
@@ -1598,6 +1654,133 @@ class PreparedOptixDbDataset:
 
     def last_phase_timings(self) -> dict[str, float | int] | None:
         return self._dataset.last_phase_timings()
+
+    def compact_summary_batch(self, requests) -> dict[str, object]:
+        native = self._compact_summary_batch_native(requests)
+        if native is not None:
+            return native
+        results: dict[str, object] = {}
+        phases: dict[str, object] = {}
+        for request in requests:
+            name = str(request["name"])
+            operation = str(request["operation"])
+            if operation == "conjunctive_scan_count":
+                results[name] = self.conjunctive_scan_count(request["predicates"])
+            elif operation == "grouped_count_summary":
+                results[name] = self.grouped_count_summary(request["query"])
+            elif operation == "grouped_sum_summary":
+                results[name] = self.grouped_sum_summary(request["query"])
+            else:
+                raise ValueError(f"unsupported DB compact-summary batch operation: {operation}")
+            phases[name] = self.last_phase_timings()
+        self._last_compact_summary_batch_phase_timings = phases
+        return results
+
+    def last_compact_summary_batch_phase_timings(self) -> dict[str, object]:
+        return dict(getattr(self, "_last_compact_summary_batch_phase_timings", {}))
+
+    def _compact_summary_batch_native(self, requests) -> dict[str, object] | None:
+        if not hasattr(self, "_dataset"):
+            return None
+        if getattr(self._dataset.library, "rtdl_optix_db_dataset_compact_summary_batch", None) is None:
+            return None
+
+        encoded_requests: list[_RtdlDbCompactSummaryRequest] = []
+        request_meta: list[dict[str, object]] = []
+        keepalive: list[object] = []
+        for request in requests:
+            operation = str(request["operation"])
+            if operation == "conjunctive_scan_count":
+                bundle = normalize_predicate_bundle(request["predicates"])
+                clauses_array = _encode_db_clauses(self._encode_clauses(bundle.clauses))
+                keepalive.append(clauses_array)
+                encoded_requests.append(
+                    _RtdlDbCompactSummaryRequest(
+                        _DB_COMPACT_SUMMARY_OP_SCAN_COUNT,
+                        ctypes.cast(clauses_array, ctypes.c_void_p),
+                        len(clauses_array),
+                        None,
+                        None,
+                    )
+                )
+                request_meta.append({"name": str(request["name"]), "operation": operation})
+            elif operation in {"grouped_count_summary", "grouped_sum_summary"}:
+                normalized_query = normalize_grouped_query(request["query"])
+                if len(normalized_query.group_keys) != 1:
+                    raise ValueError("first-wave OptiX DB compact summary batch supports exactly one group key")
+                group_key = normalized_query.group_keys[0]
+                if operation == "grouped_sum_summary" and not normalized_query.value_field:
+                    raise ValueError("grouped_sum_summary requires a value_field")
+                clauses_array = _encode_db_clauses(self._encode_clauses(normalized_query.predicates))
+                group_key_field = group_key.encode("utf-8")
+                value_field = (
+                    normalized_query.value_field.encode("utf-8")
+                    if operation == "grouped_sum_summary"
+                    else None
+                )
+                keepalive.extend(item for item in (clauses_array, group_key_field, value_field) if item is not None)
+                encoded_requests.append(
+                    _RtdlDbCompactSummaryRequest(
+                        _DB_COMPACT_SUMMARY_OP_GROUPED_SUM
+                        if operation == "grouped_sum_summary"
+                        else _DB_COMPACT_SUMMARY_OP_GROUPED_COUNT,
+                        ctypes.cast(clauses_array, ctypes.c_void_p),
+                        len(clauses_array),
+                        group_key_field,
+                        value_field,
+                    )
+                )
+                request_meta.append({"name": str(request["name"]), "operation": operation, "group_key": group_key})
+            else:
+                raise ValueError(f"unsupported DB compact-summary batch operation: {operation}")
+
+        requests_array = (_RtdlDbCompactSummaryRequest * len(encoded_requests))(*encoded_requests)
+        native_result = self._dataset.compact_summary_batch_native(requests_array, len(encoded_requests))
+        if native_result is None:
+            return None
+        results_ptr, result_count = native_result
+        try:
+            if result_count != len(request_meta):
+                raise RuntimeError("OptiX compact-summary batch returned an unexpected result count")
+            results: dict[str, object] = {}
+            phases: dict[str, object] = {}
+            for index, meta in enumerate(request_meta):
+                result = results_ptr[index]
+                name = str(meta["name"])
+                operation = str(meta["operation"])
+                phases[name] = {
+                    "traversal": float(result.traversal),
+                    "bitset_copyback": float(result.bitset_copyback),
+                    "exact_filter": float(result.exact_filter),
+                    "output_pack": float(result.output_pack),
+                    "raw_candidate_count": int(result.raw_candidate_count),
+                    "emitted_count": int(result.emitted_count),
+                }
+                if operation == "conjunctive_scan_count":
+                    results[name] = int(result.scalar_value)
+                elif operation == "grouped_count_summary":
+                    group_key = str(meta["group_key"])
+                    reverse_map = self._reverse_maps.get(group_key)
+                    results[name] = {
+                        str(_decode_db_group_key(reverse_map, result.count_rows[row_index].group_key)): int(
+                            result.count_rows[row_index].count
+                        )
+                        for row_index in range(int(result.count_row_count))
+                    }
+                elif operation == "grouped_sum_summary":
+                    group_key = str(meta["group_key"])
+                    reverse_map = self._reverse_maps.get(group_key)
+                    results[name] = {
+                        str(_decode_db_group_key(reverse_map, result.sum_rows[row_index].group_key)): int(
+                            result.sum_rows[row_index].sum
+                        )
+                        for row_index in range(int(result.sum_row_count))
+                    }
+            self._last_compact_summary_batch_phase_timings = phases
+            keepalive.append(requests_array)
+            return results
+        finally:
+            self._dataset.destroy_compact_summary_batch_results(results_ptr, result_count)
 
     def grouped_count(self, query) -> tuple[dict[str, object], ...]:
         normalized_query = normalize_grouped_query(query)
@@ -3575,6 +3758,24 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_dataset_compact_summary_batch")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlDbCompactSummaryRequest),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlDbCompactSummaryResult)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_db_compact_summary_results_destroy")
+    if symbol is not None:
+        symbol.argtypes = [ctypes.POINTER(_RtdlDbCompactSummaryResult), ctypes.c_size_t]
+        symbol.restype = None
 
 
 def _require_backend_symbol(lib, symbol_name: str):

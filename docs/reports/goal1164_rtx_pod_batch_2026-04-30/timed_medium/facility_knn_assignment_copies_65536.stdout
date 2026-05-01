@@ -1,0 +1,36 @@
+{
+  "app": "facility_knn_assignment",
+  "backend": "optix",
+  "boundary": "Coverage-threshold decision only; this is not nearest-depot ranking, not K=3 fallback assignment, and not a facility-location optimizer.",
+  "copies": 65536,
+  "coverage_threshold": {
+    "all_customers_covered": true,
+    "covered_customer_count": 262144,
+    "customer_count": 262144,
+    "identity_parity_available": true,
+    "radius": 1.0,
+    "row_count": null,
+    "summary_mode": "scalar_threshold_count",
+    "uncovered_customer_ids": []
+  },
+  "customer_count": 262144,
+  "depot_count": 262144,
+  "k": null,
+  "matches_oracle": true,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_threshold_count",
+  "optix_summary_mode": "coverage_threshold_prepared",
+  "oracle_coverage_threshold": {
+    "all_customers_covered": true,
+    "covered_customer_count": 262144,
+    "customer_count": 262144,
+    "radius": 1.0,
+    "uncovered_customer_ids": []
+  },
+  "oracle_decision_matches": true,
+  "oracle_identity_matches": true,
+  "output_mode": "summary",
+  "rt_core_accelerated": true,
+  "rtdl_role": "RTDL/OptiX uses prepared fixed-radius threshold traversal to answer the bounded facility-coverage decision: every customer has at least one depot within the service radius.",
+  "service_radius": 1.0
+}

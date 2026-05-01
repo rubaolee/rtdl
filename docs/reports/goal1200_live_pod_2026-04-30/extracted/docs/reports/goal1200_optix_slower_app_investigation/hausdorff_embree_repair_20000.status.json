@@ -1,0 +1,7 @@
+{
+  "command": "timeout 600s python3 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 20000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_20000.json",
+  "exit_code": 0,
+  "label": "hausdorff_embree_repair_20000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_embree_repair_20000.log",
+  "status": "ok"
+}

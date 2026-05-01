@@ -44,10 +44,16 @@ class Goal1007LargerScaleRtxRepeatPlanTest(unittest.TestCase):
             targets[("robot_collision_screening", "prepared_pose_flags")][
                 "current_public_wording_status"
             ],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
         self.assertIn(
-            "100 ms",
+            "normalized per-pose",
+            targets[("robot_collision_screening", "prepared_pose_flags")][
+                "current_public_wording_boundary"
+            ],
+        )
+        self.assertIn(
+            "whole-app planning speedup",
             targets[("robot_collision_screening", "prepared_pose_flags")][
                 "current_public_wording_boundary"
             ],

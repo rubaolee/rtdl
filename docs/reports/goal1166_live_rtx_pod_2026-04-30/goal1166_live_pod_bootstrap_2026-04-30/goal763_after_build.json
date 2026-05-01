@@ -1,0 +1,100 @@
+{
+  "boundary": "This bootstrap check verifies cloud build/test readiness. It does not run performance benchmarks and does not authorize RTX speedup claims.",
+  "dry_run": false,
+  "preflight": {
+    "cuda_header_exists": true,
+    "cuda_prefix": "/usr/local/cuda",
+    "geos": {
+      "geos_c_library": "libgeos_c.so.1",
+      "geos_c_library_found": true,
+      "install_hint_linux": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config",
+      "pkg_config": "/usr/bin/pkg-config",
+      "pkg_config_exists": true,
+      "pkg_config_geos_package": "geos",
+      "pkg_config_packages": {
+        "geos": {
+          "command": [
+            "/usr/bin/pkg-config",
+            "--libs",
+            "geos"
+          ],
+          "output_tail": "-lgeos_c \n",
+          "returncode": 0
+        },
+        "geos_c": {
+          "command": [
+            "/usr/bin/pkg-config",
+            "--libs",
+            "geos_c"
+          ],
+          "output_tail": "Package geos_c was not found in the pkg-config search path.\nPerhaps you should add the directory containing `geos_c.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'geos_c', required by 'virtual:world', not found\n",
+          "returncode": 1
+        }
+      },
+      "why_required": "Strict RTDL cloud gates may build the native CPU/oracle reference path. That build links GEOS C via libgeos_c; without libgeos-dev/pkg-config, graph and spatial strict gates can fail after the OptiX bootstrap already passed."
+    },
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "output_tail": "fatal: not a git repository (or any of the parent directories): .git\n",
+      "returncode": 128
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": "fatal: not a git repository (or any of the parent directories): .git\n",
+      "returncode": 128
+    },
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_exists": true,
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "--version"
+      ],
+      "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0\n",
+      "returncode": 0
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "output_tail": "Thu Apr 30 14:55:02 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:57:00.0 Off |                  Off |\n| 30%   29C    P8             25W /  230W |     213MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A             421      C   python                                  204MiB |\n+-----------------------------------------------------------------------------------------+\n",
+      "returncode": 0
+    },
+    "optix_header_exists": true,
+    "optix_prefix": "/root/vendor/optix-dev"
+  },
+  "preflight_blockers": [],
+  "skip_build": true,
+  "skip_tests": false,
+  "status": "needs_attention",
+  "steps": [
+    {
+      "name": "native_optix_focused_tests",
+      "result": {
+        "command": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.goal671_optix_prepared_anyhit_count_test",
+          "tests.goal757_prepared_optix_fixed_radius_count_test",
+          "tests.goal760_optix_robot_pose_flags_phase_profiler_test"
+        ],
+        "elapsed_sec": 0.053217938169837,
+        "returncode": 1,
+        "status": "failed",
+        "stderr_tail": "goal671_optix_prepared_anyhit_count_test (unittest.loader._FailedTest.goal671_optix_prepared_anyhit_count_test) ... ERROR\ngoal757_prepared_optix_fixed_radius_count_test (unittest.loader._FailedTest.goal757_prepared_optix_fixed_radius_count_test) ... ERROR\ngoal760_optix_robot_pose_flags_phase_profiler_test (unittest.loader._FailedTest.goal760_optix_robot_pose_flags_phase_profiler_test) ... ERROR\n\n======================================================================\nERROR: goal671_optix_prepared_anyhit_count_test (unittest.loader._FailedTest.goal671_optix_prepared_anyhit_count_test)\n----------------------------------------------------------------------\nImportError: Failed to import test module: goal671_optix_prepared_anyhit_count_test\nTraceback (most recent call last):\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 137, in loadTestsFromName\n    module = __import__(module_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'tests.goal671_optix_prepared_anyhit_count_test'\n\n\n======================================================================\nERROR: goal757_prepared_optix_fixed_radius_count_test (unittest.loader._FailedTest.goal757_prepared_optix_fixed_radius_count_test)\n----------------------------------------------------------------------\nImportError: Failed to import test module: goal757_prepared_optix_fixed_radius_count_test\nTraceback (most recent call last):\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 137, in loadTestsFromName\n    module = __import__(module_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'tests.goal757_prepared_optix_fixed_radius_count_test'\n\n\n======================================================================\nERROR: goal760_optix_robot_pose_flags_phase_profiler_test (unittest.loader._FailedTest.goal760_optix_robot_pose_flags_phase_profiler_test)\n----------------------------------------------------------------------\nImportError: Failed to import test module: goal760_optix_robot_pose_flags_phase_profiler_test\nTraceback (most recent call last):\n  File \"/usr/lib/python3.12/unittest/loader.py\", line 137, in loadTestsFromName\n    module = __import__(module_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'tests.goal760_optix_robot_pose_flags_phase_profiler_test'\n\n\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nFAILED (errors=3)\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "suite": "goal763_rtx_cloud_bootstrap_check"
+}

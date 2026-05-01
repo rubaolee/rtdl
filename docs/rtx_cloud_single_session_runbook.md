@@ -121,6 +121,37 @@ Do not patch `OPTIX_ABI_VERSION` manually. If bootstrap reports
 `Unsupported ABI version`, switch to driver-compatible headers or a newer
 driver image before running benchmarks.
 
+Install the native CPU/oracle reference dependencies before the bootstrap
+check. Several strict graph and spatial gates build the native oracle even when
+the measured backend is OptiX; without `libgeos-dev` and `pkg-config`, those
+gates can fail later with `cannot find -lgeos_c` after paid workload time has
+already started.
+
+```bash
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config
+```
+
+CUDA 13 pods with driver `550.127.05` need the same OptiX 8.0 header pin, and
+the validated Goal1164 path used nvcc PTX compilation rather than NVRTC:
+
+```bash
+cd /workspace/rtdl_python_only
+git clone --depth=1 --branch v8.0.0 https://github.com/NVIDIA/optix-dev.git /root/vendor/optix-dev
+make build-optix \
+  OPTIX_INCLUDE=/root/vendor/optix-dev/include \
+  CUDA_INCLUDE=/usr/local/cuda/include \
+  CUDA_SYSTEM_INCLUDE=/usr/include/x86_64-linux-gnu
+
+export PYTHONPATH=src:.
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}
+export RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so
+export RTDL_OPTIX_PTX_COMPILER=nvcc
+export RTDL_NVCC=/usr/local/cuda/bin/nvcc
+```
+
+Historical CUDA 12.4 bootstrap form:
+
 ```bash
 cd /workspace/rtdl_python_only
 OPTIX_PREFIX=/workspace/vendor/optix-dev-8.0.0 \
@@ -130,7 +161,9 @@ PYTHONPATH=src:. python3 scripts/goal763_rtx_cloud_bootstrap_check.py \
   --output-json docs/reports/goal763_rtx_cloud_bootstrap_check.json
 ```
 
-Do not continue if bootstrap status is not `ok`.
+Do not continue if bootstrap status is not `ok`. The bootstrap preflight now
+records GEOS/pkg-config state and reports missing `libgeos_c` as a blocker,
+because strict correctness gates require the native CPU/oracle reference path.
 
 ## Current Post-Goal1094 Runner
 
@@ -242,7 +275,11 @@ export RTDL_SOURCE_COMMIT="$(cat /workspace/rtdl_python_only/.rtdl_source_commit
 ```
 
 Use `RTDL_OPTIX_PTX_COMPILER=nvcc` on pods where NVRTC tries to include
-incomplete host libc headers such as missing `gnu/stubs-32.h`.
+incomplete host libc headers such as missing `gnu/stubs-32.h`. Goal1164 showed
+that NVRTC can be made to compile on CUDA 13 with Linux architecture predefines,
+but the validated app execution path on the driver-550 RTX A5000 pod used nvcc
+PTX compilation. Do not treat NVRTC as claim-grade for that environment until a
+separate artifact validates launch-parameter handling.
 Do not continue if `RTDL_SOURCE_COMMIT` is empty; artifacts without a source
 commit are engineering diagnostics only, not claim-grade evidence.
 

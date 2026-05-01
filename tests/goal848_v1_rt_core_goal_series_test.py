@@ -14,7 +14,7 @@ class Goal848V1RtCoreGoalSeriesTest(unittest.TestCase):
         self.assertEqual(summary["rt_core_partial_ready_now"], 0)
         self.assertEqual(summary["needs_redesign_or_new_surface"], 0)
         self.assertEqual(summary["out_of_scope_for_nvidia_rt"], 2)
-        self.assertEqual(summary["reviewed_public_wording"], 10)
+        self.assertEqual(summary["reviewed_public_wording"], 11)
         self.assertEqual(summary["blocked_public_wording"], 0)
 
     def test_priority_buckets_match_expected_apps(self) -> None:

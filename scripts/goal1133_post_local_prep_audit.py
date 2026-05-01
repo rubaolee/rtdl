@@ -112,8 +112,12 @@ def _goal_row(item: dict[str, Any]) -> dict[str, Any]:
 def build_audit() -> dict[str, Any]:
     rows = [_goal_row(item) for item in LOCAL_GOALS]
     tracked_apps = sorted({app for row in rows for app in row["apps"]})
-    public_wording_not_promoted = all(
-        rt.rtx_public_wording_status(app).status == "public_wording_not_reviewed"
+    public_wording_boundary_respected = all(
+        (
+            rt.rtx_public_wording_status(app).status == "public_wording_reviewed"
+            if app == "road_hazard_screening"
+            else rt.rtx_public_wording_status(app).status == "public_wording_not_reviewed"
+        )
         for app in tracked_apps
     )
     ready_for_review = all(
@@ -132,9 +136,9 @@ def build_audit() -> dict[str, Any]:
             "tracked_app_count": len(tracked_apps),
             "all_goal_artifacts_present": all_goal_artifacts_present,
             "ready_for_review": ready_for_review,
-            "public_wording_not_promoted": public_wording_not_promoted,
+            "public_wording_boundary_respected": public_wording_boundary_respected,
         },
-        "valid": all_goal_artifacts_present and ready_for_review and public_wording_not_promoted,
+        "valid": all_goal_artifacts_present and ready_for_review and public_wording_boundary_respected,
         "cloud_policy": (
             "The next pod should be one consolidated RTX run for changed paths only. "
             "Do not start/stop pods per app. Do not use these local changes as public "
@@ -163,7 +167,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- tracked apps: `{payload['summary']['tracked_app_count']}`",
         f"- all goal artifacts present: `{str(payload['summary']['all_goal_artifacts_present']).lower()}`",
         f"- ready for review: `{str(payload['summary']['ready_for_review']).lower()}`",
-        f"- public wording not promoted: `{str(payload['summary']['public_wording_not_promoted']).lower()}`",
+        f"- public wording boundary respected: `{str(payload['summary']['public_wording_boundary_respected']).lower()}`",
         "",
         "## Cloud Policy",
         "",

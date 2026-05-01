@@ -131,26 +131,6 @@
       "path_name": "graph_visibility_edges_gate"
     },
     {
-      "app": "event_hotspot_screening",
-      "batch": "same_semantics_review_candidate",
-      "command": [
-        "python3",
-        "scripts/goal811_spatial_optix_summary_phase_profiler.py",
-        "--scenario",
-        "event_hotspot_screening",
-        "--mode",
-        "optix",
-        "--copies",
-        "20000",
-        "--output-json",
-        "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_count_summary.json"
-      ],
-      "contains_skip_validation": false,
-      "index": 6,
-      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/prepared_count_summary.json",
-      "path_name": "prepared_count_summary"
-    },
-    {
       "app": "road_hazard_screening",
       "batch": "same_semantics_review_candidate",
       "command": [
@@ -168,7 +148,7 @@
         "docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json"
       ],
       "contains_skip_validation": false,
-      "index": 7,
+      "index": 6,
       "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/road_hazard_native_summary_gate.json",
       "path_name": "road_hazard_native_summary_gate"
     },
@@ -194,7 +174,7 @@
         "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json"
       ],
       "contains_skip_validation": false,
-      "index": 8,
+      "index": 7,
       "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_pair_overlap_optix_native_assisted_phase_gate.json",
       "path_name": "polygon_pair_overlap_optix_native_assisted_phase_gate"
     },
@@ -220,7 +200,7 @@
         "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json"
       ],
       "contains_skip_validation": false,
-      "index": 9,
+      "index": 8,
       "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/polygon_set_jaccard_optix_native_assisted_phase_gate.json",
       "path_name": "polygon_set_jaccard_optix_native_assisted_phase_gate"
     },
@@ -244,33 +224,9 @@
         "docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json"
       ],
       "contains_skip_validation": false,
-      "index": 10,
+      "index": 9,
       "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/directed_threshold_prepared.json",
       "path_name": "directed_threshold_prepared"
-    },
-    {
-      "app": "barnes_hut_force_app",
-      "batch": "same_semantics_review_candidate",
-      "command": [
-        "python3",
-        "scripts/goal887_prepared_decision_phase_profiler.py",
-        "--scenario",
-        "barnes_hut_node_coverage",
-        "--mode",
-        "optix",
-        "--body-count",
-        "200000",
-        "--iterations",
-        "10",
-        "--radius",
-        "10.0",
-        "--output-json",
-        "docs/reports/goal1052_post_goal1048_cloud_batch/node_coverage_prepared.json"
-      ],
-      "contains_skip_validation": false,
-      "index": 11,
-      "output_json": "docs/reports/goal1052_post_goal1048_cloud_batch/node_coverage_prepared.json",
-      "path_name": "node_coverage_prepared"
     }
   ],
   "date": "2026-04-28",

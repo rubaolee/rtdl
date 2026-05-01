@@ -10,12 +10,12 @@
       "exists": true,
       "findings": [],
       "matches_oracle": true,
-      "median_query_sec": 0.10311873722821474,
+      "median_query_sec": 0.11161934863775969,
       "mode": "optix",
       "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
       "path_name": "coverage_threshold_prepared_recentered",
       "phase": "same_scale_validation_and_timing",
-      "source_commit": "2ba7ae0",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
       "valid": true
     },
     {
@@ -23,12 +23,12 @@
       "exists": true,
       "findings": [],
       "matches_oracle": true,
-      "median_query_sec": 0.0062142955139279366,
+      "median_query_sec": 0.006429227069020271,
       "mode": "optix",
       "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
       "path_name": "prepared_pose_flags",
       "phase": "correctness_validation",
-      "source_commit": "2ba7ae0",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
       "valid": true
     },
     {
@@ -38,12 +38,12 @@
         "median_query_below_timing_floor"
       ],
       "matches_oracle": null,
-      "median_query_sec": 0.013836648315191269,
+      "median_query_sec": 0.018729395233094692,
       "mode": "optix",
       "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_8m_timing.json",
       "path_name": "prepared_pose_flags",
       "phase": "large_timing_repeat",
-      "source_commit": "2ba7ae0",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
       "valid": false
     },
     {
@@ -51,12 +51,12 @@
       "exists": true,
       "findings": [],
       "matches_oracle": true,
-      "median_query_sec": 0.008320477791130543,
+      "median_query_sec": 0.007976624183356762,
       "mode": "optix",
       "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json",
       "path_name": "node_coverage_prepared_rich",
       "phase": "correctness_validation",
-      "source_commit": "2ba7ae0",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
       "valid": true
     },
     {
@@ -64,12 +64,12 @@
       "exists": true,
       "findings": [],
       "matches_oracle": null,
-      "median_query_sec": 0.2406342839822173,
+      "median_query_sec": 0.22225642297416925,
       "mode": "optix",
       "output_json": "/Users/rl2025/rtdl_python_only/docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json",
       "path_name": "node_coverage_prepared_rich",
       "phase": "large_timing_repeat",
-      "source_commit": "2ba7ae0",
+      "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf",
       "valid": true
     }
   ],
@@ -80,7 +80,7 @@
     "runner_log_exists": true,
     "same_source_commit": true,
     "source_commits": [
-      "2ba7ae0"
+      "21fa036881bf9a0c806f69c15727d87b482ccfcf"
     ],
     "valid_row_count": 4
   },

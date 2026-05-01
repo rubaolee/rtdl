@@ -121,21 +121,27 @@ def _reported_run_phase_modes(payload: dict[str, Any]) -> dict[str, Any]:
             continue
         phase_modes[name] = {
             "scan": (
-                "count_summary"
+                "batch_summary"
+                if "query_compact_summary_batch_sec" in run_phases
+                else "count_summary"
                 if "query_conjunctive_scan_count_sec" in run_phases
                 else "row_materializing"
                 if "query_conjunctive_scan_and_materialize_sec" in run_phases
                 else "unknown"
             ),
             "grouped_count": (
-                "group_summary"
+                "batch_summary"
+                if "query_compact_summary_batch_sec" in run_phases
+                else "group_summary"
                 if "query_grouped_count_summary_sec" in run_phases
                 else "row_materializing"
                 if "query_grouped_count_and_materialize_sec" in run_phases
                 else "unknown"
             ),
             "grouped_sum": (
-                "group_summary"
+                "batch_summary"
+                if "query_compact_summary_batch_sec" in run_phases
+                else "group_summary"
                 if "query_grouped_sum_summary_sec" in run_phases
                 else "row_materializing"
                 if "query_grouped_sum_and_materialize_sec" in run_phases
@@ -168,7 +174,7 @@ def _reported_run_phase_totals(payload: dict[str, Any]) -> dict[str, Any]:
         postprocess_sec = float(run_phases.get("python_summary_postprocess_sec", 0.0) or 0.0)
         section_modes = modes.get(name, {})
         row_materializing = sum(1 for mode in section_modes.values() if mode == "row_materializing")
-        compact_summary = sum(1 for mode in section_modes.values() if mode in {"count_summary", "group_summary"})
+        compact_summary = sum(1 for mode in section_modes.values() if mode in {"batch_summary", "count_summary", "group_summary"})
         totals["all_sections_query_sec"] += query_sec
         totals["all_sections_python_summary_postprocess_sec"] += postprocess_sec
         totals["row_materializing_operation_count"] += row_materializing

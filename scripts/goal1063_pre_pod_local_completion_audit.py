@@ -87,7 +87,7 @@ def build_audit() -> dict[str, Any]:
     stale_candidates: list[dict[str, Any]] = []
     for row in goal1060["rows"]:
         key = (row["app"], row["path_name"])
-        if row["recommendation"] == "reject_current_public_speedup_claim":
+        if row["recommendation"] == "reject_current_public_speedup_claim" and row["app"] not in reviewed:
             remediation = LOCAL_REMEDIATION.get(key)
             rejected_rows.append(
                 {
@@ -150,10 +150,10 @@ def build_audit() -> dict[str, Any]:
         "rejected_rows_requiring_local_work": rejected_rows,
         "unreviewed_candidate_rows_requiring_goal1062_pod": stale_candidates,
         "valid": (
-            len(reviewed) == 10
+            len(reviewed) == 11
             and blocked == []
-            and len(not_reviewed) == 6
-            and len(rejected_rows) == 8
+            and len(not_reviewed) == 5
+            and len(rejected_rows) == 6
             and len(blocked_rows) == 0
             and pod_ready_now
             and all(row["pod_policy"].startswith("no_pod_until") for row in rejected_rows)

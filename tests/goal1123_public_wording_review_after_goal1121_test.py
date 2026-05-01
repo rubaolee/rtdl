@@ -19,15 +19,15 @@ class Goal1123PublicWordingReviewAfterGoal1121Test(unittest.TestCase):
         self.assertEqual(by_app["robot_collision_screening"]["status_to_apply"], "public_wording_blocked")
         self.assertIn("same-scale", by_app["robot_collision_screening"]["boundary"])
 
-    def test_ratios_and_timing_floor_are_current_goal1121_values(self) -> None:
+    def test_ratios_and_timing_floor_are_current_goal1142_values(self) -> None:
         payload = build_packet()
         by_app = {row["app"]: row for row in payload["rows"]}
 
         self.assertGreaterEqual(by_app["facility_knn_assignment"]["rtx_median_query_sec"], 0.1)
-        self.assertAlmostEqual(by_app["facility_knn_assignment"]["fastest_baseline_ratio"], 87.24, places=2)
+        self.assertAlmostEqual(by_app["facility_knn_assignment"]["fastest_baseline_ratio"], 80.60, places=2)
         self.assertGreaterEqual(by_app["robot_collision_screening"]["rtx_median_query_sec"], 0.1)
         self.assertGreater(by_app["robot_collision_screening"]["diagnostic_normalized_ratio_not_public"], 500.0)
-        self.assertAlmostEqual(by_app["barnes_hut_force_app"]["fastest_baseline_ratio"], 222.19, places=2)
+        self.assertAlmostEqual(by_app["barnes_hut_force_app"]["fastest_baseline_ratio"], 240.56, places=2)
 
     def test_markdown_keeps_boundaries_visible(self) -> None:
         markdown = to_markdown(build_packet())

@@ -74,10 +74,22 @@ def run_backend(
     case = make_case(copies)
     input_construction_sec = time.perf_counter() - input_start
     query_start = time.perf_counter()
+    raw_summary = None
+    raw_row_count = None
+    raw_summary_backend = None
     if backend == "cpu_python_reference":
         rows = rt.run_cpu_python_reference(triangle_probe_kernel, **case)
     elif backend == "cpu":
         rows = rt.run_cpu(triangle_probe_kernel, **case)
+    elif backend == "embree" and output_mode == "summary":
+        raw_rows = rt.run_embree(triangle_probe_kernel, result_mode="raw", **case)
+        try:
+            raw_row_count = len(raw_rows)
+            raw_summary = rt.summarize_triangle_row_view(raw_rows)
+            raw_summary_backend = "oracle_cpp_raw_row_view"
+        finally:
+            raw_rows.close()
+        rows = ()
     elif backend == "embree":
         rows = rt.run_embree(triangle_probe_kernel, **case)
     elif backend == "optix":
@@ -85,7 +97,17 @@ def run_backend(
         if optix_graph_mode != "auto":
             os.environ["RTDL_OPTIX_GRAPH_MODE"] = "native" if optix_graph_mode == "native" else "host_indexed"
         try:
-            rows = rt.run_optix(triangle_probe_kernel, **case)
+            if output_mode == "summary":
+                raw_rows = rt.run_optix(triangle_probe_kernel, result_mode="raw", **case)
+                try:
+                    raw_row_count = len(raw_rows)
+                    raw_summary = rt.summarize_triangle_row_view(raw_rows)
+                    raw_summary_backend = "oracle_cpp_raw_row_view"
+                finally:
+                    raw_rows.close()
+                rows = ()
+            else:
+                rows = rt.run_optix(triangle_probe_kernel, **case)
         finally:
             if optix_graph_mode != "auto":
                 if previous is None:
@@ -98,8 +120,9 @@ def run_backend(
         raise ValueError(f"unsupported backend: {backend}")
     query_and_materialize_sec = time.perf_counter() - query_start
     summary_start = time.perf_counter()
-    summary = _summarize(rows)
+    summary = raw_summary if raw_summary is not None else _summarize(rows)
     native_summary_postprocess_sec = time.perf_counter() - summary_start
+    row_count = raw_row_count if raw_row_count is not None else len(rows)
 
     return {
         "app": "graph_triangle_count",
@@ -110,16 +133,22 @@ def run_backend(
         "graph_vertex_count": 4 * copies,
         "graph_edge_count": 6 * copies,
         "seed_count": len(case["seeds"]),
-        "row_count": len(rows),
+        "row_count": row_count,
         "rows": rows if output_mode == "rows" else [],
         "summary": summary,
         "run_phases": {
             "input_construction_sec": input_construction_sec,
             "query_and_materialize_sec": query_and_materialize_sec,
+            "query_raw_view_sec": query_and_materialize_sec if raw_row_count is not None else 0.0,
+            "row_materialization_sec": 0.0 if raw_row_count is not None else query_and_materialize_sec,
             "native_summary_postprocess_sec": native_summary_postprocess_sec,
         },
         "native_continuation_active": output_mode == "summary",
-        "native_continuation_backend": "oracle_cpp" if output_mode == "summary" else None,
+        "native_continuation_backend": (
+            raw_summary_backend
+            if raw_summary_backend is not None
+            else ("oracle_cpp" if output_mode == "summary" else None)
+        ),
         "ray_tracing_accelerated": backend == "embree",
         "ray_tracing_note": (
             "Embree uses ray traversal over graph-edge primitives to collect "

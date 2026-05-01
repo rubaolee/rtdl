@@ -24,7 +24,7 @@ class Goal1009PublicRtxWordingReviewPacketTest(unittest.TestCase):
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
         self.assertIn("does not edit public docs", payload["boundary"])
 
-    def test_wording_is_scoped_and_robot_is_blocked(self) -> None:
+    def test_wording_is_scoped_and_historical_robot_block_is_superseded(self) -> None:
         module = __import__(
             "scripts.goal1009_public_rtx_wording_review_packet",
             fromlist=["build_packet"],
@@ -37,8 +37,9 @@ class Goal1009PublicRtxWordingReviewPacketTest(unittest.TestCase):
         self.assertEqual(payload["blocked_rows"][0]["app"], "robot_collision_screening")
         self.assertEqual(
             payload["blocked_rows"][0]["current_public_wording_status"],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
+        self.assertIn("superseded", payload["blocked_rows"][0]["reason"])
 
     def test_cli_writes_packet_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -62,7 +63,7 @@ class Goal1009PublicRtxWordingReviewPacketTest(unittest.TestCase):
             self.assertIn("Goal1009 Public RTX Sub-Path Wording Review Packet", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             self.assertEqual(payload["candidate_count"], 7)
-            self.assertIn("public_wording_blocked", output_md.read_text(encoding="utf-8"))
+            self.assertIn("public_wording_reviewed", output_md.read_text(encoding="utf-8"))
             self.assertTrue(output_md.exists())
 
 

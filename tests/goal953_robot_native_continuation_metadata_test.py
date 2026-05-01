@@ -63,6 +63,45 @@ class Goal953RobotNativeContinuationMetadataTest(unittest.TestCase):
         self.assertEqual(payload["output_mode"], "pose_flags")
         self.assertTrue(payload["matches_oracle"])
 
+    def test_prepared_pose_flags_scaled_fixture_uses_analytic_validation(self) -> None:
+        with (
+            mock.patch(
+                "examples.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
+                side_effect=AssertionError("scaled prepared pose flags should not run CPU oracle"),
+            ),
+            mock.patch.object(
+                robot.rt,
+                "prepare_optix_ray_triangle_any_hit_2d",
+                return_value=_FakePreparedScene(pose_flags=(False, True, False, True, False, True)),
+            ),
+            mock.patch.object(robot.rt, "prepare_optix_rays_2d", return_value=_FakePreparedRays()),
+        ):
+            payload = robot.run_app(
+                "optix",
+                optix_summary_mode="prepared_pose_flags",
+                pose_count=6,
+                obstacle_count=4,
+            )
+
+        self.assertEqual(payload["validation_mode"], "analytic_scaled_fixture")
+        self.assertTrue(payload["matches_oracle"])
+        self.assertEqual(payload["oracle_colliding_pose_ids"], [2, 4, 6])
+
+    def test_prepared_count_can_skip_cpu_validation_for_timing(self) -> None:
+        with (
+            mock.patch(
+                "examples.rtdl_robot_collision_screening_app.rt.ray_triangle_any_hit_cpu",
+                side_effect=AssertionError("skip_validation should not run CPU oracle"),
+            ),
+            mock.patch.object(robot.rt, "prepare_optix_ray_triangle_any_hit_2d", return_value=_FakePreparedScene(count=7)),
+            mock.patch.object(robot.rt, "prepare_optix_rays_2d", return_value=_FakePreparedRays()),
+        ):
+            payload = robot.run_app("optix", optix_summary_mode="prepared_count", skip_validation=True)
+
+        self.assertEqual(payload["validation_mode"], "skipped")
+        self.assertIsNone(payload["oracle_hit_edge_count"])
+        self.assertIsNone(payload["matches_oracle"])
+
     def test_row_mode_compact_outputs_do_not_overstate_native_continuation(self) -> None:
         for output_mode in ("full", "pose_flags", "hit_count"):
             with self.subTest(output_mode=output_mode):

@@ -179,7 +179,26 @@ class PreparedRegionalDashboardSession:
             assert self._dataset is not None
             compact_group_count_summary = None
             compact_group_sum_summary = None
-            if output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
+            used_compact_summary_batch = False
+            if output_mode == "compact_summary" and hasattr(self._dataset, "compact_summary_batch"):
+                used_compact_summary_batch = True
+                batch_requests = (
+                    {"name": "promo_order_count", "operation": "conjunctive_scan_count", "predicates": PROMO_SCAN},
+                    {"name": "open_order_count_by_region", "operation": "grouped_count_summary", "query": REGION_WORKLOAD},
+                    {"name": "web_revenue_by_region", "operation": "grouped_sum_summary", "query": REGION_REVENUE},
+                )
+                batch_results, run_phases["query_compact_summary_batch_sec"] = _timed_call(
+                    lambda: self._dataset.compact_summary_batch(batch_requests)
+                )
+                promo_order_count = int(batch_results["promo_order_count"])
+                promo_order_ids = []
+                compact_group_count_summary = batch_results["open_order_count_by_region"]
+                compact_group_sum_summary = batch_results["web_revenue_by_region"]
+                open_order_count_by_region = []
+                web_revenue_by_region = []
+                if hasattr(self._dataset, "last_compact_summary_batch_phase_timings"):
+                    native_db_phases["compact_summary_batch"] = self._dataset.last_compact_summary_batch_phase_timings()
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "conjunctive_scan_count"):
                 promo_order_count, run_phases["query_conjunctive_scan_count_sec"] = _timed_call(
                     lambda: self._dataset.conjunctive_scan_count(PROMO_SCAN)
                 )
@@ -193,7 +212,9 @@ class PreparedRegionalDashboardSession:
                 promo_order_count = len(promo_order_ids)
                 if hasattr(self._dataset, "last_phase_timings"):
                     native_db_phases["conjunctive_scan"] = self._dataset.last_phase_timings()
-            if output_mode == "compact_summary" and hasattr(self._dataset, "grouped_count_summary"):
+            if used_compact_summary_batch:
+                pass
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "grouped_count_summary"):
                 compact_group_count_summary, run_phases["query_grouped_count_summary_sec"] = _timed_call(
                     lambda: self._dataset.grouped_count_summary(REGION_WORKLOAD)
                 )
@@ -206,7 +227,9 @@ class PreparedRegionalDashboardSession:
                 )
                 if hasattr(self._dataset, "last_phase_timings"):
                     native_db_phases["grouped_count"] = self._dataset.last_phase_timings()
-            if output_mode == "compact_summary" and hasattr(self._dataset, "grouped_sum_summary"):
+            if used_compact_summary_batch:
+                pass
+            elif output_mode == "compact_summary" and hasattr(self._dataset, "grouped_sum_summary"):
                 compact_group_sum_summary, run_phases["query_grouped_sum_summary_sec"] = _timed_call(
                     lambda: self._dataset.grouped_sum_summary(REGION_REVENUE)
                 )

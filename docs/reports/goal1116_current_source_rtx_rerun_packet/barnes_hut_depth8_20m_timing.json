@@ -13,16 +13,17 @@
       "python_postprocess_sec",
       "validation_sec",
       "optix_close_sec"
-    ]
+    ],
+    "schema_scope": "goal887_profiler_payload"
   },
   "date": "2026-04-24",
-  "generated_at": "2026-04-29T15:34:06",
+  "generated_at": "2026-04-29T20:13:57",
   "goal": "Goal887 prepared decision OptiX phase profiler",
   "host": {
-    "hostname": "812b49ce658e",
+    "hostname": "09d2c4c4b876",
     "machine": "x86_64",
-    "platform": "Linux-5.15.0-124-generic-x86_64-with-glibc2.35",
-    "python": "3.11.10"
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
   },
   "parameters": {
     "barnes_tree_depth": 8,
@@ -50,19 +51,19 @@
     },
     "scenario": "barnes_hut_node_coverage",
     "timings_sec": {
-      "input_build_sec": 82.61460780259222,
-      "optix_close_sec": 0.0003990568220615387,
-      "optix_prepare_sec": 1.3279043231159449,
+      "input_build_sec": 99.0046820556745,
+      "optix_close_sec": 0.0004392266273498535,
+      "optix_prepare_sec": 1.7980570970103145,
       "optix_query_sec": {
-        "max_sec": 0.24532497115433216,
-        "median_sec": 0.2406342839822173,
-        "min_sec": 0.23031587526202202
+        "max_sec": 0.25197718758136034,
+        "median_sec": 0.22225642297416925,
+        "min_sec": 0.21928124595433474
       },
-      "point_pack_sec": 30.361675068736076,
+      "point_pack_sec": 37.079742764122784,
       "python_postprocess_sec": {
-        "max_sec": 3.822147846221924e-06,
-        "median_sec": 3.7811696529388428e-06,
-        "min_sec": 2.880580723285675e-06
+        "max_sec": 1.2959353625774384e-05,
+        "median_sec": 2.7855858206748962e-06,
+        "min_sec": 1.5366822481155396e-06
       },
       "validation_sec": {
         "max_sec": 0.0,
@@ -72,5 +73,5 @@
     }
   },
   "schema_version": "goal887_prepared_decision_phase_contract_v1",
-  "source_commit": "2ba7ae0"
+  "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf"
 }

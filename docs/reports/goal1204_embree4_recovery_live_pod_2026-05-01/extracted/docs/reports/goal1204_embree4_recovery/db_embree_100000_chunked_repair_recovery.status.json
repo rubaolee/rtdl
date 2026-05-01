@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 100000 --iterations 3 --output-mode compact_summary --strict --output-json docs/reports/goal1204_embree4_recovery/db_embree_100000_chunked_repair_recovery.json",
+  "exit_code": 1,
+  "label": "db_embree_100000_chunked_repair_recovery",
+  "log": "docs/reports/goal1204_embree4_recovery/db_embree_100000_chunked_repair_recovery.log",
+  "status": "failed"
+}

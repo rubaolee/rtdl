@@ -40,6 +40,18 @@ def _canonical(payload: dict[str, object]) -> dict[str, object]:
     return {key: payload[key] for key in sorted(keep) if key in payload}
 
 
+def _payload_metadata(payload: dict[str, object]) -> dict[str, object]:
+    return {
+        "run_phases": dict(payload.get("run_phases", {})),
+        "summary_materializes_rows": bool(payload.get("summary_materializes_rows", True)),
+        "native_continuation_active": bool(payload.get("native_continuation_active", False)),
+        "native_continuation_backend": payload.get("native_continuation_backend", "none"),
+        "row_count": int(payload.get("row_count", 0)),
+        "priority_segment_count": int(payload.get("priority_segment_count", 0)),
+        "output_mode": payload.get("output_mode", "unknown"),
+    }
+
+
 def _run_cpu(copies: int, output_mode: str) -> dict[str, object]:
     return road_app.run_case("cpu_python_reference", copies=copies, output_mode=output_mode)
 
@@ -63,6 +75,7 @@ def run_gate(*, copies: int, output_mode: str, strict: bool) -> dict[str, object
             "status": "ok",
             "sec": time.perf_counter() - start,
             "digest": _canonical(cpu_payload),
+            **_payload_metadata(cpu_payload),
         }
     )
 
@@ -75,6 +88,7 @@ def run_gate(*, copies: int, output_mode: str, strict: bool) -> dict[str, object
                 "status": "ok",
                 "sec": time.perf_counter() - start,
                 "digest": _canonical(optix_payload),
+                **_payload_metadata(optix_payload),
             }
         )
     except Exception as exc:  # noqa: BLE001 - optional backend gate records absence.
@@ -117,7 +131,15 @@ def run_gate(*, copies: int, output_mode: str, strict: bool) -> dict[str, object
         "cloud_claim_contract": {
             "claim_scope": "native OptiX segment/polygon hit-count traversal for compact road-hazard summaries",
             "non_claim": "not default road-hazard public speedup and not a full GIS routing or risk model claim",
-            "required_phase_groups": ("cpu_python_reference", "optix_native", "strict_pass", "strict_failures"),
+            "required_phase_groups": (
+                "cpu_python_reference",
+                "optix_native",
+                "run_phases",
+                "summary_materializes_rows",
+                "native_continuation_backend",
+                "strict_pass",
+                "strict_failures",
+            ),
         },
         "boundary": (
             "This gate validates the road-hazard app through the explicit native "

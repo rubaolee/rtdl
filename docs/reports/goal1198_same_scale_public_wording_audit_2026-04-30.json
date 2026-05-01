@@ -1,0 +1,89 @@
+{
+  "artifact_dir": "docs/reports/goal1194_live_pod_2026-04-30/final_recovery2/docs/reports/goal1192_public_wording_evidence_batch",
+  "blockers": [
+    "hausdorff_distance has OptiX-faster ratio but not same-scale artifacts"
+  ],
+  "boundary": "Goal1198 audits whether accepted evidence can support public positive ratio wording. It does not authorize public docs, release, or speedup claims by itself.",
+  "date": "2026-04-30",
+  "goal": "Goal1198 same-scale public wording audit",
+  "rows": [
+    {
+      "app": "database_analytics",
+      "embree_artifact": "database_compact_summary_embree.json",
+      "embree_copies": 30000,
+      "optix_artifact": "database_compact_summary_optix.json",
+      "optix_copies": 30000,
+      "optix_faster": false,
+      "public_ratio_safe": false,
+      "raw_ratio_embree_over_optix": 0.7918442126241788,
+      "same_scale": true
+    },
+    {
+      "app": "graph_analytics",
+      "embree_artifact": "graph_visibility_edges_embree.json",
+      "embree_copies": 30000,
+      "optix_artifact": "graph_visibility_edges_optix.json",
+      "optix_copies": 30000,
+      "optix_faster": false,
+      "public_ratio_safe": false,
+      "raw_ratio_embree_over_optix": null,
+      "same_scale": true
+    },
+    {
+      "app": "road_hazard_screening",
+      "embree_artifact": "road_hazard_native_summary_embree.json",
+      "embree_copies": 20000,
+      "optix_artifact": "road_hazard_native_summary_optix.json",
+      "optix_copies": 20000,
+      "optix_faster": true,
+      "public_ratio_safe": true,
+      "raw_ratio_embree_over_optix": 4.014155415772945,
+      "same_scale": true
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "embree_artifact": "polygon_pair_candidate_discovery_embree.json",
+      "embree_copies": 20000,
+      "optix_artifact": "polygon_pair_candidate_discovery_optix.json",
+      "optix_copies": 20000,
+      "optix_faster": false,
+      "public_ratio_safe": false,
+      "raw_ratio_embree_over_optix": 0.8390188324867768,
+      "same_scale": true
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "embree_artifact": "polygon_jaccard_safe_chunk_embree.json",
+      "embree_copies": 8192,
+      "optix_artifact": "polygon_jaccard_safe_chunk_optix.json",
+      "optix_copies": 8192,
+      "optix_faster": false,
+      "public_ratio_safe": false,
+      "raw_ratio_embree_over_optix": 0.5487602474886621,
+      "same_scale": true
+    },
+    {
+      "app": "hausdorff_distance",
+      "embree_artifact": "hausdorff_threshold_prepared_embree.json",
+      "embree_copies": 2000,
+      "optix_artifact": "hausdorff_threshold_prepared_optix.json",
+      "optix_copies": 1200000,
+      "optix_faster": true,
+      "public_ratio_safe": false,
+      "raw_ratio_embree_over_optix": 13.72846305283907,
+      "same_scale": false
+    }
+  ],
+  "safe_positive_public_ratio_apps": [
+    "road_hazard_screening"
+  ],
+  "supersedes": "Goal1196 Hausdorff positive wording proposal is unsafe because the accepted artifacts are not same-scale.",
+  "unsafe_or_blocked_ratio_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "hausdorff_distance"
+  ],
+  "valid": false
+}

@@ -1,0 +1,200 @@
+{
+  "blockers": [],
+  "boundary": "Goal1197 is an investigation manifest for OptiX-slower app paths. It does not authorize public wording changes, release, or speedup claims.",
+  "control_app_count": 1,
+  "control_apps": [
+    "road_hazard_screening"
+  ],
+  "controls": [
+    {
+      "app": "road_hazard_screening",
+      "observed_ratio_embree_over_optix": 4.014155,
+      "reason": "Should remain faster if the pod and measurement setup are sane.",
+      "role": "positive_control"
+    }
+  ],
+  "date": "2026-04-30",
+  "goal": "Goal1197 OptiX slower-app investigation manifest",
+  "pod_policy": "Run this as one batched pod session only after review. Do not restart a pod per app. Preserve all artifacts, logs, and failed JSON files; copy them back before interpreting results.",
+  "pod_ready_after_review": true,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "commands": [
+        {
+          "label": "db_embree_scale_sweep",
+          "template": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies {copies} --iterations {iterations} --output-mode compact_summary --strict --output-json docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json"
+        },
+        {
+          "label": "db_optix_scale_sweep",
+          "template": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies {copies} --iterations {iterations} --output-mode compact_summary --strict --output-json docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json"
+        }
+      ],
+      "decision_rule": "If OptiX remains slower at 100k and 300k on warm-query phase, classify current DB compact-summary OptiX as interface/continuation limited and keep positive wording blocked.",
+      "hypothesis": "OptiX traversal is real, but compact-summary timing may be dominated by Python/ctypes packing, candidate bitset transfer, or grouping continuation overhead.",
+      "observed_ratio_embree_over_optix": 0.791844,
+      "phase_fields": [
+        "results.0.prepared_session_warm_query_sec.median_sec",
+        "results.0.prepared_session_prepare_sec.median_sec",
+        "results.0.one_shot_total_sec.median_sec"
+      ],
+      "scales": [
+        {
+          "copies": 30000,
+          "iterations": 10
+        },
+        {
+          "copies": 100000,
+          "iterations": 10
+        },
+        {
+          "copies": 300000,
+          "iterations": 5
+        }
+      ]
+    },
+    {
+      "app": "graph_analytics",
+      "commands": [
+        {
+          "label": "graph_embree_visibility_sweep",
+          "template": "python3 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json"
+        },
+        {
+          "label": "graph_optix_visibility_sweep",
+          "template": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies {copies} --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json"
+        }
+      ],
+      "decision_rule": "If OptiX remains about 2x slower while phase fields are comparable, classify graph visibility as current-implementation GPU-overhead dominated and do not promote positive wording.",
+      "hypothesis": "The OptiX visibility any-hit path may be doing more launch/setup work than the Embree summary path, or the graph edge mapping is too sparse/branchy to amortize GPU traversal overhead.",
+      "observed_ratio_embree_over_optix": 0.500014,
+      "phase_fields": [
+        "graph_phase_totals_sec.query_visibility_pair_rows_sec",
+        "records_by_label.optix_visibility_anyhit.sec",
+        "records.0.sec"
+      ],
+      "scales": [
+        {
+          "copies": 30000
+        },
+        {
+          "copies": 60000
+        },
+        {
+          "copies": 120000
+        }
+      ]
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "commands": [
+        {
+          "label": "polygon_pair_embree_sweep",
+          "template": "python3 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json"
+        },
+        {
+          "label": "polygon_pair_optix_sweep",
+          "template": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app pair_overlap --mode optix --copies {copies} --output-mode summary --validation-mode analytic_summary --chunk-copies {chunk_copies} --output-json docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}.json"
+        }
+      ],
+      "decision_rule": "If OptiX only loses by a small margin while chunk_copies is held constant, inspect chunk overhead and candidate count parity before deciding whether native batching can plausibly flip the result.",
+      "hypothesis": "Native-assisted candidate discovery may be correct but not enough to beat Embree because exact continuation and chunk handling dominate.",
+      "observed_ratio_embree_over_optix": 0.839019,
+      "phase_fields": [
+        "run_phases.rt_candidate_discovery_sec",
+        "phases.optix_candidate_discovery_sec",
+        "candidate_diagnostics.optix_positive_candidate_rows"
+      ],
+      "scales": [
+        {
+          "chunk_copies": 100,
+          "copies": 10000
+        },
+        {
+          "chunk_copies": 100,
+          "copies": 20000
+        },
+        {
+          "chunk_copies": 100,
+          "copies": 40000
+        }
+      ]
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "commands": [
+        {
+          "label": "polygon_jaccard_embree_reference",
+          "run_once_per_copies": true,
+          "template": "python3 examples/rtdl_polygon_set_jaccard.py --backend embree --copies {copies} --output-mode summary > docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}_{chunk_copies}.json"
+        },
+        {
+          "label": "polygon_jaccard_optix_chunk_stability",
+          "template": "python3 scripts/goal877_polygon_overlap_optix_phase_profiler.py --app jaccard --mode optix --copies {copies} --output-mode summary --validation-mode analytic_summary --chunk-copies {chunk_copies} --output-json docs/reports/goal1197_optix_slower_app_investigation/{label}_{copies}_{chunk_copies}.json"
+        }
+      ],
+      "decision_rule": "If any chunk configuration fails parity, keep Jaccard blocked and file a correctness/stability task before more performance tuning.",
+      "hypothesis": "The Jaccard path has both performance loss and observed chunk-sensitive/nondeterministic parity behavior; stability must be proven before any future positive wording.",
+      "observed_ratio_embree_over_optix": 0.54876,
+      "phase_fields": [
+        "run_phases.rt_candidate_discovery_sec",
+        "phases.optix_candidate_discovery_sec",
+        "parity_vs_cpu",
+        "candidate_diagnostics.optix_positive_candidate_rows"
+      ],
+      "scales": [
+        {
+          "chunk_copies": 1,
+          "copies": 8192
+        },
+        {
+          "chunk_copies": 8,
+          "copies": 8192
+        },
+        {
+          "chunk_copies": 64,
+          "copies": 8192
+        },
+        {
+          "chunk_copies": 512,
+          "copies": 8192
+        }
+      ]
+    }
+  ],
+  "same_scale_repair_app_count": 1,
+  "same_scale_repair_apps": [
+    "hausdorff_distance"
+  ],
+  "same_scale_repairs": [
+    {
+      "app": "hausdorff_distance",
+      "candidate_scales": [
+        {
+          "copies": 200000,
+          "note": "OptiX was 0.0073s at 200k and below floor; Embree 200k was too expensive in prior attempt"
+        },
+        {
+          "copies": 1200000,
+          "note": "OptiX cleared floor; Embree likely too expensive without a new baseline strategy"
+        }
+      ],
+      "observed_issue": "Goal1195 final bundle used Embree copies=2000 and OptiX copies=1200000, so the raw 13.7x ratio is not a valid same-scale speedup.",
+      "required_next_evidence": "Collect same-scale or explicitly normalized Hausdorff Embree/OptiX evidence before any positive public ratio wording.",
+      "role": "same_scale_repair"
+    }
+  ],
+  "slower_app_count": 4,
+  "slower_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard"
+  ],
+  "source_evidence": [
+    "docs/reports/goal1194_goal1192_public_wording_evidence_batch_final_intake_2026-04-30.json",
+    "docs/reports/goal1195_two_ai_consensus_2026-04-30.md",
+    "docs/reports/goal1196_two_ai_consensus_2026-04-30.md"
+  ],
+  "valid": true
+}

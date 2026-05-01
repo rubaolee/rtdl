@@ -1,18 +1,72 @@
-# Local Refresh Context For AI Reviews
+# RTDL Local Operating Refresh
 
-This file mirrors the RTDL refresh constraints that matter for current
-repository review work. Read it regularly after context compaction.
+This file is stable operating memory for RTDL work. Read it regularly after
+context compaction. Keep project, machine, environment, tool, review-flow, and
+claim-boundary rules here. Do not use this file as a running goal ledger or
+progress report; write goal progress to `docs/reports/`.
 
-## Current project state
+## Project Identity
 
-- Primary repo for this review:
+- Primary repo:
   - `/Users/rl2025/rtdl_python_only`
-- Current working branch:
-  - `codex/rtx-cloud-run-2026-04-22`
-- Current released version described by the repo:
-  - `v0.9.6`
-- Current active development line described by the repo:
-  - v1.0 RTX app readiness and claim-boundary work after the released `v0.9.6` surface
+- Project: RTDL, a Python-facing ray-tracing DSL/runtime for expressing
+  RT-accelerated app kernels with strict claim boundaries.
+- Development focus: make public examples/apps useful, correct, documented,
+  and honest about which RT engine/path is actually used.
+- Stable repo convention:
+  - source under `src/`
+  - examples/apps under `examples/`
+  - tests under `tests/`
+  - scripts under `scripts/`
+  - reports/reviews under `docs/reports/`
+  - handoff prompts under `docs/handoff/`
+- Current release/version facts belong in release docs and reports, not in this
+  refresh file.
+
+## Local Machine And Environment
+
+- Local macOS machine:
+  - main bounded-correctness, documentation, Apple RT/MPS RT, and release-flow
+    work platform.
+  - not an NVIDIA/OptiX validation platform.
+- Linux / RTX cloud pods:
+  - primary NVIDIA/OptiX and RT-core validation platforms.
+  - use consolidated pod batches; do not start/stop cloud per app.
+  - install GEOS before strict correctness gates:
+    `apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config`.
+  - install/point OptiX headers and CUDA explicitly before benchmarks.
+- Windows:
+  - bounded correctness/performance platform when available.
+  - coordinate via files/reports, not ad hoc verbal relay.
+- Shared/network/remote machines:
+  - write self-contained handoff files when another agent/machine should act.
+  - do not assume another machine has the same credentials, keys, branches, or
+    dependencies.
+
+## Tool Availability
+
+- Shell:
+  - prefer `rg`/`rg --files` for search.
+  - use `apply_patch` for manual edits.
+  - avoid destructive git commands unless explicitly approved.
+- Claude CLI:
+  - may work with:
+    `claude --print --dangerously-skip-permissions "<prompt>"`
+  - if Claude hits quota/auth/tool failure, do not stop; use Gemini.
+- Gemini CLI:
+  - available at `/opt/homebrew/bin/gemini`.
+  - headless review:
+    `gemini -p "<prompt>" --yolo`
+  - if Gemini prints an attempted write action but no file appears, save the
+    stdout verdict manually into the required `docs/reports/` file and note the
+    capture.
+- Cloud SSH keys:
+  - user-provided key paths may differ from local Codex availability.
+  - verify key existence before assuming a pod is unreachable.
+- Pod setup:
+  - always log bootstrap, environment, commands, and copy-back paths.
+  - preserve failed artifacts/logs; do not overwrite failure history without a
+    supersession report.
 
 ## Review and closure discipline
 
@@ -28,6 +82,12 @@ repository review work. Read it regularly after context compaction.
 - Prefer file-based handoff and response-file review trails.
 - Do not rewrite historical external reviews. If later evidence changes a
   conclusion, add a supersession report and update current public docs.
+- For required `2-AI consensus`, if Claude is unavailable, immediately use
+  Gemini and save its verdict under `docs/reports/`.
+- Important planning, public claim changes, release decisions, or architecture
+  changes should seek `3-AI consensus` unless the user explicitly narrows scope.
+- A review failure from Claude/Gemini is evidence to handle, not a reason to
+  ignore the review requirement.
 
 ## Platform honesty
 
@@ -36,39 +96,30 @@ repository review work. Read it regularly after context compaction.
   release-flow platform.
 - Windows is a bounded correctness/performance platform when available.
 - Do not overclaim backend or GPU correctness if row parity is not proven.
-
-## Current public honesty boundary
-
-- `v0.9.6` is released.
-- Current post-release RTX app work is not a new release authorization.
-- Current local pre-cloud RTX app-prep goals after Goal1125:
-  - Goal1128: DB Embree compact-summary wrappers.
-  - Goal1129: graph phase split diagnostics.
-  - Goal1130: road-hazard native OptiX summary count path.
-  - Goal1131: polygon overlap/Jaccard phase contracts and Jaccard summary mode.
-  - Goal1132: Hausdorff app-level phase contract.
-  - Goal1133: post-local-prep audit.
-  - Goal1134: Goal887/G1132 Hausdorff phase-schema reconciliation.
-- These goals are local readiness/audit/schema work only. They do not promote
-  public RTX wording and do not authorize release.
-- Next paid RTX work should be one consolidated changed-path pod batch, not
-  start/stop per app. Do not use local prep as public speedup evidence without
-  real RTX artifacts, same-semantics baselines, and 2-AI review.
-- Hausdorff remains blocked for public RTX speedup wording because the current
-  large-scale dry-run uses an analytic tiled oracle; use it as capability/phase
-  evidence unless a non-analytic speed-baseline contract is designed.
-- `robot_collision_screening / prepared_pose_flags` is a real bounded
-  RT-core path. Goal1126 accepted normalized per-pose public wording only:
-  it is not a same-total-work wall-time claim, not a whole-app robot-planning
-  speedup claim, and excludes full kinematics, scene construction, ray packing,
-  witness rows, continuous collision detection, Python input construction, and
-  whole-app planning speedup.
-- Goal1123 accepted narrow public wording for
-  `facility_knn_assignment / coverage_threshold_prepared_recentered` and
-  `barnes_hut_force_app / node_coverage_prepared_rich` only.
 - `--backend optix` is not by itself a public NVIDIA RT-core speedup claim.
-- Public RTX wording must follow `rtdsl.rtx_public_wording_matrix()`.
-- Reviewers should prefer strict, bounded judgments over open-ended redesign.
+- Distinguish:
+  - backend ran
+  - native RT traversal ran
+  - RT-core hardware was plausibly exercised
+  - same-semantics baseline comparison supports a public speedup claim
+- Do not quote same-backend warm/prepared ratios as RTX-vs-baseline speedups.
+- Public RTX wording must follow the repo's current public wording matrix and
+  saved review reports.
+
+## Documentation And Report Rules
+
+- Front-page docs, tutorials, examples, feature guides, architecture docs, and
+  app docs must be consistent with current code before release.
+- Public docs must be useful and attractive, but never overclaim performance,
+  backend support, or release authorization.
+- Goal/progress information belongs in `docs/reports/` and history/release
+  docs, not in this refresh file.
+- If a new external report arrives, read it, summarize defects, fix or rebut
+  with evidence, and save a response report.
+- For cloud runs, copy artifacts back and run local intake before interpreting
+  results.
+- Release-level work requires total tests, total docs update, total audit, and
+  review-flow evidence.
 
 ## Working style for this review
 
@@ -77,3 +128,8 @@ repository review work. Read it regularly after context compaction.
 - Keep the review grounded in saved docs, tests, and reports.
 - Use generated audits where available, then save Claude/Gemini-style reviews
   and a two-AI consensus report for bounded goal closure.
+- Before significant work, inspect current files; do not assume stale memory is
+  current.
+- Keep user updates concise but frequent during long-running work.
+- When a task uses paid cloud, maximize local preparation first and batch cloud
+  operations efficiently.

@@ -21,16 +21,15 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
         by_app = {row["app"]: row for row in payload["rows"]}
 
         self.assertTrue(payload["valid"])
-        self.assertEqual(payload["summary"]["unresolved_nvidia_public_wording_apps"], 6)
+        self.assertEqual(payload["summary"]["unresolved_nvidia_public_wording_apps"], 5)
         self.assertEqual(payload["summary"]["public_wording_blocked"], 0)
-        self.assertEqual(payload["summary"]["public_wording_not_reviewed"], 6)
+        self.assertEqual(payload["summary"]["public_wording_not_reviewed"], 5)
         self.assertEqual(set(by_app), {
             "database_analytics",
             "graph_analytics",
             "hausdorff_distance",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
-            "road_hazard_screening",
         })
 
     def test_buckets_prevent_wasteful_pod_runs(self) -> None:
@@ -47,7 +46,6 @@ class Goal1125UnresolvedRtxPublicWordingPrioritizationTest(unittest.TestCase):
         for app in (
             "database_analytics",
             "graph_analytics",
-            "road_hazard_screening",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         ):

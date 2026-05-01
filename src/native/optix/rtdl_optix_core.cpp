@@ -117,6 +117,13 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
         src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
     }
     std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
+    if (!std::getenv("RTDL_NVCC")) {
+        std::error_code ignored;
+        if (!std::filesystem::exists(nvcc, ignored)
+            && std::filesystem::exists("/usr/local/cuda/bin/nvcc", ignored)) {
+            nvcc = "/usr/local/cuda/bin/nvcc";
+        }
+    }
     std::vector<std::string> argv_storage = {
         nvcc,
         "-ptx",
@@ -230,11 +237,17 @@ std::string compile_to_ptx(const char* cuda_src,
     }
 
     std::vector<const char*> opts;
-    opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 1);
+    opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 3);
     for (const std::string& include_opt : nvrtc_include_opts) {
         opts.push_back(include_opt.c_str());
     }
     opts.push_back("--std=c++14");
+#if defined(__linux__) && defined(__x86_64__)
+    // CUDA 13 NVRTC can include glibc headers without the host architecture
+    // predefines, which makes gnu/stubs.h look for missing 32-bit stubs.
+    opts.push_back("-D__x86_64__=1");
+    opts.push_back("-D__LP64__=1");
+#endif
     for (const char* o : extra_opts) opts.push_back(o);
 
     nvrtcProgram prog;
@@ -287,7 +300,8 @@ static void init_optix_context() {
     CUdevice  dev;
     CUcontext cu_ctx;
     CU_CHECK(cuDeviceGet(&dev, 0));
-    CU_CHECK(cuCtxCreate(&cu_ctx, 0, dev));
+    CU_CHECK(cuDevicePrimaryCtxRetain(&cu_ctx, dev));
+    CU_CHECK(cuCtxSetCurrent(cu_ctx));
     OPTIX_CHECK(optixInit());
     OptixDeviceContextOptions opts = {};
     if (const char* log_level = std::getenv("RTDL_OPTIX_LOG_LEVEL")) {

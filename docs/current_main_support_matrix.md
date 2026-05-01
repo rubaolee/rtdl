@@ -1,10 +1,10 @@
 # RTDL Current Main Support Matrix
 
-Status: live support matrix for the released `v0.9.6` tag and current `main`.
+Status: live support matrix for the released `v0.9.8` tag and current `main`.
 
 This page is intentionally separate from the
-[v0.9.6 release support matrix](release_reports/v0_9_6/support_matrix.md).
-The released `v0.9.6` tag is the current public release boundary. Users who
+[v0.9.8 release support matrix](release_reports/v0_9_8/support_matrix.md).
+The released `v0.9.8` tag is the current public release boundary. Users who
 build from the latest source should read this page together with the release
 matrix because stale local backend libraries may not contain the newest native
 symbols until rebuilt.
@@ -17,10 +17,12 @@ engine as `native`, `native_assisted`, `compatibility_fallback`, or
 
 ## Boundary
 
-- Current public release: `v0.9.6`.
-- Current `main`: released `v0.9.6` surface plus any later untagged local work.
+- Current public release: `v0.9.8`.
+- Current `main`: released `v0.9.8` surface plus any later untagged local work.
 - The `v0.9.6` release boundary includes the native/native-assisted any-hit work
   and prepared repeated-query visibility/count optimizations from Goals650-681.
+- The `v0.9.8` release boundary adds bounded RTX app evidence and public wording
+  state without widening whole-app or backend-flag-only speedup claims.
 - Backend libraries must be rebuilt from current source before current-main
   native paths are available.
 - Stale backend libraries may fall back to compatibility dispatch or reject a
@@ -137,5 +139,8 @@ For the public release boundary, use:
 - [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
 - [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
 - [v0.9.6 Audit Report](release_reports/v0_9_6/audit_report.md)
+- [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
+- [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
+- [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
 - [v0.9.5 Release Package](release_reports/v0_9_5/README.md)
 - [v0.9.5 Support Matrix](release_reports/v0_9_5/support_matrix.md)

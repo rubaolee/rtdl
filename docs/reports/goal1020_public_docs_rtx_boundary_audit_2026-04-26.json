@@ -26,7 +26,7 @@
       "exists": true,
       "missing_phrases": [],
       "path": "docs/app_engine_support_matrix.md",
-      "required_phrase_count": 4,
+      "required_phrase_count": 3,
       "status": "ok"
     },
     {

@@ -35,6 +35,9 @@ class Goal763RtxCloudBootstrapCheckTest(unittest.TestCase):
             self.assertTrue(payload["dry_run"])
             self.assertEqual([step["name"] for step in payload["steps"]], ["build_optix", "native_optix_focused_tests"])
             self.assertIn("OPTIX_PREFIX", " ".join(payload["steps"][0]["result"]["command"]))
+            self.assertIn("geos", payload["preflight"])
+            self.assertIn("install_hint_linux", payload["preflight"]["geos"])
+            self.assertIn("libgeos-dev", payload["preflight"]["geos"]["install_hint_linux"])
             self.assertTrue(output.exists())
 
     def test_skip_flags_omit_steps(self) -> None:
@@ -42,6 +45,29 @@ class Goal763RtxCloudBootstrapCheckTest(unittest.TestCase):
         payload = module.run_check(dry_run=True, skip_build=True, skip_tests=True)
         self.assertEqual(payload["status"], "ok")
         self.assertEqual(payload["steps"], [])
+
+    def test_missing_geos_is_preflight_blocker(self) -> None:
+        module = __import__("scripts.goal763_rtx_cloud_bootstrap_check", fromlist=["run_check"])
+        original = module._geos_preflight
+        module._geos_preflight = lambda: {
+            "pkg_config": None,
+            "pkg_config_exists": False,
+            "pkg_config_packages": {},
+            "pkg_config_geos_package": None,
+            "geos_c_library": None,
+            "geos_c_library_found": False,
+            "install_hint_linux": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config",
+            "why_required": "strict reference path needs GEOS",
+        }
+        try:
+            payload = module.run_check(dry_run=False, skip_build=True, skip_tests=True)
+        finally:
+            module._geos_preflight = original
+        blockers = payload["preflight_blockers"]
+        self.assertIn("missing pkg-config for GEOS/native oracle checks", blockers)
+        self.assertIn("missing GEOS pkg-config package geos or geos_c", blockers)
+        self.assertIn("missing GEOS C library libgeos_c", blockers)
+        self.assertEqual(payload["status"], "needs_attention")
 
 
 if __name__ == "__main__":

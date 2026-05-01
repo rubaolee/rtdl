@@ -33,7 +33,7 @@ class Goal1060PostGoal1058SpeedupCandidateAuditTest(unittest.TestCase):
             rows[("robot_collision_screening", "prepared_pose_flags")][
                 "current_public_wording_status"
             ],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
         self.assertEqual(
             rows[("event_hotspot_screening", "prepared_count_summary")][

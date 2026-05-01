@@ -1,0 +1,54 @@
+{
+  "boundary": "Goal1208 is a public-wording decision packet only. It proposes narrow wording states from accepted Goal1206 evidence but does not edit public docs, authorize release, or by itself authorize public RTX speedup claims.",
+  "date": "2026-05-01",
+  "goal": "Goal1208 public wording decision after Goal1206",
+  "min_public_ratio": 1.2,
+  "proposed_correctness_ready_speedup_blocked_apps": [
+    "polygon_set_jaccard"
+  ],
+  "proposed_public_wording_blocked_apps": [
+    "database_analytics"
+  ],
+  "proposed_public_wording_reviewed_apps": [
+    "road_hazard_screening"
+  ],
+  "public_speedup_claim_authorized_count": 0,
+  "public_speedup_claims_applied_by_this_packet": 0,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "boundary": "Only prepared compact-summary scan/group/count/sum traversal is covered; no DBMS, SQL engine, full dashboard, row-materialization, Python setup, or whole-app speedup claim is allowed.",
+      "candidate_public_wording": "RTDL's prepared DB compact-summary RTX sub-path is repaired at 100k and 300k, but the measured 1.12x-1.16x advantage is below the 1.2x public speedup threshold.",
+      "copies": [
+        100000,
+        300000
+      ],
+      "decision": "keep_public_wording_blocked_no_positive_speedup",
+      "path_name": "prepared_db_compact_summary",
+      "raw_ratio_embree_over_optix": 1.122647161469647,
+      "status_to_apply": "public_wording_blocked"
+    },
+    {
+      "app": "road_hazard_screening",
+      "boundary": "Only the prepared native segment/polygon road-hazard summary traversal and threshold-count continuation are covered; default app behavior, GIS/routing, row materialization, Python setup, and whole-app speedup remain outside this wording.",
+      "candidate_public_wording": "RTDL's prepared native road-hazard RTX sub-path measured 0.230652 s and 3.53x versus the reviewed same-scale Embree sub-path at 40k copies.",
+      "decision": "propose_public_wording_reviewed",
+      "embree_phase_sec": 0.8147223866544664,
+      "optix_phase_sec": 0.23065232206135988,
+      "path_name": "prepared_native_road_hazard_summary",
+      "raw_ratio_embree_over_optix": 3.532253130483238,
+      "status_to_apply": "public_wording_reviewed"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "boundary": "Only public-safe chunk correctness/readiness is covered; exact area refinement, Jaccard whole-app speedup, arbitrary chunk sizes, row materialization, and Python postprocess are outside this wording.",
+      "candidate_public_wording": "RTDL's polygon-set Jaccard OptiX path has public-safe chunk correctness evidence at chunk 512; no positive RTX speedup wording is authorized because this packet has no same-scale Embree speedup comparison and chunk 64 remains diagnostic-only/parity-failing.",
+      "decision": "correctness_ready_no_speedup_wording",
+      "path_name": "native_assisted_lsi_pip_candidate_discovery",
+      "raw_ratio_embree_over_optix": null,
+      "status_to_apply": "public_correctness_ready_speedup_blocked"
+    }
+  ],
+  "source_consensus": "docs/reports/goal1206_two_ai_consensus_2026-05-01.md",
+  "source_intake": "docs/reports/goal1206_repaired_rtx_recovery_merge_intake_2026-05-01.json"
+}

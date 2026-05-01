@@ -42,10 +42,14 @@ class Goal978RtxSpeedupClaimCandidateAuditTest(unittest.TestCase):
         )
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_status"],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
         self.assertIn(
-            "100 ms",
+            "normalized per-pose",
+            rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_boundary"],
+        )
+        self.assertIn(
+            "whole-app planning speedup",
             rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_boundary"],
         )
         self.assertEqual(

@@ -1,0 +1,85 @@
+{
+  "boundary": "This profiler separates input build, point packing, OptiX preparation, prepared query, Python postprocess, validation, and close phases for prepared decision sub-paths. It does not authorize an RTX speedup claim without a real RTX run, same-semantics baselines, and independent review.",
+  "cloud_claim_contract": {
+    "activation_status": "deferred_until_real_rtx_phase_run_and_review",
+    "app_level_phase_aliases": {
+      "input_build_sec": "run_app.run_phases.input_construction_sec",
+      "optix_close_sec": "profiler-only prepared-handle close phase; not emitted by run_app",
+      "optix_prepare_sec": "run_app.run_phases.optix_prepare_sec",
+      "optix_query_sec": "run_app.run_phases.optix_query_sec",
+      "point_pack_sec": "profiler-only packed array phase; not emitted by run_app",
+      "python_postprocess_sec": "run_app.run_phases.python_postprocess_sec",
+      "validation_sec": "run_app.run_phases.validation_sec"
+    },
+    "claim_scope": "prepared OptiX fixed-radius threshold traversal for Hausdorff <= radius decisions",
+    "cloud_policy": "include in the same deferred RTX batch after the active evidence batch succeeds",
+    "non_claim": "not exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, or a whole-app speedup claim",
+    "phase_schema_note": "Goal887 required_phase_groups describe the cloud profiler payload. Goal1132 app-level Hausdorff payloads use run_phases field names listed in app_level_phase_aliases.",
+    "required_phase_groups": [
+      "input_build_sec",
+      "point_pack_sec",
+      "optix_prepare_sec",
+      "optix_query_sec",
+      "python_postprocess_sec",
+      "validation_sec",
+      "optix_close_sec"
+    ],
+    "schema_scope": "goal887_profiler_payload"
+  },
+  "date": "2026-04-24",
+  "generated_at": "2026-05-01T00:11:46",
+  "goal": "Goal887 prepared decision OptiX phase profiler",
+  "host": {
+    "hostname": "bd98276a9bb4",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "parameters": {
+    "barnes_tree_depth": 1,
+    "body_count": 1000,
+    "copies": 200000,
+    "hit_threshold": 1,
+    "iterations": 3,
+    "mode": "optix",
+    "radius": 0.4,
+    "skip_validation": false
+  },
+  "scenario": {
+    "mode": "optix",
+    "result": {
+      "covered_a_to_b": 800000,
+      "covered_b_to_a": 800000,
+      "matches_oracle": true,
+      "oracle_within_threshold": true,
+      "point_count_a": 800000,
+      "point_count_b": 800000,
+      "radius": 0.4,
+      "within_threshold": true
+    },
+    "scenario": "hausdorff_threshold",
+    "timings_sec": {
+      "input_build_sec": 1.9123187600634992,
+      "optix_close_sec": 0.004467534017749131,
+      "optix_prepare_sec": 0.6811166659463197,
+      "optix_query_sec": {
+        "max_sec": 0.005236556055024266,
+        "median_sec": 0.004715401097200811,
+        "min_sec": 0.004631851916201413
+      },
+      "point_pack_sec": 2.7375515691237524,
+      "python_postprocess_sec": {
+        "max_sec": 5.849986337125301e-06,
+        "median_sec": 1.9000144675374031e-06,
+        "min_sec": 1.0299263522028923e-06
+      },
+      "validation_sec": {
+        "max_sec": 0.00020890799351036549,
+        "median_sec": 8.686899673193693e-05,
+        "min_sec": 6.998900789767504e-05
+      }
+    }
+  },
+  "schema_version": "goal887_prepared_decision_phase_contract_v1",
+  "source_commit": "goal1200-archive-4f77dbde17c8baefab4c79130f446ceb4b2d7d72279b9755f7605dedd4ebaa66"
+}

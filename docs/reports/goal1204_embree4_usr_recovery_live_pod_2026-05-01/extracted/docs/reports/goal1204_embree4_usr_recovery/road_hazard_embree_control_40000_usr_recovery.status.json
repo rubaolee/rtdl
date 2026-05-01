@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 40000 --output-mode summary > docs/reports/goal1204_embree4_usr_recovery/road_hazard_embree_control_40000_usr_recovery.json",
+  "exit_code": 0,
+  "label": "road_hazard_embree_control_40000_usr_recovery",
+  "log": "docs/reports/goal1204_embree4_usr_recovery/road_hazard_embree_control_40000_usr_recovery.log",
+  "status": "ok"
+}

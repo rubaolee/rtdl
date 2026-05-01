@@ -1,0 +1,31 @@
+{
+  "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1182_rtdl_current_source_for_next_pod_2026-04-30.tar.gz",
+  "archive_sha256": "b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+  "blockers": [],
+  "boundary": "Goal1183 is a local readiness gate. It does not start cloud resources, run benchmarks, authorize release, or authorize public RTX speedup wording.",
+  "checks": {
+    "archive_exists": true,
+    "archive_sha_matches_packet": true,
+    "archive_sha_used_in_run_command": true,
+    "consensus_accepts_goal1182": true,
+    "copy_back_commands_cover_result_and_sha": true,
+    "executor_generates_manifest_before_run": true,
+    "executor_installs_geos": true,
+    "executor_packs_result_archive": true,
+    "executor_verifies_archive_sha": true,
+    "intake_script_exists": true,
+    "no_local_cloud_execution": true,
+    "no_release_or_public_speedup_authorization": true,
+    "packet_json_exists": true,
+    "packet_valid": true,
+    "required_consensus_files_exist": true,
+    "run_command_overrides_goal1175_defaults": true,
+    "upload_commands_cover_archive_and_executor": true
+  },
+  "date": "2026-04-30",
+  "goal": "Goal1183 Goal1182 pre-pod readiness gate",
+  "next_action": "Start one RTX-class pod session and run the Goal1182 packet commands verbatim.",
+  "packet_sha256": "b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+  "post_pod_required_action": "Copy back the result TGZ and SHA, extract under docs/reports/goal1182_live_pod_2026-04-30/, then run scripts/goal1170_clean_source_rtx_batch_intake.py before interpreting evidence.",
+  "ready_for_pod": true
+}

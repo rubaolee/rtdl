@@ -8,7 +8,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal655TutorialExampleCurrentMainConsistencyTest(unittest.TestCase):
-    def test_release_facing_examples_use_v096_release_boundary(self) -> None:
+    def test_release_facing_examples_preserve_v096_backend_feature_boundary(self) -> None:
         text = (REPO_ROOT / "docs" / "release_facing_examples.md").read_text(
             encoding="utf-8"
         )

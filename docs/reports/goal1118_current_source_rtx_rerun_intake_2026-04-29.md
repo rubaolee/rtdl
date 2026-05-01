@@ -13,7 +13,7 @@ Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cl
 | `row_count` | `5` |
 | `valid_row_count` | `4` |
 | `missing_row_count` | `0` |
-| `source_commits` | `['2ba7ae0']` |
+| `source_commits` | `['21fa036881bf9a0c806f69c15727d87b482ccfcf']` |
 | `same_source_commit` | `True` |
 | `runner_log_exists` | `True` |
 | `public_speedup_claim_authorized` | `False` |
@@ -22,11 +22,11 @@ Goal1118 intakes Goal1116 current-source RTX rerun artifacts. It does not run cl
 
 | App | Phase | Exists | Valid | Source commit | Median query sec | Findings |
 | --- | --- | --- | --- | --- | ---: | --- |
-| `facility_knn_assignment` | `same_scale_validation_and_timing` | `True` | `True` | `2ba7ae0` | `0.103119` |  |
-| `robot_collision_screening` | `correctness_validation` | `True` | `True` | `2ba7ae0` | `0.006214` |  |
-| `robot_collision_screening` | `large_timing_repeat` | `True` | `False` | `2ba7ae0` | `0.013837` | median_query_below_timing_floor |
-| `barnes_hut_force_app` | `correctness_validation` | `True` | `True` | `2ba7ae0` | `0.008320` |  |
-| `barnes_hut_force_app` | `large_timing_repeat` | `True` | `True` | `2ba7ae0` | `0.240634` |  |
+| `facility_knn_assignment` | `same_scale_validation_and_timing` | `True` | `True` | `21fa036881bf9a0c806f69c15727d87b482ccfcf` | `0.111619` |  |
+| `robot_collision_screening` | `correctness_validation` | `True` | `True` | `21fa036881bf9a0c806f69c15727d87b482ccfcf` | `0.006429` |  |
+| `robot_collision_screening` | `large_timing_repeat` | `True` | `False` | `21fa036881bf9a0c806f69c15727d87b482ccfcf` | `0.018729` | median_query_below_timing_floor |
+| `barnes_hut_force_app` | `correctness_validation` | `True` | `True` | `21fa036881bf9a0c806f69c15727d87b482ccfcf` | `0.007977` |  |
+| `barnes_hut_force_app` | `large_timing_repeat` | `True` | `True` | `21fa036881bf9a0c806f69c15727d87b482ccfcf` | `0.222256` |  |
 
 ## Boundary
 

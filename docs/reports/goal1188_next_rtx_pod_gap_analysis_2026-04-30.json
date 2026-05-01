@@ -1,0 +1,232 @@
+{
+  "blocked_public_wording_count": 0,
+  "blockers": [],
+  "boundary": "This is a planning/gap analysis only. It does not authorize public RTX speedup wording, release, tagging, or another pod run by itself.",
+  "date": "2026-04-30",
+  "goal": "Goal1188 next RTX pod gap analysis",
+  "needs_public_wording_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "road_hazard_screening",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard",
+    "hausdorff_distance"
+  ],
+  "needs_public_wording_evidence_count": 6,
+  "non_nvidia_target_count": 2,
+  "pod_recommendation": "Do not spend another pod session until the six needs_public_wording_evidence apps have explicit same-contract baseline commands and timing-floor scale choices. The next pod should batch those six rows plus optional ANN/robot timing-only replacements only if their wording contract changes.",
+  "public_app_count": 18,
+  "reviewed_public_wording_count": 10,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "bucket": "needs_public_wording_evidence",
+      "gap": "public wording not reviewed; latest DB compact-summary timing is just below the 0.1s review floor",
+      "next_local": "prepare a larger same-contract DB compact-summary scale or repeat-count plan that clears the timing floor without changing semantics",
+      "next_pod": "rerun compact_summary prepared warm-query with same-contract CPU/Embree baseline and enough work to exceed the public-review timing floor",
+      "performance_class": "python_interface_dominated",
+      "public_wording_status": "public_wording_not_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "graph_analytics",
+      "bucket": "needs_public_wording_evidence",
+      "gap": "public wording not reviewed for graph visibility/native graph-ray candidate paths",
+      "next_local": "define same-semantics graph visibility-edge and native graph-ray summary baselines; keep BFS orchestration outside the claim",
+      "next_pod": "collect graph visibility/native graph-ray timing with matching CPU/Embree baseline and phase metadata",
+      "performance_class": "optix_traversal",
+      "public_wording_status": "public_wording_not_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "apple_rt_demo",
+      "bucket": "non_nvidia_target",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "not_optix_applicable",
+      "public_wording_status": "not_nvidia_public_wording_target",
+      "readiness_status": "exclude_from_rtx_app_benchmark",
+      "rt_core_status": "not_nvidia_rt_core_target"
+    },
+    {
+      "app": "service_coverage_gaps",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "event_hotspot_screening",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "facility_knn_assignment",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "road_hazard_screening",
+      "bucket": "needs_public_wording_evidence",
+      "gap": "public wording not reviewed for prepared native road-hazard compact summary",
+      "next_local": "confirm same-contract CPU or Embree baseline for summary output only, not full GIS/routing",
+      "next_pod": "collect prepared native summary timing plus same-contract baseline at a scale above the timing floor",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_not_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "segment_polygon_hitcount",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "segment_polygon_anyhit_rows",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "bucket": "needs_public_wording_evidence",
+      "gap": "public wording not reviewed; candidate discovery is RT-assisted but exact area continuation remains separate",
+      "next_local": "split candidate-discovery timing from exact area continuation and define a candidate-only public wording candidate",
+      "next_pod": "collect candidate-discovery-only OptiX timing with CPU/Embree candidate baseline; do not claim exact area speedup",
+      "performance_class": "python_interface_dominated",
+      "public_wording_status": "public_wording_not_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "bucket": "needs_public_wording_evidence",
+      "gap": "public wording not reviewed; chunked candidate discovery is bounded and exact Jaccard continuation remains separate",
+      "next_local": "choose a stable chunk-size contract and same-contract candidate baseline; keep exact Jaccard outside the claim",
+      "next_pod": "collect safe-chunk candidate-discovery timing with baseline and explicit chunk metadata",
+      "performance_class": "python_interface_dominated",
+      "public_wording_status": "public_wording_not_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "hausdorff_distance",
+      "bucket": "needs_public_wording_evidence",
+      "gap": "public wording not reviewed; latest prepared threshold timing is far below the 0.1s review floor",
+      "next_local": "prepare larger/repeated directed_threshold_prepared decision workload while preserving oracle-match semantics",
+      "next_pod": "collect prepared threshold decision timing with oracle/baseline and enough repeated work to exceed the timing floor",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_not_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "ann_candidate_search",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "outlier_detection",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "dbscan_clustering",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "robot_collision_screening",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "barnes_hut_force_app",
+      "bucket": "reviewed_wording",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "optix_traversal_prepared_summary",
+      "public_wording_status": "public_wording_reviewed",
+      "readiness_status": "ready_for_rtx_claim_review",
+      "rt_core_status": "rt_core_ready"
+    },
+    {
+      "app": "hiprt_ray_triangle_hitcount",
+      "bucket": "non_nvidia_target",
+      "gap": "",
+      "next_local": "",
+      "next_pod": "",
+      "performance_class": "not_optix_exposed",
+      "public_wording_status": "not_nvidia_public_wording_target",
+      "readiness_status": "exclude_from_rtx_app_benchmark",
+      "rt_core_status": "not_nvidia_rt_core_target"
+    }
+  ],
+  "rt_core_ready_count": 16,
+  "timing_only_followups": {
+    "ann_candidate_search": {
+      "next_action": "do not promote Goal1184 ANN timing-only row; only rerun if a future claim needs same-contract oracle/baseline at larger scale",
+      "status": "public wording reviewed for prepared candidate-coverage decision; Goal1184 ANN row is timing-only"
+    },
+    "robot_collision_screening": {
+      "next_action": "do not promote Goal1184 robot timing-only row into same-total-work speedup; rerun only with normalized baseline contract if wording changes are requested",
+      "status": "public wording reviewed only for normalized per-pose prepared pose flags; Goal1184 robot row is timing-only"
+    }
+  },
+  "valid": true
+}

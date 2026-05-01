@@ -1,0 +1,7 @@
+{
+  "command": "timeout 600s python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 200000 --iterations 3 --radius 0.4 --output-json docs/reports/goal1200_optix_slower_app_investigation/hausdorff_optix_repair_200000.json",
+  "exit_code": 0,
+  "label": "hausdorff_optix_repair_200000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/hausdorff_optix_repair_200000.log",
+  "status": "ok"
+}

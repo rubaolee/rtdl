@@ -19,13 +19,10 @@ class Goal1062BlockedRtxWordingRerunManifestTest(unittest.TestCase):
         )
         payload = module.build_manifest()
         self.assertTrue(payload["valid"])
-        self.assertEqual(
-            payload["blocked_apps"],
-            ["facility_knn_assignment", "robot_collision_screening"],
-        )
-        self.assertEqual(payload["summary"]["row_count"], 4)
-        self.assertEqual(payload["summary"]["validation_row_count"], 2)
-        self.assertEqual(payload["summary"]["timing_row_count"], 2)
+        self.assertEqual(payload["blocked_apps"], [])
+        self.assertEqual(payload["summary"]["row_count"], 0)
+        self.assertEqual(payload["summary"]["validation_row_count"], 0)
+        self.assertEqual(payload["summary"]["timing_row_count"], 0)
         self.assertEqual(payload["summary"]["validation_rows_with_skip_validation"], [])
         self.assertEqual(payload["summary"]["timing_rows_without_floor"], [])
         self.assertIn("does not run cloud", payload["boundary"])
@@ -36,28 +33,7 @@ class Goal1062BlockedRtxWordingRerunManifestTest(unittest.TestCase):
             fromlist=["build_manifest"],
         )
         rows = module.build_manifest()["rows"]
-        by_key = {(row["app"], row["phase"]): row for row in rows}
-
-        facility_validation = by_key[("facility_knn_assignment", "correctness_validation")]
-        self.assertFalse(facility_validation["contains_skip_validation"])
-        self.assertIn("facility_service_coverage", facility_validation["command"])
-
-        facility_timing = by_key[("facility_knn_assignment", "large_timing_repeat")]
-        self.assertTrue(facility_timing["contains_skip_validation"])
-        self.assertEqual(facility_timing["timing_floor_sec"], 0.100)
-        self.assertIn("800000", facility_timing["command"])
-
-        robot_validation = by_key[("robot_collision_screening", "correctness_validation")]
-        self.assertFalse(robot_validation["contains_skip_validation"])
-        self.assertIn("python_objects", robot_validation["command"])
-        self.assertIn("pose_flags", robot_validation["command"])
-
-        robot_timing = by_key[("robot_collision_screening", "large_timing_repeat")]
-        self.assertTrue(robot_timing["contains_skip_validation"])
-        self.assertEqual(robot_timing["timing_floor_sec"], 0.100)
-        self.assertIn("packed_arrays", robot_timing["command"])
-        self.assertIn("pose_count", robot_timing["command"])
-        self.assertIn("8000000", robot_timing["command"])
+        self.assertEqual(rows, [])
 
     def test_cli_writes_json_markdown_and_shell_runner(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -86,7 +62,7 @@ class Goal1062BlockedRtxWordingRerunManifestTest(unittest.TestCase):
             self.assertTrue(payload["valid"])
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("Goal1062 Blocked RTX Wording Rerun Manifest", markdown)
-            self.assertIn("facility_coverage_threshold_large_timing.json", markdown)
+            self.assertNotIn("robot_prepared_pose_flags_large_timing.json", markdown)
             shell = output_sh.read_text(encoding="utf-8")
             self.assertIn("RTDL_SOURCE_COMMIT", shell)
             self.assertIn("nvidia-smi", shell)

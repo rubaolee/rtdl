@@ -76,6 +76,8 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
         self.assertTrue(all(record["parity_vs_cpu_python_reference"] for record in optix_records))
         self.assertEqual(optix_records[1]["optix_graph_mode"], "native")
         self.assertEqual(optix_records[2]["optix_graph_mode"], "native")
+        self.assertIn("section_run_phases", optix_records[1])
+        self.assertIn("native_continuation_backend", optix_records[1])
 
     def test_summary_strict_uses_analytic_validation_without_cpu_reference(self) -> None:
         from scripts import goal889_graph_visibility_optix_gate as goal889
@@ -103,6 +105,9 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
         self.assertIn("analytic_expected_triangle_count", labels)
         optix_records = [record for record in payload["records"] if str(record["label"]).startswith("optix_")]
         self.assertTrue(all(record["parity_vs_analytic_expected"] for record in optix_records))
+        for record in optix_records:
+            self.assertIn("section_run_phases", record)
+            self.assertIn("native_continuation_backend", record)
 
     def test_summary_default_visibility_uses_single_launch_not_chunks(self) -> None:
         from scripts import goal889_graph_visibility_optix_gate as goal889
@@ -127,6 +132,31 @@ class Goal889GraphVisibilityOptixGateTest(unittest.TestCase):
         self.assertEqual(visibility_record["chunking"], "single_launch")
         self.assertEqual(visibility_record["chunk_count"], 1)
         self.assertEqual(visibility_record["chunk_copies"], 2)
+        self.assertIn("section_run_phases", visibility_record)
+
+    def test_chunked_visibility_preserves_aggregate_phase_metadata(self) -> None:
+        from scripts import goal889_graph_visibility_optix_gate as goal889
+
+        optix_visibility = graph_app.run_app("cpu_python_reference", "visibility_edges", copies=1, output_mode="summary")
+        optix_bfs = graph_app.run_app("cpu_python_reference", "bfs", copies=2, output_mode="summary")
+        optix_triangle = graph_app.run_app("cpu_python_reference", "triangle_count", copies=2, output_mode="summary")
+        with mock.patch.object(
+            goal889.graph_app,
+            "run_app",
+            side_effect=[optix_visibility, optix_visibility, optix_bfs, optix_triangle],
+        ):
+            payload = goal889.run_gate(
+                copies=2,
+                output_mode="summary",
+                strict=True,
+                validation_mode="analytic_summary",
+                chunk_copies=1,
+            )
+
+        visibility_record = next(record for record in payload["records"] if record["label"] == "optix_visibility_anyhit")
+        self.assertEqual(visibility_record["chunk_count"], 2)
+        self.assertIn("section_run_phases", visibility_record)
+        self.assertIn("query_visibility_pair_rows_sec", visibility_record["section_run_phases"])
 
     def test_cli_writes_non_strict_json(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT / "build") as tmpdir:

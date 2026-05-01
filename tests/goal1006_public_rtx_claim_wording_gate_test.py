@@ -47,7 +47,7 @@ class Goal1006PublicRtxClaimWordingGateTest(unittest.TestCase):
         )
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_status"],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
         self.assertEqual(
             rows[("event_hotspot_screening", "prepared_count_summary")]["public_wording_status"],

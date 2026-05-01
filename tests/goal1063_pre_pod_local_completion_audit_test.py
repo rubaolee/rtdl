@@ -20,12 +20,12 @@ class Goal1063PrePodLocalCompletionAuditTest(unittest.TestCase):
         payload = module.build_audit()
         self.assertTrue(payload["valid"])
         self.assertTrue(payload["pod_ready_now"])
-        self.assertEqual(payload["summary"]["reviewed_public_wording_apps"], 10)
+        self.assertEqual(payload["summary"]["reviewed_public_wording_apps"], 11)
         self.assertEqual(payload["blocked_apps"], [])
         self.assertEqual(payload["summary"]["blocked_rows_ready_for_one_pod"], 0)
-        self.assertEqual(payload["summary"]["rejected_current_speedup_rows"], 8)
-        self.assertEqual(payload["summary"]["local_only_blockers_before_broader_pod"], 8)
-        self.assertIn("No currently blocked", payload["pod_ready_scope"])
+        self.assertEqual(payload["summary"]["rejected_current_speedup_rows"], 6)
+        self.assertEqual(payload["summary"]["local_only_blockers_before_broader_pod"], 6)
+        self.assertIn("No currently blocked public-wording rows remain", payload["pod_ready_scope"])
 
     def test_rejected_rows_are_not_marked_pod_ready_without_local_changes(self) -> None:
         module = __import__(
@@ -68,7 +68,7 @@ class Goal1063PrePodLocalCompletionAuditTest(unittest.TestCase):
             markdown = output_md.read_text(encoding="utf-8")
             self.assertIn("Goal1063 Pre-Pod Local Completion Audit", markdown)
             self.assertIn("no_pod_until_code_or_scale_changes", markdown)
-            self.assertIn("No currently blocked", markdown)
+            self.assertIn("No currently blocked public-wording rows remain", markdown)
 
 
 if __name__ == "__main__":

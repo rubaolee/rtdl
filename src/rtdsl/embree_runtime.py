@@ -1784,6 +1784,27 @@ class PreparedEmbreeDbDataset:
         finally:
             rows.close()
 
+    def compact_summary_batch(self, requests) -> dict[str, object]:
+        results: dict[str, object] = {}
+        phases: dict[str, object] = {}
+        for request in requests:
+            name = str(request["name"])
+            operation = str(request["operation"])
+            if operation == "conjunctive_scan_count":
+                results[name] = self.conjunctive_scan_count(request["predicates"])
+            elif operation == "grouped_count_summary":
+                results[name] = self.grouped_count_summary(request["query"])
+            elif operation == "grouped_sum_summary":
+                results[name] = self.grouped_sum_summary(request["query"])
+            else:
+                raise ValueError(f"unsupported DB compact-summary batch operation: {operation}")
+            phases[name] = None
+        self._last_compact_summary_batch_phase_timings = phases
+        return results
+
+    def last_compact_summary_batch_phase_timings(self) -> dict[str, object]:
+        return dict(getattr(self, "_last_compact_summary_batch_phase_timings", {}))
+
     def grouped_count(self, query) -> tuple[dict[str, object], ...]:
         normalized_query = normalize_grouped_query(query)
         if len(normalized_query.group_keys) != 1:
@@ -3229,11 +3250,11 @@ def _check_status(status: int, error=None) -> None:
 
 
 def _default_embree_prefix(system: str) -> Path:
+    if "RTDL_EMBREE_PREFIX" in os.environ:
+        return Path(os.environ["RTDL_EMBREE_PREFIX"])
     if system == "Darwin":
         return Path("/opt/homebrew/opt/embree")
     if system == "Windows":
-        if "RTDL_EMBREE_PREFIX" in os.environ:
-            return Path(os.environ["RTDL_EMBREE_PREFIX"])
         home = Path.home()
         for candidate in (
             home / "vendor",

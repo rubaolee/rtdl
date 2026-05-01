@@ -751,8 +751,33 @@ def _run_triangle_probe_oracle(compiled: CompiledKernel, normalized_inputs, libr
         library.rtdl_oracle_free_rows(rows_ptr)
 
 
-def summarize_bfs_rows(rows) -> dict[str, int]:
+def _summarize_bfs_row_buffer(input_rows_ptr, input_row_count: int) -> dict[str, int]:
     library = _load_oracle_library()
+    summary_rows_ptr = ctypes.POINTER(_RtdlBfsSummaryRow)()
+    summary_row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_summarize_bfs_rows(
+        input_rows_ptr,
+        input_row_count,
+        ctypes.byref(summary_rows_ptr),
+        ctypes.byref(summary_row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        if summary_row_count.value != 1:
+            raise RuntimeError("native BFS summary must return exactly one row")
+        return {
+            "discovered_edge_count": int(summary_rows_ptr[0].discovered_edge_count),
+            "discovered_vertex_count": int(summary_rows_ptr[0].discovered_vertex_count),
+            "max_level": int(summary_rows_ptr[0].max_level),
+        }
+    finally:
+        library.rtdl_oracle_free_rows(summary_rows_ptr)
+
+
+def summarize_bfs_rows(rows) -> dict[str, int]:
     row_values = tuple(rows)
     row_array = (_RtdlBfsExpandRow * len(row_values))(*[
         _RtdlBfsExpandRow(
@@ -762,28 +787,14 @@ def summarize_bfs_rows(rows) -> dict[str, int]:
         )
         for row in row_values
     ])
-    rows_ptr = ctypes.POINTER(_RtdlBfsSummaryRow)()
-    row_count = ctypes.c_size_t()
-    error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_summarize_bfs_rows(
-        row_array,
-        len(row_values),
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
-    _check_status(status, error)
-    try:
-        if row_count.value != 1:
-            raise RuntimeError("native BFS summary must return exactly one row")
-        return {
-            "discovered_edge_count": int(rows_ptr[0].discovered_edge_count),
-            "discovered_vertex_count": int(rows_ptr[0].discovered_vertex_count),
-            "max_level": int(rows_ptr[0].max_level),
-        }
-    finally:
-        library.rtdl_oracle_free_rows(rows_ptr)
+    return _summarize_bfs_row_buffer(row_array, len(row_values))
+
+
+def summarize_bfs_row_view(row_view) -> dict[str, int]:
+    """Summarize a native BFS row view without materializing Python dict rows."""
+    row_count = int(row_view.row_count)
+    rows_ptr = ctypes.cast(row_view.rows_ptr, ctypes.POINTER(_RtdlBfsExpandRow))
+    return _summarize_bfs_row_buffer(rows_ptr, row_count)
 
 
 def summarize_fixed_radius_rows(rows) -> dict[str, int]:
@@ -857,8 +868,32 @@ def summarize_knn_rows(rows) -> dict[str, int]:
         library.rtdl_oracle_free_rows(rows_ptr)
 
 
-def summarize_triangle_rows(rows) -> dict[str, int]:
+def _summarize_triangle_row_buffer(input_rows_ptr, input_row_count: int) -> dict[str, int]:
     library = _load_oracle_library()
+    summary_rows_ptr = ctypes.POINTER(_RtdlTriangleSummaryRow)()
+    summary_row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_summarize_triangle_rows(
+        input_rows_ptr,
+        input_row_count,
+        ctypes.byref(summary_rows_ptr),
+        ctypes.byref(summary_row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        if summary_row_count.value != 1:
+            raise RuntimeError("native triangle summary must return exactly one row")
+        return {
+            "triangle_count": int(summary_rows_ptr[0].triangle_count),
+            "touched_vertex_count": int(summary_rows_ptr[0].touched_vertex_count),
+        }
+    finally:
+        library.rtdl_oracle_free_rows(summary_rows_ptr)
+
+
+def summarize_triangle_rows(rows) -> dict[str, int]:
     row_values = tuple(rows)
     row_array = (_RtdlTriangleRow * len(row_values))(*[
         _RtdlTriangleRow(
@@ -868,27 +903,14 @@ def summarize_triangle_rows(rows) -> dict[str, int]:
         )
         for row in row_values
     ])
-    rows_ptr = ctypes.POINTER(_RtdlTriangleSummaryRow)()
-    row_count = ctypes.c_size_t()
-    error = ctypes.create_string_buffer(4096)
-    status = library.rtdl_oracle_summarize_triangle_rows(
-        row_array,
-        len(row_values),
-        ctypes.byref(rows_ptr),
-        ctypes.byref(row_count),
-        error,
-        len(error),
-    )
-    _check_status(status, error)
-    try:
-        if row_count.value != 1:
-            raise RuntimeError("native triangle summary must return exactly one row")
-        return {
-            "triangle_count": int(rows_ptr[0].triangle_count),
-            "touched_vertex_count": int(rows_ptr[0].touched_vertex_count),
-        }
-    finally:
-        library.rtdl_oracle_free_rows(rows_ptr)
+    return _summarize_triangle_row_buffer(row_array, len(row_values))
+
+
+def summarize_triangle_row_view(row_view) -> dict[str, int]:
+    """Summarize a native triangle row view without materializing Python dict rows."""
+    row_count = int(row_view.row_count)
+    rows_ptr = ctypes.cast(row_view.rows_ptr, ctypes.POINTER(_RtdlTriangleRow))
+    return _summarize_triangle_row_buffer(rows_ptr, row_count)
 
 
 def _run_lsi_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:

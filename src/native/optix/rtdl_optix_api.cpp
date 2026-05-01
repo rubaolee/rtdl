@@ -949,6 +949,123 @@ extern "C" int rtdl_optix_db_dataset_grouped_sum(
     }, error_out, error_size);
 }
 
+static void rtdl_optix_fill_db_compact_summary_phase(RtdlDbCompactSummaryResult& result)
+{
+    result.traversal = g_optix_last_db_traversal_s;
+    result.bitset_copyback = g_optix_last_db_bitset_copy_s;
+    result.exact_filter = g_optix_last_db_exact_filter_s;
+    result.output_pack = g_optix_last_db_output_pack_s;
+    result.raw_candidate_count = g_optix_last_db_raw_candidate_count;
+    result.emitted_count = g_optix_last_db_emitted_count;
+}
+
+extern "C" void rtdl_optix_db_compact_summary_results_destroy(
+        RtdlDbCompactSummaryResult* results,
+        size_t result_count)
+{
+    if (!results) {
+        return;
+    }
+    for (size_t index = 0; index < result_count; ++index) {
+        std::free(results[index].count_rows);
+        std::free(results[index].sum_rows);
+    }
+    std::free(results);
+}
+
+extern "C" int rtdl_optix_db_dataset_compact_summary_batch(
+        RtdlOptixDbDataset* dataset,
+        const RtdlDbCompactSummaryRequest* requests,
+        size_t request_count,
+        RtdlDbCompactSummaryResult** results_out,
+        size_t* result_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!dataset) {
+            throw std::runtime_error("OptiX prepared DB dataset must not be null");
+        }
+        if (!results_out || !result_count_out) {
+            throw std::runtime_error("output pointers must not be null");
+        }
+        if (request_count > 0 && !requests) {
+            throw std::runtime_error("compact summary request pointer must not be null when request_count > 0");
+        }
+        *results_out = nullptr;
+        *result_count_out = 0;
+
+        auto* impl = reinterpret_cast<OptixDbDatasetImpl*>(dataset);
+        std::vector<RtdlDbCompactSummaryResult> results(request_count);
+        try {
+            for (size_t index = 0; index < request_count; ++index) {
+                const RtdlDbCompactSummaryRequest& request = requests[index];
+                RtdlDbCompactSummaryResult& result = results[index];
+                result.operation = request.operation;
+                if (request.operation == kRtdlDbCompactSummaryScanCount) {
+                    run_db_conjunctive_scan_count_optix_prepared(
+                        impl,
+                        request.clauses,
+                        request.clause_count,
+                        &result.scalar_value);
+                    rtdl_optix_fill_db_compact_summary_phase(result);
+                } else if (request.operation == kRtdlDbCompactSummaryGroupedCount) {
+                    if (!request.group_key_field) {
+                        throw std::runtime_error("grouped_count compact summary requires group_key_field");
+                    }
+                    run_db_grouped_count_optix_prepared(
+                        impl,
+                        request.clauses,
+                        request.clause_count,
+                        request.group_key_field,
+                        &result.count_rows,
+                        &result.count_row_count);
+                    rtdl_optix_fill_db_compact_summary_phase(result);
+                } else if (request.operation == kRtdlDbCompactSummaryGroupedSum) {
+                    if (!request.group_key_field || !request.value_field) {
+                        throw std::runtime_error("grouped_sum compact summary requires group_key_field and value_field");
+                    }
+                    run_db_grouped_sum_optix_prepared(
+                        impl,
+                        request.clauses,
+                        request.clause_count,
+                        request.group_key_field,
+                        request.value_field,
+                        &result.sum_rows,
+                        &result.sum_row_count);
+                    rtdl_optix_fill_db_compact_summary_phase(result);
+                } else {
+                    throw std::runtime_error("unsupported DB compact-summary batch operation");
+                }
+            }
+        } catch (...) {
+            for (RtdlDbCompactSummaryResult& result : results) {
+                std::free(result.count_rows);
+                std::free(result.sum_rows);
+                result.count_rows = nullptr;
+                result.sum_rows = nullptr;
+            }
+            throw;
+        }
+
+        auto* out = static_cast<RtdlDbCompactSummaryResult*>(
+            std::calloc(results.size(), sizeof(RtdlDbCompactSummaryResult)));
+        if (!out && !results.empty()) {
+            for (RtdlDbCompactSummaryResult& result : results) {
+                std::free(result.count_rows);
+                std::free(result.sum_rows);
+                result.count_rows = nullptr;
+                result.sum_rows = nullptr;
+            }
+            throw std::bad_alloc();
+        }
+        if (!results.empty()) {
+            std::memcpy(out, results.data(), sizeof(RtdlDbCompactSummaryResult) * results.size());
+        }
+        *results_out = out;
+        *result_count_out = results.size();
+    }, error_out, error_size);
+}
+
 extern "C" void rtdl_optix_free_rows(void* rows) {
     std::free(rows);
 }

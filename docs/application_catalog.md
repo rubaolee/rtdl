@@ -59,10 +59,21 @@ The machine-readable public wording source is
 `rtdsl.rtx_public_wording_matrix()` via the
 [App Engine Support Matrix](app_engine_support_matrix.md) and
 [v1.0 RTX App Status](v1_0_rtx_app_status.md). In particular,
-`robot_collision_screening / prepared_pose_flags` is a real bounded RT-core
-path with reviewed normalized per-pose wording only after Goal1126; it is not a
-same-total-work wall-time claim and not a whole-app robot-planning speedup
-claim.
+`facility_knn_assignment / coverage_threshold_prepared_recentered`,
+`road_hazard_screening / prepared_native_compact_summary_40k`,
+and `barnes_hut_force_app / node_coverage_prepared_rich` have reviewed
+bounded public RTX sub-path wording after Goal1146 and Goal1208.
+`robot_collision_screening / prepared_pose_flags` has reviewed Goal1126
+normalized per-pose wording only; it is not a same-total-work wall-time claim
+and not a whole-app robot-planning speedup claim.
+Goal1177 is recorded as recovered clean-source RTX A5000 batch evidence for
+external-review input only. Goal1184 is recorded as newer Goal1182 RTX A4500
+batch evidence for external-review input only. Neither goal adds a new reviewed
+public wording row or authorizes public speedup wording. Goal1177 does not add a new reviewed public wording row
+and does not authorize public speedup wording.
+Goal1208 authorizes only the bounded road-hazard prepared native
+compact-summary wording; full GIS/routing, default-app behavior, row output,
+and whole-app road-hazard speedup remain outside the claim.
 
 The original RTDL root spatial workloads are still first-class:
 [LSI](features/lsi/README.md) turns segment sets into segment-intersection

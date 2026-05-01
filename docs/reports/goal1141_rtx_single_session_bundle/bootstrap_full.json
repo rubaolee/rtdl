@@ -1,0 +1,117 @@
+{
+  "boundary": "This bootstrap check verifies cloud build/test readiness. It does not run performance benchmarks and does not authorize RTX speedup claims.",
+  "dry_run": false,
+  "preflight": {
+    "cuda_header_exists": true,
+    "cuda_prefix": "/usr/local/cuda-12.8",
+    "geos": {
+      "geos_c_library": "libgeos_c.so.1",
+      "geos_c_library_found": true,
+      "install_hint_linux": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config",
+      "pkg_config": "/usr/bin/pkg-config",
+      "pkg_config_exists": true,
+      "pkg_config_geos_package": "geos",
+      "pkg_config_packages": {
+        "geos": {
+          "command": [
+            "/usr/bin/pkg-config",
+            "--libs",
+            "geos"
+          ],
+          "output_tail": "-lgeos_c \n",
+          "returncode": 0
+        },
+        "geos_c": {
+          "command": [
+            "/usr/bin/pkg-config",
+            "--libs",
+            "geos_c"
+          ],
+          "output_tail": "Package geos_c was not found in the pkg-config search path.\nPerhaps you should add the directory containing `geos_c.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'geos_c', required by 'virtual:world', not found\n",
+          "returncode": 1
+        }
+      },
+      "why_required": "Strict RTDL cloud gates may build the native CPU/oracle reference path. That build links GEOS C via libgeos_c; without libgeos-dev/pkg-config, graph and spatial strict gates can fail after the OptiX bootstrap already passed."
+    },
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "output_tail": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).\n",
+      "returncode": 128
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": "fatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).\n",
+      "returncode": 128
+    },
+    "nvcc": "/usr/local/cuda-12.8/bin/nvcc",
+    "nvcc_exists": true,
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda-12.8/bin/nvcc",
+        "--version"
+      ],
+      "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n",
+      "returncode": 0
+    },
+    "nvidia_smi": {
+      "command": [
+        "nvidia-smi"
+      ],
+      "output_tail": "Wed Apr 29 20:05:10 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA RTX A5000               On  |   00000000:52:00.0 Off |                  Off |\n| 30%   29C    P8             25W /  230W |       1MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+      "returncode": 0
+    },
+    "optix_header_exists": true,
+    "optix_prefix": "/workspace/vendor/optix-dev-9.0.0"
+  },
+  "preflight_blockers": [],
+  "skip_build": false,
+  "skip_tests": false,
+  "status": "ok",
+  "steps": [
+    {
+      "name": "build_optix",
+      "result": {
+        "command": [
+          "make",
+          "build-optix",
+          "OPTIX_PREFIX=/workspace/vendor/optix-dev-9.0.0",
+          "CUDA_PREFIX=/usr/local/cuda-12.8",
+          "NVCC=/usr/local/cuda-12.8/bin/nvcc"
+        ],
+        "elapsed_sec": 13.616336148232222,
+        "returncode": 0,
+        "status": "ok",
+        "stderr_tail": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n",
+        "stdout_tail": "mkdir -p build\n/usr/local/cuda-12.8/bin/nvcc -std=c++17 -O3 -shared -I/workspace/vendor/optix-dev-9.0.0/include -I/usr/local/cuda-12.8/include  -DRTDL_OPTIX_INCLUDE_DIR=\\\"/workspace/vendor/optix-dev-9.0.0/include\\\" -DRTDL_CUDA_INCLUDE_DIR=\\\"/usr/local/cuda-12.8/include\\\" -DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\\\"/usr/include/x86_64-linux-gnu\\\" -Xcompiler -fPIC \\\n\tsrc/native/rtdl_optix.cpp \\\n\t-L/usr/local/cuda-12.8/lib64 -lcuda -lnvrtc -lgeos_c  \\\n\t-o build/librtdl_optix.so\n"
+      }
+    },
+    {
+      "name": "native_optix_focused_tests",
+      "result": {
+        "command": [
+          "/usr/bin/python3",
+          "-m",
+          "unittest",
+          "-v",
+          "tests.goal671_optix_prepared_anyhit_count_test",
+          "tests.goal757_prepared_optix_fixed_radius_count_test",
+          "tests.goal760_optix_robot_pose_flags_phase_profiler_test"
+        ],
+        "elapsed_sec": 7.921293841674924,
+        "returncode": 0,
+        "status": "ok",
+        "stderr_tail": "ptixFixedRadiusNativeTest.test_native_outlier_and_dbscan_prepared_sessions_match_oracles) ... ok\ntest_native_prepared_rows_match_one_shot_rows (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusNativeTest.test_native_prepared_rows_match_one_shot_rows) ... ok\ntest_closed_prepared_handle_is_rejected (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_closed_prepared_handle_is_rejected) ... ok\ntest_dbscan_app_prepared_optix_core_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_app_prepared_optix_core_count_uses_scalar_count) ... ok\ntest_dbscan_app_prepared_optix_core_flags_match_oracle (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_app_prepared_optix_core_flags_match_oracle) ... ok\ntest_dbscan_prepared_session_core_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_prepared_session_core_count_uses_scalar_count) ... ok\ntest_dbscan_prepared_session_matches_oracle_and_closes (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_dbscan_prepared_session_matches_oracle_and_closes) ... ok\ntest_empty_prepared_handle_needs_no_native_library (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_empty_prepared_handle_needs_no_native_library) ... ok\ntest_fixed_radius_profiler_scalar_threshold_count_matches_oracle (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_fixed_radius_profiler_scalar_threshold_count_matches_oracle) ... ok\ntest_native_sources_export_prepared_optix_fixed_radius_symbols (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_native_sources_export_prepared_optix_fixed_radius_symbols) ... ok\ntest_outlier_app_prepared_optix_density_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_app_prepared_optix_density_count_uses_scalar_count) ... ok\ntest_outlier_app_prepared_optix_summary_matches_oracle (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_app_prepared_optix_summary_matches_oracle) ... ok\ntest_outlier_prepared_session_density_count_uses_scalar_count (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_prepared_session_density_count_uses_scalar_count) ... ok\ntest_outlier_prepared_session_matches_oracle_and_closes (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_outlier_prepared_session_matches_oracle_and_closes) ... ok\ntest_prepared_handle_rejects_radius_above_max_radius (tests.goal757_prepared_optix_fixed_radius_count_test.Goal757PreparedOptixFixedRadiusPortableTest.test_prepared_handle_rejects_radius_above_max_radius) ... ok\ntest_cli_emits_valid_json (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_cli_emits_valid_json) ... ok\ntest_dry_run_schema_and_boundary (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_dry_run_schema_and_boundary) ... ok\ntest_packed_arrays_requires_optix_and_skip_validation (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_packed_arrays_requires_optix_and_skip_validation) ... ok\ntest_skip_validation_records_no_oracle_claim (tests.goal760_optix_robot_pose_flags_phase_profiler_test.Goal760OptixRobotPoseFlagsPhaseProfilerTest.test_skip_validation_records_no_oracle_claim) ... ok\n\n----------------------------------------------------------------------\nRan 34 tests in 4.580s\n\nOK\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "suite": "goal763_rtx_cloud_bootstrap_check"
+}

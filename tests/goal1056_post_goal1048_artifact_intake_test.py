@@ -24,8 +24,8 @@ class Goal1056PostGoal1048ArtifactIntakeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             payload = module.build_intake(Path(tmpdir))
         self.assertEqual(payload["overall_status"], "needs_cloud_artifacts")
-        self.assertEqual(payload["expected_artifact_count"], 11)
-        self.assertEqual(payload["missing_artifact_count"], 11)
+        self.assertEqual(payload["expected_artifact_count"], 8)
+        self.assertEqual(payload["missing_artifact_count"], 8)
         self.assertEqual(payload["public_speedup_claim_authorized_count"], 0)
         self.assertIn("does not run cloud", payload["boundary"])
 

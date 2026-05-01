@@ -13,16 +13,17 @@
       "python_postprocess_sec",
       "validation_sec",
       "optix_close_sec"
-    ]
+    ],
+    "schema_scope": "goal887_profiler_payload"
   },
   "date": "2026-04-24",
-  "generated_at": "2026-04-29T15:28:43",
+  "generated_at": "2026-04-29T20:07:55",
   "goal": "Goal887 prepared decision OptiX phase profiler",
   "host": {
-    "hostname": "812b49ce658e",
+    "hostname": "09d2c4c4b876",
     "machine": "x86_64",
-    "platform": "Linux-5.15.0-124-generic-x86_64-with-glibc2.35",
-    "python": "3.11.10"
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
   },
   "parameters": {
     "barnes_tree_depth": 1,
@@ -50,27 +51,27 @@
     },
     "scenario": "facility_service_coverage_recentered",
     "timings_sec": {
-      "input_build_sec": 50.49322281219065,
-      "optix_close_sec": 8.139945566654205e-05,
-      "optix_prepare_sec": 1.1073209904134274,
+      "input_build_sec": 54.00116168707609,
+      "optix_close_sec": 0.00018251873552799225,
+      "optix_prepare_sec": 1.3546443162485957,
       "optix_query_sec": {
-        "max_sec": 0.11185828968882561,
-        "median_sec": 0.10311873722821474,
-        "min_sec": 0.09734564181417227
+        "max_sec": 0.11418766248971224,
+        "median_sec": 0.11161934863775969,
+        "min_sec": 0.10696904826909304
       },
-      "point_pack_sec": 17.252622162923217,
+      "point_pack_sec": 20.027014416642487,
       "python_postprocess_sec": {
-        "max_sec": 5.832873284816742e-06,
-        "median_sec": 2.843327820301056e-06,
-        "min_sec": 2.086162567138672e-06
+        "max_sec": 1.4514662325382233e-05,
+        "median_sec": 1.8291175365447998e-06,
+        "min_sec": 1.3951212167739868e-06
       },
       "validation_sec": {
-        "max_sec": 13.558824996463954,
-        "median_sec": 13.162515547126532,
-        "min_sec": 13.077294381335378
+        "max_sec": 13.10911175981164,
+        "median_sec": 12.20148690789938,
+        "min_sec": 12.189147308468819
       }
     }
   },
   "schema_version": "goal887_prepared_decision_phase_contract_v1",
-  "source_commit": "2ba7ae0"
+  "source_commit": "21fa036881bf9a0c806f69c15727d87b482ccfcf"
 }

@@ -1,0 +1,7 @@
+{
+  "command": "python3 examples/rtdl_road_hazard_screening.py --backend embree --copies 20000 --output-mode summary > docs/reports/goal1200_optix_slower_app_investigation/road_hazard_embree_control_20000.json",
+  "exit_code": 0,
+  "label": "road_hazard_embree_control_20000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/road_hazard_embree_control_20000.log",
+  "status": "ok"
+}

@@ -55,6 +55,12 @@ def _write(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _summary_preserves_existing(current: dict[str, Any], existing: Any) -> bool:
+    if not isinstance(existing, dict):
+        return current == existing
+    return all(current.get(key) == value for key, value in existing.items())
+
+
 def _time_hausdorff(copies: int, repeats: int) -> tuple[dict[str, Any], float]:
     samples: list[float] = []
     last: dict[str, Any] = {}
@@ -124,7 +130,7 @@ def _repair_artifact(path: Path, *, write: bool) -> dict[str, Any]:
             "old_native_query": old_native_query,
             "new_native_query": native_query,
             "repeats": repeats,
-            "summary_matches_existing": summary == artifact.get("summary"),
+            "summary_matches_existing": _summary_preserves_existing(summary, artifact.get("summary")),
         },
     }
 

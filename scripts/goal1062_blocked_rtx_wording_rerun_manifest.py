@@ -55,55 +55,6 @@ def _row(
 def build_manifest() -> dict[str, Any]:
     rows = [
         _row(
-            app="facility_knn_assignment",
-            path_name="coverage_threshold_prepared",
-            phase="correctness_validation",
-            output_name="facility_coverage_threshold_validation.json",
-            purpose="Reconfirm oracle parity for the prepared facility service-coverage decision path.",
-            scale_note="Small validation scale; this row is not intended to satisfy the 100 ms timing floor.",
-            requires_validation=True,
-            timing_floor_sec=None,
-            command=_command(
-                "python3",
-                "scripts/goal887_prepared_decision_phase_profiler.py",
-                "--scenario",
-                "facility_service_coverage",
-                "--mode",
-                "optix",
-                "--copies",
-                "20000",
-                "--iterations",
-                "10",
-                "--radius",
-                "1.0",
-            ),
-        ),
-        _row(
-            app="facility_knn_assignment",
-            path_name="coverage_threshold_prepared",
-            phase="large_timing_repeat",
-            output_name="facility_coverage_threshold_large_timing.json",
-            purpose="Collect a claim-review timing repeat large enough to test the 100 ms floor.",
-            scale_note="Large timing run; validation is intentionally separated into the validation row to avoid O(N) oracle cost during timing.",
-            requires_validation=False,
-            timing_floor_sec=0.100,
-            command=_command(
-                "python3",
-                "scripts/goal887_prepared_decision_phase_profiler.py",
-                "--scenario",
-                "facility_service_coverage",
-                "--mode",
-                "optix",
-                "--copies",
-                "800000",
-                "--iterations",
-                "7",
-                "--radius",
-                "1.0",
-                "--skip-validation",
-            ),
-        ),
-        _row(
             app="robot_collision_screening",
             path_name="prepared_pose_flags",
             phase="correctness_validation",
@@ -161,6 +112,8 @@ def build_manifest() -> dict[str, Any]:
         app for app, row in rt.rtx_public_wording_matrix().items()
         if row.status == "public_wording_blocked"
     )
+    if "robot_collision_screening" not in blocked_apps:
+        rows = []
     validation_rows = [row for row in rows if row["phase"] == "correctness_validation"]
     timing_rows = [row for row in rows if row["phase"] == "large_timing_repeat"]
     validation_skip = [row["output_json"] for row in validation_rows if row["contains_skip_validation"]]
@@ -186,16 +139,24 @@ def build_manifest() -> dict[str, Any]:
             "Do not use this manifest to authorize public wording without a later artifact-intake and 2+ AI review.",
         ],
         "valid": (
-            blocked_apps == ["facility_knn_assignment", "robot_collision_screening"]
-            and len(rows) == 4
-            and len(validation_rows) == 2
-            and len(timing_rows) == 2
-            and not validation_skip
-            and not timing_without_floor
-            and all(row["current_public_wording_status"] == "public_wording_blocked" for row in rows)
+            (
+                blocked_apps == []
+                and len(rows) == 0
+                and len(validation_rows) == 0
+                and len(timing_rows) == 0
+            )
+            or (
+                blocked_apps == ["robot_collision_screening"]
+                and len(rows) == 2
+                and len(validation_rows) == 1
+                and len(timing_rows) == 1
+                and not validation_skip
+                and not timing_without_floor
+                and all(row["current_public_wording_status"] == "public_wording_blocked" for row in rows)
+            )
         ),
         "boundary": (
-            "Goal1062 prepares one batched rerun plan for the remaining blocked NVIDIA RTX wording rows. "
+            "Goal1062 prepares one batched rerun plan for any remaining blocked NVIDIA RTX wording rows. "
             "It does not run cloud, create resources, authorize release, or authorize public speedup wording."
         ),
     }

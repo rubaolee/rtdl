@@ -1,0 +1,93 @@
+{
+  "boundary": "Goal1196 is a public-wording decision packet after Goal1195 evidence-readiness. It proposes narrow public wording only for rows with same-contract OptiX advantage, keeps slower OptiX rows blocked from positive speedup wording, and does not edit public docs or authorize release by itself.",
+  "date": "2026-04-30",
+  "goal": "Goal1196 public wording decision packet after Goal1195",
+  "min_public_ratio": 1.2,
+  "proposed_public_wording_blocked_apps": [
+    "database_analytics",
+    "graph_analytics",
+    "polygon_pair_overlap_area_rows",
+    "polygon_set_jaccard"
+  ],
+  "proposed_public_wording_reviewed_apps": [
+    "road_hazard_screening",
+    "hausdorff_distance"
+  ],
+  "public_speedup_claim_authorized_count": 0,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "boundary": "Prepared compact-summary traversal/filter/grouping is evidence-ready, but the measured OptiX phase is slower than Embree; no SQL-engine, DBMS, full-row, dashboard, or whole-app speedup claim is allowed.",
+      "candidate_public_wording": "No positive public RTX speedup wording is authorized for database_analytics from Goal1195 evidence.",
+      "decision": "keep_public_wording_blocked_no_positive_speedup",
+      "embree_phase_sec": 0.11934712203219533,
+      "optix_phase_sec": 0.15072045754641294,
+      "path_name": "prepared_db_compact_summary",
+      "public_speedup_claim_authorized_here": false,
+      "raw_ratio_embree_over_optix": 0.7918442126241788,
+      "status_to_apply": "public_wording_blocked"
+    },
+    {
+      "app": "graph_analytics",
+      "boundary": "Bounded visibility/graph-ray RT traversal is evidence-ready, but the measured OptiX phase is slower than Embree; no BFS, triangle-count, graph-system, shortest-path, distributed-analytics, or whole-app speedup claim is allowed.",
+      "candidate_public_wording": "No positive public RTX speedup wording is authorized for graph_analytics from Goal1195 evidence.",
+      "decision": "keep_public_wording_blocked_no_positive_speedup",
+      "embree_phase_sec": 1.0002804789692163,
+      "optix_phase_sec": 2.000505495816469,
+      "path_name": "visibility_edges_prepared_anyhit",
+      "public_speedup_claim_authorized_here": false,
+      "raw_ratio_embree_over_optix": 0.5000138620268926,
+      "status_to_apply": "public_wording_blocked"
+    },
+    {
+      "app": "road_hazard_screening",
+      "boundary": "Only the prepared native segment/polygon road-hazard summary traversal and threshold-count continuation are covered; default app behavior, full GIS/routing, row materialization, Python setup, and whole-app speedup remain outside this wording.",
+      "candidate_public_wording": "RTDL's prepared native road-hazard summary RTX sub-path measured 0.103539 s and 4.01x versus the reviewed same-contract Embree sub-path.",
+      "decision": "propose_public_wording_reviewed",
+      "embree_phase_sec": 0.41562127228826284,
+      "optix_phase_sec": 0.10353890899568796,
+      "path_name": "prepared_native_road_hazard_summary",
+      "public_speedup_claim_authorized_here": false,
+      "raw_ratio_embree_over_optix": 4.014155415772945,
+      "status_to_apply": "public_wording_reviewed"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "boundary": "Native-assisted LSI/PIP candidate discovery is evidence-ready, but the measured OptiX phase is slower than Embree; exact polygon-area refinement, row materialization, broad spatial-join performance, and whole-app speedup are outside any wording.",
+      "candidate_public_wording": "No positive public RTX speedup wording is authorized for polygon_pair_overlap_area_rows from Goal1195 evidence.",
+      "decision": "keep_public_wording_blocked_no_positive_speedup",
+      "embree_phase_sec": 2.89659671112895,
+      "optix_phase_sec": 3.4523619720712304,
+      "path_name": "native_assisted_lsi_pip_candidate_discovery",
+      "public_speedup_claim_authorized_here": false,
+      "raw_ratio_embree_over_optix": 0.8390188324867768,
+      "status_to_apply": "public_wording_blocked"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "boundary": "Native-assisted LSI/PIP candidate discovery is evidence-ready after recovery, but the first pod run failed parity, chunk-sensitive or nondeterministic behavior was observed during the recovery trail, and the final measured OptiX phase is slower than Embree; exact set-area/Jaccard refinement, row materialization, and whole-app speedup are outside any wording. Any future positive-wording consideration requires stability testing across chunk configurations.",
+      "candidate_public_wording": "No positive public RTX speedup wording is authorized for polygon_set_jaccard from Goal1195 evidence.",
+      "decision": "keep_public_wording_blocked_no_positive_speedup",
+      "embree_phase_sec": 0.8894528830423951,
+      "optix_phase_sec": 1.6208405895158648,
+      "path_name": "native_assisted_lsi_pip_candidate_discovery",
+      "public_speedup_claim_authorized_here": false,
+      "raw_ratio_embree_over_optix": 0.5487602474886621,
+      "status_to_apply": "public_wording_blocked"
+    },
+    {
+      "app": "hausdorff_distance",
+      "boundary": "Only the prepared fixed-radius Hausdorff <= threshold decision sub-path is covered; exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, violating-ID witnesses in scalar mode, Python setup, and whole-app speedup remain outside this wording.",
+      "candidate_public_wording": "RTDL's prepared Hausdorff threshold-decision RTX sub-path measured 0.122389 s and 13.73x versus the reviewed same-contract Embree directed-summary sub-path.",
+      "decision": "propose_public_wording_reviewed",
+      "embree_phase_sec": 1.6802135026082397,
+      "optix_phase_sec": 0.12238904647529125,
+      "path_name": "prepared_directed_threshold_decision",
+      "public_speedup_claim_authorized_here": false,
+      "raw_ratio_embree_over_optix": 13.72846305283907,
+      "status_to_apply": "public_wording_reviewed"
+    }
+  ],
+  "source_consensus": "docs/reports/goal1195_two_ai_consensus_2026-04-30.md",
+  "source_intake": "docs/reports/goal1194_goal1192_public_wording_evidence_batch_final_intake_2026-04-30.json"
+}

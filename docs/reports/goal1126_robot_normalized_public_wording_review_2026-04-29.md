@@ -16,10 +16,10 @@ Current Goal1123 robot decision: `keep_public_wording_blocked_pending_same_scale
 
 | Engine | Pose count | Obstacle count | Phase seconds | Per-pose seconds |
 | --- | ---: | ---: | ---: | ---: |
-| RTX/OptiX | `64000000` | `4096` | `0.178698` | `0.000000002792` |
+| RTX/OptiX | `64000000` | `4096` | `0.178471` | `0.000000002789` |
 | Embree | `36000000` | `4096` | `92.249685` | `0.000002562491` |
 
-Normalized per-pose ratio, Embree over RTX: `917.75x`.
+Normalized per-pose ratio, Embree over RTX: `918.91x`.
 
 ## Checks
 
@@ -33,7 +33,7 @@ Normalized per-pose ratio, Embree over RTX: `917.75x`.
 
 ## Candidate Public Wording
 
-RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.
+RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178471 s for 64M poses and 918.91x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.
 
 Boundary: This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path. Full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside the wording.
 

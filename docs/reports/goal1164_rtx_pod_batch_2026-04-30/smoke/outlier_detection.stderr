@@ -1,0 +1,7 @@
+usage: rtdl_outlier_detection_app.py [-h]
+                                     [--backend {cpu_python_reference,cpu,embree,optix,vulkan,scipy}]
+                                     [--copies COPIES]
+                                     [--output-mode {full,density_summary,density_count}]
+                                     [--optix-summary-mode {rows,rt_count_threshold,rt_count_threshold_prepared}]
+                                     [--embree-summary-mode {rows,rt_count_threshold,rt_count_threshold_prepared}]
+rtdl_outlier_detection_app.py: error: unrecognized arguments: --require-rt-core

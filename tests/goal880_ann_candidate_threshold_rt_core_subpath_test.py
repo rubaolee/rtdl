@@ -34,7 +34,14 @@ class _PartialPreparedCandidateThreshold(_PreparedCandidateThreshold):
 class Goal880AnnCandidateThresholdRtCoreSubpathTest(unittest.TestCase):
     def test_optix_candidate_threshold_mode_uses_prepared_traversal(self) -> None:
         prepared = _PreparedCandidateThreshold()
-        with mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", return_value=prepared) as mocked:
+        with (
+            mock.patch.object(app.rt, "prepare_optix_fixed_radius_count_threshold_2d", return_value=prepared) as mocked,
+            mock.patch.object(
+                app,
+                "candidate_threshold_oracle",
+                wraps=app.candidate_threshold_oracle,
+            ) as oracle_mock,
+        ):
             payload = app.run_app(
                 "optix",
                 optix_summary_mode="candidate_threshold_prepared",
@@ -43,6 +50,9 @@ class Goal880AnnCandidateThresholdRtCoreSubpathTest(unittest.TestCase):
             )
 
         mocked.assert_called_once()
+        oracle_mock.assert_called_once()
+        self.assertEqual(len(oracle_mock.call_args.args[0]), 3)
+        self.assertEqual(len(oracle_mock.call_args.args[1]), 3)
         self.assertEqual(prepared.query_count, payload["query_count"])
         self.assertEqual(prepared.radius, 0.2)
         self.assertEqual(prepared.threshold, 1)

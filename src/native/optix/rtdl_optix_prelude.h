@@ -239,6 +239,33 @@ struct RtdlDbGroupedSumRow {
     int64_t sum;
 };
 
+constexpr uint32_t kRtdlDbCompactSummaryScanCount = 1u;
+constexpr uint32_t kRtdlDbCompactSummaryGroupedCount = 2u;
+constexpr uint32_t kRtdlDbCompactSummaryGroupedSum = 3u;
+
+struct RtdlDbCompactSummaryRequest {
+    uint32_t operation;
+    const RtdlDbClause* clauses;
+    size_t clause_count;
+    const char* group_key_field;
+    const char* value_field;
+};
+
+struct RtdlDbCompactSummaryResult {
+    uint32_t operation;
+    size_t scalar_value;
+    RtdlDbGroupedCountRow* count_rows;
+    size_t count_row_count;
+    RtdlDbGroupedSumRow* sum_rows;
+    size_t sum_row_count;
+    double traversal;
+    double bitset_copyback;
+    double exact_filter;
+    double output_pack;
+    size_t raw_candidate_count;
+    size_t emitted_count;
+};
+
 struct RtdlOptixDbDataset;
 
 int  rtdl_optix_get_version(int* major_out, int* minor_out, int* patch_out);
@@ -516,6 +543,16 @@ int  rtdl_optix_db_dataset_grouped_sum(
          const char* value_field,
          RtdlDbGroupedSumRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_db_dataset_compact_summary_batch(
+         RtdlOptixDbDataset* dataset,
+         const RtdlDbCompactSummaryRequest* requests,
+         size_t request_count,
+         RtdlDbCompactSummaryResult** results_out,
+         size_t* result_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_db_compact_summary_results_destroy(
+         RtdlDbCompactSummaryResult* results,
+         size_t result_count);
 int  rtdl_optix_db_get_last_phase_timings(
          double* traversal_out,
          double* bitset_copy_out,

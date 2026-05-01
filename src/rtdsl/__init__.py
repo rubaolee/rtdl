@@ -315,9 +315,11 @@ from .lowering import lower_to_rayjoin
 from .oracle_runtime import oracle_version
 from .oracle_runtime import refine_polygon_pair_overlap_area_rows_for_pairs
 from .oracle_runtime import refine_polygon_set_jaccard_for_pairs
+from .oracle_runtime import summarize_bfs_row_view
 from .oracle_runtime import summarize_bfs_rows
 from .oracle_runtime import summarize_fixed_radius_rows
 from .oracle_runtime import summarize_knn_rows
+from .oracle_runtime import summarize_triangle_row_view
 from .oracle_runtime import summarize_triangle_rows
 from .plan_schema import load_plan_schema
 from .plan_schema import schema_path
@@ -608,9 +610,11 @@ __all__ = [
     "oracle_version",
     "refine_polygon_pair_overlap_area_rows_for_pairs",
     "refine_polygon_set_jaccard_for_pairs",
+    "summarize_bfs_row_view",
     "summarize_bfs_rows",
     "summarize_fixed_radius_rows",
     "summarize_knn_rows",
+    "summarize_triangle_row_view",
     "summarize_triangle_rows",
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",

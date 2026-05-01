@@ -9,18 +9,24 @@ class Goal808SegmentPolygonAppNativeModePropagationTest(unittest.TestCase):
     def test_road_hazard_native_mode_sets_env_for_optix_call(self) -> None:
         from examples import rtdl_road_hazard_screening as app
 
-        observed: dict[str, str | None] = {}
+        prepared = mock.Mock()
+        prepared.count_at_least.return_value = 1
+        prepared.close.return_value = None
 
-        def fake_run_optix(kernel, **inputs):
-            observed["mode"] = os.environ.get("RTDL_OPTIX_SEGPOLY_MODE")
-            return ({"segment_id": 1, "hit_count": 2},)
-
-        with mock.patch.object(app.rt, "run_optix", side_effect=fake_run_optix):
+        with mock.patch.object(
+            app.rt,
+            "prepare_optix_segment_polygon_hitcount_2d",
+            return_value=prepared,
+        ) as prepare:
             payload = app.run_case("optix", output_mode="summary", optix_mode="native")
 
-        self.assertEqual(observed["mode"], "native")
+        prepare.assert_called_once()
+        prepared.count_at_least.assert_called_once()
+        prepared.close.assert_called_once()
         self.assertEqual(payload["optix_mode"], "native")
         self.assertEqual(payload["priority_segment_count"], 1)
+        self.assertTrue(payload["native_continuation_active"])
+        self.assertFalse(payload["summary_materializes_rows"])
 
     def test_anyhit_compact_mode_can_request_native_hitcount_path(self) -> None:
         from examples import rtdl_segment_polygon_anyhit_rows as app

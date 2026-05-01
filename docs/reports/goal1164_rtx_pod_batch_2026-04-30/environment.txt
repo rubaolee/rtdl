@@ -1,0 +1,8 @@
+Thu Apr 30 13:39:47 UTC 2026
+ed2fb89e0cc0
+NVIDIA RTX A5000, 550.127.05, 24564 MiB
+Python 3.12.3
+Build cuda_13.0.r13.0/compiler.36424714_0
+v8.0.0
+include/optix.h:37:#define OPTIX_VERSION 80000
+include/optix_function_table.h:29:#define OPTIX_ABI_VERSION 87

@@ -23,20 +23,4 @@ echo "Goal1062 blocked RTX wording rerun"
 echo "source_commit=${RTDL_SOURCE_COMMIT}"
 nvidia-smi
 
-echo "Running 1/4: facility_knn_assignment:coverage_threshold_prepared:correctness_validation"
-python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario facility_service_coverage --mode optix --copies 20000 --iterations 10 --radius 1.0 --output-json docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_validation.json
-echo "Completed docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_validation.json"
-
-echo "Running 2/4: facility_knn_assignment:coverage_threshold_prepared:large_timing_repeat"
-python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario facility_service_coverage --mode optix --copies 800000 --iterations 7 --radius 1.0 --skip-validation --output-json docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_large_timing.json
-echo "Completed docs/reports/goal1062_blocked_rtx_wording_rerun/facility_coverage_threshold_large_timing.json"
-
-echo "Running 3/4: robot_collision_screening:prepared_pose_flags:correctness_validation"
-python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --pose-count 4096 --obstacle-count 256 --iterations 3 --input-mode python_objects --result-mode pose_flags --output-json docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_validation.json
-echo "Completed docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_validation.json"
-
-echo "Running 4/4: robot_collision_screening:prepared_pose_flags:large_timing_repeat"
-python3 scripts/goal760_optix_robot_pose_flags_phase_profiler.py --mode optix --pose-count 8000000 --obstacle-count 4096 --iterations 7 --input-mode packed_arrays --result-mode pose_count --skip-validation --output-json docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_large_timing.json
-echo "Completed docs/reports/goal1062_blocked_rtx_wording_rerun/robot_prepared_pose_flags_large_timing.json"
-
 echo "Goal1062 complete. Copy back docs/reports/goal1062_blocked_rtx_wording_rerun before stopping the pod."

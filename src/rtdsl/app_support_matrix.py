@@ -640,23 +640,38 @@ def _public_wording(
 
 
 _GOAL1048_VALIDATED_BOUNDARY_POLICY = (
-    "Goal1048 RTX A5000 run completed from commit "
-    "0c79b64d1b71383080f2e8572612488796d1c16c; claim-grade only for "
-    "validated or strict bounded sub-path evidence, not whole-app speedup, "
-    "and public wording still requires same-semantics baseline review."
+    "Goal1048/Goal1058 RTX A5000 evidence remains historical validation "
+    "context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from "
+    "source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 "
+    "added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local "
+    "ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. "
+    "Goal1177 accepted the recovered clean-source staged-archive RTX A5000 "
+    "Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only "
+    "for validated or strict bounded sub-path evidence, not whole-app speedup, "
+    "and does not authorize new public wording; public wording still requires same-semantics baseline review."
 )
 
 _GOAL1058_FACILITY_VALIDATED_POLICY = (
-    "Goal1123 accepted narrow public wording for the prepared facility "
-    "coverage-threshold RTX query sub-path only. Ranked KNN assignment, "
-    "fallback assignment, Python setup, and whole-app speedup remain outside "
-    "the claim."
+    "Goal1048/Goal1058 RTX A5000 evidence remains historical validation "
+    "context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from "
+    "source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1146 "
+    "promoted narrow prepared coverage-threshold public wording only; "
+    "Goal1164/Goal1165/Goal1166/Goal1177/Goal1184 are follow-up engineering and "
+    "clean-source batch evidence, not new public wording. ranked KNN assignment, fallback "
+    "assignment, Python setup, and whole-app speedup remain outside the claim."
 )
 
 _GOAL1058_ROBOT_VALIDATED_POLICY = (
-    "Goal1121 robot timing crossed the 100 ms review floor, but Goal1123 kept "
-    "public speedup wording blocked until a same-scale or explicitly accepted "
-    "normalized baseline review exists."
+    "Goal1048/Goal1058 RTX A5000 evidence remains historical validation "
+    "context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from "
+    "source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1142 "
+    "replaced stale-source 64M robot timing with same-source bounded sub-path evidence. "
+    "Goal1164 exposed large-scale robot timing bottlenecks, Goal1165 removed "
+    "avoidable CPU validation from prepared timing paths, Goal1166 prepared "
+    "the next validation/timing pod packet, and Goal1177 accepted the recovered "
+    "clean-source staged-archive robot timing row as timing-only review input. Goal1184 accepted the newer RTX A4500 robot timing row as timing-only external-review input. "
+    "Goal1126 accepted explicit normalized per-pose public wording only; this is not "
+    "a same-total-work wall-time or whole-app robot-planning claim."
 )
 
 
@@ -749,7 +764,7 @@ _RT_CORE_APP_MATURITY_MATRIX: dict[str, RtCoreAppMaturity] = {
         "ann_candidate_search",
         RT_CORE_READY,
         RT_CORE_READY,
-        "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim.",
+        "Use candidate_threshold_prepared as the only RT-core ANN claim path; KNN ranking and full ANN indexing remain outside the claim. Goal1165 replaced the tiled validation path with the single-tile analytic expectation so large prepared timing runs do not accidentally validate an O(copies^2) fixture.",
         _GOAL1048_VALIDATED_BOUNDARY_POLICY,
     ),
     "outlier_detection": _maturity(
@@ -832,16 +847,16 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     "facility_knn_assignment": _public_wording(
         "facility_knn_assignment",
         PUBLIC_WORDING_REVIEWED,
-        "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.103119 s and 87.24x versus the reviewed same-contract CPU oracle baseline.",
-        "Goal1121/Goal1123",
-        "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup are outside this wording.",
+        "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.111619 s and 80.60x versus the reviewed same-contract CPU oracle baseline.",
+        "Goal1146",
+        "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup remain outside this wording.",
     ),
     "road_hazard_screening": _public_wording(
         "road_hazard_screening",
-        PUBLIC_WORDING_NOT_REVIEWED,
-        _NO_GOAL1009_REVIEW,
-        "Goal933/Goal941",
-        "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL's prepared native road-hazard RTX sub-path measured 0.230652 s and 3.53x versus the reviewed same-scale Embree sub-path at 40k copies.",
+        "Goal1208",
+        "Only the prepared native road-hazard compact-summary traversal/count sub-path at 40k copies is covered; default app behavior, full GIS/routing, row output, Python orchestration, and whole-app road-hazard speedup remain outside this wording.",
     ),
     "segment_polygon_hitcount": _public_wording(
         "segment_polygon_hitcount",
@@ -902,16 +917,16 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     "robot_collision_screening": _public_wording(
         "robot_collision_screening",
         PUBLIC_WORDING_REVIEWED,
-        "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
-        "Goal1121/Goal1123/Goal1126",
-        "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path; full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside this wording.",
+        "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178471 s for 64M poses and 918.91x normalized per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+        "Goal1126",
+        "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path. Full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside the wording.",
     ),
     "barnes_hut_force_app": _public_wording(
         "barnes_hut_force_app",
         PUBLIC_WORDING_REVIEWED,
-        "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.240634 s and 222.19x versus the reviewed same-contract Embree node-coverage baseline.",
-        "Goal1121/Goal1123",
-        "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup are outside this wording.",
+        "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.222256 s and 240.56x versus the reviewed same-contract Embree node-coverage baseline.",
+        "Goal1146",
+        "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside this wording.",
     ),
     "hiprt_ray_triangle_hitcount": _public_wording(
         "hiprt_ray_triangle_hitcount",

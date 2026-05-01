@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import ctypes.util
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -96,6 +98,33 @@ def _probe(command: list[str]) -> dict[str, Any]:
         return {"command": command, "returncode": -1, "output_tail": str(exc)}
 
 
+def _geos_preflight() -> dict[str, Any]:
+    pkg_config = shutil.which("pkg-config")
+    package_probes = {}
+    usable_package = None
+    if pkg_config:
+        for package in ("geos", "geos_c"):
+            probe = _probe([pkg_config, "--libs", package])
+            package_probes[package] = probe
+            if probe["returncode"] == 0 and usable_package is None:
+                usable_package = package
+    library = ctypes.util.find_library("geos_c")
+    return {
+        "pkg_config": pkg_config,
+        "pkg_config_exists": pkg_config is not None,
+        "pkg_config_packages": package_probes,
+        "pkg_config_geos_package": usable_package,
+        "geos_c_library": library,
+        "geos_c_library_found": library is not None,
+        "install_hint_linux": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config",
+        "why_required": (
+            "Strict RTDL cloud gates may build the native CPU/oracle reference path. "
+            "That build links GEOS C via libgeos_c; without libgeos-dev/pkg-config, "
+            "graph and spatial strict gates can fail after the OptiX bootstrap already passed."
+        ),
+    }
+
+
 def run_check(*, dry_run: bool, skip_build: bool, skip_tests: bool) -> dict[str, Any]:
     optix_prefix = _candidate_optix_prefix()
     cuda_prefix = _candidate_cuda_prefix()
@@ -111,6 +140,7 @@ def run_check(*, dry_run: bool, skip_build: bool, skip_tests: bool) -> dict[str,
         "RTDL_OPTIX_PTX_COMPILER": "nvcc",
         "RTDL_NVCC": str(nvcc),
     }
+    geos = _geos_preflight()
     preflight = {
         "optix_prefix": str(optix_prefix),
         "optix_header_exists": (optix_prefix / "include" / "optix.h").exists(),
@@ -118,6 +148,7 @@ def run_check(*, dry_run: bool, skip_build: bool, skip_tests: bool) -> dict[str,
         "cuda_header_exists": (cuda_prefix / "include" / "cuda.h").exists(),
         "nvcc": str(nvcc),
         "nvcc_exists": nvcc.exists(),
+        "geos": geos,
         "nvidia_smi": _probe(["nvidia-smi"]),
         "nvcc_version": _probe([str(nvcc), "--version"]) if nvcc.exists() else None,
         "git_head": _probe(["git", "rev-parse", "HEAD"]),
@@ -170,6 +201,12 @@ def run_check(*, dry_run: bool, skip_build: bool, skip_tests: bool) -> dict[str,
             preflight_blockers.append("missing OptiX SDK header optix.h")
         if not preflight["nvcc_exists"]:
             preflight_blockers.append("missing nvcc")
+        if not geos["pkg_config_exists"]:
+            preflight_blockers.append("missing pkg-config for GEOS/native oracle checks")
+        if geos["pkg_config_geos_package"] is None:
+            preflight_blockers.append("missing GEOS pkg-config package geos or geos_c")
+        if not geos["geos_c_library_found"]:
+            preflight_blockers.append("missing GEOS C library libgeos_c")
     return {
         "suite": "goal763_rtx_cloud_bootstrap_check",
         "dry_run": dry_run,

@@ -33,68 +33,68 @@ Date: 2026-04-17
 
 ## Command Inventory
 
-- `README.md:426` `python examples/rtdl_hello_world.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:432` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
-- `README.md:439` `python examples/rtdl_feature_quickstart_cookbook.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:451` `python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
-- `README.md:452` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:453` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:459` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:460` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:461` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:462` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:470` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:471` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:472` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:473` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:474` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:475` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:485` `python examples/rtdl_hiprt_ray_triangle_hitcount.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
-- `README.md:497` `python examples/rtdl_apple_rt_demo_app.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
-- `README.md:526` `python examples/rtdl_hello_world.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:527` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
-- `README.md:528` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:529` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:530` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:531` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:532` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:533` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:534` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:535` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:536` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:537` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:538` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:539` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:546` `python examples/rtdl_hello_world.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:547` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
-- `README.md:548` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:549` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:550` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:551` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:552` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:553` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:554` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:555` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:556` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:557` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:558` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `README.md:559` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/v1_0_rtx_app_status.md:20` `python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/v1_0_rtx_app_status.md:21` `python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
-- `docs/v1_0_rtx_app_status.md:23` `python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
-- `docs/v1_0_rtx_app_status.md:24` `python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
-- `docs/v1_0_rtx_app_status.md:25` `python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
-- `docs/v1_0_rtx_app_status.md:26` `python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/v1_0_rtx_app_status.md:27` `python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/v1_0_rtx_app_status.md:28` `python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/v1_0_rtx_app_status.md:29` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_family`
-- `docs/v1_0_rtx_app_status.md:30` `python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_family`
-- `docs/v1_0_rtx_app_status.md:31` `python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/v1_0_rtx_app_status.md:32` `python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/v1_0_rtx_app_status.md:33` `python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count` -> `linux_gpu_backend_gated` / `goal992_scalar_fixed_radius_command_exact`
-- `docs/v1_0_rtx_app_status.md:34` `python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count` -> `linux_gpu_backend_gated` / `goal992_scalar_fixed_radius_command_exact`
-- `docs/v1_0_rtx_app_status.md:35` `python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` -> `linux_gpu_backend_gated` / `goal410_harness_family`
-- `docs/v1_0_rtx_app_status.md:36` `python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `README.md:487` `python examples/rtdl_hello_world.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:493` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
+- `README.md:500` `python examples/rtdl_feature_quickstart_cookbook.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:512` `python examples/rtdl_graph_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
+- `README.md:513` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:514` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:520` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:521` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:522` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:523` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:531` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:532` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:533` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:534` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:535` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:536` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:546` `python examples/rtdl_hiprt_ray_triangle_hitcount.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
+- `README.md:558` `python examples/rtdl_apple_rt_demo_app.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
+- `README.md:587` `python examples/rtdl_hello_world.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:588` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
+- `README.md:589` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:590` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:591` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:592` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:593` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:594` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:595` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:596` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:597` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:598` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:599` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:600` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:607` `python examples/rtdl_hello_world.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:608` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
+- `README.md:609` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:610` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:611` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:612` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:613` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:614` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:615` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:616` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:617` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:618` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:619` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `README.md:620` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/v1_0_rtx_app_status.md:57` `python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `docs/v1_0_rtx_app_status.md:58` `python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
+- `docs/v1_0_rtx_app_status.md:60` `python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
+- `docs/v1_0_rtx_app_status.md:61` `python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
+- `docs/v1_0_rtx_app_status.md:62` `python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
+- `docs/v1_0_rtx_app_status.md:63` `python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `docs/v1_0_rtx_app_status.md:64` `python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `docs/v1_0_rtx_app_status.md:65` `python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `docs/v1_0_rtx_app_status.md:66` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_family`
+- `docs/v1_0_rtx_app_status.md:67` `python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_family`
+- `docs/v1_0_rtx_app_status.md:68` `python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `docs/v1_0_rtx_app_status.md:69` `python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
+- `docs/v1_0_rtx_app_status.md:70` `python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count` -> `linux_gpu_backend_gated` / `goal992_scalar_fixed_radius_command_exact`
+- `docs/v1_0_rtx_app_status.md:71` `python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count` -> `linux_gpu_backend_gated` / `goal992_scalar_fixed_radius_command_exact`
+- `docs/v1_0_rtx_app_status.md:72` `python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` -> `linux_gpu_backend_gated` / `goal410_harness_family`
+- `docs/v1_0_rtx_app_status.md:73` `python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
 - `docs/release_facing_examples.md:43` `python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
 - `docs/release_facing_examples.md:44` `python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
 - `docs/release_facing_examples.md:45` `python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal821_require_rt_core_doc_gate_exact`
@@ -111,86 +111,86 @@ Date: 2026-04-17
 - `docs/release_facing_examples.md:56` `python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count` -> `linux_gpu_backend_gated` / `goal992_scalar_fixed_radius_command_exact`
 - `docs/release_facing_examples.md:57` `python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count` -> `linux_gpu_backend_gated` / `goal410_harness_family`
 - `docs/release_facing_examples.md:58` `python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core` -> `linux_gpu_backend_gated` / `goal942_claim_review_command_exact`
-- `docs/release_facing_examples.md:158` `python examples/rtdl_feature_quickstart_cookbook.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:170` `python examples/rtdl_ray_triangle_any_hit.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:171` `python examples/rtdl_visibility_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:172` `python examples/rtdl_reduce_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:208` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:209` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:210` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:211` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:212` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:213` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:220` `python examples/rtdl_hausdorff_distance_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:221` `python examples/rtdl_hausdorff_distance_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:222` `python examples/rtdl_hausdorff_distance_app.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:264` `python examples/rtdl_hiprt_ray_triangle_hitcount.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
-- `docs/release_facing_examples.md:298` `python examples/rtdl_apple_rt_demo_app.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
-- `docs/release_facing_examples.md:350` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:360` `python examples/rtdl_knn_rows.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:378` `python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_family`
-- `docs/release_facing_examples.md:379` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:380` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:381` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:382` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:421` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:422` `python examples/rtdl_robot_collision_screening_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:423` `python examples/rtdl_robot_collision_screening_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:449` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:450` `python examples/rtdl_barnes_hut_force_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:451` `python examples/rtdl_barnes_hut_force_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:452` `python examples/rtdl_barnes_hut_force_app.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:486` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:487` `python examples/rtdl_graph_bfs.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:489` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:490` `python examples/rtdl_graph_triangle_count.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:496` `python examples/rtdl_graph_bfs.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:497` `python examples/rtdl_graph_triangle_count.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:506` `python examples/rtdl_graph_bfs.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:507` `python examples/rtdl_graph_bfs.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:508` `python examples/rtdl_graph_triangle_count.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:509` `python examples/rtdl_graph_triangle_count.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:536` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:537` `python examples/rtdl_db_conjunctive_scan.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:539` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:540` `python examples/rtdl_db_grouped_count.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:542` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:543` `python examples/rtdl_db_grouped_sum.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:544` `python examples/rtdl_db_conjunctive_scan.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:545` `python examples/rtdl_db_grouped_count.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:546` `python examples/rtdl_db_grouped_sum.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:548` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:549` `python examples/rtdl_database_analytics_app.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:550` `python examples/rtdl_database_analytics_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:559` `python examples/rtdl_db_conjunctive_scan.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:560` `python examples/rtdl_db_conjunctive_scan.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:561` `python examples/rtdl_db_grouped_count.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:562` `python examples/rtdl_db_grouped_count.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:563` `python examples/rtdl_db_grouped_sum.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:564` `python examples/rtdl_db_grouped_sum.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:565` `python examples/rtdl_database_analytics_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:566` `python examples/rtdl_database_analytics_app.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:597` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:598` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:599` `python examples/rtdl_fixed_radius_neighbors.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:601` `python examples/rtdl_knn_rows.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:602` `python examples/rtdl_knn_rows.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:603` `python examples/rtdl_knn_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:628` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:629` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:630` `python examples/rtdl_fixed_radius_neighbors.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:642` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
-- `docs/release_facing_examples.md:652` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal410_harness_family`
-- `docs/release_facing_examples.md:662` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:663` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:664` `python examples/rtdl_polygon_set_jaccard.py --backend optix` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
-- `docs/release_facing_examples.md:674` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:675` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
-- `docs/release_facing_examples.md:676` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
-- `docs/release_facing_examples.md:708` `python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
-- `docs/release_facing_examples.md:725` `python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
-- `docs/release_facing_examples.md:731` `python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
-- `docs/release_facing_examples.md:747` `python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle` -> `portable_python_cpu` / `goal410_harness_family`
+- `docs/release_facing_examples.md:171` `python examples/rtdl_feature_quickstart_cookbook.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:183` `python examples/rtdl_ray_triangle_any_hit.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:184` `python examples/rtdl_visibility_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:185` `python examples/rtdl_reduce_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:221` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:222` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:223` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:224` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:225` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:226` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:233` `python examples/rtdl_hausdorff_distance_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:234` `python examples/rtdl_hausdorff_distance_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:235` `python examples/rtdl_hausdorff_distance_app.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:277` `python examples/rtdl_hiprt_ray_triangle_hitcount.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
+- `docs/release_facing_examples.md:311` `python examples/rtdl_apple_rt_demo_app.py` -> `portable_python_cpu` / `goal593_public_example_smoke_exact`
+- `docs/release_facing_examples.md:363` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:373` `python examples/rtdl_knn_rows.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:391` `python examples/rtdl_service_coverage_gaps.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_family`
+- `docs/release_facing_examples.md:392` `python examples/rtdl_hausdorff_distance_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:393` `python examples/rtdl_ann_candidate_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:394` `python examples/rtdl_outlier_detection_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:395` `python examples/rtdl_dbscan_clustering_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:434` `python examples/rtdl_robot_collision_screening_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:435` `python examples/rtdl_robot_collision_screening_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:436` `python examples/rtdl_robot_collision_screening_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:462` `python examples/rtdl_barnes_hut_force_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:463` `python examples/rtdl_barnes_hut_force_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:464` `python examples/rtdl_barnes_hut_force_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:465` `python examples/rtdl_barnes_hut_force_app.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:499` `python examples/rtdl_graph_bfs.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:500` `python examples/rtdl_graph_bfs.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:502` `python examples/rtdl_graph_triangle_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:503` `python examples/rtdl_graph_triangle_count.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:509` `python examples/rtdl_graph_bfs.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:510` `python examples/rtdl_graph_triangle_count.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:519` `python examples/rtdl_graph_bfs.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:520` `python examples/rtdl_graph_bfs.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:521` `python examples/rtdl_graph_triangle_count.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:522` `python examples/rtdl_graph_triangle_count.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:549` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:550` `python examples/rtdl_db_conjunctive_scan.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:552` `python examples/rtdl_db_grouped_count.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:553` `python examples/rtdl_db_grouped_count.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:555` `python examples/rtdl_db_grouped_sum.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:556` `python examples/rtdl_db_grouped_sum.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:557` `python examples/rtdl_db_conjunctive_scan.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:558` `python examples/rtdl_db_grouped_count.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:559` `python examples/rtdl_db_grouped_sum.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:561` `python examples/rtdl_database_analytics_app.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:562` `python examples/rtdl_database_analytics_app.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:563` `python examples/rtdl_database_analytics_app.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:572` `python examples/rtdl_db_conjunctive_scan.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:573` `python examples/rtdl_db_conjunctive_scan.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:574` `python examples/rtdl_db_grouped_count.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:575` `python examples/rtdl_db_grouped_count.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:576` `python examples/rtdl_db_grouped_sum.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:577` `python examples/rtdl_db_grouped_sum.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:578` `python examples/rtdl_database_analytics_app.py --backend optix` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:579` `python examples/rtdl_database_analytics_app.py --backend vulkan` -> `linux_gpu_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:610` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:611` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:612` `python examples/rtdl_fixed_radius_neighbors.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:614` `python examples/rtdl_knn_rows.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:615` `python examples/rtdl_knn_rows.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:616` `python examples/rtdl_knn_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:641` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:642` `python examples/rtdl_fixed_radius_neighbors.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:643` `python examples/rtdl_fixed_radius_neighbors.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:655` `python examples/rtdl_segment_polygon_hitcount.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal513_front_page_smoke_exact`
+- `docs/release_facing_examples.md:665` `python examples/rtdl_segment_polygon_anyhit_rows.py --backend cpu_python_reference --copies 16` -> `portable_python_cpu` / `goal410_harness_family`
+- `docs/release_facing_examples.md:675` `python examples/rtdl_polygon_set_jaccard.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:676` `python examples/rtdl_polygon_set_jaccard.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:677` `python examples/rtdl_polygon_set_jaccard.py --backend optix` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/release_facing_examples.md:687` `python examples/rtdl_polygon_pair_overlap_area_rows.py` -> `portable_python_cpu` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:688` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`
+- `docs/release_facing_examples.md:689` `python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --output-mode summary` -> `linux_gpu_backend_gated` / `goal878_optix_doc_gate_exact`
+- `docs/release_facing_examples.md:721` `python examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --shadow-mode rtdl_light_to_surface --output-dir build/quick_hidden_star_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
+- `docs/release_facing_examples.md:738` `python examples/visual_demo/rtdl_lit_ball_demo.py --backend cpu_python_reference --compare-backend none --width 240 --height 240 --triangles 512 --output build/rtdl_lit_ball_demo_hq.pgm` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
+- `docs/release_facing_examples.md:744` `python examples/visual_demo/rtdl_smooth_camera_orbit_demo.py --backend cpu_python_reference --compare-backend none --width 48 --height 48 --latitude-bands 6 --longitude-bands 12 --frames 1 --jobs 1 --output-dir build/quick_smooth_camera_demo` -> `visual_demo_or_optional_artifact` / `goal410_harness_family`
+- `docs/release_facing_examples.md:760` `python scripts/rtdl_generate_only.py --workload polygon_set_jaccard --dataset authored_polygon_set_jaccard_minimal --backend cpu_python_reference --output-mode rows --artifact-shape handoff_bundle --output build/generated_polygon_set_jaccard_bundle` -> `portable_python_cpu` / `goal410_harness_family`
 - `docs/tutorials/db_workloads.md:51` `python examples/rtdl_db_conjunctive_scan.py --backend cpu_python_reference` -> `portable_python_cpu` / `goal410_harness_exact`
 - `docs/tutorials/db_workloads.md:52` `python examples/rtdl_db_conjunctive_scan.py --backend cpu` -> `optional_native_backend_gated` / `goal410_harness_exact`
 - `docs/tutorials/db_workloads.md:53` `python examples/rtdl_db_conjunctive_scan.py --backend embree` -> `optional_native_backend_gated` / `goal410_harness_exact`

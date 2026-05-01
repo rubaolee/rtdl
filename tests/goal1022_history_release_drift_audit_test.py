@@ -12,14 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1022HistoryReleaseDriftAuditTest(unittest.TestCase):
-    def test_audit_records_current_v096_history_status_and_full_suite(self) -> None:
+    def test_audit_records_current_release_history_status_and_full_suite(self) -> None:
         module = __import__(
             "scripts.goal1022_history_release_drift_audit",
             fromlist=["build_audit"],
         )
         payload = module.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["current_public_release"], "v0.9.6")
+        self.assertEqual(payload["current_public_release"], "v0.9.8")
         self.assertFalse(payload["history_drift_detected"])
         self.assertEqual(payload["history_status"], "drift_resolved")
         self.assertTrue(payload["release_report_claims_history_catchup"])

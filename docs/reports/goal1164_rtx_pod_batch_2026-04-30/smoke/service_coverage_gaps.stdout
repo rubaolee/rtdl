@@ -1,0 +1,25 @@
+{
+  "app": "service_coverage_gaps",
+  "backend": "optix",
+  "clinic_count": 3,
+  "clinic_loads": {},
+  "copies": 1,
+  "coverage_summary_rows": [],
+  "covered_household_count": 3,
+  "embree_summary_mode": null,
+  "household_count": 4,
+  "k_max": 4,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_threshold_count",
+  "nearby_clinics_by_household": {},
+  "optix_performance": {
+    "class": "optix_traversal_prepared_summary",
+    "note": "Explicit gap_summary_prepared mode uses prepared OptiX fixed-radius threshold traversal and compact summary output; rows mode is not the RT-core claim path."
+  },
+  "optix_summary_mode": "gap_summary_prepared",
+  "radius": 0.85,
+  "rows": [],
+  "rt_core_accelerated": true,
+  "summary_boundary": "gap_summary_prepared reports only scalar covered/uncovered counts; use rows mode when household ids, clinic ids, distances, or clinic loads are required.",
+  "uncovered_household_ids": null
+}

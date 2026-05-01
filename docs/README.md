@@ -22,8 +22,8 @@ Read these in order for the current public story:
 11. [Application Catalog](application_catalog.md)
 12. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 13. [App Engine Support Matrix](app_engine_support_matrix.md)
-14. [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
-15. [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
+14. [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
+15. [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -44,7 +44,7 @@ write?", use this short path:
 6. check the exact current boundary in the
    [Current Main Support Matrix](current_main_support_matrix.md)
 7. check the exact release boundary in the
-   [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
+   [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 8. check the exact app-building boundary in the
    [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 9. check the exact released DB boundary in the
@@ -85,6 +85,10 @@ audited release claims.
 - [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
 - [v0.9 Support Matrix](release_reports/v0_9/support_matrix.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+- [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
+- [v0.9.8 Release Statement](release_reports/v0_9_8/release_statement.md)
+- [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
+- [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
 - [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
 - [v0.9.6 Release Statement](release_reports/v0_9_6/release_statement.md)
 - [v0.9.6 Support Matrix](release_reports/v0_9_6/support_matrix.md)
@@ -117,6 +121,9 @@ audited release claims.
 
 - [v0.9 Release Package](release_reports/v0_9/README.md)
 - [v0.9.1 Release Package](release_reports/v0_9_1/README.md)
+- [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
+- [v0.9.8 Release Statement](release_reports/v0_9_8/release_statement.md)
+- [v0.9.8 Audit Report](release_reports/v0_9_8/audit_report.md)
 - [v0.9.6 Release Package](release_reports/v0_9_6/README.md)
 - [v0.9.6 Release Statement](release_reports/v0_9_6/release_statement.md)
 - [v0.9.6 Audit Report](release_reports/v0_9_6/audit_report.md)
@@ -159,13 +166,14 @@ Use these only when you need deeper history, audit trails, or process detail:
 
 Keep these current facts in mind while reading:
 
-- current released version is `v0.9.6`
+- current released version is `v0.9.8`
 - current `main` carries the released bounded `v0.7.0` DB line, released
   `v0.8.0` app-building examples over existing RTDL features, released
   `v0.9.0` HIPRT / closest-hit expansion, the released `v0.9.1` Apple RT
   closest-hit slice, the released `v0.9.4` Apple RT consolidation, the
   released `v0.9.5` any-hit / visibility-row / emitted-row reduction slice,
-  and the released `v0.9.6` prepared/prepacked repeated visibility/count line
+  the released `v0.9.6` prepared/prepacked repeated visibility/count line,
+  and the released `v0.9.8` bounded RTX app-evidence/public-wording line
 - the untagged `v0.9.2` candidate and `v0.9.3` native-coverage milestone are
   internal evidence lines absorbed into `v0.9.4`, not separate public releases
 - released `v0.9.4` carries Apple RT full-surface compatibility,
@@ -182,6 +190,10 @@ Keep these current facts in mind while reading:
   optimizations for Apple RT, OptiX, HIPRT, and Vulkan; these are scoped to
   stable build-side triangles, repeated probe rays, and reduced/compact output
   contracts, not broad DB/graph/full-row speedup claims
+- released `v0.9.8` adds the bounded RTX app-evidence release package, with
+  11 reviewed RTX app rows, road-hazard detection as the only newly promoted
+  public row in this release, and DB full output plus polygon Jaccard public
+  speedup wording still blocked
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`

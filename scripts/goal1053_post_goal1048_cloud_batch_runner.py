@@ -49,7 +49,7 @@ def build_runner() -> dict[str, Any]:
         "commands": commands,
         "valid": (
             manifest["valid"]
-            and len(commands) == 11
+            and len(commands) == 8
             and not any(command["contains_skip_validation"] for command in commands[:2])
         ),
         "boundary": (

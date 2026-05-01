@@ -50,6 +50,18 @@ def _canonical(payload: dict[str, object], section_name: str, *, include_rows: b
     return canonical
 
 
+def _section_metadata(payload: dict[str, object], section_name: str) -> dict[str, object]:
+    section = payload["sections"][section_name]  # type: ignore[index]
+    return {
+        "section_run_phases": dict(section.get("run_phases", {})),  # type: ignore[attr-defined]
+        "native_continuation_active": bool(section.get("native_continuation_active", False)),  # type: ignore[attr-defined]
+        "native_continuation_backend": section.get("native_continuation_backend", "none"),  # type: ignore[attr-defined]
+        "row_count": int(section.get("row_count", 0)),  # type: ignore[attr-defined]
+        "row_materialization_sec": float(section.get("run_phases", {}).get("row_materialization_sec", 0.0)),  # type: ignore[attr-defined]
+        "query_raw_view_sec": float(section.get("run_phases", {}).get("query_raw_view_sec", 0.0)),  # type: ignore[attr-defined]
+    }
+
+
 def _expected_summary_record(scenario: str, copies: int) -> dict[str, object]:
     if scenario == "visibility_edges":
         digest = {
@@ -115,6 +127,8 @@ def _run_optix_visibility_chunked_record(copies: int, chunk_copies: int, include
     total_visible = 0
     total_blocked = 0
     total_rows = 0
+    phase_totals: dict[str, float] = {}
+    native_continuation_backends: set[str] = set()
     chunks = 0
     remaining = copies
     try:
@@ -132,6 +146,11 @@ def _run_optix_visibility_chunked_record(copies: int, chunk_copies: int, include
             total_visible += int(summary["visible_edge_count"])  # type: ignore[index]
             total_blocked += int(summary["blocked_edge_count"])  # type: ignore[index]
             total_rows += int(section.get("row_count", 0))  # type: ignore[attr-defined]
+            for name, value in section.get("run_phases", {}).items():  # type: ignore[attr-defined]
+                phase_totals[name] = phase_totals.get(name, 0.0) + float(value)
+            native_backend = section.get("native_continuation_backend", "none")  # type: ignore[attr-defined]
+            if native_backend not in {None, "none"}:
+                native_continuation_backends.add(str(native_backend))
             chunks += 1
             remaining -= current
         return {
@@ -150,6 +169,15 @@ def _run_optix_visibility_chunked_record(copies: int, chunk_copies: int, include
             "optix_graph_mode": "not_applicable",
             "chunk_copies": chunk_copies,
             "chunk_count": chunks,
+            "section_run_phases": phase_totals,
+            "native_continuation_active": bool(native_continuation_backends),
+            "native_continuation_backend": (
+                "+".join(sorted(native_continuation_backends))
+                if native_continuation_backends
+                else "none"
+            ),
+            "row_materialization_sec": float(phase_totals.get("row_materialization_sec", 0.0)),
+            "query_raw_view_sec": float(phase_totals.get("query_raw_view_sec", 0.0)),
         }
     except Exception as exc:  # noqa: BLE001 - optional backend gate records absence.
         return {
@@ -177,7 +205,7 @@ def _run_optix_record(scenario: str, copies: int, include_rows: bool) -> dict[st
     try:
         output_mode = "rows" if include_rows else "summary"
         payload = graph_app.run_app("optix", scenario, copies=copies, output_mode=output_mode, **kwargs)
-        return {
+        record = {
             "label": label,
             "scenario": scenario,
             "status": "ok",
@@ -185,6 +213,8 @@ def _run_optix_record(scenario: str, copies: int, include_rows: bool) -> dict[st
             "digest": _canonical(payload, scenario, include_rows=include_rows),
             "optix_graph_mode": kwargs.get("optix_graph_mode", "not_applicable"),
         }
+        record.update(_section_metadata(payload, scenario))
+        return record
     except Exception as exc:  # noqa: BLE001 - optional backend gate records absence.
         return {
             "label": label,

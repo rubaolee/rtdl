@@ -297,6 +297,13 @@ def _summarize_collisions(
     }
 
 
+def _expected_scaled_pose_flags(poses: tuple[dict[str, object], ...]) -> tuple[dict[str, object], ...]:
+    return tuple(
+        {"pose_id": int(pose["pose_id"]), "collides": int(pose["pose_id"]) % 2 == 0}
+        for pose in poses
+    )
+
+
 def _compact_collision_payload(
     *,
     mode: str,
@@ -340,6 +347,7 @@ def run_app(
     *,
     pose_count: int | None = None,
     obstacle_count: int | None = None,
+    skip_validation: bool = False,
 ) -> dict[str, object]:
     if optix_summary_mode not in {"rows", "prepared_count", "prepared_pose_flags"}:
         raise ValueError("optix_summary_mode must be 'rows', 'prepared_count', or 'prepared_pose_flags'")
@@ -361,12 +369,12 @@ def run_app(
     poses = case["poses"]
     ray_metadata = case["ray_metadata"]
 
-    oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
-    oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
-
     if backend == "optix" and optix_summary_mode == "prepared_count":
         prepared_summary = _run_optix_prepared_hit_edge_count(edge_rays, obstacle_triangles)
-        expected_hit_count = sum(1 for row in oracle_rows if row["any_hit"])
+        expected_hit_count = None
+        if not skip_validation:
+            oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
+            expected_hit_count = sum(1 for row in oracle_rows if row["any_hit"])
         return {
             "app": "robot_collision_screening",
             "backend": backend,
@@ -376,8 +384,12 @@ def run_app(
             "edge_ray_count": len(edge_rays),
             "obstacle_triangle_count": len(obstacle_triangles),
             "prepared_summary": prepared_summary,
-            "oracle_hit_edge_count": int(expected_hit_count),
-            "matches_oracle": int(prepared_summary["hit_edge_count"]) == int(expected_hit_count),
+            "oracle_hit_edge_count": None if expected_hit_count is None else int(expected_hit_count),
+            "matches_oracle": (
+                None if expected_hit_count is None
+                else int(prepared_summary["hit_edge_count"]) == int(expected_hit_count)
+            ),
+            "validation_mode": "skipped" if skip_validation else "cpu_oracle",
             "native_continuation_active": True,
             "native_continuation_backend": "optix_prepared_any_hit_count",
             "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns a native scalar hit-edge count, avoiding per-ray Python dict row materialization for this summary path.",
@@ -386,6 +398,22 @@ def run_app(
 
     if backend == "optix" and optix_summary_mode == "prepared_pose_flags":
         prepared_summary = _run_optix_prepared_pose_flags(edge_rays, obstacle_triangles, poses, ray_metadata)
+        expected_pose_flags = None
+        expected_colliding_pose_ids = None
+        validation_mode = "skipped"
+        if not skip_validation:
+            if pose_count is not None:
+                expected_pose_flags = _expected_scaled_pose_flags(poses)
+                expected_colliding_pose_ids = [
+                    int(row["pose_id"]) for row in expected_pose_flags if bool(row["collides"])
+                ]
+                validation_mode = "analytic_scaled_fixture"
+            else:
+                oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
+                oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
+                expected_pose_flags = oracle_summary["pose_collision_flags"]
+                expected_colliding_pose_ids = oracle_summary["colliding_pose_ids"]
+                validation_mode = "cpu_oracle"
         return {
             "app": "robot_collision_screening",
             "backend": backend,
@@ -395,14 +423,20 @@ def run_app(
             "edge_ray_count": len(edge_rays),
             "obstacle_triangle_count": len(obstacle_triangles),
             "prepared_summary": prepared_summary,
-            "oracle_colliding_pose_ids": oracle_summary["colliding_pose_ids"],
-            "matches_oracle": tuple(prepared_summary["pose_collision_flags"]) == tuple(oracle_summary["pose_collision_flags"]),
+            "oracle_colliding_pose_ids": expected_colliding_pose_ids,
+            "matches_oracle": (
+                None if expected_pose_flags is None
+                else tuple(prepared_summary["pose_collision_flags"]) == tuple(expected_pose_flags)
+            ),
+            "validation_mode": validation_mode,
             "native_continuation_active": True,
             "native_continuation_backend": "optix_prepared_pose_flags",
             "rtdl_role": "RTDL uses a prepared OptiX ray/triangle any-hit scene and returns native pose collision flags, avoiding per-ray Python dict row materialization for this app summary path.",
             "boundary": "Prepared pose-flags mode returns one collision flag per pose. Use optix_summary_mode='rows' when edge-level witnesses or hit-ray IDs are needed.",
         }
 
+    oracle_rows = rt.ray_triangle_any_hit_cpu(edge_rays, obstacle_triangles)
+    oracle_summary = _summarize_collisions(oracle_rows, poses, ray_metadata)
     rows = _run_backend(backend, edge_rays, obstacle_triangles)
     summary = _summarize_collisions(rows, poses, ray_metadata)
 
@@ -446,6 +480,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--pose-count", type=int, default=None, help="use a generated scalable pose fixture")
     parser.add_argument("--obstacle-count", type=int, default=None, help="use a generated scalable obstacle fixture")
+    parser.add_argument(
+        "--skip-validation",
+        action="store_true",
+        help="Prepared OptiX summary modes only: skip CPU/oracle validation for timing diagnostics.",
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -455,6 +494,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.output_mode,
                 pose_count=args.pose_count,
                 obstacle_count=args.obstacle_count,
+                skip_validation=args.skip_validation,
             ),
             indent=2,
             sort_keys=True,

@@ -280,11 +280,7 @@ def run_app(
     case = make_ann_case(copies=copies)
     if backend == "optix" and optix_summary_mode == "candidate_threshold_prepared":
         coverage = _run_optix_candidate_threshold(case, radius=candidate_radius)
-        oracle = candidate_threshold_oracle(
-            case["query_points"],
-            case["candidate_points"],
-            radius=candidate_radius,
-        )
+        oracle = expected_tiled_candidate_threshold(copies=copies, radius=candidate_radius)
         return {
             "app": "ann_candidate_search",
             "backend": backend,

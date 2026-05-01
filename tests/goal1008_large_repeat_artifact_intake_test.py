@@ -40,7 +40,7 @@ class Goal1008LargeRepeatArtifactIntakeTest(unittest.TestCase):
         )
         self.assertEqual(
             rows[("robot_collision_screening", "prepared_pose_flags")]["current_public_wording_status"],
-            "public_wording_blocked",
+            "public_wording_reviewed",
         )
         self.assertLess(rows[("robot_collision_screening", "prepared_pose_flags")]["rtx_phase_sec"], 0.10)
         self.assertEqual(

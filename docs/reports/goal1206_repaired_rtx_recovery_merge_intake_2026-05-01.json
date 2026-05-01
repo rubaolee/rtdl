@@ -1,0 +1,111 @@
+{
+  "boundary": "Goal1205 intakes Goal1204 pod artifacts only. It does not authorize public docs, release, or public RTX speedup wording without a separate review decision.",
+  "database_analytics": [
+    {
+      "copies": 100000,
+      "embree_chunked": true,
+      "embree_sec": 0.3383033503778279,
+      "embree_status": "ok",
+      "optix_chunked": true,
+      "optix_sec": 0.3013443243689835,
+      "optix_status": "ok",
+      "ratio_embree_over_optix": 1.122647161469647,
+      "repair_passed": true
+    },
+    {
+      "copies": 300000,
+      "embree_chunked": true,
+      "embree_sec": 1.0553332888521254,
+      "embree_status": "ok",
+      "optix_chunked": true,
+      "optix_sec": 0.9069793741218746,
+      "optix_status": "ok",
+      "ratio_embree_over_optix": 1.1635692265591873,
+      "repair_passed": true
+    }
+  ],
+  "date": "2026-05-01",
+  "decisions": {
+    "database_analytics": "repair_passed",
+    "polygon_set_jaccard": "public_safe_chunk_ready",
+    "road_hazard_screening": "same_scale_public_positive_candidate"
+  },
+  "goal": "Goal1206 repaired RTX recovery merge intake",
+  "input_dir": "/var/folders/85/mj9yv2ts6ddcphbndl3992kh0000gn/T/tmp7yfhy0mw/merged",
+  "original_input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1204_live_pod_2026-05-01/extracted/docs/reports/goal1204_repaired_rtx_pod",
+  "polygon_set_jaccard": [
+    {
+      "chunk_copies": 512,
+      "chunk_policy": {
+        "chunk_copies": 512,
+        "policy": "public_safe",
+        "public_safe": true,
+        "reason": "Goal1164/Goal1200 evidence supports public Jaccard summary checks only for reviewed safe chunks.",
+        "safe_max": 4096,
+        "safe_min": 512
+      },
+      "copies": 8192,
+      "diagnostic_only": false,
+      "label": "jaccard_optix_8192_public_safe_chunk_512",
+      "optix_candidate_sec": 1.1900066710077226,
+      "parity_vs_cpu": true,
+      "public_safe": true,
+      "status": "ok"
+    },
+    {
+      "chunk_copies": 64,
+      "chunk_policy": {
+        "chunk_copies": 64,
+        "policy": "diagnostic_only",
+        "public_safe": false,
+        "reason": "This chunk size is diagnostic-only; prior RTX evidence showed some smaller chunks can miss candidates.",
+        "safe_max": 4096,
+        "safe_min": 512
+      },
+      "copies": 8192,
+      "diagnostic_only": true,
+      "label": "jaccard_optix_8192_diagnostic_chunk_64",
+      "optix_candidate_sec": 1.2713950425386429,
+      "parity_vs_cpu": false,
+      "public_safe": false,
+      "status": "ok"
+    }
+  ],
+  "public_positive_candidates_from_this_batch": [
+    "polygon_set_jaccard",
+    "road_hazard_screening"
+  ],
+  "recovery_boundary": "Goal1206 merges the original Goal1204 pod evidence with Embree4 /usr recovery controls. It is an evidence intake only and does not authorize public wording without review.",
+  "recovery_copied_files": [
+    "db_embree_100000_chunked_repair_usr_recovery.json->db_embree_100000_chunked_repair.json",
+    "db_embree_100000_chunked_repair_usr_recovery.status.json->db_embree_100000_chunked_repair.status.json",
+    "db_embree_100000_chunked_repair_usr_recovery.log->db_embree_100000_chunked_repair.log",
+    "db_embree_300000_chunked_repair_usr_recovery.json->db_embree_300000_chunked_repair.json",
+    "db_embree_300000_chunked_repair_usr_recovery.status.json->db_embree_300000_chunked_repair.status.json",
+    "db_embree_300000_chunked_repair_usr_recovery.log->db_embree_300000_chunked_repair.log",
+    "road_hazard_embree_control_40000_usr_recovery.json->road_hazard_embree_control_40000.json",
+    "road_hazard_embree_control_40000_usr_recovery.status.json->road_hazard_embree_control_40000.status.json",
+    "road_hazard_embree_control_40000_usr_recovery.log->road_hazard_embree_control_40000.log"
+  ],
+  "recovery_input_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1204_embree4_usr_recovery_live_pod_2026-05-01/extracted/docs/reports/goal1204_embree4_usr_recovery",
+  "road_hazard_screening": {
+    "copies": 40000,
+    "embree_sec": 0.8147223866544664,
+    "embree_status": "ok",
+    "optix_sec": 0.23065232206135988,
+    "optix_status": "ok",
+    "ratio_embree_over_optix": 3.532253130483238,
+    "same_scale_public_positive_candidate": true,
+    "timing_floor_met": true
+  },
+  "status_summary": {
+    "failed_count": 3,
+    "failed_labels": [
+      "db_embree_100000_chunked_repair",
+      "db_embree_300000_chunked_repair",
+      "road_hazard_embree_control_40000"
+    ],
+    "status_count": 9
+  },
+  "valid": true
+}

@@ -29,30 +29,30 @@ REQUIRED_FILES = (
 
 REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "current released version is `v0.9.6`",
+        "current released version is `v0.9.8`",
         "not automatic public speedup claims",
         "robot_collision_screening / prepared_pose_flags",
         "Goal1126",
-        "not a same-total-work wall-time",
+        "same-total-work",
     ),
     "docs/README.md": (
-        "current released version is `v0.9.6`",
-        "v0.9.6 Release Package",
+        "current released version is `v0.9.8`",
+        "v0.9.8 Release Package",
         "v1.0 RTX App Status",
     ),
     "docs/current_main_support_matrix.md": (
-        "Current public release: `v0.9.6`",
-        "released `v0.9.6` tag",
+        "Current public release: `v0.9.8`",
+        "released `v0.9.8` tag",
     ),
     "docs/application_catalog.md": (
         "is not by itself a NVIDIA RT-core claim",
         "rtdsl.rtx_public_wording_matrix()",
-        "reviewed normalized per-pose wording only",
+        "Goal1126",
     ),
     "docs/app_engine_support_matrix.md": (
         "The machine-readable source of truth is `rtdsl.rtx_public_wording_matrix()`",
-        "public_wording_blocked",
-        "blocked_for_public_speedup_wording",
+        "public_wording_reviewed",
+        "Goal1126 reviewed explicit normalized per-pose wording only",
     ),
     "docs/release_facing_examples.md": (
         "`--backend optix` is a backend-selection flag, not an automatic NVIDIA RT-core",
@@ -62,24 +62,24 @@ REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "docs/rtdl_feature_guide.md": (
         "`--backend optix` is not enough for a public",
         "rtdsl.rtx_public_wording_matrix()",
-        "Goal1126 accepted",
+        "Goal1126",
     ),
     "docs/v1_0_rtx_app_status.md": (
         "not release authorization and not a public speedup claim",
-        "Goal1126 accepted normalized per-pose public wording for robot",
+        "Goal1126 promoted robot only with explicit normalized per-pose wording",
         "rtdsl.rtx_public_wording_matrix()",
     ),
     "history/COMPLETE_HISTORY.md": (
-        "v0.9.6",
-        "Goal1023",
-        "Goal684",
+        "v0.9.8",
+        "Goal1221",
+        "Goal1220",
         "Historical records are not rewritten",
     ),
     "history/revision_dashboard.md": (
-        "v0.9.6",
-        "Goal1023",
-        "Goal684",
-        "2026-04-26-goal1023-v0_9_6-history-catchup",
+        "v0.9.8",
+        "Goal1221",
+        "Goal1220",
+        "docs/release_reports/v0_9_8/README.md",
     ),
 }
 

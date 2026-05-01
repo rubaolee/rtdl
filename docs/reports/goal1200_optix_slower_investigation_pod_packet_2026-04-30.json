@@ -1,0 +1,69 @@
+{
+  "archive": {
+    "archive_bytes": 1502233,
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1200_rtdl_source_2026-04-30.tar.gz",
+    "archive_sha256": "4f77dbde17c8baefab4c79130f446ceb4b2d7d72279b9755f7605dedd4ebaa66",
+    "boundary": "This archive packages the staged source set for transfer to a pod. It is not a benchmark artifact and does not authorize public wording.",
+    "date": "2026-04-30",
+    "goal": "Goal1175 staged source archive builder",
+    "manifest_aggregate_sha256": "5cc6416acc875073e72234c1b3771585a69e5e50707d4594b5329b80a15250b7",
+    "manifest_file_count": 1775,
+    "valid": true
+  },
+  "boundary": "This packet prepares a future pod execution path for Goal1200 investigation evidence. It creates a source archive and replay commands only; it does not run cloud, edit public docs, authorize release, or authorize public RTX speedup wording.",
+  "commands": {
+    "copy_back": [
+      "mkdir -p docs/reports/goal1200_live_pod_2026-04-30",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1200_optix_slower_app_investigation.tgz docs/reports/goal1200_live_pod_2026-04-30/",
+      "scp -P <pod_port> -i <ssh_key> root@<pod_host>:/tmp/goal1200_optix_slower_app_investigation.tgz.sha256 docs/reports/goal1200_live_pod_2026-04-30/",
+      "tar -xzf docs/reports/goal1200_live_pod_2026-04-30/goal1200_optix_slower_app_investigation.tgz -C docs/reports/goal1200_live_pod_2026-04-30"
+    ],
+    "run_on_pod": "ARCHIVE=/tmp/goal1200_rtdl_source_2026-04-30.tar.gz EXPECTED_SHA256=4f77dbde17c8baefab4c79130f446ceb4b2d7d72279b9755f7605dedd4ebaa66 WORKDIR=/workspace/rtdl_goal1200 RESULT_TGZ=/tmp/goal1200_optix_slower_app_investigation.tgz RESULT_SHA=/tmp/goal1200_optix_slower_app_investigation.tgz.sha256 bash /tmp/goal1200_executor.sh",
+    "upload": [
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/docs/reports/goal1200_rtdl_source_2026-04-30.tar.gz root@<pod_host>:/tmp/goal1200_rtdl_source_2026-04-30.tar.gz",
+      "scp -P <pod_port> -i <ssh_key> /Users/rl2025/rtdl_python_only/scripts/goal1200_optix_slower_investigation_pod_executor.sh root@<pod_host>:/tmp/goal1200_executor.sh"
+    ]
+  },
+  "date": "2026-04-30",
+  "goal": "Goal1200 OptiX slower-app investigation pod packet",
+  "pod_batch": {
+    "local_copyback_dir": "docs/reports/goal1200_live_pod_2026-04-30",
+    "pod_executor": "scripts/goal1200_optix_slower_investigation_pod_executor.sh",
+    "positive_controls": [
+      "road_hazard_screening"
+    ],
+    "post_same_scale_sync": "docs/reports/goal1199_two_ai_consensus_2026-04-30.md",
+    "remote_archive": "/tmp/goal1200_rtdl_source_2026-04-30.tar.gz",
+    "remote_result": "/tmp/goal1200_optix_slower_app_investigation.tgz",
+    "remote_result_sha": "/tmp/goal1200_optix_slower_app_investigation.tgz.sha256",
+    "reviewed_plan": "docs/reports/goal1197_optix_slower_app_investigation_manifest_2026-04-30.md",
+    "same_scale_repairs": [
+      "hausdorff_distance"
+    ],
+    "target_rows": [
+      "database_analytics",
+      "graph_analytics",
+      "polygon_pair_overlap_area_rows",
+      "polygon_set_jaccard"
+    ]
+  },
+  "preconditions": [
+    "Use one RTX-class Linux pod session; do not restart per app.",
+    "Use the local key that exists on this Mac, usually ~/.ssh/id_ed25519_rtdl_codex.",
+    "Executor preserves failed status JSON and logs instead of aborting the whole batch.",
+    "Copy the result tgz and sha256 back before interpretation.",
+    "A separate intake/review goal must interpret results after copy-back."
+  ],
+  "source_manifest": {
+    "aggregate_sha256": "5cc6416acc875073e72234c1b3771585a69e5e50707d4594b5329b80a15250b7",
+    "file_count": 1775
+  },
+  "valid": true,
+  "verification": {
+    "actual_sha256": "4f77dbde17c8baefab4c79130f446ceb4b2d7d72279b9755f7605dedd4ebaa66",
+    "archive_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1200_rtdl_source_2026-04-30.tar.gz",
+    "exists": true,
+    "expected_sha256": "4f77dbde17c8baefab4c79130f446ceb4b2d7d72279b9755f7605dedd4ebaa66",
+    "valid": true
+  }
+}

@@ -96,13 +96,19 @@ def build_packet(goal1006_path: Path = GOAL1006, goal1008_path: Path = GOAL1008)
     for source in goal1008["rows"]:
         if source["large_repeat_status"] == "still_below_public_review_timing_floor":
             public_wording = rt.rtx_public_wording_status(str(source["app"]))
+            reason = (
+                "Historical Goal1009 timing-floor block superseded by later Goal1126 "
+                "normalized per-pose public-wording review."
+                if public_wording.status == "public_wording_reviewed"
+                else "Still below the 100 ms public-review timing floor after larger RTX repeats."
+            )
             blocked.append(
                 {
                     "app": source["app"],
                     "path_name": source["path_name"],
                     "current_public_wording_status": public_wording.status,
                     "current_public_wording_boundary": public_wording.boundary,
-                    "reason": "Still below the 100 ms public-review timing floor after larger RTX repeats.",
+                    "reason": reason,
                     "rtx_phase_sec": source["rtx_phase_sec"],
                     "chosen_artifact": source["chosen_artifact"],
                 }
@@ -169,7 +175,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
     lines.extend(["## Blocked Rows", ""])
     for row in payload["blocked_rows"]:
         lines.append(
-            f"- `{row['app']} / {row['path_name']}` remains blocked: {row['reason']} "
+            f"- `{row['app']} / {row['path_name']}` historical blocked row: {row['reason']} "
             f"median RTX phase `{_fmt_sec(row['rtx_phase_sec'])}` s. "
             f"Current public wording status: `{row['current_public_wording_status']}`."
         )

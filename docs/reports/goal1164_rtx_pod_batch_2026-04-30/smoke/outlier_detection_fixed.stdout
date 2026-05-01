@@ -1,0 +1,111 @@
+{
+  "app": "outlier_detection",
+  "backend": "optix",
+  "boundary": "Bounded density-threshold outlier demo only; Embree/OptiX rt_count_threshold is an experimental fixed-radius count prototype, not a KNN/Hausdorff/Barnes-Hut claim. One-shot CLI runs cannot fully amortize backend preparation; prepared app/session mode is intended for repeated probes.",
+  "copies": 1,
+  "density_rows": [
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 1
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 2
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 3
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 4
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 5
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 6
+    },
+    {
+      "is_outlier": true,
+      "neighbor_count": 1,
+      "point_id": 7
+    },
+    {
+      "is_outlier": true,
+      "neighbor_count": 1,
+      "point_id": 8
+    }
+  ],
+  "embree_summary_mode": "not_applicable",
+  "k_max": 16,
+  "matches_oracle": true,
+  "min_neighbors_including_self": 3,
+  "native_continuation_active": true,
+  "native_continuation_backend": "optix_threshold_count",
+  "native_summary_row_count": 8,
+  "neighbor_row_count": 0,
+  "optix_summary_mode": "rt_count_threshold_prepared",
+  "oracle_density_rows": [
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 1
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 2
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 3
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 4
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 5
+    },
+    {
+      "is_outlier": false,
+      "neighbor_count": 3,
+      "point_id": 6
+    },
+    {
+      "is_outlier": true,
+      "neighbor_count": 1,
+      "point_id": 7
+    },
+    {
+      "is_outlier": true,
+      "neighbor_count": 1,
+      "point_id": 8
+    }
+  ],
+  "oracle_outlier_count": 2,
+  "outlier_count": 2,
+  "outlier_point_ids": [
+    7,
+    8
+  ],
+  "output_mode": "density_summary",
+  "point_count": 8,
+  "radius": 0.35,
+  "rtdl_role": "Default RTDL emits fixed-radius neighbor rows; rt.reduce_rows(count) converts them into local density counts, and Python applies the outlier threshold. The compact density paths use prepared fixed-radius threshold traversal through native backend fixed-radius threshold-count continuation and avoid neighbor-row materialization.",
+  "summary_mode": null,
+  "threshold_reached_count": null
+}

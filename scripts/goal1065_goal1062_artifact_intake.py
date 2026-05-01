@@ -163,12 +163,14 @@ def build_intake(artifact_dir: Path = DEFAULT_ARTIFACT_DIR) -> dict[str, Any]:
     timing_passed = status_counts.get("timing_floor_passed", 0)
     timing_below = status_counts.get("timing_below_floor", 0)
     overall_status = (
-        "blocked"
+        "no_blocked_public_wording_rows"
+        if not rows
+        else "blocked"
         if blocked_count
         else "ready_for_public_wording_review"
-        if missing_count == 0 and validation_passed == 2 and timing_passed == 2
+        if missing_count == 0 and validation_passed == 1 and timing_passed == 1
         else "timing_floor_not_met"
-        if missing_count == 0 and validation_passed == 2 and timing_below > 0
+        if missing_count == 0 and validation_passed == 1 and timing_below > 0
         else "needs_cloud_artifacts"
     )
     return {

@@ -1,0 +1,66 @@
+{
+  "boundary": "This is a local baseline JSON/schema probe only. It does not run OptiX, does not authorize pod execution, and does not authorize public RTX speedup wording.",
+  "date": "2026-04-30",
+  "failing_probe_count": 0,
+  "goal": "Goal1191 next pod local baseline schema probe",
+  "output_dir": "/Users/rl2025/rtdl_python_only/docs/reports/goal1191_next_pod_local_baseline_schema_probe",
+  "passing_probe_count": 6,
+  "probe_count": 6,
+  "rows": [
+    {
+      "app": "database_analytics",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario sales_risk --copies 2 --iterations 2 --output-mode compact_summary --strict --output-json /Users/rl2025/rtdl_python_only/docs/reports/goal1191_next_pod_local_baseline_schema_probe/database_compact_summary_embree_probe.json",
+      "json_parse_error": "",
+      "missing_required_paths": [],
+      "output_file": "docs/reports/goal1191_next_pod_local_baseline_schema_probe/database_compact_summary_embree_probe.json",
+      "returncode": 0,
+      "status": "ok"
+    },
+    {
+      "app": "graph_analytics",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 examples/rtdl_graph_analytics_app.py --backend embree --scenario visibility_edges --copies 2 --output-mode summary",
+      "json_parse_error": "",
+      "missing_required_paths": [],
+      "output_file": "docs/reports/goal1191_next_pod_local_baseline_schema_probe/graph_visibility_edges_embree_probe.json",
+      "returncode": 0,
+      "status": "ok"
+    },
+    {
+      "app": "road_hazard_screening",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 examples/rtdl_road_hazard_screening.py --backend embree --copies 2 --output-mode summary",
+      "json_parse_error": "",
+      "missing_required_paths": [],
+      "output_file": "docs/reports/goal1191_next_pod_local_baseline_schema_probe/road_hazard_native_summary_embree_probe.json",
+      "returncode": 0,
+      "status": "ok"
+    },
+    {
+      "app": "polygon_pair_overlap_area_rows",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 examples/rtdl_polygon_pair_overlap_area_rows.py --backend embree --copies 2 --output-mode summary",
+      "json_parse_error": "",
+      "missing_required_paths": [],
+      "output_file": "docs/reports/goal1191_next_pod_local_baseline_schema_probe/polygon_pair_candidate_discovery_embree_probe.json",
+      "returncode": 0,
+      "status": "ok"
+    },
+    {
+      "app": "polygon_set_jaccard",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 examples/rtdl_polygon_set_jaccard.py --backend embree --copies 2 --output-mode summary",
+      "json_parse_error": "",
+      "missing_required_paths": [],
+      "output_file": "docs/reports/goal1191_next_pod_local_baseline_schema_probe/polygon_jaccard_safe_chunk_embree_probe.json",
+      "returncode": 0,
+      "status": "ok"
+    },
+    {
+      "app": "hausdorff_distance",
+      "command": "/opt/homebrew/opt/python@3.14/bin/python3.14 examples/rtdl_hausdorff_distance_app.py --backend embree --copies 2 --embree-result-mode directed_summary --hausdorff-threshold 0.4",
+      "json_parse_error": "",
+      "missing_required_paths": [],
+      "output_file": "docs/reports/goal1191_next_pod_local_baseline_schema_probe/hausdorff_threshold_prepared_embree_probe.json",
+      "returncode": 0,
+      "status": "ok"
+    }
+  ],
+  "valid": true
+}

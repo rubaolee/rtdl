@@ -1,0 +1,93 @@
+{
+  "artifact_count": 8,
+  "boundary": "This intake can accept clean-source Goal1170 RTX artifacts for review. It does not authorize public wording by itself.",
+  "date": "2026-04-30",
+  "dirty_source_artifacts": [],
+  "goal": "Goal1170 clean-source RTX batch artifact intake",
+  "input_dir": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch",
+  "missing_artifacts": [],
+  "rows": [
+    {
+      "artifact": "database_compact_summary.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/database_compact_summary.json",
+      "source_commit": "",
+      "status": null,
+      "timing_only": false,
+      "valid": true
+    },
+    {
+      "artifact": "graph_visibility_edges.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/graph_visibility_edges.json",
+      "source_commit": "",
+      "status": "pass",
+      "timing_only": false,
+      "valid": true
+    },
+    {
+      "artifact": "road_hazard_native_summary.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/road_hazard_native_summary.json",
+      "source_commit": "",
+      "status": "pass",
+      "timing_only": false,
+      "valid": true
+    },
+    {
+      "artifact": "polygon_pair_candidate_discovery.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/polygon_pair_candidate_discovery.json",
+      "source_commit": "goal1175-archive-b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+      "status": "pass",
+      "timing_only": false,
+      "valid": true
+    },
+    {
+      "artifact": "polygon_jaccard_safe_chunk.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/polygon_jaccard_safe_chunk.json",
+      "source_commit": "goal1175-archive-b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+      "status": "pass",
+      "timing_only": false,
+      "valid": true
+    },
+    {
+      "artifact": "hausdorff_threshold_prepared.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/hausdorff_threshold_prepared.json",
+      "source_commit": "goal1175-archive-b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+      "status": null,
+      "timing_only": false,
+      "valid": true
+    },
+    {
+      "artifact": "ann_candidate_65536_timing.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/ann_candidate_65536_timing.json",
+      "source_commit": "goal1175-archive-b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+      "status": null,
+      "timing_only": true,
+      "valid": true
+    },
+    {
+      "artifact": "robot_pose_count_262144_timing.json",
+      "exists": true,
+      "findings": [],
+      "path": "docs/reports/goal1182_live_pod_2026-04-30/extracted/docs/reports/goal1170_clean_source_rtx_claim_grade_batch/robot_pose_count_262144_timing.json",
+      "source_commit": "goal1175-archive-b5f7c732d927acaaf5daf1ee2840aef6943ab6e01e81138111df73f98fbd5e00",
+      "status": null,
+      "timing_only": true,
+      "valid": true
+    }
+  ],
+  "valid": true,
+  "valid_artifact_count": 8
+}

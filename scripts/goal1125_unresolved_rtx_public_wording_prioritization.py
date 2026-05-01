@@ -53,19 +53,6 @@ APP_PLANS: dict[str, dict[str, str]] = {
         ),
         "pod_policy": "no_pod_until_phase_split_or_code_changes",
     },
-    "road_hazard_screening": {
-        "action_bucket": LOCAL_OPTIMIZATION_FIRST,
-        "priority": "p1",
-        "why": (
-            "The prepared road-hazard RTX summary is far slower than the same-semantics Embree "
-            "summary in Goal1060."
-        ),
-        "next_local_action": (
-            "Root-cause segment/polygon batching and summary-return overhead; keep claim scope to "
-            "the prepared compact summary gate."
-        ),
-        "pod_policy": "no_pod_until_code_or_batching_changes",
-    },
     "polygon_pair_overlap_area_rows": {
         "action_bucket": LOCAL_OPTIMIZATION_FIRST,
         "priority": "p2",
@@ -207,15 +194,14 @@ def build_audit() -> dict[str, Any]:
         "recommended_order": [
             "database_analytics",
             "graph_analytics",
-            "road_hazard_screening",
             "hausdorff_distance",
             "polygon_pair_overlap_area_rows",
             "polygon_set_jaccard",
         ],
         "valid": (
-            len(rows) == 6
+            len(rows) == 5
             and {row["app"] for row in rows} == set(APP_PLANS)
-            and bucket_counts.get(LOCAL_OPTIMIZATION_FIRST, 0) == 5
+            and bucket_counts.get(LOCAL_OPTIMIZATION_FIRST, 0) == 4
             and bucket_counts.get(NEEDS_BASELINE_REVIEW, 0) == 0
             and bucket_counts.get(NEEDS_SCALE_CONTRACT, 0) == 1
             and all(row["rt_core_status"] == "rt_core_ready" for row in rows)

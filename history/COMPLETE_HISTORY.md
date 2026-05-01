@@ -63,11 +63,14 @@ Use these layers together:
 - `v0.9.4`
 - `v0.9.5`
 - `v0.9.6`
+- `v0.9.8`
 
 ## Current Top Revision Rounds
 
 | Version | Date | Status | Round | Result | Archive |
 | --- | --- | --- | --- | --- | --- |
+| `v0.9.8` | 2026-05-01 | `released` | Goal1221 v0.9.8 release action after Goal1220 final authorization | `released` | `docs/release_reports/v0_9_8/README.md` |
+| `v0.9.8` | 2026-05-01 | `accepted` | Goals1216-1220 v0.9.8 release-candidate audit, package, and final authorization | `accepted` | `docs/reports/goal1220_two_ai_consensus_2026-05-01.md` |
 | `v0.9.6` | 2026-04-26 | `accepted` | Goal1023 v0.9.6 history catch-up after drift audit | `accepted` | `2026-04-26-goal1023-v0_9_6-history-catchup` |
 | `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals658-679 cross-engine prepared visibility/count optimization and release gates | `accepted` | `2026-04-20-goal658-679-cross-engine-prepared-visibility-optimization` |
 | `v0.9.5-current-main` | 2026-04-20 | `accepted` | Goals650-656 current-main any-hit, documentation, and test catch-up | `accepted` | `2026-04-20-goal650-656-current-main-anyhit-doc-test-catchup` |
@@ -116,6 +119,8 @@ Use these layers together:
 
 - Goal1023 appends the missing `v0.9.6` / Goal684 public-history entry detected
   by Goal1022. Historical records are not rewritten to look current.
+- Goal1221 appends the `v0.9.8` release-action entry after Goal1220 final
+  authorization. Older release records remain historical.
 - This page does not claim that every chat message or terminal line is
   preserved.
 - It does claim that the repo-visible evidence is now discoverable through a

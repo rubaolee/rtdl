@@ -15,7 +15,7 @@ import rtdsl as rt
 
 
 GOAL = "Goal947 v1.0 RTX app status page"
-DATE = "2026-04-27"
+DATE = "2026-04-30"
 
 APP_PATHS = {
     "database_analytics": "examples/rtdl_database_analytics_app.py",
@@ -102,7 +102,7 @@ NATIVE_CONTINUATION_CONTRACTS = {
 }
 
 NEXT_CLOUD_ACTION = {
-    "ready_for_rtx_claim_review": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+    "ready_for_rtx_claim_review": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
     "exclude_from_rtx_app_benchmark": "never include in NVIDIA RTX cloud batch",
 }
 
@@ -131,11 +131,23 @@ GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS = {
         "ratio": "6.62x",
         "scope": "prepared fixed-radius scalar core-count sub-path only",
     },
+    "robot_collision_screening": {
+        "app_path": "robot_collision_screening / prepared_pose_flags",
+        "rtx_phase_sec": "0.178471",
+        "ratio": "918.91x normalized per-pose",
+        "scope": "prepared ray/triangle any-hit pose-count query sub-path only",
+    },
     "facility_knn_assignment": {
         "app_path": "facility_knn_assignment / coverage_threshold_prepared_recentered",
-        "rtx_phase_sec": "0.103119",
-        "ratio": "87.24x",
+        "rtx_phase_sec": "0.111619",
+        "ratio": "80.60x",
         "scope": "prepared facility coverage-threshold query sub-path only",
+    },
+    "road_hazard_screening": {
+        "app_path": "road_hazard_screening / prepared_native_compact_summary_40k",
+        "rtx_phase_sec": "0.230652",
+        "ratio": "3.53x",
+        "scope": "prepared native road-hazard compact-summary traversal/count sub-path at 40k copies only",
     },
     "segment_polygon_hitcount": {
         "app_path": "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
@@ -155,16 +167,10 @@ GOAL1009_REVIEWED_PUBLIC_WORDING_ROWS = {
         "ratio": "4.86x",
         "scope": "prepared ANN candidate-coverage decision sub-path only",
     },
-    "robot_collision_screening": {
-        "app_path": "robot_collision_screening / prepared_pose_flags",
-        "rtx_phase_sec": "0.178698",
-        "ratio": "917.75x",
-        "scope": "prepared robot collision pose-count query sub-path only; normalized per-pose versus 36M chunked Embree",
-    },
     "barnes_hut_force_app": {
         "app_path": "barnes_hut_force_app / node_coverage_prepared_rich",
-        "rtx_phase_sec": "0.240634",
-        "ratio": "222.19x",
+        "rtx_phase_sec": "0.222256",
+        "ratio": "240.56x",
         "scope": "prepared Barnes-Hut node-coverage query sub-path only",
     },
 }
@@ -265,9 +271,15 @@ def to_markdown(payload: dict[str, Any]) -> str:
         f"- reviewed public RTX sub-path wording rows: `{summary['reviewed_public_wording']}`",
         f"- broad or whole-app public speedup claim authorized: `{summary['broad_or_whole_app_public_speedup_claim_authorized']}`",
         f"- post-Goal1048 validated RTX artifact intake completed (Goal1058): `True`",
+        f"- changed-path RTX artifact intake completed (Goal1135/Goal1136): `True`",
+        f"- latest RTX pod batch and local follow-up completed (Goal1164/Goal1165): `True`",
+        f"- next RTX pod packet accepted by 2-AI review (Goal1166): `True`",
+        f"- recovered clean-source Goal1170 RTX batch accepted for external-review input (Goal1177): `True`",
+        f"- newer Goal1182 RTX A4500 batch accepted for external-review input (Goal1184): `True`",
+        f"- repaired RTX evidence merged and road-hazard wording reviewed (Goal1206/Goal1208): `True`",
         "",
         "Use this page as the release-facing source of truth for app-level RTX claim review. For engine-by-engine details, see `docs/app_engine_support_matrix.md`.",
-        "Goal1048 completed the consolidated RTX rerun on an RTX A5000 from commit `0c79b64d1b71383080f2e8572612488796d1c16c`. Goal1058 added a tracked-only archive rerun from commit `21fa036881bf9a0c806f69c15727d87b482ccfcf` and validated the facility and robot diagnostic rows with oracle parity. Goal1121 added current-source RTX A5000 evidence for facility, robot, and Barnes-Hut; Goal1123 accepted narrow public wording for facility and Barnes-Hut; Goal1126 accepted normalized per-pose public wording for robot. Only validated/strict bounded paths may be described as claim-review evidence, and most rows remain bounded prepared sub-path or native-assisted phase evidence, not whole-app speedup.",
+        "Goal1048 completed the consolidated RTX rerun on an RTX A5000 from commit `0c79b64d1b71383080f2e8572612488796d1c16c`. Goal1058 added a tracked-only archive rerun from commit `21fa036881bf9a0c806f69c15727d87b482ccfcf` and validated the facility and robot diagnostic rows with oracle parity. Goal1121/Goal1123/Goal1126 are public-wording context for facility, robot, and Barnes-Hut; Goal1142 collected same-source replacement evidence, and Goal1142/Goal1143 Gemini review accepted the evidence review. Goal1146 re-promoted facility and Barnes-Hut with bounded current-source public wording, and Goal1126 promoted robot only with explicit normalized per-pose wording. Goal1135/Goal1136 added changed-path RTX A5000 artifacts for DB compact summary, graph visibility edges, road hazard, polygon pair overlap, polygon set Jaccard, and Hausdorff threshold gates. Goal1164 added a newer RTX A5000 smoke/medium batch: all smoke rows passed, ANN and robot exposed large-scale timing bottlenecks, and Jaccard passed at chunk sizes 512-4096 while 256/8192 remained diagnostic boundaries. Goal1165 made local ANN/robot/Jaccard follow-up fixes, and Goal1166 accepted the next pod packet by Codex+Gemini review. Goal1177 then accepted the recovered clean-source staged-archive Goal1170 eight-row RTX A5000 batch as external-review input only after documenting the initial missing-manifest failure, manifest-generation recovery, and Gemini ACCEPT review. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only after SHA-matched copy-back and valid local intake. Goal1206 merged repaired RTX pod evidence with Embree4 recovery controls, and Goal1208/Claude review authorized only the bounded road-hazard prepared native compact-summary wording. Only validated/strict bounded paths may be described as claim-review evidence, and most rows remain bounded prepared sub-path or native-assisted phase evidence, not whole-app speedup.",
         "",
         "## Reviewed Public RTX Sub-Path Wording",
         "",
@@ -294,11 +306,16 @@ def to_markdown(payload: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "`robot_collision_screening / prepared_pose_flags` now has reviewed normalized",
-            "per-pose public wording after Goal1126. This is not a same-total-work wall-time",
-            "claim and not a whole-app robot-planning claim. Other `ready_for_rtx_claim_review`",
+            "`facility_knn_assignment` and `barnes_hut_force_app` were re-promoted by Goal1146",
+            "with current-source same-contract wording. `robot_collision_screening` was promoted",
+            "by Goal1126 with explicit normalized per-pose wording only; it is not a",
+            "same-total-work wall-time claim and not a whole-app robot-planning claim.",
+            "Other `ready_for_rtx_claim_review`",
             "rows remain engineering-ready or",
             "claim-review-ready, but do not yet have reviewed public speedup wording.",
+            "Goal1177 does not add a new reviewed public wording row.",
+            "Goal1184 does not add a new reviewed public wording row.",
+            "Goal1208 adds exactly one reviewed public wording row for the bounded road-hazard prepared native compact-summary sub-path.",
             "",
         "## Status Table",
         "",

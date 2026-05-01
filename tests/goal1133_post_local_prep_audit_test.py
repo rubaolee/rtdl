@@ -20,7 +20,7 @@ class Goal1133PostLocalPrepAuditTest(unittest.TestCase):
         self.assertEqual(payload["summary"]["tracked_app_count"], 6)
         self.assertTrue(payload["summary"]["all_goal_artifacts_present"])
         self.assertTrue(payload["summary"]["ready_for_review"])
-        self.assertTrue(payload["summary"]["public_wording_not_promoted"])
+        self.assertTrue(payload["summary"]["public_wording_boundary_respected"])
         self.assertIn("Do not start/stop pods per app", payload["cloud_policy"])
         self.assertIn("does not run cloud", payload["boundary"])
         by_goal = {row["goal"]: row for row in payload["rows"]}

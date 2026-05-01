@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal933_prepared_segment_polygon_optix_profiler.py --scenario road_hazard_prepared_summary --copies 40000 --iterations 5 --mode run --output-json docs/reports/goal1204_repaired_rtx_pod/road_hazard_optix_control_40000.json",
+  "exit_code": 0,
+  "label": "road_hazard_optix_control_40000",
+  "log": "docs/reports/goal1204_repaired_rtx_pod/road_hazard_optix_control_40000.log",
+  "status": "ok"
+}

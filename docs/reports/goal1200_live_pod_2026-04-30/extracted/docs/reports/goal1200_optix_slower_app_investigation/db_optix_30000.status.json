@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 30000 --iterations 10 --output-mode compact_summary --strict --output-json docs/reports/goal1200_optix_slower_app_investigation/db_optix_30000.json",
+  "exit_code": 0,
+  "label": "db_optix_30000",
+  "log": "docs/reports/goal1200_optix_slower_app_investigation/db_optix_30000.log",
+  "status": "ok"
+}

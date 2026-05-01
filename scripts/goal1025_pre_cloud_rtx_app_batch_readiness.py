@@ -108,7 +108,7 @@ def build_audit() -> dict[str, Any]:
         and readiness_counts["exclude_from_rtx_app_benchmark"] == 2
         and maturity_counts["rt_core_ready"] == 16
         and maturity_counts["not_nvidia_rt_core_target"] == 2
-        and public_wording_counts["public_wording_reviewed"] == 10
+        and public_wording_counts["public_wording_reviewed"] == 11
         and public_wording_counts["public_wording_blocked"] == 0
         and public_wording_blocked == []
         and not missing_nvidia_targets

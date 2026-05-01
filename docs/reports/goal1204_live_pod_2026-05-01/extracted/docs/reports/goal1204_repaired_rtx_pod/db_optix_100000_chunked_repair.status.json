@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend optix --scenario sales_risk --copies 100000 --iterations 3 --output-mode compact_summary --strict --output-json docs/reports/goal1204_repaired_rtx_pod/db_optix_100000_chunked_repair.json",
+  "exit_code": 0,
+  "label": "db_optix_100000_chunked_repair",
+  "log": "docs/reports/goal1204_repaired_rtx_pod/db_optix_100000_chunked_repair.log",
+  "status": "ok"
+}

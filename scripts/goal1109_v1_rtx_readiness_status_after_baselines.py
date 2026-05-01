@@ -9,7 +9,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DATE = "2026-04-29"
-GOAL = "Goal1109 v1 RTX readiness status after Goal1121 current-source RTX intake"
+GOAL = "Goal1109 v1 RTX readiness status after Goal1146 public wording promotion"
 
 
 def build_status() -> dict[str, Any]:
@@ -17,19 +17,21 @@ def build_status() -> dict[str, Any]:
         {
             "app": "facility_knn_assignment",
             "path_name": "coverage_threshold_prepared_recentered",
-            "status": "engineering_review_ready_needs_public_wording_review",
+            "status": "public_wording_reviewed",
             "latest_evidence": [
                 "docs/reports/goal1116_current_source_rtx_rerun_packet/facility_recentered_coverage_threshold_2_5m_optix_validation.json",
                 "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_cpu_oracle_baseline.json",
                 "docs/reports/goal1101_current_contract_non_optix_baselines/facility_recentered_2_5m_embree_baseline.json",
-                "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
-                "docs/reports/goal1121_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1142_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+                "docs/reports/goal1142_gemini_manual_external_review_2026-04-29.md",
+                "docs/reports/goal1142_goal1143_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md",
             ],
-            "engineering_ratio_summary": "87.24x vs CPU oracle; 289.05x vs Embree using query-phase medians",
+            "engineering_ratio_summary": "80.60x vs CPU oracle using query-phase medians; Goal1146 reviewed narrow prepared coverage-threshold public wording",
             "next_action": (
-                "Run a public wording review against the Goal1121 current-source artifact before any README/front-page claim."
+                "Keep wording limited to the prepared recentered coverage-threshold query decision; do not claim ranked KNN assignment or whole-app speedup."
             ),
-            "public_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": True,
         },
         {
             "app": "robot_collision_screening",
@@ -43,13 +45,14 @@ def build_status() -> dict[str, Any]:
                 "docs/reports/goal1086_robot_chunked_embree_baseline_intake_2026-04-29.json",
                 "docs/reports/goal1114_two_ai_consensus_2026-04-29.md",
                 "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_validation.json",
-                "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1121.json",
-                "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
-                "docs/reports/goal1121_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1116_current_source_rtx_rerun_packet/robot_prepared_pose_flags_64m_timing_goal1142.json",
+                "docs/reports/goal1142_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+                "docs/reports/goal1142_gemini_manual_external_review_2026-04-29.md",
+                "docs/reports/goal1142_goal1143_two_ai_consensus_2026-04-29.md",
             ],
             "engineering_ratio_summary": (
                 "Robot same-source RTX evidence complete: 4096-pose correctness passed; 64M-pose timing crossed "
-                "the 100 ms floor at 0.178698s median query. Same-scale public ratio still requires wording review."
+                "the 100 ms floor at 0.178471s median query. Same-scale public ratio still requires wording review."
             ),
             "next_action": (
                 "Run a public wording review that decides whether the 64M RTX timing can be compared to the 36M "
@@ -60,20 +63,21 @@ def build_status() -> dict[str, Any]:
         {
             "app": "barnes_hut_force_app",
             "path_name": "node_coverage_prepared_rich",
-            "status": "engineering_review_ready_needs_public_wording_review",
+            "status": "public_wording_reviewed",
             "latest_evidence": [
                 "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_4096_validation.json",
                 "docs/reports/goal1116_current_source_rtx_rerun_packet/barnes_hut_depth8_20m_timing.json",
                 "docs/reports/goal1101_current_contract_non_optix_baselines/barnes_hut_depth8_20m_embree_timing_baseline.json",
-                "docs/reports/goal1121_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
-                "docs/reports/goal1121_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1142_current_source_rtx_rerun_intake_with_robot_64m_2026-04-29.json",
+                "docs/reports/goal1142_gemini_manual_external_review_2026-04-29.md",
+                "docs/reports/goal1142_goal1143_two_ai_consensus_2026-04-29.md",
+                "docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md",
             ],
-            "engineering_ratio_summary": "222.19x vs Embree using query-phase medians",
+            "engineering_ratio_summary": "240.56x vs Embree using query-phase medians; Goal1146 reviewed narrow prepared node-coverage public wording",
             "next_action": (
-                "Run a public wording review against the Goal1121 current-source validation and 20M timing artifacts "
-                "before any README/front-page claim."
+                "Keep wording limited to the prepared depth-8 node-coverage threshold traversal; do not claim opening-rule, force-vector, N-body, or whole-app speedup."
             ),
-            "public_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": True,
         },
     ]
     summary = {
@@ -81,6 +85,7 @@ def build_status() -> dict[str, Any]:
         "engineering_comparison_ready_count": sum(
             row["status"].startswith("engineering_review_ready") for row in rows
         ),
+        "public_wording_reviewed_count": sum(row["status"] == "public_wording_reviewed" for row in rows),
         "non_cloud_ready_count": sum("ready_for_non_cloud" in row["status"] for row in rows),
         "blocked_count": sum("blocked" in row["status"] for row in rows),
         "public_speedup_claim_authorized_count": sum(
@@ -89,10 +94,11 @@ def build_status() -> dict[str, Any]:
     }
     valid = (
         len(rows) == 3
-        and summary["engineering_comparison_ready_count"] == 3
+        and summary["engineering_comparison_ready_count"] == 1
+        and summary["public_wording_reviewed_count"] == 2
         and summary["non_cloud_ready_count"] == 0
         and summary["blocked_count"] == 0
-        and summary["public_speedup_claim_authorized_count"] == 0
+        and summary["public_speedup_claim_authorized_count"] == 2
     )
     return {
         "goal": GOAL,
@@ -102,16 +108,16 @@ def build_status() -> dict[str, Any]:
         "summary": summary,
         "valid": valid,
         "boundary": (
-            "Goal1109 refreshes v1 RTX readiness after Goal1121 current-source RTX intake. It does not run cloud, "
-            "does not authorize release, does not change public wording, and does not authorize public RTX speedup claims. "
-            "Facility, Robot, and Barnes-Hut have engineering review evidence only; public wording review remains required."
+            "Goal1109 refreshes v1 RTX readiness after Goal1142 same-source RTX intake. It does not run cloud, "
+            "does not authorize release, and does not create new evidence. After Goal1146, Facility and Barnes-Hut have "
+            "reviewed bounded public RTX sub-path wording; Robot remains engineering-ready but blocked for public speedup wording."
         ),
     }
 
 
 def to_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        "# Goal1109 V1 RTX Readiness Status After Goal1121 Current-Source RTX Intake",
+        "# Goal1109 V1 RTX Readiness Status After Goal1146 Public Wording Promotion",
         "",
         f"Date: {payload['date']}",
         "",

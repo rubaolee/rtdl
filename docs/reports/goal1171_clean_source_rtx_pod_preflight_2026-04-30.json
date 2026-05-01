@@ -1,0 +1,74 @@
+{
+  "blockers": [],
+  "boundary": "This preflight checks readiness for the clean-source Goal1170 RTX batch. It does not run benchmarks and does not authorize public speedup wording.",
+  "checks": {
+    "cuda_prefix_exists": true,
+    "geos_c_library_available": true,
+    "geos_pkg_config_available": true,
+    "manifest_exists": true,
+    "manifest_has_eight_rows": true,
+    "nvcc_exists": true,
+    "nvidia_smi_available": true,
+    "optix_library_exists": true,
+    "runner_exists": true,
+    "runner_refuses_dirty_tree": true,
+    "source_clean": true
+  },
+  "date": "2026-04-30",
+  "dry_run": true,
+  "environment": {
+    "cuda_prefix": "/usr/local/cuda",
+    "geos": {
+      "geos_c_library": "/opt/homebrew/lib/libgeos_c.dylib",
+      "install_hint": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libgeos-dev pkg-config",
+      "pkg_config": "/opt/homebrew/bin/pkg-config",
+      "pkg_config_geos_package": "geos",
+      "pkg_config_probes": {
+        "geos": {
+          "command": [
+            "/opt/homebrew/bin/pkg-config",
+            "--libs",
+            "geos"
+          ],
+          "output_tail": "-L/opt/homebrew/Cellar/geos/3.14.1/lib -lgeos_c\n",
+          "returncode": 0
+        },
+        "geos_c": {
+          "command": [
+            "/opt/homebrew/bin/pkg-config",
+            "--libs",
+            "geos_c"
+          ],
+          "output_tail": "Package geos_c was not found in the pkg-config search path.\nPerhaps you should add the directory containing `geos_c.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'geos_c' not found\n",
+          "returncode": 1
+        }
+      }
+    },
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "output_tail": "d0ebf9d69041cf013b7af4dcb20a570d25d92c3f\n",
+      "returncode": 0
+    },
+    "git_status_short": {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "output_tail": "s/reports/goal1162_gemini_polygon_gate_artifact_replayability_review_2026-04-30.md\n?? docs/reports/goal1162_polygon_gate_artifact_replayability_2026-04-30.md\n?? docs/reports/goal1162_polygon_pair_overlap_gate_dry_run_2026-04-30.json\n?? docs/reports/goal1162_polygon_set_jaccard_gate_dry_run_2026-04-30.json\n?? docs/reports/goal1162_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1163_gemini_pre_cloud_rtx_readiness_supersession_review_2026-04-30.md\n?? docs/reports/goal1163_pre_cloud_rtx_readiness_supersession_2026-04-30.json\n?? docs/reports/goal1163_pre_cloud_rtx_readiness_supersession_2026-04-30.md\n?? docs/reports/goal1163_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1164_gemini_rtx_pod_batch_review_2026-04-30.md\n?? docs/reports/goal1164_rtx_pod_batch_2026-04-30/\n?? docs/reports/goal1164_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1165_gemini_local_rtx_app_perf_followup_review_2026-04-30.md\n?? docs/reports/goal1165_local_rtx_app_perf_followup_2026-04-30.md\n?? docs/reports/goal1165_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1166_gemini_next_pod_packet_review_2026-04-30.md\n?? docs/reports/goal1166_live_rtx_pod_2026-04-30/\n?? docs/reports/goal1166_post_goal1165_next_rtx_pod_packet_2026-04-30.json\n?? docs/reports/goal1166_post_goal1165_next_rtx_pod_packet_2026-04-30.md\n?? docs/reports/goal1166_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1167_gemini_public_rtx_status_sync_review_2026-04-30.md\n?? docs/reports/goal1167_public_rtx_status_sync_after_goal1166_2026-04-30.md\n?? docs/reports/goal1167_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1168_claude_live_pod_intake_audit_review_2026-04-30.md\n?? docs/reports/goal1168_external_review_attempt_blocked_2026-04-30.md\n?? docs/reports/goal1168_goal1166_live_pod_intake_audit_2026-04-30.json\n?? docs/reports/goal1168_goal1166_live_pod_intake_audit_2026-04-30.md\n?? docs/reports/goal1168_manual_external_review_2026-04-30.md\n?? docs/reports/goal1168_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1169_clean_source_rtx_claim_grade_batch_plan_2026-04-30.md\n?? docs/reports/goal1169_external_review_2026-04-30.md\n?? docs/reports/goal1169_two_ai_consensus_2026-04-30.md\n?? docs/reports/goal1170_clean_source_rtx_batch_manifest_2026-04-30.json\n?? docs/reports/goal1170_clean_source_rtx_batch_manifest_2026-04-30.md\n?? docs/reports/goal1170_external_review_attempt_blocked_2026-04-30.md\n?? docs/reports/goal1171_clean_source_rtx_pod_preflight_2026-04-30.json\n?? scripts/goal1136_changed_path_rtx_pod_artifact_intake.py\n?? scripts/goal1139_current_window_consensus_audit.py\n?? scripts/goal1141_rtx_single_session_bundle.py\n?? scripts/goal1141_rtx_single_session_runner.sh\n?? scripts/goal1155_db_compact_summary_precloud_audit.py\n?? scripts/goal1161_hausdorff_nonanalytic_threshold_contract.py\n?? scripts/goal1163_pre_cloud_rtx_readiness_supersession.py\n?? scripts/goal1166_post_goal1165_next_pod_packet.py\n?? scripts/goal1166_post_goal1165_next_rtx_pod_packet_runner.sh\n?? scripts/goal1168_goal1166_live_pod_intake_audit.py\n?? scripts/goal1170_clean_source_rtx_batch_intake.py\n?? scripts/goal1170_clean_source_rtx_batch_manifest.py\n?? scripts/goal1170_clean_source_rtx_batch_runner.sh\n?? scripts/goal1171_clean_source_rtx_pod_preflight.py\n?? tests/goal1136_changed_path_rtx_pod_artifact_intake_test.py\n?? tests/goal1139_current_window_consensus_audit_test.py\n?? tests/goal1141_rtx_single_session_bundle_test.py\n?? tests/goal1155_db_compact_summary_precloud_audit_test.py\n?? tests/goal1156_db_compact_summary_batch_contract_test.py\n?? tests/goal1157_optix_db_compact_summary_native_abi_test.py\n?? tests/goal1158_graph_raw_summary_contract_test.py\n?? tests/goal1161_hausdorff_nonanalytic_threshold_contract_test.py\n?? tests/goal1163_pre_cloud_rtx_readiness_supersession_test.py\n?? tests/goal1166_post_goal1165_next_pod_packet_test.py\n?? tests/goal1168_goal1166_live_pod_intake_audit_test.py\n?? tests/goal1170_clean_source_rtx_batch_manifest_test.py\n?? tests/goal1171_clean_source_rtx_pod_preflight_test.py\n",
+      "returncode": 0
+    },
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "nvcc_version": null,
+    "nvidia_smi": null,
+    "optix_library": "/Users/rl2025/rtdl_python_only/build/librtdl_optix.so"
+  },
+  "goal": "Goal1171 clean-source RTX pod preflight",
+  "manifest_path": "/Users/rl2025/rtdl_python_only/docs/reports/goal1170_clean_source_rtx_batch_manifest_2026-04-30.json",
+  "runner_path": "/Users/rl2025/rtdl_python_only/scripts/goal1170_clean_source_rtx_batch_runner.sh",
+  "valid": true
+}

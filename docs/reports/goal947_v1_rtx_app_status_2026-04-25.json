@@ -1,6 +1,6 @@
 {
   "boundary": "This page is the public v1.0 RTX app status index. It lists bounded NVIDIA OptiX/RTX claim-review candidates and non-claim boundaries. It is not release authorization and not a public speedup claim.",
-  "date": "2026-04-27",
+  "date": "2026-04-30",
   "goal": "Goal947 v1.0 RTX app status page",
   "reviewed_public_wording_rows": [
     {
@@ -28,10 +28,22 @@
       "scope": "prepared fixed-radius scalar core-count sub-path only"
     },
     {
+      "app_path": "robot_collision_screening / prepared_pose_flags",
+      "ratio": "918.91x normalized per-pose",
+      "rtx_phase_sec": "0.178471",
+      "scope": "prepared ray/triangle any-hit pose-count query sub-path only"
+    },
+    {
       "app_path": "facility_knn_assignment / coverage_threshold_prepared_recentered",
-      "ratio": "87.24x",
-      "rtx_phase_sec": "0.103119",
+      "ratio": "80.60x",
+      "rtx_phase_sec": "0.111619",
       "scope": "prepared facility coverage-threshold query sub-path only"
+    },
+    {
+      "app_path": "road_hazard_screening / prepared_native_compact_summary_40k",
+      "ratio": "3.53x",
+      "rtx_phase_sec": "0.230652",
+      "scope": "prepared native road-hazard compact-summary traversal/count sub-path at 40k copies only"
     },
     {
       "app_path": "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
@@ -52,15 +64,9 @@
       "scope": "prepared ANN candidate-coverage decision sub-path only"
     },
     {
-      "app_path": "robot_collision_screening / prepared_pose_flags",
-      "ratio": "917.75x",
-      "rtx_phase_sec": "0.178698",
-      "scope": "prepared robot collision pose-count query sub-path only; normalized per-pose versus 36M chunked Embree"
-    },
-    {
       "app_path": "barnes_hut_force_app / node_coverage_prepared_rich",
-      "ratio": "222.19x",
-      "rtx_phase_sec": "0.240634",
+      "ratio": "240.56x",
+      "rtx_phase_sec": "0.222256",
       "scope": "prepared Barnes-Hut node-coverage query sub-path only"
     }
   ],
@@ -70,7 +76,7 @@
       "app": "database_analytics",
       "app_path": "examples/rtdl_database_analytics_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_database_analytics_app.py --backend optix --output-mode compact_summary --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -96,7 +102,7 @@
       "app": "graph_analytics",
       "app_path": "examples/rtdl_graph_analytics_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -148,7 +154,7 @@
       "app": "service_coverage_gaps",
       "app_path": "examples/rtdl_service_coverage_gaps.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_service_coverage_gaps.py --backend optix --optix-summary-mode gap_summary_prepared --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -174,7 +180,7 @@
       "app": "event_hotspot_screening",
       "app_path": "examples/rtdl_event_hotspot_screening.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_event_hotspot_screening.py --backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -200,7 +206,7 @@
       "app": "facility_knn_assignment",
       "app_path": "examples/rtdl_facility_knn_assignment.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_facility_knn_assignment.py --backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -213,9 +219,9 @@
       "native_continuation_contract": "native continuation only for OptiX coverage_threshold_prepared service-coverage decisions",
       "non_claim_boundary": "ranked nearest-depot assignment remains outside the OptiX claim; only the service-coverage decision sub-path is traversal-backed",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.103119 s and 87.24x versus the reviewed same-contract CPU oracle baseline.",
-      "public_wording_boundary": "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup are outside this wording.",
-      "public_wording_evidence": "Goal1121/Goal1123",
+      "public_wording": "RTDL's prepared facility coverage-threshold RTX query sub-path measured 0.111619 s and 80.60x versus the reviewed same-contract CPU oracle baseline.",
+      "public_wording_boundary": "Only the prepared recentered coverage-threshold query decision is covered; ranked nearest-facility assignment, KNN fallback output, facility-location optimization, Python-side setup, and whole-app speedup remain outside this wording.",
+      "public_wording_evidence": "Goal1146",
       "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
@@ -226,7 +232,7 @@
       "app": "road_hazard_screening",
       "app_path": "examples/rtdl_road_hazard_screening.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -239,10 +245,10 @@
       "native_continuation_contract": "app native OptiX hit-count mode is metadata-gated; accepted claim surface remains prepared road-hazard summary traversal",
       "non_claim_boundary": "claim is limited to the prepared compact road-hazard summary gate; default public app behavior, full GIS/routing, and broad road-hazard speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Prepared native road-hazard summary traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal933/Goal941",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording": "RTDL's prepared native road-hazard RTX sub-path measured 0.230652 s and 3.53x versus the reviewed same-scale Embree sub-path at 40k copies.",
+      "public_wording_boundary": "Only the prepared native road-hazard compact-summary traversal/count sub-path at 40k copies is covered; default app behavior, full GIS/routing, row output, Python orchestration, and whole-app road-hazard speedup remain outside this wording.",
+      "public_wording_evidence": "Goal1208",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared native segment/polygon road-hazard summary traversal"
@@ -252,7 +258,7 @@
       "app": "segment_polygon_hitcount",
       "app_path": "examples/rtdl_segment_polygon_hitcount.py",
       "claim_command": "PYTHONPATH=src:. python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -278,7 +284,7 @@
       "app": "segment_polygon_anyhit_rows",
       "app_path": "examples/rtdl_segment_polygon_anyhit_rows.py",
       "claim_command": "PYTHONPATH=src:. python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -304,7 +310,7 @@
       "app": "polygon_pair_overlap_area_rows",
       "app_path": "examples/rtdl_polygon_pair_overlap_area_rows.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_pair_overlap_area_rows.py --backend optix --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -330,7 +336,7 @@
       "app": "polygon_set_jaccard",
       "app_path": "examples/rtdl_polygon_set_jaccard.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_polygon_set_jaccard.py --backend optix --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -356,7 +362,7 @@
       "app": "hausdorff_distance",
       "app_path": "examples/rtdl_hausdorff_distance_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -382,7 +388,7 @@
       "app": "ann_candidate_search",
       "app_path": "examples/rtdl_ann_candidate_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -408,7 +414,7 @@
       "app": "outlier_detection",
       "app_path": "examples/rtdl_outlier_detection_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_outlier_detection_app.py --backend optix --optix-summary-mode rt_count_threshold_prepared --output-mode density_count",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -434,7 +440,7 @@
       "app": "dbscan_clustering",
       "app_path": "examples/rtdl_dbscan_clustering_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_dbscan_clustering_app.py --backend optix --optix-summary-mode rt_core_flags_prepared --output-mode core_count",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -460,7 +466,7 @@
       "app": "robot_collision_screening",
       "app_path": "examples/rtdl_robot_collision_screening_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_robot_collision_screening_app.py --backend optix --optix-summary-mode prepared_count",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -473,9 +479,9 @@
       "native_continuation_contract": "native continuation only for prepared OptiX count or pose-flag summaries",
       "non_claim_boundary": "RTX 4090 evidence covers prepared scalar pose-count traversal only; full robot kinematics and witness-row output remain outside the claim",
       "performance_class": "optix_traversal",
-      "public_wording": "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178698 s for 64M poses and 917.75x per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
-      "public_wording_boundary": "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path; full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside this wording.",
-      "public_wording_evidence": "Goal1121/Goal1123/Goal1126",
+      "public_wording": "RTDL's prepared robot collision pose-count RTX query sub-path measured 0.178471 s for 64M poses and 918.91x normalized per-pose throughput versus the reviewed 36M chunked Embree any-hit baseline.",
+      "public_wording_boundary": "This is normalized per-pose wording, not a same-total-work wall-time claim. It covers only the prepared ray/triangle any-hit pose-count query sub-path. Full robot kinematics, scene construction, ray packing, witness-row output, continuous collision detection, Python input construction, and whole-app planning speedup are outside the wording.",
+      "public_wording_evidence": "Goal1126",
       "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
@@ -486,7 +492,7 @@
       "app": "barnes_hut_force_app",
       "app_path": "examples/rtdl_barnes_hut_force_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence is available for validated or strict bounded sub-path review only; it is not whole-app speedup evidence.",
+      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -499,9 +505,9 @@
       "native_continuation_contract": "native C++ candidate summaries follow candidate rows; OptiX prepared threshold path covers node-coverage decision only",
       "non_claim_boundary": "Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.240634 s and 222.19x versus the reviewed same-contract Embree node-coverage baseline.",
-      "public_wording_boundary": "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup are outside this wording.",
-      "public_wording_evidence": "Goal1121/Goal1123",
+      "public_wording": "RTDL's prepared Barnes-Hut node-coverage RTX query sub-path measured 0.222256 s and 240.56x versus the reviewed same-contract Embree node-coverage baseline.",
+      "public_wording_boundary": "Only the prepared depth-8 node-coverage threshold traversal is covered; Barnes-Hut opening-rule evaluation, candidate-row output, force-vector reduction, N-body simulation, and whole-app speedup remain outside this wording.",
+      "public_wording_evidence": "Goal1146",
       "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
@@ -548,6 +554,6 @@
     "public_app_count": 18,
     "public_speedup_claim_authorized": false,
     "ready_for_rtx_claim_review": 16,
-    "reviewed_public_wording": 10
+    "reviewed_public_wording": 11
   }
 }

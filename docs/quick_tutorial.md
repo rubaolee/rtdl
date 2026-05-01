@@ -104,6 +104,9 @@ NVIDIA RT-core claim note:
 - start from `docs/application_catalog.md` and
   `docs/app_engine_support_matrix.md` before benchmarking or publishing RTX
   claims
+- Goal1177 and Goal1184 are external-review input only; they do not authorize
+  new public RTX speedup wording
+- Goal1177 does not authorize new public RTX speedup wording
 
 Optional Embree backend build/probe:
 
