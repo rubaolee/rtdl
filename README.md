@@ -23,10 +23,12 @@ PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree
 
 Useful first reads:
 
+- [Public Documentation Map](docs/public_documentation_map.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
+- [Performance Model](docs/performance_model.md)
 - [v1.0 RTX App Status](docs/v1_0_rtx_app_status.md)
 - [Docs Index](docs/README.md)
 
@@ -146,6 +148,7 @@ Detailed evidence and review trail:
 - [v1.0 RTX App Status](docs/v1_0_rtx_app_status.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
 - [App Engine Support Matrix](docs/app_engine_support_matrix.md)
+- [Performance Model](docs/performance_model.md)
 - [Goal1008 Large Repeat Artifact Intake](docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md)
 - [Goal1009 Public RTX Wording Review Packet](docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md)
 - [Goal1058 Three-AI Same-Semantics Consensus](docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md)
@@ -164,6 +167,7 @@ Detailed evidence and review trail:
 | Geometry rows | `knn_rows`, `bounded_knn_rows`, `fixed_radius_neighbors`, exact closest-hit paths |
 | Any-hit traversal | `ray_triangle_any_hit`, visibility rows, prepared repeated-query visibility/count helpers |
 | Reductions | `reduce_rows` in Python; native reductions are a v1.5 design target |
+| IR and lowering | `CompiledKernel` lowers to `RTExecutionPlan`; see [IR And Lowering](docs/rtdl/ir_and_lowering.md) |
 | Backends | CPU reference, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
 | Apps | Hausdorff, ANN candidate search, outlier detection, DBSCAN core flags, robot collision screening, Barnes-Hut node coverage, graph visibility, database-style summaries, road hazard, segment/polygon summaries |
 

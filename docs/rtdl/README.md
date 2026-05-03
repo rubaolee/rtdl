@@ -27,14 +27,18 @@ The documents here have different roles and should not overlap heavily.
    - how `input -> traverse -> refine -> emit` supports v0.8 apps
    - where the RTDL/Python boundary sits
 
-5. [Feature Homes](../features/README.md)
+5. [IR And Lowering](ir_and_lowering.md)
+   - how `CompiledKernel` lowers to `RTExecutionPlan`
+   - what is stable today and what v1.5 must generalize
+
+6. [Feature Homes](../features/README.md)
    - workload-by-workload usage homes
    - best practices, examples, and limitations per feature
 
-6. [LLM Authoring Guide](llm_authoring_guide.md)
+7. [LLM Authoring Guide](llm_authoring_guide.md)
    - agent-facing guidance for generating RTDL code
 
-7. [Release-Facing Examples](../release_facing_examples.md)
+8. [Release-Facing Examples](../release_facing_examples.md)
    - includes small RTDL-plus-Python application demos
 
 ## Current Runtime Surface
@@ -46,6 +50,8 @@ The language docs describe a public surface that can currently be used through:
 - `rt.run_optix(...)` as the controlled GPU backend on supported NVIDIA hosts
 - `rt.run_vulkan(...)` on the accepted bounded Linux validation surface, still
   provisional beyond that larger-scale boundary
+- `rt.lower_to_execution_plan(...)` for inspecting the current plan-level IR
+  when authoring or reviewing kernels
 
 The language surface is still intentionally narrow, but it is no longer only a
 planning or code-generation surface.

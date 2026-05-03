@@ -10,18 +10,18 @@ the current live path only.
 Read these in order for the current public story:
 
 1. [Project Front Page](../README.md)
-2. [Current Architecture](current_architecture.md)
-3. [Feature Guide](rtdl_feature_guide.md)
-4. [Capability Boundaries](capability_boundaries.md)
-5. [Backend Maturity](backend_maturity.md)
-6. [Current Main Support Matrix](current_main_support_matrix.md)
-7. [Quick Tutorial](quick_tutorial.md)
-8. [RTDL Tutorials](tutorials/README.md)
-9. [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
-10. [Release-Facing Examples](release_facing_examples.md)
-11. [Application Catalog](application_catalog.md)
-12. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
-13. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+2. [Public Documentation Map](public_documentation_map.md)
+3. [Current Architecture](current_architecture.md)
+4. [Feature Guide](rtdl_feature_guide.md)
+5. [Capability Boundaries](capability_boundaries.md)
+6. [Quick Tutorial](quick_tutorial.md)
+7. [RTDL Tutorials](tutorials/README.md)
+8. [Release-Facing Examples](release_facing_examples.md)
+9. [Application Catalog](application_catalog.md)
+10. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+11. [IR And Lowering](rtdl/ir_and_lowering.md)
+12. [Performance Model](performance_model.md)
+13. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 14. [App Engine Support Matrix](app_engine_support_matrix.md)
 15. [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 
@@ -36,18 +36,20 @@ If your question is "does RTDL make my ray-tracing-style workload easier to
 write?", use this short path:
 
 1. read [Current Architecture](current_architecture.md) for the user contract
-2. run [Quick Tutorial](quick_tutorial.md)
-3. choose a feature from [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
-4. run one runnable example from [Release-Facing Examples](release_facing_examples.md)
-5. read [v0.8 App Building](tutorials/v0_8_app_building.md) if you want to see
+2. use [Public Documentation Map](public_documentation_map.md) to choose the
+   right path for tutorials, apps, architecture, model, IR, or performance
+3. run [Quick Tutorial](quick_tutorial.md)
+4. choose a feature from [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+5. run one runnable example from [Release-Facing Examples](release_facing_examples.md)
+6. read [v0.8 App Building](tutorials/v0_8_app_building.md) if you want to see
    RTDL kernels used inside Python applications
-6. check the exact current boundary in the
+7. check the exact current boundary in the
    [Current Main Support Matrix](current_main_support_matrix.md)
-7. check the exact release boundary in the
+8. check the exact release boundary in the
    [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
-8. check the exact app-building boundary in the
+9. check the exact app-building boundary in the
    [v0.8 Support Matrix](release_reports/v0_8/support_matrix.md)
-9. check the exact released DB boundary in the
+10. check the exact released DB boundary in the
    [v0.7 Support Matrix](release_reports/v0_7/support_matrix.md)
 
 The public promise is authoring-burden reduction: RTDL hides backend-specific
@@ -69,17 +71,20 @@ audited release claims.
 ## Live Documentation
 
 - [Quick Tutorial](quick_tutorial.md)
+- [Public Documentation Map](public_documentation_map.md)
 - [Current Architecture](current_architecture.md)
 - [Feature Guide](rtdl_feature_guide.md)
 - [Capability Boundaries](capability_boundaries.md)
 - [Backend Maturity](backend_maturity.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
+- [Performance Model](performance_model.md)
 - [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 - [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 - [Application Catalog](application_catalog.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [RTDL Tutorials](tutorials/README.md)
 - [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md)
+- [IR And Lowering](rtdl/ir_and_lowering.md)
 - [v0.8 App Building](tutorials/v0_8_app_building.md)
 - [v0.8 Release Package](release_reports/v0_8/README.md)
 - [v0.8 Release Statement](release_reports/v0_8/release_statement.md)
