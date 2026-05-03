@@ -1,0 +1,113 @@
+{
+  "boundary": "This is a current-main v1.0 readiness audit. It does not move the v0.9.8 release tag and does not authorize a new public release.",
+  "checks": {
+    "current_main_positioning_ok": true,
+    "public_docs_ok": true,
+    "public_state_ok": true,
+    "required_reports_ok": true,
+    "status_page_ok": true
+  },
+  "date": "2026-05-03",
+  "expected": {
+    "blocked_public_speedup_wording": [
+      "graph_analytics",
+      "polygon_pair_overlap_area_rows"
+    ],
+    "not_nvidia_public_wording_targets": [
+      "apple_rt_demo",
+      "hiprt_ray_triangle_hitcount"
+    ],
+    "not_reviewed_public_speedup_wording": [
+      "database_analytics",
+      "polygon_set_jaccard"
+    ],
+    "reviewed_public_wording_count": 12
+  },
+  "goal": "Goal1229 current-main v1.0 readiness audit",
+  "missing_reports": [],
+  "next_v1_0_work": [
+    "Keep v0.9.8 release package historical and separate from current-main v1.0 docs.",
+    "Finish current v1.0 front-page and app documentation around selected RT sub-paths and native continuations.",
+    "Do not start v1.5 implementation until the v1.0 public surface is stable and externally reviewed."
+  ],
+  "public_wording_state": {
+    "blocked": [
+      "graph_analytics",
+      "polygon_pair_overlap_area_rows"
+    ],
+    "not_nvidia_target": [
+      "apple_rt_demo",
+      "hiprt_ray_triangle_hitcount"
+    ],
+    "not_reviewed": [
+      "database_analytics",
+      "polygon_set_jaccard"
+    ],
+    "reviewed": [
+      "ann_candidate_search",
+      "barnes_hut_force_app",
+      "dbscan_clustering",
+      "event_hotspot_screening",
+      "facility_knn_assignment",
+      "hausdorff_distance",
+      "outlier_detection",
+      "road_hazard_screening",
+      "robot_collision_screening",
+      "segment_polygon_anyhit_rows",
+      "segment_polygon_hitcount",
+      "service_coverage_gaps"
+    ]
+  },
+  "surface_rows": [
+    {
+      "exists": true,
+      "mentions_12_reviewed": true,
+      "mentions_goal1224": true,
+      "path": "README.md",
+      "stale_current_main_phrases": []
+    },
+    {
+      "exists": true,
+      "mentions_12_reviewed": true,
+      "mentions_goal1224": true,
+      "path": "docs/README.md",
+      "stale_current_main_phrases": []
+    },
+    {
+      "exists": true,
+      "mentions_12_reviewed": false,
+      "mentions_goal1224": true,
+      "path": "docs/application_catalog.md",
+      "stale_current_main_phrases": []
+    },
+    {
+      "exists": true,
+      "mentions_12_reviewed": false,
+      "mentions_goal1224": true,
+      "path": "docs/rtdl_feature_guide.md",
+      "stale_current_main_phrases": []
+    },
+    {
+      "exists": true,
+      "mentions_12_reviewed": false,
+      "mentions_goal1224": true,
+      "path": "docs/release_facing_examples.md",
+      "stale_current_main_phrases": []
+    },
+    {
+      "exists": true,
+      "mentions_12_reviewed": false,
+      "mentions_goal1224": true,
+      "path": "docs/app_engine_support_matrix.md",
+      "stale_current_main_phrases": []
+    },
+    {
+      "exists": true,
+      "mentions_12_reviewed": false,
+      "mentions_goal1224": true,
+      "path": "docs/v1_0_rtx_app_status.md",
+      "stale_current_main_phrases": []
+    }
+  ],
+  "valid": true
+}
