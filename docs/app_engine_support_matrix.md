@@ -201,17 +201,19 @@ claims.
 | `public_wording_not_reviewed` | The app or bounded sub-path is RT-core ready, but no exact public speedup wording has been reviewed. |
 | `not_nvidia_public_wording_target` | Engine-specific app; keep it out of NVIDIA RTX public wording. |
 
-Current reviewed public wording rows after Goal1208: `11`. Goal1146 re-promoted
+Current reviewed public wording rows after Goal1224: `12`. Goal1146 re-promoted
 `facility_knn_assignment / coverage_threshold_prepared_recentered` and
 `barnes_hut_force_app / node_coverage_prepared_rich` using current-source
 Goal1142 evidence and 2-AI promotion review. Goal1126 reviewed
 `robot_collision_screening / prepared_pose_flags` normalized per-pose wording
 only; it is not a same-total-work wall-time claim and not a whole-app
-robot-planning speedup claim. Goal1177 does not add any new reviewed public
-wording row. Goal1177 and Goal1184 do not add any new reviewed public wording
-row. Goal1208 adds exactly one reviewed public wording row for
+robot-planning speedup claim. Goal1177 and Goal1184 do not add any new reviewed
+public wording row. Goal1208 adds exactly one reviewed public wording row for
 `road_hazard_screening / prepared_native_compact_summary_40k`, limited to the
 prepared native compact-summary traversal/count sub-path at 40k copies.
+Goal1224 adds reviewed Hausdorff threshold-decision wording and keeps graph plus
+polygon-pair public speedup wording blocked because current same-contract
+evidence shows OptiX slower than Embree.
 
 ## RT-Core App Maturity Contract
 

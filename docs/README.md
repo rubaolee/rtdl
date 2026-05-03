@@ -190,10 +190,11 @@ Keep these current facts in mind while reading:
   optimizations for Apple RT, OptiX, HIPRT, and Vulkan; these are scoped to
   stable build-side triangles, repeated probe rays, and reduced/compact output
   contracts, not broad DB/graph/full-row speedup claims
-- released `v0.9.8` adds the bounded RTX app-evidence release package, with
-  11 reviewed RTX app rows, road-hazard detection as the only newly promoted
-  public row in this release, and DB full output plus polygon Jaccard public
-  speedup wording still blocked
+- released `v0.9.8` adds the bounded RTX app-evidence release package. Current
+  mainline has 12 reviewed bounded RTX sub-path rows after Goal1224, while DB
+  full output, graph visibility-edge speedup wording, polygon-pair speedup
+  wording, and polygon Jaccard public speedup wording remain blocked under
+  current evidence
 - the previous released graph line was `v0.6.1`
 - the accepted v0.2 workload surface is exactly:
   - `segment_polygon_hitcount`

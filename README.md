@@ -21,6 +21,23 @@ Apple Silicon, the bounded any-hit / visibility-row / emitted-row reduction
 slice, prepared/prepacked repeated 2D visibility/count optimizations, and the
 bounded RTX app evidence / public-claim cleanup package.
 
+## v1.0 Direction
+
+The v1.0 goal is to prove that a Python-hosted RT DSL works on real
+application-shaped workloads. RTDL lets users express spatial, graph,
+database-style, nearest-neighbor, simulation-screening, and geometry workflows
+in Python, then routes selected traversal-heavy phases through RT-capable
+backends. Some selected sub-paths have reviewed speedup evidence; whole-app
+performance still depends on whether the non-RT continuation has a native
+implementation.
+
+The current app engines intentionally include v1.0 custom native continuations
+where they are needed to make supported apps useful and measurable. That is the
+v1.0 proof machinery, not the final architecture. v1.5 is planned to replace
+app-specific engine customization with reviewed generic traversal-plus-reduction
+primitives. v2.0 targets broader end-to-end performance through explicit
+zero-copy partnership with GPU compute tools for the non-RT phases.
+
 `v0.9.5` added bounded any-hit / early-exit traversal as
 `rt.ray_triangle_any_hit(exact=False)`, line-of-sight helpers
 (`rt.visibility_rows_cpu(...)` / `rt.visibility_rows(...)`), and
@@ -111,6 +128,10 @@ broad RT-core acceleration claim:
 - `robot_collision_screening / prepared_pose_flags`: RTX query phase
   `0.178471` s, `918.91x normalized per-pose` versus the reviewed Embree
   any-hit baseline for the prepared ray/triangle pose-count query sub-path
+- `hausdorff_distance / directed_threshold_prepared`: RTX query phase
+  `0.122389` s, `13.73x` versus the reviewed same-contract Embree
+  directed-summary sub-path for the prepared Hausdorff threshold-decision
+  traversal only
 
 The robot wording is normalized per-pose only. It remains not a same-total-work
 wall-time claim and not a whole-app robot-planning claim; full robot kinematics, scene
@@ -141,14 +162,16 @@ per-pose wording:
 `docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md`.
 Goal1177 adds recovered clean-source RTX A5000 batch evidence for external
 review input only; Goal1184 adds newer Goal1182 RTX A4500 batch evidence for
-external-review input only. Goal1177 does not add a new reviewed public wording row
-and does not authorize public speedup wording. Neither goal adds a new reviewed public wording row
-or authorizes public speedup wording. Goal1208
-authorizes exactly one later
+external-review input only. Neither goal adds a new reviewed public wording row
+or authorizes public speedup wording. Goal1208 authorizes exactly one later
 bounded public wording row for `road_hazard_screening /
 prepared_native_compact_summary_40k`; it does not authorize full GIS/routing,
 row-output, default-app, or whole-app road-hazard speedup wording:
-`docs/reports/goal1208_two_ai_consensus_2026-05-01.md`.
+`docs/reports/goal1208_two_ai_consensus_2026-05-01.md`. Goal1224 resolves the
+remaining graph, polygon-pair, and Hausdorff wording rows: Hausdorff is reviewed
+for the bounded prepared threshold-decision sub-path, while graph and
+polygon-pair public speedup wording remain blocked because valid same-contract
+evidence shows OptiX slower than Embree.
 
 RTDL is not a general-purpose renderer or graphics engine.
 The visual demo in this repository exists as a proof that the same RTDL compute
@@ -185,11 +208,14 @@ bounded DB-style analytical workloads.
   v0.9 HIPRT/closest-hit, v0.9.4 Apple RT consolidation, and
   prepared/prepacked repeated visibility/count optimization lines
 - released `v0.9.8` surface:
-  - public RTX app wording is synchronized to `11` reviewed sub-path rows
-  - `road_hazard_screening / prepared_native_compact_summary_40k` is the only
-    newly reviewed public RTX speedup wording row
-  - `database_analytics` and `polygon_set_jaccard` public speedup wording
-    remain blocked
+  - current mainline public RTX app wording is synchronized to `12` reviewed
+    sub-path rows after Goal1224
+  - `road_hazard_screening / prepared_native_compact_summary_40k` and
+    `hausdorff_distance / directed_threshold_prepared` are the latest reviewed
+    bounded public RTX speedup wording rows
+  - `database_analytics`, `graph_analytics`,
+    `polygon_pair_overlap_area_rows`, and `polygon_set_jaccard` public speedup
+    wording remain blocked under current evidence
   - no broad app-suite, whole-app, or all-OptiX RT-core speedup claim is
     authorized
 - released `v0.9.6` surface:
@@ -777,10 +803,10 @@ Current mainline release line:
   prepared/prepacked visibility/count paths for Apple RT, OptiX, HIPRT, and
   Vulkan under bounded scalar/compact-output contracts
 - released `v0.9.8` carries the bounded RTX app-evidence and public-claim
-  cleanup line: 11 reviewed RTX app rows, road-hazard detection as the only
-  newly promoted public row in this release, and strict blocking of DB full
-  output and polygon Jaccard public speedup wording until matching evidence
-  exists
+  cleanup line. Current mainline has 12 reviewed bounded RTX sub-path rows after
+  Goal1224, with strict blocking of DB full output, graph visibility-edge
+  speedup wording, polygon-pair speedup wording, and polygon Jaccard public
+  speedup wording until matching evidence exists
 
 Newest released graph workload surface:
 

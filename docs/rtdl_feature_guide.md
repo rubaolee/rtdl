@@ -100,16 +100,21 @@ whole-app speedup remain outside the claim unless the support matrix and a
 later review explicitly authorize them.
 `facility_knn_assignment / coverage_threshold_prepared_recentered`,
 `road_hazard_screening / prepared_native_compact_summary_40k`,
-and `barnes_hut_force_app / node_coverage_prepared_rich` have reviewed
-bounded public RTX sub-path wording after Goal1146 and Goal1208.
+`barnes_hut_force_app / node_coverage_prepared_rich`, and
+`hausdorff_distance / directed_threshold_prepared` have reviewed bounded public
+RTX sub-path wording after Goal1146, Goal1208, and Goal1224.
 `robot_collision_screening / prepared_pose_flags` has reviewed Goal1126
 normalized per-pose wording only; it is not a same-total-work wall-time claim
 and not a whole-app robot-planning claim.
 Goal1177 adds recovered clean-source RTX A5000 batch evidence for external
 review input only. Goal1184 adds newer Goal1182 RTX A4500 batch evidence for
 external-review input only. Neither goal adds a new reviewed public wording row
-or authorizes public speedup wording. Goal1177 does not add a new reviewed public wording row
-and does not authorize public speedup wording. Goal1208 authorizes only the bounded road-hazard prepared native compact-summary wording; full GIS/routing, default-app behavior, row output, and whole-app road-hazard speedup remain outside the claim.
+or authorizes public speedup wording. Goal1208 authorizes only the bounded
+road-hazard prepared native compact-summary wording; full GIS/routing,
+default-app behavior, row output, and whole-app road-hazard speedup remain
+outside the claim. Goal1224 reviews Hausdorff threshold-decision wording and
+keeps graph plus polygon-pair public speedup wording blocked under current
+same-contract evidence.
 
 Current supported workload families:
 
