@@ -36,6 +36,7 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("240.56x", text)
         self.assertIn("robot_collision_screening / prepared_pose_flags", text)
         self.assertIn("918.91x normalized per-pose", compact)
+        self.assertIn("hausdorff_distance / directed_threshold_prepared", text)
 
     def test_robot_normalized_public_speedup_wording_is_scoped(self) -> None:
         text = README.read_text(encoding="utf-8")
@@ -54,11 +55,14 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md", text)
         self.assertIn("docs/reports/goal1123_two_ai_consensus_2026-04-29.md", text)
         self.assertIn("docs/reports/goal1126_three_ai_consensus_2026-04-29.md", text)
+        self.assertIn("docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md", text)
+        self.assertIn("docs/reports/goal1208_two_ai_consensus_2026-05-01.md", text)
+        self.assertIn("docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md", text)
 
     def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
         v1 = V1_STATUS.read_text(encoding="utf-8")
         matrix = APP_MATRIX.read_text(encoding="utf-8")
-        self.assertIn("reviewed public RTX sub-path wording rows: `11`", v1)
+        self.assertIn("reviewed public RTX sub-path wording rows: `12`", v1)
         self.assertIn("robot_collision_screening", v1)
         self.assertIn("Goal1146", v1)
         self.assertIn("Goal1126", v1)

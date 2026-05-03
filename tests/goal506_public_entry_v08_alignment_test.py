@@ -19,8 +19,9 @@ class Goal506PublicEntryV08AlignmentTest(unittest.TestCase):
         self.assertIn("examples/rtdl_dbscan_clustering_app.py", readme)
         self.assertIn("examples/rtdl_robot_collision_screening_app.py", readme)
         self.assertIn("examples/rtdl_barnes_hut_force_app.py", readme)
-        self.assertIn("These apps use existing RTDL\nfeatures and Python-owned application logic", readme)
-        self.assertIn('not a new released\n    backend/language surface', readme)
+        compact = " ".join(readme.split())
+        self.assertIn("These apps use existing RTDL features and Python-owned application logic", compact)
+        self.assertIn("not a new released backend/language surface", compact)
 
     def test_docs_index_routes_new_users_to_v0_8_app_building(self) -> None:
         docs_index = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
