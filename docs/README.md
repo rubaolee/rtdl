@@ -21,8 +21,8 @@ Read these in order for the current public story:
 10. [Release-Facing Examples](release_facing_examples.md)
 11. [Application Catalog](application_catalog.md)
 12. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
-13. [App Engine Support Matrix](app_engine_support_matrix.md)
-14. [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
+13. [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
+14. [App Engine Support Matrix](app_engine_support_matrix.md)
 15. [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
