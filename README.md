@@ -359,6 +359,7 @@ For exact status:
 - [RTDL v0.9.8 Release Statement](docs/release_reports/v0_9_8/release_statement.md)
 - [RTDL v0.9.8 Support Matrix](docs/release_reports/v0_9_8/support_matrix.md)
 - [RTDL v0.9.8 Audit Report](docs/release_reports/v0_9_8/audit_report.md)
+- [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)
 - [RTDL v0.9.1 Release Package](docs/release_reports/v0_9_1/README.md)
 - [RTDL v0.9.6 Release Package](docs/release_reports/v0_9_6/README.md)
 - [RTDL v0.9.6 Release Statement](docs/release_reports/v0_9_6/release_statement.md)

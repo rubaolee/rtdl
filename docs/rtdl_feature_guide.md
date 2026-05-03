@@ -25,13 +25,14 @@ performance claims.
 ## What RTDL Is Today
 
 RTDL is a Python-hosted DSL for non-graphical ray-tracing-style workloads.
-The current released state is `v0.9.6`: the bounded `v0.7.0` DB package, the
+The current released state is `v0.9.8`: the bounded `v0.7.0` DB package, the
 released `v0.8.0` app-building layer that uses existing RTDL features with
 Python application logic, the released `v0.9.0` HIPRT / closest-hit expansion,
 the released `v0.9.1` Apple RT closest-hit slice, the released `v0.9.4`
-Apple RT consolidation, and the released `v0.9.5` any-hit / visibility-row /
-emitted-row reduction layer, plus the released `v0.9.6` prepared/prepacked
-repeated visibility/count optimization line.
+Apple RT consolidation, the released `v0.9.5` any-hit / visibility-row /
+emitted-row reduction layer, the released `v0.9.6` prepared/prepacked repeated
+visibility/count optimization line, and the released `v0.9.8` bounded RTX app
+evidence / public-claim cleanup package.
 
 The released `v0.9.1` line adds an Apple RT slice:
 `run_apple_rt` for 3D `ray_triangle_closest_hit` through Apple Metal/MPS on the
@@ -85,7 +86,8 @@ RT-core acceleration claim. Claim-sensitive app commands must use
 `--require-rt-core`, and apps reject that flag unless the selected mode is a
 documented bounded OptiX traversal path. Current claim-review candidates are
 the bounded sub-paths listed in
-[v1.0 RTX App Status](v1_0_rtx_app_status.md), with release-facing public
+[v1.0 RTX App Status](v1_0_rtx_app_status.md) and the
+[v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), with release-facing public
 wording governed by `rtdsl.rtx_public_wording_matrix()`: prepared
 DB compact summaries, graph visibility/native graph-ray candidate generation,
 service coverage, event hotspot, facility coverage decisions, prepared
@@ -154,6 +156,8 @@ Current release layers:
   MPS-prism any-hit, and prepared/prepacked repeated-query visibility/count
   paths for Apple RT, OptiX, HIPRT, and Vulkan under scalar/compact-output
   contracts
+- `v0.9.8`: bounded RTX app evidence and public-claim cleanup package, with
+  current-main v1.0 docs carrying post-Goal1224/Goal1228 current-state updates
 
 Plus:
 

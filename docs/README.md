@@ -75,6 +75,7 @@ audited release claims.
 - [Backend Maturity](backend_maturity.md)
 - [Current Main Support Matrix](current_main_support_matrix.md)
 - [v1.0 RTX App Status](v1_0_rtx_app_status.md)
+- [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 - [Application Catalog](application_catalog.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)
 - [RTDL Tutorials](tutorials/README.md)
