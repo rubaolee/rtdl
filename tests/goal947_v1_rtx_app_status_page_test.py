@@ -20,8 +20,8 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
         self.assertEqual(payload["summary"]["public_app_count"], len(rt.public_apps()))
         self.assertEqual(payload["summary"]["ready_for_rtx_claim_review"], 16)
         self.assertEqual(payload["summary"]["not_nvidia_rt_core_target"], 2)
-        self.assertEqual(payload["summary"]["reviewed_public_wording"], 12)
-        self.assertEqual(payload["summary"]["blocked_public_wording"], 2)
+        self.assertEqual(payload["summary"]["reviewed_public_wording"], 13)
+        self.assertEqual(payload["summary"]["blocked_public_wording"], 1)
         self.assertFalse(payload["summary"]["public_speedup_claim_authorized"])
         self.assertFalse(payload["summary"]["broad_or_whole_app_public_speedup_claim_authorized"])
         self.assertEqual(
@@ -90,7 +90,7 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertEqual(payload["summary"]["ready_for_rtx_claim_review"], 16)
-            self.assertEqual(payload["summary"]["reviewed_public_wording"], 12)
+            self.assertEqual(payload["summary"]["reviewed_public_wording"], 13)
             self.assertIn("v1.0 RTX App Status", markdown)
             self.assertIn("Reviewed Public RTX Sub-Path Wording", markdown)
             self.assertIn("Goal1146", markdown)
@@ -109,7 +109,7 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
 
     def test_latest_pod_batch_context_is_not_public_wording_promotion(self) -> None:
         payload = goal947.build_status_page()
-        self.assertEqual(payload["summary"]["reviewed_public_wording"], 12)
+        self.assertEqual(payload["summary"]["reviewed_public_wording"], 13)
         markdown = goal947.to_markdown(payload)
         self.assertIn("latest RTX pod batch and local follow-up completed (Goal1164/Goal1165): `True`", markdown)
         self.assertIn("next RTX pod packet accepted by 2-AI review (Goal1166): `True`", markdown)
@@ -118,9 +118,9 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
         self.assertIn("Goal1177 does not add a new reviewed public wording row", markdown)
         self.assertIn("Goal1184 does not add a new reviewed public wording row", markdown)
         self.assertIn("Goal1208 adds exactly one reviewed public wording row", markdown)
-        self.assertIn("Goal1224 resolves the remaining graph, polygon-pair, and Hausdorff rows", markdown)
-        self.assertIn("does not authorize new public wording", markdown)
-        self.assertIn("reviewed public RTX sub-path wording rows: `12`", markdown)
+        self.assertIn("Goal1263 promotes bounded polygon-pair wording", markdown)
+        self.assertIn("Graph remains blocked", markdown)
+        self.assertIn("reviewed public RTX sub-path wording rows: `13`", markdown)
 
     def test_checked_in_json_artifacts_include_public_wording_layer(self) -> None:
         for name in (
@@ -133,7 +133,7 @@ class Goal947V1RtxAppStatusPageTest(unittest.TestCase):
                     payload["source_of_truth"]["public_wording"],
                     "rtdsl.rtx_public_wording_matrix()",
                 )
-                self.assertIn(payload["summary"]["reviewed_public_wording"], (7, 9, 10, 11, 12))
+                self.assertIn(payload["summary"]["reviewed_public_wording"], (7, 9, 10, 11, 12, 13))
                 robot = next(
                     row for row in payload["rows"] if row["app"] == "robot_collision_screening"
                 )

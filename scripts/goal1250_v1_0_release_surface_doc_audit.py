@@ -137,11 +137,11 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "RTDL accelerates <exact prepared/native sub-path>",
     ),
     "docs/v1_0_rtx_app_status.md": (
-        "reviewed public RTX sub-path wording rows: `12`",
+        "reviewed public RTX sub-path wording rows: `13`",
         "broad or whole-app public speedup claim authorized: `False`",
         "These are not whole-app, default-mode",
-        "Goal1224 resolves the remaining graph, polygon-pair, and Hausdorff rows",
-        "graph and polygon-pair stay blocked",
+        "Goal1263 promotes bounded polygon-pair wording",
+        "Graph remains blocked",
         "Forbidden Wording",
     ),
     "docs/release_reports/v1_0/README.md": (

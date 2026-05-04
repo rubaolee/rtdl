@@ -68,6 +68,12 @@
       "ratio": "240.56x",
       "rtx_phase_sec": "0.222256",
       "scope": "prepared Barnes-Hut node-coverage query sub-path only"
+    },
+    {
+      "app_path": "hausdorff_distance / directed_threshold_prepared",
+      "ratio": "13.73x",
+      "rtx_phase_sec": "0.122389",
+      "scope": "prepared Hausdorff <= radius threshold-decision traversal sub-path only"
     }
   ],
   "rows": [
@@ -102,7 +108,7 @@
       "app": "graph_analytics",
       "app_path": "examples/rtdl_graph_analytics_app.py",
       "claim_command": "PYTHONPATH=src:. python examples/rtdl_graph_analytics_app.py --backend optix --scenario visibility_edges --require-rt-core",
-      "cloud_action": "Goal1048/Goal1058 and Goal1135/Goal1136 RTX A5000 evidence remain historical validation context. Goal1164 collected a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, Goal1166 prepared the next pod packet, Goal1177 accepted the recovered clean-source Goal1170 eight-row RTX A5000 batch as external-review input only, and Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. This is bounded sub-path evidence, not whole-app speedup evidence, and it does not authorize new public wording.",
+      "cloud_action": "Goal1048/Goal1058 RTX A5000 evidence remains historical validation context; Goal1135/Goal1136 added changed-path RTX A5000 artifacts from source marker 21fa036881bf9a0c806f69c15727d87b482ccfcf. Goal1164 added a newer RTX A5000 smoke/medium batch, Goal1165 fixed local ANN/robot/Jaccard bottlenecks, and Goal1166 prepared the next pod packet. Goal1177 accepted the recovered clean-source staged-archive RTX A5000 Goal1170 eight-row batch as external-review input only. Goal1184 accepted the newer Goal1182 RTX A4500 eight-row batch as external-review input only. claim-grade only for validated or strict bounded sub-path evidence, not whole-app speedup, and does not authorize new public wording; public wording still requires same-semantics baseline review.",
       "engine_support": {
         "apple_rt": "not_exposed_by_app_cli",
         "cpu_python_reference": "portable_cpu_oracle",
@@ -115,10 +121,10 @@
       "native_continuation_contract": "top-level metadata aggregates selected native graph sections; visibility_edges uses optix_visibility_pair_rows on OptiX",
       "non_claim_boundary": "Goal929 covers bounded graph RT sub-paths only; CPU-side frontier bookkeeping, triangle set-intersection, shortest-path, graph database, distributed analytics, and whole-app graph-system acceleration remain outside the claim",
       "performance_class": "optix_traversal",
-      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Bounded graph visibility and graph-ray candidate-generation sub-paths are RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal889/Goal905/Goal929",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording": "RTDL's graph visibility_edges RTX sub-path has valid same-contract evidence, but measured 2.000505 s versus 1.000280 s for Embree, so the raw Embree-over-OptiX ratio is 0.50x and no positive public RTX speedup wording is authorized.",
+      "public_wording_boundary": "Only the bounded graph visibility_edges any-hit traversal sub-path is covered; BFS frontier bookkeeping, triangle set-intersection, shortest-path logic, graph database behavior, distributed analytics, Python setup, and whole-app graph speedup remain outside this wording.",
+      "public_wording_evidence": "Goal1224",
+      "public_wording_status": "public_wording_blocked",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "bounded visibility any-hit plus native graph-ray BFS/triangle candidate generation"
@@ -323,10 +329,10 @@
       "native_continuation_contract": "native C++ exact area continuation follows RT-assisted LSI/PIP candidate discovery",
       "non_claim_boundary": "exact area refinement remains CPU/Python-owned; only candidate discovery may enter claim review",
       "performance_class": "python_interface_dominated",
-      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Native-assisted LSI/PIP candidate discovery is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal877/Goal929",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording": "RTDL v1.1 shows bounded OptiX acceleration for the polygon-pair RTX sub-path at 40k, 80k, and 160k copies on an RTX A5000; at 160k copies the reviewed same-contract benchmark measured about 1.4x faster candidate discovery and about 1.2x faster observed pipeline versus Embree.",
+      "public_wording_boundary": "Only RT-assisted LSI/PIP positive candidate discovery plus native C++ exact polygon-area continuation is covered. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording. Correctness is summary-parity under the v1.1 profiler contract; candidate-count mismatch remains a v1.2 diagnostic item.",
+      "public_wording_evidence": "Goal1263",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "native-assisted LSI/PIP candidate discovery"
@@ -375,10 +381,10 @@
       "native_continuation_contract": "native continuation only for Embree directed_summary or OptiX directed_threshold_prepared decision paths",
       "non_claim_boundary": "exact Hausdorff distance, KNN-row output, nearest-neighbor ranking, and whole-app speedup remain outside the claim",
       "performance_class": "optix_traversal_prepared_summary",
-      "public_wording": "No Goal1009 public speedup wording has been reviewed for this app path yet.",
-      "public_wording_boundary": "Prepared Hausdorff threshold-decision traversal is RT-core ready, but no public speedup wording is authorized yet.",
-      "public_wording_evidence": "Goal887/Goal941",
-      "public_wording_status": "public_wording_not_reviewed",
+      "public_wording": "RTDL's prepared Hausdorff threshold-decision RTX sub-path measured 0.122389 s and 13.73x versus the reviewed same-contract Embree directed-summary sub-path.",
+      "public_wording_boundary": "Only the prepared Hausdorff <= radius threshold-decision traversal sub-path is covered; exact Hausdorff distance, KNN rows, nearest-neighbor ranking, violating-ID witness output, Python setup, validation, and whole-app speedup remain outside this wording.",
+      "public_wording_evidence": "Goal1224",
+      "public_wording_status": "public_wording_reviewed",
       "readiness_status": "ready_for_rtx_claim_review",
       "rt_core_status": "rt_core_ready",
       "rt_core_subpath": "prepared fixed-radius Hausdorff threshold decision"
@@ -548,12 +554,12 @@
     "readiness": "rtdsl.optix_app_benchmark_readiness_matrix()"
   },
   "summary": {
-    "blocked_public_wording": 0,
+    "blocked_public_wording": 1,
     "broad_or_whole_app_public_speedup_claim_authorized": false,
     "not_nvidia_rt_core_target": 2,
     "public_app_count": 18,
     "public_speedup_claim_authorized": false,
     "ready_for_rtx_claim_review": 16,
-    "reviewed_public_wording": 11
+    "reviewed_public_wording": 13
   }
 }

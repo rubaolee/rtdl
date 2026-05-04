@@ -47,6 +47,7 @@ Only level 4 is a public speedup claim.
 
 Current public RTX wording is governed by:
 
+- [v1.1 OptiX/Embree Status](v1_1_optix_status.md)
 - [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 - [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md)
 - [App Engine Support Matrix](app_engine_support_matrix.md)

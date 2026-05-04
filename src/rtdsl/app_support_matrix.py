@@ -874,10 +874,10 @@ _RTX_PUBLIC_WORDING_MATRIX: dict[str, RtxPublicWordingStatus] = {
     ),
     "polygon_pair_overlap_area_rows": _public_wording(
         "polygon_pair_overlap_area_rows",
-        PUBLIC_WORDING_BLOCKED,
-        "RTDL's polygon-pair candidate-discovery RTX sub-path has valid same-contract evidence, but measured 3.452362 s versus 2.896597 s for Embree, so the raw Embree-over-OptiX ratio is 0.84x and no positive public RTX speedup wording is authorized.",
-        "Goal1224",
-        "Only native-assisted LSI/PIP candidate discovery is covered; exact polygon-area continuation, row materialization, Python setup, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording.",
+        PUBLIC_WORDING_REVIEWED,
+        "RTDL v1.1 shows bounded OptiX acceleration for the polygon-pair RTX sub-path at 40k, 80k, and 160k copies on an RTX A5000; at 160k copies the reviewed same-contract benchmark measured about 1.4x faster candidate discovery and about 1.2x faster observed pipeline versus Embree.",
+        "Goal1263",
+        "Only RT-assisted LSI/PIP positive candidate discovery plus native C++ exact polygon-area continuation is covered. Monolithic GPU polygon overlay, broad GIS acceleration, arbitrary polygon geometry, and whole-app polygon-overlap speedup remain outside this wording. Correctness is summary-parity under the v1.1 profiler contract; candidate-count mismatch remains a v1.2 diagnostic item.",
     ),
     "polygon_set_jaccard": _public_wording(
         "polygon_set_jaccard",

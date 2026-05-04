@@ -17,10 +17,10 @@ class Goal1229CurrentMainV10ReadinessAuditTest(unittest.TestCase):
     def test_current_main_v1_0_audit_is_valid(self) -> None:
         payload = goal1229.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["expected"]["reviewed_public_wording_count"], 12)
+        self.assertEqual(payload["expected"]["reviewed_public_wording_count"], 13)
         self.assertEqual(
             payload["public_wording_state"]["blocked"],
-            ["graph_analytics", "polygon_pair_overlap_area_rows"],
+            ["graph_analytics"],
         )
         self.assertEqual(
             payload["public_wording_state"]["not_reviewed"],
@@ -62,7 +62,7 @@ class Goal1229CurrentMainV10ReadinessAuditTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
-            self.assertIn("reviewed public RTX sub-path wording rows: `12`", markdown)
+            self.assertIn("reviewed public RTX sub-path wording rows: `13`", markdown)
             self.assertIn("does not move the v0.9.8 release tag", markdown)
 
 

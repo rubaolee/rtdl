@@ -33,6 +33,7 @@ REQUIRED_REPORTS = (
     "docs/reports/goal1228_two_ai_consensus_2026-05-03.md",
     "docs/reports/goal1228_gemini_v1_0_positioning_docs_review_2026-05-03.md",
     "docs/reports/goal1228_v1_0_positioning_and_engine_customization_plan_2026-05-03.md",
+    "docs/reports/goal1263_three_ai_consensus_polygon_pair_v1_1_2026-05-04.md",
 )
 
 STALE_CURRENT_MAIN_PHRASES = (
@@ -75,8 +76,9 @@ def _surface_doc_rows() -> list[dict[str, Any]]:
             {
                 "path": path,
                 "exists": (ROOT / path).exists(),
-                "mentions_12_reviewed": "12 reviewed" in text,
+                "mentions_13_reviewed": "13 reviewed" in text,
                 "mentions_goal1224": "Goal1224" in text,
+                "mentions_goal1263": "Goal1263" in text,
                 "stale_current_main_phrases": stale_hits,
             }
         )
@@ -102,13 +104,13 @@ def build_audit() -> dict[str, Any]:
     status_page_ok = all(
         phrase in status_page
         for phrase in (
-            "reviewed public RTX sub-path wording rows: `12`",
-            "Goal1224 resolves the remaining graph, polygon-pair, and Hausdorff rows",
-            "graph and polygon-pair stay blocked",
+            "reviewed public RTX sub-path wording rows: `13`",
+            "Goal1263 promotes bounded polygon-pair wording",
+            "Graph remains blocked",
         )
     )
-    expected_reviewed_count = 12
-    expected_blocked = ["graph_analytics", "polygon_pair_overlap_area_rows"]
+    expected_reviewed_count = 13
+    expected_blocked = ["graph_analytics"]
     expected_not_reviewed = ["database_analytics", "polygon_set_jaccard"]
     expected_non_targets = ["apple_rt_demo", "hiprt_ray_triangle_hitcount"]
     public_state_ok = (
@@ -185,8 +187,9 @@ def to_markdown(payload: dict[str, Any]) -> str:
     for row in payload["surface_rows"]:
         stale = ", ".join(row["stale_current_main_phrases"]) or "none"
         lines.append(
-            f"- `{row['path']}`: mentions_12_reviewed=`{row['mentions_12_reviewed']}`, "
-            f"mentions_goal1224=`{row['mentions_goal1224']}`, stale_current_main_phrases=`{stale}`"
+            f"- `{row['path']}`: mentions_13_reviewed=`{row['mentions_13_reviewed']}`, "
+            f"mentions_goal1224=`{row['mentions_goal1224']}`, "
+            f"mentions_goal1263=`{row['mentions_goal1263']}`, stale_current_main_phrases=`{stale}`"
         )
     lines.extend(["", "## Next v1.0 Work", ""])
     for item in payload["next_v1_0_work"]:

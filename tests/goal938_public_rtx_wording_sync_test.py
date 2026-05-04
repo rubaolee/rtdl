@@ -17,7 +17,7 @@ class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
             "--backend optix --optix-summary-mode count_summary_prepared --require-rt-core",
             "--backend optix --optix-summary-mode coverage_threshold_prepared --require-rt-core",
             "--backend optix --output-mode summary --optix-mode native --require-rt-core",
-            "prepared native hit-count traversal",
+            "prepared native segment/polygon hit-count traversal",
             "prepared bounded native pair-row traversal",
             "polygon pair overlap",
             "polygon set Jaccard",

@@ -18,6 +18,7 @@ REVIEWED_APPS = {
     "road_hazard_screening",
     "hausdorff_distance",
     "barnes_hut_force_app",
+    "polygon_pair_overlap_area_rows",
 }
 
 class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
@@ -36,7 +37,7 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
             if row.status == "public_wording_reviewed"
         }
         self.assertEqual(reviewed, REVIEWED_APPS)
-        self.assertEqual(len(reviewed), 12)
+        self.assertEqual(len(reviewed), 13)
 
     def test_reviewed_rows_are_bounded_to_named_subpaths(self) -> None:
         matrix = rt.rtx_public_wording_matrix()
@@ -48,6 +49,8 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
                 self.assertEqual(row.evidence, "Goal1208")
             elif app == "hausdorff_distance":
                 self.assertEqual(row.evidence, "Goal1224")
+            elif app == "polygon_pair_overlap_area_rows":
+                self.assertEqual(row.evidence, "Goal1263")
             elif app == "robot_collision_screening":
                 self.assertEqual(row.evidence, "Goal1126")
             elif app == "event_hotspot_screening":
@@ -106,7 +109,7 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
         self.assertIn("full GIS/routing", wording.boundary)
         self.assertIn("whole-app road-hazard speedup", wording.boundary)
 
-    def test_goal1224_resolves_remaining_not_reviewed_rows(self) -> None:
+    def test_goal1224_and_goal1263_resolve_remaining_not_reviewed_rows(self) -> None:
         graph = rt.rtx_public_wording_status("graph_analytics")
         polygon_pair = rt.rtx_public_wording_status("polygon_pair_overlap_area_rows")
         hausdorff = rt.rtx_public_wording_status("hausdorff_distance")
@@ -115,9 +118,10 @@ class Goal1011RtxPublicWordingMatrixTest(unittest.TestCase):
         self.assertEqual(graph.evidence, "Goal1224")
         self.assertIn("0.50x", graph.reviewed_wording)
         self.assertIn("BFS frontier bookkeeping", graph.boundary)
-        self.assertEqual(polygon_pair.status, "public_wording_blocked")
-        self.assertEqual(polygon_pair.evidence, "Goal1224")
-        self.assertIn("0.84x", polygon_pair.reviewed_wording)
+        self.assertEqual(polygon_pair.status, "public_wording_reviewed")
+        self.assertEqual(polygon_pair.evidence, "Goal1263")
+        self.assertIn("1.4x", polygon_pair.reviewed_wording)
+        self.assertIn("1.2x", polygon_pair.reviewed_wording)
         self.assertIn("exact polygon-area continuation", polygon_pair.boundary)
         self.assertEqual(hausdorff.status, "public_wording_reviewed")
         self.assertEqual(hausdorff.evidence, "Goal1224")
