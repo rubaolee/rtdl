@@ -5,7 +5,7 @@ history. If you are new to RTDL, do not browse everything here first. Start with
 the live path below, then branch into tutorials, apps, architecture, IR, or
 performance.
 
-The current released version is `v0.9.8`; current released version: `v0.9.8`.
+The current released version is `v0.9.8`.
 
 ## New User Path
 
@@ -111,6 +111,8 @@ specific backend path says so.
 
 Use these for audit trails and exact release boundaries:
 
+- [v1.0 Release Candidate Package](release_reports/v1_0/README.md)
+- [v1.0 Release Candidate Support Matrix](release_reports/v1_0/support_matrix.md)
 - [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
 - [v0.9.8 Release Statement](release_reports/v0_9_8/release_statement.md)
 - [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
