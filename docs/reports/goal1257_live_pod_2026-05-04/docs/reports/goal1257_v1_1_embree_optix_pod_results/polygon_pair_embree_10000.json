@@ -1,0 +1,30 @@
+{
+  "app": "polygon_pair_overlap_area_rows",
+  "backend": "embree",
+  "backend_mode": "embree_native_assisted",
+  "boundary": "Embree mode uses native Embree LSI/PIP positive candidate discovery and native C++ exact grid-cell area continuation. OptiX mode uses native OptiX LSI/PIP positive candidate discovery and the same native C++ continuation. These modes are RT-candidate plus native-continuation pipelines, not monolithic GPU area-overlay kernels.",
+  "candidate_row_count": 30000,
+  "copies": 10000,
+  "left_polygon_count": 20000,
+  "native_continuation_active": true,
+  "native_continuation_backend": "oracle_cpp",
+  "optix_performance": {
+    "class": "python_interface_dominated",
+    "note": "Public app exposes OptiX native-assisted LSI/PIP positive candidate discovery, then native C++ exact grid-cell area continuation. This is real traversal-assisted filtering plus native continuation, not a monolithic GPU polygon-area kernel."
+  },
+  "output_mode": "summary",
+  "right_polygon_count": 30000,
+  "row_count": 20000,
+  "rt_core_accelerated": false,
+  "rt_core_candidate_discovery_active": false,
+  "run_phases": {
+    "input_construction_sec": 0.20175061095505953,
+    "native_exact_continuation_sec": 1.6913761524483562,
+    "rt_candidate_discovery_sec": 1.5259678699076176
+  },
+  "summary": {
+    "overlap_pair_count": 20000,
+    "total_intersection_area": 50000,
+    "total_union_area": 190000
+  }
+}

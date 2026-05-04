@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal756_db_prepared_session_perf.py --backend embree --scenario all --copies 30000 --iterations 5 --output-mode compact_summary --strict --output-json docs/reports/goal1257_v1_1_embree_optix_pod_results/db_embree_30000.json",
+  "exit_code": 0,
+  "label": "db_embree_30000",
+  "log": "docs/reports/goal1257_v1_1_embree_optix_pod_results/db_embree_30000.log",
+  "status": "ok"
+}

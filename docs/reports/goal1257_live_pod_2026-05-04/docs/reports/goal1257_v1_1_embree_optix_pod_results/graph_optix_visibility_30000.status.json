@@ -1,0 +1,7 @@
+{
+  "command": "python3 scripts/goal889_graph_visibility_optix_gate.py --copies 30000 --output-mode summary --validation-mode analytic_summary --chunk-copies 0 --strict --output-json docs/reports/goal1257_v1_1_embree_optix_pod_results/graph_optix_visibility_30000.json",
+  "exit_code": 0,
+  "label": "graph_optix_visibility_30000",
+  "log": "docs/reports/goal1257_v1_1_embree_optix_pod_results/graph_optix_visibility_30000.log",
+  "status": "ok"
+}

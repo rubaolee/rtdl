@@ -1,0 +1,82 @@
+{
+  "app": "pair_overlap",
+  "boundary": "This profiler separates OptiX LSI/PIP candidate discovery from native C++ exact area/Jaccard continuation. It does not authorize full polygon-overlap RTX speedup claims.",
+  "candidate_diagnostics": {
+    "candidate_count_matches_expected": false,
+    "expected_or_cpu_candidate_row_count": 120000,
+    "optix_candidate_row_count": 80000
+  },
+  "chunk_copies": 512,
+  "chunk_count": 79,
+  "chunk_policy": null,
+  "cloud_claim_contract": {
+    "chunk_policy": "not_applicable",
+    "claim_scope": "OptiX native-assisted LSI/PIP candidate discovery for bounded polygon-pair overlap",
+    "non_claim": "not a monolithic GPU polygon-area kernel and not a full app RTX speedup claim",
+    "required_phase_groups": [
+      "input_build_sec",
+      "cpu_reference_sec",
+      "optix_candidate_discovery_sec",
+      "cpu_exact_refinement_sec",
+      "native_exact_continuation_sec",
+      "parity_vs_cpu",
+      "rt_core_candidate_discovery_active",
+      "validation_mode",
+      "output_mode"
+    ]
+  },
+  "copies": 40000,
+  "cpu_digest": {
+    "app": "polygon_pair_overlap_area_rows",
+    "copies": 40000,
+    "output_mode": "summary",
+    "row_count": 80000,
+    "summary": {
+      "overlap_pair_count": 80000,
+      "total_intersection_area": 200000,
+      "total_union_area": 760000
+    }
+  },
+  "date": "2026-04-24",
+  "error": null,
+  "generated_at": "2026-05-04T21:50:48",
+  "goal": "Goal877 polygon overlap OptiX phase profiler",
+  "host": {
+    "hostname": "1db59abf42db",
+    "machine": "x86_64",
+    "platform": "Linux-5.15.0-102-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "mode": "optix",
+  "optix_digest": {
+    "app": "polygon_pair_overlap_area_rows",
+    "copies": 40000,
+    "output_mode": "summary",
+    "row_count": 80000,
+    "summary": {
+      "overlap_pair_count": 80000,
+      "total_intersection_area": 200000,
+      "total_union_area": 760000
+    }
+  },
+  "optix_metadata": {
+    "backend_mode": "optix_native_assisted",
+    "native_continuation_active": false,
+    "native_continuation_backend": null,
+    "rt_core_accelerated": false,
+    "rt_core_candidate_discovery_active": true
+  },
+  "output_mode": "summary",
+  "parity_vs_cpu": true,
+  "phases": {
+    "cpu_exact_refinement_sec": 5.906646063551307,
+    "cpu_reference_sec": null,
+    "input_build_sec": 0.0,
+    "native_exact_continuation_sec": 5.906646063551307,
+    "optix_candidate_discovery_sec": 6.033039587549865
+  },
+  "schema_version": "goal877_polygon_overlap_optix_phase_contract_v2",
+  "source_commit": "goal1257-archive-0c455b4190955292bf46cb9ed41e9600ed17132356bc5e7f7cb5e82046211048",
+  "status": "pass",
+  "validation_mode": "analytic_summary"
+}
