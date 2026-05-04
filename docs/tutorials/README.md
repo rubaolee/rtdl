@@ -9,6 +9,9 @@ longer tutorials.
 If you want to choose a runnable app or example before reading the full ladder,
 use [App And Example Quickstart](../app_example_quickstart.md).
 
+If you want the full example inventory, use [Examples Index](../../examples/README.md).
+That index is intentionally more complete and more boundary-heavy than this tutorial page.
+
 The tutorial ladder is organized around the main RTDL value proposition: write a
 small workload kernel once, keep application logic in Python, and avoid
 hand-maintaining separate ray-tracing backend implementations for every modern

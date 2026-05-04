@@ -1,6 +1,24 @@
 # Examples
 
-This directory contains two kinds of material:
+This directory is the full example inventory. If you are new, do not start by
+reading every file here. Use the short path below first, then return to the
+detailed inventory when you need a specific app or backend boundary.
+
+## Short Path
+
+| Step | Run or read | Purpose |
+| --- | --- | --- |
+| 1 | `PYTHONPATH=src:. python examples/rtdl_hello_world.py` | prove the checkout imports and runs |
+| 2 | `PYTHONPATH=src:. python examples/rtdl_hello_world_backends.py --backend cpu_python_reference` | see backend selection without performance claims |
+| 3 | [App And Example Quickstart](../docs/app_example_quickstart.md) | choose one app by job instead of scanning the directory |
+| 4 | [v1.0 App Acceleration Inventory](../docs/v1_0_app_acceleration_inventory.md) | check what RTDL accelerates and what remains outside |
+| 5 | [Performance Model](../docs/performance_model.md) | interpret any timing or speedup wording safely |
+
+The quick rule: examples show runnable RTDL shapes; public speedup wording comes only from the support matrix and reviewed evidence for an exact bounded sub-path.
+
+## Directory Contents
+
+This directory contains several kinds of material:
 
 - release-facing examples you can run first
 - reference kernels and helper generators used by examples and tests
