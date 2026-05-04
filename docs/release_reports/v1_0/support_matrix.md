@@ -14,16 +14,16 @@ Reviewed bounded NVIDIA RTX public wording rows: `12`.
 | --- | --- | --- | --- |
 | `service_coverage_gaps / prepared_gap_summary` | reviewed | yes | prepared fixed-radius gap-summary query/native sub-path only |
 | `event_hotspot_screening / prepared_count_summary` | reviewed | yes | prepared fixed-radius count-summary query phase only |
+| `outlier_detection / prepared_fixed_radius_density_summary` | reviewed | yes | prepared fixed-radius scalar threshold-count sub-path only |
+| `dbscan_clustering / prepared_fixed_radius_core_flags` | reviewed | yes | prepared fixed-radius scalar core-count sub-path only |
+| `robot_collision_screening / prepared_pose_flags` | reviewed | yes | prepared ray/triangle any-hit pose-count query sub-path only; ratio wording is normalized per-pose |
 | `facility_knn_assignment / coverage_threshold_prepared_recentered` | reviewed | yes | prepared facility coverage-threshold query sub-path only |
 | `road_hazard_screening / prepared_native_compact_summary_40k` | reviewed | yes | prepared compact-summary traversal/count sub-path at 40k copies only |
 | `segment_polygon_hitcount / segment_polygon_hitcount_native_experimental` | reviewed | yes | prepared native segment/polygon hit-count traversal only |
 | `segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate` | reviewed | yes | prepared bounded native pair-row traversal only |
-| `hausdorff_distance / directed_threshold_prepared` | reviewed | yes | prepared Hausdorff <= radius threshold-decision traversal sub-path only |
 | `ann_candidate_search / candidate_threshold_prepared` | reviewed | yes | prepared ANN candidate-coverage decision sub-path only |
-| `outlier_detection / prepared_fixed_radius_density_summary` | reviewed | yes | prepared fixed-radius scalar threshold-count sub-path only |
-| `dbscan_clustering / prepared_fixed_radius_core_flags` | reviewed | yes | prepared fixed-radius scalar core-count sub-path only |
-| `robot_collision_screening / prepared_pose_flags` | reviewed | yes | prepared ray/triangle any-hit pose-count query sub-path only; ratio wording is normalized per-pose |
 | `barnes_hut_force_app / node_coverage_prepared_rich` | reviewed | yes | prepared Barnes-Hut node-coverage query sub-path only, not force reduction |
+| `hausdorff_distance / directed_threshold_prepared` | reviewed | yes | prepared Hausdorff <= radius threshold-decision traversal sub-path only |
 
 ## Blocked, Not-Reviewed, Or Non-NVIDIA Rows
 

@@ -1,0 +1,110 @@
+{
+  "boundary": "This audit covers v1.0 release-candidate readiness only. It does not release v1.0, update VERSION, authorize a tag, or authorize new public speedup wording.",
+  "date": "2026-05-04",
+  "docs_index_ok": true,
+  "goal": "Goal1249 v1.0 release-candidate audit",
+  "missing_reports": [],
+  "next_steps": [
+    "Run the release-surface documentation test gate.",
+    "Run full local discovery or an approved release-equivalent gate.",
+    "Seek final external review and final authorization.",
+    "Update VERSION and tag only after final authorization."
+  ],
+  "package_ok": true,
+  "package_rows": [
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/README.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/release_statement.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/support_matrix.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/audit_report.md",
+      "status": "ok"
+    },
+    {
+      "exists": true,
+      "forbidden_phrases": [],
+      "missing_required_phrases": [],
+      "path": "docs/release_reports/v1_0/tag_preparation.md",
+      "status": "ok"
+    }
+  ],
+  "pod_decision": "No pod is required for the v1.0 release-candidate package audit. Use a pod only if the release scope changes to promote blocked or not-reviewed rows into new public RTX speedup wording.",
+  "pod_needed_now": false,
+  "recommendation": "v1_0_release_candidate_ready_for_release_surface_gate",
+  "release_marker": "v0.9.8",
+  "release_marker_ok": true,
+  "reports_ok": true,
+  "support_ok": true,
+  "support_state": {
+    "blocked_rows_present": true,
+    "expected_reviewed_phases": [
+      "service_coverage_gaps / prepared_gap_summary",
+      "event_hotspot_screening / prepared_count_summary",
+      "outlier_detection / prepared_fixed_radius_density_summary",
+      "dbscan_clustering / prepared_fixed_radius_core_flags",
+      "robot_collision_screening / prepared_pose_flags",
+      "facility_knn_assignment / coverage_threshold_prepared_recentered",
+      "road_hazard_screening / prepared_native_compact_summary_40k",
+      "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
+      "segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "ann_candidate_search / candidate_threshold_prepared",
+      "barnes_hut_force_app / node_coverage_prepared_rich",
+      "hausdorff_distance / directed_threshold_prepared"
+    ],
+    "non_nvidia_rows_present": true,
+    "not_reviewed_rows_present": true,
+    "status_matches_expected": true,
+    "status_reviewed_count": 12,
+    "status_reviewed_phases": [
+      "service_coverage_gaps / prepared_gap_summary",
+      "event_hotspot_screening / prepared_count_summary",
+      "outlier_detection / prepared_fixed_radius_density_summary",
+      "dbscan_clustering / prepared_fixed_radius_core_flags",
+      "robot_collision_screening / prepared_pose_flags",
+      "facility_knn_assignment / coverage_threshold_prepared_recentered",
+      "road_hazard_screening / prepared_native_compact_summary_40k",
+      "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
+      "segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "ann_candidate_search / candidate_threshold_prepared",
+      "barnes_hut_force_app / node_coverage_prepared_rich",
+      "hausdorff_distance / directed_threshold_prepared"
+    ],
+    "support_matches_expected": true,
+    "support_reviewed_count": 12,
+    "support_reviewed_phases": [
+      "service_coverage_gaps / prepared_gap_summary",
+      "event_hotspot_screening / prepared_count_summary",
+      "outlier_detection / prepared_fixed_radius_density_summary",
+      "dbscan_clustering / prepared_fixed_radius_core_flags",
+      "robot_collision_screening / prepared_pose_flags",
+      "facility_knn_assignment / coverage_threshold_prepared_recentered",
+      "road_hazard_screening / prepared_native_compact_summary_40k",
+      "segment_polygon_hitcount / segment_polygon_hitcount_native_experimental",
+      "segment_polygon_anyhit_rows / segment_polygon_anyhit_rows_prepared_bounded_gate",
+      "ann_candidate_search / candidate_threshold_prepared",
+      "barnes_hut_force_app / node_coverage_prepared_rich",
+      "hausdorff_distance / directed_threshold_prepared"
+    ]
+  },
+  "valid": true
+}
