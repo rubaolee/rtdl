@@ -13,7 +13,7 @@ GOAL = "Goal1250 v1.0 release-surface documentation audit"
 
 SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "The current released version is `v0.9.8`.",
+        "The current released version is `v1.0`.",
         "## v1.0 Direction",
         "v1.0 proof machinery, not the final architecture",
         "v1.5 is planned to replace app-specific engine customization",
@@ -25,7 +25,7 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "[Performance Model](docs/performance_model.md)",
     ),
     "docs/README.md": (
-        "The current released version is `v0.9.8`.",
+        "The current released version is `v1.0`.",
         "Public Surfaces",
         "Front page",
         "Tutorials",
@@ -34,7 +34,7 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "v1.0 is a foundation release line",
         "v1.5 should replace app-specific native continuations",
         "v2.0 is the broader end-to-end performance target",
-        "[v1.0 Release Candidate Package](release_reports/v1_0/README.md)",
+        "[v1.0 Release Package](release_reports/v1_0/README.md)",
     ),
     "docs/public_documentation_map.md": (
         "Current Public Surfaces",
@@ -145,41 +145,39 @@ SURFACE_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
         "Forbidden Wording",
     ),
     "docs/release_reports/v1_0/README.md": (
-        "Status: draft release candidate for `v1.0`; not released.",
-        "The current released version remains `v0.9.8`",
+        "Status: released as `v1.0`.",
+        "The current released version is `v1.0`",
         "`12` reviewed bounded NVIDIA RTX public wording rows",
-        "Final v1.0 release still needs",
+        "released `v1.0` boundary",
     ),
     "docs/release_reports/v1_0/release_statement.md": (
-        "Status: draft release candidate for `v1.0`; not released.",
-        "The current released version remains `v0.9.8`.",
+        "Status: released as `v1.0`.",
+        "The current released version is `v1.0`.",
         "foundation release for",
-        "What This Release Candidate Must Not Claim",
+        "What This Release Must Not Claim",
     ),
     "docs/release_reports/v1_0/support_matrix.md": (
-        "Status: draft release candidate for `v1.0`; not released.",
+        "Status: released as `v1.0`.",
         "Reviewed bounded NVIDIA RTX public wording rows: `12`.",
         "Blocked, Not-Reviewed, Or Non-NVIDIA Rows",
         "v1.5 And v2.0 Handoff",
     ),
     "docs/release_reports/v1_0/audit_report.md": (
-        "Status: draft release candidate for `v1.0`; not released.",
-        "This audit checks whether current main is ready",
-        "not yet a released v1.0",
+        "Status: released as `v1.0`.",
+        "This audit records the evidence used to release v1.0",
+        "RTDL v1.0 is released",
         "No immediate pod is required",
     ),
     "docs/release_reports/v1_0/tag_preparation.md": (
-        "Status: draft release candidate for `v1.0`; not released.",
-        "Do not run these until final authorization is saved",
-        "This file is tag preparation only.",
-        "not a release authorization",
+        "Status: released as `v1.0`.",
+        "Requirements Satisfied Before Tag",
+        "This file records the tag procedure.",
+        "does not widen the v1.0 claim scope",
     ),
 }
 
 FORBIDDEN_RELEASE_SURFACE_PHRASES = (
-    "Status: released as `v1.0`",
-    "The current released version is `v1.0`",
-    "current released version: `v1.0`",
+    "Status: draft release candidate for `v1.0`; not released.",
     "broad or whole-app public speedup claim authorized: `True`",
     "all apps now have public RTX speedup wording",
     "app-specific native continuations are already removed in v1.0",
@@ -214,14 +212,14 @@ def build_audit() -> dict[str, Any]:
     rows = _surface_rows()
     failures = [row for row in rows if row["status"] != "ok"]
     version = _read("VERSION").strip()
-    version_ok = version == "v0.9.8"
+    version_ok = version == "v1.0"
     valid = not failures and version_ok
     return {
         "goal": GOAL,
         "date": DATE,
         "valid": valid,
         "recommendation": (
-            "v1_0_release_surface_ready_for_full_local_discovery"
+            "v1_0_release_surface_released"
             if valid
             else "blocked_pending_release_surface_doc_fixes"
         ),
@@ -237,14 +235,14 @@ def build_audit() -> dict[str, Any]:
             "blocked/not-reviewed RTX rows are promoted."
         ),
         "boundary": (
-            "This is a documentation release-surface audit. It does not release "
-            "v1.0, update VERSION, authorize a tag, or authorize new performance "
-            "claims."
+            "This is a documentation release-surface audit for released v1.0. "
+            "It does not authorize new performance claims beyond the reviewed "
+            "bounded sub-path wording."
         ),
         "next_steps": [
-            "Run full local discovery or an approved release-equivalent gate.",
-            "Seek final external review and final authorization.",
-            "Update VERSION and tag only after final authorization.",
+            "Run focused release-action tests.",
+            "Commit the release action.",
+            "Tag the release-action commit.",
         ],
     }
 

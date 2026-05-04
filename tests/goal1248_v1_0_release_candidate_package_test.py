@@ -9,7 +9,7 @@ PACKAGE_DIR = ROOT / "docs" / "release_reports" / "v1_0"
 
 
 class Goal1248V10ReleaseCandidatePackageTest(unittest.TestCase):
-    def test_release_candidate_package_files_exist_and_are_not_released(self) -> None:
+    def test_release_package_files_exist_and_are_released(self) -> None:
         for name in [
             "README.md",
             "release_statement.md",
@@ -19,16 +19,16 @@ class Goal1248V10ReleaseCandidatePackageTest(unittest.TestCase):
         ]:
             with self.subTest(name=name):
                 text = (PACKAGE_DIR / name).read_text(encoding="utf-8")
-                self.assertIn("Status: draft release candidate for `v1.0`; not released.", text)
-                self.assertNotIn("Status: released as `v1.0`", text)
+                self.assertIn("Status: released as `v1.0`", text)
+                self.assertNotIn("Status: draft release candidate for `v1.0`; not released.", text)
 
     def test_package_preserves_current_release_marker_boundary(self) -> None:
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         docs_index = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         package_readme = (PACKAGE_DIR / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(version, "v0.9.8")
-        self.assertIn("The current released version remains `v0.9.8`", package_readme)
-        self.assertIn("The current released version is `v0.9.8`", docs_index)
+        self.assertEqual(version, "v1.0")
+        self.assertIn("The current released version is `v1.0`", package_readme)
+        self.assertIn("The current released version is `v1.0`", docs_index)
 
     def test_package_records_v1_0_scope_and_claim_boundaries(self) -> None:
         combined = "\n".join(path.read_text(encoding="utf-8") for path in PACKAGE_DIR.glob("*.md"))

@@ -22,7 +22,7 @@ REQUIRED_FILES: tuple[str, ...] = (
 
 CURRENT_SURFACE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "README.md": (
-        "The current released version is `v0.9.8`",
+        "The current released version is `v1.0`",
         "Reviewed rows are bounded public sub-path wording",
         "not automatic public speedup claims",
         "v1.0 RTX App Status",

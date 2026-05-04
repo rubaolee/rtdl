@@ -17,8 +17,8 @@ class Goal1250V10ReleaseSurfaceDocAuditTest(unittest.TestCase):
     def test_release_surface_doc_audit_is_valid(self) -> None:
         payload = goal1250.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["recommendation"], "v1_0_release_surface_ready_for_full_local_discovery")
-        self.assertEqual(payload["version"], "v0.9.8")
+        self.assertEqual(payload["recommendation"], "v1_0_release_surface_released")
+        self.assertEqual(payload["version"], "v1.0")
         self.assertTrue(payload["version_ok"])
         self.assertFalse(payload["pod_needed_now"])
         self.assertGreaterEqual(payload["surface_count"], 18)
@@ -44,12 +44,11 @@ class Goal1250V10ReleaseSurfaceDocAuditTest(unittest.TestCase):
                 self.assertFalse(row["missing_required_phrases"])
                 self.assertFalse(row["forbidden_phrases"])
 
-    def test_boundary_and_next_steps_do_not_release_v1_0(self) -> None:
+    def test_boundary_and_next_steps_preserve_release_scope(self) -> None:
         payload = goal1250.build_audit()
-        self.assertIn("does not release v1.0", payload["boundary"])
+        self.assertIn("released v1.0", payload["boundary"])
         self.assertIn("No pod is required", payload["pod_decision"])
-        self.assertIn("Run full local discovery", " ".join(payload["next_steps"]))
-        self.assertIn("Update VERSION and tag only after final authorization", " ".join(payload["next_steps"]))
+        self.assertIn("Tag the release-action commit", " ".join(payload["next_steps"]))
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -74,7 +73,7 @@ class Goal1250V10ReleaseSurfaceDocAuditTest(unittest.TestCase):
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
-            self.assertIn("version: `v0.9.8`", markdown)
+            self.assertIn("version: `v1.0`", markdown)
             self.assertIn("failure count: `0`", markdown)
 
 

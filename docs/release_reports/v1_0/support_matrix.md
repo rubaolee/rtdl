@@ -1,6 +1,6 @@
-# RTDL v1.0 Release Candidate Support Matrix
+# RTDL v1.0 Support Matrix
 
-Status: draft release candidate for `v1.0`; not released.
+Status: released as `v1.0`.
 
 This matrix summarizes the intended `v1.0` public support boundary. For the
 living current-main app inventory, use `docs/v1_0_app_acceleration_inventory.md`.
@@ -10,7 +10,7 @@ For exact reviewed RTX wording rows, use `docs/v1_0_rtx_app_status.md`.
 
 Reviewed bounded NVIDIA RTX public wording rows: `12`.
 
-| App / sub-path | Public wording status | Public claim allowed for v1.0 RC | Boundary |
+| App / sub-path | Public wording status | Public claim allowed for v1.0 | Boundary |
 | --- | --- | --- | --- |
 | `service_coverage_gaps / prepared_gap_summary` | reviewed | yes | prepared fixed-radius gap-summary query/native sub-path only |
 | `event_hotspot_screening / prepared_count_summary` | reviewed | yes | prepared fixed-radius count-summary query phase only |
@@ -27,7 +27,7 @@ Reviewed bounded NVIDIA RTX public wording rows: `12`.
 
 ## Blocked, Not-Reviewed, Or Non-NVIDIA Rows
 
-| App row | v1.0 RC status | What would unblock public speedup wording |
+| App row | v1.0 status | What would unblock public speedup wording |
 | --- | --- | --- |
 | `database_analytics` | not reviewed for current public speedup wording | Same-contract evidence with clear query contract, same result schema, and reviewed OptiX-vs-baseline speedup above the public threshold. |
 | `graph_analytics` | blocked | Same-contract evidence where the reviewed OptiX traversal path is faster than the Embree baseline for the exact bounded graph/candidate traversal being described. |
@@ -60,4 +60,4 @@ with reviewed generic primitives:
 - experimental `COLLECT_K_BOUNDED`.
 
 v2.0 is the later end-to-end performance architecture, not a claim made by this
-v1.0 release candidate.
+v1.0 release.

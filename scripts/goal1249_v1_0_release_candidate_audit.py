@@ -10,7 +10,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DATE = "2026-05-04"
-GOAL = "Goal1249 v1.0 release-candidate audit"
+GOAL = "Goal1249 v1.0 release audit"
 
 PACKAGE_FILES = (
     "README.md",
@@ -44,8 +44,6 @@ REVIEWED_PHASES = (
 )
 
 FORBIDDEN_PHRASES = (
-    "Status: released as `v1.0`",
-    "`v1.0` is released.",
     "broad whole-app speedup claim is allowed",
     "all-app NVIDIA RT-core speedup claim is allowed",
     "broad or whole-app public speedup claim authorized: `True`",
@@ -65,7 +63,7 @@ def _package_rows() -> list[dict[str, Any]]:
         missing_required = [
             phrase
             for phrase in (
-                "Status: draft release candidate for `v1.0`; not released.",
+                "Status: released as `v1.0`",
                 "v1.0",
             )
             if phrase not in text
@@ -136,12 +134,12 @@ def build_audit() -> dict[str, Any]:
         and support_state["not_reviewed_rows_present"]
         and support_state["non_nvidia_rows_present"]
     )
-    release_marker_ok = version == "v0.9.8" and "The current released version is `v0.9.8`." in readme
+    release_marker_ok = version == "v1.0" and "The current released version is `v1.0`." in readme
     docs_index_ok = all(
         phrase in readme
         for phrase in (
-            "[v1.0 Release Candidate Package](release_reports/v1_0/README.md)",
-            "[v1.0 Release Candidate Support Matrix](release_reports/v1_0/support_matrix.md)",
+            "[v1.0 Release Package](release_reports/v1_0/README.md)",
+            "[v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)",
             "[v0.9.8 Release Package](release_reports/v0_9_8/README.md)",
         )
     )
@@ -152,9 +150,9 @@ def build_audit() -> dict[str, Any]:
         "date": DATE,
         "valid": valid,
         "recommendation": (
-            "v1_0_release_candidate_ready_for_release_surface_gate"
+            "v1_0_release_action_complete"
             if valid
-            else "blocked_pending_release_candidate_fixes"
+            else "blocked_pending_v1_0_release_action_fixes"
         ),
         "pod_needed_now": False,
         "pod_decision": (
@@ -172,22 +170,22 @@ def build_audit() -> dict[str, Any]:
         "support_ok": support_ok,
         "support_state": support_state,
         "boundary": (
-            "This audit covers v1.0 release-candidate readiness only. It does "
-            "not release v1.0, update VERSION, authorize a tag, or authorize "
-            "new public speedup wording."
+            "This audit covers the released v1.0 package and live version "
+            "marker. It does not authorize new public speedup wording beyond "
+            "the reviewed bounded sub-path rows."
         ),
         "next_steps": [
             "Run the release-surface documentation test gate.",
-            "Run full local discovery or an approved release-equivalent gate.",
-            "Seek final external review and final authorization.",
-            "Update VERSION and tag only after final authorization.",
+            "Run focused release-action tests.",
+            "Commit the release action.",
+            "Tag the release-action commit.",
         ],
     }
 
 
 def to_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        "# Goal1249 v1.0 Release-Candidate Audit",
+        "# Goal1249 v1.0 Release Audit",
         "",
         f"Date: {payload['date']}",
         "",
@@ -239,7 +237,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit v1.0 release-candidate package readiness.")
+    parser = argparse.ArgumentParser(description="Audit v1.0 release package readiness.")
     parser.add_argument(
         "--output-json",
         default="docs/reports/goal1249_v1_0_release_candidate_audit_2026-05-04.json",

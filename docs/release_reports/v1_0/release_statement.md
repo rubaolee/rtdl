@@ -1,8 +1,8 @@
 # RTDL v1.0 Release Statement
 
-Status: draft release candidate for `v1.0`; not released.
+Status: released as `v1.0`.
 
-The current released version remains `v0.9.8`.
+The current released version is `v1.0`.
 
 The proposed release statement is:
 
@@ -12,7 +12,7 @@ The proposed release statement is:
 > where bounded performance claims are valid. It is a foundation release for
 > the v1.5 primitive cleanup and v2.0 end-to-end performance architecture.
 
-## What This Release Candidate May Claim
+## What This Release May Claim
 
 - RTDL can express the current app/example set through a Python-facing
   traversal-oriented model.
@@ -27,7 +27,7 @@ The proposed release statement is:
 - v1.0 intentionally accepts app-specific native continuations as proof
   machinery; v1.5 should replace those with generic primitives.
 
-## What This Release Candidate Must Not Claim
+## What This Release Must Not Claim
 
 - broad speedup across all RTDL apps;
 - whole-app speedup unless a future release explicitly reviews that whole-app

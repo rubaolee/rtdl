@@ -17,9 +17,9 @@ class Goal1249V10ReleaseCandidateAuditTest(unittest.TestCase):
     def test_v1_0_release_candidate_audit_is_valid(self) -> None:
         payload = goal1249.build_audit()
         self.assertTrue(payload["valid"], payload)
-        self.assertEqual(payload["recommendation"], "v1_0_release_candidate_ready_for_release_surface_gate")
+        self.assertEqual(payload["recommendation"], "v1_0_release_action_complete")
         self.assertFalse(payload["pod_needed_now"])
-        self.assertEqual(payload["release_marker"], "v0.9.8")
+        self.assertEqual(payload["release_marker"], "v1.0")
         self.assertTrue(payload["package_ok"])
         self.assertTrue(payload["support_ok"])
         self.assertTrue(payload["docs_index_ok"])
@@ -39,14 +39,14 @@ class Goal1249V10ReleaseCandidateAuditTest(unittest.TestCase):
         )
         self.assertNotIn("facility_knn_assignment / prepared_query_knn", state["support_reviewed_phases"])
 
-    def test_package_remains_draft_not_release_authorization(self) -> None:
+    def test_package_is_released_without_new_speedup_authorization(self) -> None:
         payload = goal1249.build_audit()
         for row in payload["package_rows"]:
             with self.subTest(path=row["path"]):
                 self.assertEqual(row["status"], "ok")
                 self.assertFalse(row["missing_required_phrases"])
                 self.assertFalse(row["forbidden_phrases"])
-        self.assertIn("does not release v1.0", payload["boundary"])
+        self.assertIn("released v1.0", payload["boundary"])
         self.assertIn("No pod is required", payload["pod_decision"])
 
     def test_cli_writes_json_and_markdown(self) -> None:
@@ -68,12 +68,12 @@ class Goal1249V10ReleaseCandidateAuditTest(unittest.TestCase):
                 stderr=subprocess.PIPE,
                 check=True,
             )
-            self.assertIn("Goal1249 v1.0 Release-Candidate Audit", completed.stdout)
+            self.assertIn("Goal1249 v1.0 Release Audit", completed.stdout)
             payload = json.loads(output_json.read_text(encoding="utf-8"))
             markdown = output_md.read_text(encoding="utf-8")
             self.assertTrue(payload["valid"])
             self.assertIn("support matrix reviewed rows: `12`", markdown)
-            self.assertIn("release marker: `v0.9.8`", markdown)
+            self.assertIn("release marker: `v1.0`", markdown)
 
 
 if __name__ == "__main__":

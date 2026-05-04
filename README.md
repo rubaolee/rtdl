@@ -7,8 +7,8 @@ database-style summaries.
 The core idea: write app-shaped Python code, lower the traversal-heavy part to
 an RT-capable backend, and keep the remaining app logic explicit.
 
-The current released version is `v0.9.8`.
-- current released version: `v0.9.8`
+The current released version is `v1.0`.
+- current released version: `v1.0`
 
 ## Start Fast
 
@@ -35,8 +35,8 @@ PYTHONPATH=src:. python examples/rtdl_hausdorff_distance_app.py --backend embree
 
 | Area | State |
 | --- | --- |
-| Release | current released version: `v0.9.8` |
-| v1.0 mainline | app-shaped RTDL proof, documentation, and bounded evidence |
+| Release | current released version: `v1.0` |
+| v1.0 | released app-shaped RTDL proof, documentation, and bounded evidence |
 | Public RTX wording | `12 reviewed` bounded RTX sub-path rows after Goal1224 |
 | Still blocked | `graph_analytics`, `polygon_pair_overlap_area_rows` public speedup wording |
 | Not yet public-reviewed | `database_analytics`, `polygon_set_jaccard` public speedup wording |

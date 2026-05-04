@@ -1,15 +1,15 @@
-# RTDL v1.0 Release Candidate Audit Report
+# RTDL v1.0 Release Audit Report
 
-Status: draft release candidate for `v1.0`; not released.
+Status: released as `v1.0`.
 
 Date: 2026-05-04
 
 ## Audit Scope
 
-This audit checks whether current main is ready to enter final v1.0 release
-review as an app-shaped RTDL proof release. It does not authorize a tag.
+This audit records the evidence used to release v1.0 as an app-shaped RTDL
+proof release.
 
-The release-candidate package covers:
+The release package covers:
 
 - front page and public documentation map;
 - quick tutorial and tutorial index;
@@ -32,19 +32,19 @@ Recent local evidence before this package:
 - Goal1251 full local discovery: `2422` tests OK, `196` skipped, `0`
   failures, `0` errors, `166.940s`.
 
-Required before final release action:
+Final release-action evidence:
 
-- run the v1.0 release-candidate package tests;
-- run release-surface documentation audits after any last docs edits;
-- save external-AI package review and Codex consensus;
-- save final release authorization before changing `VERSION` or tagging.
+- v1.0 release-candidate package tests passed before authorization;
+- release-surface documentation audits passed before authorization;
+- external-AI package review and Codex consensus were saved;
+- final release authorization was saved before changing `VERSION` or tagging.
 
 ## Documentation Audit
 
 The current public documentation separates:
 
-- current released version `v0.9.8`;
-- draft v1.0 release-candidate package status;
+- current released version `v1.0`;
+- released v1.0 package status;
 - v1.0 as foundation/proof release;
 - v1.5 as generic primitive cleanup;
 - v2.0 as end-to-end performance architecture;
@@ -53,9 +53,8 @@ The current public documentation separates:
 
 ## Known Non-Claims
 
-This release candidate rejects these claims:
+This release rejects these claims:
 
-- RTDL v1.0 is already released;
 - all apps have public RTX speedup wording;
 - all backends have equivalent support;
 - app-specific native continuations are already gone;
@@ -64,7 +63,6 @@ This release candidate rejects these claims:
 
 ## Audit Verdict
 
-Current main is close to a v1.0 release candidate, but not yet a released v1.0.
-No immediate pod is required for the documented v1.0 proof scope. A pod is only
-needed if the release scope changes to promote blocked or not-reviewed app rows
-into new public speedup claims.
+RTDL v1.0 is released as the app-shaped RTDL proof release. No immediate pod is required for the documented v1.0 proof scope. A pod is only needed if the scope
+changes to promote blocked or not-reviewed app rows into new public speedup
+claims.

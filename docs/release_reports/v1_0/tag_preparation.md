@@ -1,12 +1,12 @@
-# RTDL v1.0 Tag Preparation
+# RTDL v1.0 Tag Record
 
-Status: draft release candidate for `v1.0`; not released.
+Status: released as `v1.0`.
 
 Date: 2026-05-04
 
 ## Release Boundary
 
-The future `v1.0` tag should represent the app-shaped RTDL proof release:
+The `v1.0` tag represents the app-shaped RTDL proof release:
 
 - current docs explain the Python-facing RTDL model clearly;
 - tutorials and app/example docs are usable entry points;
@@ -17,27 +17,27 @@ The future `v1.0` tag should represent the app-shaped RTDL proof release:
 - v1.5 and v2.0 follow-up scope is documented without being claimed as already
   complete.
 
-## Requirements Already Satisfied For Candidate Prep
+## Release Scope Satisfied
 
-- The current released version remains `v0.9.8`.
+- The current released version is `v1.0`.
 - v1.0 positioning and engine-customization boundary docs exist.
 - Front page and tutorial polish have recent focused tests and external review
   consensus.
 - No immediate pod is required for the currently documented v1.0 proof scope.
 
-## Requirements Before Tag
+## Requirements Satisfied Before Tag
 
-- Complete final v1.0 release-candidate audit.
-- Complete external-AI review of this v1.0 package and save it under
+- Completed final v1.0 release-candidate audit.
+- Completed external-AI review of this v1.0 package and saved it under
   `docs/reports/`.
-- Save Codex consensus for the final v1.0 package.
-- Run the agreed release-surface and full-discovery test gates.
-- Update `VERSION` from `v0.9.8` to `v1.0` only after final authorization.
-- Commit release docs before tagging.
+- Saved Codex consensus for the final v1.0 package.
+- Ran the agreed release-surface and full-discovery test gates.
+- Saved final authorization before updating `VERSION`.
+- Updated `VERSION` from `v0.9.8` to `v1.0` as part of the release action.
 
 ## Tag Commands
 
-Do not run these until final authorization is saved:
+The release action uses:
 
 ```bash
 git tag -a v1.0 -m "Release RTDL v1.0"
@@ -47,4 +47,4 @@ git push origin v1.0
 
 ## Boundary
 
-This file is tag preparation only. It is not a release authorization.
+This file records the tag procedure. It does not widen the v1.0 claim scope.

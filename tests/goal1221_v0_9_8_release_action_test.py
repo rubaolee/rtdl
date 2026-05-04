@@ -8,12 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal1221V098ReleaseActionTest(unittest.TestCase):
-    def test_version_and_public_front_page_are_released_v098(self) -> None:
-        version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    def test_v098_release_package_remains_historical_release(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(version, "v0.9.8")
-        self.assertIn("The current released version is `v0.9.8`", readme)
-        self.assertIn("- current released version: `v0.9.8`", readme)
+        self.assertIn("The current released version is `v1.0`", readme)
+        self.assertIn("- current released version: `v1.0`", readme)
         self.assertNotIn("- current released version: `v0.9.6`\n- current released version: `v0.9.8`", readme)
 
     def test_release_package_is_released_not_prepared(self) -> None:

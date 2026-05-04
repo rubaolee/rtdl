@@ -1,11 +1,10 @@
-# RTDL v1.0 Release Candidate Package
+# RTDL v1.0 Release Package
 
-Status: draft release candidate for `v1.0`; not released.
+Status: released as `v1.0`.
 
-The current released version remains `v0.9.8` until a separate final
-authorization, version-marker update, release commit, and tag action complete.
+The current released version is `v1.0`.
 
-`v1.0` is the app-shaped RTDL proof release candidate. It packages the current
+`v1.0` is the app-shaped RTDL proof release. It packages the current
 main documentation, examples, app inventory, and bounded performance evidence
 showing that a Python-facing ray-tracing DSL can express useful non-rendering
 workloads across real backend surfaces. It is not the final performance
@@ -13,7 +12,7 @@ architecture.
 
 ## Scope
 
-This release-candidate package records the intended `v1.0` boundary:
+This release package records the `v1.0` boundary:
 
 - a compact public front page and documentation router for new users;
 - tutorials and app/example docs for the Python-hosted RTDL authoring path;
@@ -58,19 +57,18 @@ Disallowed conclusions:
 - [Current Architecture](../../current_architecture.md)
 - [IR And Lowering](../../rtdl/ir_and_lowering.md)
 
-## Current Gate State
+## Release Gate State
 
-- Implementation and bounded evidence are largely complete for the intended
-  v1.0 proof boundary.
+- Implementation and bounded evidence are complete for the released v1.0 proof
+  boundary.
 - Recent public-doc focused gates passed after front-page and tutorial polish.
 - No immediate pod is required unless the release scope changes to promote a
   blocked or not-reviewed app row into new public speedup wording.
-- Final v1.0 release still needs a full release-candidate audit, external-AI
-  package review, final authorization, version-marker update, release commit,
-  and tag action.
+- Full local discovery, external-AI review, final authorization, and version
+  marker update completed before the release action.
 
 ## Release State
 
-This package is a release-candidate draft. It is useful for review and final
-audit preparation, but it is not a release authorization and must not be cited
-as a completed `v1.0` tag.
+This package is the released `v1.0` boundary. It must still not be cited as a
+whole-app speedup authorization or as new public wording for blocked or
+not-reviewed rows.

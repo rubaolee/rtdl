@@ -5,7 +5,7 @@ history. If you are new to RTDL, do not browse everything here first. Start with
 the live path below, then branch into tutorials, apps, architecture, IR, or
 performance.
 
-The current released version is `v0.9.8`.
+The current released version is `v1.0`.
 
 ## New User Path
 
@@ -26,7 +26,7 @@ the current public story:
 12. [Performance Model](performance_model.md)
 13. [v1.0 RTX App Status](v1_0_rtx_app_status.md)
 14. [RTDL Current Main Support Matrix](current_main_support_matrix.md)
-15. [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
+15. [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
 
 Older release packages remain linked below for auditability, but they are not
 the recommended first path for a new user.
@@ -111,8 +111,10 @@ specific backend path says so.
 
 Use these for audit trails and exact release boundaries:
 
-- [v1.0 Release Candidate Package](release_reports/v1_0/README.md)
-- [v1.0 Release Candidate Support Matrix](release_reports/v1_0/support_matrix.md)
+- [v1.0 Release Package](release_reports/v1_0/README.md)
+- [v1.0 Release Statement](release_reports/v1_0/release_statement.md)
+- [v1.0 Support Matrix](release_reports/v1_0/support_matrix.md)
+- [v1.0 Audit Report](release_reports/v1_0/audit_report.md)
 - [v0.9.8 Release Package](release_reports/v0_9_8/README.md)
 - [v0.9.8 Release Statement](release_reports/v0_9_8/release_statement.md)
 - [v0.9.8 Support Matrix](release_reports/v0_9_8/support_matrix.md)
