@@ -11,6 +11,11 @@ This directory contains two kinds of material:
 
 If you are new to RTDL, use these files first:
 
+For a shorter user-facing route through the app demos, read
+[`docs/app_example_quickstart.md`](../docs/app_example_quickstart.md). This
+directory index is the full inventory; the quickstart is the cleaner first
+path.
+
 | If you want to see... | Start with | What data becomes |
 | --- | --- | --- |
 | the smallest runnable program | `rtdl_hello_world.py` | one script becomes a known output |

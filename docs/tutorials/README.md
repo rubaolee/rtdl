@@ -6,6 +6,9 @@ If you are brand new, read [Quick Tutorial](../quick_tutorial.md) first. It gets
 you a working program immediately and explains the kernel shape before the
 longer tutorials.
 
+If you want to choose a runnable app or example before reading the full ladder,
+use [App And Example Quickstart](../app_example_quickstart.md).
+
 The tutorial ladder is organized around the main RTDL value proposition: write a
 small workload kernel once, keep application logic in Python, and avoid
 hand-maintaining separate ray-tracing backend implementations for every modern

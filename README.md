@@ -25,6 +25,7 @@ Useful first reads:
 
 - [Public Documentation Map](docs/public_documentation_map.md)
 - [Quick Tutorial](docs/quick_tutorial.md)
+- [App And Example Quickstart](docs/app_example_quickstart.md)
 - [Release-Facing Examples](docs/release_facing_examples.md)
 - [Application Catalog](docs/application_catalog.md)
 - [v1.0 App Acceleration Inventory](docs/v1_0_app_acceleration_inventory.md)

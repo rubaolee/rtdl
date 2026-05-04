@@ -12,7 +12,7 @@ goal archive.
 | Front page and project promise | [Project Front Page](../README.md) | [Feature Guide](rtdl_feature_guide.md), [Capability Boundaries](capability_boundaries.md) |
 | Tutorials | [Quick Tutorial](quick_tutorial.md) | [Tutorial Ladder](tutorials/README.md), [Feature Quickstart Cookbook](tutorials/feature_quickstart_cookbook.md) |
 | Apps | [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md) | [Application Catalog](application_catalog.md), [App Engine Support Matrix](app_engine_support_matrix.md) |
-| Examples | [Release-Facing Examples](release_facing_examples.md) | [Examples Index](../examples/README.md), [v0.8 App Building](tutorials/v0_8_app_building.md) |
+| Examples | [App And Example Quickstart](app_example_quickstart.md) | [Release-Facing Examples](release_facing_examples.md), [Examples Index](../examples/README.md), [v0.8 App Building](tutorials/v0_8_app_building.md) |
 | Architecture | [Current Architecture](current_architecture.md) | [Capability Boundaries](capability_boundaries.md), [Backend Maturity](backend_maturity.md) |
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [Workload Cookbook](rtdl/workload_cookbook.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | [DSL Reference](rtdl/dsl_reference.md), `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
@@ -54,7 +54,8 @@ release-audit history.
 
 ### 3. Apps And Examples
 
-Use [Application Catalog](application_catalog.md),
+Use [App And Example Quickstart](app_example_quickstart.md),
+[Application Catalog](application_catalog.md),
 [v1.0 App Acceleration Inventory](v1_0_app_acceleration_inventory.md), and
 [Examples Index](../examples/README.md) to understand supported app demos.
 These docs should say what each app does, which part is RT-accelerated, which

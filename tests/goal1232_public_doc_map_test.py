@@ -63,12 +63,34 @@ class Goal1232PublicDocMapTest(unittest.TestCase):
         language_index = (ROOT / "docs" / "rtdl" / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("[Public Documentation Map](docs/public_documentation_map.md)", readme)
+        self.assertIn("[App And Example Quickstart](docs/app_example_quickstart.md)", readme)
         self.assertIn("[Performance Model](docs/performance_model.md)", readme)
         self.assertIn("[IR And Lowering](docs/rtdl/ir_and_lowering.md)", readme)
         self.assertIn("[Public Documentation Map](public_documentation_map.md)", docs_index)
+        self.assertIn("[App And Example Quickstart](app_example_quickstart.md)", docs_index)
         self.assertIn("[Performance Model](performance_model.md)", docs_index)
         self.assertIn("[IR And Lowering](rtdl/ir_and_lowering.md)", docs_index)
         self.assertIn("[IR And Lowering](ir_and_lowering.md)", language_index)
+
+    def test_app_example_quickstart_is_short_and_honest(self) -> None:
+        text = (ROOT / "docs" / "app_example_quickstart.md").read_text(encoding="utf-8")
+        compact = " ".join(text.split())
+
+        for phrase in (
+            "First Three Commands",
+            "Choose An App",
+            "Choose An Example Type",
+            "RTX Rule For App Runs",
+            "Recommended v1.0 Demo Path",
+            "--backend optix is not a public NVIDIA RT-core speedup claim",
+            "Only claim the exact prepared/native sub-path",
+            "RTDL can express real app-shaped RT workloads from Python",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+        self.assertLessEqual(len(text.splitlines()), 140)
+        self.assertIn("whole-app acceleration", compact)
 
 
 if __name__ == "__main__":
