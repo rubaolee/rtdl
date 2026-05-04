@@ -11,13 +11,18 @@ APP_MATRIX = ROOT / "docs" / "app_engine_support_matrix.md"
 
 
 class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
-    def test_reviewed_rtx_wording_is_present_and_scoped(self) -> None:
+    def test_front_page_keeps_compact_claim_boundary(self) -> None:
         text = README.read_text(encoding="utf-8")
         compact = " ".join(text.split())
         self.assertIn("bounded public", text)
-        self.assertIn("Goal1142", text)
         self.assertIn("not a whole-app, default-mode, Python-postprocess", text)
         self.assertIn("broad RT-core acceleration claim", text)
+        self.assertIn("support matrix and v1.0 inventory as the authority", compact)
+        self.assertIn("Detailed evidence and review trail", text)
+
+    def test_reviewed_rtx_wording_detail_lives_in_status_page(self) -> None:
+        text = V1_STATUS.read_text(encoding="utf-8")
+        compact = " ".join(text.split())
         self.assertIn("service_coverage_gaps / prepared_gap_summary", text)
         self.assertIn("event_hotspot_screening / prepared_count_summary", text)
         self.assertIn("outlier_detection / prepared_fixed_radius_density_summary", text)
@@ -39,7 +44,7 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("hausdorff_distance / directed_threshold_prepared", text)
 
     def test_robot_normalized_public_speedup_wording_is_scoped(self) -> None:
-        text = README.read_text(encoding="utf-8")
+        text = README.read_text(encoding="utf-8") + "\n" + V1_STATUS.read_text(encoding="utf-8")
         compact = " ".join(text.split())
         self.assertIn("robot_collision_screening / prepared_pose_flags", text)
         self.assertIn("normalized per-pose", text)
@@ -48,16 +53,20 @@ class Goal1010PublicRtxReadmeWordingTest(unittest.TestCase):
         self.assertIn("witness-row output", text)
 
     def test_artifact_trail_points_to_goal1008_and_goal1009(self) -> None:
-        text = README.read_text(encoding="utf-8")
-        self.assertIn("docs/reports/goal1008_large_repeat_artifact_intake_2026-04-26.md", text)
-        self.assertIn("docs/reports/goal1009_public_rtx_wording_review_packet_2026-04-26.md", text)
-        self.assertIn("docs/reports/goal1058_three_ai_same_semantics_consensus_2026-04-28.md", text)
-        self.assertIn("docs/reports/goal1121_rtx_pod_current_source_run_report_2026-04-29.md", text)
-        self.assertIn("docs/reports/goal1123_two_ai_consensus_2026-04-29.md", text)
-        self.assertIn("docs/reports/goal1126_three_ai_consensus_2026-04-29.md", text)
-        self.assertIn("docs/reports/goal1146_two_ai_public_wording_promotion_consensus_2026-04-29.md", text)
-        self.assertIn("docs/reports/goal1208_two_ai_consensus_2026-05-01.md", text)
-        self.assertIn("docs/reports/goal1224_two_ai_rtx_wording_resolution_consensus_2026-05-01.md", text)
+        text = V1_STATUS.read_text(encoding="utf-8") + "\n" + APP_MATRIX.read_text(encoding="utf-8")
+        for goal in (
+            "Goal1008",
+            "Goal1009",
+            "Goal1058",
+            "Goal1121",
+            "Goal1123",
+            "Goal1126",
+            "Goal1146",
+            "Goal1208",
+            "Goal1224",
+        ):
+            with self.subTest(goal=goal):
+                self.assertIn(goal, text)
 
     def test_secondary_public_status_docs_match_robot_boundary(self) -> None:
         v1 = V1_STATUS.read_text(encoding="utf-8")

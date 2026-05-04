@@ -29,6 +29,10 @@ The following rows have passed bounded wording review for prepared
 RTX A5000 query/native sub-path wording. These are not whole-app, default-mode,
 Python-postprocess, or broad RT-core acceleration claims:
 
+The segment/polygon hit-count row is the prepared native hit-count traversal
+claim path; pair-row output and broader segment/polygon app behavior remain
+outside that wording.
+
 | App/path | RTX phase (s) | Ratio | Scope |
 | --- | ---: | ---: | --- |
 | `service_coverage_gaps / prepared_gap_summary` | `0.136545` | `1.61x` | prepared gap-summary query/native sub-path only |
@@ -98,4 +102,3 @@ RTDL includes a bounded NVIDIA OptiX/RTX-backed subpath for `<app>`: `<allowed c
 - `readiness`: `rtdsl.optix_app_benchmark_readiness_matrix()`
 - `maturity`: `rtdsl.rt_core_app_maturity_matrix()`
 - `public_wording`: `rtdsl.rtx_public_wording_matrix()`
-

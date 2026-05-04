@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class Goal938PublicRtxWordingSyncTest(unittest.TestCase):
-    def test_front_page_names_current_ready_claim_review_paths(self) -> None:
-        text = (ROOT / "README.md").read_text(encoding="utf-8")
+    def test_status_page_names_current_ready_claim_review_paths(self) -> None:
+        text = (ROOT / "docs/v1_0_rtx_app_status.md").read_text(encoding="utf-8")
         for phrase in (
             "--backend optix --output-mode compact_summary --require-rt-core",
             "--backend optix --scenario visibility_edges --require-rt-core",
